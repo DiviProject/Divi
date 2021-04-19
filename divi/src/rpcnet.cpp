@@ -17,6 +17,7 @@
 #include "version.h"
 #include "chainparams.h"
 #include <FeeRate.h>
+#include <FeeAndPriorityCalculator.h>
 
 #include <boost/foreach.hpp>
 
@@ -24,7 +25,6 @@
 
 using namespace json_spirit;
 using namespace std;
-extern CFeeRate minRelayTxFee;
 
 Value getconnectioncount(const Array& params, bool fHelp)
 {
@@ -393,7 +393,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("timeoffset", GetTimeOffset()));
     obj.push_back(Pair("connections", (int)vNodes.size()));
     obj.push_back(Pair("networks", GetNetworksInfo()));
-    obj.push_back(Pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
+    obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getFeeRateQuote().GetFeePerK() )));
     Array localAddresses;
     {
         LOCK(cs_mapLocalHost);

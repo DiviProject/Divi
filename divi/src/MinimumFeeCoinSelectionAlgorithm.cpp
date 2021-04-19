@@ -10,7 +10,7 @@
 #include <I_SignatureSizeEstimator.h>
 #include <defaultValues.h>
 
-extern CFeeRate minRelayTxFee;
+const CFeeRate& minRelayTxFee = FeeAndPriorityCalculator::instance().getFeeRateQuote();
 extern CAmount maxTxFee;
 
 MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(

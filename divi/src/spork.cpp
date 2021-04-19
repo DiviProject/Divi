@@ -18,6 +18,7 @@
 #include <chain.h>
 #include <blockmap.h>
 #include <FeeRate.h>
+#include <FeeAndPriorityCalculator.h>
 
 #include <numeric>
 #include <boost/algorithm/string/join.hpp>
@@ -33,7 +34,6 @@ extern CCriticalSection cs_main;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
 extern std::map<uint256, int64_t> mapRejectedBlocks;
-extern CFeeRate minRelayTxFee;
 extern CAmount maxTxFee;
 
 extern void Misbehaving(NodeId pnode, int howmuch);
@@ -306,7 +306,7 @@ void CSporkManager::ExecuteMultiValueSpork(int nSporkID)
         CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_14_TX_FEE), vValues);
         TxFeeSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, chainTip->nHeight, chainTip->nTime);
 
-        minRelayTxFee = CFeeRate(activeSpork.nMinFeePerKb);
+        FeeAndPriorityCalculator::instance().setFeeRate(activeSpork.nMinFeePerKb);
         maxTxFee = activeSpork.nMaxFee;
 #ifdef ENABLE_WALLET
         nTransactionSizeMultiplier = activeSpork.nTxSizeMultiplier;

@@ -17,18 +17,17 @@
 #include <spork.h>
 #include <Settings.h>
 #include <coins.h>
-#include <FeeRate.h>
 #include <ThreadManagementHelpers.h>
 #include <net.h>
 #include <chain.h>
 #include <map>
+#include <FeeAndPriorityCalculator.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 
 extern Settings& settings;
 extern CCoinsViewCache* pcoinsTip;
-extern CFeeRate minRelayTxFee;
 extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
@@ -118,7 +117,7 @@ void ThreadStakeMinter(CWallet* pwallet)
             cs_main,Params(),
             chainActive,
             GetMasternodeSync(),
-            minRelayTxFee,
+            FeeAndPriorityCalculator::instance().getFeeRateQuote(),
             pcoinsTip,
             GetMasternodePayments(),
             mempool,
@@ -151,7 +150,7 @@ void static ThreadPoWMinter(CWallet* pwallet,bool fGenerate)
             Params(),
             chainActive,
             GetMasternodeSync(),
-            minRelayTxFee,
+            FeeAndPriorityCalculator::instance().getFeeRateQuote(),
             pcoinsTip,
             GetMasternodePayments(),
             mempool,

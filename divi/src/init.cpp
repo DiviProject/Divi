@@ -999,13 +999,13 @@ void CreateHardlinksForBlocks()
 
 std::pair<size_t,size_t> CalculateDBCacheSizes()
 {
-    size_t nTotalCache = (settings.GetArg("-dbcache", nDefaultDbCache) << 20);
+    size_t nTotalCache = (settings.GetArg("-dbcache", DEFAULT_DB_CACHE_SIZE) << 20);
     size_t nBlockTreeDBCache = 0;
     size_t nCoinDBCache = 0;
-    if (nTotalCache < (nMinDbCache << 20))
-        nTotalCache = (nMinDbCache << 20); // total cache cannot be less than nMinDbCache
-    else if (nTotalCache > (nMaxDbCache << 20))
-        nTotalCache = (nMaxDbCache << 20); // total cache cannot be greater than nMaxDbCache
+    if (nTotalCache < (MIN_DB_CACHE_SIZE << 20))
+        nTotalCache = (MIN_DB_CACHE_SIZE << 20); // total cache cannot be less than MIN_DB_CACHE_SIZE
+    else if (nTotalCache > (MAX_DB_CACHE_SIZE << 20))
+        nTotalCache = (MAX_DB_CACHE_SIZE << 20); // total cache cannot be greater than MAX_DB_CACHE_SIZE
     nBlockTreeDBCache = nTotalCache / 8;
     if (nBlockTreeDBCache > (1 << 21) && !settings.GetBoolArg("-txindex", true))
         nBlockTreeDBCache = (1 << 21); // block tree db cache shouldn't be larger than 2 MiB

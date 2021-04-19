@@ -20,7 +20,6 @@
 
 //! if set, all keys will be derived by using BIP39/BIP44
 #define translate(x) std::string(x)
-extern Settings& settings;
 
 static const int screenWidth = 79;
 static const int optIndent = 2;
@@ -56,7 +55,7 @@ std::string HelpMessageCli()
     return strUsage;
 }
 
-std::string HelpMessage(HelpMessageMode mode,const CChainParams& defaultParameters)
+std::string HelpMessage(HelpMessageMode mode,const Settings& settings, const CChainParams& defaultParameters)
 {
     // When adding new options to the categories, please keep and ensure alphabetical ordering.
     std::string strUsage = HelpMessageGroup(translate("Options:"));

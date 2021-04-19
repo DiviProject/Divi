@@ -778,12 +778,9 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
     {
         if (txout.IsEmpty() && !tx.IsCoinBase() && !tx.IsCoinStake())
             return state.DoS(100, error("%s: txout empty for user transaction",__func__));
-        if (txout.nValue < 0)
-            return state.DoS(100, error("%s : txout.nValue negative",__func__),
-                             REJECT_INVALID, "bad-txns-vout-negative");
-        if (txout.nValue > maxMoneyAllowedInOutput)
-            return state.DoS(100, error("%s : txout.nValue too high",__func__),
-                             REJECT_INVALID, "bad-txns-vout-toolarge");
+        if(!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
+            return state.DoS(100, error("%s : txout.nValue out of range",__func__),
+                             REJECT_INVALID, "bad-txns-vout-negative-or-toolarge");
         nValueOut += txout.nValue;
         if (!MoneyRange(nValueOut,maxMoneyAllowedInOutput))
             return state.DoS(100, error("%s : txout total out of range",__func__),

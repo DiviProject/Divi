@@ -32,6 +32,7 @@
 #include <MasternodeModule.h>
 #include <masternode-sync.h>
 #include <MasternodeHelpers.h>
+#include <FeeAndPriorityCalculator.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -60,7 +61,6 @@ extern CBlockTreeDB* pblocktree;
 extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern CFeeRate minRelayTxFee;
 extern CWallet* pwalletMain;
 
 bool GetAddressIndex(bool addresIndexEnabled,
@@ -215,7 +215,7 @@ Value getinfo(const Array& params, bool fHelp)
     if (pwalletMain && pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
 #endif
-    obj.push_back(Pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
+    obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getFeeRateQuote().GetFeePerK())));
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));

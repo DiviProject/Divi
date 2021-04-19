@@ -69,7 +69,6 @@ extern bool fReindex ;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern int64_t nTimeBestReceived;
-extern CFeeRate minRelayTxFee;
 extern CAmount maxTxFee;
 extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
@@ -2026,7 +2025,8 @@ CTxOut CreateChangeOutput(CReserveKey& reservekey)
 
 static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes)
 {
-    return std::min(::minRelayTxFee.GetFee(nTxBytes),maxTxFee);
+    const CFeeRate& feeRate = priorityFeeCalculator.getFeeRateQuote();
+    return std::min(feeRate.GetFee(nTxBytes),maxTxFee);
 }
 
 //! Largest (in bytes) free transaction we're willing to create

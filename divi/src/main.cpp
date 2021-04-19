@@ -113,13 +113,9 @@ bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeig
 
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
-/** Fees smaller than this (in duffs) are considered zero fee (for relaying and mining)
- * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
- * so it's still 10 times lower comparing to bitcoin.
- */
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
-extern CFeeRate minRelayTxFee;
-CTxMemPool mempool(::minRelayTxFee);
+const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
+CTxMemPool mempool(feeAndPriorityCalculator.getFeeRateQuote());
 
 static void CheckBlockIndex();
 
@@ -855,7 +851,7 @@ bool CheckFeesPaidAreAcceptable(
     CValidationState& state)
 {
     const uint256 hash = tx.GetHash();
-    CAmount minimumRelayFee = ::minRelayTxFee.GetFee(nSize);
+    CAmount minimumRelayFee = feeAndPriorityCalculator.getFeeRateQuote().GetFee(nSize);
     bool txShouldHavePriority = TxShouldBePrioritized(hash, nSize);
     if (fLimitFree && !txShouldHavePriority && nFees < minimumRelayFee)
         return state.DoS(0, error("%s : not enough fees %s, %d < %d",__func__,

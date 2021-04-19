@@ -4,17 +4,18 @@
 
 #include "test/FakeWallet.h"
 
+#include <blockmap.h>
 #include "chain.h"
 #include "merkletx.h"
 #include "primitives/transaction.h"
 #include "random.h"
 #include "script/script.h"
+#include <Settings.h>
 #include "sync.h"
 #include "WalletTx.h"
 
 #include <sstream>
 #include <string>
-
 namespace
 {
 
@@ -75,6 +76,11 @@ CMutableTransaction createDefaultTransaction(const CScript& defaultScript, unsig
   return tx;
 }
 
+bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite)
+{
+  return CWalletDB(Settings::instance(), walletPtr->strWalletFile).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
+}
+
 } // anonymous namespace
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
@@ -91,6 +97,15 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
   GetKeyFromPool(newDefaultKey, false);
   SetDefaultKey(newDefaultKey);
 
+  ENTER_CRITICAL_SECTION(cs_wallet);
+}
+
+FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)
+  : CWallet(walletFilename, *c.activeChain, *c.blockIndexByHash)
+  , fakeChain(c)
+{
+  bool firstLoad = true;
+  LoadWallet(firstLoad);
   ENTER_CRITICAL_SECTION(cs_wallet);
 }
 
@@ -122,6 +137,33 @@ void FakeWallet::FakeAddToChain(const CWalletTx& tx)
   txPtr->hashBlock = fakeChain.activeChain->Tip()->GetBlockHash();
   txPtr->nIndex = 0;
   txPtr->fMerkleVerified = true;
+  WriteTxToDisk(this,*txPtr);
+}
+
+bool FakeWallet::TransactionIsInMainChain(const CWalletTx* walletTx) const
+{
+  const BlockMap& blockIndexByHash = *(fakeChain.blockIndexByHash);
+  BlockMap::const_iterator it = blockIndexByHash.find(walletTx->hashBlock);
+  if(it != blockIndexByHash.end())
+  {
+    return fakeChain.activeChain->Contains(it->second);
+  }
+  else
+  {
+    return false;
+  }
+}
+
+void FakeWallet::SetConfirmedTxsToVerified()
+{
+  std::vector<const CWalletTx*> allTransactions = GetWalletTransactionReferences();
+  for(auto txPtrCopy: allTransactions)
+  {
+    if(TransactionIsInMainChain(txPtrCopy))
+    {
+      const_cast<CWalletTx*>(txPtrCopy)->fMerkleVerified = true;
+    }
+  }
 }
 
 CPubKey FakeWallet::getNewKey()

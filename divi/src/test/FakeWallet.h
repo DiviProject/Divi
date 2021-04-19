@@ -22,7 +22,7 @@ class FakeWallet : public CWallet
 {
 
 private:
-  
+
   /** Version for blocks to add.  */
   static constexpr int32_t version = 1;
 
@@ -33,6 +33,7 @@ public:
 
   /** Constructs the wallet with a given external fake chain.  */
   explicit FakeWallet(FakeBlockIndexWithHashes& c);
+  explicit FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename);
   ~FakeWallet ();
 
   /** Adds a new block to our fake chain.  */
@@ -43,6 +44,9 @@ public:
    *  with the output to the requested script is set.  */
   const CWalletTx& AddDefaultTx(const CScript& scriptToPayTo, unsigned& outputIndex,
                                 CAmount amount = 100 * COIN);
+
+  bool TransactionIsInMainChain(const CWalletTx* walletTx) const;
+  void SetConfirmedTxsToVerified();
 
   /** Modifies the given wallet transaction to look like it was included in the
    *  current top block.  */

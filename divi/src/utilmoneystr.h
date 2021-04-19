@@ -17,5 +17,5 @@
 std::string FormatMoney(const CAmount& n, bool fPlus = false);
 bool ParseMoney(const std::string& str, CAmount& nRet);
 bool ParseMoney(const char* pszIn, CAmount& nRet);
-bool MoneyRange(CAmount nValueOut);
+bool MoneyRange(CAmount nValueOut,const CAmount maxMoneyOut);
 #endif // BITCOIN_UTILMONEYSTR_H

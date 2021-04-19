@@ -14,6 +14,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "Settings.h"
+#include <LicenseAndInfo.h>
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
@@ -79,7 +80,7 @@ bool AppInit(int argc, char* argv[])
             strUsage += "\n" + translate("Usage:") + "\n" +
                         "  divid [options]                     " + translate("Start Divi Core Daemon") + "\n";
 
-            strUsage += "\n" + HelpMessage(HMM_BITCOIND);
+            strUsage += "\n" + HelpMessage(HMM_BITCOIND,Params(CBaseChainParams::MAIN));
         }
 
         fprintf(stdout, "%s", strUsage.c_str());

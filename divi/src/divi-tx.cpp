@@ -8,6 +8,7 @@
 #include "coins.h"
 #include "core_io.h"
 #include "keystore.h"
+#include <LicenseAndInfo.h>
 #include "primitives/block.h" // for MAX_BLOCK_SIZE
 #include "primitives/transaction.h"
 #include "script/script.h"

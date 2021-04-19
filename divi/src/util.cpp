@@ -124,21 +124,6 @@ Settings& settings = Settings::instance();
 bool fDaemon = false;
 bool fLogIPs = false;
 
-static const int screenWidth = 79;
-static const int optIndent = 2;
-static const int msgIndent = 7;
-
-std::string HelpMessageGroup(const std::string &message) {
-    return std::string(message) + std::string("\n\n");
-}
-
-std::string HelpMessageOpt(const std::string &option, const std::string &message) {
-    return std::string(optIndent,' ') + std::string(option) +
-           std::string("\n") + std::string(msgIndent,' ') +
-           FormatParagraph(message, screenWidth - msgIndent, msgIndent) +
-           std::string("\n\n");
-}
-
 #ifndef WIN32
 boost::filesystem::path GetPidFile(const Settings& settings)
 {

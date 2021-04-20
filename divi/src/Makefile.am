@@ -309,7 +309,7 @@ BITCOIN_CORE_H = \
   StakableCoin.h \
   keypool.h \
   reservekey.h \
-  walletBackupCreator.h \
+  WalletBackupCreator.h \
   WalletBackupFeatureContainer.h \
   WalletIntegrityVerifier.h \
   wallet_ismine.h \
@@ -419,7 +419,7 @@ libbitcoin_server_a_SOURCES = \
   NotificationInterface.cpp \
   version.cpp \
   versionbits.cpp \
-  walletBackupCreator.cpp \
+  WalletBackupCreator.cpp \
   walletBackupFeatureContainer.cpp \
   WalletIntegrityVerifier.cpp \
   $(JSON_H) \

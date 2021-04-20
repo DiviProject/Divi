@@ -1,4 +1,4 @@
-#include "walletBackupCreator.h"
+#include "WalletBackupCreator.h"
 #include <utiltime.h>
 #include <util.h>
 #include <boost/foreach.hpp>

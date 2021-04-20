@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include <walletBackupCreator.h>
+#include <WalletBackupCreator.h>
 #include <MockFileSystem.h>
 #include <iostream>
 

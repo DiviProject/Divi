@@ -1,10 +1,10 @@
-#include <monthlyWalletBackupCreator.h>
+#include <MonthlyWalletBackupCreator.h>
 #include <boost/test/unit_test.hpp>
 #include <MockFileSystem.h>
 #include <string>
 #include <ctime>
-#include <monthlyWalletBackupCreator.h>
-#include <mockWalletBackupCreator.h>
+#include <MonthlyWalletBackupCreator.h>
+#include <MockWalletBackupCreator.h>
 #include <timeIntervalConstants.h>
 
 using ::testing::Exactly;

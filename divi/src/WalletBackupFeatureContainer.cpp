@@ -1,7 +1,7 @@
 #include <WalletBackupFeatureContainer.h>
 #include <FilteredBoostFileSystem.h>
 #include <walletBackupCreator.h>
-#include <monthlyWalletBackupCreator.h>
+#include <MonthlyWalletBackupCreator.h>
 #include <DatabaseWrapper.h>
 
 WalletBackupFeatureContainer::WalletBackupFeatureContainer (

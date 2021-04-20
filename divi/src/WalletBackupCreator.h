@@ -2,8 +2,8 @@
 #define WALLET_BACKUP_CREATOR_H
 #include <string>
 #include <boost/filesystem.hpp>
-#include <i_walletBackupCreator.h>
-#include <i_filesystem.h>
+#include <I_WalletBackupCreator.h>
+#include <I_Filesystem.h>
 
 class WalletBackupCreator : public I_WalletBackupCreator
 {

@@ -339,8 +339,6 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
 
     // see if we have this Masternode
     if (mn.protocolVersion >= ActiveProtocol()) {
-        if (fRequireEnabled && !mn.IsEnabled()) return false;
-
         // LogPrint("masternode","mnping - Found corresponding mn for vin: %s\n", vin);
         // update only if there is no known ping for this masternode or
         // last ping was more then MASTERNODE_MIN_MNP_SECONDS-60 ago comparing to this one

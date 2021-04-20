@@ -310,7 +310,7 @@ BITCOIN_CORE_H = \
   keypool.h \
   reservekey.h \
   walletBackupCreator.h \
-  walletBackupFeatureContainer.h \
+  WalletBackupFeatureContainer.h \
   WalletIntegrityVerifier.h \
   wallet_ismine.h \
   walletdb.h \

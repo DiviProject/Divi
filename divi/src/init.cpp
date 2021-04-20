@@ -22,7 +22,7 @@
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
-#include <walletBackupFeatureContainer.h>
+#include <WalletBackupFeatureContainer.h>
 #include "miner.h"
 #include "net.h"
 #include "rpcserver.h"

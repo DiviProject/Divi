@@ -303,7 +303,10 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
         LogPrint("masternode","mnb - Got updated entry for %s\n", mnb.vin.prevout.hash);
         if (UpdateWithNewBroadcast(mnb,*pmn)) {
             int unusedDoSValue = 0;
-            if (mnb.lastPing != CMasternodePing() &&  CheckAndUpdatePing(*pmn,mnb.lastPing,unusedDoSValue,false)) {
+            if (mnb.lastPing != CMasternodePing() &&
+                !(false && !(pmn->IsEnabled())) &&
+                CheckAndUpdatePing(*pmn,mnb.lastPing,unusedDoSValue,false))
+            {
                 RecordSeenPing(pmn->lastPing);
                 pmn->lastPing.Relay();
             }
@@ -479,7 +482,8 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     // Also check that the attached ping is valid.
     CMasternode mn(mnb);
     mn.lastPing = CMasternodePing();
-    if (!CheckAndUpdatePing(mn,mnb.lastPing, nDoS)) {
+    if ( !(true && !mn.IsEnabled()) && !CheckAndUpdatePing(mn,mnb.lastPing, nDoS) )
+    {
         LogPrintf("%s : mnb - attached ping is invalid\n", __func__);
         if (pfrom != nullptr)
             Misbehaving(pfrom->GetId(), nDoS);
@@ -527,7 +531,10 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp, CMasternode
 
     auto* pmn = Find(mnp.vin);
     int nDoS = 0;
-    if (pmn != nullptr && CheckAndUpdatePing(*pmn,mnp,nDoS)) {
+    if (pmn != nullptr &&
+        !(true && !pmn->IsEnabled()) &&
+        CheckAndUpdatePing(*pmn,mnp,nDoS))
+    {
         RecordSeenPing(mnp);
         mnp.Relay();
         return true;

@@ -304,7 +304,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
         if (UpdateWithNewBroadcast(mnb,*pmn)) {
             int unusedDoSValue = 0;
             if (mnb.lastPing != CMasternodePing() &&
-                CheckAndUpdatePing(*pmn,mnb.lastPing,unusedDoSValue,false))
+                CheckAndUpdatePing(*pmn,mnb.lastPing,unusedDoSValue))
             {
                 RecordSeenPing(pmn->lastPing);
                 pmn->lastPing.Relay();
@@ -318,7 +318,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
     return true;
 }
 
-bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, int& nDoS,bool fRequireEnabled)
+bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, int& nDoS)
 {
     if (mnp.sigTime > GetAdjustedTime() + 60 * 60) {
         LogPrint("masternode", "%s - Signature rejected, too far into the future %s\n",

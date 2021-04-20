@@ -19,7 +19,7 @@
 #include "primitives/transaction.h"
 #include "ui_interface.h"
 #include <timeIntervalConstants.h>
-#include <walletBackupFeatureContainer.h>
+#include <WalletBackupFeatureContainer.h>
 #include "wallet.h"
 #include "Settings.h"
 #include <main.h>

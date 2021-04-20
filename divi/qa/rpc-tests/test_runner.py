@@ -87,6 +87,7 @@ BASE_SCRIPTS = [
     'mempool_coinbase_spends.py',
     'mempool_resurrect_test.py',
     'mempool_spendcoinbase.py',
+    'MnAreSafeToRestart.py',
     'mncollateral.py',
     'mnoperation.py',
     'op_meta.py',

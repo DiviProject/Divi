@@ -467,7 +467,8 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     }
 
     // make sure collateral is still unspent
-    if (!localMasternode.IsOurBroadcast(mnb) && !CheckInputsForMasternode(mnb,nDoS))
+    const bool isOurBroadcast = localMasternode.IsOurBroadcast(mnb);
+    if (!isOurBroadcast && !CheckInputsForMasternode(mnb,nDoS))
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash);
         if (nDoS > 0 && pfrom != nullptr)

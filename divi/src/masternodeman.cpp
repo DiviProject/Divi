@@ -318,7 +318,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
     return true;
 }
 
-bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, int& nDoS)
+bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, int& nDoS,bool skipPingChainSyncCheck)
 {
     if (mnp.sigTime > GetAdjustedTime() + 60 * 60) {
         LogPrint("masternode", "%s - Signature rejected, too far into the future %s\n",
@@ -351,23 +351,26 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
                 return false;
             }
 
-            BlockMap::const_iterator mi = blockIndicesByHash_.find(mnp.blockHash);
-            if (mi != blockIndicesByHash_.end() && (*mi).second) {
-                if ((*mi).second->nHeight < activeChain_.Height() - 24) {
-                    LogPrint("masternode", "%s - Masternode %s block hash %s is too old\n",
-                             __func__, mnp.vin.prevout.hash, mnp.blockHash);
-                    // Do nothing here (no Masternode update, no mnping relay)
-                    // Let this node to be visible but fail to accept mnping
+            if(!skipPingChainSyncCheck)
+            {
+                BlockMap::const_iterator mi = blockIndicesByHash_.find(mnp.blockHash);
+                if (mi != blockIndicesByHash_.end() && (*mi).second) {
+                    if ((*mi).second->nHeight < activeChain_.Height() - 24) {
+                        LogPrint("masternode", "%s - Masternode %s block hash %s is too old\n",
+                                __func__, mnp.vin.prevout.hash, mnp.blockHash);
+                        // Do nothing here (no Masternode update, no mnping relay)
+                        // Let this node to be visible but fail to accept mnping
+
+                        return false;
+                    }
+                } else {
+                    LogPrint("masternode", "%s - Masternode %s block hash %s is unknown\n",
+                            __func__, mnp.vin.prevout.hash, mnp.blockHash);
+                    // maybe we stuck so we shouldn't ban this node, just fail to accept it
+                    // TODO: or should we also request this block?
 
                     return false;
                 }
-            } else {
-                LogPrint("masternode", "%s - Masternode %s block hash %s is unknown\n",
-                         __func__, mnp.vin.prevout.hash, mnp.blockHash);
-                // maybe we stuck so we shouldn't ban this node, just fail to accept it
-                // TODO: or should we also request this block?
-
-                return false;
             }
 
             mn.lastPing = mnp;
@@ -467,7 +470,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     }
 
     // make sure collateral is still unspent
-    const bool isOurBroadcast = localMasternode.IsOurBroadcast(mnb);
+    const bool isOurBroadcast = localMasternode.IsOurBroadcast(mnb,true);
     if (!isOurBroadcast && !CheckInputsForMasternode(mnb,nDoS))
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash);
@@ -479,7 +482,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     // Also check that the attached ping is valid.
     CMasternode mn(mnb);
     mn.lastPing = CMasternodePing();
-    if ( mn.IsEnabled() && !CheckAndUpdatePing(mn,mnb.lastPing, nDoS) )
+    if ( mn.IsEnabled() && !CheckAndUpdatePing(mn,mnb.lastPing, nDoS, isOurBroadcast) )
     {
         LogPrintf("%s : mnb - attached ping is invalid\n", __func__);
         if (pfrom != nullptr)

@@ -20,4 +20,4 @@ public:
     virtual TimeStampedFolderContents get_timestamped_folder_contents(const PathType& directory) = 0;
 };
 
-#endif //I_FILESYSTEM_H 
+#endif //I_FILESYSTEM_H

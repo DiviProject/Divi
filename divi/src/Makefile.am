@@ -239,7 +239,7 @@ BITCOIN_CORE_H = \
   CoinMintingModule.h \
   PoSTransactionCreator.h \
   PeerNotificationOfMintService.h \
-  monthlyWalletBackupCreator.h \
+  MonthlyWalletBackupCreator.h \
   MinimumFeeCoinSelectionAlgorithm.h \
   mruset.h \
   netbase.h \
@@ -396,7 +396,7 @@ libbitcoin_server_a_SOURCES = \
   PeerNotificationOfMintService.cpp \
   miner.cpp \
   BlockMemoryPoolTransactionCollector.cpp \
-  monthlyWalletBackupCreator.cpp \
+  MonthlyWalletBackupCreator.cpp \
   net.cpp \
   netfulfilledman.cpp \
   noui.cpp \

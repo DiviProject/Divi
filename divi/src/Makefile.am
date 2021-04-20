@@ -420,7 +420,7 @@ libbitcoin_server_a_SOURCES = \
   version.cpp \
   versionbits.cpp \
   WalletBackupCreator.cpp \
-  walletBackupFeatureContainer.cpp \
+  WalletBackupFeatureContainer.cpp \
   WalletIntegrityVerifier.cpp \
   $(JSON_H) \
   $(BITCOIN_CORE_H)

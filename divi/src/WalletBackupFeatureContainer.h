@@ -1,10 +1,10 @@
 #ifndef WALLET_BACKUP_FEATURE_CONTAINER_H
 #define WALLET_BACKUP_FEATURE_CONTAINER_H
 
-#include <i_filesystem.h>
-#include <i_walletBackupCreator.h>
+#include <I_Filesystem.h>
+#include <I_WalletBackupCreator.h>
 #include <WalletIntegrityVerifier.h>
-#include <i_databaseWrapper.h>
+#include <I_DatabaseWrapper.h>
 #include <memory>
 
 class WalletBackupFeatureContainer

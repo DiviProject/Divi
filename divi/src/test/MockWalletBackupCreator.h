@@ -1,7 +1,7 @@
 #ifndef MOCKWALLETBACKUPCREATOR_H
 #define MOCKWALLETBACKUPCREATOR_H
 
-#include <i_walletBackupCreator.h>
+#include <I_WalletBackupCreator.h>
 #include <gmock/gmock.h>
 
 

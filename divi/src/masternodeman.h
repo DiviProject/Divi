@@ -47,7 +47,7 @@ private:
     bool UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const;
     bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchronization,CMasternodeBroadcast& mnb, int& nDoS);
-    bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS);
+    bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool skipPingChainSyncCheck = false);
 public:
 
     CMasternodeMan(

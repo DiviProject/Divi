@@ -395,6 +395,8 @@ libbitcoin_server_a_SOURCES = \
   PoSStakeModifierService.cpp \
   PeerNotificationOfMintService.cpp \
   miner.cpp \
+  MasternodeHelpers.cpp \
+  MasternodeModule.cpp \
   BlockMemoryPoolTransactionCollector.cpp \
   MonthlyWalletBackupCreator.cpp \
   net.cpp \
@@ -441,12 +443,10 @@ libbitcoin_wallet_a_CFLAGS = -fPIC
 libbitcoin_wallet_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_SOURCES = \
   activemasternode.cpp \
-  MasternodeHelpers.cpp \
   bip38.cpp \
   BlockSubsidyProvider.cpp \
   obfuscation.cpp \
   MasternodeBroadcastFactory.cpp \
-  MasternodeModule.cpp \
   uiMessenger.cpp \
   db.cpp \
   dbenv.cpp \

@@ -53,7 +53,7 @@ extern const std::string CLIENT_BUILD;
 extern const std::string CLIENT_DATE;
 
 const std::string CLIENT_NAME_STR("DIVI Core");
-const std::string CLIENT_VERSION_STR("2.2.0.0");
+const std::string CLIENT_VERSION_STR = "" STRINGIZE(CLIENT_VERSION_MAJOR) "." STRINGIZE(CLIENT_VERSION_MINOR) "." STRINGIZE(CLIENT_VERSION_REVISION) "." STRINGIZE(CLIENT_VERSION_BUILD);
 
 
 std::string FormatFullVersion();

@@ -15,17 +15,32 @@ extern bool fReindex;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
 
+static bool mnResyncRequested  = false;
+bool MasternodeResyncIsRequested()
+{
+    return mnResyncRequested;
+}
+void FulfilledMasternodeResyncRequest()
+{
+    mnResyncRequested = false;
+}
+static bool IsBlockchainSyncStalled(const int64_t& now)
+{
+    constexpr int64_t oneHourStalledLimit = 60*60;
+    static int64_t lastChecked = GetTime();
+    const bool stalled = now - lastChecked > oneHourStalledLimit;
+    lastChecked = now;
+    return stalled;
+}
 bool IsBlockchainSynced()
 {
     static bool fBlockchainSynced = false;
-    static int64_t lastProcess = GetTime();
-
-    // if the last call to this function was more than 60 minutes ago (client was in sleep mode) reset the sync process
     const int64_t now = GetTime();
-    if (now - lastProcess > 60 * 60) {
+    if(IsBlockchainSyncStalled(now))
+    {
         fBlockchainSynced = false;
+        mnResyncRequested = true;
     }
-    lastProcess = now;
 
     if (fBlockchainSynced) return true;
 

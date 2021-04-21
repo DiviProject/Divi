@@ -8,6 +8,8 @@ class CMasternodePing;
 class CTxIn;
 class COutPoint;
 
+bool MasternodeResyncIsRequested();
+void FulfilledMasternodeResyncRequest();
 bool IsBlockchainSynced();
 
 /** Returns the block hash that is used in the masternode scoring / ranking

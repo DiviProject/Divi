@@ -12,7 +12,7 @@
 //! These need to be macros, as clientversion.cpp's and divi*-res.rc's voodoo requires it
 #define CLIENT_VERSION_MAJOR 2
 #define CLIENT_VERSION_MINOR 2
-#define CLIENT_VERSION_REVISION 0
+#define CLIENT_VERSION_REVISION 1
 #define CLIENT_VERSION_BUILD 0
 
 #define CLIENT_VERSION_IS_RELEASE true		// Todo: !! Set to true for release, false for prerelease or test build
@@ -54,7 +54,6 @@ extern const std::string CLIENT_DATE;
 
 const std::string CLIENT_NAME_STR("DIVI Core");
 const std::string CLIENT_VERSION_STR = "" STRINGIZE(CLIENT_VERSION_MAJOR) "." STRINGIZE(CLIENT_VERSION_MINOR) "." STRINGIZE(CLIENT_VERSION_REVISION) "." STRINGIZE(CLIENT_VERSION_BUILD);
-
 
 std::string FormatFullVersion();
 std::string FormatSubVersion(const std::vector<std::string>& comments);

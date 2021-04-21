@@ -540,8 +540,6 @@ void ThreadMasternodeBackgroundSync()
 
     int64_t nTimeManageStatus = 0;
     int64_t nTimeConnections = 0;
-    int64_t lastResyncMasternodeData = GetTime();
-    constexpr int64_t forceMasternodeResyncTimeWindow = 60*60;
 
     while (true) {
         int64_t now;
@@ -555,15 +553,13 @@ void ThreadMasternodeBackgroundSync()
         //
         // this function keeps track of its own "last call" time and
         // ignores calls if they are too early
-        masternodeSync.Process(regtest);
-
-        bool blockchainIsSynced = IsBlockchainSynced();
-        if(now - lastResyncMasternodeData > forceMasternodeResyncTimeWindow)
+        if(MasternodeResyncIsRequested())
         {
             masternodeSync.Reset();
-            lastResyncMasternodeData = now;
+            FulfilledMasternodeResyncRequest();
         }
-        if(!blockchainIsSynced) continue;
+        masternodeSync.Process(regtest);
+        if(!IsBlockchainSynced()) continue;
         // check if we should activate or ping every few minutes,
         // start right after sync is considered to be done
         if (now >= nTimeManageStatus + MASTERNODE_PING_SECONDS) {

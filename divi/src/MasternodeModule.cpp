@@ -31,6 +31,18 @@
 #include <blockmap.h>
 #include <ThreadManagementHelpers.h>
 
+#define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
+
+template <typename T>
+static T readFromHex(std::string hexString)
+{
+    std::vector<unsigned char> hex = ParseHex(hexString);
+    CDataStream ss(hex,SER_NETWORK,PROTOCOL_VERSION);
+    T object;
+    ss >> object;
+    return object;
+}
+
 bool fMasterNode = false;
 bool fLiteMode = false;
 
@@ -43,18 +55,6 @@ CMasternodeMan mnodeman(networkMessageManager,chainActive,mapBlockIndex,addrman)
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CMasternodePayments masternodePayments(masternodePaymentData,networkMessageManager,mnodeman);
 CMasternodeSync masternodeSync(masternodePayments,networkMessageManager,masternodePaymentData);
-
-#define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
-
-template <typename T>
-static T readFromHex(std::string hexString)
-{
-    std::vector<unsigned char> hex = ParseHex(hexString);
-    CDataStream ss(hex,SER_NETWORK,PROTOCOL_VERSION);
-    T object;
-    ss >> object;
-    return object;
-}
 
 bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionIndexEnabled, std::string& errorMessage)
 {

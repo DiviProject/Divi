@@ -56,6 +56,41 @@ CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CMasternodePayments masternodePayments(masternodePaymentData,networkMessageManager,mnodeman);
 CMasternodeSync masternodeSync(masternodePayments,networkMessageManager,masternodePaymentData);
 
+bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
+{
+    if(!activeMasternode.SetMasternodeAddress(settings.GetArg("-masternodeaddr", "")))
+    {
+        errorMessage = "Invalid -masternodeaddr address: " + settings.GetArg("-masternodeaddr", "");
+        return false;
+    }
+    LogPrintf("Masternode address: %s\n", activeMasternode.service);
+
+    if(settings.ParameterIsSet("-masternodeprivkey"))
+    {
+        if(!activeMasternode.SetMasternodeKey(settings.GetArg("-masternodeprivkey", "")))
+        {
+            errorMessage = translate("Invalid masternodeprivkey. Please see documenation.");
+            return false;
+        }
+    }
+    else
+    {
+        errorMessage = translate("You must specify a masternodeprivkey in the configuration. Please see documentation for help.");
+        return false;
+    }
+    return true;
+}
+
+bool LoadMasternodeConfigurations(std::string& errorMessage)
+{
+    // parse masternode.conf
+    if (!masternodeConfig.read(errorMessage)) {
+        errorMessage="Error reading masternode configuration file: "+ errorMessage + "\n";
+        return false;
+    }
+    return true;
+}
+
 bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionIndexEnabled, std::string& errorMessage)
 {
     fMasterNode = settings.GetBoolArg("-masternode", false);
@@ -481,16 +516,6 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
     return false;
 }
 
-bool LoadMasternodeConfigurations(std::string& errorMessage)
-{
-    // parse masternode.conf
-    if (!masternodeConfig.read(errorMessage)) {
-        errorMessage="Error reading masternode configuration file: "+ errorMessage + "\n";
-        return false;
-    }
-    return true;
-}
-
 void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction)
 {
     if(settings.GetBoolArg("-mnconflock", true))
@@ -506,30 +531,6 @@ void LockUpMasternodeCollateral(const Settings& settings, std::function<void(con
     }
 }
 
-bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
-{
-    if(!activeMasternode.SetMasternodeAddress(settings.GetArg("-masternodeaddr", "")))
-    {
-        errorMessage = "Invalid -masternodeaddr address: " + settings.GetArg("-masternodeaddr", "");
-        return false;
-    }
-    LogPrintf("Masternode address: %s\n", activeMasternode.service);
-
-    if(settings.ParameterIsSet("-masternodeprivkey"))
-    {
-        if(!activeMasternode.SetMasternodeKey(settings.GetArg("-masternodeprivkey", "")))
-        {
-            errorMessage = translate("Invalid masternodeprivkey. Please see documenation.");
-            return false;
-        }
-    }
-    else
-    {
-        errorMessage = translate("You must specify a masternodeprivkey in the configuration. Please see documentation for help.");
-        return false;
-    }
-    return true;
-}
 
 //TODO: Rename/move to core
 void ThreadMasternodeBackgroundSync()

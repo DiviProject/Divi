@@ -1,7 +1,6 @@
 #include <MasternodeModule.h>
 
 #include <utiltime.h>
-#include <memory>
 #include <chrono>
 
 #include <masternode-sync.h>
@@ -50,75 +49,60 @@ bool fLiteMode = false;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
 
-class MasternodeModule
+MasternodeModule::MasternodeModule(
+    ): fMasterNode_(fMasterNode)
+    , fLiteMode_(fLiteMode)
+    , chainActive_(chainActive)
+    , mapBlockIndex_(mapBlockIndex)
+    , networkMessageManager_( new MasternodeNetworkMessageManager)
+    , masternodePaymentData_(new MasternodePaymentData)
+    , masternodeConfig_( new CMasternodeConfig)
+    , mnodeman_(new CMasternodeMan(*networkMessageManager_,chainActive_,mapBlockIndex_,addrman))
+    , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
+    , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_))
+    , masternodeSync_(new CMasternodeSync(*masternodePayments_,*networkMessageManager_,*masternodePaymentData_))
 {
-private:
-    bool& fMasterNode_;
-    bool& fLiteMode_;
-    const CChain& chainActive_;
-    const BlockMap& mapBlockIndex_;
-    std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
-    std::unique_ptr<MasternodePaymentData> masternodePaymentData_;
-    std::unique_ptr<CMasternodeConfig> masternodeConfig_;
-    std::unique_ptr<CMasternodeMan> mnodeman_;
-    std::unique_ptr<CActiveMasternode> activeMasternode_;
-    std::unique_ptr<CMasternodePayments> masternodePayments_;
-    std::unique_ptr<CMasternodeSync> masternodeSync_;
-public:
-    MasternodeModule(
-        ): fMasterNode_(fMasterNode)
-        , fLiteMode_(fLiteMode)
-        , chainActive_(chainActive)
-        , mapBlockIndex_(mapBlockIndex)
-        , networkMessageManager_( new MasternodeNetworkMessageManager)
-        , masternodePaymentData_(new MasternodePaymentData)
-        , masternodeConfig_( new CMasternodeConfig)
-        , mnodeman_(new CMasternodeMan(*networkMessageManager_,chainActive_,mapBlockIndex_,addrman))
-        , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
-        , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_))
-        , masternodeSync_(new CMasternodeSync(*masternodePayments_,*networkMessageManager_,*masternodePaymentData_))
-    {
-    }
+}
 
-    ~MasternodeModule()
-    {
-        masternodeSync_.reset();
-        masternodePayments_.reset();
-        activeMasternode_.reset();
-        mnodeman_.reset();
-        masternodeConfig_.reset();
-        masternodePaymentData_.reset();
-        networkMessageManager_.reset();
-    }
-    MasternodeNetworkMessageManager& getNetworkMessageManager() const
-    {
-        return *networkMessageManager_;
-    }
-    MasternodePaymentData& getMasternodePaymentData() const
-    {
-        return *masternodePaymentData_;
-    }
-    CMasternodeConfig& getMasternodeConfigurations() const
-    {
-        return *masternodeConfig_;
-    }
-    CMasternodeMan& getMasternodeManager() const
-    {
-        return *mnodeman_;
-    }
-    CActiveMasternode& getActiveMasternode() const
-    {
-        return *activeMasternode_;
-    }
-    CMasternodePayments& getMasternodePayments() const
-    {
-        return *masternodePayments_;
-    }
-    CMasternodeSync& getMasternodeSynchronization() const
-    {
-        return *masternodeSync_;
-    }
-};
+MasternodeModule::~MasternodeModule()
+{
+    masternodeSync_.reset();
+    masternodePayments_.reset();
+    activeMasternode_.reset();
+    mnodeman_.reset();
+    masternodeConfig_.reset();
+    masternodePaymentData_.reset();
+    networkMessageManager_.reset();
+}
+
+MasternodeNetworkMessageManager& MasternodeModule::getNetworkMessageManager() const
+{
+    return *networkMessageManager_;
+}
+MasternodePaymentData& MasternodeModule::getMasternodePaymentData() const
+{
+    return *masternodePaymentData_;
+}
+CMasternodeConfig& MasternodeModule::getMasternodeConfigurations() const
+{
+    return *masternodeConfig_;
+}
+CMasternodeMan& MasternodeModule::getMasternodeManager() const
+{
+    return *mnodeman_;
+}
+CActiveMasternode& MasternodeModule::getActiveMasternode() const
+{
+    return *activeMasternode_;
+}
+CMasternodePayments& MasternodeModule::getMasternodePayments() const
+{
+    return *masternodePayments_;
+}
+CMasternodeSync& MasternodeModule::getMasternodeSynchronization() const
+{
+    return *masternodeSync_;
+}
 
 MasternodeModule mnModule;
 MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();

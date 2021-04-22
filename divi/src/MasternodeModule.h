@@ -5,6 +5,8 @@
 #include <functional>
 #include <stdint.h>
 #include <vector>
+#include <memory>
+
 class Settings;
 class CBlockIndex;
 class CDataStream;
@@ -13,6 +15,39 @@ class CMasternodeSync;
 class UIMessenger;
 class CMasternodePayments;
 class CKeyStore;
+
+class CChain;
+class BlockMap;
+class MasternodeNetworkMessageManager;
+class MasternodePaymentData;
+class CMasternodeConfig;
+class CMasternodeMan;
+class CActiveMasternode;
+class MasternodeModule
+{
+private:
+    bool& fMasterNode_;
+    bool& fLiteMode_;
+    const CChain& chainActive_;
+    const BlockMap& mapBlockIndex_;
+    std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
+    std::unique_ptr<MasternodePaymentData> masternodePaymentData_;
+    std::unique_ptr<CMasternodeConfig> masternodeConfig_;
+    std::unique_ptr<CMasternodeMan> mnodeman_;
+    std::unique_ptr<CActiveMasternode> activeMasternode_;
+    std::unique_ptr<CMasternodePayments> masternodePayments_;
+    std::unique_ptr<CMasternodeSync> masternodeSync_;
+public:
+    MasternodeModule();
+    ~MasternodeModule();
+    MasternodeNetworkMessageManager& getNetworkMessageManager() const;
+    MasternodePaymentData& getMasternodePaymentData() const;
+    CMasternodeConfig& getMasternodeConfigurations() const;
+    CMasternodeMan& getMasternodeManager() const;
+    CActiveMasternode& getActiveMasternode() const;
+    CMasternodePayments& getMasternodePayments() const;
+    CMasternodeSync& getMasternodeSynchronization() const;
+};
 
 void ThreadMasternodeBackgroundSync();
 void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction);

@@ -143,6 +143,7 @@ BITCOIN_CORE_H = \
   obfuscation.h \
   MasternodeModule.h \
   MasternodeBroadcastFactory.h \
+  RpcMasternodeFeatures.h \
   db.h \
   dbenv.h \
   DatabaseWrapper.h\
@@ -407,6 +408,7 @@ libbitcoin_server_a_SOURCES = \
   rpcblockchain.cpp \
   rpclottery.cpp \
   rpcmasternode.cpp \
+  RpcMasternodeFeatures.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \
   rpcnet.cpp \

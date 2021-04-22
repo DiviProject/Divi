@@ -23,6 +23,7 @@
 #include <MasternodeBroadcastFactory.h>
 #include <MasternodeHelpers.h>
 #include <version.h>
+#include <RpcMasternodeFeatures.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>

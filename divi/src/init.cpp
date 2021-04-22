@@ -93,6 +93,7 @@ extern int nScriptCheckThreads;
 extern int nCoinCacheSize;
 extern bool fTxIndex;
 extern bool fVerifyingBlocks;
+extern bool fLiteMode;
 extern BlockMap mapBlockIndex;
 extern CTxMemPool mempool;
 extern Settings& settings;

@@ -36,7 +36,6 @@
 
 class Settings;
 
-extern bool fLiteMode;
 extern bool fEnableSwiftTX;
 extern int nSwiftTXDepth;
 extern int nAnonymizeDiviAmount;

@@ -1,7 +1,7 @@
 #include <MasternodeModule.h>
 
 #include <utiltime.h>
-
+#include <memory>
 #include <chrono>
 
 #include <masternode-sync.h>
@@ -31,6 +31,7 @@
 #include <blockmap.h>
 #include <ThreadManagementHelpers.h>
 
+
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
 template <typename T>
@@ -56,55 +57,66 @@ private:
     bool& fLiteMode_;
     const CChain& chainActive_;
     const BlockMap& mapBlockIndex_;
-    MasternodeNetworkMessageManager networkMessageManager;
-    MasternodePaymentData masternodePaymentData;
-    CMasternodeConfig masternodeConfig;
-    CMasternodeMan mnodeman;
-    CActiveMasternode activeMasternode;
-    CMasternodePayments masternodePayments;
-    CMasternodeSync masternodeSync;
+    std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
+    std::unique_ptr<MasternodePaymentData> masternodePaymentData_;
+    std::unique_ptr<CMasternodeConfig> masternodeConfig_;
+    std::unique_ptr<CMasternodeMan> mnodeman_;
+    std::unique_ptr<CActiveMasternode> activeMasternode_;
+    std::unique_ptr<CMasternodePayments> masternodePayments_;
+    std::unique_ptr<CMasternodeSync> masternodeSync_;
 public:
     MasternodeModule(
         ): fMasterNode_(fMasterNode)
         , fLiteMode_(fLiteMode)
         , chainActive_(chainActive)
         , mapBlockIndex_(mapBlockIndex)
-        , networkMessageManager()
-        , masternodePaymentData()
-        , masternodeConfig()
-        , mnodeman(networkMessageManager,chainActive_,mapBlockIndex_,addrman)
-        , activeMasternode(masternodeConfig, fMasterNode_)
-        , masternodePayments(masternodePaymentData,networkMessageManager,mnodeman)
-        , masternodeSync(masternodePayments,networkMessageManager,masternodePaymentData)
+        , networkMessageManager_( new MasternodeNetworkMessageManager)
+        , masternodePaymentData_(new MasternodePaymentData)
+        , masternodeConfig_( new CMasternodeConfig)
+        , mnodeman_(new CMasternodeMan(*networkMessageManager_,chainActive_,mapBlockIndex_,addrman))
+        , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
+        , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_))
+        , masternodeSync_(new CMasternodeSync(*masternodePayments_,*networkMessageManager_,*masternodePaymentData_))
     {
     }
-    MasternodeNetworkMessageManager& getNetworkMessageManager()
+
+    ~MasternodeModule()
     {
-        return networkMessageManager;
+        masternodeSync_.reset();
+        masternodePayments_.reset();
+        activeMasternode_.reset();
+        mnodeman_.reset();
+        masternodeConfig_.reset();
+        masternodePaymentData_.reset();
+        networkMessageManager_.reset();
     }
-    MasternodePaymentData& getMasternodePaymentData()
+    MasternodeNetworkMessageManager& getNetworkMessageManager() const
     {
-        return masternodePaymentData;
+        return *networkMessageManager_;
     }
-    CMasternodeConfig& getMasternodeConfigurations()
+    MasternodePaymentData& getMasternodePaymentData() const
     {
-        return masternodeConfig;
+        return *masternodePaymentData_;
     }
-    CMasternodeMan& getMasternodeManager()
+    CMasternodeConfig& getMasternodeConfigurations() const
     {
-        return mnodeman;
+        return *masternodeConfig_;
     }
-    CActiveMasternode& getActiveMasternode()
+    CMasternodeMan& getMasternodeManager() const
     {
-        return activeMasternode;
+        return *mnodeman_;
     }
-    CMasternodePayments& getMasternodePayments()
+    CActiveMasternode& getActiveMasternode() const
     {
-        return masternodePayments;
+        return *activeMasternode_;
     }
-    CMasternodeSync& getMasternodeSynchronization()
+    CMasternodePayments& getMasternodePayments() const
     {
-        return masternodeSync;
+        return *masternodePayments_;
+    }
+    CMasternodeSync& getMasternodeSynchronization() const
+    {
+        return *masternodeSync_;
     }
 };
 

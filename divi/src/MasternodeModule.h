@@ -58,6 +58,7 @@ bool MasternodeIsKnown(const uint256& inventoryHash);
 bool MasternodePingIsKnown(const uint256& inventoryHash);
 bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash);
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash);
+bool ShareMasternodeWinnerWithPeer(CNode* peer,const uint256& inventoryHash);
 void ForceMasternodeResync();
 const CMasternodeSync& GetMasternodeSync();
 bool RelayMasternodeBroadcast(std::string hexData,std::string signature = "");

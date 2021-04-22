@@ -474,6 +474,20 @@ bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
     }
     return false;
 }
+
+bool ShareMasternodeWinnerWithPeer(CNode* peer,const uint256& inventoryHash)
+{
+    const auto* winner = masternodePayments.GetPaymentWinnerForHash(inventoryHash);
+    if (winner != nullptr) {
+        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+        ss.reserve(1000);
+        ss << *winner;
+        peer->PushMessage("mnw", ss);
+        return true;
+    }
+    return false;
+}
+
 bool MasternodePingIsKnown(const uint256& inventoryHash)
 {
     return networkMessageManager.pingIsKnown(inventoryHash);

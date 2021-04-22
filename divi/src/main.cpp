@@ -3324,12 +3324,8 @@ void static ProcessGetData(CNode* pfrom)
                     }
                 }
                 if (!pushed && inv.type == MSG_MASTERNODE_WINNER) {
-                    const auto* winner = GetMasternodePayments().GetPaymentWinnerForHash(inv.hash);
-                    if (winner != nullptr) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << *winner;
-                        pfrom->PushMessage("mnw", ss);
+                    if(ShareMasternodeWinnerWithPeer(pfrom,inv.hash))
+                    {
                         pushed = true;
                     }
                 }

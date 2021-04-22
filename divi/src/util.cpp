@@ -108,7 +108,6 @@ using namespace std;
 // DIVI only features
 
 // Masternode
-bool fLiteMode = false;
 // SwiftX
 bool fEnableSwiftTX = true;
 int nSwiftTXDepth = 5;

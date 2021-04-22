@@ -32,7 +32,8 @@
 #include <ThreadManagementHelpers.h>
 
 bool fMasterNode = false;
-extern bool fLiteMode;
+bool fLiteMode = false;
+
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
 MasternodeNetworkMessageManager networkMessageManager;

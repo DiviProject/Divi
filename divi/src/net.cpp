@@ -123,6 +123,11 @@ boost::condition_variable messageHandlerCondition;
 static CNodeSignals g_signals;
 CNodeSignals& GetNodeSignals() { return g_signals; }
 
+CAddrMan& GetNetworkAddressManager()
+{
+    return addrman;
+}
+
 void AddOneShot(string strDest)
 {
     LOCK(cs_vOneShots);

@@ -13,11 +13,9 @@
 #include <DataDirectory.h>
 #include <Logging.h>
 
-extern Settings& settings;
-
 // clang-format on
 
-boost::filesystem::path GetMasternodeConfigFile()
+boost::filesystem::path GetMasternodeConfigFile(const Settings& settings)
 {
     boost::filesystem::path pathConfigFile(settings.GetArg("-mnconf", "masternode.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir() / pathConfigFile;
@@ -30,10 +28,10 @@ void CMasternodeConfig::add(const std::string& alias, const std::string& ip, con
     entries.emplace_back(alias, ip, privKey, txHash, outputIndex);
 }
 
-bool CMasternodeConfig::read(std::string& strErr)
+bool CMasternodeConfig::read(const Settings& settings, std::string& strErr)
 {
     int linenumber = 1;
-    boost::filesystem::path pathMasternodeConfigFile = GetMasternodeConfigFile();
+    boost::filesystem::path pathMasternodeConfigFile = GetMasternodeConfigFile(settings);
     boost::filesystem::ifstream streamConfig(pathMasternodeConfigFile);
 
     if (!streamConfig.good()) {
@@ -91,9 +89,9 @@ bool CMasternodeConfig::CMasternodeEntry::castOutputIndex(int &n)
 }
 
 
-CMasternodeConfig::CMasternodeConfig()
+CMasternodeConfig::CMasternodeConfig(
+    ): entries()
 {
-    entries = std::vector<CMasternodeEntry>();
 }
 
 const std::vector<CMasternodeConfig::CMasternodeEntry>& CMasternodeConfig::getEntries() const

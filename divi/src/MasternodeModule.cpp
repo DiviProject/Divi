@@ -26,7 +26,6 @@
 #include <spork.h>
 #include <keystore.h>
 
-#include <addrman.h>
 #include <blockmap.h>
 #include <ThreadManagementHelpers.h>
 
@@ -45,7 +44,7 @@ MasternodeModule::MasternodeModule(
     , networkMessageManager_( new MasternodeNetworkMessageManager)
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
-    , mnodeman_(new CMasternodeMan(*networkMessageManager_,chainActive_,mapBlockIndex_,addrman))
+    , mnodeman_(new CMasternodeMan(*networkMessageManager_,chainActive_,mapBlockIndex_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_))
     , masternodeSync_(new CMasternodeSync(*masternodePayments_,*networkMessageManager_,*masternodePaymentData_))

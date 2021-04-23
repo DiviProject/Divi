@@ -12,6 +12,8 @@
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
+#include <sstream>
+
 #ifdef DEBUG_LOCKCONTENTION
 void PrintLockContention(const char* pszName, const char* pszFile, int nLine)
 {
@@ -66,23 +68,39 @@ static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch,
 {
     LogPrintf("POTENTIAL DEADLOCK DETECTED\n");
     LogPrintf("Previous lock order was:\n");
+
+    std::string lockOrderData = "Prior Order:\n";
+    std::string firstMismatch = "";
+    std::string secondMismatch = "";
+    fprintf(stderr, "POTENTIAL DEADLOCK DETECTED\n");
+
     BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, s2) {
         if (i.first == mismatch.first)
-            LogPrintf(" (1)");
+        {
+            lockOrderData += std::string("\tFirst: ") +i.second.ToString() + "\n";
+        }
         if (i.first == mismatch.second)
-            LogPrintf(" (2)");
-        LogPrintf(" %s\n", i.second);
-    }
-    LogPrintf("Current lock order is:\n");
-    BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, s1) {
-        if (i.first == mismatch.first)
-            LogPrintf(" (1)");
-        if (i.first == mismatch.second)
-            LogPrintf(" (2)");
+        {
+            lockOrderData += std::string("\tSecond: ") +i.second.ToString() + "\n";
+        }
         LogPrintf(" %s\n", i.second);
     }
 
-    tfm::format(std::cerr, "Assertion failed: detected inconsistent lock order for %s, details in debug log.\n", s2.back().second.ToString());
+    lockOrderData += "\nCurrent Order:\n";
+    LogPrintf("Current lock order is:\n");
+    BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, s1) {
+        if (i.first == mismatch.first)
+        {
+            lockOrderData += std::string("\tFirst: ") +i.second.ToString() + "\n";
+        }
+        if (i.first == mismatch.second)
+        {
+            lockOrderData += std::string("\tSecond: ") +i.second.ToString() + "\n";
+        }
+        LogPrintf(" %s\n", i.second);
+    }
+
+    tfm::format(std::cerr, "Assertion failed: detected inconsistent lock order for %s, details in debug log.\n%s", s2.back().second.ToString(),lockOrderData.c_str());
     abort();
 }
 
@@ -141,7 +159,12 @@ std::string LocksHeld()
 {
     std::string result;
     BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, *lockstack)
-        result += i.second.ToString() + std::string("\n");
+    {
+        std::ostringstream ss;
+        ss << (uint64_t)i.first;
+        result +=std::string("\t")+ss.str()+"|"+ i.second.ToString() + std::string("\n");
+    }
+
     return result;
 }
 
@@ -150,7 +173,8 @@ void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine,
     BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, *lockstack)
         if (i.first == cs)
             return;
-    fprintf(stderr, "Assertion failed: lock %s not held in %s:%i; locks held:\n%s", pszName, pszFile, nLine, LocksHeld().c_str());
+    std::string errorMessage = LocksHeld();
+    fprintf(stderr, "Assertion failed: lock %s not held in %s:%i; locks held:\n%s", pszName, pszFile, nLine, errorMessage.empty()? "No locks held": errorMessage.c_str());
     abort();
 }
 

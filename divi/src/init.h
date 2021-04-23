@@ -18,6 +18,5 @@ class thread_group;
 void StartShutdown();
 bool ShutdownRequested();
 void Shutdown();
-void PrepareShutdown();
 bool InitializeDivi(boost::thread_group& threadGroup);
 #endif // BITCOIN_INIT_H

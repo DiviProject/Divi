@@ -219,7 +219,6 @@ void FlushWalletAndStopMinting()
 
 void StoreDataCaches()
 {
-    DumpMasternodeDataToDisk();
     DataCacheManager(
         GetDataDir(),
         uiInterface,
@@ -228,9 +227,7 @@ void StoreDataCaches()
 
 bool LoadDataCaches()
 {
-    UIMessenger uiMessenger(uiInterface);
-    return LoadMasternodeDataFromDisk(uiMessenger,GetDataDir().string()) &&
-        DataCacheManager(
+    return DataCacheManager(
             GetDataDir(),
             uiInterface,
             fLiteMode).LoadDataCaches();
@@ -315,6 +312,7 @@ void PrepareShutdown()
     StopNode();
     InterruptTorControl();
     StopTorControl();
+    DumpMasternodeDataToDisk();
     StoreDataCaches();
     UnregisterNodeSignals(GetNodeSignals());
     SaveFeeEstimatesFromMempool();
@@ -1512,12 +1510,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 
     // ********************************************************* Step 10: setup ObfuScation
-
-    if(!LoadDataCaches())
+    UIMessenger uiMessenger(uiInterface);
+    if(!LoadMasternodeDataFromDisk(uiMessenger,GetDataDir().string()) || !LoadDataCaches())
     {
         return false;
     }
-
 
     std::string errorMessage;
     if(!InitializeMasternodeIfRequested(settings,fTxIndex,errorMessage))

@@ -12,6 +12,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
+class Settings;
 class CMasternodeConfig
 {
 public:
@@ -92,7 +93,7 @@ public:
     CMasternodeConfig();
 
     void clear();
-    bool read(std::string& strErr);
+    bool read(const Settings& settings, std::string& strErr);
     void add(const std::string& alias, const std::string& ip, const std::string& privKey,
              const std::string& txHash, const std::string& outputIndex);
     const std::vector<CMasternodeEntry>& getEntries() const;

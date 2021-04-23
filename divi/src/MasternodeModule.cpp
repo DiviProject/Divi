@@ -129,10 +129,10 @@ bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
     return true;
 }
 
-bool LoadMasternodeConfigurations(std::string& errorMessage)
+bool LoadMasternodeConfigurations(const Settings& settings, std::string& errorMessage)
 {
     // parse masternode.conf
-    if (!masternodeConfig.read(errorMessage)) {
+    if (!masternodeConfig.read(settings,errorMessage)) {
         errorMessage="Error reading masternode configuration file: "+ errorMessage + "\n";
         return false;
     }
@@ -147,7 +147,7 @@ bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionI
         errorMessage = "You can not start a masternode in litemode";
         return false;
     }
-    if(!LoadMasternodeConfigurations(errorMessage))
+    if(!LoadMasternodeConfigurations(settings,errorMessage))
     {
         return false;
     }

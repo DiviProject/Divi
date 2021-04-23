@@ -25,7 +25,13 @@ public:
 
     WalletCoinManagementTestFixture()
       : fakeChain(1, 1600000000, 1), wallet(fakeChain)
-    {}
+    {
+        ENTER_CRITICAL_SECTION(wallet.cs_wallet);
+    }
+    ~WalletCoinManagementTestFixture()
+    {
+        LEAVE_CRITICAL_SECTION(wallet.cs_wallet);
+    }
 
     CScript vaultScriptAsOwner() const
     {

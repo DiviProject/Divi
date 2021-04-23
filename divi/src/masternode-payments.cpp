@@ -5,7 +5,6 @@
 
 #include "masternode-payments.h"
 
-#include "addrman.h"
 #include "BlockDiskAccessor.h"
 #include <chain.h>
 #include "chainparamsbase.h"
@@ -30,6 +29,7 @@
 #include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
 #include <MasternodeNetworkMessageManager.h>
+#include <timedata.h>
 
 void Misbehaving(NodeId pnode, int howmuch);
 extern CCriticalSection cs_main;

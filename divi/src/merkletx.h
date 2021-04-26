@@ -50,12 +50,11 @@ public:
      *  0  : in memory pool, waiting to be included in a block
      * >=1 : this many blocks deep in the main chain
      */
-    int GetNumberOfBlockConfirmations(const CBlockIndex*& pindexRet, bool enableIX = true) const;
-    int GetNumberOfBlockConfirmations(bool enableIX = true) const;
+    int GetNumberOfBlockConfirmations(const CBlockIndex*& pindexRet) const;
+    int GetNumberOfBlockConfirmations() const;
     bool IsInMainChain() const;
     int GetBlocksToMaturity() const;
     bool AcceptToMemoryPool(bool fLimitFree);
-    int GetTransactionLockSignatures() const;
     bool IsTransactionLockTimedOut() const;
 };
 #endif// MERKLE_TX_H

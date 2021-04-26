@@ -36,9 +36,6 @@
 
 class Settings;
 
-extern bool fEnableSwiftTX;
-extern int nSwiftTXDepth;
-extern int nAnonymizeDiviAmount;
 extern int nLiquidityProvider;
 extern int64_t enforceMasternodePaymentsTime;
 extern int keysLoaded;

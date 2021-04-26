@@ -46,8 +46,6 @@ extern CChain chainActive;
 extern CWallet* pwalletMain;
 extern Settings& settings;
 
-int GetIXConfirmations(uint256 nTXHash);
-
 std::string HelpRequiringPassphrase()
 {
     return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
@@ -61,8 +59,8 @@ void EnsureWalletIsUnlocked()
 
 void WalletTxToJSON(const CWalletTx& wtx, Object& entry)
 {
-    int confirms = wtx.GetNumberOfBlockConfirmations(false);
-    int confirmsTotal = GetIXConfirmations(wtx.GetHash()) + confirms;
+    int confirms = wtx.GetNumberOfBlockConfirmations();
+    int confirmsTotal = confirms;
     entry.push_back(Pair("confirmations", confirmsTotal));
     entry.push_back(Pair("bcconfirmations", confirms));
     if (wtx.IsCoinBase() || wtx.IsCoinStake())
@@ -1284,7 +1282,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
             continue;
 
         int nDepth = wtx.GetNumberOfBlockConfirmations();
-        int nBCDepth = wtx.GetNumberOfBlockConfirmations(false);
+        int nBCDepth = wtx.GetNumberOfBlockConfirmations();
         if (nDepth < nMinDepth)
             continue;
 
@@ -1472,7 +1470,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
 
             if (!pwalletMain->IsMine(address)) {
                 const CBlockIndex *index = nullptr;
-                if(wtx.GetNumberOfBlockConfirmations(index, true) > 0 && index)
+                if(wtx.GetNumberOfBlockConfirmations(index) > 0 && index)
                 {
                     bool isLotteryPayment = heightValidator.IsValidLotteryBlockHeight(index->nHeight);
                     //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
@@ -1898,7 +1896,7 @@ Value listsinceblock(const Array& params, bool fHelp)
     {
         CWalletTx tx = *(*it);
 
-        if (depth == -1 || tx.GetNumberOfBlockConfirmations(false) < depth)
+        if (depth == -1 || tx.GetNumberOfBlockConfirmations() < depth)
             ListTransactions(*pwalletMain, tx, "*", 0, true, transactions, filter);
     }
 

@@ -17,8 +17,6 @@ extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
 extern BlockMap mapBlockIndex;
 extern CChain chainActive;
-extern bool fEnableSwiftTX;
-extern int nSwiftTXDepth;
 
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
 
@@ -51,10 +49,10 @@ void CMerkleTx::Init()
     fMerkleVerified = false;
 }
 
-int CMerkleTx::GetNumberOfBlockConfirmations(bool enableIX) const
+int CMerkleTx::GetNumberOfBlockConfirmations() const
 {
     const CBlockIndex* pindexRet;
-    return GetNumberOfBlockConfirmations(pindexRet, enableIX);
+    return GetNumberOfBlockConfirmations(pindexRet);
 }
 bool CMerkleTx::IsInMainChain() const
 {
@@ -123,20 +121,11 @@ int CMerkleTx::GetNumberOfBlockConfirmationsINTERNAL(const CBlockIndex*& pindexR
     return bestHeight - pindex->nHeight + 1;
 }
 
-int CMerkleTx::GetNumberOfBlockConfirmations(const CBlockIndex*& pindexRet, bool enableIX) const
+int CMerkleTx::GetNumberOfBlockConfirmations(const CBlockIndex*& pindexRet) const
 {
     int nResult = GetNumberOfBlockConfirmationsINTERNAL(pindexRet);
     if (nResult == 0 && !mempool.exists(GetHash()))
         return -1; // Not in chain, not in mempool
-
-    if (enableIX) {
-        if (nResult < 6) {
-            int signatures = GetTransactionLockSignatures();
-            if (signatures >= SWIFTTX_SIGNATURES_REQUIRED) {
-                return nSwiftTXDepth + nResult;
-            }
-        }
-    }
 
     return nResult;
 }
@@ -158,24 +147,9 @@ bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree)
     return fAccepted;
 }
 
-int CMerkleTx::GetTransactionLockSignatures() const
-{
-    if (fLargeWorkForkFound || fLargeWorkInvalidChainFound) return -2;
-    if (!sporkManager.IsSporkActive(SPORK_2_SWIFTTX_ENABLED)) return -3;
-    if (!fEnableSwiftTX) return -1;
-
-    //compile consessus vote
-    std::map<uint256, CTransactionLock>::iterator i = mapTxLocks.find(GetHash());
-    if (i != mapTxLocks.end()) {
-        return (*i).second.CountSignatures();
-    }
-
-    return -1;
-}
-
 bool CMerkleTx::IsTransactionLockTimedOut() const
 {
-    if (!fEnableSwiftTX) return 0;
+    return 0;
 
     //compile consessus vote
     std::map<uint256, CTransactionLock>::iterator i = mapTxLocks.find(GetHash());

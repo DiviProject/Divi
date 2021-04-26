@@ -1613,7 +1613,7 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
     if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
         return false;
 
-    nDepth = pcoin->GetNumberOfBlockConfirmations(false);
+    nDepth = pcoin->GetNumberOfBlockConfirmations();
 
     // We should not consider coins which aren't at least in our mempool
     // It's possible for these to be conflicted via ancestors which we may never be able to detect

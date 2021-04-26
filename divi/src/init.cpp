@@ -565,11 +565,6 @@ bool EnableWalletFeatures()
             LogPrintf("InitializeDivi : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
     }
 
-    if (!settings.GetBoolArg("-enableswifttx", fEnableSwiftTX)) {
-        if (settings.SoftSetArg("-swifttxdepth", 0))
-            LogPrintf("InitializeDivi : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
-    }
-
     return true;
 }
 
@@ -1526,18 +1521,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
     LockUpMasternodeCollateral();
     threadGroup.create_thread(boost::bind(&ThreadMasternodeBackgroundSync));
-
-// XX42 Remove/refactor code below. Until then provide safe defaults
-    nAnonymizeDiviAmount = 2;
-
-    fEnableSwiftTX = false; //settings.GetBoolArg("-enableswifttx", fEnableSwiftTX);
-    nSwiftTXDepth = settings.GetArg("-swifttxdepth", nSwiftTXDepth);
-    nSwiftTXDepth = std::min(std::max(nSwiftTXDepth, 0), 60);
-
     LogPrintf("fLiteMode %d\n", fLiteMode);
-    LogPrintf("nSwiftTXDepth %d\n", nSwiftTXDepth);
-    LogPrintf("Anonymize DIVI Amount %d\n", nAnonymizeDiviAmount);
-
 
     // ********************************************************* Step 11: start node
 

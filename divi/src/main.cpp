@@ -660,21 +660,6 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
     return true;
 }
 
-int GetIXConfirmations(uint256 nTXHash)
-{
-    int sigs = 0;
-
-    std::map<uint256, CTransactionLock>::iterator i = mapTxLocks.find(nTXHash);
-    if (i != mapTxLocks.end()) {
-        sigs = (*i).second.CountSignatures();
-    }
-    if (sigs >= SWIFTTX_SIGNATURES_REQUIRED) {
-        return nSwiftTXDepth;
-    }
-
-    return 0;
-}
-
 bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 {
     // Basic checks that don't depend on any context

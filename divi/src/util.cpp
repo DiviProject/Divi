@@ -108,11 +108,6 @@ using namespace std;
 // DIVI only features
 
 // Masternode
-// SwiftX
-bool fEnableSwiftTX = true;
-int nSwiftTXDepth = 5;
-
-int nAnonymizeDiviAmount = 1000;
 int nLiquidityProvider = 0;
 /** Spork enforcement enabled time */
 int64_t enforceMasternodePaymentsTime = 4085657524;

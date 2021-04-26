@@ -32,7 +32,7 @@
 extern Settings& settings;
 bool SendMessages(CNode* pto, bool fSendTrickle);
 
-CService ip(uint32_t i)
+CService ToIP(uint32_t i)
 {
     struct in_addr s;
     s.s_addr = i;
@@ -44,15 +44,15 @@ BOOST_AUTO_TEST_SUITE(DoS_tests)
 BOOST_AUTO_TEST_CASE(DoS_banning)
 {
     CNode::ClearBanned();
-    CAddress addr1(ip(0xa0b0c001));
+    CAddress addr1(ToIP(0xa0b0c001));
     CNode dummyNode1(INVALID_SOCKET, addr1, "", true);
     dummyNode1.nVersion = 1;
     Misbehaving(dummyNode1.GetId(), 100); // Should get banned
     SendMessages(&dummyNode1, false);
     BOOST_CHECK(CNode::IsBanned(addr1));
-    BOOST_CHECK(!CNode::IsBanned(ip(0xa0b0c001|0x0000ff00))); // Different IP, not banned
+    BOOST_CHECK(!CNode::IsBanned(ToIP(0xa0b0c001|0x0000ff00))); // Different IP, not banned
 
-    CAddress addr2(ip(0xa0b0c002));
+    CAddress addr2(ToIP(0xa0b0c002));
     CNode dummyNode2(INVALID_SOCKET, addr2, "", true);
     dummyNode2.nVersion = 1;
     Misbehaving(dummyNode2.GetId(), 50);
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(DoS_banscore)
 {
     CNode::ClearBanned();
     settings.SetParameter("-banscore", "111"); // because 11 is my favorite number
-    CAddress addr1(ip(0xa0b0c001));
+    CAddress addr1(ToIP(0xa0b0c001));
     CNode dummyNode1(INVALID_SOCKET, addr1, "", true);
     dummyNode1.nVersion = 1;
     Misbehaving(dummyNode1.GetId(), 100);
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(DoS_bantime)
     int64_t nStartTime = GetTime();
     SetMockTime(nStartTime); // Overrides future calls to GetTime()
 
-    CAddress addr(ip(0xa0b0c001));
+    CAddress addr(ToIP(0xa0b0c001));
     CNode dummyNode(INVALID_SOCKET, addr, "", true);
     dummyNode.nVersion = 1;
 

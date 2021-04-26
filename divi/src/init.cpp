@@ -171,13 +171,14 @@ bool static InitWarning(const std::string& str)
 // shutdown thing.
 //
 
+
 volatile bool fRequestShutdown = false;
 volatile bool fRestartRequested = false; // if true then restart, else shutdown
-void StartShutdown()
+void MainStartShutdown()
 {
     fRequestShutdown = true;
 }
-bool ShutdownRequested()
+bool MainShutdownRequested()
 {
     return fRequestShutdown || fRestartRequested;
 }
@@ -344,7 +345,7 @@ void PrepareShutdown()
 * called implicitly when the parent object is deleted. In this case we have to skip the
 * PrepareShutdown() part because it was already executed and just delete the wallet instance.
 */
-void Shutdown()
+void MainShutdown()
 {
     // Shutdown part 1: prepare shutdown
     if (!fRestartRequested) {
@@ -358,6 +359,57 @@ void Shutdown()
 #endif
     LogPrintf("%s: done\n", __func__);
 }
+
+StartAndShutdownSignals::StartAndShutdownSignals(
+    ): startShutdown()
+    , shutdownRequested()
+    , shutdown()
+{
+    startShutdown.connect(&MainStartShutdown);
+    shutdownRequested.connect(&MainShutdownRequested);
+    shutdown.connect(&MainShutdown);
+}
+static StartAndShutdownSignals startAndShutdownSignals;
+
+void StartShutdown()
+{
+    startAndShutdownSignals.startShutdown();
+}
+bool ShutdownRequested()
+{
+    bool val = *startAndShutdownSignals.shutdownRequested();
+    return val;
+}
+void Shutdown()
+{
+    startAndShutdownSignals.shutdown();
+}
+
+void UnitTestShutdown()
+{
+  exit(0);
+}
+
+void UnitTestStartShutdown()
+{
+  exit(0);
+}
+
+bool UnitTestShutdownRequested()
+{
+  return false;
+}
+
+void StartAndShutdownSignals::EnableUnitTestSignals()
+{
+    startAndShutdownSignals.shutdown.disconnect(&MainShutdown);
+    startAndShutdownSignals.startShutdown.disconnect(&MainStartShutdown);
+    startAndShutdownSignals.shutdownRequested.disconnect(&MainShutdownRequested);
+    startAndShutdownSignals.shutdown.connect(&UnitTestShutdown);
+    startAndShutdownSignals.startShutdown.connect(&UnitTestStartShutdown);
+    startAndShutdownSignals.shutdownRequested.connect(&UnitTestShutdownRequested);
+}
+
 
 /**
  * Signal handlers are very limited in what they are allowed to do, so:

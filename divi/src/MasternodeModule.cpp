@@ -37,16 +37,18 @@ extern CChain chainActive;
 extern BlockMap mapBlockIndex;
 
 MasternodeModule::MasternodeModule(
+    const CChain& activeChain,
+    const BlockMap& blockIndexByHash
     ): fMasterNode_(fMasterNode)
     , fLiteMode_(fLiteMode)
-    , chainActive_(chainActive)
-    , mapBlockIndex_(mapBlockIndex)
+    , activeChain_(activeChain)
+    , blockIndexByHash_(blockIndexByHash)
     , networkMessageManager_( new MasternodeNetworkMessageManager)
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
-    , mnodeman_(new CMasternodeMan(*networkMessageManager_,chainActive_,mapBlockIndex_,GetNetworkAddressManager()))
+    , mnodeman_(new CMasternodeMan(*networkMessageManager_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
-    , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_,chainActive_))
+    , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_,activeChain_))
     , masternodeSync_(new CMasternodeSync(*masternodePayments_,*networkMessageManager_,*masternodePaymentData_))
 {
 }
@@ -95,7 +97,7 @@ CMasternodeSync& MasternodeModule::getMasternodeSynchronization() const
      return fMasterNode_;
  }
 
-MasternodeModule mnModule;
+MasternodeModule mnModule(chainActive,mapBlockIndex);
 MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
 MasternodePaymentData& masternodePaymentData = mnModule.getMasternodePaymentData();
 CMasternodeConfig& masternodeConfig = mnModule.getMasternodeConfigurations();

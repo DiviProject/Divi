@@ -27,7 +27,6 @@ class MasternodeModule
 {
 private:
     bool fMasterNode_;
-    bool& fLiteMode_;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;

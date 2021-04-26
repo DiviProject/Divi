@@ -38,7 +38,6 @@ MasternodeModule::MasternodeModule(
     const CChain& activeChain,
     const BlockMap& blockIndexByHash
     ): fMasterNode_(false)
-    , fLiteMode_(fLiteMode)
     , activeChain_(activeChain)
     , blockIndexByHash_(blockIndexByHash)
     , networkMessageManager_( new MasternodeNetworkMessageManager)

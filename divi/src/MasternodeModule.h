@@ -26,7 +26,7 @@ class CActiveMasternode;
 class MasternodeModule
 {
 private:
-    bool& fMasterNode_;
+    bool fMasterNode_;
     bool& fLiteMode_;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
@@ -50,6 +50,7 @@ public:
     CMasternodePayments& getMasternodePayments() const;
     CMasternodeSync& getMasternodeSynchronization() const;
     bool localNodeIsAMasternode() const;
+    void designateLocalNodeAsMasternode();
 };
 
 const CMasternodeSync& GetMasternodeSync();

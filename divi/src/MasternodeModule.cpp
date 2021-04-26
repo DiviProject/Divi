@@ -30,16 +30,14 @@
 #include <ThreadManagementHelpers.h>
 
 
-bool fMasterNode = false;
 bool fLiteMode = false;
-
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
 
 MasternodeModule::MasternodeModule(
     const CChain& activeChain,
     const BlockMap& blockIndexByHash
-    ): fMasterNode_(fMasterNode)
+    ): fMasterNode_(false)
     , fLiteMode_(fLiteMode)
     , activeChain_(activeChain)
     , blockIndexByHash_(blockIndexByHash)
@@ -96,6 +94,10 @@ CMasternodeSync& MasternodeModule::getMasternodeSynchronization() const
  {
      return fMasterNode_;
  }
+ void MasternodeModule::designateLocalNodeAsMasternode()
+ {
+     fMasterNode_ = true;
+ }
 
 MasternodeModule mnModule(chainActive,mapBlockIndex);
 MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
@@ -143,9 +145,11 @@ bool LoadMasternodeConfigurations(const Settings& settings, std::string& errorMe
 
 bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionIndexEnabled, std::string& errorMessage)
 {
-    fMasterNode = settings.GetBoolArg("-masternode", false);
+    bool enableMasternode = settings.GetBoolArg("-masternode", false);
+    if(enableMasternode) mnModule.designateLocalNodeAsMasternode();
+
     fLiteMode = settings.GetBoolArg("-litemode", false);
-    if (fMasterNode && fLiteMode) {
+    if (enableMasternode && fLiteMode) {
         errorMessage = "You can not start a masternode in litemode";
         return false;
     }
@@ -153,13 +157,13 @@ bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionI
     {
         return false;
     }
-    if (fMasterNode && transactionIndexEnabled == false)
+    if (enableMasternode && transactionIndexEnabled == false)
     {
         errorMessage = "Enabling Masternode support requires turning on transaction indexing."
                          "Please add txindex=1 to your configuration and start with -reindex";
         return false;
     }
-    else if (fMasterNode)
+    else if (enableMasternode)
     {
         LogPrintf("IS MASTER NODE\n");
         if(!SetupActiveMasternode(settings,errorMessage))
@@ -290,7 +294,7 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
 
 bool VoteForMasternodePayee(const CBlockIndex* pindex)
 {
-    if (fLiteMode || masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST || !fMasterNode) return false;
+    if (fLiteMode || masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST || !mnModule.localNodeIsAMasternode()) return false;
     constexpr int numberOfBlocksIntoTheFutureToVoteOn = 10;
     static int64_t lastProcessBlockHeight = 0;
     const int64_t nBlockHeight = pindex->nHeight + numberOfBlocksIntoTheFutureToVoteOn;

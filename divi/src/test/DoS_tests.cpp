@@ -18,6 +18,7 @@
 #include <utiltime.h>
 #include <OrphanTransactions.h>
 #include <primitives/transaction.h>
+#include <NodeState.h>
 
 
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
@@ -29,7 +30,6 @@
 
 // Tests this internal-to-main.cpp method:
 extern Settings& settings;
-void Misbehaving(NodeId nodeid, int howmuch);
 bool SendMessages(CNode* pto, bool fSendTrickle);
 
 CService ip(uint32_t i)

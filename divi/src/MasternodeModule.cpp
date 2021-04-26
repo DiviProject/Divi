@@ -46,7 +46,7 @@ MasternodeModule::MasternodeModule(
     , masternodeConfig_( new CMasternodeConfig)
     , mnodeman_(new CMasternodeMan(*networkMessageManager_,chainActive_,mapBlockIndex_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
-    , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_))
+    , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_,chainActive_))
     , masternodeSync_(new CMasternodeSync(*masternodePayments_,*networkMessageManager_,*masternodePaymentData_))
 {
 }

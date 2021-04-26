@@ -26,6 +26,7 @@ class I_BlockSubsidyProvider;
 class CMasternodeMan;
 class MasternodePaymentData;
 class MasternodeNetworkMessageManager;
+class CChain;
 //
 // Masternode Payments Class
 // Keeps track of who should get paid for which blocks
@@ -45,6 +46,7 @@ private:
     MasternodePaymentData& paymentData_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     CMasternodeMan& masternodeManager_;
+    const CChain& activeChain_;
 
     /** Map from the inventory hashes of mnw's to the corresponding data.  */
     std::map<uint256, CMasternodePaymentWinner>& mapMasternodePayeeVotes;
@@ -65,7 +67,8 @@ public:
     CMasternodePayments(
         MasternodePaymentData& paymentData,
         MasternodeNetworkMessageManager& networkMessageManager,
-        CMasternodeMan& masternodeManager);
+        CMasternodeMan& masternodeManager,
+        const CChain& activeChain);
     ~CMasternodePayments();
 
     bool AddWinningMasternode(const CMasternodePaymentWinner &winner);

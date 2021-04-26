@@ -5,6 +5,7 @@
 
 #include "masternodeman.h"
 
+#include <array>
 #include <activemasternode.h>
 #include <addrman.h>
 #include <masternode.h>
@@ -21,10 +22,8 @@
 #include <chain.h>
 #include <blockmap.h>
 #include <TransactionDiskAccessor.h>
+#include <NodeState.h>
 
-#include <array>
-
-extern void Misbehaving(NodeId pnode, int howmuch);
 extern bool ShutdownRequested();
 
 //    pathMN = GetDataDir() / "mncache.dat";

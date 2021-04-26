@@ -26,6 +26,7 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 #include <ValidationState.h>
+#include <NodeState.h>
 
 extern bool fLiteMode;
 extern CAmount nTransactionValueMultiplier;
@@ -36,7 +37,6 @@ extern BlockMap mapBlockIndex;
 extern std::map<uint256, int64_t> mapRejectedBlocks;
 extern CAmount maxTxFee;
 
-extern void Misbehaving(NodeId pnode, int howmuch);
 extern bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 extern bool DisconnectBlocksAndReprocess(int blocks);
 extern bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);

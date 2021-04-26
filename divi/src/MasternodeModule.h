@@ -28,8 +28,8 @@ class MasternodeModule
 private:
     bool& fMasterNode_;
     bool& fLiteMode_;
-    const CChain& chainActive_;
-    const BlockMap& mapBlockIndex_;
+    const CChain& activeChain_;
+    const BlockMap& blockIndexByHash_;
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
     std::unique_ptr<MasternodePaymentData> masternodePaymentData_;
     std::unique_ptr<CMasternodeConfig> masternodeConfig_;
@@ -38,7 +38,9 @@ private:
     std::unique_ptr<CMasternodePayments> masternodePayments_;
     std::unique_ptr<CMasternodeSync> masternodeSync_;
 public:
-    MasternodeModule();
+    MasternodeModule(
+        const CChain& activeChain,
+        const BlockMap& blockIndexByHash);
     ~MasternodeModule();
     MasternodeNetworkMessageManager& getNetworkMessageManager() const;
     MasternodePaymentData& getMasternodePaymentData() const;

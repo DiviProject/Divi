@@ -30,12 +30,9 @@
 #include <MasternodeHelpers.h>
 #include <MasternodeNetworkMessageManager.h>
 #include <timedata.h>
+#include <NodeState.h>
 
-void Misbehaving(NodeId pnode, int howmuch);
 extern CCriticalSection cs_main;
-extern CChain chainActive;
-extern CMasternodeMan mnodeman;
-
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED = 6;
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL = 10;
 constexpr int MN_WINNER_MINIMUM_AGE = 8000;    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
@@ -142,7 +139,8 @@ public:
 CMasternodePayments::CMasternodePayments(
     MasternodePaymentData& paymentData,
     MasternodeNetworkMessageManager& networkMessageManager,
-    CMasternodeMan& masternodeManager
+    CMasternodeMan& masternodeManager,
+    const CChain& activeChain
     ): rankingCache(new RankingCache)
     , nSyncedFromPeer(0)
     , nLastBlockHeight(0)
@@ -150,6 +148,7 @@ CMasternodePayments::CMasternodePayments(
     , paymentData_(paymentData)
     , networkMessageManager_(networkMessageManager)
     , masternodeManager_(masternodeManager)
+    , activeChain_(activeChain)
     , mapMasternodePayeeVotes(paymentData_.mapMasternodePayeeVotes)
     , mapMasternodeBlocks(paymentData_.mapMasternodeBlocks)
 {
@@ -239,8 +238,8 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
         int nHeight;
         {
             TRY_LOCK(cs_main, locked);
-            if (!locked || chainActive.Tip() == NULL) return;
-            nHeight = chainActive.Tip()->nHeight;
+            if (!locked || activeChain_.Tip() == NULL) return;
+            nHeight = activeChain_.Tip()->nHeight;
         }
 
         if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
@@ -380,7 +379,7 @@ bool CMasternodePayments::IsScheduled(const CScript mnpayee, int nNotBlockHeight
     {
         TRY_LOCK(cs_main, locked);
         if (!locked) return false;
-        tip = chainActive.Tip();
+        tip = activeChain_.Tip();
     }
     if (tip == nullptr)
         return false;
@@ -524,8 +523,8 @@ void CMasternodePayments::PruneOldMasternodeWinnerData(CMasternodeSync& masterno
     int nHeight;
     {
         TRY_LOCK(cs_main, locked);
-        if (!locked || chainActive.Tip() == NULL) return;
-        nHeight = chainActive.Tip()->nHeight;
+        if (!locked || activeChain_.Tip() == NULL) return;
+        nHeight = activeChain_.Tip()->nHeight;
     }
 
     //keep up to five cycles for historical sake
@@ -581,7 +580,7 @@ std::string CMasternodePayments::ToString() const
 
 unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const
 {
-    const CBlockIndex* chainTip = chainActive.Tip();
+    const CBlockIndex* chainTip = activeChain_.Tip();
     if (chainTip == NULL) return 0u;
 
     CScript mnPayee = GetScriptForDestination(masternode.pubKeyCollateralAddress.GetID());

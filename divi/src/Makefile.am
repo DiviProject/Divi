@@ -199,6 +199,9 @@ BITCOIN_CORE_H = \
   ValidationState.h \
   ActiveChainManager.h \
   IndexDatabaseUpdateCollector.h \
+  NodeState.h \
+  BlockRejects.h\
+  QueuedBlock.h \
   main.h \
   OrphanTransactions.h \
   TransactionOpCounting.h \
@@ -373,6 +376,7 @@ libbitcoin_server_a_SOURCES = \
   UtxoCheckingAndUpdating.cpp\
   ActiveChainManager.cpp \
   IndexDatabaseUpdateCollector.cpp \
+  NodeState.cpp \
   main.cpp \
   OrphanTransactions.cpp \
   WalletLoggingHelper.cpp \
@@ -473,6 +477,7 @@ libbitcoin_wallet_a_SOURCES = \
   masternode-sync.cpp \
   masternodeconfig.cpp \
   MasternodeNetworkMessageManager.cpp \
+  NodeState.cpp \
   masternodeman.cpp \
   netfulfilledman.cpp \
   reservekey.cpp \
@@ -560,6 +565,7 @@ libbitcoin_common_a_SOURCES = \
   bip39.cpp \
   chainparams.cpp \
   coins.cpp \
+  NodeState.cpp \
   FeeAndPriorityCalculator.cpp \
   compressor.cpp \
   destination.cpp \

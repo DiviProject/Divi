@@ -4,6 +4,7 @@
 
 #define BOOST_TEST_MODULE Divi Test Suite
 
+#include <init.h>
 #include "main.h"
 #include "net.h"
 #include "random.h"
@@ -22,8 +23,8 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
 
-CClientUIInterface uiInterface;
-CWallet* pwalletMain;
+extern CClientUIInterface uiInterface;
+extern CWallet* pwalletMain;
 extern Settings& settings;
 extern bool fPrintToConsole;
 extern void noui_connect();
@@ -65,6 +66,7 @@ struct TestingSetup {
         for (int i=0; i < nScriptCheckThreads-1; i++)
             threadGroup.create_thread(&TransactionInputChecker::ThreadScriptCheck);
         RegisterNodeSignals(GetNodeSignals());
+        StartAndShutdownSignals::EnableUnitTestSignals();
     }
     ~TestingSetup()
     {
@@ -86,18 +88,3 @@ struct TestingSetup {
 };
 
 BOOST_GLOBAL_FIXTURE(TestingSetup);
-
-void Shutdown(void* parg)
-{
-  exit(0);
-}
-
-void StartShutdown()
-{
-  exit(0);
-}
-
-bool ShutdownRequested()
-{
-  return false;
-}

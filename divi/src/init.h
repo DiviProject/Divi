@@ -7,7 +7,8 @@
 #define BITCOIN_INIT_H
 
 #include <string>
-
+#include <boost/signals2/signal.hpp>
+#include <set>
 class CWallet;
 
 namespace boost
@@ -18,5 +19,13 @@ class thread_group;
 void StartShutdown();
 bool ShutdownRequested();
 void Shutdown();
+struct StartAndShutdownSignals
+{
+    boost::signals2::signal<void ()> startShutdown;
+    boost::signals2::signal<bool ()> shutdownRequested;
+    boost::signals2::signal<void ()> shutdown;
+    StartAndShutdownSignals();
+    static void EnableUnitTestSignals();
+};
 bool InitializeDivi(boost::thread_group& threadGroup);
 #endif // BITCOIN_INIT_H

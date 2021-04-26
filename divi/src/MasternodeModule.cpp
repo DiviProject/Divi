@@ -157,7 +157,7 @@ bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionI
     {
         return false;
     }
-    if (enableMasternode && transactionIndexEnabled == false)
+    if (enableMasternode && !transactionIndexEnabled)
     {
         errorMessage = "Enabling Masternode support requires turning on transaction indexing."
                          "Please add txindex=1 to your configuration and start with -reindex";

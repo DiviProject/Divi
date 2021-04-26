@@ -1510,18 +1510,22 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 
     // ********************************************************* Step 10: setup ObfuScation
-    UIMessenger uiMessenger(uiInterface);
-    if(!LoadMasternodeDataFromDisk(uiMessenger,GetDataDir().string()) || !LoadDataCaches())
+    if(!LoadDataCaches())
     {
         return false;
     }
-
+    UIMessenger uiMessenger(uiInterface);
     std::string errorMessage;
+    if(!LoadMasternodeDataFromDisk(uiMessenger,GetDataDir().string()) )
+    {
+        return false;
+    }
     if(!InitializeMasternodeIfRequested(settings,fTxIndex,errorMessage))
     {
         return InitError(errorMessage);
     }
     LockUpMasternodeCollateral();
+    threadGroup.create_thread(boost::bind(&ThreadMasternodeBackgroundSync));
 
 // XX42 Remove/refactor code below. Until then provide safe defaults
     nAnonymizeDiviAmount = 2;
@@ -1534,7 +1538,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("nSwiftTXDepth %d\n", nSwiftTXDepth);
     LogPrintf("Anonymize DIVI Amount %d\n", nAnonymizeDiviAmount);
 
-    threadGroup.create_thread(boost::bind(&ThreadMasternodeBackgroundSync));
 
     // ********************************************************* Step 11: start node
 

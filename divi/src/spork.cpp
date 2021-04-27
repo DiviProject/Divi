@@ -44,6 +44,18 @@ extern bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bo
 std::map<uint256, CSporkMessage> mapSporks;
 CSporkManager sporkManager;
 
+bool ShareSporkDataWithPeer(CNode* peer, const uint256& inventoryHash)
+{
+    if (mapSporks.count(inventoryHash)) {
+        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+        ss.reserve(1000);
+        ss << mapSporks[inventoryHash];
+        peer->PushMessage("spork", ss);
+        return true;
+    }
+    return false;
+}
+
 static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_2_SWIFTTX_ENABLED,                "0"},             // ON
     {SPORK_3_SWIFTTX_BLOCK_FILTERING,        "0"},             // ON

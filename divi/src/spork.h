@@ -15,6 +15,7 @@ class CNode;
 class CSporkMessage;
 class CSporkManager;
 class CSporkDB;
+class uint256;
 
 /*
     Don't ever reuse these IDs for other sporks
@@ -37,7 +38,7 @@ static const int SPORK_END                                              = SPORK_
 
 extern std::map<uint256, CSporkMessage> mapSporks;
 extern CSporkManager sporkManager;
-
+bool ShareSporkDataWithPeer(CNode* peer, const uint256& inventoryHash);
 //
 // Spork classes
 // Keep track of all of the network spork settings

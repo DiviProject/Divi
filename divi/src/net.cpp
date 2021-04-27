@@ -47,6 +47,16 @@
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
+
+#ifdef WIN32
+// Win32 LevelDB doesn't use filedescriptors, and the ones used for
+// accessing block files, don't count towards to fd_set size limit
+// anyway.
+#define MIN_CORE_FILEDESCRIPTORS 0
+#else
+#define MIN_CORE_FILEDESCRIPTORS 150
+#endif
+
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
 
@@ -123,6 +133,11 @@ boost::condition_variable messageHandlerCondition;
 // Signals for message handling
 static CNodeSignals g_signals;
 CNodeSignals& GetNodeSignals() { return g_signals; }
+
+int GetMaxConnections()
+{
+    return nMaxConnections;
+}
 
 CAddrMan& GetNetworkAddressManager()
 {
@@ -2235,6 +2250,88 @@ static bool Bind(UIMessenger& uiMessenger,const CService& addr, unsigned int fla
     }
     return true;
 }
+
+static bool fAlerts = DEFAULT_ALERTS;
+bool AlertsAreEnabled()
+{
+    return fAlerts;
+}
+void EnableAlertsAccordingToSettings(const Settings& settings)
+{
+    fAlerts = settings.GetBoolArg("-alerts", DEFAULT_ALERTS);
+}
+
+bool SetNumberOfFileDescriptors(UIMessenger& uiMessenger, int& nFD)
+{
+    nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS);
+    if (nFD < MIN_CORE_FILEDESCRIPTORS)
+        return uiMessenger.InitError(translate("Not enough file descriptors available."));
+    if (nFD - MIN_CORE_FILEDESCRIPTORS < nMaxConnections)
+        nMaxConnections = nFD - MIN_CORE_FILEDESCRIPTORS;
+
+    return true;
+}
+
+void SetNetworkingParameters()
+{
+    if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
+        // when specifying an explicit binding address, you want to listen on it
+        // even when -connect or -proxy is specified
+        if (settings.SoftSetBoolArg("-listen", true))
+            LogPrintf("InitializeDivi : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
+    }
+
+    if (settings.ParameterIsSet("-connect") && settings.GetMultiParameter("-connect").size() > 0) {
+        // when only connecting to trusted nodes, do not seed via DNS, or listen by default
+        if (settings.SoftSetBoolArg("-dnsseed", false))
+            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -dnsseed=0\n");
+        if (settings.SoftSetBoolArg("-listen", false))
+            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -listen=0\n");
+    }
+
+    if (settings.ParameterIsSet("-proxy")) {
+        // to protect privacy, do not listen by default if a default proxy server is specified
+        if (settings.SoftSetBoolArg("-listen", false))
+            LogPrintf("%s: parameter interaction: -proxy set -> setting -listen=0\n", __func__);
+        // to protect privacy, do not use UPNP when a proxy is set. The user may still specify -listen=1
+        // to listen locally, so don't rely on this happening through -listen below.
+        if (settings.SoftSetBoolArg("-upnp", false))
+            LogPrintf("%s: parameter interaction: -proxy set -> setting -upnp=0\n", __func__);
+        // to protect privacy, do not discover addresses by default
+        if (settings.SoftSetBoolArg("-discover", false))
+            LogPrintf("InitializeDivi : parameter interaction: -proxy set -> setting -discover=0\n");
+    }
+
+    if (!settings.GetBoolArg("-listen", true)) {
+        // do not map ports or try to retrieve public IP when not listening (pointless)
+        if (settings.SoftSetBoolArg("-upnp", false))
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -upnp=0\n");
+        if (settings.SoftSetBoolArg("-discover", false))
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -discover=0\n");
+        if (settings.SoftSetBoolArg("-listenonion", false))
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -listenonion=0\n");
+    }
+
+    if (settings.ParameterIsSet("-externalip")) {
+        // if an explicit public IP is specified, do not try to find others
+        if (settings.SoftSetBoolArg("-discover", false))
+            LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
+    }
+
+    nConnectTimeout = settings.GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
+    if (nConnectTimeout <= 0)
+        nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
+
+    EnableAlertsAccordingToSettings(settings);
+    if (settings.GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
+        nLocalServices |= NODE_BLOOM;
+
+    const int reservedFileDescriptors = MIN_CORE_FILEDESCRIPTORS;
+    int nBind = std::max((int)settings.ParameterIsSet("-bind") + (int)settings.ParameterIsSet("-whitebind"), 1);
+    nMaxConnections = settings.GetArg("-maxconnections", 125);
+    nMaxConnections = std::max(std::min(nMaxConnections, (int)(FD_SETSIZE - nBind - reservedFileDescriptors)), 0);
+}
+
 bool InitializeP2PNetwork(UIMessenger& uiMessenger)
 {
     RegisterNodeSignals(GetNodeSignals());

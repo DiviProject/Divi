@@ -125,7 +125,7 @@ extern bool fDiscover;
 extern bool fListen;
 extern uint64_t nLocalServices;
 extern uint64_t nLocalHostNonce;
-extern int nMaxConnections;
+int GetMaxConnections();
 CAddrMan& GetNetworkAddressManager();
 
 extern std::vector<CNode*> vNodes;
@@ -658,5 +658,8 @@ public:
 };
 
 class UIMessenger;
+bool AlertsAreEnabled();
+bool SetNumberOfFileDescriptors(UIMessenger& uiMessenger, int& nFD);
+void SetNetworkingParameters();
 bool InitializeP2PNetwork(UIMessenger& uiMessenger);
 #endif // BITCOIN_NET_H

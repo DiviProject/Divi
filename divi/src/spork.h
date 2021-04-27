@@ -39,6 +39,7 @@ static const int SPORK_END                                              = SPORK_
 extern std::map<uint256, CSporkMessage> mapSporks;
 extern CSporkManager sporkManager;
 bool ShareSporkDataWithPeer(CNode* peer, const uint256& inventoryHash);
+bool SporkDataIsKnown(const uint256& inventoryHash);
 //
 // Spork classes
 // Keep track of all of the network spork settings

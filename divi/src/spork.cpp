@@ -55,6 +55,10 @@ bool ShareSporkDataWithPeer(CNode* peer, const uint256& inventoryHash)
     }
     return false;
 }
+bool SporkDataIsKnown(const uint256& inventoryHash)
+{
+    return mapSporks.count(inventoryHash);
+}
 
 static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_2_SWIFTTX_ENABLED,                "0"},             // ON

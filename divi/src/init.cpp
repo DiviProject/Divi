@@ -112,14 +112,6 @@ static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #define MIN_CORE_FILEDESCRIPTORS 150
 #endif
 
-/** Used to pass flags to the Bind() function */
-enum BindFlags {
-    BF_NONE = 0,
-    BF_EXPLICIT = (1U << 0),
-    BF_REPORT_ERROR = (1U << 1),
-    BF_WHITELIST = (1U << 2),
-};
-
 //! -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
 static const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
 //! -maxtxfee will warn if called with a higher fee than this amount (in satoshis)
@@ -422,19 +414,6 @@ void HandleSIGTERM(int)
 void HandleSIGHUP(int)
 {
     fReopenDebugLog = true;
-}
-
-bool static Bind(const CService& addr, unsigned int flags)
-{
-    if (!(flags & BF_EXPLICIT) && IsLimited(addr))
-        return false;
-    std::string strError;
-    if (!BindListenPort(addr, strError, (flags & BF_WHITELIST) != 0)) {
-        if (flags & BF_REPORT_ERROR)
-            return InitError(strError);
-        return false;
-    }
-    return true;
 }
 
 static void BlockNotifyCallback(const uint256& hashNewTip)
@@ -805,123 +784,6 @@ bool BackupWallet(std::string strDataDir, bool fDisableWallet)
         }
     }
 #endif // ENABLE_WALLET
-    return true;
-}
-
-bool InitializeP2PNetwork()
-{
-    RegisterNodeSignals(GetNodeSignals());
-    if (settings.ParameterIsSet("-onlynet")) {
-        std::set<enum Network> nets;
-        BOOST_FOREACH (std::string snet, settings.GetMultiParameter("-onlynet")) {
-            enum Network net = ParseNetwork(snet);
-            if (net == NET_UNROUTABLE)
-                return InitError(strprintf(translate("Unknown network specified in -onlynet: '%s'"), snet));
-            nets.insert(net);
-        }
-        for (int n = 0; n < NET_MAX; n++) {
-            enum Network net = (enum Network)n;
-            if (!nets.count(net))
-                SetLimited(net);
-        }
-    }
-
-    if (settings.ParameterIsSet("-whitelist")) {
-        BOOST_FOREACH (const std::string& net, settings.GetMultiParameter("-whitelist")) {
-            CSubNet subnet(net);
-            if (!subnet.IsValid())
-                return InitError(strprintf(translate("Invalid netmask specified in -whitelist: '%s'"), net));
-            CNode::AddWhitelistedRange(subnet);
-        }
-    }
-
-    // Check for host lookup allowed before parsing any network related parameters
-    fNameLookup = settings.GetBoolArg("-dns", DEFAULT_NAME_LOOKUP);
-
-    bool proxyRandomize = settings.GetBoolArg("-proxyrandomize", true);
-    // -proxy sets a proxy for all outgoing network traffic
-    // -noproxy (or -proxy=0) as well as the empty string can be used to not set a proxy, this is the default
-    std::string proxyArg = settings.GetArg("-proxy", "");
-    if (proxyArg != "" && proxyArg != "0") {
-        CService proxyAddr;
-        if (!Lookup(proxyArg.c_str(), proxyAddr, 9050, fNameLookup)) {
-            return InitError(strprintf(translate("Invalid -proxy address or hostname: '%s'"), proxyArg));
-        }
-
-        proxyType addrProxy = proxyType(proxyAddr, proxyRandomize);
-        if (!addrProxy.IsValid())
-            return InitError(strprintf(translate("Invalid -proxy address or hostname: '%s'"), proxyArg));
-
-        SetProxy(NET_IPV4, addrProxy);
-        SetProxy(NET_IPV6, addrProxy);
-        SetProxy(NET_TOR, addrProxy);
-        SetNameProxy(addrProxy);
-        SetReachable(NET_TOR); // by default, -proxy sets onion as reachable, unless -noonion later
-    }
-
-    // -onion can be used to set only a proxy for .onion, or override normal proxy for .onion addresses
-    // -noonion (or -onion=0) disables connecting to .onion entirely
-    // An empty string is used to not override the onion proxy (in which case it defaults to -proxy set above, or none)
-    std::string onionArg = settings.GetArg("-onion", "");
-    if (onionArg != "") {
-        if (onionArg == "0") { // Handle -noonion/-onion=0
-            SetReachable(NET_TOR, false); // set onions as unreachable
-        } else {
-            CService onionProxy;
-            if (!Lookup(onionArg.c_str(), onionProxy, 9050, fNameLookup)) {
-                return InitError(strprintf(translate("Invalid -onion address or hostname: '%s'"), onionArg));
-            }
-            proxyType addrOnion = proxyType(onionProxy, proxyRandomize);
-            if (!addrOnion.IsValid())
-                return InitError(strprintf(translate("Invalid -onion address or hostname: '%s'"), onionArg));
-            SetProxy(NET_TOR, addrOnion);
-            SetReachable(NET_TOR);
-        }
-    }
-
-    // see Step 2: parameter interactions for more information about these
-    fListen = settings.GetBoolArg("-listen", DEFAULT_LISTEN);
-    fDiscover = settings.GetBoolArg("-discover", true);
-
-    bool fBound = false;
-    if (fListen) {
-        if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
-            BOOST_FOREACH (std::string strBind, settings.GetMultiParameter("-bind")) {
-                CService addrBind;
-                if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
-                    return InitError(strprintf(translate("Cannot resolve -bind address: '%s'"), strBind));
-                fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR));
-            }
-            BOOST_FOREACH (std::string strBind, settings.GetMultiParameter("-whitebind")) {
-                CService addrBind;
-                if (!Lookup(strBind.c_str(), addrBind, 0, false))
-                    return InitError(strprintf(translate("Cannot resolve -whitebind address: '%s'"), strBind));
-                if (addrBind.GetPort() == 0)
-                    return InitError(strprintf(translate("Need to specify a port with -whitebind: '%s'"), strBind));
-                fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR | BF_WHITELIST));
-            }
-        } else {
-            struct in_addr inaddr_any;
-            inaddr_any.s_addr = INADDR_ANY;
-            fBound |= Bind(CService(in6addr_any, GetListenPort()), BF_NONE);
-            fBound |= Bind(CService(inaddr_any, GetListenPort()), !fBound ? BF_REPORT_ERROR : BF_NONE);
-        }
-        if (!fBound)
-            return InitError(translate("Failed to listen on any port. Use -listen=0 if you want this."));
-    }
-
-    if (settings.ParameterIsSet("-externalip")) {
-        BOOST_FOREACH (std::string strAddr, settings.GetMultiParameter("-externalip")) {
-            CService addrLocal(strAddr, GetListenPort(), fNameLookup);
-            if (!addrLocal.IsValid())
-                return InitError(strprintf(translate("Cannot resolve -externalip address: '%s'"), strAddr));
-            AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
-        }
-    }
-
-    BOOST_FOREACH (std::string strDest, settings.GetMultiParameter("-seednode"))
-        AddOneShot(strDest);
-
     return true;
 }
 
@@ -1314,6 +1176,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 2: parameter interactions
     // Set this early so that parameter interactions go to console
+    UIMessenger uiMessenger(uiInterface);
     SetLoggingAndDebugSettings();
 
     SetNetworkingParameters();
@@ -1391,7 +1254,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
     // ********************************************************* Step 6: network initialization
 
-    if(!InitializeP2PNetwork())
+    if(!InitializeP2PNetwork(uiMessenger))
     {
         return false;
     }
@@ -1520,7 +1383,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
-    UIMessenger uiMessenger(uiInterface);
     std::string errorMessage;
     if(!LoadMasternodeDataFromDisk(uiMessenger,GetDataDir().string()) )
     {

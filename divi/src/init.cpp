@@ -267,13 +267,13 @@ void DeallocateShallowDatabases()
     pcoinscatcher = NULL;
     pcoinsdbview = NULL;
     pblocktree = NULL;
-    sporkManager.DeallocateDatabase();
+    GetSporkManager().DeallocateDatabase();
 }
 
 void CleanAndReallocateShallowDatabases(const std::pair<std::size_t,std::size_t>& blockTreeAndCoinDBCacheSizes)
 {
     DeallocateShallowDatabases();
-    sporkManager.AllocateDatabase();
+    GetSporkManager().AllocateDatabase();
     pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
     pcoinsdbview = new CCoinsViewDB(blockTreeAndCoinDBCacheSizes.second, false, fReindex);
     pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
@@ -992,6 +992,7 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
 
 bool SetSporkKey()
 {
+    CSporkManager& sporkManager = GetSporkManager();
     sporkManager.SetSporkAddress(Params().SporkKey());
     if (settings.ParameterIsSet("-sporkkey")) // spork priv key
     {
@@ -1076,7 +1077,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
 
         // DIVI: load previous sessions sporks if we have them.
         uiInterface.InitMessage(translate("Loading sporks..."));
-        sporkManager.LoadSporksFromDB();
+        GetSporkManager().LoadSporksFromDB();
 
         uiInterface.InitMessage(translate("Loading block index..."));
         std::string strBlockIndexError = "";

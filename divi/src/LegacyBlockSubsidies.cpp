@@ -25,6 +25,7 @@ CAmount BlockSubsidy(int nHeight, const CChainParams& chainParameters)
 }
 CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParameters)
 {
+    const CSporkManager& sporkManager = GetSporkManager();
     if(sporkManager.IsSporkActive(SPORK_15_BLOCK_VALUE)) {
         MultiValueSporkList<BlockSubsiditySporkValue> vBlockSubsiditySporkValues;
         CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_15_BLOCK_VALUE), vBlockSubsiditySporkValues);
@@ -75,6 +76,7 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
             helper(nProposalsPercentage));
     };
 
+    const CSporkManager& sporkManager = GetSporkManager();
     if(sporkManager.IsSporkActive(SPORK_13_BLOCK_PAYMENTS)) {
         MultiValueSporkList<BlockPaymentSporkValue> vBlockPaymentsValues;
         CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);

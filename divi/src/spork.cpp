@@ -59,6 +59,14 @@ bool SporkDataIsKnown(const uint256& inventoryHash)
 {
     return mapSporks.count(inventoryHash);
 }
+void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
+{
+    sporkManager.ProcessSpork(pfrom, strCommand, vRecv);
+}
+CSporkManager& GetSporkManager()
+{
+    return sporkManager;
+}
 
 static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_2_SWIFTTX_ENABLED,                "0"},             // ON

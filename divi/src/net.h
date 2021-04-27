@@ -657,4 +657,6 @@ public:
     bool Read(CAddrMan& addr);
 };
 
+class UIMessenger;
+bool InitializeP2PNetwork(UIMessenger& uiMessenger);
 #endif // BITCOIN_NET_H

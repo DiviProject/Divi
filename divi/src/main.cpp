@@ -109,7 +109,6 @@ bool fSpentIndex = false;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
-bool fAlerts = DEFAULT_ALERTS;
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
@@ -3964,7 +3963,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (fAlerts && strCommand == "alert") {
+    else if (strCommand == "alert" && AlertsAreEnabled()) {
         CAlert alert;
         vRecv >> alert;
 

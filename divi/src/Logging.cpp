@@ -17,12 +17,25 @@ bool fPrintToConsole = false;
 bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
 bool fLogTimestamps = false;
+bool fLogIPs = false;
+
 extern Settings& settings;
 
 LOG_FORMAT_WITH_TOSTRING(uint256)
 
 namespace
 {
+template <class T, class TAl>
+inline T* begin_ptr(std::vector<T, TAl>& v)
+{
+    return v.empty() ? NULL : &v[0];
+}
+/** Get begin pointer of vector (const version) */
+template <class T, class TAl>
+inline const T* begin_ptr(const std::vector<T, TAl>& v)
+{
+    return v.empty() ? NULL : &v[0];
+}
 
 FILE* fileout = nullptr;
 
@@ -150,4 +163,51 @@ int LogPrintStr(const std::string& str)
     }
 
     return ret;
+}
+
+void ShrinkDebugFile()
+{
+    // Scroll debug.log if it's getting too big
+    boost::filesystem::path pathLog = GetDataDir() / "debug.log";
+    FILE* file = fopen(pathLog.string().c_str(), "r");
+    if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000) {
+        // Restart the file with some of the end
+        std::vector<char> vch(200000, 0);
+        fseek(file, -((long)vch.size()), SEEK_END);
+        int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
+        fclose(file);
+
+        file = fopen(pathLog.string().c_str(), "w");
+        if (file) {
+            fwrite(begin_ptr(vch), 1, nBytes, file);
+            fclose(file);
+        }
+    } else if (file != NULL)
+        fclose(file);
+}
+
+void SetLoggingAndDebugSettings()
+{
+    fPrintToConsole = settings.GetBoolArg("-printtoconsole", false);
+    fLogTimestamps = settings.GetBoolArg("-logtimestamps", true);
+    fLogIPs = settings.GetBoolArg("-logips", false);
+
+    const std::vector<std::string>& categories = settings.GetMultiParameter("-debug");
+    fDebug = !categories.empty();
+    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
+    if (settings.GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
+        fDebug = false;
+
+    if (settings.GetBoolArg("-shrinkdebugfile", !fDebug))
+        ShrinkDebugFile();
+
+    if(fPrintToConsole)
+    {
+        setvbuf(stdout, NULL, _IOLBF, 0);
+    }
+}
+
+bool ShouldLogPeerIPs()
+{
+    return fLogIPs;
 }

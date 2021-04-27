@@ -8,12 +8,13 @@
 #include <vector>
 
 /* Variables used by logging*/
-extern bool fPrintToConsole;
 extern bool fPrintToDebugLog;
 extern bool fDebug;
 extern volatile bool fReopenDebugLog;
 extern bool fLogTimestamps;
 
+void SetLoggingAndDebugSettings();
+bool ShouldLogPeerIPs();
 /** Return true if log accepts specified category */
 bool LogAcceptCategory(const char* category);
 /** Send a string to the log output */

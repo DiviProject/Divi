@@ -3074,7 +3074,7 @@ bool static AlreadyHave(const CInv& inv)
     case MSG_TXLOCK_VOTE:
         return mapTxLockVote.count(inv.hash);
     case MSG_SPORK:
-        return mapSporks.count(inv.hash);
+        return SporkDataIsKnown(inv.hash);
     case MSG_MASTERNODE_WINNER:
         return MasternodeWinnerIsKnown(inv.hash);
     case MSG_MASTERNODE_ANNOUNCE:

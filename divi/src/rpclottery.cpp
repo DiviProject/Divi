@@ -43,7 +43,7 @@ Value getlotteryblockwinners(const Array& params, bool fHelp)
     static const CChainParams& chainParameters = Params();
     static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
     static LotteryWinnersCalculator calculator(
-        chainParameters.GetLotteryBlockStartBlock(),chainActive, sporkManager,subsidyCointainer.superblockHeightValidator());
+        chainParameters.GetLotteryBlockStartBlock(),chainActive, GetSporkManager(),subsidyCointainer.superblockHeightValidator());
     const CBlockIndex* chainTip = nullptr;
     {
         LOCK(cs_main);

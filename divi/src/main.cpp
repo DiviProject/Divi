@@ -1359,7 +1359,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         GetMasternodePayments(),
         subsidiesContainer.superblockHeightValidator(),
         subsidiesContainer.blockSubsidiesProvider(),
-        sporkManager);
+        GetSporkManager());
 
     const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
     IndexDatabaseUpdates indexDatabaseUpdates;
@@ -1917,6 +1917,7 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex)
 
 CBlockIndex* AddToBlockIndex(const CBlock& block)
 {
+    static const CSporkManager& sporkManager = GetSporkManager();
     static BlockIndexLotteryUpdater lotteryUpdater(Params(),chainActive,sporkManager);
     // Check for duplicate
     uint256 hash = block.GetHash();
@@ -2144,6 +2145,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleR
     }
 
     // ----------- swiftTX transaction scanning -----------
+    const CSporkManager& sporkManager = GetSporkManager();
     if (sporkManager.IsSporkActive(SPORK_3_SWIFTTX_BLOCK_FILTERING)) {
         BOOST_FOREACH (const CTransaction& tx, block.vtx) {
             if (!tx.IsCoinBase()) {
@@ -3366,7 +3368,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         pfrom->PushMessage("verack");
 
         if(pfrom->fInbound) {
-            pfrom->PushMessage("sporkcount", sporkManager.GetActiveSporkCount());
+            pfrom->PushMessage("sporkcount", GetSporkManager().GetActiveSporkCount());
         }
 
         pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
@@ -4062,7 +4064,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             }
         }
     } else {
-        sporkManager.ProcessSpork(pfrom, strCommand, vRecv);
+        ProcessSpork(pfrom, strCommand, vRecv);
         ProcessMasternodeMessages(pfrom,strCommand,vRecv);
     }
 

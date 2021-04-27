@@ -117,7 +117,7 @@ Value setgenerate(const Array& params, bool fHelp)
             *pwalletMain,
             mapHashedBlocks,
             mapBlockIndex,
-            sporkManager);
+            GetSporkManager());
         I_CoinMinter& minter = mintingModule.coinMinter();
 
         while (nHeight < nHeightEnd)
@@ -196,7 +196,7 @@ Value generateblock(const Array& params, bool fHelp)
         *pwalletMain,
         mapHashedBlocks,
         mapBlockIndex,
-        sporkManager);
+        GetSporkManager());
     I_CoinMinter& minter = mintingModule.coinMinter();
     ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
     assert(blockFactory);

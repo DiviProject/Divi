@@ -86,7 +86,6 @@ extern CCriticalSection cs_main;
 extern Settings& settings;
 extern bool fReindex;
 extern bool fImporting;
-extern bool fAlerts;
 extern bool fCheckBlockIndex;
 extern int nScriptCheckThreads;
 extern int nCoinCacheSize;
@@ -101,15 +100,6 @@ extern CBlockTreeDB* pblocktree;
 extern CCoinsViewCache* pcoinsTip;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
-#endif
-
-#ifdef WIN32
-// Win32 LevelDB doesn't use filedescriptors, and the ones used for
-// accessing block files, don't count towards to fd_set size limit
-// anyway.
-#define MIN_CORE_FILEDESCRIPTORS 0
-#else
-#define MIN_CORE_FILEDESCRIPTORS 150
 #endif
 
 //! -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
@@ -527,61 +517,6 @@ bool VerifyCriticalDependenciesAreAvailable()
     return true;
 }
 
-void SetNetworkingParameters()
-{
-    if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
-        // when specifying an explicit binding address, you want to listen on it
-        // even when -connect or -proxy is specified
-        if (settings.SoftSetBoolArg("-listen", true))
-            LogPrintf("InitializeDivi : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
-    }
-
-    if (settings.ParameterIsSet("-connect") && settings.GetMultiParameter("-connect").size() > 0) {
-        // when only connecting to trusted nodes, do not seed via DNS, or listen by default
-        if (settings.SoftSetBoolArg("-dnsseed", false))
-            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -dnsseed=0\n");
-        if (settings.SoftSetBoolArg("-listen", false))
-            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -listen=0\n");
-    }
-
-    if (settings.ParameterIsSet("-proxy")) {
-        // to protect privacy, do not listen by default if a default proxy server is specified
-        if (settings.SoftSetBoolArg("-listen", false))
-            LogPrintf("%s: parameter interaction: -proxy set -> setting -listen=0\n", __func__);
-        // to protect privacy, do not use UPNP when a proxy is set. The user may still specify -listen=1
-        // to listen locally, so don't rely on this happening through -listen below.
-        if (settings.SoftSetBoolArg("-upnp", false))
-            LogPrintf("%s: parameter interaction: -proxy set -> setting -upnp=0\n", __func__);
-        // to protect privacy, do not discover addresses by default
-        if (settings.SoftSetBoolArg("-discover", false))
-            LogPrintf("InitializeDivi : parameter interaction: -proxy set -> setting -discover=0\n");
-    }
-
-    if (!settings.GetBoolArg("-listen", true)) {
-        // do not map ports or try to retrieve public IP when not listening (pointless)
-        if (settings.SoftSetBoolArg("-upnp", false))
-            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -upnp=0\n");
-        if (settings.SoftSetBoolArg("-discover", false))
-            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -discover=0\n");
-        if (settings.SoftSetBoolArg("-listenonion", false))
-            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -listenonion=0\n");
-    }
-
-    if (settings.ParameterIsSet("-externalip")) {
-        // if an explicit public IP is specified, do not try to find others
-        if (settings.SoftSetBoolArg("-discover", false))
-            LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
-    }
-
-    nConnectTimeout = settings.GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
-    if (nConnectTimeout <= 0)
-        nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
-
-    fAlerts = settings.GetBoolArg("-alerts", DEFAULT_ALERTS);
-    if (settings.GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
-        nLocalServices |= NODE_BLOOM;
-}
-
 bool EnableWalletFeatures()
 {
     if (settings.GetBoolArg("-salvagewallet", false)) {
@@ -595,20 +530,6 @@ bool EnableWalletFeatures()
         if (settings.SoftSetBoolArg("-rescan", true))
             LogPrintf("InitializeDivi : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
     }
-
-    return true;
-}
-
-bool SetMaxConnectionsAndFileDescriptors(int& nFD)
-{
-    int nBind = std::max((int)settings.ParameterIsSet("-bind") + (int)settings.ParameterIsSet("-whitebind"), 1);
-    nMaxConnections = settings.GetArg("-maxconnections", 125);
-    nMaxConnections = std::max(std::min(nMaxConnections, (int)(FD_SETSIZE - nBind - MIN_CORE_FILEDESCRIPTORS)), 0);
-    nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS);
-    if (nFD < MIN_CORE_FILEDESCRIPTORS)
-        return InitError(translate("Not enough file descriptors available."));
-    if (nFD - MIN_CORE_FILEDESCRIPTORS < nMaxConnections)
-        nMaxConnections = nFD - MIN_CORE_FILEDESCRIPTORS;
 
     return true;
 }
@@ -798,6 +719,7 @@ void PruneHDSeedParameterInteraction()
 
 void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, const std::string& dataDirectoryInUse)
 {
+    const int maximumNumberOfConnections = GetMaxConnections();
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     LogPrintf("DIVI version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
@@ -806,7 +728,7 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", dataDirectoryInUse);
     LogPrintf("Using config file %s\n", settings.GetConfigFile().string());
-    LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, numberOfFileDescriptors);
+    LogPrintf("Using at most %i connections (%i file descriptors available)\n", maximumNumberOfConnections, numberOfFileDescriptors);
     LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
 }
 
@@ -1188,7 +1110,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // Make sure enough file descriptors are available
     int numberOfFileDescriptors;
-    if(!SetMaxConnectionsAndFileDescriptors(numberOfFileDescriptors))
+    if(!SetNumberOfFileDescriptors(uiMessenger,numberOfFileDescriptors))
     {
         return false;
     }

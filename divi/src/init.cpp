@@ -718,48 +718,6 @@ bool SetTransactionRequirements()
     return true;
 }
 
-void ShrinkDebugFile()
-{
-    // Scroll debug.log if it's getting too big
-    boost::filesystem::path pathLog = GetDataDir() / "debug.log";
-    FILE* file = fopen(pathLog.string().c_str(), "r");
-    if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000) {
-        // Restart the file with some of the end
-        std::vector<char> vch(200000, 0);
-        fseek(file, -((long)vch.size()), SEEK_END);
-        int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
-        fclose(file);
-
-        file = fopen(pathLog.string().c_str(), "w");
-        if (file) {
-            fwrite(begin_ptr(vch), 1, nBytes, file);
-            fclose(file);
-        }
-    } else if (file != NULL)
-        fclose(file);
-}
-
-void SetLoggingAndDebugSettings()
-{
-    fPrintToConsole = settings.GetBoolArg("-printtoconsole", false);
-    fLogTimestamps = settings.GetBoolArg("-logtimestamps", true);
-    fLogIPs = settings.GetBoolArg("-logips", false);
-
-    const std::vector<std::string>& categories = settings.GetMultiParameter("-debug");
-    fDebug = !categories.empty();
-    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-    if (settings.GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
-        fDebug = false;
-
-    if (settings.GetBoolArg("-shrinkdebugfile", !fDebug))
-        ShrinkDebugFile();
-
-    if(fPrintToConsole)
-    {
-        setvbuf(stdout, NULL, _IOLBF, 0);
-    }
-}
-
 bool TryLockDataDirectory(const std::string& datadir)
 {
     // Make sure only a single DIVI process is using the data directory.

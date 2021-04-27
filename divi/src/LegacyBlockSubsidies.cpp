@@ -20,7 +20,7 @@ CAmount BlockSubsidy(int nHeight, const CChainParams& chainParameters)
     CAmount nSubsidy = std::max(
         1250 - 100* std::max(nHeight/chainParameters.SubsidyHalvingInterval() -1,0),
         250)*COIN;
-    
+
     return nSubsidy;
 }
 CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParameters)
@@ -31,7 +31,7 @@ CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParamete
         auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
         BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight, nBlockTime);
 
-        if(activeSpork.IsValid() && 
+        if(activeSpork.IsValid() &&
             (activeSpork.nActivationBlockHeight % chainParameters.SubsidyHalvingInterval()) == 0 )
         {
             // we expect that this value is in coins, not in satoshis
@@ -56,22 +56,22 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
     nSubsidy -= nLotteryPart;
 
     auto helper = [nHeight,&chainParameters,nSubsidy,nLotteryPart](
-        int nStakePercentage, 
+        int nStakePercentage,
         int nMasternodePercentage,
-        int nTreasuryPercentage, 
-        int nProposalsPercentage, 
-        int nCharityPercentage) 
+        int nTreasuryPercentage,
+        int nProposalsPercentage,
+        int nCharityPercentage)
     {
         auto helper = [nSubsidy](int percentage) {
             return (nSubsidy * percentage) / 100;
         };
 
         return CBlockRewards(
-            helper(nStakePercentage), 
-            helper(nMasternodePercentage), 
-            helper(nTreasuryPercentage), 
+            helper(nStakePercentage),
+            helper(nMasternodePercentage),
+            helper(nTreasuryPercentage),
             helper(nCharityPercentage),
-            nLotteryPart, 
+            nLotteryPart,
             helper(nProposalsPercentage));
     };
 
@@ -87,8 +87,8 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
             return helper(
                 activeSpork.nStakeReward,
                 activeSpork.nMasternodeReward,
-                activeSpork.nTreasuryReward, 
-                activeSpork.nProposalsReward, 
+                activeSpork.nTreasuryReward,
+                activeSpork.nProposalsReward,
                 activeSpork.nCharityReward);
         }
     }

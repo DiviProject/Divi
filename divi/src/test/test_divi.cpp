@@ -26,7 +26,6 @@
 extern CClientUIInterface uiInterface;
 extern CWallet* pwalletMain;
 extern Settings& settings;
-extern bool fPrintToConsole;
 extern void noui_connect();
 extern NotificationInterfaceRegistry registry;//TODO: rid this
 extern CBlockTreeDB* pblocktree;

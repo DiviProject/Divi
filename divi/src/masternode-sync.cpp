@@ -206,6 +206,7 @@ bool CMasternodeSync::ShouldWaitForSync(const int64_t now)
 
 SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const int64_t lastUpdate, std::string assetType)
 {
+    static const CSporkManager& sporkManager = GetSporkManager();
     LogPrint("masternode", "%s - %s %lld (GetTime() - MASTERNODE_SYNC_TIMEOUT) %lld\n",__func__,assetType, lastUpdate, now - MASTERNODE_SYNC_TIMEOUT);
     if (lastUpdate > 0 && lastUpdate < now - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD)
     { //hasn't received a new item in the last five seconds, so we'll move to the

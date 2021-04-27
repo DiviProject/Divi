@@ -108,6 +108,7 @@ bool HasRecentlyAttemptedToGenerateProofOfStake()
 // ppcoin: stake minter thread
 void ThreadStakeMinter(CWallet* pwallet)
 {
+    static const CSporkManager& sporkManager = GetSporkManager();
     static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
     boost::this_thread::interruption_point();
     LogPrintf("ThreadStakeMinter started\n");
@@ -141,6 +142,7 @@ void ThreadStakeMinter(CWallet* pwallet)
 
 void static ThreadPoWMinter(CWallet* pwallet,bool fGenerate)
 {
+    static const CSporkManager& sporkManager = GetSporkManager();
     static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
     boost::this_thread::interruption_point();
     try {

@@ -36,10 +36,10 @@ static const int SPORK_16_LOTTERY_TICKET_MIN_VALUE                  = 10015;
 static const int SPORK_START                                            = SPORK_2_SWIFTTX_ENABLED;
 static const int SPORK_END                                              = SPORK_16_LOTTERY_TICKET_MIN_VALUE;
 
-extern std::map<uint256, CSporkMessage> mapSporks;
-extern CSporkManager sporkManager;
 bool ShareSporkDataWithPeer(CNode* peer, const uint256& inventoryHash);
 bool SporkDataIsKnown(const uint256& inventoryHash);
+void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
+CSporkManager& GetSporkManager();
 //
 // Spork classes
 // Keep track of all of the network spork settings

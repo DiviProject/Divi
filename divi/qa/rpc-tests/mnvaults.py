@@ -178,6 +178,7 @@ class MnVaultsTest (BitcoinTestFramework):
     # restarting it as necessary during operation).
     for _ in range (100):
       self.advance_time (100)
+      time.sleep(0.01)
 
     # Due to advancing the time without having any masternodes, sync will
     # have failed on the nodes that are up.  Reset the sync now to make
@@ -196,6 +197,7 @@ class MnVaultsTest (BitcoinTestFramework):
     # Finish masternode sync.
     for _ in range (100):
       self.advance_time ()
+      time.sleep(0.01)
     for n in self.nodes:
       if n is not None:
         status = n.mnsync ("status")
@@ -216,6 +218,7 @@ class MnVaultsTest (BitcoinTestFramework):
     self.mine_blocks (100)
     for _ in range (150):
       self.advance_time (100)
+      time.sleep(0.01)
 
     cnt = self.nodes[3].getmasternodecount ()
     assert_equal (cnt["total"], 1)
@@ -228,6 +231,7 @@ class MnVaultsTest (BitcoinTestFramework):
     for _ in range (10):
       self.mine_blocks (1)
       self.advance_time (10)
+      time.sleep(0.01)
 
     # Check that some payments were made.
     winners = self.nodes[3].getmasternodewinners ()

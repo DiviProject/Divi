@@ -99,16 +99,10 @@ CMasternodeSync& MasternodeModule::getMasternodeSynchronization() const
  }
 
 MasternodeModule mnModule(chainActive,mapBlockIndex);
-MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
-MasternodePaymentData& masternodePaymentData = mnModule.getMasternodePaymentData();
-CMasternodeConfig& masternodeConfig = mnModule.getMasternodeConfigurations();
-CMasternodeMan& mnodeman = mnModule.getMasternodeManager();
-CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
-CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
-CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
 
 bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
 {
+    CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
     if(!activeMasternode.SetMasternodeAddress(settings.GetArg("-masternodeaddr", "")))
     {
         errorMessage = "Invalid -masternodeaddr address: " + settings.GetArg("-masternodeaddr", "");
@@ -134,6 +128,7 @@ bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
 
 bool LoadMasternodeConfigurations(const Settings& settings, std::string& errorMessage)
 {
+    CMasternodeConfig& masternodeConfig = mnModule.getMasternodeConfigurations();
     // parse masternode.conf
     if (!masternodeConfig.read(settings,errorMessage)) {
         errorMessage="Error reading masternode configuration file: "+ errorMessage + "\n";
@@ -175,13 +170,19 @@ bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionI
 
 CMasternodePayments& GetMasternodePayments()
 {
-    return masternodePayments;
+    return mnModule.getMasternodePayments();
+}
+
+const CMasternodeSync& GetMasternodeSync()
+{
+    return mnModule.getMasternodeSynchronization();
 }
 
 bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataDir)
 {
     if (!fLiteMode)
     {
+        MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
         std::string strDBName;
 
         strDBName = "mncache.dat";
@@ -192,6 +193,7 @@ bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataD
         }
 
         if(networkMessageManager.masternodeCount()) {
+            MasternodePaymentData& masternodePaymentData = mnModule.getMasternodePaymentData();
             strDBName = "mnpayments.dat";
             uiMessenger.InitMessage("Loading masternode payment cache...");
             CFlatDB<MasternodePaymentData> flatdb2(strDBName, "magicMasternodePaymentsCache");
@@ -208,6 +210,8 @@ void DumpMasternodeDataToDisk()
 {
     if(!fLiteMode)
     {
+        MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
+        MasternodePaymentData& masternodePaymentData = mnModule.getMasternodePaymentData();
         CFlatDB<MasternodeNetworkMessageManager> flatdb1("mncache.dat", "magicMasternodeCache");
         flatdb1.Dump(networkMessageManager);
         CFlatDB<MasternodePaymentData> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
@@ -215,18 +219,14 @@ void DumpMasternodeDataToDisk()
     }
 }
 
-const CMasternodeSync& GetMasternodeSync()
-{
-    return masternodeSync;
-}
-
 void ForceMasternodeResync()
 {
-    masternodeSync.Reset();
+    mnModule.getMasternodeSynchronization().Reset();
 }
 
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash)
 {
+    static const MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
     if (networkMessageManager.pingIsKnown(inventoryHash)) {
         peer->PushMessage("mnp", networkMessageManager.getKnownPing(inventoryHash));
         return true;
@@ -236,6 +236,7 @@ bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash)
 
 bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
 {
+    static const MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
     if (networkMessageManager.broadcastIsKnown(inventoryHash))
     {
         peer->PushMessage("mnb", networkMessageManager.getKnownBroadcast(inventoryHash));
@@ -246,6 +247,7 @@ bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
 
 bool ShareMasternodeWinnerWithPeer(CNode* peer,const uint256& inventoryHash)
 {
+    static const CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
     const auto* winner = masternodePayments.GetPaymentWinnerForHash(inventoryHash);
     if (winner != nullptr) {
         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
@@ -259,10 +261,13 @@ bool ShareMasternodeWinnerWithPeer(CNode* peer,const uint256& inventoryHash)
 
 bool MasternodePingIsKnown(const uint256& inventoryHash)
 {
+    static const MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
     return networkMessageManager.pingIsKnown(inventoryHash);
 }
 bool MasternodeIsKnown(const uint256& inventoryHash)
 {
+    static const MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
+    static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     if (networkMessageManager.broadcastIsKnown(inventoryHash))
     {
         masternodeSync.AddedMasternodeList(inventoryHash);
@@ -273,6 +278,8 @@ bool MasternodeIsKnown(const uint256& inventoryHash)
 
 bool MasternodeWinnerIsKnown(const uint256& inventoryHash)
 {
+    static const CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
+    static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     if (masternodePayments.GetPaymentWinnerForHash(inventoryHash) != nullptr)
     {
         masternodeSync.AddedMasternodeWinner(inventoryHash);
@@ -283,6 +290,10 @@ bool MasternodeWinnerIsKnown(const uint256& inventoryHash)
 
 void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream& vRecv)
 {
+    static CMasternodeMan& mnodeman = mnModule.getMasternodeManager();
+    static CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
+    static CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
+    static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     if(!fLiteMode)
     {
         mnodeman.ProcessMessage(activeMasternode,masternodeSync,pfrom, strCommand, vRecv);
@@ -293,6 +304,9 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
 
 bool VoteForMasternodePayee(const CBlockIndex* pindex)
 {
+    static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
+    static CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
+    static CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
     if (fLiteMode || masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST || !mnModule.localNodeIsAMasternode()) return false;
     constexpr int numberOfBlocksIntoTheFutureToVoteOn = 10;
     static int64_t lastProcessBlockHeight = 0;
@@ -360,6 +374,7 @@ void LockUpMasternodeCollateral(const Settings& settings, std::function<void(con
 {
     if(settings.GetBoolArg("-mnconflock", true))
     {
+        CMasternodeConfig& masternodeConfig = mnModule.getMasternodeConfigurations();
         uint256 mnTxHash;
         BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries())
         {
@@ -383,6 +398,10 @@ void ThreadMasternodeBackgroundSync()
     int64_t nTimeManageStatus = 0;
     int64_t nTimeConnections = 0;
 
+    CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
+    CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
+    CMasternodeMan& mnodeman = mnModule.getMasternodeManager();
+    CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
     while (true) {
         int64_t now;
         {

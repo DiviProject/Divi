@@ -295,7 +295,7 @@ void PrepareShutdown()
     StopNode();
     InterruptTorControl();
     StopTorControl();
-    DumpMasternodeDataToDisk();
+    SaveMasternodeDataToDisk();
     StoreDataCaches();
     UnregisterNodeSignals(GetNodeSignals());
     SaveFeeEstimatesFromMempool();

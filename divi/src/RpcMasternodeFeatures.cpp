@@ -28,8 +28,6 @@ static T readFromHex(std::string hexString)
     return object;
 }
 
-extern MasternodeModule mnModule;
-
 MasternodeStartResult::MasternodeStartResult(
     ): status(false)
     , broadcastData("")
@@ -71,6 +69,7 @@ MasternodeCountData::MasternodeCountData(
 
 bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& signature, const bool updatePing)
 {
+    const auto& mnModule = GetMasternodeModule();
     auto& activeMasternode = mnModule.getActiveMasternode();
     auto& mnodeman = mnModule.getMasternodeManager();
     auto& masternodeSync = mnModule.getMasternodeSynchronization();
@@ -111,6 +110,7 @@ bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& sig
 
 MasternodeStartResult StartMasternode(const CKeyStore& keyStore,std::string alias, bool deferRelay)
 {
+    const auto& mnModule = GetMasternodeModule();
     auto& activeMasternode = mnModule.getActiveMasternode();
     auto& mnodeman = mnModule.getMasternodeManager();
     auto& masternodeSync = mnModule.getMasternodeSynchronization();
@@ -163,6 +163,7 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore,std::string alia
 
 ActiveMasternodeStatus GetActiveMasternodeStatus()
 {
+    const auto& mnModule = GetMasternodeModule();
     if (!mnModule.localNodeIsAMasternode()) throw std::runtime_error("This is not a masternode");
     auto& activeMasternode = mnModule.getActiveMasternode();
     auto& mnodeman = mnModule.getMasternodeManager();
@@ -187,6 +188,7 @@ ActiveMasternodeStatus GetActiveMasternodeStatus()
 
 std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)
 {
+    const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
     auto& masternodePayments = mnModule.getMasternodePayments();
 
@@ -234,6 +236,7 @@ std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)
 
 static int StableMasternodeCount()
 {
+    const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
     LOCK(networkMessageManager.cs);
     int nStable_size = 0;
@@ -264,6 +267,7 @@ static int StableMasternodeCount()
 
 static void CountNetworks(int& ipv4, int& ipv6, int& onion)
 {
+    const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
     int protocolVersion = ActiveProtocol();
 
@@ -291,6 +295,7 @@ static void CountNetworks(int& ipv4, int& ipv6, int& onion)
 
 MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
 {
+    const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
     auto& masternodePayments = mnModule.getMasternodePayments();
     auto& mnodeman = mnModule.getMasternodeManager();

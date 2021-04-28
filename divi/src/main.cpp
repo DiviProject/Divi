@@ -1331,8 +1331,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     static const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
     static const BlockIncentivesPopulator incentives(
         chainParameters,
-        GetMasternodeSync(),
-        GetMasternodePayments(),
+        GetMasternodeModule(),
         subsidiesContainer.superblockHeightValidator(),
         subsidiesContainer.blockSubsidiesProvider(),
         GetSporkManager());
@@ -1444,7 +1443,7 @@ void FlushStateToDisk()
 void static UpdateTip(CBlockIndex* pindexNew)
 {
     chainActive.SetTip(pindexNew);
-    GetMasternodePayments().updateChainTipHeight(pindexNew);
+    GetMasternodeModule().getMasternodePayments().updateChainTipHeight(pindexNew);
 
     // New best block
     nTimeBestReceived = GetTime();
@@ -2646,7 +2645,7 @@ bool static LoadBlockIndexDB(string& strError)
     if (it == mapBlockIndex.end())
         return true;
     chainActive.SetTip(it->second);
-    GetMasternodePayments().updateChainTipHeight(it->second);
+    GetMasternodeModule().getMasternodePayments().updateChainTipHeight(it->second);
 
     PruneBlockIndexCandidates();
 

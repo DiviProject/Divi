@@ -9,6 +9,7 @@
 #include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
 #include <ProofOfStakeModule.h>
+#include <MasternodeModule.h>
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
@@ -43,10 +44,9 @@ CoinMintingModule::CoinMintingModule(
     AnnotatedMixin<boost::recursive_mutex>& mainCS,
     const CChainParams& chainParameters,
     const CChain& activeChain,
-    const CMasternodeSync& masternodeSynchronization,
+    const MasternodeModule& masternodeModule,
     const CFeeRate& relayTxFeeCalculator,
     CCoinsViewCache* baseCoinsViewCache,
-    CMasternodePayments& masternodePayments,
     CTxMemPool& mempool,
     std::vector<CNode*>& peers,
     CWallet& wallet,
@@ -57,8 +57,7 @@ CoinMintingModule::CoinMintingModule(
     , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
         chainParameters,
-        masternodeSynchronization,
-        masternodePayments,
+        masternodeModule,
         blockSubsidyContainer_->superblockHeightValidator(),
         blockSubsidyContainer_->blockSubsidiesProvider(),
         sporkManager))
@@ -93,7 +92,7 @@ CoinMintingModule::CoinMintingModule(
         activeChain,
         chainParameters,
         peers,
-        masternodeSynchronization,
+        masternodeModule.getMasternodeSynchronization(),
         hashedBlockTimestampsByHeight,
         mempool,
         mainCS))

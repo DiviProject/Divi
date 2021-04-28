@@ -53,8 +53,7 @@ public:
 };
 
 // Used for downstream constructors and use cases
-const CMasternodeSync& GetMasternodeSync();
-CMasternodePayments& GetMasternodePayments();
+const MasternodeModule& GetMasternodeModule();
 
 // Used in main to manage signals back and forth
 bool VoteForMasternodePayee(const CBlockIndex* pindex);

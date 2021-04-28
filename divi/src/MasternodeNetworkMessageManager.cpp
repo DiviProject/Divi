@@ -198,11 +198,11 @@ bool MasternodeNetworkMessageManager::pingIsKnown(const uint256& pingHash) const
 {
     return mapSeenMasternodePing.count(pingHash) >0;
 }
-const CMasternodeBroadcast& MasternodeNetworkMessageManager::getKnownBroadcast(const uint256& broadcastHash)
+const CMasternodeBroadcast& MasternodeNetworkMessageManager::getKnownBroadcast(const uint256& broadcastHash) const
 {
-    return mapSeenMasternodeBroadcast[broadcastHash];
+    return mapSeenMasternodeBroadcast.find(broadcastHash)->second;
 }
-const CMasternodePing& MasternodeNetworkMessageManager::getKnownPing(const uint256& pingHash)
+const CMasternodePing& MasternodeNetworkMessageManager::getKnownPing(const uint256& pingHash) const
 {
-    return mapSeenMasternodePing[pingHash];
+    return mapSeenMasternodePing.find(pingHash)->second;
 }

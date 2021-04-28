@@ -33,6 +33,7 @@
 bool fLiteMode = false;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
+MasternodeModule mnModule(chainActive,mapBlockIndex);
 
 MasternodeModule::MasternodeModule(
     const CChain& activeChain,
@@ -97,8 +98,6 @@ CMasternodeSync& MasternodeModule::getMasternodeSynchronization() const
  {
      fMasterNode_ = true;
  }
-
-MasternodeModule mnModule(chainActive,mapBlockIndex);
 
 bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
 {
@@ -206,7 +205,7 @@ bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataD
     }
     return true;
 }
-void DumpMasternodeDataToDisk()
+void SaveMasternodeDataToDisk()
 {
     if(!fLiteMode)
     {

@@ -52,11 +52,11 @@ public:
     void designateLocalNodeAsMasternode();
 };
 
+// Used for downstream constructors and use cases
 const CMasternodeSync& GetMasternodeSync();
 CMasternodePayments& GetMasternodePayments();
 
-void ThreadMasternodeBackgroundSync();
-void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction);
+// Used in main to manage signals back and forth
 bool VoteForMasternodePayee(const CBlockIndex* pindex);
 void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream& vRecv);
 bool MasternodeWinnerIsKnown(const uint256& inventoryHash);
@@ -65,8 +65,14 @@ bool MasternodePingIsKnown(const uint256& inventoryHash);
 bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash);
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash);
 bool ShareMasternodeWinnerWithPeer(CNode* peer,const uint256& inventoryHash);
+
+//Used in rpcmisc for manual restart of mn sync
 void ForceMasternodeResync();
+
+// Used for initialization
+void ThreadMasternodeBackgroundSync();
+void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction);
 bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataDir);
-void DumpMasternodeDataToDisk();
+void SaveMasternodeDataToDisk();
 bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionIndexEnabled, std::string& errorMessage);
 #endif //MASTERNODE_MODULE_H

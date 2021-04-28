@@ -99,6 +99,11 @@ CMasternodeSync& MasternodeModule::getMasternodeSynchronization() const
      fMasterNode_ = true;
  }
 
+const MasternodeModule& GetMasternodeModule()
+{
+    return mnModule;
+}
+
 bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
 {
     CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
@@ -165,16 +170,6 @@ bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionI
         }
     }
     return true;
-}
-
-CMasternodePayments& GetMasternodePayments()
-{
-    return mnModule.getMasternodePayments();
-}
-
-const CMasternodeSync& GetMasternodeSync()
-{
-    return mnModule.getMasternodeSynchronization();
 }
 
 bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataDir)

@@ -15,6 +15,7 @@ class I_BlockSubsidyProvider;
 class CTransaction;
 class CMasternodeSync;
 class CSporkManager;
+class MasternodeModule;
 
 class BlockIncentivesPopulator : public I_BlockIncentivesPopulator
 {
@@ -36,8 +37,7 @@ private:
 public:
     BlockIncentivesPopulator(
         const CChainParams& chainParameters,
-        const CMasternodeSync& masternodeSynchronization,
-        CMasternodePayments& masternodePayments,
+        const MasternodeModule& masternodeModule,
         const I_SuperblockHeightValidator& heightValidator,
         const I_BlockSubsidyProvider& blockSubsidies,
         const CSporkManager& sporkManager);

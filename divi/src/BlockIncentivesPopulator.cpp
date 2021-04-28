@@ -19,6 +19,7 @@
 #include <masternode.h>
 #include <masternode-sync.h>
 #include <MasternodeHelpers.h>
+#include <MasternodeModule.h>
 
 extern Settings& settings;
 namespace
@@ -97,14 +98,13 @@ bool IsValidTreasuryPayment(const CChainParams& chainParameters, const CBlockRew
 
 BlockIncentivesPopulator::BlockIncentivesPopulator(
     const CChainParams& chainParameters,
-    const CMasternodeSync& masternodeSynchronization,
-    CMasternodePayments& masternodePayments,
+    const MasternodeModule& masternodeModule,
     const I_SuperblockHeightValidator& heightValidator,
     const I_BlockSubsidyProvider& blockSubsidies,
     const CSporkManager& sporkManager
     ): chainParameters_(chainParameters)
-    , masternodeSync_(masternodeSynchronization)
-    , masternodePayments_(masternodePayments)
+    , masternodeSync_(masternodeModule.getMasternodeSynchronization())
+    , masternodePayments_(masternodeModule.getMasternodePayments())
     , heightValidator_(heightValidator)
     , blockSubsidies_(blockSubsidies)
     , sporkManager_(sporkManager)

@@ -26,6 +26,7 @@ class CSporkManager;
 class Settings;
 class CCoinsViewCache;
 class CFeeRate;
+class MasternodeModule;
 
 class CoinMintingModule
 {
@@ -42,10 +43,9 @@ public:
         AnnotatedMixin<boost::recursive_mutex>& mainCS,
         const CChainParams& chainParameters,
         const CChain& activeChain,
-        const CMasternodeSync& masternodeSynchronization,
+        const MasternodeModule& masternodeModule,
         const CFeeRate& relayTxFeeCalculator,
         CCoinsViewCache* baseCoinsViewCache,
-        CMasternodePayments& masternodePayments,
         CTxMemPool& mempool,
         std::vector<CNode*>& peers,
         CWallet& wallet,

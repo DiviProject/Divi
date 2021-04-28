@@ -264,7 +264,7 @@ Value mnsync(const Array& params, bool fHelp)
 
     if (strMode == "status") {
         Object obj;
-        const CMasternodeSync& masternodeSynchronization = GetMasternodeSync();
+        const CMasternodeSync& masternodeSynchronization = GetMasternodeModule().getMasternodeSynchronization();
         obj.push_back(Pair("IsBlockchainSynced", IsBlockchainSynced()));
         obj.push_back(Pair("lastMasternodeList", masternodeSynchronization.lastMasternodeList));
         obj.push_back(Pair("lastMasternodeWinner", masternodeSynchronization.lastMasternodeWinner));
@@ -1187,7 +1187,7 @@ Value getstakingstatus(const Array& params, bool fHelp)
         obj.push_back(Pair("enoughcoins", pwalletMain->GetStakingBalance() > 0  ));
     }
 
-    obj.push_back(Pair("mnsync", GetMasternodeSync().IsSynced()));
+    obj.push_back(Pair("mnsync", GetMasternodeModule().getMasternodeSynchronization().IsSynced()));
 
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", nStaking));

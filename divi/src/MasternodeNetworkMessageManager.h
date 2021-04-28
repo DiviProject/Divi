@@ -51,8 +51,8 @@ public:
 
     bool broadcastIsKnown(const uint256& broadcastHash) const;
     bool pingIsKnown(const uint256& pingHash) const;
-    const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash);
-    const CMasternodePing& getKnownPing(const uint256& pingHash);
+    const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash) const;
+    const CMasternodePing& getKnownPing(const uint256& pingHash) const;
 
     ADD_SERIALIZE_METHODS
     template <typename Stream, typename Operation>

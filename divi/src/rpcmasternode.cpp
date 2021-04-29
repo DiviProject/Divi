@@ -618,14 +618,14 @@ Value getmasternodewinners (const Array& params, bool fHelp)
         strFilter = params[1].get_str();
 
     Array ret;
-
+    const CMasternodePayments& mnpayments = GetMasternodeModule().getMasternodePayments();
     for (int i = nHeight - nLast; i < nHeight + 20; i++) {
         Object obj;
         obj.push_back(Pair("nHeight", i));
 
         uint256 seedHash;
         if (!GetBlockHashForScoring(seedHash, pindex, i - nHeight)) continue;
-        std::string strPayment = GetMasternodeModule().getMasternodePayments().GetRequiredPaymentsString(seedHash);
+        std::string strPayment = mnpayments.GetRequiredPaymentsString(seedHash);
         if (strFilter != "" && strPayment.find(strFilter) == std::string::npos) continue;
 
         if (strPayment.find(',') != std::string::npos) {

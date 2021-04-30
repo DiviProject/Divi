@@ -307,7 +307,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
     }
     return true;
 }
-void CMasternodeSync::Process(bool networkIsRegtest)
+void CMasternodeSync::Process(bool networkIsRegtest,bool(*blockChainSyncComplete)())
 {
     const int64_t now = GetTime();
     LogPrint("masternode", "Masternode sync process at %lld\n", now);
@@ -319,7 +319,7 @@ void CMasternodeSync::Process(bool networkIsRegtest)
     if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_INITIAL) GetNextAsset();
 
     // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
-    if (!networkIsRegtest && !IsBlockchainSynced() && RequestedMasternodeAssets > MasternodeSyncCode::MASTERNODE_SYNC_SPORKS)
+    if (!networkIsRegtest && !blockChainSyncComplete() && RequestedMasternodeAssets > MasternodeSyncCode::MASTERNODE_SYNC_SPORKS)
     {
         waitingForBlockchainSync = true;
         return;

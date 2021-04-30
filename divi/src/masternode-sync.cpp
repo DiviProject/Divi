@@ -17,8 +17,8 @@
 #include <MasternodeNetworkMessageManager.h>
 #include <version.h>
 #include <MasternodePaymentData.h>
-#include <MasternodeHelpers.h>
 #include <primitives/transaction.h>
+#include <I_PeerSyncQueryService.h>
 // clang-format on
 
 #include <algorithm>
@@ -27,10 +27,12 @@ static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
 
 CMasternodeSync::CMasternodeSync(
+    const I_PeerSyncQueryService& peerSyncService,
     CMasternodePayments& masternodePayments,
     MasternodeNetworkMessageManager& networkMessageManager,
     MasternodePaymentData& masternodePaymentData
-    ): masternodePayments_(masternodePayments)
+    ): peerSyncService_(peerSyncService)
+    , masternodePayments_(masternodePayments)
     , networkMessageManager_(networkMessageManager)
     , masternodePaymentData_(masternodePaymentData)
 {
@@ -350,15 +352,7 @@ void CMasternodeSync::Process(bool networkIsRegtest,bool(*blockChainSyncComplete
         LogPrint("masternode", "%s - blockchain sync is finished, restarting mn list sync\n", __func__);
     }
 
-    std::vector<CNode*> vSporkSyncedNodes;
-    {
-    TRY_LOCK(cs_vNodes, lockRecv);
-    if (!lockRecv) return;
-
-    std::copy_if(std::begin(vNodes), std::end(vNodes), std::back_inserter(vSporkSyncedNodes), [](const CNode *node) {
-        return node->fInbound || node->AreSporksSynced();
-    });
-    }
+    std::vector<CNode*> vSporkSyncedNodes = peerSyncService_.GetSporkSyncedOrInboundNodes();
 
     // don't event attemp to sync if we don't have 3 synced nodes
     if(vSporkSyncedNodes.size() < 3) {

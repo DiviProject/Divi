@@ -173,6 +173,7 @@ BITCOIN_CORE_H = \
   I_BlockSubsidyProvider.h \
   I_PoSStakeModifierService.h \
   I_ProofOfStakeCalculator.h \
+  I_PeerSyncQueryService.h \
   I_BlockDataReader.h \
   ProofOfStakeCalculator.h \
   datacachemanager.h \

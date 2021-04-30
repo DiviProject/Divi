@@ -28,26 +28,58 @@
 
 #include <blockmap.h>
 #include <ThreadManagementHelpers.h>
-
+#include <I_PeerSyncQueryService.h>
 
 bool fLiteMode = false;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
-MasternodeModule mnModule(chainActive,mapBlockIndex);
+
+class PeerSyncQueryService: public I_PeerSyncQueryService
+{
+private:
+    const std::vector<CNode*>& peers_;
+    CCriticalSection& peersLock_;
+public:
+    PeerSyncQueryService(
+        const std::vector<CNode*>& peers,
+        CCriticalSection& peersLock
+        ): peers_(peers)
+        , peersLock_(peersLock)
+    {
+    }
+    virtual std::vector<CNode*> GetSporkSyncedOrInboundNodes() const
+    {
+        std::vector<CNode*> vSporkSyncedNodes;
+        {
+        TRY_LOCK(peersLock_, lockRecv);
+        if (!lockRecv) return {};
+
+        std::copy_if(std::begin(peers_), std::end(peers_), std::back_inserter(vSporkSyncedNodes), [](const CNode *node) {
+            return node->fInbound || node->AreSporksSynced();
+        });
+        }
+        return vSporkSyncedNodes;
+    }
+};
+
+PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
+MasternodeModule mnModule(peerSyncQueryService,chainActive,mapBlockIndex);
 
 MasternodeModule::MasternodeModule(
+    const PeerSyncQueryService& peerSyncQueryService,
     const CChain& activeChain,
     const BlockMap& blockIndexByHash
     ): fMasterNode_(false)
     , activeChain_(activeChain)
     , blockIndexByHash_(blockIndexByHash)
+    , peerSyncQueryService_(peerSyncQueryService)
     , networkMessageManager_( new MasternodeNetworkMessageManager)
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
     , mnodeman_(new CMasternodeMan(*networkMessageManager_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_,activeChain_))
-    , masternodeSync_(new CMasternodeSync(*masternodePayments_,*networkMessageManager_,*masternodePaymentData_))
+    , masternodeSync_(new CMasternodeSync(peerSyncQueryService_,*masternodePayments_,*networkMessageManager_,*masternodePaymentData_))
 {
 }
 

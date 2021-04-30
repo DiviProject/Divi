@@ -34,7 +34,6 @@ constexpr char DB_BARETXIDINDEX = 'T';
 } // anonymous namespace
 
 extern BlockMap mapBlockIndex;
-extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 
 CBlockIndex* InsertBlockIndex(uint256 hash);
 
@@ -301,9 +300,6 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                     if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params()))
                         return error("LoadBlockIndex() : CheckProofOfWork failed: %s", *pindexNew);
                 }
-                // ppcoin: build setStakeSeen
-                if (pindexNew->IsProofOfStake())
-                    setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
                 pcursor->Next();
             } else {

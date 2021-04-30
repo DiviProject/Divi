@@ -413,7 +413,7 @@ void ThreadMasternodeBackgroundSync()
             masternodeSync.Reset();
             FulfilledMasternodeResyncRequest();
         }
-        masternodeSync.Process(regtest);
+        masternodeSync.Process(regtest,&IsBlockchainSynced);
         if(!IsBlockchainSynced()) continue;
         // check if we should activate or ping every few minutes,
         // start right after sync is considered to be done

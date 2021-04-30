@@ -18,6 +18,7 @@ class CTxIn;
 #include <uint256.h>
 #include <stdint.h>
 #include <string>
+class I_PeerSyncQueryService;
 //
 // CMasternodeSync : Sync masternode assets in stages
 //
@@ -42,6 +43,7 @@ class CMasternodeSync
 {
 private:
     int64_t nTimeLastProcess = 0;
+    const I_PeerSyncQueryService& peerSyncService_;
     CMasternodePayments& masternodePayments_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
@@ -74,6 +76,7 @@ public:
     int64_t nAssetSyncStarted;
 
     CMasternodeSync(
+        const I_PeerSyncQueryService& peerSyncService,
         CMasternodePayments& masternodePayments,
         MasternodeNetworkMessageManager& networkMessageManager,
         MasternodePaymentData& masternodePaymentData);

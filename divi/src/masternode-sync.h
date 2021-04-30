@@ -6,13 +6,6 @@
 #ifndef MASTERNODE_SYNC_H
 #define MASTERNODE_SYNC_H
 
-#define MASTERNODE_SYNC_INITIAL 0
-#define MASTERNODE_SYNC_SPORKS 1
-#define MASTERNODE_SYNC_LIST 2
-#define MASTERNODE_SYNC_MNW 3
-#define MASTERNODE_SYNC_FAILED 998
-#define MASTERNODE_SYNC_FINISHED 999
-
 class CMasternodeSync;
 class CNode;
 class CDataStream;
@@ -33,6 +26,16 @@ enum SyncStatus
     FAIL,
     SUCCESS,
     REQUEST_SYNC,
+};
+
+enum MasternodeSyncCode: int
+{
+    MASTERNODE_SYNC_INITIAL = 0,
+    MASTERNODE_SYNC_SPORKS = 1,
+    MASTERNODE_SYNC_LIST = 2,
+    MASTERNODE_SYNC_MNW = 3,
+    MASTERNODE_SYNC_FAILED = 998,
+    MASTERNODE_SYNC_FINISHED = 999,
 };
 
 class CMasternodeSync
@@ -90,7 +93,7 @@ public:
     bool MasternodeWinnersListIsSync(CNode* pnode, const int64_t now);
     void Process(bool networkIsRegtest);
     bool IsSynced() const;
-    bool IsMasternodeListSynced() const { return RequestedMasternodeAssets > MASTERNODE_SYNC_LIST; }
+    bool IsMasternodeListSynced() const;
     void AskForMN(CNode* pnode, const CTxIn& vin) const;
 };
 

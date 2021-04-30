@@ -301,7 +301,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
     static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     static CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
     static CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
-    if (fLiteMode || masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST || !mnModule.localNodeIsAMasternode()) return false;
+    if (fLiteMode || !masternodeSync.IsMasternodeListSynced() || !mnModule.localNodeIsAMasternode()) return false;
     constexpr int numberOfBlocksIntoTheFutureToVoteOn = 10;
     static int64_t lastProcessBlockHeight = 0;
     const int64_t nBlockHeight = pindex->nHeight + numberOfBlocksIntoTheFutureToVoteOn;

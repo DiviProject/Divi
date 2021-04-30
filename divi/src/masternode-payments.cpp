@@ -566,7 +566,7 @@ void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
         }
         ++it;
     }
-    node->PushMessage("ssc", MASTERNODE_SYNC_MNW, nInvCount);
+    node->PushMessage("ssc", static_cast<int>(MasternodeSyncCode::MASTERNODE_SYNC_MNW), nInvCount);
 }
 
 std::string CMasternodePayments::ToString() const

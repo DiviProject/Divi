@@ -39,7 +39,7 @@ CMasternodeSync::CMasternodeSync(
 
 bool CMasternodeSync::IsSynced() const
 {
-    return RequestedMasternodeAssets == MASTERNODE_SYNC_FINISHED;
+    return RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_FINISHED;
 }
 
 void CMasternodeSync::Reset()
@@ -54,7 +54,7 @@ void CMasternodeSync::Reset()
     sumMasternodeWinner = 0;
     countMasternodeList = 0;
     countMasternodeWinner = 0;
-    RequestedMasternodeAssets = MASTERNODE_SYNC_INITIAL;
+    RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_INITIAL;
     RequestedMasternodeAttempt = 0;
     nAssetSyncStarted = GetTime();
     masternodePayments_.ResetRankingCache();
@@ -99,19 +99,19 @@ void CMasternodeSync::AddedMasternodeWinner(const uint256& hash)
 void CMasternodeSync::GetNextAsset()
 {
     switch (RequestedMasternodeAssets) {
-    case (MASTERNODE_SYNC_INITIAL):
-    case (MASTERNODE_SYNC_FAILED): // should never be used here actually, use Reset() instead
-        RequestedMasternodeAssets = MASTERNODE_SYNC_SPORKS;
+    case (MasternodeSyncCode::MASTERNODE_SYNC_INITIAL):
+    case (MasternodeSyncCode::MASTERNODE_SYNC_FAILED): // should never be used here actually, use Reset() instead
+        RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_SPORKS;
         break;
-    case (MASTERNODE_SYNC_SPORKS):
-        RequestedMasternodeAssets = MASTERNODE_SYNC_LIST;
+    case (MasternodeSyncCode::MASTERNODE_SYNC_SPORKS):
+        RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_LIST;
         break;
-    case (MASTERNODE_SYNC_LIST):
-        RequestedMasternodeAssets = MASTERNODE_SYNC_MNW;
+    case (MasternodeSyncCode::MASTERNODE_SYNC_LIST):
+        RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_MNW;
         break;
-    case (MASTERNODE_SYNC_MNW):
+    case (MasternodeSyncCode::MASTERNODE_SYNC_MNW):
         LogPrintf("CMasternodeSync::GetNextAsset - Sync has finished\n");
-        RequestedMasternodeAssets = MASTERNODE_SYNC_FINISHED;
+        RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_FINISHED;
         break;
     }
     RequestedMasternodeAttempt = 0;
@@ -122,17 +122,17 @@ std::string CMasternodeSync::GetSyncStatus()
 {
     switch (RequestedMasternodeAssets)
     {
-    case MASTERNODE_SYNC_INITIAL:
+    case MasternodeSyncCode::MASTERNODE_SYNC_INITIAL:
         return translate("Synchronization pending...");
-    case MASTERNODE_SYNC_SPORKS:
+    case MasternodeSyncCode::MASTERNODE_SYNC_SPORKS:
         return translate("Synchronizing sporks...");
-    case MASTERNODE_SYNC_LIST:
+    case MasternodeSyncCode::MASTERNODE_SYNC_LIST:
         return translate("Synchronizing masternodes...");
-    case MASTERNODE_SYNC_MNW:
+    case MasternodeSyncCode::MASTERNODE_SYNC_MNW:
         return translate("Synchronizing masternode winners...");
-    case MASTERNODE_SYNC_FAILED:
+    case MasternodeSyncCode::MASTERNODE_SYNC_FAILED:
         return translate("Synchronization failed");
-    case MASTERNODE_SYNC_FINISHED:
+    case MasternodeSyncCode::MASTERNODE_SYNC_FINISHED:
         return translate("Synchronization finished");
     }
     return "";
@@ -146,11 +146,11 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
         vRecv >> nItemID >> nCount;
 
 
-        if (RequestedMasternodeAssets >= MASTERNODE_SYNC_FINISHED) return;
+        if (RequestedMasternodeAssets >= MasternodeSyncCode::MASTERNODE_SYNC_FINISHED) return;
 
         //this means we will receive no further communication
         switch (nItemID) {
-        case (MASTERNODE_SYNC_LIST):
+        case (MasternodeSyncCode::MASTERNODE_SYNC_LIST):
             if (nItemID != RequestedMasternodeAssets) return;
             if(nCount == 0) {
                 lastMasternodeList = GetTime();
@@ -158,7 +158,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
             sumMasternodeList += nCount;
             countMasternodeList++;
             break;
-        case (MASTERNODE_SYNC_MNW):
+        case (MasternodeSyncCode::MASTERNODE_SYNC_MNW):
             if (nItemID != RequestedMasternodeAssets) return;
             if(nCount == 0) {
                 lastMasternodeWinner = GetTime();
@@ -197,9 +197,9 @@ bool CMasternodeSync::ShouldWaitForSync(const int64_t now)
     nTimeLastProcess = now;
 
     //try syncing again
-    if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED && lastFailure + (1 * 60) < now) {
+    if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_FAILED && lastFailure + (1 * 60) < now) {
         Reset();
-    } else if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED) {
+    } else if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_FAILED) {
         return true;
     }
     return false;
@@ -223,7 +223,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
             (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || now - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
         if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
             LogPrintf("%s - ERROR - Sync has failed, will retry later (%s)\n",__func__,assetType);
-            RequestedMasternodeAssets = MASTERNODE_SYNC_FAILED;
+            RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_FAILED;
             RequestedMasternodeAttempt = 0;
             lastFailure = now;
             nCountFailures++;
@@ -238,7 +238,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
 }
 bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
 {
-    if (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST)
+    if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_LIST)
     {
         const SyncStatus status = SyncAssets(pnode,now,lastMasternodeList,"mnsync");
         switch(status)
@@ -272,9 +272,14 @@ uint32_t CMasternodeSync::masternodeCount() const
 {
     return networkMessageManager_.masternodeCount();
 }
+
+bool CMasternodeSync::IsMasternodeListSynced() const
+{
+    return RequestedMasternodeAssets > MasternodeSyncCode::MASTERNODE_SYNC_LIST;
+}
 bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t now)
 {
-    if (RequestedMasternodeAssets == MASTERNODE_SYNC_MNW)
+    if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_MNW)
     {
         const SyncStatus status = SyncAssets(pnode,now,lastMasternodeWinner,"mnwsync");
         switch(status)
@@ -311,10 +316,10 @@ void CMasternodeSync::Process(bool networkIsRegtest)
 
     LogPrint("masternode", "CMasternodeSync::Process() - RequestedMasternodeAssets %d\n", RequestedMasternodeAssets);
 
-    if (RequestedMasternodeAssets == MASTERNODE_SYNC_INITIAL) GetNextAsset();
+    if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_INITIAL) GetNextAsset();
 
     // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
-    if (!networkIsRegtest && !IsBlockchainSynced() && RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS)
+    if (!networkIsRegtest && !IsBlockchainSynced() && RequestedMasternodeAssets > MasternodeSyncCode::MASTERNODE_SYNC_SPORKS)
     {
         waitingForBlockchainSync = true;
         return;
@@ -363,7 +368,7 @@ void CMasternodeSync::Process(bool networkIsRegtest)
     for(CNode* pnode: vSporkSyncedNodes)
     {
         //set to synced
-        if (RequestedMasternodeAssets == MASTERNODE_SYNC_SPORKS)
+        if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_SPORKS)
         {
             // this has to be safe to do, because we will get here only if we have 3 peers
             if (RequestedMasternodeAttempt >= 2) GetNextAsset();

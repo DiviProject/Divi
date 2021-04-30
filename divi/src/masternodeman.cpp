@@ -579,7 +579,7 @@ void CMasternodeMan::SyncMasternodeListWithPeer(CNode* peer)
             nInvCount++;
         }
     }
-    peer->PushMessage("ssc", MASTERNODE_SYNC_LIST, nInvCount);
+    peer->PushMessage("ssc", static_cast<int>(MasternodeSyncCode::MASTERNODE_SYNC_LIST), nInvCount);
     LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, peer->GetId());
 }
 bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)

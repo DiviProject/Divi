@@ -203,7 +203,7 @@ bool CMasternodeSync::ShouldWaitForSync(const int64_t now)
     nTimeLastProcess = now;
 
     //try syncing again
-    if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_FAILED && lastFailure + (1 * 60) < now) {
+    if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_FAILED && timestampOfLastFailedSync + (1 * 60) < now) {
         Reset();
     } else if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_FAILED) {
         return true;
@@ -230,7 +230,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
             LogPrintf("%s - ERROR - Sync has failed, will retry later (%s)\n",__func__,assetType);
             RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_FAILED;
             RequestedMasternodeAttempt = 0;
-            lastFailure = now;
+            timestampOfLastFailedSync = now;
             countOfFailedSyncAttempts++;
         } else {
             GetNextAsset();

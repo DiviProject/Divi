@@ -202,7 +202,7 @@ class MnStatusTest (BitcoinTestFramework):
 
     for n in [1, 2, 3]:
       status = self.nodes[n].mnsync ("status")
-      assert_equal (status["RequestedMasternodeAssets"], 999)
+      assert_equal (status["currentMasternodeSyncStatus"], 999)
 
   def verify_number_of_votes_exist_and_tally_winners(self,startBlockHeight, endBlockHeight, expected_votes, expected_address = None):
     heightSet = set()

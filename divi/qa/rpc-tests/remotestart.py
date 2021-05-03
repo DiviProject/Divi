@@ -85,7 +85,7 @@ class MnRemoteStartTest (BitcoinTestFramework):
     result = []
     for n in [1, 2, 3]:
       status = self.nodes[n].mnsync ("status")
-      result.append(status["RequestedMasternodeAssets"] == 999)
+      result.append(status["currentMasternodeSyncStatus"] == 999)
     return all(result)
 
   def start_node (self, n, startMN = False):

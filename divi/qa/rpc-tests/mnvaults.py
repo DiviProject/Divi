@@ -201,7 +201,7 @@ class MnVaultsTest (BitcoinTestFramework):
     for n in self.nodes:
       if n is not None:
         status = n.mnsync ("status")
-        assert_equal (status["RequestedMasternodeAssets"], 999)
+        assert_equal (status["currentMasternodeSyncStatus"], 999)
 
     # Check that the masternode is indeed active.
     data = self.nodes[1].getmasternodestatus ()

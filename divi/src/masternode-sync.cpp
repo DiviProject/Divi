@@ -59,8 +59,8 @@ void CMasternodeSync::Reset()
     nCountFailures = 0;
     sumMasternodeList = 0;
     sumMasternodeWinner = 0;
-    countMasternodeList = 0;
-    countMasternodeWinner = 0;
+    fulfilledMasternodeListSyncRequests = 0;
+    fulfilledMasternodeWinnerSyncRequests = 0;
     RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_INITIAL;
     RequestedMasternodeAttempt = 0;
     nAssetSyncStarted = clock_.getTime();
@@ -162,7 +162,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
                 timestampOfLastMasternodeListUpdate = clock_.getTime();
             }
             sumMasternodeList += nCount;
-            countMasternodeList++;
+            fulfilledMasternodeListSyncRequests++;
             break;
         case (MasternodeSyncCode::MASTERNODE_SYNC_MNW):
             if (nItemID != RequestedMasternodeAssets) return;
@@ -170,7 +170,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
                 timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
             }
             sumMasternodeWinner += nCount;
-            countMasternodeWinner++;
+            fulfilledMasternodeWinnerSyncRequests++;
             break;
         }
 

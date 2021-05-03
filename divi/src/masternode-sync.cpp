@@ -26,10 +26,12 @@ static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
 
 CMasternodeSync::CMasternodeSync(
+    const CSporkManager& sporkManager,
     const I_PeerSyncQueryService& peerSyncService,
     MasternodeNetworkMessageManager& networkMessageManager,
     MasternodePaymentData& masternodePaymentData
-    ): peerSyncService_(peerSyncService)
+    ): sporkManager_(sporkManager)
+    , peerSyncService_(peerSyncService)
     , networkMessageManager_(networkMessageManager)
     , masternodePaymentData_(masternodePaymentData)
 {
@@ -205,7 +207,6 @@ bool CMasternodeSync::ShouldWaitForSync(const int64_t now)
 
 SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const int64_t lastUpdate, std::string assetType)
 {
-    static const CSporkManager& sporkManager = GetSporkManager();
     LogPrint("masternode", "%s - %s %lld (GetTime() - MASTERNODE_SYNC_TIMEOUT) %lld\n",__func__,assetType, lastUpdate, now - MASTERNODE_SYNC_TIMEOUT);
     if (lastUpdate > 0 && lastUpdate < now - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD)
     { //hasn't received a new item in the last five seconds, so we'll move to the
@@ -219,7 +220,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
     // timeout
     if (lastUpdate == 0 &&
             (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || now - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
-        if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
+        if (sporkManager_.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
             LogPrintf("%s - ERROR - Sync has failed, will retry later (%s)\n",__func__,assetType);
             RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_FAILED;
             RequestedMasternodeAttempt = 0;

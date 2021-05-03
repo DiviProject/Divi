@@ -24,13 +24,14 @@ class CMasternodeConfig;
 class CMasternodeMan;
 class CActiveMasternode;
 class PeerSyncQueryService;
+class CSporkManager;
+
 class MasternodeModule
 {
 private:
     bool fMasterNode_;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
-    const PeerSyncQueryService& peerSyncQueryService_;
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
     std::unique_ptr<MasternodePaymentData> masternodePaymentData_;
     std::unique_ptr<CMasternodeConfig> masternodeConfig_;
@@ -40,6 +41,7 @@ private:
     std::unique_ptr<CMasternodeSync> masternodeSync_;
 public:
     MasternodeModule(
+        const CSporkManager& sporkManager,
         const PeerSyncQueryService& peerSyncQueryService,
         const CChain& activeChain,
         const BlockMap& blockIndexByHash);

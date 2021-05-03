@@ -168,7 +168,7 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
 
     for n in self.nodes:
       status = n.mnsync ("status")
-      assert_equal (status["RequestedMasternodeAssets"], 999)
+      assert_equal (status["currentMasternodeSyncStatus"], 999)
 
   def time_out_blockchain_sync (self):
     """
@@ -188,11 +188,11 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
 
     status = self.nodes[0].mnsync ("status")
     assert_equal (status["IsBlockchainSynced"], False)
-    assert_equal (status["RequestedMasternodeAssets"], 1)
+    assert_equal (status["currentMasternodeSyncStatus"], 1)
 
     status = self.nodes[1].mnsync ("status")
     assert_equal (status["IsBlockchainSynced"], True)
-    assert_equal (status["RequestedMasternodeAssets"], 999)
+    assert_equal (status["currentMasternodeSyncStatus"], 999)
 
   def run_test (self):
     createPoSStacks ([self.nodes[0], self.nodes[1]], self.nodes)

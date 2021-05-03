@@ -73,8 +73,8 @@ public:
     int fulfilledMasternodeWinnerSyncRequests;
 
     // Count peers we've requested the list from
-    int RequestedMasternodeAssets;
-    int RequestedMasternodeAttempt;
+    int currentMasternodeSyncStatus;
+    int totalSuccessivePeerSyncRequests;
 
     // Time when current masternode asset sync started
     int64_t nAssetSyncStarted;

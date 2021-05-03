@@ -30,6 +30,7 @@
 #include <ThreadManagementHelpers.h>
 #include <I_PeerSyncQueryService.h>
 #include <I_Clock.h>
+#include <I_BlockchainSyncQueryService.h>
 
 bool fLiteMode = false;
 extern CChain chainActive;
@@ -72,12 +73,23 @@ public:
     }
 };
 
+class BlockchainSyncQueryService final: public I_BlockchainSyncQueryService
+{
+public:
+    virtual bool isBlockchainSynced() const
+    {
+        return IsBlockchainSynced();
+    }
+};
+
 LocalClock localClock;
+BlockchainSyncQueryService blockchainSyncQueryService;
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
-MasternodeModule mnModule(localClock,GetSporkManager(),peerSyncQueryService,chainActive,mapBlockIndex);
+MasternodeModule mnModule(localClock,blockchainSyncQueryService,GetSporkManager(),peerSyncQueryService,chainActive,mapBlockIndex);
 
 MasternodeModule::MasternodeModule(
     const I_Clock& clock,
+    const I_BlockchainSyncQueryService& blockChainSyncQueryService,
     const CSporkManager& sporkManager,
     const PeerSyncQueryService& peerSyncQueryService,
     const CChain& activeChain,
@@ -91,7 +103,7 @@ MasternodeModule::MasternodeModule(
     , mnodeman_(new CMasternodeMan(*networkMessageManager_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_,activeChain_))
-    , masternodeSync_(new CMasternodeSync(sporkManager,peerSyncQueryService,clock,*networkMessageManager_,*masternodePaymentData_))
+    , masternodeSync_(new CMasternodeSync(sporkManager,peerSyncQueryService,clock,blockChainSyncQueryService,*networkMessageManager_,*masternodePaymentData_))
 {
 }
 
@@ -458,7 +470,7 @@ void ThreadMasternodeBackgroundSync()
             masternodePayments.ResetRankingCache();
             FulfilledMasternodeResyncRequest();
         }
-        masternodeSync.Process(regtest,&IsBlockchainSynced);
+        masternodeSync.Process(regtest);
         if(!IsBlockchainSynced()) continue;
         // check if we should activate or ping every few minutes,
         // start right after sync is considered to be done

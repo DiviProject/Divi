@@ -26,6 +26,7 @@ class CActiveMasternode;
 class PeerSyncQueryService;
 class CSporkManager;
 class I_Clock;
+class I_BlockchainSyncQueryService;
 
 class MasternodeModule
 {
@@ -43,6 +44,7 @@ private:
 public:
     MasternodeModule(
         const I_Clock& clock,
+        const I_BlockchainSyncQueryService& blockChainSyncQueryService,
         const CSporkManager& sporkManager,
         const PeerSyncQueryService& peerSyncQueryService,
         const CChain& activeChain,

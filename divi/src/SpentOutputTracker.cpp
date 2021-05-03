@@ -65,7 +65,6 @@ std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
     int64_t orderedTransactionIndex,
     bool loadedFromDisk)
 {
-    uint256 hash = newlyAddedTransaction.GetHash();
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = transactionRecord_.AddTransaction(newlyAddedTransaction);
     if(ret.second)
     {
@@ -75,7 +74,7 @@ std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
             addedTx.nOrderPos = orderedTransactionIndex;
             addedTx.nTimeReceived = GetAdjustedTime();
         }
-        AddToSpends(hash);
+        AddToSpends(ret.first->second);
     }
     return std::make_pair(&(ret.first->second),ret.second);
 }
@@ -89,17 +88,14 @@ void SpentOutputTracker::AddToSpends(const COutPoint& outpoint, const uint256& w
 }
 
 
-void SpentOutputTracker::AddToSpends(const uint256& wtxid)
+void SpentOutputTracker::AddToSpends(const CWalletTx& tx)
 {
-    const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(wtxid);
-    assert(transactionPtr);
-    if (transactionPtr->IsCoinBase()) // Coinbases don't spend anything!
+    if (tx.IsCoinBase()) // Coinbases don't spend anything!
         return;
 
-    for(const CTxIn& txin: transactionPtr->vin)
-    {
-        AddToSpends(txin.prevout, wtxid);
-    }
+    const auto hash = tx.GetHash();
+    for(const CTxIn& txin: tx.vin)
+        AddToSpends(txin.prevout, hash);
 }
 
 std::set<uint256> SpentOutputTracker::GetConflictingTxHashes(const CWalletTx& tx) const

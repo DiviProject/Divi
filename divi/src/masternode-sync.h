@@ -11,6 +11,7 @@ class CNode;
 class CDataStream;
 class MasternodeNetworkMessageManager;
 class MasternodePaymentData;
+class CSporkManager;
 class CTxIn;
 
 #include <map>
@@ -42,6 +43,7 @@ class CMasternodeSync
 {
 private:
     int64_t nTimeLastProcess = 0;
+    const CSporkManager& sporkManager_;
     const I_PeerSyncQueryService& peerSyncService_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
@@ -74,6 +76,7 @@ public:
     int64_t nAssetSyncStarted;
 
     CMasternodeSync(
+        const CSporkManager& sporkManager,
         const I_PeerSyncQueryService& peerSyncService,
         MasternodeNetworkMessageManager& networkMessageManager,
         MasternodePaymentData& masternodePaymentData);

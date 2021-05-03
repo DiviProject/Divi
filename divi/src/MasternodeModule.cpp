@@ -63,23 +63,23 @@ public:
 };
 
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
-MasternodeModule mnModule(peerSyncQueryService,chainActive,mapBlockIndex);
+MasternodeModule mnModule(GetSporkManager(),peerSyncQueryService,chainActive,mapBlockIndex);
 
 MasternodeModule::MasternodeModule(
+    const CSporkManager& sporkManager,
     const PeerSyncQueryService& peerSyncQueryService,
     const CChain& activeChain,
     const BlockMap& blockIndexByHash
     ): fMasterNode_(false)
     , activeChain_(activeChain)
     , blockIndexByHash_(blockIndexByHash)
-    , peerSyncQueryService_(peerSyncQueryService)
     , networkMessageManager_( new MasternodeNetworkMessageManager)
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
     , mnodeman_(new CMasternodeMan(*networkMessageManager_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_,activeChain_))
-    , masternodeSync_(new CMasternodeSync(peerSyncQueryService_,*networkMessageManager_,*masternodePaymentData_))
+    , masternodeSync_(new CMasternodeSync(sporkManager,peerSyncQueryService,*networkMessageManager_,*masternodePaymentData_))
 {
 }
 

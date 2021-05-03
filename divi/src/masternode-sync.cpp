@@ -52,8 +52,8 @@ bool CMasternodeSync::IsSynced() const
 void CMasternodeSync::Reset()
 {
     waitingForBlockchainSync = false;
-    lastMasternodeList = 0;
-    lastMasternodeWinner = 0;
+    timestampOfLastMasternodeListUpdate = 0;
+    timestampOfLastMasternodeWinnerUpdate = 0;
     mapSeenSyncMNB.clear();
     mapSeenSyncMNW.clear();
     nCountFailures = 0;
@@ -80,11 +80,11 @@ void CMasternodeSync::AddedMasternodeList(const uint256& hash)
 {
     if (networkMessageManager_.broadcastIsKnown(hash)) {
         if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
-            lastMasternodeList = clock_.getTime();
+            timestampOfLastMasternodeListUpdate = clock_.getTime();
             mapSeenSyncMNB[hash]++;
         }
     } else {
-        lastMasternodeList = clock_.getTime();
+        timestampOfLastMasternodeListUpdate = clock_.getTime();
         mapSeenSyncMNB.insert(std::make_pair(hash, 1));
     }
 }
@@ -93,11 +93,11 @@ void CMasternodeSync::AddedMasternodeWinner(const uint256& hash)
 {
     if (masternodePaymentData_.masternodeWinnerVoteIsKnown(hash)) {
         if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
-            lastMasternodeWinner = clock_.getTime();
+            timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
             mapSeenSyncMNW[hash]++;
         }
     } else {
-        lastMasternodeWinner = clock_.getTime();
+        timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
         mapSeenSyncMNW.insert(std::make_pair(hash, 1));
     }
 }
@@ -159,7 +159,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
         case (MasternodeSyncCode::MASTERNODE_SYNC_LIST):
             if (nItemID != RequestedMasternodeAssets) return;
             if(nCount == 0) {
-                lastMasternodeList = clock_.getTime();
+                timestampOfLastMasternodeListUpdate = clock_.getTime();
             }
             sumMasternodeList += nCount;
             countMasternodeList++;
@@ -167,7 +167,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
         case (MasternodeSyncCode::MASTERNODE_SYNC_MNW):
             if (nItemID != RequestedMasternodeAssets) return;
             if(nCount == 0) {
-                lastMasternodeWinner = clock_.getTime();
+                timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
             }
             sumMasternodeWinner += nCount;
             countMasternodeWinner++;
@@ -245,7 +245,7 @@ bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
 {
     if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_LIST)
     {
-        const SyncStatus status = SyncAssets(pnode,now,lastMasternodeList,"mnsync");
+        const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeListUpdate,"mnsync");
         switch(status)
         {
             case SyncStatus::FAIL:
@@ -286,7 +286,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
 {
     if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_MNW)
     {
-        const SyncStatus status = SyncAssets(pnode,now,lastMasternodeWinner,"mnwsync");
+        const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeWinnerUpdate,"mnwsync");
         switch(status)
         {
             case SyncStatus::FAIL:

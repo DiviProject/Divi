@@ -239,8 +239,8 @@ Value mnsync(const Array& params, bool fHelp)
             "\nResult ('status' mode):\n"
             "{\n"
             "  \"IsBlockchainSynced\": true|false,    (boolean) 'true' if blockchain is synced\n"
-            "  \"lastMasternodeList\": xxxx,        (numeric) Timestamp of last MN list message\n"
-            "  \"lastMasternodeWinner\": xxxx,      (numeric) Timestamp of last MN winner message\n"
+            "  \"timestampOfLastMasternodeListUpdate\": xxxx,        (numeric) Timestamp of last MN list message\n"
+            "  \"timestampOfLastMasternodeWinnerUpdate\": xxxx,      (numeric) Timestamp of last MN winner message\n"
             "  \"lastBudgetItem\": xxxx,            (numeric) Timestamp of last MN budget message\n"
             "  \"lastFailure\": xxxx,           (numeric) Timestamp of last failed sync\n"
             "  \"nCountFailures\": n,           (numeric) Number of failed syncs (total)\n"
@@ -266,8 +266,8 @@ Value mnsync(const Array& params, bool fHelp)
         Object obj;
         const CMasternodeSync& masternodeSynchronization = GetMasternodeModule().getMasternodeSynchronization();
         obj.push_back(Pair("IsBlockchainSynced", IsBlockchainSynced()));
-        obj.push_back(Pair("lastMasternodeList", masternodeSynchronization.lastMasternodeList));
-        obj.push_back(Pair("lastMasternodeWinner", masternodeSynchronization.lastMasternodeWinner));
+        obj.push_back(Pair("timestampOfLastMasternodeListUpdate", masternodeSynchronization.timestampOfLastMasternodeListUpdate));
+        obj.push_back(Pair("timestampOfLastMasternodeWinnerUpdate", masternodeSynchronization.timestampOfLastMasternodeWinnerUpdate));
         obj.push_back(Pair("lastFailure", masternodeSynchronization.lastFailure));
         obj.push_back(Pair("nCountFailures", masternodeSynchronization.nCountFailures));
         obj.push_back(Pair("sumMasternodeList", masternodeSynchronization.sumMasternodeList));

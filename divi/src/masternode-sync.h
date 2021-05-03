@@ -66,8 +66,8 @@ public:
     int nCountFailures;
 
     // sum of all counts
-    int sumMasternodeList;
-    int sumMasternodeWinner;
+    int nominalNumberOfMasternodeBroadcastsReceived;
+    int nominalNumberOfMasternodeWinnersReceived;
     // peers that reported counts
     int fulfilledMasternodeListSyncRequests;
     int fulfilledMasternodeWinnerSyncRequests;

@@ -244,8 +244,8 @@ Value mnsync(const Array& params, bool fHelp)
             "  \"lastBudgetItem\": xxxx,            (numeric) Timestamp of last MN budget message\n"
             "  \"lastFailure\": xxxx,           (numeric) Timestamp of last failed sync\n"
             "  \"nCountFailures\": n,           (numeric) Number of failed syncs (total)\n"
-            "  \"sumMasternodeList\": n,        (numeric) Number of MN list messages (total)\n"
-            "  \"sumMasternodeWinner\": n,      (numeric) Number of MN winner messages (total)\n"
+            "  \"nominalNumberOfMasternodeBroadcastsReceived\": n,        (numeric) Number of MN list messages (total)\n"
+            "  \"nominalNumberOfMasternodeWinnersReceived\": n,      (numeric) Number of MN winner messages (total)\n"
             "  \"sumBudgetItemProp\": n,        (numeric) Number of MN budget messages (total)\n"
             "  \"sumBudgetItemFin\": n,         (numeric) Number of MN budget finalization messages (total)\n"
             "  \"fulfilledMasternodeListSyncRequests\": n,      (numeric) Number of MN list messages (local)\n"
@@ -270,8 +270,8 @@ Value mnsync(const Array& params, bool fHelp)
         obj.push_back(Pair("timestampOfLastMasternodeWinnerUpdate", masternodeSynchronization.timestampOfLastMasternodeWinnerUpdate));
         obj.push_back(Pair("lastFailure", masternodeSynchronization.lastFailure));
         obj.push_back(Pair("nCountFailures", masternodeSynchronization.nCountFailures));
-        obj.push_back(Pair("sumMasternodeList", masternodeSynchronization.sumMasternodeList));
-        obj.push_back(Pair("sumMasternodeWinner", masternodeSynchronization.sumMasternodeWinner));
+        obj.push_back(Pair("nominalNumberOfMasternodeBroadcastsReceived", masternodeSynchronization.nominalNumberOfMasternodeBroadcastsReceived));
+        obj.push_back(Pair("nominalNumberOfMasternodeWinnersReceived", masternodeSynchronization.nominalNumberOfMasternodeWinnersReceived));
         obj.push_back(Pair("fulfilledMasternodeListSyncRequests", masternodeSynchronization.fulfilledMasternodeListSyncRequests));
         obj.push_back(Pair("fulfilledMasternodeWinnerSyncRequests", masternodeSynchronization.fulfilledMasternodeWinnerSyncRequests));
         obj.push_back(Pair("RequestedMasternodeAssets", masternodeSynchronization.RequestedMasternodeAssets));

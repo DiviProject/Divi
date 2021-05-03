@@ -63,7 +63,7 @@ public:
     int64_t timestampOfLastMasternodeListUpdate;
     int64_t timestampOfLastMasternodeWinnerUpdate;
     int64_t lastFailure;
-    int nCountFailures;
+    int countOfFailedSyncAttempts;
 
     // sum of all counts
     int nominalNumberOfMasternodeBroadcastsReceived;

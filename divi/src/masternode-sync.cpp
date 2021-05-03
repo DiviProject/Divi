@@ -56,7 +56,7 @@ void CMasternodeSync::Reset()
     timestampOfLastMasternodeWinnerUpdate = 0;
     mapSeenSyncMNB.clear();
     mapSeenSyncMNW.clear();
-    nCountFailures = 0;
+    countOfFailedSyncAttempts = 0;
     nominalNumberOfMasternodeBroadcastsReceived = 0;
     nominalNumberOfMasternodeWinnersReceived = 0;
     fulfilledMasternodeListSyncRequests = 0;
@@ -231,7 +231,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
             RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_FAILED;
             RequestedMasternodeAttempt = 0;
             lastFailure = now;
-            nCountFailures++;
+            countOfFailedSyncAttempts++;
         } else {
             GetNextAsset();
         }

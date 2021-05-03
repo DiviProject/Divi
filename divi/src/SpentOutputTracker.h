@@ -14,12 +14,14 @@ class SpentOutputTracker
 {
 private:
     WalletTransactionRecord& transactionRecord_;
-protected:
+
     using TxSpends = std::multimap<COutPoint, uint256>;
     TxSpends mapTxSpends;
+
     void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
-    void AddToSpends(const uint256& wtxid);
+    void AddToSpends(const CWalletTx& tx);
     void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
+
 public:
     SpentOutputTracker(WalletTransactionRecord& transactionRecord);
     /**

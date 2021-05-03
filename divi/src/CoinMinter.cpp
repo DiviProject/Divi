@@ -77,15 +77,13 @@ bool CoinMinter::satisfiesMintingRequirements() const
     const unsigned minimumChainTipTimestampForMinting = GetTime() - oneReorgWorthOfTimestampDrift;
 
     CBlockIndex* chainTip = chain_.Tip();
-    bool chainTipNotSyncedEnough = chainTip? chainTip->nTime < minimumChainTipTimestampForMinting: IsBlockchainSynced();
+    bool chainTipIsSyncedEnough = !(chainTip? chainTip->nTime < minimumChainTipTimestampForMinting: IsBlockchainSynced());
     bool stakingRequirementsAreMet =
-        !(
-            chainTipNotSyncedEnough ||
-            !peerNotifier_->havePeersToNotify() ||
-            pwallet_->IsLocked() ||
-            pwallet_->GetStakingBalance() <= 0 ||
-            !masternodeSync_.IsSynced()
-        );
+        chainTipIsSyncedEnough &&
+        peerNotifier_->havePeersToNotify() &&
+        !pwallet_->IsLocked() &&
+        !(pwallet_->GetStakingBalance() <= 0) &&
+        masternodeSync_.IsSynced();
     return stakingRequirementsAreMet;
 }
 bool CoinMinter::limitStakingSpeed() const

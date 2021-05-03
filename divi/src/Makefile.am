@@ -175,6 +175,7 @@ BITCOIN_CORE_H = \
   I_ProofOfStakeCalculator.h \
   I_PeerSyncQueryService.h \
   I_Clock.h \
+  I_BlockchainSyncQueryService.h \
   I_BlockDataReader.h \
   ProofOfStakeCalculator.h \
   datacachemanager.h \

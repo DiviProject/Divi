@@ -147,34 +147,34 @@ std::string CMasternodeSync::GetSyncStatus()
 void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "ssc") { //Sync status count
-        int nItemID;
-        int nCount;
-        vRecv >> nItemID >> nCount;
+        int syncCode;
+        int itemsSynced;
+        vRecv >> syncCode >> itemsSynced;
 
 
         if (RequestedMasternodeAssets >= MasternodeSyncCode::MASTERNODE_SYNC_FINISHED) return;
 
         //this means we will receive no further communication
-        switch (nItemID) {
+        switch (syncCode) {
         case (MasternodeSyncCode::MASTERNODE_SYNC_LIST):
-            if (nItemID != RequestedMasternodeAssets) return;
-            if(nCount == 0) {
+            if (syncCode != RequestedMasternodeAssets) return;
+            if(itemsSynced == 0) {
                 timestampOfLastMasternodeListUpdate = clock_.getTime();
             }
-            nominalNumberOfMasternodeBroadcastsReceived += nCount;
+            nominalNumberOfMasternodeBroadcastsReceived += itemsSynced;
             fulfilledMasternodeListSyncRequests++;
             break;
         case (MasternodeSyncCode::MASTERNODE_SYNC_MNW):
-            if (nItemID != RequestedMasternodeAssets) return;
-            if(nCount == 0) {
+            if (syncCode != RequestedMasternodeAssets) return;
+            if(itemsSynced == 0) {
                 timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
             }
-            nominalNumberOfMasternodeWinnersReceived += nCount;
+            nominalNumberOfMasternodeWinnersReceived += itemsSynced;
             fulfilledMasternodeWinnerSyncRequests++;
             break;
         }
 
-        LogPrint("masternode", "CMasternodeSync:ProcessMessage - ssc - got inventory count %d %d\n", nItemID, nCount);
+        LogPrint("masternode", "CMasternodeSync:ProcessMessage - ssc - got inventory count %d %d\n", syncCode, itemsSynced);
     }
 }
 bool CMasternodeSync::ShouldWaitForSync(const int64_t now)

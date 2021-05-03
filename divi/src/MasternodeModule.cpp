@@ -29,6 +29,7 @@
 #include <blockmap.h>
 #include <ThreadManagementHelpers.h>
 #include <I_PeerSyncQueryService.h>
+#include <I_Clock.h>
 
 bool fLiteMode = false;
 extern CChain chainActive;
@@ -62,10 +63,21 @@ public:
     }
 };
 
+class LocalClock final: public I_Clock
+{
+public:
+    virtual int64_t getTime() const
+    {
+        return GetTime();
+    }
+};
+
+LocalClock localClock;
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
-MasternodeModule mnModule(GetSporkManager(),peerSyncQueryService,chainActive,mapBlockIndex);
+MasternodeModule mnModule(localClock,GetSporkManager(),peerSyncQueryService,chainActive,mapBlockIndex);
 
 MasternodeModule::MasternodeModule(
+    const I_Clock& clock,
     const CSporkManager& sporkManager,
     const PeerSyncQueryService& peerSyncQueryService,
     const CChain& activeChain,
@@ -79,7 +91,7 @@ MasternodeModule::MasternodeModule(
     , mnodeman_(new CMasternodeMan(*networkMessageManager_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_,activeChain_))
-    , masternodeSync_(new CMasternodeSync(sporkManager,peerSyncQueryService,*networkMessageManager_,*masternodePaymentData_))
+    , masternodeSync_(new CMasternodeSync(sporkManager,peerSyncQueryService,clock,*networkMessageManager_,*masternodePaymentData_))
 {
 }
 

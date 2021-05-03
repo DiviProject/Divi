@@ -17,6 +17,7 @@
 #include <version.h>
 #include <MasternodePaymentData.h>
 #include <primitives/transaction.h>
+#include <I_Clock.h>
 #include <I_PeerSyncQueryService.h>
 // clang-format on
 
@@ -28,10 +29,12 @@ static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
 CMasternodeSync::CMasternodeSync(
     const CSporkManager& sporkManager,
     const I_PeerSyncQueryService& peerSyncService,
+    const I_Clock& clock,
     MasternodeNetworkMessageManager& networkMessageManager,
     MasternodePaymentData& masternodePaymentData
     ): sporkManager_(sporkManager)
     , peerSyncService_(peerSyncService)
+    , clock_(clock)
     , networkMessageManager_(networkMessageManager)
     , masternodePaymentData_(masternodePaymentData)
 {
@@ -57,7 +60,7 @@ void CMasternodeSync::Reset()
     countMasternodeWinner = 0;
     RequestedMasternodeAssets = MasternodeSyncCode::MASTERNODE_SYNC_INITIAL;
     RequestedMasternodeAttempt = 0;
-    nAssetSyncStarted = GetTime();
+    nAssetSyncStarted = clock_.getTime();
 }
 
 void CMasternodeSync::DsegUpdate(CNode* pnode)
@@ -74,11 +77,11 @@ void CMasternodeSync::AddedMasternodeList(const uint256& hash)
 {
     if (networkMessageManager_.broadcastIsKnown(hash)) {
         if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
-            lastMasternodeList = GetTime();
+            lastMasternodeList = clock_.getTime();
             mapSeenSyncMNB[hash]++;
         }
     } else {
-        lastMasternodeList = GetTime();
+        lastMasternodeList = clock_.getTime();
         mapSeenSyncMNB.insert(std::make_pair(hash, 1));
     }
 }
@@ -87,11 +90,11 @@ void CMasternodeSync::AddedMasternodeWinner(const uint256& hash)
 {
     if (masternodePaymentData_.masternodeWinnerVoteIsKnown(hash)) {
         if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
-            lastMasternodeWinner = GetTime();
+            lastMasternodeWinner = clock_.getTime();
             mapSeenSyncMNW[hash]++;
         }
     } else {
-        lastMasternodeWinner = GetTime();
+        lastMasternodeWinner = clock_.getTime();
         mapSeenSyncMNW.insert(std::make_pair(hash, 1));
     }
 }
@@ -115,7 +118,7 @@ void CMasternodeSync::GetNextAsset()
         break;
     }
     RequestedMasternodeAttempt = 0;
-    nAssetSyncStarted = GetTime();
+    nAssetSyncStarted = clock_.getTime();
 }
 
 std::string CMasternodeSync::GetSyncStatus()
@@ -153,7 +156,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
         case (MasternodeSyncCode::MASTERNODE_SYNC_LIST):
             if (nItemID != RequestedMasternodeAssets) return;
             if(nCount == 0) {
-                lastMasternodeList = GetTime();
+                lastMasternodeList = clock_.getTime();
             }
             sumMasternodeList += nCount;
             countMasternodeList++;
@@ -161,7 +164,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
         case (MasternodeSyncCode::MASTERNODE_SYNC_MNW):
             if (nItemID != RequestedMasternodeAssets) return;
             if(nCount == 0) {
-                lastMasternodeWinner = GetTime();
+                lastMasternodeWinner = clock_.getTime();
             }
             sumMasternodeWinner += nCount;
             countMasternodeWinner++;
@@ -308,7 +311,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
 }
 void CMasternodeSync::Process(bool networkIsRegtest,bool(*blockChainSyncComplete)())
 {
-    const int64_t now = GetTime();
+    const int64_t now = clock_.getTime();
     LogPrint("masternode", "Masternode sync process at %lld\n", now);
 
     if(ShouldWaitForSync(now)) return;
@@ -344,7 +347,7 @@ void CMasternodeSync::Process(bool networkIsRegtest,bool(*blockChainSyncComplete
             return;
         }
 
-        nAssetSyncStarted = GetTime();
+        nAssetSyncStarted = clock_.getTime();
         waitingForBlockchainSync = false;
         LogPrint("masternode", "%s - blockchain sync is finished, restarting mn list sync\n", __func__);
     }

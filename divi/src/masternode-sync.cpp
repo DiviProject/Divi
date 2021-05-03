@@ -371,17 +371,10 @@ void CMasternodeSync::Process(bool networkIsRegtest,bool(*blockChainSyncComplete
             return;
         }
 
-        if (pnode->nVersion >=  ActiveProtocol())
+        if (pnode->nVersion >=  ActiveProtocol() &&
+            (!MasternodeListIsSynced(pnode,now) || !MasternodeWinnersListIsSync(pnode,now)))
         {
-            if(!MasternodeListIsSynced(pnode,now))
-            {
-                return;
-            }
-
-            if (!MasternodeWinnersListIsSync(pnode,now))
-            {
-                return;
-            }
+            return;
         }
     }
 }

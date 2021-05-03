@@ -60,8 +60,8 @@ public:
     std::map<uint256, int> mapSeenSyncMNB;
     std::map<uint256, int> mapSeenSyncMNW;
 
-    int64_t lastMasternodeList;
-    int64_t lastMasternodeWinner;
+    int64_t timestampOfLastMasternodeListUpdate;
+    int64_t timestampOfLastMasternodeWinnerUpdate;
     int64_t lastFailure;
     int nCountFailures;
 

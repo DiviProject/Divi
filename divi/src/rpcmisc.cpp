@@ -242,7 +242,7 @@ Value mnsync(const Array& params, bool fHelp)
             "  \"timestampOfLastMasternodeListUpdate\": xxxx,        (numeric) Timestamp of last MN list message\n"
             "  \"timestampOfLastMasternodeWinnerUpdate\": xxxx,      (numeric) Timestamp of last MN winner message\n"
             "  \"lastBudgetItem\": xxxx,            (numeric) Timestamp of last MN budget message\n"
-            "  \"lastFailure\": xxxx,           (numeric) Timestamp of last failed sync\n"
+            "  \"timestampOfLastFailedSync\": xxxx,           (numeric) Timestamp of last failed sync\n"
             "  \"countOfFailedSyncAttempts\": n,           (numeric) Number of failed syncs (total)\n"
             "  \"nominalNumberOfMasternodeBroadcastsReceived\": n,        (numeric) Number of MN list messages (total)\n"
             "  \"nominalNumberOfMasternodeWinnersReceived\": n,      (numeric) Number of MN winner messages (total)\n"
@@ -268,7 +268,7 @@ Value mnsync(const Array& params, bool fHelp)
         obj.push_back(Pair("IsBlockchainSynced", IsBlockchainSynced()));
         obj.push_back(Pair("timestampOfLastMasternodeListUpdate", masternodeSynchronization.timestampOfLastMasternodeListUpdate));
         obj.push_back(Pair("timestampOfLastMasternodeWinnerUpdate", masternodeSynchronization.timestampOfLastMasternodeWinnerUpdate));
-        obj.push_back(Pair("lastFailure", masternodeSynchronization.lastFailure));
+        obj.push_back(Pair("timestampOfLastFailedSync", masternodeSynchronization.timestampOfLastFailedSync));
         obj.push_back(Pair("countOfFailedSyncAttempts", masternodeSynchronization.countOfFailedSyncAttempts));
         obj.push_back(Pair("nominalNumberOfMasternodeBroadcastsReceived", masternodeSynchronization.nominalNumberOfMasternodeBroadcastsReceived));
         obj.push_back(Pair("nominalNumberOfMasternodeWinnersReceived", masternodeSynchronization.nominalNumberOfMasternodeWinnersReceived));

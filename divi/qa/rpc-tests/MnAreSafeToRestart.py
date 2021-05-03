@@ -224,7 +224,7 @@ class MnAreSafeToRestart (BitcoinTestFramework):
     for n in [1, 2, 3]:
       while True:
         status = self.nodes[n].mnsync ("status")
-        if str(status["RequestedMasternodeAssets"])!=str(999):
+        if str(status["currentMasternodeSyncStatus"])!=str(999):
           print("...")
           if wait:
             time.sleep(10)

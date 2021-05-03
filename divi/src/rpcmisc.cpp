@@ -252,8 +252,8 @@ Value mnsync(const Array& params, bool fHelp)
             "  \"fulfilledMasternodeWinnerSyncRequests\": n,    (numeric) Number of MN winner messages (local)\n"
             "  \"countBudgetItemProp\": n,      (numeric) Number of MN budget messages (local)\n"
             "  \"countBudgetItemFin\": n,       (numeric) Number of MN budget finalization messages (local)\n"
-            "  \"RequestedMasternodeAssets\": n, (numeric) Status code of last sync phase\n"
-            "  \"RequestedMasternodeAttempt\": n, (numeric) Status code of last sync attempt\n"
+            "  \"currentMasternodeSyncStatus\": n, (numeric) Status code of last sync phase\n"
+            "  \"totalSuccessivePeerSyncRequests\": n, (numeric) Status code of last sync attempt\n"
             "}\n"
 
             "\nResult ('reset' mode):\n"
@@ -274,8 +274,8 @@ Value mnsync(const Array& params, bool fHelp)
         obj.push_back(Pair("nominalNumberOfMasternodeWinnersReceived", masternodeSynchronization.nominalNumberOfMasternodeWinnersReceived));
         obj.push_back(Pair("fulfilledMasternodeListSyncRequests", masternodeSynchronization.fulfilledMasternodeListSyncRequests));
         obj.push_back(Pair("fulfilledMasternodeWinnerSyncRequests", masternodeSynchronization.fulfilledMasternodeWinnerSyncRequests));
-        obj.push_back(Pair("RequestedMasternodeAssets", masternodeSynchronization.RequestedMasternodeAssets));
-        obj.push_back(Pair("RequestedMasternodeAttempt", masternodeSynchronization.RequestedMasternodeAttempt));
+        obj.push_back(Pair("currentMasternodeSyncStatus", masternodeSynchronization.currentMasternodeSyncStatus));
+        obj.push_back(Pair("totalSuccessivePeerSyncRequests", masternodeSynchronization.totalSuccessivePeerSyncRequests));
 
         return obj;
     }

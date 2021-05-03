@@ -25,6 +25,7 @@ class CMasternodeMan;
 class CActiveMasternode;
 class PeerSyncQueryService;
 class CSporkManager;
+class I_Clock;
 
 class MasternodeModule
 {
@@ -41,6 +42,7 @@ private:
     std::unique_ptr<CMasternodeSync> masternodeSync_;
 public:
     MasternodeModule(
+        const I_Clock& clock,
         const CSporkManager& sporkManager,
         const PeerSyncQueryService& peerSyncQueryService,
         const CChain& activeChain,

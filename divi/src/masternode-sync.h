@@ -19,6 +19,7 @@ class CTxIn;
 #include <stdint.h>
 #include <string>
 class I_PeerSyncQueryService;
+class I_Clock;
 //
 // CMasternodeSync : Sync masternode assets in stages
 //
@@ -45,6 +46,7 @@ private:
     int64_t nTimeLastProcess = 0;
     const CSporkManager& sporkManager_;
     const I_PeerSyncQueryService& peerSyncService_;
+    const I_Clock& clock_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
 
@@ -78,6 +80,7 @@ public:
     CMasternodeSync(
         const CSporkManager& sporkManager,
         const I_PeerSyncQueryService& peerSyncService,
+        const I_Clock& clock,
         MasternodeNetworkMessageManager& networkMessageManager,
         MasternodePaymentData& masternodePaymentData);
 

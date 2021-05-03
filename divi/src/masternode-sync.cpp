@@ -19,6 +19,7 @@
 #include <primitives/transaction.h>
 #include <I_Clock.h>
 #include <I_PeerSyncQueryService.h>
+#include <I_BlockchainSyncQueryService.h>
 // clang-format on
 
 #include <algorithm>
@@ -30,11 +31,13 @@ CMasternodeSync::CMasternodeSync(
     const CSporkManager& sporkManager,
     const I_PeerSyncQueryService& peerSyncService,
     const I_Clock& clock,
+    const I_BlockchainSyncQueryService& blockchainSync,
     MasternodeNetworkMessageManager& networkMessageManager,
     MasternodePaymentData& masternodePaymentData
     ): sporkManager_(sporkManager)
     , peerSyncService_(peerSyncService)
     , clock_(clock)
+    , blockchainSync_(blockchainSync)
     , networkMessageManager_(networkMessageManager)
     , masternodePaymentData_(masternodePaymentData)
 {
@@ -309,7 +312,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
     }
     return true;
 }
-void CMasternodeSync::Process(bool networkIsRegtest,bool(*blockChainSyncComplete)())
+void CMasternodeSync::Process(bool networkIsRegtest)
 {
     const int64_t now = clock_.getTime();
     LogPrint("masternode", "Masternode sync process at %lld\n", now);
@@ -321,7 +324,7 @@ void CMasternodeSync::Process(bool networkIsRegtest,bool(*blockChainSyncComplete
     if (RequestedMasternodeAssets == MasternodeSyncCode::MASTERNODE_SYNC_INITIAL) GetNextAsset();
 
     // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
-    if (!networkIsRegtest && !blockChainSyncComplete() && RequestedMasternodeAssets > MasternodeSyncCode::MASTERNODE_SYNC_SPORKS)
+    if (!networkIsRegtest && !blockchainSync_.isBlockchainSynced() && RequestedMasternodeAssets > MasternodeSyncCode::MASTERNODE_SYNC_SPORKS)
     {
         waitingForBlockchainSync = true;
         return;

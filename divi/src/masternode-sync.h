@@ -20,6 +20,7 @@ class CTxIn;
 #include <string>
 class I_PeerSyncQueryService;
 class I_Clock;
+class I_BlockchainSyncQueryService;
 //
 // CMasternodeSync : Sync masternode assets in stages
 //
@@ -47,6 +48,7 @@ private:
     const CSporkManager& sporkManager_;
     const I_PeerSyncQueryService& peerSyncService_;
     const I_Clock& clock_;
+    const I_BlockchainSyncQueryService& blockchainSync_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
 
@@ -81,6 +83,7 @@ public:
         const CSporkManager& sporkManager,
         const I_PeerSyncQueryService& peerSyncService,
         const I_Clock& clock,
+        const I_BlockchainSyncQueryService& blockchainSync,
         MasternodeNetworkMessageManager& networkMessageManager,
         MasternodePaymentData& masternodePaymentData);
 
@@ -97,7 +100,7 @@ public:
     SyncStatus SyncAssets(CNode* pnode, const int64_t now,const int64_t lastUpdate, std::string assetType);
     bool MasternodeListIsSynced(CNode* pnode, const int64_t now);
     bool MasternodeWinnersListIsSync(CNode* pnode, const int64_t now);
-    void Process(bool networkIsRegtest, bool(*blockChainSyncComplete)());
+    void Process(bool networkIsRegtest);
     bool IsSynced() const;
     bool IsMasternodeListSynced() const;
     void AskForMN(CNode* pnode, const CTxIn& vin) const;

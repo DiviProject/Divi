@@ -69,8 +69,8 @@ public:
     int sumMasternodeList;
     int sumMasternodeWinner;
     // peers that reported counts
-    int countMasternodeList;
-    int countMasternodeWinner;
+    int fulfilledMasternodeListSyncRequests;
+    int fulfilledMasternodeWinnerSyncRequests;
 
     // Count peers we've requested the list from
     int RequestedMasternodeAssets;

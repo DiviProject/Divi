@@ -77,7 +77,7 @@ public:
     int totalSuccessivePeerSyncRequests;
 
     // Time when current masternode asset sync started
-    int64_t nAssetSyncStarted;
+    int64_t lastSyncStageStartTimestamp;
 
     CMasternodeSync(
         const CSporkManager& sporkManager,
@@ -89,7 +89,7 @@ public:
 
     void AddedMasternodeList(const uint256& hash);
     void AddedMasternodeWinner(const uint256& hash);
-    void GetNextAsset();
+    void ContinueToNextSyncStage();
     std::string GetSyncStatus();
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 

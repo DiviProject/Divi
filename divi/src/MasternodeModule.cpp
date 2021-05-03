@@ -79,7 +79,7 @@ MasternodeModule::MasternodeModule(
     , mnodeman_(new CMasternodeMan(*networkMessageManager_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_,activeChain_))
-    , masternodeSync_(new CMasternodeSync(peerSyncQueryService_,*masternodePayments_,*networkMessageManager_,*masternodePaymentData_))
+    , masternodeSync_(new CMasternodeSync(peerSyncQueryService_,*networkMessageManager_,*masternodePaymentData_))
 {
 }
 
@@ -443,6 +443,7 @@ void ThreadMasternodeBackgroundSync()
         if(MasternodeResyncIsRequested())
         {
             masternodeSync.Reset();
+            masternodePayments.ResetRankingCache();
             FulfilledMasternodeResyncRequest();
         }
         masternodeSync.Process(regtest,&IsBlockchainSynced);

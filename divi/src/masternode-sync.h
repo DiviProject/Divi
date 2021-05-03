@@ -11,7 +11,6 @@ class CNode;
 class CDataStream;
 class MasternodeNetworkMessageManager;
 class MasternodePaymentData;
-class CMasternodePayments;
 class CTxIn;
 
 #include <map>
@@ -44,7 +43,6 @@ class CMasternodeSync
 private:
     int64_t nTimeLastProcess = 0;
     const I_PeerSyncQueryService& peerSyncService_;
-    CMasternodePayments& masternodePayments_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
 
@@ -77,7 +75,6 @@ public:
 
     CMasternodeSync(
         const I_PeerSyncQueryService& peerSyncService,
-        CMasternodePayments& masternodePayments,
         MasternodeNetworkMessageManager& networkMessageManager,
         MasternodePaymentData& masternodePaymentData);
 

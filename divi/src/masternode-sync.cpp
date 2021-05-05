@@ -6,8 +6,6 @@
 // clang-format off
 #include <masternode-sync.h>
 
-#include <spork.h>
-#include <utiltime.h>
 #include <Logging.h>
 #include <netfulfilledman.h>
 #include <ui_interface.h>
@@ -28,14 +26,12 @@ static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
 
 CMasternodeSync::CMasternodeSync(
-    const CSporkManager& sporkManager,
     const I_PeerSyncQueryService& peerSyncService,
     const I_Clock& clock,
     const I_BlockchainSyncQueryService& blockchainSync,
     MasternodeNetworkMessageManager& networkMessageManager,
     MasternodePaymentData& masternodePaymentData
-    ): sporkManager_(sporkManager)
-    , peerSyncService_(peerSyncService)
+    ): peerSyncService_(peerSyncService)
     , clock_(clock)
     , blockchainSync_(blockchainSync)
     , networkMessageManager_(networkMessageManager)
@@ -225,16 +221,13 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
 
     // timeout
     if (lastUpdate == 0 &&
-            (totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD * 3 || now - lastSyncStageStartTimestamp > MASTERNODE_SYNC_TIMEOUT * 5)) {
-        if (sporkManager_.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
-            LogPrintf("%s - ERROR - Sync has failed, will retry later (%s)\n",__func__,assetType);
-            currentMasternodeSyncStatus = MasternodeSyncCode::MASTERNODE_SYNC_FAILED;
-            totalSuccessivePeerSyncRequests = 0;
-            timestampOfLastFailedSync = now;
-            countOfFailedSyncAttempts++;
-        } else {
-            ContinueToNextSyncStage();
-        }
+            (totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD * 3 || now - lastSyncStageStartTimestamp > MASTERNODE_SYNC_TIMEOUT * 5))
+    {
+        LogPrintf("%s - ERROR - Sync has failed, will retry later (%s)\n",__func__,assetType);
+        currentMasternodeSyncStatus = MasternodeSyncCode::MASTERNODE_SYNC_FAILED;
+        totalSuccessivePeerSyncRequests = 0;
+        timestampOfLastFailedSync = now;
+        countOfFailedSyncAttempts++;
         return SyncStatus::FAIL;
     }
 

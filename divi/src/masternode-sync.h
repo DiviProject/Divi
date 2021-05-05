@@ -45,7 +45,6 @@ class CMasternodeSync
 {
 private:
     int64_t nTimeLastProcess = 0;
-    const CSporkManager& sporkManager_;
     const I_PeerSyncQueryService& peerSyncService_;
     const I_Clock& clock_;
     const I_BlockchainSyncQueryService& blockchainSync_;
@@ -80,7 +79,6 @@ public:
     int64_t lastSyncStageStartTimestamp;
 
     CMasternodeSync(
-        const CSporkManager& sporkManager,
         const I_PeerSyncQueryService& peerSyncService,
         const I_Clock& clock,
         const I_BlockchainSyncQueryService& blockchainSync,

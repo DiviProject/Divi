@@ -24,9 +24,9 @@ class CMasternodeConfig;
 class CMasternodeMan;
 class CActiveMasternode;
 class PeerSyncQueryService;
-class CSporkManager;
 class I_Clock;
 class I_BlockchainSyncQueryService;
+class CNetFulfilledRequestManager;
 
 class MasternodeModule
 {
@@ -34,6 +34,7 @@ private:
     bool fMasterNode_;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
+    std::unique_ptr<CNetFulfilledRequestManager> networkFulfilledRequestManager_;
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
     std::unique_ptr<MasternodePaymentData> masternodePaymentData_;
     std::unique_ptr<CMasternodeConfig> masternodeConfig_;
@@ -49,6 +50,8 @@ public:
         const CChain& activeChain,
         const BlockMap& blockIndexByHash);
     ~MasternodeModule();
+
+    CNetFulfilledRequestManager& getNetworkFulfilledRequestManager() const;
     MasternodeNetworkMessageManager& getNetworkMessageManager() const;
     MasternodePaymentData& getMasternodePaymentData() const;
     CMasternodeConfig& getMasternodeConfigurations() const;

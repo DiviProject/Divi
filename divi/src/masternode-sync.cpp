@@ -26,12 +26,14 @@ static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
 
 CMasternodeSync::CMasternodeSync(
+    CNetFulfilledRequestManager& networkFulfilledRequestManager,
     const I_PeerSyncQueryService& peerSyncService,
     const I_Clock& clock,
     const I_BlockchainSyncQueryService& blockchainSync,
     MasternodeNetworkMessageManager& networkMessageManager,
     MasternodePaymentData& masternodePaymentData
-    ): peerSyncService_(peerSyncService)
+    ): networkFulfilledRequestManager_(networkFulfilledRequestManager)
+    , peerSyncService_(peerSyncService)
     , clock_(clock)
     , blockchainSync_(blockchainSync)
     , networkMessageManager_(networkMessageManager)
@@ -216,8 +218,8 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
         return SyncStatus::FAIL;
     }
 
-    if (netfulfilledman.HasFulfilledRequest(pnode->addr, assetType)) return SyncStatus::SUCCESS;
-    netfulfilledman.AddFulfilledRequest(pnode->addr, assetType);
+    if (networkFulfilledRequestManager_.HasFulfilledRequest(pnode->addr, assetType)) return SyncStatus::SUCCESS;
+    networkFulfilledRequestManager_.AddFulfilledRequest(pnode->addr, assetType);
 
     // timeout
     if (lastUpdate == 0 &&

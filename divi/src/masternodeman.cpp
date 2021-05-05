@@ -169,33 +169,7 @@ bool CMasternodeMan::IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_
 void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
 {
     Check();
-
-    LOCK(cs);
-
-    //remove inactive and outdated
-    std::vector<CMasternode>::iterator it = networkMessageManager_.masternodes.begin();
-    while (it != networkMessageManager_.masternodes.end())
-    {
-        if ((*it).activeState == CMasternode::MASTERNODE_REMOVE ||
-            (*it).activeState == CMasternode::MASTERNODE_VIN_SPENT ||
-            (forceExpiredRemoval && (*it).activeState == CMasternode::MASTERNODE_EXPIRED) ||
-            (*it).protocolVersion < ActiveProtocol())
-        {
-            LogPrint("masternode", "CMasternodeMan: Removing inactive Masternode %s - %i now\n", (*it).vin.prevout.hash, networkMessageManager_.masternodeCount() - 1);
-
-            networkMessageManager_.clearExpiredMasternodeBroadcasts(it->vin.prevout,masternodeSynchronization);
-            networkMessageManager_.clearExpiredMasternodeEntryRequests(it->vin.prevout);
-            it = networkMessageManager_.masternodes.erase(it);
-        } else {
-            ++it;
-        }
-    }
-
-    networkMessageManager_.clearTimedOutMasternodeListRequestsFromPeers();
-    networkMessageManager_.clearTimedOutMasternodeListRequestsToPeers();
-    networkMessageManager_.clearTimedOutMasternodeEntryRequests();
-    networkMessageManager_.clearTimedOutMasternodeBroadcasts(masternodeSynchronization);
-    networkMessageManager_.clearTimedOutMasternodePings();
+    networkMessageManager_.clearTimedOutAndExpiredRequests(masternodeSynchronization,forceExpiredRemoval);
 }
 
 bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const
@@ -433,20 +407,12 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 
 void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
 {
-    networkMessageManager_.mapSeenMasternodePing[mnp.GetHash()] = mnp;
-
-    const auto* pmn = Find(mnp.vin);
-    if (pmn != nullptr) {
-        const uint256 mnbHash = CMasternodeBroadcast(*pmn).GetHash();
-        auto mit = networkMessageManager_.mapSeenMasternodeBroadcast.find(mnbHash);
-        if (mit != networkMessageManager_.mapSeenMasternodeBroadcast.end())
-          mit->second.lastPing = mnp;
-    }
+    networkMessageManager_.recordPing(mnp);
 }
 
 bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMasternodeSync& masternodeSynchronization,CNode* pfrom, CMasternodeBroadcast& mnb)
 {
-    if (networkMessageManager_.mapSeenMasternodeBroadcast.count(mnb.GetHash())) { //seen
+    if (networkMessageManager_.broadcastIsKnown(mnb.GetHash())) { //seen
         masternodeSynchronization.RecordMasternodeListUpdate(mnb.GetHash());
         return true;
     }
@@ -509,7 +475,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     LogPrint("masternode","mnb - Got NEW Masternode entry - %s - %lli \n", mnb.vin.prevout.hash, mnb.sigTime);
     Add(mn);
 
-    networkMessageManager_.mapSeenMasternodeBroadcast[mnb.GetHash()] = mnb;
+    networkMessageManager_.recordBroadcast(mnb);
     RecordSeenPing(mnb.lastPing);
 
     // if it matches our Masternode privkey, then we've been remotely activated
@@ -526,7 +492,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
 
 bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp, CMasternodeSync& masternodeSynchronization)
 {
-    if (networkMessageManager_.mapSeenMasternodePing.count(mnp.GetHash())) return true; //seen
+    if (networkMessageManager_.pingIsKnown(mnp.GetHash())) return true; //seen
 
     auto* pmn = Find(mnp.vin);
     int nDoS = 0;
@@ -562,7 +528,7 @@ bool CMasternodeMan::NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer)
         CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
         const uint256 hash = mnb.GetHash();
         peer->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
-        if (!networkMessageManager_.mapSeenMasternodeBroadcast.count(hash)) networkMessageManager_.mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
+        networkMessageManager_.recordBroadcast(mnb);
         return true;
     }
     return false;

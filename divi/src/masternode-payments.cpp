@@ -137,6 +137,7 @@ public:
 /** Object for who's going to get paid on which blocks */
 
 CMasternodePayments::CMasternodePayments(
+    CNetFulfilledRequestManager& networkFulfilledRequestManager,
     MasternodePaymentData& paymentData,
     MasternodeNetworkMessageManager& networkMessageManager,
     CMasternodeMan& masternodeManager,
@@ -145,6 +146,7 @@ CMasternodePayments::CMasternodePayments(
     , nSyncedFromPeer(0)
     , nLastBlockHeight(0)
     , chainTipHeight(0)
+    , networkFulfilledRequestManager_(networkFulfilledRequestManager)
     , paymentData_(paymentData)
     , networkMessageManager_(networkMessageManager)
     , masternodeManager_(masternodeManager)
@@ -218,14 +220,14 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
         int nCountNeeded;
         vRecv >> nCountNeeded;
 
-        if (netfulfilledman.HasFulfilledRequest(pfrom->addr, "mnget"))
+        if (networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr, "mnget"))
         {
             LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
             Misbehaving(pfrom->GetId(), 20);
             return;
         }
 
-        netfulfilledman.AddFulfilledRequest(pfrom->addr, "mnget");
+        networkFulfilledRequestManager_.AddFulfilledRequest(pfrom->addr, "mnget");
         Sync(pfrom, nCountNeeded);
         LogPrint("mnpayments", "mnget - Sent Masternode winners to peer %i\n", pfrom->GetId());
     } else if (strCommand == "mnw") { //Masternode Payments Declare Winner

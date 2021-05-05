@@ -6,8 +6,6 @@
 #include "netfulfilledman.h"
 #include "utiltime.h"
 
-CNetFulfilledRequestManager netfulfilledman;
-
 namespace
 {
 

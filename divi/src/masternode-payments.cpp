@@ -246,7 +246,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
 
         if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
             LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), nHeight);
-            masternodeSynchronization.AddedMasternodeWinner(winner.GetHash());
+            masternodeSynchronization.RecordMasternodeWinnerUpdate(winner.GetHash());
             return;
         }
 
@@ -288,7 +288,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
 
         if (AddWinningMasternode(winner)) {
             winner.Relay();
-            masternodeSynchronization.AddedMasternodeWinner(winner.GetHash());
+            masternodeSynchronization.RecordMasternodeWinnerUpdate(winner.GetHash());
         }
     }
 }

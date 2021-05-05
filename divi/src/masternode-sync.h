@@ -88,8 +88,8 @@ public:
         MasternodeNetworkMessageManager& networkMessageManager,
         MasternodePaymentData& masternodePaymentData);
 
-    void AddedMasternodeList(const uint256& hash);
-    void AddedMasternodeWinner(const uint256& hash);
+    void RecordMasternodeListUpdate(const uint256& hash);
+    void RecordMasternodeWinnerUpdate(const uint256& hash);
     void ContinueToNextSyncStage();
     std::string GetSyncStatus();
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);

@@ -311,7 +311,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
             Check(*pmn);
             if (pmn->IsEnabled()) mnb.Relay();
         }
-        masternodeSynchronization.AddedMasternodeList(mnb.GetHash());
+        masternodeSynchronization.RecordMasternodeListUpdate(mnb.GetHash());
     }
 
     return true;
@@ -447,7 +447,7 @@ void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
 bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMasternodeSync& masternodeSynchronization,CNode* pfrom, CMasternodeBroadcast& mnb)
 {
     if (networkMessageManager_.mapSeenMasternodeBroadcast.count(mnb.GetHash())) { //seen
-        masternodeSynchronization.AddedMasternodeList(mnb.GetHash());
+        masternodeSynchronization.RecordMasternodeListUpdate(mnb.GetHash());
         return true;
     }
 
@@ -494,7 +494,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     if (pfrom != nullptr)
         addr = pfrom->addr;
     addressManager_.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
-    masternodeSynchronization.AddedMasternodeList(mnb.GetHash());
+    masternodeSynchronization.RecordMasternodeListUpdate(mnb.GetHash());
 
     // If the masternode already is in our list and is enabled, nothing
     // remains to be done.  If it is not enabled, we remove the old masternode

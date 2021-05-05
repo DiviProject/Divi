@@ -45,7 +45,6 @@ public:
     MasternodeModule(
         const I_Clock& clock,
         const I_BlockchainSyncQueryService& blockChainSyncQueryService,
-        const CSporkManager& sporkManager,
         const PeerSyncQueryService& peerSyncQueryService,
         const CChain& activeChain,
         const BlockMap& blockIndexByHash);

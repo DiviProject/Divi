@@ -3,18 +3,19 @@
 #include <Logging.h>
 #include <utiltime.h>
 #include <masternode-sync.h>
+#include <version.h>
 
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 #define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
 
 MasternodeNetworkMessageManager::MasternodeNetworkMessageManager(
-    ): masternodes()
+    ): nDsqCount(0)
     , mAskedUsForMasternodeList()
     , mWeAskedForMasternodeList()
     , mWeAskedForMasternodeListEntry()
-    , nDsqCount(0)
     , mapSeenMasternodeBroadcast()
     , mapSeenMasternodePing()
+    , masternodes()
 {
 
 }
@@ -28,6 +29,36 @@ const std::vector<CMasternode>& MasternodeNetworkMessageManager::GetFullMasterno
 {
     LOCK(cs);
     return masternodes;
+}
+
+void MasternodeNetworkMessageManager::clearTimedOutAndExpiredRequests(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
+{
+   LOCK(cs);
+
+    //remove inactive and outdated
+    std::vector<CMasternode>::iterator it = masternodes.begin();
+    while (it != masternodes.end())
+    {
+        if ((*it).activeState == CMasternode::MASTERNODE_REMOVE ||
+            (*it).activeState == CMasternode::MASTERNODE_VIN_SPENT ||
+            (forceExpiredRemoval && (*it).activeState == CMasternode::MASTERNODE_EXPIRED) ||
+            (*it).protocolVersion < ActiveProtocol())
+        {
+            LogPrint("masternode", "CMasternodeMan: Removing inactive Masternode %s - %i now\n", (*it).vin.prevout.hash, masternodeCount() - 1);
+
+            clearExpiredMasternodeBroadcasts(it->vin.prevout,masternodeSynchronization);
+            clearExpiredMasternodeEntryRequests(it->vin.prevout);
+            it = masternodes.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    clearTimedOutMasternodeListRequestsFromPeers();
+    clearTimedOutMasternodeListRequestsToPeers();
+    clearTimedOutMasternodeEntryRequests();
+    clearTimedOutMasternodeBroadcasts(masternodeSynchronization);
+    clearTimedOutMasternodePings();
 }
 
 void MasternodeNetworkMessageManager::clearTimedOutMasternodeListRequestsFromPeers()
@@ -197,6 +228,38 @@ bool MasternodeNetworkMessageManager::broadcastIsKnown(const uint256& broadcastH
 bool MasternodeNetworkMessageManager::pingIsKnown(const uint256& pingHash) const
 {
     return mapSeenMasternodePing.count(pingHash) >0;
+}
+void MasternodeNetworkMessageManager::recordPing(const CMasternodePing& mnp)
+{
+    mapSeenMasternodePing[mnp.GetHash()] = mnp;
+
+    const CMasternode* pmn = nullptr;
+    {
+        LOCK(cs);
+        for(const CMasternode& mn: masternodes)
+        {
+            if (mn.vin.prevout == mnp.vin.prevout)
+            {
+                pmn = &mn;
+                break;
+            }
+        }
+    }
+    if (pmn != nullptr)
+    {
+        const uint256 mnbHash = CMasternodeBroadcast(*pmn).GetHash();
+        auto mit = mapSeenMasternodeBroadcast.find(mnbHash);
+        if (mit != mapSeenMasternodeBroadcast.end())
+        {
+            mit->second.lastPing = mnp;
+        }
+    }
+}
+void MasternodeNetworkMessageManager::recordBroadcast(const CMasternodeBroadcast& mnb)
+{
+    const uint256 hash = mnb.GetHash();
+    if(broadcastIsKnown(hash)) return;
+    mapSeenMasternodeBroadcast.emplace(hash,mnb);
 }
 const CMasternodeBroadcast& MasternodeNetworkMessageManager::getKnownBroadcast(const uint256& broadcastHash) const
 {

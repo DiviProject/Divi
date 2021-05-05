@@ -178,7 +178,6 @@ BITCOIN_CORE_H = \
   I_BlockchainSyncQueryService.h \
   I_BlockDataReader.h \
   ProofOfStakeCalculator.h \
-  datacachemanager.h \
   uiMessenger.h \
   kernel.h \
   I_ProofOfStakeGenerator.h \
@@ -365,7 +364,6 @@ libbitcoin_server_a_SOURCES = \
   BlockTransactionChecker.cpp \
   FeeAndPriorityCalculator.cpp \
   ForkActivation.cpp \
-  datacachemanager.cpp \
   uiMessenger.cpp \
   leveldbwrapper.cpp \
   blockFileInfo.cpp \

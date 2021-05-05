@@ -383,3 +383,8 @@ void CMasternodeSync::AskForMN(CNode* pnode, const CTxIn& vin) const
         pnode->PushMessage("dseg", vin);
     }
 }
+
+void CMasternodeSync::ClearTimedOutAndExpiredRequests(bool forceExpiredRemoval)
+{
+    networkMessageManager_.clearTimedOutAndExpiredRequests(*this,forceExpiredRemoval);
+}

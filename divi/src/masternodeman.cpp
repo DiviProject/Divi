@@ -166,12 +166,6 @@ bool CMasternodeMan::IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_
     return TimeSinceLastPingIsWithin(mn, MASTERNODE_MIN_MNP_SECONDS - 60, now);
 }
 
-void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
-{
-    Check();
-    networkMessageManager_.clearTimedOutAndExpiredRequests(masternodeSynchronization,forceExpiredRemoval);
-}
-
 bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const
 {
     if (mnb.sigTime > masternode.sigTime) {

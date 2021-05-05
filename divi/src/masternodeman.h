@@ -64,10 +64,6 @@ public:
     bool TimeSinceLastPingIsWithin(const CMasternode& mn, const int timeWindow, int64_t now = -1) const;
     bool IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t now) const;
     bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now) const;
-
-    /// Check all Masternodes and remove inactive
-    void CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization,bool forceExpiredRemoval = false);
-
     int CountEnabled() const;
 
     /// Find an entry

@@ -498,7 +498,8 @@ void ThreadMasternodeBackgroundSync()
 
         if (now >= nTimeConnections + 60) {
             nTimeConnections = now;
-            mnodeman.CheckAndRemoveInnactive(masternodeSync);
+            mnodeman.Check();
+            masternodeSync.ClearTimedOutAndExpiredRequests();
             masternodePayments.PruneOldMasternodeWinnerData(masternodeSync);
         }
     }

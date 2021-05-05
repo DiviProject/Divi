@@ -105,6 +105,7 @@ public:
     bool IsSynced() const;
     bool IsMasternodeListSynced() const;
     void AskForMN(CNode* pnode, const CTxIn& vin) const;
+    void ClearTimedOutAndExpiredRequests(bool forceExpiredRemoval = false);
 };
 
 #endif

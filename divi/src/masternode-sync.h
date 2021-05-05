@@ -21,6 +21,7 @@ class CTxIn;
 class I_PeerSyncQueryService;
 class I_Clock;
 class I_BlockchainSyncQueryService;
+class CNetFulfilledRequestManager;
 //
 // CMasternodeSync : Sync masternode assets in stages
 //
@@ -45,6 +46,7 @@ class CMasternodeSync
 {
 private:
     int64_t nTimeLastProcess = 0;
+    CNetFulfilledRequestManager& networkFulfilledRequestManager_;
     const I_PeerSyncQueryService& peerSyncService_;
     const I_Clock& clock_;
     const I_BlockchainSyncQueryService& blockchainSync_;
@@ -79,6 +81,7 @@ public:
     int64_t lastSyncStageStartTimestamp;
 
     CMasternodeSync(
+        CNetFulfilledRequestManager& networkFulfilledRequestManager,
         const I_PeerSyncQueryService& peerSyncService,
         const I_Clock& clock,
         const I_BlockchainSyncQueryService& blockchainSync,

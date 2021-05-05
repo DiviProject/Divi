@@ -97,13 +97,14 @@ MasternodeModule::MasternodeModule(
     ): fMasterNode_(false)
     , activeChain_(activeChain)
     , blockIndexByHash_(blockIndexByHash)
+    , networkFulfilledRequestManager_(new CNetFulfilledRequestManager)
     , networkMessageManager_( new MasternodeNetworkMessageManager)
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
     , mnodeman_(new CMasternodeMan(*networkMessageManager_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
-    , masternodePayments_(new CMasternodePayments(*masternodePaymentData_,*networkMessageManager_,*mnodeman_,activeChain_))
-    , masternodeSync_(new CMasternodeSync(peerSyncQueryService,clock,blockChainSyncQueryService,*networkMessageManager_,*masternodePaymentData_))
+    , masternodePayments_(new CMasternodePayments(*networkFulfilledRequestManager_,*masternodePaymentData_,*networkMessageManager_,*mnodeman_,activeChain_))
+    , masternodeSync_(new CMasternodeSync(*networkFulfilledRequestManager_,peerSyncQueryService,clock,blockChainSyncQueryService,*networkMessageManager_,*masternodePaymentData_))
 {
 }
 
@@ -116,8 +117,13 @@ MasternodeModule::~MasternodeModule()
     masternodeConfig_.reset();
     masternodePaymentData_.reset();
     networkMessageManager_.reset();
+    networkFulfilledRequestManager_.reset();
 }
 
+CNetFulfilledRequestManager& MasternodeModule::getNetworkFulfilledRequestManager() const
+{
+    return *networkFulfilledRequestManager_;
+}
 MasternodeNetworkMessageManager& MasternodeModule::getNetworkMessageManager() const
 {
     return *networkMessageManager_;
@@ -233,12 +239,13 @@ bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataD
     if (!fLiteMode)
     {
         MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
+        CNetFulfilledRequestManager& networkFulfilledRequestManager = mnModule.getNetworkFulfilledRequestManager();
         std::string strDBName;
 
         strDBName = "netfulfilled.dat";
         uiMessenger.InitMessage("Loading fulfilled requests cache...");
         CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
-        if(!flatdb4.Load(netfulfilledman)) {
+        if(!flatdb4.Load(networkFulfilledRequestManager)) {
             return uiMessenger.InitError("Failed to load fulfilled requests cache from", "\n" + pathToDataDir );
         }
 
@@ -269,12 +276,13 @@ void SaveMasternodeDataToDisk()
     {
         MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
         MasternodePaymentData& masternodePaymentData = mnModule.getMasternodePaymentData();
+        CNetFulfilledRequestManager& networkFulfilledRequestManager = mnModule.getNetworkFulfilledRequestManager();
         CFlatDB<MasternodeNetworkMessageManager> flatdb1("mncache.dat", "magicMasternodeCache");
         flatdb1.Dump(networkMessageManager);
         CFlatDB<MasternodePaymentData> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
         flatdb2.Dump(masternodePaymentData);
         CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
-        flatdb4.Dump(netfulfilledman);
+        flatdb4.Dump(networkFulfilledRequestManager);
     }
 }
 

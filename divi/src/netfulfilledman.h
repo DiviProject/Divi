@@ -9,9 +9,6 @@
 #include "serialize.h"
 #include "sync.h"
 
-class CNetFulfilledRequestManager;
-extern CNetFulfilledRequestManager netfulfilledman;
-
 // Fulfilled requests are used to prevent nodes from asking for the same data on sync
 // and from being banned for doing so too often.
 class CNetFulfilledRequestManager

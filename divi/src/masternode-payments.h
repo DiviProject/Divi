@@ -27,6 +27,7 @@ class CMasternodeMan;
 class MasternodePaymentData;
 class MasternodeNetworkMessageManager;
 class CChain;
+class CNetFulfilledRequestManager;
 //
 // Masternode Payments Class
 // Keeps track of who should get paid for which blocks
@@ -43,6 +44,7 @@ private:
     int nSyncedFromPeer;
     int nLastBlockHeight;
     int chainTipHeight;
+    CNetFulfilledRequestManager& networkFulfilledRequestManager_;
     MasternodePaymentData& paymentData_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     CMasternodeMan& masternodeManager_;
@@ -65,6 +67,7 @@ public:
     void updateChainTipHeight(const CBlockIndex* pindex);
 
     CMasternodePayments(
+        CNetFulfilledRequestManager& networkFulfilledRequestManager,
         MasternodePaymentData& paymentData,
         MasternodeNetworkMessageManager& networkMessageManager,
         CMasternodeMan& masternodeManager,

@@ -13,28 +13,20 @@ class CMasternodeSync;
 
 class MasternodeNetworkMessageManager
 {
-public:
-    mutable CCriticalSection cs;
-
-    MasternodeNetworkMessageManager();
-    std::vector<CMasternode> masternodes;
+private:
+    // Dummy variable to keep serialization consistent;
+    int64_t nDsqCount;
     // who's asked for the Masternode list and the last time
     std::map<CNetAddr, int64_t> mAskedUsForMasternodeList;
     // who we asked for the Masternode list and the last time
     std::map<CNetAddr, int64_t> mWeAskedForMasternodeList;
     // which Masternodes we've asked for
     std::map<COutPoint, int64_t> mWeAskedForMasternodeListEntry;
-
-    // Dummy variable to keep serialization consistent;
-    int64_t nDsqCount;
-
     // Keep track of all broadcasts I've seen
     std::map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;
     // Keep track of all pings I've seen
     std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
-    uint32_t masternodeCount() const;
-    const std::vector<CMasternode>& GetFullMasternodeVector() const;
     void clearTimedOutMasternodeListRequestsFromPeers();
     void clearTimedOutMasternodeListRequestsToPeers();
     void clearTimedOutMasternodeEntryRequests();
@@ -42,6 +34,15 @@ public:
     void clearTimedOutMasternodeBroadcasts(CMasternodeSync& masternodeSynchronization);
     void clearExpiredMasternodeBroadcasts(const COutPoint& collateral, CMasternodeSync& masternodeSynchronization);
     void clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral);
+public:
+    mutable CCriticalSection cs;
+
+    MasternodeNetworkMessageManager();
+    std::vector<CMasternode> masternodes;
+
+    uint32_t masternodeCount() const;
+    const std::vector<CMasternode>& GetFullMasternodeVector() const;
+    void clearTimedOutAndExpiredRequests(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval);
     bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);
     bool recordDsegUpdateAttempt(const CAddress& peerAddress);
     bool recordMasternodeEntryRequestAttempt(const COutPoint& masternodeCollateral);
@@ -51,6 +52,8 @@ public:
 
     bool broadcastIsKnown(const uint256& broadcastHash) const;
     bool pingIsKnown(const uint256& pingHash) const;
+    void recordPing(const CMasternodePing& mnp);
+    void recordBroadcast(const CMasternodeBroadcast& mnb);
     const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash) const;
     const CMasternodePing& getKnownPing(const uint256& pingHash) const;
 

@@ -16,7 +16,6 @@
 #include <chainparams.h>
 #include "checkpoints.h"
 #include "compat/sanity.h"
-#include "datacachemanager.h"
 #include <defaultValues.h>
 #include "key.h"
 #include "main.h"
@@ -200,22 +199,6 @@ void FlushWalletAndStopMinting()
 #endif
 }
 
-void StoreDataCaches()
-{
-    DataCacheManager(
-        GetDataDir(),
-        uiInterface,
-        fLiteMode).StoreDataCaches();
-}
-
-bool LoadDataCaches()
-{
-    return DataCacheManager(
-            GetDataDir(),
-            uiInterface,
-            fLiteMode).LoadDataCaches();
-}
-
 void LoadFeeEstimatesForMempool()
 {
     boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
@@ -296,7 +279,6 @@ void PrepareShutdown()
     InterruptTorControl();
     StopTorControl();
     SaveMasternodeDataToDisk();
-    StoreDataCaches();
     UnregisterNodeSignals(GetNodeSignals());
     SaveFeeEstimatesFromMempool();
     FlushStateAndDeallocateShallowDatabases();
@@ -1301,10 +1283,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 
     // ********************************************************* Step 10: setup ObfuScation
-    if(!LoadDataCaches())
-    {
-        return false;
-    }
     std::string errorMessage;
     if(!LoadMasternodeDataFromDisk(uiMessenger,GetDataDir().string()) )
     {

@@ -23,6 +23,7 @@
 #include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
 #include <MasternodeBroadcastFactory.h>
+#include <netfulfilledman.h>
 #include <spork.h>
 #include <keystore.h>
 
@@ -234,6 +235,13 @@ bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataD
         MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
         std::string strDBName;
 
+        strDBName = "netfulfilled.dat";
+        uiMessenger.InitMessage("Loading fulfilled requests cache...");
+        CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
+        if(!flatdb4.Load(netfulfilledman)) {
+            return uiMessenger.InitError("Failed to load fulfilled requests cache from", "\n" + pathToDataDir );
+        }
+
         strDBName = "mncache.dat";
         uiMessenger.InitMessage("Loading masternode cache...");
         CFlatDB<MasternodeNetworkMessageManager> flatdb1(strDBName, "magicMasternodeCache");
@@ -265,6 +273,8 @@ void SaveMasternodeDataToDisk()
         flatdb1.Dump(networkMessageManager);
         CFlatDB<MasternodePaymentData> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
         flatdb2.Dump(masternodePaymentData);
+        CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
+        flatdb4.Dump(netfulfilledman);
     }
 }
 

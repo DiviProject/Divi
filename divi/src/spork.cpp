@@ -155,7 +155,7 @@ void CSporkManager::LoadSporksFromDB()
 {
     for (int i = SPORK_START; i <= SPORK_END; ++i) {
         // Since not all spork IDs are in use, we have to exclude undefined IDs
-        std::string strSpork = sporkManager.GetSporkNameByID(i);
+        std::string strSpork = GetSporkNameByID(i);
         if (strSpork == "Unknown") continue;
 
         // attempt to read spork from sporkDB
@@ -168,7 +168,7 @@ void CSporkManager::LoadSporksFromDB()
         // add spork to memory
         mapSporks[spork.GetHash()] = spork;
         AddActiveSpork(spork);
-        LogPrintf("%s : loaded spork %s with value %d\n", __func__, sporkManager.GetSporkNameByID(spork.nSporkID), spork.strValue);
+        LogPrintf("%s : loaded spork %s with value %d\n", __func__, GetSporkNameByID(spork.nSporkID), spork.strValue);
     }
 }
 
@@ -327,7 +327,7 @@ void CSporkManager::ExecuteMultiValueSpork(int nSporkID)
     {
         auto chainTip = chainActive.Tip();
         MultiValueSporkList<TxFeeSporkValue> vValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_14_TX_FEE), vValues);
+        CSporkManager::ConvertMultiValueSporkVector(GetMultiValueSpork(SPORK_14_TX_FEE), vValues);
         TxFeeSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, chainTip->nHeight, chainTip->nTime);
 
         FeeAndPriorityCalculator::instance().setFeeRate(activeSpork.nMinFeePerKb);

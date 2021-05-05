@@ -74,7 +74,7 @@ void CMasternodeSync::DsegUpdate(CNode* pnode)
     }
 }
 
-void CMasternodeSync::AddedMasternodeList(const uint256& hash)
+void CMasternodeSync::RecordMasternodeListUpdate(const uint256& hash)
 {
     if (networkMessageManager_.broadcastIsKnown(hash)) {
         if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
@@ -87,7 +87,7 @@ void CMasternodeSync::AddedMasternodeList(const uint256& hash)
     }
 }
 
-void CMasternodeSync::AddedMasternodeWinner(const uint256& hash)
+void CMasternodeSync::RecordMasternodeWinnerUpdate(const uint256& hash)
 {
     if (masternodePaymentData_.masternodeWinnerVoteIsKnown(hash)) {
         if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {

@@ -337,7 +337,7 @@ bool MasternodeIsKnown(const uint256& inventoryHash)
     static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     if (networkMessageManager.broadcastIsKnown(inventoryHash))
     {
-        masternodeSync.AddedMasternodeList(inventoryHash);
+        masternodeSync.RecordMasternodeListUpdate(inventoryHash);
         return true;
     }
     return false;
@@ -349,7 +349,7 @@ bool MasternodeWinnerIsKnown(const uint256& inventoryHash)
     static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     if (masternodePayments.GetPaymentWinnerForHash(inventoryHash) != nullptr)
     {
-        masternodeSync.AddedMasternodeWinner(inventoryHash);
+        masternodeSync.RecordMasternodeWinnerUpdate(inventoryHash);
         return true;
     }
     return false;

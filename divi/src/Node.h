@@ -18,7 +18,6 @@
 class CBloomFilter;
 typedef int NodeId;
 
-extern uint64_t nLocalHostNonce;
 /** The maximum number of entries in an 'inv' protocol message */
 constexpr unsigned int MAX_INV_SZ = 50000;
 
@@ -186,6 +185,7 @@ private:
     static uint64_t nTotalBytesSent;
 
 public:
+    bool IsSelfConnection(uint64_t otherNonce) const;
     NodeId GetId() const
     {
         return id;

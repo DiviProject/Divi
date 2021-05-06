@@ -3262,7 +3262,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             pfrom->fRelayTxes = true;
 
         // Disconnect if we connected to ourself
-        if (nNonce == nLocalHostNonce && nNonce > 1) {
+        if (pfrom->IsSelfConnection(nNonce))
+        {
             LogPrintf("connected to self at %s, disconnecting\n", pfrom->addr);
             pfrom->fDisconnect = true;
             return true;

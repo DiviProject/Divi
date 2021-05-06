@@ -61,7 +61,7 @@ private:
 
     bool GetBlockPayee(const uint256& seedHash, CScript& payee) const;
     bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;
-    bool CheckMasternodeWinnerValidity(const CMasternodeSync& masternodeSynchronization,const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const;
+    bool CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const;
 public:
     static const int MNPAYMENTS_SIGNATURES_REQUIRED;
     static const int MNPAYMENTS_SIGNATURES_TOTAL;
@@ -80,7 +80,7 @@ public:
 
     void Sync(CNode* node, int nCountNeeded);
     void CheckAndRemove();
-    void PruneOldMasternodeWinnerData(CMasternodeSync& masternodeSynchronization);
+    void PruneOldMasternodeWinnerData();
 
     bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& seedHash) const;
     bool IsScheduled(const CScript mnpayee, int nNotBlockHeight) const;
@@ -88,7 +88,7 @@ public:
     bool CanVote(const COutPoint& outMasternode, const uint256& seedHash);
 
     int GetMinMasternodePaymentsProto() const;
-    void ProcessMessageMasternodePayments(CMasternodeSync& masternodeSynchronization,CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
+    void ProcessMessageMasternodePayments(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     std::string GetRequiredPaymentsString(const uint256& seedHash) const;
     void FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const;
     std::string ToString() const;

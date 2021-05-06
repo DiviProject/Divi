@@ -159,7 +159,10 @@ CNode::~CNode()
     nodeSignals_->FinalizeNode(GetId());
 }
 
-
+bool CNode::IsSelfConnection(uint64_t otherNonce) const
+{
+    return otherNonce == nLocalHostNonce && otherNonce > 1;
+}
 
 // requires LOCK(cs_vSend)
 void CNode::SocketSendData()

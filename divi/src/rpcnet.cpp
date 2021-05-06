@@ -395,15 +395,14 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("networks", GetNetworksInfo()));
     obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getFeeRateQuote().GetFeePerK() )));
     Array localAddresses;
+    std::vector<LocalHostData> localHostData = GetLocalHostData();
+    for (const LocalHostData& item: localHostData)
     {
-        LOCK(cs_mapLocalHost);
-        BOOST_FOREACH (const PAIRTYPE(CNetAddr, LocalServiceInfo) & item, mapLocalHost) {
-            Object rec;
-            rec.push_back(Pair("address", item.first.ToString()));
-            rec.push_back(Pair("port", item.second.nPort));
-            rec.push_back(Pair("score", item.second.nScore));
-            localAddresses.push_back(rec);
-        }
+        Object rec;
+        rec.push_back(Pair("address", item.address));
+        rec.push_back(Pair("port", item.port));
+        rec.push_back(Pair("score", item.score));
+        localAddresses.push_back(rec);
     }
     obj.push_back(Pair("localaddresses", localAddresses));
     return obj;

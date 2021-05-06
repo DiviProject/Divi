@@ -5,7 +5,6 @@
 #include <string>
 
 class CNode;
-extern uint64_t nLocalServices;
 
 struct LocalServiceInfo;
 enum {
@@ -33,6 +32,9 @@ bool IsReachable(const CNetAddr& addr);
 void SetReachable(enum Network net, bool fFlag = true);
 CAddress GetLocalAddress(const CNetAddr* paddrPeer = NULL);
 unsigned short GetListenPort();
+const uint64_t& GetLocalServices();
+void EnableBloomFilters();
+bool BloomFiltersAreEnabled();
 
 struct LocalHostData
 {

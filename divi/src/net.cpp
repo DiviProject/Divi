@@ -1248,7 +1248,7 @@ void StartNode(boost::thread_group& threadGroup)
     }
 
     if (pnodeLocalHost == NULL)
-        pnodeLocalHost = new CNode(&GetNodeSignals(),INVALID_SOCKET, CAddress(CService("127.0.0.1", 0), nLocalServices));
+        pnodeLocalHost = new CNode(&GetNodeSignals(),INVALID_SOCKET, CAddress(CService("127.0.0.1", 0), GetLocalServices()));
 
     Discover(threadGroup);
 
@@ -1606,7 +1606,7 @@ void SetNetworkingParameters()
 
     EnableAlertsAccordingToSettings(settings);
     if (settings.GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
-        nLocalServices |= NODE_BLOOM;
+        EnableBloomFilters();
 
     const int reservedFileDescriptors = MIN_CORE_FILEDESCRIPTORS;
     int nBind = std::max((int)settings.ParameterIsSet("-bind") + (int)settings.ParameterIsSet("-whitebind"), 1);

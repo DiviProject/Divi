@@ -389,7 +389,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("subversion",
         FormatSubVersion(std::vector<std::string>())));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
-    obj.push_back(Pair("localservices", strprintf("%016x", nLocalServices)));
+    obj.push_back(Pair("localservices", strprintf("%016x", GetLocalServices())));
     obj.push_back(Pair("timeoffset", GetTimeOffset()));
     obj.push_back(Pair("connections", (int)vNodes.size()));
     obj.push_back(Pair("networks", GetNetworksInfo()));

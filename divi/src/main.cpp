@@ -3909,7 +3909,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
     }
 
-    else if (!(nLocalServices & NODE_BLOOM) &&
+    else if (!BloomFiltersAreEnabled() &&
              (strCommand == "filterload" ||
               strCommand == "filteradd" ||
               strCommand == "filterclear")) {

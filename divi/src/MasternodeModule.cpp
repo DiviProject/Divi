@@ -363,7 +363,7 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
     static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     if(!fLiteMode)
     {
-        mnodeman.ProcessMessage(activeMasternode,masternodeSync,pfrom, strCommand, vRecv);
+        mnodeman.ProcessMessage(activeMasternode,pfrom, strCommand, vRecv);
         masternodePayments.ProcessMessageMasternodePayments(pfrom, strCommand, vRecv);
     }
     masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);

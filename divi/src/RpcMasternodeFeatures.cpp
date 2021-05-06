@@ -72,7 +72,6 @@ bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& sig
     const auto& mnModule = GetMasternodeModule();
     auto& activeMasternode = mnModule.getActiveMasternode();
     auto& mnodeman = mnModule.getMasternodeManager();
-    auto& masternodeSync = mnModule.getMasternodeSynchronization();
 
     CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(hexData);
 
@@ -98,7 +97,7 @@ bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& sig
         }
     }
 
-    if (mnodeman.ProcessBroadcast(activeMasternode, masternodeSync,nullptr, mnb))
+    if (mnodeman.ProcessBroadcast(activeMasternode, nullptr, mnb))
     {
         return true;
     }
@@ -113,7 +112,6 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore,std::string alia
     const auto& mnModule = GetMasternodeModule();
     auto& activeMasternode = mnModule.getActiveMasternode();
     auto& mnodeman = mnModule.getMasternodeManager();
-    auto& masternodeSync = mnModule.getMasternodeSynchronization();
 
     MasternodeStartResult result;
     for(const auto& configEntry : mnModule.getMasternodeConfigurations().getEntries())
@@ -145,7 +143,7 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore,std::string alia
             return result;
         }
 
-        if(!mnodeman.ProcessBroadcast(activeMasternode, masternodeSync,nullptr, mnb))
+        if(!mnodeman.ProcessBroadcast(activeMasternode, nullptr, mnb))
         {
             LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin);
             result.status = false;

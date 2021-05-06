@@ -159,6 +159,22 @@ CNode::~CNode()
     nodeSignals_->FinalizeNode(GetId());
 }
 
+NodeBufferStatus CNode::GetSendBufferStatus() const
+{
+    if(nSendSize < SendBufferSize())
+    {
+        return NodeBufferStatus::HAS_SPACE;
+    }
+    else if(nSendSize > (SendBufferSize()*2) )
+    {
+        return NodeBufferStatus::IS_OVERFLOWED;
+    }
+    else
+    {
+        return NodeBufferStatus::IS_FULL;
+    }
+}
+
 bool CNode::IsSelfConnection(uint64_t otherNonce) const
 {
     return otherNonce == nLocalHostNonce && otherNonce > 1;

@@ -21,7 +21,12 @@ typedef int NodeId;
 /** The maximum number of entries in an 'inv' protocol message */
 constexpr unsigned int MAX_INV_SZ = 50000;
 
-unsigned int SendBufferSize();
+enum NodeBufferStatus
+{
+    HAS_SPACE,
+    IS_FULL,
+    IS_OVERFLOWED,
+};
 
 // Signals for message handling
 class CNode;
@@ -185,6 +190,7 @@ private:
     static uint64_t nTotalBytesSent;
 
 public:
+    NodeBufferStatus GetSendBufferStatus() const;
     bool IsSelfConnection(uint64_t otherNonce) const;
     NodeId GetId() const
     {

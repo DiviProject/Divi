@@ -3033,7 +3033,7 @@ void static ProcessGetData(CNode* pfrom)
 
     while (it != pfrom->vRecvGetData.end()) {
         // Don't bother if send buffer is too full to respond anyway
-        if (pfrom->nSendSize >= SendBufferSize())
+        if (pfrom->GetSendBufferStatus() == NodeBufferStatus::IS_FULL)
             break;
 
         const CInv& inv = *it;
@@ -3452,7 +3452,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             // Track requests for our stuff
             g_signals.Inventory(inv.hash);
 
-            if (pfrom->nSendSize > (SendBufferSize() * 2)) {
+            if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_OVERFLOWED) {
                 Misbehaving(pfrom->GetId(), 50);
                 return error("send buffer size() = %u", pfrom->nSendSize);
             }
@@ -4012,7 +4012,7 @@ bool ProcessMessages(CNode* pfrom)
     std::deque<CNetMessage>::iterator it = pfrom->vRecvMsg.begin();
     while (!pfrom->fDisconnect && it != pfrom->vRecvMsg.end()) {
         // Don't bother if send buffer is too full to respond anyway
-        if (pfrom->nSendSize >= SendBufferSize())
+        if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_FULL)
             break;
 
         // get next message

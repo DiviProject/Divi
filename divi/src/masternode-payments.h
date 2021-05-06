@@ -48,6 +48,7 @@ private:
     MasternodePaymentData& paymentData_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     CMasternodeMan& masternodeManager_;
+    CMasternodeSync& masternodeSynchronization_;
     const CChain& activeChain_;
 
     /** Map from the inventory hashes of mnw's to the corresponding data.  */
@@ -71,6 +72,7 @@ public:
         MasternodePaymentData& paymentData,
         MasternodeNetworkMessageManager& networkMessageManager,
         CMasternodeMan& masternodeManager,
+        CMasternodeSync& masternodeSynchronization,
         const CChain& activeChain);
     ~CMasternodePayments();
 

@@ -141,6 +141,7 @@ CMasternodePayments::CMasternodePayments(
     MasternodePaymentData& paymentData,
     MasternodeNetworkMessageManager& networkMessageManager,
     CMasternodeMan& masternodeManager,
+    CMasternodeSync& masternodeSynchronization,
     const CChain& activeChain
     ): rankingCache(new RankingCache)
     , nSyncedFromPeer(0)
@@ -150,6 +151,7 @@ CMasternodePayments::CMasternodePayments(
     , paymentData_(paymentData)
     , networkMessageManager_(networkMessageManager)
     , masternodeManager_(masternodeManager)
+    , masternodeSynchronization_(masternodeSynchronization)
     , activeChain_(activeChain)
     , mapMasternodePayeeVotes(paymentData_.mapMasternodePayeeVotes)
     , mapMasternodeBlocks(paymentData_.mapMasternodeBlocks)

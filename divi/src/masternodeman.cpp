@@ -216,7 +216,7 @@ bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, i
 
     return true;
 }
-bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchronization, CMasternodeBroadcast& mnb, int& nDoS)
+bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS)
 {
     // make sure signature isn't in the future (past is OK)
     if (mnb.sigTime > GetAdjustedTime() + 60 * 60) {
@@ -281,7 +281,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
             Check(*pmn);
             if (pmn->IsEnabled()) mnb.Relay();
         }
-        masternodeSynchronization.RecordMasternodeListUpdate(mnb.GetHash());
+        masternodeSynchronization_.RecordMasternodeListUpdate(mnb.GetHash());
     }
 
     return true;
@@ -406,15 +406,15 @@ void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
     networkMessageManager_.recordPing(mnp);
 }
 
-bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMasternodeSync& masternodeSynchronization,CNode* pfrom, CMasternodeBroadcast& mnb)
+bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* pfrom, CMasternodeBroadcast& mnb)
 {
     if (networkMessageManager_.broadcastIsKnown(mnb.GetHash())) { //seen
-        masternodeSynchronization.RecordMasternodeListUpdate(mnb.GetHash());
+        masternodeSynchronization_.RecordMasternodeListUpdate(mnb.GetHash());
         return true;
     }
 
     int nDoS = 0;
-    if (!CheckAndUpdateMasternode(masternodeSynchronization,mnb,nDoS))
+    if (!CheckAndUpdateMasternode(mnb,nDoS))
     {
         if (nDoS > 0 && pfrom != nullptr)
             Misbehaving(pfrom->GetId(), nDoS);
@@ -456,7 +456,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     if (pfrom != nullptr)
         addr = pfrom->addr;
     addressManager_.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
-    masternodeSynchronization.RecordMasternodeListUpdate(mnb.GetHash());
+    masternodeSynchronization_.RecordMasternodeListUpdate(mnb.GetHash());
 
     // If the masternode already is in our list and is enabled, nothing
     // remains to be done.  If it is not enabled, we remove the old masternode
@@ -486,7 +486,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     return true;
 }
 
-bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp, CMasternodeSync& masternodeSynchronization)
+bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
 {
     if (networkMessageManager_.pingIsKnown(mnp.GetHash())) return true; //seen
 
@@ -513,7 +513,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp, CMasternode
     // something significant is broken or mn is unknown,
     // we might have to ask for a masternode entry once
     if (pfrom != nullptr)
-        masternodeSynchronization.AskForMN(pfrom, mnp.vin);
+        masternodeSynchronization_.AskForMN(pfrom, mnp.vin);
 
     return false;
 }
@@ -557,7 +557,7 @@ bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
     }
     return false;
 }
-void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode,CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
+void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if (!IsBlockchainSynced()) return;
 
@@ -566,7 +566,7 @@ void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode,CMasterno
     if (strCommand == "mnb") { //Masternode Broadcast
         CMasternodeBroadcast mnb;
         vRecv >> mnb;
-        if (!ProcessBroadcast(localMasternode,masternodeSynchronization,pfrom, mnb))
+        if (!ProcessBroadcast(localMasternode,pfrom, mnb))
           return;
     }
 
@@ -575,7 +575,7 @@ void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode,CMasterno
         vRecv >> mnp;
 
         LogPrint("masternode", "mnp - Masternode ping, vin: %s\n", mnp.vin.prevout.hash);
-        if (!ProcessPing(pfrom, mnp, masternodeSynchronization))
+        if (!ProcessPing(pfrom, mnp))
             return;
     } else if (strCommand == "dseg") { //Get Masternode list or specific entry
 

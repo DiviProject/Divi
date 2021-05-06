@@ -47,7 +47,7 @@ private:
 
     bool UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const;
     bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
-    bool CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchronization,CMasternodeBroadcast& mnb, int& nDoS);
+    bool CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool skipPingChainSyncCheck = false);
 public:
 
@@ -87,7 +87,7 @@ public:
      *  command.  Otherwise, we apply any potential DoS banscore.
      *
      *  Returns true if all was valid, and false if not.  */
-    bool ProcessBroadcast(CActiveMasternode& localMasternode, CMasternodeSync& masternodeSynchronization, CNode* pfrom, CMasternodeBroadcast& mnb);
+    bool ProcessBroadcast(CActiveMasternode& localMasternode, CNode* pfrom, CMasternodeBroadcast& mnb);
 
     /** Processes a masternode ping.  It is verified first, and if valid,
      *  used to update our state and inserted into mapSeenMasternodePing.
@@ -96,9 +96,9 @@ public:
      *  we apply potential DoS banscores.
      *
      *  Returns true if the ping message was valid.  */
-    bool ProcessPing(CNode* pfrom, CMasternodePing& mnp, CMasternodeSync& masternodeSynchronization);
+    bool ProcessPing(CNode* pfrom, CMasternodePing& mnp);
 
-    void ProcessMessage(CActiveMasternode& localMasternode, CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+    void ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     std::string ToString() const;
 };

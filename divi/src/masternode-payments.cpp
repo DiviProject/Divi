@@ -213,7 +213,7 @@ int CMasternodePayments::GetMinMasternodePaymentsProto() const
     return ActiveProtocol();                          // Allow only updated peers
 }
 
-void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& masternodeSynchronization,CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
+void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
     if (!IsBlockchainSynced()) return;
 
@@ -248,7 +248,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
 
         if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
             LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), nHeight);
-            masternodeSynchronization.RecordMasternodeWinnerUpdate(winner.GetHash());
+            masternodeSynchronization_.RecordMasternodeWinnerUpdate(winner.GetHash());
             return;
         }
 
@@ -264,7 +264,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
         }
 
         std::string strError = "";
-        if (!CheckMasternodeWinnerValidity(masternodeSynchronization,winner,pfrom,strError))
+        if (!CheckMasternodeWinnerValidity(winner,pfrom,strError))
         {
             return;
         }
@@ -276,9 +276,9 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
 
         if (!CheckMasternodeWinnerSignature(winner)) {
             LogPrintf("%s : - invalid signature\n", __func__);
-            if (masternodeSynchronization.IsSynced()) Misbehaving(pfrom->GetId(), 20);
+            if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetId(), 20);
             // it could just be a non-synced masternode
-            masternodeSynchronization.AskForMN(pfrom, winner.vinMasternode);
+            masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
             return;
         }
 
@@ -290,7 +290,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
 
         if (AddWinningMasternode(winner)) {
             winner.Relay();
-            masternodeSynchronization.RecordMasternodeWinnerUpdate(winner.GetHash());
+            masternodeSynchronization_.RecordMasternodeWinnerUpdate(winner.GetHash());
         }
     }
 }
@@ -318,14 +318,14 @@ bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymen
 
     return false;
 }
-bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodeSync& masternodeSynchronization, const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
+bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
 {
     CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
 
     if (!pmn) {
         strError = strprintf("Unknown Masternode %s", winner.vinMasternode.prevout.hash.ToString());
         LogPrint("masternode","%s - %s\n",__func__, strError);
-        masternodeSynchronization.AskForMN(pnode, winner.vinMasternode);
+        masternodeSynchronization_.AskForMN(pnode, winner.vinMasternode);
         return false;
     }
 
@@ -360,7 +360,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodeSync& m
     }
 
 
-    if(!masternodeSynchronization.IsSynced()){ return true;}
+    if(!masternodeSynchronization_.IsSynced()){ return true;}
 
     /* Make sure that the payee is in our own payment queue near the top.  */
     const std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(seedHash, winner.GetHeight());
@@ -520,7 +520,7 @@ void CMasternodePayments::CheckAndRemove()
 {
 }
 
-void CMasternodePayments::PruneOldMasternodeWinnerData(CMasternodeSync& masternodeSynchronization)
+void CMasternodePayments::PruneOldMasternodeWinnerData()
 {
     LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
 
@@ -532,7 +532,7 @@ void CMasternodePayments::PruneOldMasternodeWinnerData(CMasternodeSync& masterno
     }
 
     //keep up to five cycles for historical sake
-    int nLimit = std::max(int(masternodeSynchronization.masternodeCount() * 1.25), 1000);
+    int nLimit = std::max(int(masternodeSynchronization_.masternodeCount() * 1.25), 1000);
 
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
     while (it != mapMasternodePayeeVotes.end()) {
@@ -540,7 +540,7 @@ void CMasternodePayments::PruneOldMasternodeWinnerData(CMasternodeSync& masterno
 
         if (nHeight - winner.GetHeight() > nLimit) {
             LogPrint("mnpayments", "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.GetHeight());
-            masternodeSynchronization.mapSeenSyncMNW.erase((*it).first);
+            masternodeSynchronization_.mapSeenSyncMNW.erase((*it).first);
             mapMasternodePayeeVotes.erase(it++);
             mapMasternodeBlocks.erase(winner.GetScoreHash());
         } else {

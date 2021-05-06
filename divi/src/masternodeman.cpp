@@ -79,10 +79,12 @@ CMasternodeMan::~CMasternodeMan()
 
 CMasternodeMan::CMasternodeMan(
     MasternodeNetworkMessageManager& networkMessageManager,
+    CMasternodeSync& masternodeSynchronization,
     const CChain& activeChain,
     const BlockMap& blockIndicesByHash,
     CAddrMan& addressManager
     ):  networkMessageManager_(networkMessageManager)
+    , masternodeSynchronization_(masternodeSynchronization)
     , cs(networkMessageManager_.cs)
     , cs_process_message()
     , activeChain_(activeChain)

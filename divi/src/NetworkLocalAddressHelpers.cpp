@@ -198,3 +198,16 @@ unsigned short GetListenPort()
 {
     return (unsigned short)(settings.GetArg("-port", Params().GetDefaultPort()));
 }
+
+const uint64_t& GetLocalServices()
+{
+    return nLocalServices;
+}
+void EnableBloomFilters()
+{
+    nLocalServices |= NODE_BLOOM;
+}
+bool BloomFiltersAreEnabled()
+{
+    return static_cast<bool>(nLocalServices & NODE_BLOOM);
+}

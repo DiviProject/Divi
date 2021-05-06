@@ -107,17 +107,15 @@ bool LogAcceptCategory(const char* category)
             const std::vector<std::string> categories = settings.GetMultiParameter("-debug");
             ptrCategory.reset(new std::set<std::string>(categories.begin(), categories.end()));
             // thread_specific_ptr automatically deletes the set when the thread ends.
-            // "all" is a composite category enabling all DIVI-related debug output
-            if (ptrCategory->count(std::string("all")) || ptrCategory->count(std::string("")))
-            {
-                return true;
-            }
         }
         const std::set<std::string>& setCategories = *ptrCategory.get();
 
-        // if not debugging everything and not debugging specific category, LogPrint does nothing.
-        if (setCategories.count(std::string(category)) == 0)
-            return false;
+        // "all" is a composite category enabling all DIVI-related debug output
+        if (ptrCategory->count(std::string("all")) || ptrCategory->count(std::string("")))
+            return true;
+
+        // if not debugging specific category, LogPrint does nothing.
+        return setCategories.count(std::string(category)) > 0;
     }
     return true;
 }

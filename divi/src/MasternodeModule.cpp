@@ -102,7 +102,7 @@ MasternodeModule::MasternodeModule(
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
     , masternodeSync_(new CMasternodeSync(*networkFulfilledRequestManager_,peerSyncQueryService,clock,blockChainSyncQueryService,*networkMessageManager_,*masternodePaymentData_))
-    , mnodeman_(new CMasternodeMan(*networkMessageManager_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
+    , mnodeman_(new CMasternodeMan(*networkMessageManager_,*masternodeSync_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*networkFulfilledRequestManager_,*masternodePaymentData_,*networkMessageManager_,*mnodeman_,*masternodeSync_,activeChain_))
 {

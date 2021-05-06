@@ -28,6 +28,7 @@ class CMasternodeMan
 {
 private:
     MasternodeNetworkMessageManager& networkMessageManager_;
+    CMasternodeSync& masternodeSynchronization_;
     // critical section to protect the inner data structures
     CCriticalSection& cs;
 
@@ -52,6 +53,7 @@ public:
 
     CMasternodeMan(
         MasternodeNetworkMessageManager& networkMessageManager,
+        CMasternodeSync& masternodeSynchronization,
         const CChain& activeChain,
         const BlockMap& blockIndicesByHash,
         CAddrMan& addressManager);

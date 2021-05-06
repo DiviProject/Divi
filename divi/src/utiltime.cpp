@@ -7,6 +7,7 @@
 #include "config/divi-config.h"
 #endif
 
+#include "Logging.h"
 #include "tinyformat.h"
 #include "utiltime.h"
 
@@ -30,6 +31,7 @@ int64_t GetTime()
 void SetMockTime(int64_t nMockTimeIn)
 {
     boost::unique_lock<boost::mutex> lock(csMockTime);
+    LogPrint("mocktime", "Setting mocktime to %d\n", nMockTime);
     nMockTime = nMockTimeIn;
     cvMockTimeChanged.notify_all();
 }

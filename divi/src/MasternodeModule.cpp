@@ -86,14 +86,15 @@ public:
 LocalClock localClock;
 BlockchainSyncQueryService blockchainSyncQueryService;
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
-MasternodeModule mnModule(localClock,blockchainSyncQueryService,peerSyncQueryService,chainActive,mapBlockIndex);
+MasternodeModule mnModule(localClock,blockchainSyncQueryService,peerSyncQueryService,chainActive,mapBlockIndex,GetNetworkAddressManager());
 
 MasternodeModule::MasternodeModule(
     const I_Clock& clock,
     const I_BlockchainSyncQueryService& blockChainSyncQueryService,
     const PeerSyncQueryService& peerSyncQueryService,
     const CChain& activeChain,
-    const BlockMap& blockIndexByHash
+    const BlockMap& blockIndexByHash,
+    CAddrMan& addressManager
     ): fMasterNode_(false)
     , activeChain_(activeChain)
     , blockIndexByHash_(blockIndexByHash)
@@ -102,7 +103,7 @@ MasternodeModule::MasternodeModule(
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
     , masternodeSync_(new CMasternodeSync(*networkFulfilledRequestManager_,peerSyncQueryService,clock,blockChainSyncQueryService,*networkMessageManager_,*masternodePaymentData_))
-    , mnodeman_(new CMasternodeMan(*networkMessageManager_,*masternodeSync_,activeChain_,blockIndexByHash_,GetNetworkAddressManager()))
+    , mnodeman_(new CMasternodeMan(*networkMessageManager_,*masternodeSync_,activeChain_,blockIndexByHash_,addressManager))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*networkFulfilledRequestManager_,*masternodePaymentData_,*networkMessageManager_,*mnodeman_,*masternodeSync_,activeChain_))
 {

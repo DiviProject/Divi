@@ -27,6 +27,7 @@ class PeerSyncQueryService;
 class I_Clock;
 class I_BlockchainSyncQueryService;
 class CNetFulfilledRequestManager;
+class CAddrMan;
 
 class MasternodeModule
 {
@@ -48,7 +49,8 @@ public:
         const I_BlockchainSyncQueryService& blockChainSyncQueryService,
         const PeerSyncQueryService& peerSyncQueryService,
         const CChain& activeChain,
-        const BlockMap& blockIndexByHash);
+        const BlockMap& blockIndexByHash,
+        CAddrMan& addressManager);
     ~MasternodeModule();
 
     CNetFulfilledRequestManager& getNetworkFulfilledRequestManager() const;

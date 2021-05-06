@@ -46,7 +46,7 @@ private:
 public:
     MasternodeModule(
         const I_Clock& clock,
-        const I_BlockchainSyncQueryService& blockChainSyncQueryService,
+        const I_BlockchainSyncQueryService& blockchainSyncQueryService,
         const PeerSyncQueryService& peerSyncQueryService,
         const CChain& activeChain,
         const BlockMap& blockIndexByHash,

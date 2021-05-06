@@ -250,6 +250,8 @@ BITCOIN_CORE_H = \
   netbase.h \
   netfulfilledman.h \
   net.h \
+  Node.h \
+  NetworkLocalAddressHelpers.h \
   OutputEntry.h \
   noui.h \
   pow.h \
@@ -405,6 +407,8 @@ libbitcoin_server_a_SOURCES = \
   BlockMemoryPoolTransactionCollector.cpp \
   MonthlyWalletBackupCreator.cpp \
   net.cpp \
+  Node.cpp \
+  NetworkLocalAddressHelpers.cpp \
   netfulfilledman.cpp \
   noui.cpp \
   pow.cpp \

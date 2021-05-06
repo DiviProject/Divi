@@ -364,7 +364,7 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
     if(!fLiteMode)
     {
         mnodeman.ProcessMessage(activeMasternode,masternodeSync,pfrom, strCommand, vRecv);
-        masternodePayments.ProcessMessageMasternodePayments(masternodeSync,pfrom, strCommand, vRecv);
+        masternodePayments.ProcessMessageMasternodePayments(pfrom, strCommand, vRecv);
     }
     masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
 }
@@ -500,7 +500,7 @@ void ThreadMasternodeBackgroundSync()
             nTimeConnections = now;
             mnodeman.Check();
             masternodeSync.ClearTimedOutAndExpiredRequests();
-            masternodePayments.PruneOldMasternodeWinnerData(masternodeSync);
+            masternodePayments.PruneOldMasternodeWinnerData();
         }
     }
 }

@@ -243,7 +243,7 @@ void CNode::SocketSendData()
             nLastSend = GetTime();
             nSendBytes += nBytes;
             nSendOffset += nBytes;
-            RecordBytesSent(nBytes);
+            CNode::RecordBytesSent(nBytes);
             if (nSendOffset == data.size()) {
                 nSendOffset = 0;
                 nSendSize -= data.size();

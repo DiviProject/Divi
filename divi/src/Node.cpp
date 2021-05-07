@@ -179,6 +179,56 @@ bool CNode::IsSelfConnection(uint64_t otherNonce) const
 {
     return otherNonce == nLocalHostNonce && otherNonce > 1;
 }
+NodeId CNode::GetId() const
+{
+    return id;
+}
+int CNode::GetRefCount()
+{
+    assert(nRefCount >= 0);
+    return nRefCount;
+}
+// requires LOCK(cs_vRecvMsg)
+unsigned int CNode::GetTotalRecvSize()
+{
+    unsigned int total = 0;
+    for(const CNetMessage& msg: vRecvMsg)
+        total += msg.vRecv.size() + 24;
+    return total;
+}
+// requires LOCK(cs_vRecvMsg)
+void CNode::SetRecvVersion(int nVersionIn)
+{
+    nRecvVersion = nVersionIn;
+    for(CNetMessage& msg: vRecvMsg)
+        msg.SetVersion(nVersionIn);
+}
+CNode* CNode::AddRef()
+{
+    nRefCount++;
+    return this;
+}
+void CNode::Release()
+{
+    nRefCount--;
+}
+void CNode::AddAddressKnown(const CAddress& addr)
+{
+    setAddrKnown.insert(addr);
+}
+void CNode::AddInventoryKnown(const CInv& inv)
+{
+    {
+        LOCK(cs_inventory);
+        setInventoryKnown.insert(inv);
+    }
+}
+void CNode::PushInventory(const CInv& inv)
+{
+    LOCK(cs_inventory);
+    if (setInventoryKnown.count(inv) == 0)
+        vInventoryToSend.push_back(inv);
+}
 
 // requires LOCK(cs_vSend)
 void CNode::SocketSendData()

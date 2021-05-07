@@ -30,6 +30,7 @@
 #include <ThreadManagementHelpers.h>
 #include <version.h>
 #include <uiMessenger.h>
+#include <PeerBanningService.h>
 
 #ifdef WIN32
 #include <string.h>
@@ -501,7 +502,7 @@ void ThreadSocketHandler()
                 } else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS) {
                     LogPrint("net", "connection from %s dropped (full)\n", addr);
                     CloseSocket(hSocket);
-                } else if (CNode::IsBanned(addr) && !whitelisted) {
+                } else if (PeerBanningService::IsBanned(GetTime(),addr) && !whitelisted) {
                     LogPrintf("connection from %s dropped (banned)\n", addr);
                     CloseSocket(hSocket);
                 } else {
@@ -960,7 +961,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
     boost::this_thread::interruption_point();
     if (!pszDest) {
         if (IsLocal(addrConnect) ||
-            FindNode((CNetAddr)addrConnect) || CNode::IsBanned(addrConnect) ||
+            FindNode((CNetAddr)addrConnect) || PeerBanningService::IsBanned(GetTime(),addrConnect) ||
             FindNode(addrConnect.ToStringIPPort()))
             return false;
     } else if (FindNode(pszDest))

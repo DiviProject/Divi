@@ -33,6 +33,7 @@
 #include <masternode-sync.h>
 #include <MasternodeHelpers.h>
 #include <FeeAndPriorityCalculator.h>
+#include <PeerBanningService.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -127,7 +128,7 @@ Value ban(const Array& params, bool fHelp)
             std::string subVersion = getSubVersion(pnode->cleanSubVer);
             if(versionToIndexConverter(subVersion) < referenceVersionIndex)
             {
-                CNode::Ban(pnode->addr,lifetimeBan);
+                PeerBanningService::Ban(pnode->addr,lifetimeBan);
                 array.push_back(pnode->addr.ToString() );
                 pnode->fDisconnect = true;
             }
@@ -143,7 +144,7 @@ Value ban(const Array& params, bool fHelp)
         {
             if(strcmp(addressToBan.ToString().c_str(), pnode->addr.ToString().c_str() ) == 0)
             {
-                CNode::Ban(pnode->addr,lifetimeBan);
+                PeerBanningService::Ban(pnode->addr,lifetimeBan);
                 pnode->fDisconnect = true;
                 Object obj;
                 obj.push_back(Pair("Banned", addressToBan.ToString()));
@@ -1141,7 +1142,7 @@ Value clearbanned(const Array& params, bool fHelp)
             "clearbanned\n"
             "\nUnbans all nodes.\n"
             );
-    CNode::ClearBanned();
+    PeerBanningService::ClearBanned();
     return Value();
 
 }
@@ -1153,7 +1154,7 @@ Value listbanned(const Array& params, bool fHelp)
             "\nUnbans all nodes.\n"
             );
     Object result;
-    result.push_back(Pair("banned:",CNode::ListBanned()));
+    result.push_back(Pair("banned:",PeerBanningService::ListBanned()));
     return result;
 
 }

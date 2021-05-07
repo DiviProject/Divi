@@ -252,6 +252,7 @@ BITCOIN_CORE_H = \
   net.h \
   Node.h \
   NetworkLocalAddressHelpers.h \
+  PeerBanningService.h \
   OutputEntry.h \
   noui.h \
   pow.h \
@@ -409,6 +410,7 @@ libbitcoin_server_a_SOURCES = \
   net.cpp \
   Node.cpp \
   NetworkLocalAddressHelpers.cpp \
+  PeerBanningService.cpp \
   netfulfilledman.cpp \
   noui.cpp \
   pow.cpp \

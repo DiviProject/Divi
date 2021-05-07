@@ -61,6 +61,66 @@ Value ping(const Array& params, bool fHelp)
     return Value::null;
 }
 
+class CNodeStats
+{
+public:
+    NodeId nodeid;
+    uint64_t nServices;
+    int64_t nLastSend;
+    int64_t nLastRecv;
+    int64_t nTimeConnected;
+    std::string addrName;
+    int nVersion;
+    std::string cleanSubVer;
+    bool fInbound;
+    int nStartingHeight;
+    uint64_t nSendBytes;
+    uint64_t nRecvBytes;
+    bool fWhitelisted;
+    double dPingTime;
+    double dPingWait;
+    std::string addrLocal;
+
+    CNodeStats(CNode*);
+};
+#undef X
+#define X(name) name = pnode->name
+CNodeStats::CNodeStats(CNode* pnode)
+{
+    nodeid = pnode->GetId();
+    X(nServices);
+    X(nLastSend);
+    X(nLastRecv);
+    X(nTimeConnected);
+    X(addrName);
+    X(nVersion);
+    X(cleanSubVer);
+    X(fInbound);
+    X(nStartingHeight);
+    X(nSendBytes);
+    X(nRecvBytes);
+    X(fWhitelisted);
+
+    // It is common for nodes with good ping times to suddenly become lagged,
+    // due to a new block arriving or other large transfer.
+    // Merely reporting pingtime might fool the caller into thinking the node was still responsive,
+    // since pingtime does not update until the ping is complete, which might take a while.
+    // So, if a ping is taking an unusually long time in flight,
+    // the caller can immediately detect that this is happening.
+    int64_t nPingUsecWait = 0;
+    if ((0 != pnode->nPingNonceSent) && (0 != pnode->nPingUsecStart)) {
+        nPingUsecWait = GetTimeMicros() - pnode->nPingUsecStart;
+    }
+
+    // Raw ping time is in microseconds, but show it to user as whole seconds (DIVI users should be well used to small numbers with many decimal places by now :)
+    dPingTime = (((double)pnode->nPingUsecTime) / 1e6);
+    dPingWait = (((double)nPingUsecWait) / 1e6);
+
+    // Leave string empty if addrLocal invalid (not filled in yet)
+    addrLocal = pnode->addrLocal.IsValid() ? pnode->addrLocal.ToString() : "";
+}
+#undef X
+
 static void CopyNodeStats(std::vector<CNodeStats>& vstats)
 {
     vstats.clear();
@@ -68,9 +128,7 @@ static void CopyNodeStats(std::vector<CNodeStats>& vstats)
     LOCK(cs_vNodes);
     vstats.reserve(vNodes.size());
     BOOST_FOREACH (CNode* pnode, vNodes) {
-        CNodeStats stats;
-        pnode->copyStats(stats);
-        vstats.push_back(stats);
+        vstats.emplace_back(pnode);
     }
 }
 

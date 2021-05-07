@@ -38,27 +38,6 @@ struct CNodeSignals {
     boost::signals2::signal<void(NodeId)> FinalizeNode;
 };
 
-class CNodeStats
-{
-public:
-    NodeId nodeid;
-    uint64_t nServices;
-    int64_t nLastSend;
-    int64_t nLastRecv;
-    int64_t nTimeConnected;
-    std::string addrName;
-    int nVersion;
-    std::string cleanSubVer;
-    bool fInbound;
-    int nStartingHeight;
-    uint64_t nSendBytes;
-    uint64_t nRecvBytes;
-    bool fWhitelisted;
-    double dPingTime;
-    double dPingWait;
-    std::string addrLocal;
-};
-
 class CNetMessage
 {
 public:
@@ -276,7 +255,6 @@ public:
     static bool IsBanned(CNetAddr ip);
     static bool Ban(const CNetAddr& ip);
     static bool Ban(const CNetAddr& addr, int64_t banTime);
-    void copyStats(CNodeStats& stats);
 
     static bool IsWhitelistedRange(const CNetAddr& ip);
     static void AddWhitelistedRange(const CSubNet& subnet);

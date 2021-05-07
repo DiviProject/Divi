@@ -1,9 +1,15 @@
 #include <PeerBanningService.h>
 
-#include <Settings.h>
 // Static stuff
 std::map<CNetAddr, int64_t> PeerBanningService::setBanned;
 CCriticalSection PeerBanningService::cs_setBanned;
+int64_t PeerBanningService::defaultBanDuration = 0;
+
+void PeerBanningService::SetDefaultBanDuration(int64_t banDuration)
+{
+    LOCK(cs_setBanned);
+    defaultBanDuration = banDuration;
+}
 
 void PeerBanningService::ClearBanned()
 {
@@ -41,8 +47,7 @@ bool PeerBanningService::IsBanned(int64_t currentTime, CNetAddr ip)
 
 bool PeerBanningService::Ban(int64_t currentTime, const CNetAddr& addr)
 {
-    static const Settings& settings = Settings::instance();
-    int64_t banTime = currentTime + settings.GetArg("-bantime", 60 * 60 * 24); // Default 24-hour ban
+    int64_t banTime = currentTime + defaultBanDuration;
     return Ban(addr,banTime);
 }
 

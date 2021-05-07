@@ -187,10 +187,9 @@ public:
     NodeId GetId() const;
     int GetRefCount();
     unsigned int GetTotalRecvSize();
+    bool IsAvailableToReceive();
 
-    // requires LOCK(cs_vRecvMsg)
     bool ReceiveMsgBytes(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
-    // requires LOCK(cs_vRecvMsg)
     void SetRecvVersion(int nVersionIn);
     CNode* AddRef();
     void Release();
@@ -205,18 +204,9 @@ public:
     void SetSporkCount(int nSporkCountIn);
     bool AreSporksSynced() const;
 
-    bool IsSubscribed(unsigned int nChannel);
-    void Subscribe(unsigned int nChannel, unsigned int nHops = 0);
-    void CancelSubscribe(unsigned int nChannel);
     void CloseSocketDisconnect();
     bool DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand = "");
-
-    /** Checks whether we want to send messages to this peer.  We do not
-     *  send messages until we receive their version and get sporks.  */
     bool CanSendMessagesToPeer() const;
-
-    /** Checks if we should send a ping message to this peer, and does it
-     *  if we should.  */
     void MaybeSendPing();
 };
 

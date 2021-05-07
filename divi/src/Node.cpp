@@ -18,6 +18,7 @@ extern Settings& settings;
 uint64_t nLocalHostNonce = 0;
 
 unsigned int SendBufferSize() { return 1000 * settings.GetArg("-maxsendbuffer", 1 * 1000); }
+unsigned int ReceiveFloodSize() { return 1000 * settings.GetArg("-maxreceivebuffer", 5 * 1000); }
 
 CNetMessage::CNetMessage(int nTypeIn, int nVersionIn) : hdrbuf(nTypeIn, nVersionIn), vRecv(nTypeIn, nVersionIn)
 {
@@ -200,6 +201,11 @@ void CNode::SetRecvVersion(int nVersionIn)
     for(CNetMessage& msg: vRecvMsg)
         msg.SetVersion(nVersionIn);
 }
+bool CNode::IsAvailableToReceive()
+{
+    return GetTotalRecvSize() <= ReceiveFloodSize();
+}
+
 CNode* CNode::AddRef()
 {
     nRefCount++;
@@ -509,6 +515,8 @@ bool CNode::AreSporksSynced() const
     return nSporksCount >= 0 && nSporksCount <= nSporksSynced;
 }
 
+/** Checks whether we want to send messages to this peer.  We do not
+ *  send messages until we receive their version and get sporks.  */
 bool CNode::CanSendMessagesToPeer() const
 {
     // Don't send anything until we get their version message
@@ -522,6 +530,8 @@ bool CNode::CanSendMessagesToPeer() const
     return true;
 }
 
+    /** Checks if we should send a ping message to this peer, and does it
+     *  if we should.  */
 void CNode::MaybeSendPing()
 {
     /** Time between pings automatically sent out for latency probing and keepalive (in seconds). */

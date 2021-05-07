@@ -449,9 +449,13 @@ void ThreadSocketHandler()
                 }
                 {
                     TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
-                    if (lockRecv && (pnode->vRecvMsg.empty() || !pnode->vRecvMsg.front().complete() ||
-                                        pnode->GetTotalRecvSize() <= ReceiveFloodSize()))
+                    if (lockRecv &&
+                        (pnode->vRecvMsg.empty() ||
+                        !pnode->vRecvMsg.front().complete() ||
+                        pnode->IsAvailableToReceive()))
+                    {
                         FD_SET(pnode->hSocket, &fdsetRecv);
+                    }
                 }
             }
         }
@@ -1534,7 +1538,6 @@ bool CAddrDB::Read(CAddrMan& addr)
     return true;
 }
 
-unsigned int ReceiveFloodSize() { return 1000 * settings.GetArg("-maxreceivebuffer", 5 * 1000); }
 
 /** Used to pass flags to the Bind() function */
 enum BindFlags {

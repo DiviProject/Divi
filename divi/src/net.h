@@ -75,9 +75,6 @@ extern limitedmap<CInv, int64_t> mapAlreadyAskedFor;
 extern std::vector<std::string> vAddedNodes;
 extern CCriticalSection cs_vAddedNodes;
 
-extern NodeId nLastNodeId;
-extern CCriticalSection cs_nLastNodeId;
-
 class CTransaction;
 void RelayTransaction(const CTransaction& tx);
 void RelayTransaction(const CTransaction& tx, const CDataStream& ss);

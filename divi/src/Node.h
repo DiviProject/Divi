@@ -192,72 +192,20 @@ private:
 public:
     NodeBufferStatus GetSendBufferStatus() const;
     bool IsSelfConnection(uint64_t otherNonce) const;
-    NodeId GetId() const
-    {
-        return id;
-    }
-
-    int GetRefCount()
-    {
-        assert(nRefCount >= 0);
-        return nRefCount;
-    }
-
-    // requires LOCK(cs_vRecvMsg)
-    unsigned int GetTotalRecvSize()
-    {
-        unsigned int total = 0;
-        for(const CNetMessage& msg: vRecvMsg)
-            total += msg.vRecv.size() + 24;
-        return total;
-    }
+    NodeId GetId() const;
+    int GetRefCount();
+    unsigned int GetTotalRecvSize();
 
     // requires LOCK(cs_vRecvMsg)
     bool ReceiveMsgBytes(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
-
     // requires LOCK(cs_vRecvMsg)
-    void SetRecvVersion(int nVersionIn)
-    {
-        nRecvVersion = nVersionIn;
-        for(CNetMessage& msg: vRecvMsg)
-            msg.SetVersion(nVersionIn);
-    }
-
-    CNode* AddRef()
-    {
-        nRefCount++;
-        return this;
-    }
-
-    void Release()
-    {
-        nRefCount--;
-    }
-
-
-    void AddAddressKnown(const CAddress& addr)
-    {
-        setAddrKnown.insert(addr);
-    }
-
+    void SetRecvVersion(int nVersionIn);
+    CNode* AddRef();
+    void Release();
+    void AddAddressKnown(const CAddress& addr);
     void PushAddress(const CAddress& addr);
-
-
-    void AddInventoryKnown(const CInv& inv)
-    {
-        {
-            LOCK(cs_inventory);
-            setInventoryKnown.insert(inv);
-        }
-    }
-
-    void PushInventory(const CInv& inv)
-    {
-        LOCK(cs_inventory);
-        if (setInventoryKnown.count(inv) == 0)
-            vInventoryToSend.push_back(inv);
-    }
-
+    void AddInventoryKnown(const CInv& inv);
+    void PushInventory(const CInv& inv);
     void AskFor(const CInv& inv);
     void SocketSendData();
 

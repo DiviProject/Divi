@@ -12,6 +12,7 @@ private:
     // Key is IP address, value is banned-until-time
     static std::map<CNetAddr, int64_t> setBanned;
     static CCriticalSection cs_setBanned;
+    static int64_t defaultBanDuration;
 public:
     // Denial-of-service detection/prevention
     // The idea is to detect peers that are behaving
@@ -27,6 +28,7 @@ public:
     // dangerous, because it can cause a network split
     // between nodes running old code and nodes running
     // new code.
+    static void SetDefaultBanDuration(int64_t banDuration);
     static void ClearBanned(); // needed for unit testing
     static std::string ListBanned();
     static bool IsBanned(int64_t currentTime, CNetAddr ip);

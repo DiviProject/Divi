@@ -1575,6 +1575,7 @@ bool SetNumberOfFileDescriptors(UIMessenger& uiMessenger, int& nFD)
 
 void SetNetworkingParameters()
 {
+    PeerBanningService::SetDefaultBanDuration(settings.GetArg("-bantime", 60 * 60 * 24));
     if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
         // when specifying an explicit binding address, you want to listen on it
         // even when -connect or -proxy is specified

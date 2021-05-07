@@ -39,8 +39,20 @@ CService ToIP(uint32_t i)
     s.s_addr = i;
     return CService(CNetAddr(s), Params().GetDefaultPort());
 }
+struct DoSTestFixture
+{
+    DoSTestFixture()
+    {
+        constexpr int64_t singleDayDurationInSeconds = 24*60*60;
+        PeerBanningService::SetDefaultBanDuration(singleDayDurationInSeconds);
+    }
+    ~DoSTestFixture()
+    {
+        PeerBanningService::SetDefaultBanDuration(0);
+    }
+};
 
-BOOST_AUTO_TEST_SUITE(DoS_tests)
+BOOST_FIXTURE_TEST_SUITE(DoS_tests,DoSTestFixture)
 
 BOOST_AUTO_TEST_CASE(DoS_banning)
 {

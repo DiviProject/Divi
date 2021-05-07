@@ -606,27 +606,6 @@ bool CNode::Ban(const CNetAddr& addr, int64_t banTime)
     return true;
 }
 
-
-std::vector<CSubNet> CNode::vWhitelistedRange;
-CCriticalSection CNode::cs_vWhitelistedRange;
-
-bool CNode::IsWhitelistedRange(const CNetAddr& addr)
-{
-    LOCK(cs_vWhitelistedRange);
-    for(const CSubNet& subnet: vWhitelistedRange)
-    {
-        if (subnet.Match(addr))
-            return true;
-    }
-    return false;
-}
-
-void CNode::AddWhitelistedRange(const CSubNet& subnet)
-{
-    LOCK(cs_vWhitelistedRange);
-    vWhitelistedRange.push_back(subnet);
-}
-
 uint64_t NetworkUsageStats::nTotalBytesRecv = 0;
 uint64_t NetworkUsageStats::nTotalBytesSent = 0;
 CCriticalSection NetworkUsageStats::cs_totalBytesRecv;

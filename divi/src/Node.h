@@ -119,12 +119,6 @@ protected:
     // Key is IP address, value is banned-until-time
     static std::map<CNetAddr, int64_t> setBanned;
     static CCriticalSection cs_setBanned;
-
-    // Whitelisted ranges. Any node connecting from these is automatically
-    // whitelisted (as well as those connecting to whitelisted binds).
-    static std::vector<CSubNet> vWhitelistedRange;
-    static CCriticalSection cs_vWhitelistedRange;
-
     // Basic fuzz-testing
     void Fuzz(int nChance); // modifies ssSend
 
@@ -248,9 +242,6 @@ public:
     static bool IsBanned(CNetAddr ip);
     static bool Ban(const CNetAddr& ip);
     static bool Ban(const CNetAddr& addr, int64_t banTime);
-
-    static bool IsWhitelistedRange(const CNetAddr& ip);
-    static void AddWhitelistedRange(const CSubNet& subnet);
 };
 
 class NetworkUsageStats

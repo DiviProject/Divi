@@ -91,6 +91,7 @@ BASE_SCRIPTS = [
     'mncollateral.py',
     'mnoperation.py',
     'mnvaults.py',
+    'NoBlocksForLongTime.py',
     'op_meta.py',
     'proxy_test.py',
     'receivedby.py',

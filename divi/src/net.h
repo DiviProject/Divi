@@ -42,18 +42,6 @@ namespace boost
 class thread_group;
 } // namespace boost
 
-/** Time after which to disconnect, after waiting for a ping response (or inactivity). */
-static const int TIMEOUT_INTERVAL = 20 * 60;
-
-/** -listen default */
-static const bool DEFAULT_LISTEN = true;
-/** -upnp default */
-#ifdef USE_UPNP
-static const bool DEFAULT_UPNP = USE_UPNP;
-#else
-static const bool DEFAULT_UPNP = false;
-#endif
-
 void AddOneShot(std::string strDest);
 bool RecvLine(SOCKET hSocket, std::string& strLine);
 void AddressCurrentlyConnected(const CService& addr);

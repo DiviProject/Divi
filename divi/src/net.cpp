@@ -48,6 +48,16 @@
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
+/** Time after which to disconnect, after waiting for a ping response (or inactivity). */
+constexpr int TIMEOUT_INTERVAL = 20 * 60;
+/** -listen default */
+constexpr bool DEFAULT_LISTEN = true;
+/** -upnp default */
+#ifdef USE_UPNP
+constexpr bool DEFAULT_UPNP = USE_UPNP;
+#else
+constexpr bool DEFAULT_UPNP = false;
+#endif
 
 #ifdef WIN32
 // Win32 LevelDB doesn't use filedescriptors, and the ones used for

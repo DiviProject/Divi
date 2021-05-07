@@ -250,6 +250,7 @@ BITCOIN_CORE_H = \
   netbase.h \
   netfulfilledman.h \
   net.h \
+  AddrDB.h \
   Node.h \
   NetworkLocalAddressHelpers.h \
   PeerBanningService.h \
@@ -408,6 +409,7 @@ libbitcoin_server_a_SOURCES = \
   BlockMemoryPoolTransactionCollector.cpp \
   MonthlyWalletBackupCreator.cpp \
   net.cpp \
+  AddrDB.cpp \
   Node.cpp \
   NetworkLocalAddressHelpers.cpp \
   PeerBanningService.cpp \

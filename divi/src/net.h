@@ -78,12 +78,6 @@ extern CCriticalSection cs_vAddedNodes;
 extern NodeId nLastNodeId;
 extern CCriticalSection cs_nLastNodeId;
 
-class CExplicitNetCleanup
-{
-public:
-    static void callCleanup();
-};
-
 class CTransaction;
 void RelayTransaction(const CTransaction& tx);
 void RelayTransaction(const CTransaction& tx, const CDataStream& ss);

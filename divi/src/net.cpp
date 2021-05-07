@@ -123,8 +123,11 @@ static CSemaphore* semOutbound = NULL;
 boost::condition_variable messageHandlerCondition;
 
 // Signals for message handling
-static CNodeSignals g_signals;
-CNodeSignals& GetNodeSignals() { return g_signals; }
+static CNodeSignals globalNodeSignals;
+CNodeSignals& GetNodeSignals()
+{
+    return globalNodeSignals;
+}
 
 int GetMaxConnections()
 {
@@ -986,6 +989,7 @@ void ThreadMessageHandler()
 {
     boost::mutex condition_mutex;
     boost::unique_lock<boost::mutex> lock(condition_mutex);
+    static CNodeSignals& nodeSignals = GetNodeSignals();
 
     /* We periodically rebroadcast our address.  This is the last time
        we did a broadcast.  */
@@ -1019,7 +1023,7 @@ void ThreadMessageHandler()
             {
                 TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
                 if (lockRecv) {
-                    if (!g_signals.ProcessMessages(pnode))
+                    if (!nodeSignals.ProcessMessages(pnode))
                         pnode->CloseSocketDisconnect();
 
                     if (pnode->GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)
@@ -1067,7 +1071,7 @@ void ThreadMessageHandler()
             {
                 TRY_LOCK(pnode->cs_vSend, lockSend);
                 if (lockSend)
-                    g_signals.SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
+                    nodeSignals.SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
             }
             boost::this_thread::interruption_point();
         }

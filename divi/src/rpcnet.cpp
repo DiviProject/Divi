@@ -380,8 +380,8 @@ Value getnettotals(const Array& params, bool fHelp)
             HelpExampleCli("getnettotals", "") + HelpExampleRpc("getnettotals", ""));
 
     Object obj;
-    obj.push_back(Pair("totalbytesrecv", CNode::GetTotalBytesRecv()));
-    obj.push_back(Pair("totalbytessent", CNode::GetTotalBytesSent()));
+    obj.push_back(Pair("totalbytesrecv", NetworkUsageStats::GetTotalBytesRecv()));
+    obj.push_back(Pair("totalbytessent", NetworkUsageStats::GetTotalBytesSent()));
     obj.push_back(Pair("timemillis", GetTimeMillis()));
     return obj;
 }

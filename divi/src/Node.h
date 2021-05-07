@@ -162,13 +162,6 @@ public:
     ~CNode();
 
 private:
-    // Network usage totals
-    static CCriticalSection cs_totalBytesRecv;
-    static CCriticalSection cs_totalBytesSent;
-    static uint64_t nTotalBytesRecv;
-    static uint64_t nTotalBytesSent;
-
-
     // TODO: Document the postcondition of this function.  Is cs_vSend locked?
     void BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend);
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
@@ -258,7 +251,17 @@ public:
 
     static bool IsWhitelistedRange(const CNetAddr& ip);
     static void AddWhitelistedRange(const CSubNet& subnet);
+};
 
+class NetworkUsageStats
+{
+private:
+    // Network usage totals
+    static CCriticalSection cs_totalBytesRecv;
+    static CCriticalSection cs_totalBytesSent;
+    static uint64_t nTotalBytesRecv;
+    static uint64_t nTotalBytesSent;
+public:
     // Network stats
     static void RecordBytesRecv(uint64_t bytes);
     static void RecordBytesSent(uint64_t bytes);

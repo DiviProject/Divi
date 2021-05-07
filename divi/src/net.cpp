@@ -529,7 +529,7 @@ void ThreadSocketHandler()
                                 pnode->CloseSocketDisconnect();
                             pnode->nLastRecv = GetTime();
                             pnode->nRecvBytes += nBytes;
-                            CNode::RecordBytesRecv(nBytes);
+                            NetworkUsageStats::RecordBytesRecv(nBytes);
                         } else if (nBytes == 0) {
                             // socket closed gracefully
                             if (!pnode->fDisconnect)

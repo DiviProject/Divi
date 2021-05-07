@@ -68,6 +68,7 @@
 #include <IndexDatabaseUpdates.h>
 #include <BlockTransactionChecker.h>
 #include <NodeState.h>
+#include <PeerBanningService.h>
 
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;
@@ -4133,7 +4134,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 if (pto->addr.IsLocal())
                     LogPrintf("Warning: not banning local peer %s!\n", pto->addr);
                 else {
-                    CNode::Ban(pto->addr);
+                    PeerBanningService::Ban(GetTime(),pto->addr);
                 }
             }
             state->fShouldBan = false;

@@ -7,6 +7,7 @@
 #include <limitedmap.h>
 #include <Logging.h>
 #include <NetworkLocalAddressHelpers.h>
+#include <PeerBanningService.h>
 #include <random.h>
 #include <Settings.h>
 #include <timedata.h>
@@ -470,7 +471,7 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastComma
         LogPrintf("%s : peer=%d using obsolete version %i; disconnecting\n", __func__, id, nVersion);
         PushMessage("reject", strLastCommand, REJECT_OBSOLETE, strprintf("Version must be %d or greater", ActiveProtocol()));
         fDisconnect = true;
-        CNode::Ban(addr);
+        PeerBanningService::Ban(GetTime(),addr);
     }
 
     return fDisconnect;
@@ -550,60 +551,6 @@ void CNode::MaybeSendPing()
             PushMessage("ping");
         }
     }
-}
-
-// Static stuff
-std::map<CNetAddr, int64_t> CNode::setBanned;
-CCriticalSection CNode::cs_setBanned;
-
-void CNode::ClearBanned()
-{
-    LOCK(cs_setBanned);
-    setBanned.clear();
-}
-
-std::string CNode::ListBanned()
-{
-    std::string bannedIps = "[\n";
-    LOCK(cs_setBanned);
-    for(auto banned: setBanned)
-    {
-        bannedIps += banned.first.ToString();
-        bannedIps += ",\n";
-    }
-    bannedIps += "]";
-    return bannedIps;
-}
-
-bool CNode::IsBanned(CNetAddr ip)
-{
-    bool fResult = false;
-    {
-        LOCK(cs_setBanned);
-        std::map<CNetAddr, int64_t>::iterator i = setBanned.find(ip);
-        if (i != setBanned.end()) {
-            int64_t t = (*i).second;
-            if (GetTime() < t)
-                fResult = true;
-        }
-    }
-    return fResult;
-}
-
-bool CNode::Ban(const CNetAddr& addr)
-{
-    int64_t banTime = GetTime() + settings.GetArg("-bantime", 60 * 60 * 24); // Default 24-hour ban
-    return Ban(addr,banTime);
-}
-
-bool CNode::Ban(const CNetAddr& addr, int64_t banTime)
-{
-    {
-        LOCK(cs_setBanned);
-        if (setBanned[addr] < banTime)
-            setBanned[addr] = banTime;
-    }
-    return true;
 }
 
 uint64_t NetworkUsageStats::nTotalBytesRecv = 0;

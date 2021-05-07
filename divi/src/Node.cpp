@@ -86,10 +86,6 @@ int CNetMessage::readData(const char* pch, unsigned int nBytes)
     return nCopy;
 }
 
-uint64_t CNode::nTotalBytesRecv = 0;
-uint64_t CNode::nTotalBytesSent = 0;
-CCriticalSection CNode::cs_totalBytesRecv;
-CCriticalSection CNode::cs_totalBytesSent;
 NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
 limitedmap<CInv, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);
@@ -243,7 +239,7 @@ void CNode::SocketSendData()
             nLastSend = GetTime();
             nSendBytes += nBytes;
             nSendOffset += nBytes;
-            CNode::RecordBytesSent(nBytes);
+            NetworkUsageStats::RecordBytesSent(nBytes);
             if (nSendOffset == data.size()) {
                 nSendOffset = 0;
                 nSendSize -= data.size();
@@ -377,30 +373,6 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend)
         SocketSendData();
 
     LEAVE_CRITICAL_SECTION(cs_vSend);
-}
-
-void CNode::RecordBytesRecv(uint64_t bytes)
-{
-    LOCK(cs_totalBytesRecv);
-    nTotalBytesRecv += bytes;
-}
-
-void CNode::RecordBytesSent(uint64_t bytes)
-{
-    LOCK(cs_totalBytesSent);
-    nTotalBytesSent += bytes;
-}
-
-uint64_t CNode::GetTotalBytesRecv()
-{
-    LOCK(cs_totalBytesRecv);
-    return nTotalBytesRecv;
-}
-
-uint64_t CNode::GetTotalBytesSent()
-{
-    LOCK(cs_totalBytesSent);
-    return nTotalBytesSent;
 }
 
 void CNode::Fuzz(int nChance)
@@ -580,6 +552,7 @@ void CNode::MaybeSendPing()
     }
 }
 
+// Static stuff
 std::map<CNetAddr, int64_t> CNode::setBanned;
 CCriticalSection CNode::cs_setBanned;
 
@@ -652,4 +625,32 @@ void CNode::AddWhitelistedRange(const CSubNet& subnet)
 {
     LOCK(cs_vWhitelistedRange);
     vWhitelistedRange.push_back(subnet);
+}
+
+uint64_t NetworkUsageStats::nTotalBytesRecv = 0;
+uint64_t NetworkUsageStats::nTotalBytesSent = 0;
+CCriticalSection NetworkUsageStats::cs_totalBytesRecv;
+CCriticalSection NetworkUsageStats::cs_totalBytesSent;
+void NetworkUsageStats::RecordBytesRecv(uint64_t bytes)
+{
+    LOCK(cs_totalBytesRecv);
+    nTotalBytesRecv += bytes;
+}
+
+void NetworkUsageStats::RecordBytesSent(uint64_t bytes)
+{
+    LOCK(cs_totalBytesSent);
+    nTotalBytesSent += bytes;
+}
+
+uint64_t NetworkUsageStats::GetTotalBytesRecv()
+{
+    LOCK(cs_totalBytesRecv);
+    return nTotalBytesRecv;
+}
+
+uint64_t NetworkUsageStats::GetTotalBytesSent()
+{
+    LOCK(cs_totalBytesSent);
+    return nTotalBytesSent;
 }

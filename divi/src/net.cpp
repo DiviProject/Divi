@@ -306,6 +306,24 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest, bool obfuScationMa
 }
 
 static list<CNode*> vNodesDisconnected;
+static std::vector<CSubNet> vWhitelistedRange;
+static CCriticalSection cs_vWhitelistedRange;
+bool IsWhitelistedRange(const CNetAddr& addr)
+{
+    LOCK(cs_vWhitelistedRange);
+    for(const CSubNet& subnet: vWhitelistedRange)
+    {
+        if (subnet.Match(addr))
+            return true;
+    }
+    return false;
+}
+
+void AddWhitelistedRange(const CSubNet& subnet)
+{
+    LOCK(cs_vWhitelistedRange);
+    vWhitelistedRange.push_back(subnet);
+}
 
 void ThreadSocketHandler()
 {
@@ -465,7 +483,7 @@ void ThreadSocketHandler()
                     if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
                         LogPrintf("Warning: Unknown socket family\n");
 
-                bool whitelisted = hListenSocket.whitelisted || CNode::IsWhitelistedRange(addr);
+                bool whitelisted = hListenSocket.whitelisted || IsWhitelistedRange(addr);
                 {
                     LOCK(cs_vNodes);
                     BOOST_FOREACH (CNode* pnode, vNodes)
@@ -1637,7 +1655,7 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
             CSubNet subnet(net);
             if (!subnet.IsValid())
                 return uiMessenger.InitError(strprintf(translate("Invalid netmask specified in -whitelist: '%s'"), net));
-            CNode::AddWhitelistedRange(subnet);
+            AddWhitelistedRange(subnet);
         }
     }
 

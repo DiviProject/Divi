@@ -133,7 +133,6 @@ extern json_spirit::Value getpoolinfo(const json_spirit::Array& params, bool fHe
 extern json_spirit::Value masternode(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value listmasternodes(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getmasternodecount(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value masternodeconnect(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value masternodecurrent(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value masternodedebug(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value setupmasternode(const json_spirit::Array& params, bool fHelp);
@@ -465,7 +464,6 @@ static const CRPCCommand vRPCCommands[] =
 		{ "divi", "fundmasternode", &fundmasternode, true, true, false },
 		{"divi", "listmasternodes", &listmasternodes, true, true, false},
         {"divi", "getmasternodecount", &getmasternodecount, true, true, false},
-        {"divi", "masternodeconnect", &masternodeconnect, true, true, false},
         {"divi", "masternodecurrent", &masternodecurrent, true, true, false},
         // {"divi", "masternodedebug", &masternodedebug, true, true, false},
         {"divi","setupmasternode",&setupmasternode,true,false,true},

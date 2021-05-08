@@ -105,7 +105,6 @@ struct ListenSocket {
 //
 // Global state variables
 //
-extern CWallet* pwalletMain;
 bool fDiscover = true;
 bool fListen = true;
 
@@ -1265,7 +1264,7 @@ void static Discover(boost::thread_group& threadGroup)
 #endif
 }
 
-void StartNode(boost::thread_group& threadGroup)
+void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain)
 {
     uiInterface.InitMessage(translate("Loading addresses..."));
     // Load addresses for peers.dat

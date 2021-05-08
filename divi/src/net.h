@@ -43,8 +43,6 @@ namespace boost
 class thread_group;
 } // namespace boost
 
-void AddOneShot(std::string strDest);
-bool RecvLine(SOCKET hSocket, std::string& strLine);
 void AddressCurrentlyConnected(const CService& addr);
 CNode* FindNode(const CNetAddr& ip);
 CNode* FindNode(const std::string& addrName);
@@ -59,8 +57,7 @@ CNodeSignals& GetNodeSignals();
 bool IsPeerAddrLocalGood(CNode* pnode);
 void AdvertizeLocal(CNode* pnode);
 
-extern bool fDiscover;
-extern bool fListen;
+const bool& IsListening();
 int GetMaxConnections();
 CAddrMan& GetNetworkAddressManager();
 

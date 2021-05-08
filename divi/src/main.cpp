@@ -3295,7 +3295,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         if (!pfrom->fInbound) {
             // Advertise our address
-            if (fListen && !IsInitialBlockDownload()) {
+            if (IsListening() && !IsInitialBlockDownload()) {
                 CAddress addr = GetLocalAddress(&pfrom->addr);
                 if (addr.IsRoutable()) {
                     LogPrintf("ProcessMessages: advertizing address %s\n", addr);

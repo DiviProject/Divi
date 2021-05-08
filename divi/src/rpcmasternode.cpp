@@ -374,33 +374,6 @@ Value listmasternodes(const Array& params, bool fHelp)
     return ret;
 }
 
-Value masternodeconnect(const Array& params, bool fHelp)
-{
-	if (fHelp || (params.size() != 1))
-		throw std::runtime_error(
-			"masternodeconnect \"address\"\n"
-			"\nAttempts to connect to specified masternode address\n"
-
-			"\nArguments:\n"
-			"1. \"address\"     (string, required) IP or net address to connect to\n"
-
-			"\nExamples:\n" +
-			HelpExampleCli("masternodeconnect", "\"192.168.0.6:51472\"") + HelpExampleRpc("masternodeconnect", "\"192.168.0.6:51472\""));
-
-	std::string strAddress = params[0].get_str();
-
-	CService addr = CService(strAddress);
-
-	CNode* pnode = ConnectNode((CAddress)addr, NULL, false);
-	if (pnode) {
-		pnode->Release();
-		return Value::null;
-	}
-	else {
-		throw std::runtime_error("error connecting\n");
-	}
-}
-
 Value getmasternodecount (const Array& params, bool fHelp)
 {
     if (fHelp || (params.size() > 0))

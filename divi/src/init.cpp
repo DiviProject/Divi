@@ -1315,7 +1315,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (settings.GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION))
         StartTorControl(threadGroup);
 
-    StartNode(threadGroup);
+    StartNode(threadGroup,pwalletMain);
 
 #ifdef ENABLE_WALLET
     // Generate coins in the background

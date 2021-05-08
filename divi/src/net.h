@@ -36,6 +36,7 @@
 class CAddrMan;
 class CBlockIndex;
 class CNode;
+class CWallet;
 
 namespace boost
 {
@@ -52,7 +53,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuSc
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound = NULL, const char* strDest = NULL, bool fOneShot = false);
 void MapPort(bool fUseUPnP);
 bool BindListenPort(const CService& bindAddr, std::string& strError, bool fWhitelisted = false);
-void StartNode(boost::thread_group& threadGroup);
+void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain);
 bool StopNode();
 
 CNodeSignals& GetNodeSignals();

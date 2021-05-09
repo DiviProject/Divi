@@ -163,7 +163,7 @@ void AddOneShot(string strDest)
 }
 
 // Is our peer's addrLocal potentially useful as an external IP source?
-bool IsPeerAddrLocalGood(CNode* pnode)
+bool PeersLocalAddressIsGood(CNode* pnode)
 {
     return fDiscover && pnode->addr.IsRoutable() && pnode->addrLocal.IsRoutable() &&
            !IsLimited(pnode->addrLocal.GetNetwork());
@@ -177,7 +177,7 @@ void AdvertizeLocal(CNode* pnode)
         // If discovery is enabled, sometimes give our peer the address it
         // tells us that it sees us as in case it has a better idea of our
         // address than we do.
-        if (IsPeerAddrLocalGood(pnode) && (!addrLocal.IsRoutable() ||
+        if (PeersLocalAddressIsGood(pnode) && (!addrLocal.IsRoutable() ||
                                               GetRand((GetnScore(addrLocal) > LOCAL_MANUAL) ? 8 : 2) == 0)) {
             addrLocal.SetIP(pnode->addrLocal);
         }

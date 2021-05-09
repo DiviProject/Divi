@@ -563,6 +563,11 @@ void CNode::MaybeSendPing()
     }
 }
 
+void CNode::ClearInventoryItem(const CInv& inv)
+{
+    mapAlreadyAskedFor.erase(inv);
+}
+
 uint64_t NetworkUsageStats::nTotalBytesRecv = 0;
 uint64_t NetworkUsageStats::nTotalBytesSent = 0;
 CCriticalSection NetworkUsageStats::cs_totalBytesRecv;

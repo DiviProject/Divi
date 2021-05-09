@@ -63,6 +63,7 @@ void RelayTransactionLockReq(const CTransaction& tx, bool relayToAll = false);
 void RelayInv(CInv& inv);
 
 void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate);
+void DeterministicallyRelayAddressToLimitedPeers(const CAddress& addr,int numberOfNodes);
 
 class UIMessenger;
 bool AlertsAreEnabled();

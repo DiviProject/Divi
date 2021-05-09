@@ -27,6 +27,7 @@
 #include <boost/lexical_cast.hpp>
 #include <ValidationState.h>
 #include <NodeState.h>
+#include <utilstrencodings.h>
 
 extern bool fLiteMode;
 extern CAmount nTransactionValueMultiplier;

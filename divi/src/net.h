@@ -11,14 +11,10 @@
 #include "compat.h"
 #include "hash.h"
 #include "limitedmap.h"
-#include "mruset.h"
 #include "netbase.h"
 #include "protocol.h"
-#include "random.h"
 #include "streams.h"
 #include "sync.h"
-#include "uint256.h"
-#include "utilstrencodings.h"
 #include <Node.h>
 #include <NetworkLocalAddressHelpers.h>
 
@@ -44,9 +40,6 @@ class thread_group;
 } // namespace boost
 
 void AddressCurrentlyConnected(const CService& addr);
-CNode* FindNode(const CNetAddr& ip);
-CNode* FindNode(const std::string& addrName);
-CNode* FindNode(const CService& ip);
 CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuScationMaster = false);
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound = NULL, const char* strDest = NULL, bool fOneShot = false);
 void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain);
@@ -67,9 +60,6 @@ extern std::map<CInv, CDataStream> mapRelay;
 extern std::deque<std::pair<int64_t, CInv> > vRelayExpiration;
 extern CCriticalSection cs_mapRelay;
 extern limitedmap<CInv, int64_t> mapAlreadyAskedFor;
-
-extern std::vector<std::string> vAddedNodes;
-extern CCriticalSection cs_vAddedNodes;
 
 class CTransaction;
 void RelayTransaction(const CTransaction& tx);

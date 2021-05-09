@@ -32,6 +32,9 @@
 #include <uiMessenger.h>
 #include <PeerBanningService.h>
 #include <AddrDB.h>
+#include <uint256.h>
+#include <utilstrencodings.h>
+#include <random.h>
 
 #ifdef WIN32
 #include <string.h>

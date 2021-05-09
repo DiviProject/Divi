@@ -208,6 +208,7 @@ public:
     bool DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand = "");
     bool CanSendMessagesToPeer() const;
     void MaybeSendPing();
+    static void ClearInventoryItem(const CInv& inv);
 };
 
 class NetworkUsageStats

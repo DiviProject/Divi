@@ -3587,7 +3587,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         bool fMissingInputs = false;
         CValidationState state;
 
-        mapAlreadyAskedFor.erase(inv);
+        CNode::ClearInventoryItem(inv);
 
         if ( AcceptToMemoryPool(mempool, state, tx, true, &fMissingInputs))
         {

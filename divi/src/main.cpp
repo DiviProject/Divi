@@ -3107,15 +3107,7 @@ void static ProcessGetData(CNode* pfrom)
                 }
             } else if (inv.IsKnownType()) {
                 // Send stream from relay memory
-                bool pushed = false;
-                {
-                    LOCK(cs_mapRelay);
-                    std::map<CInv, CDataStream>::iterator mi = mapRelay.find(inv);
-                    if (mi != mapRelay.end()) {
-                        pfrom->PushMessage(inv.GetCommand(), (*mi).second);
-                        pushed = true;
-                    }
-                }
+                bool pushed = RepeatRelayedInventory(pfrom,inv);
 
                 if (!pushed && inv.type == MSG_TX) {
                     CTransaction tx;

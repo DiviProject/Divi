@@ -1352,6 +1352,17 @@ public:
     }
 } instance_of_cnetcleanup;
 
+bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv)
+{
+    LOCK(cs_mapRelay);
+    std::map<CInv, CDataStream>::iterator mi = mapRelay.find(inv);
+    if (mi != mapRelay.end()) {
+        pfrom->PushMessage(inv.GetCommand(), (*mi).second);
+        return true;
+    }
+    return false;
+}
+
 void RelayTransaction(const CTransaction& tx)
 {
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);

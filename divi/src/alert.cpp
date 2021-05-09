@@ -7,7 +7,7 @@
 
 #include "chainparams.h"
 #include "clientversion.h"
-#include "net.h"
+#include <Node.h>
 #include "pubkey.h"
 #include "timedata.h"
 #include "ui_interface.h"
@@ -121,25 +121,6 @@ bool CAlert::AppliesTo(int nVersion, std::string strSubVerIn) const
 bool CAlert::AppliesToMe() const
 {
     return AppliesTo(PROTOCOL_VERSION, FormatSubVersion(std::vector<std::string>()));
-}
-
-bool CAlert::RelayTo(CNode* pnode) const
-{
-    if (!IsInEffect())
-        return false;
-    // don't relay to nodes which haven't sent their version message
-    if (pnode->nVersion == 0)
-        return false;
-    // returns true if wasn't already contained in the set
-    if (pnode->setKnown.insert(GetHash()).second) {
-        if (AppliesTo(pnode->nVersion, pnode->strSubVer) ||
-            AppliesToMe() ||
-            GetAdjustedTime() < nRelayUntil) {
-            pnode->PushMessage("alert", *this);
-            return true;
-        }
-    }
-    return false;
 }
 
 bool CAlert::CheckSignature() const
@@ -266,6 +247,26 @@ void CAlert::GetHighestPriorityWarning(int& nPriority, std::string& strStatusBar
 }
 
 // Relay alerts
+
+bool CAlert::RelayTo(CNode* pnode) const
+{
+    if (!IsInEffect())
+        return false;
+    // don't relay to nodes which haven't sent their version message
+    if (pnode->nVersion == 0)
+        return false;
+    // returns true if wasn't already contained in the set
+    if (pnode->setKnown.insert(GetHash()).second) {
+        if (AppliesTo(pnode->nVersion, pnode->strSubVer) ||
+            AppliesToMe() ||
+            GetAdjustedTime() < nRelayUntil) {
+            pnode->PushMessage("alert", *this);
+            return true;
+        }
+    }
+    return false;
+}
+
 void CAlert::RelayAlerts(CNode* peer)
 {
     LOCK(cs_mapAlerts);

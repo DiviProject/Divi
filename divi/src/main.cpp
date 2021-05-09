@@ -3293,7 +3293,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 if (addr.IsRoutable()) {
                     LogPrintf("ProcessMessages: advertizing address %s\n", addr);
                     pfrom->PushAddress(addr);
-                } else if (IsPeerAddrLocalGood(pfrom)) {
+                } else if (PeersLocalAddressIsGood(pfrom)) {
                     addr.SetIP(pfrom->addrLocal);
                     LogPrintf("ProcessMessages: advertizing address %s\n", addr);
                     pfrom->PushAddress(addr);

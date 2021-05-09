@@ -47,7 +47,7 @@ bool StopNode();
 
 CNodeSignals& GetNodeSignals();
 
-bool IsPeerAddrLocalGood(CNode* pnode);
+bool PeersLocalAddressIsGood(CNode* pnode);
 void AdvertizeLocal(CNode* pnode);
 
 const bool& IsListening();

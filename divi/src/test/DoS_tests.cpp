@@ -20,6 +20,7 @@
 #include <primitives/transaction.h>
 #include <PeerBanningService.h>
 #include <NodeState.h>
+#include <random.h>
 
 
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'

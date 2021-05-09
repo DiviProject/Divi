@@ -8,6 +8,7 @@
 #include "netbase.h"
 #include "net.h"
 #include "crypto/hmac_sha256.h"
+#include <random.h>
 
 #include <vector>
 #include <deque>

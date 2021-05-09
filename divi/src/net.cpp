@@ -12,6 +12,7 @@
 #include "net.h"
 
 #include "addrman.h"
+#include <alert.h>
 #include <bloom.h>
 #include "chainparams.h"
 #include "clientversion.h"
@@ -1388,6 +1389,13 @@ void DeterministicallyRelayAddressToLimitedPeers(const CAddress& addr,int number
     }
     for (std::multimap<uint256, CNode*>::iterator mi = mapMix.begin(); mi != mapMix.end() && numberOfNodes-- > 0; ++mi)
         ((*mi).second)->PushAddress(addr);
+}
+
+void RelayAlertToPeers(const CAlert& alert)
+{
+    LOCK(cs_vNodes);
+    for(CNode* pnode: vNodes)
+            alert.RelayTo(pnode);
 }
 
 bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv)

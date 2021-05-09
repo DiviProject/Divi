@@ -1801,13 +1801,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
             const uint256 hashNewTip = pindexNewTip->GetBlockHash();
             // Relay inventory, but don't relay old inventory during initial block download.
             int nBlockEstimate = checkpointsVerifier.GetTotalBlocksEstimate();
-            {
-                LOCK(cs_vNodes);
-                for (auto* pnode : vNodes) {
-                    if (chainActive.Height() > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : nBlockEstimate))
-                        pnode->PushInventory(CInv(MSG_BLOCK, hashNewTip));
-                }
-            }
+            NotifyPeersOfNewChainTip(chainActive.Height(),hashNewTip,nBlockEstimate);
             // Notify external listeners about the new tip.
             uiInterface.NotifyBlockTip(hashNewTip);
             g_signals.UpdatedBlockTip(pindexNewTip);

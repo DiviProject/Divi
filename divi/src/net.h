@@ -30,6 +30,7 @@ class CNode;
 class CWallet;
 class CInv;
 class CDataStream;
+class uint256;
 
 namespace boost
 {
@@ -60,6 +61,8 @@ void RelayTransaction(const CTransaction& tx);
 void RelayTransaction(const CTransaction& tx, const CDataStream& ss);
 void RelayTransactionLockReq(const CTransaction& tx, bool relayToAll = false);
 void RelayInv(CInv& inv);
+
+void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate);
 
 class UIMessenger;
 bool AlertsAreEnabled();

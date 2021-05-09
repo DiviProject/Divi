@@ -12,6 +12,7 @@
 #include "net.h"
 
 #include "addrman.h"
+#include <bloom.h>
 #include "chainparams.h"
 #include "clientversion.h"
 #include "miner.h"
@@ -35,6 +36,10 @@
 #include <uint256.h>
 #include <utilstrencodings.h>
 #include <random.h>
+#include <hash.h>
+#include <limitedmap.h>
+#include <protocol.h>
+#include <streams.h>
 
 #ifdef WIN32
 #include <string.h>

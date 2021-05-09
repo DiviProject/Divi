@@ -7,13 +7,8 @@
 #ifndef BITCOIN_NET_H
 #define BITCOIN_NET_H
 
-#include "bloom.h"
 #include "compat.h"
-#include "hash.h"
-#include "limitedmap.h"
 #include "netbase.h"
-#include "protocol.h"
-#include "streams.h"
 #include "sync.h"
 #include <Node.h>
 #include <NetworkLocalAddressHelpers.h>
@@ -33,6 +28,8 @@ class CAddrMan;
 class CBlockIndex;
 class CNode;
 class CWallet;
+class CInv;
+class CDataStream;
 
 namespace boost
 {

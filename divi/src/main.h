@@ -28,7 +28,6 @@ enum FlushStateMode {
 class CBlockIndex;
 class CBlockTreeDB;
 class CSporkDB;
-class CBloomFilter;
 class CInv;
 class CScriptCheck;
 class NotificationInterface;

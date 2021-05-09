@@ -25,6 +25,7 @@
 #include <boost/signals2/signal.hpp>
 
 class CAddrMan;
+class CAlert;
 class CBlockIndex;
 class CNode;
 class CWallet;
@@ -64,6 +65,7 @@ void RelayInv(CInv& inv);
 
 void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate);
 void DeterministicallyRelayAddressToLimitedPeers(const CAddress& addr,int numberOfNodes);
+void RelayAlertToPeers(const CAlert& alert);
 
 class UIMessenger;
 bool AlertsAreEnabled();

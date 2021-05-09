@@ -3857,11 +3857,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             if (alert.ProcessAlert(settings)) {
                 // Relay
                 pfrom->setKnown.insert(alertHash);
-                {
-                    LOCK(cs_vNodes);
-                    for(CNode* pnode: vNodes)
-                            alert.RelayTo(pnode);
-                }
+                RelayAlertToPeers(alert);
             } else {
                 // Small DoS penalty so peers that send us lots of
                 // duplicate/expired/invalid-signature/whatever alerts

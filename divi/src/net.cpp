@@ -1357,6 +1357,15 @@ public:
     }
 } instance_of_cnetcleanup;
 
+void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate)
+{
+    LOCK(cs_vNodes);
+    for (CNode* pnode : vNodes) {
+        if (chainHeight > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : fallbackPeerChainHeightEstimate))
+            pnode->PushInventory(CInv(MSG_BLOCK, updatedBlockHashForChainTip));
+    }
+}
+
 bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv)
 {
     LOCK(cs_mapRelay);

@@ -63,6 +63,8 @@ extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern CWallet* pwalletMain;
+extern std::vector<CNode*> vNodes;
+extern CCriticalSection cs_vNodes;
 
 bool GetAddressIndex(bool addresIndexEnabled,
                      CBlockTreeDB* pblocktree,

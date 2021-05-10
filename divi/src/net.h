@@ -12,6 +12,7 @@
 #include "sync.h"
 #include <Node.h>
 #include <NetworkLocalAddressHelpers.h>
+#include <I_PeerSyncQueryService.h>
 
 #include <deque>
 #include <stdint.h>
@@ -52,6 +53,7 @@ void AdvertizeLocal(CNode* pnode);
 const bool& IsListening();
 int GetMaxConnections();
 CAddrMan& GetNetworkAddressManager();
+const I_PeerSyncQueryService& GetPeerSyncQueryService();
 
 bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv);
 class CTransaction;

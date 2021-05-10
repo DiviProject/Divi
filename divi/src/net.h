@@ -53,9 +53,6 @@ const bool& IsListening();
 int GetMaxConnections();
 CAddrMan& GetNetworkAddressManager();
 
-extern std::vector<CNode*> vNodes;
-extern CCriticalSection cs_vNodes;
-
 bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv);
 class CTransaction;
 void RelayTransaction(const CTransaction& tx);

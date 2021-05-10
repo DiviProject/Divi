@@ -36,6 +36,8 @@
 bool fLiteMode = false;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
+extern std::vector<CNode*> vNodes;
+extern CCriticalSection cs_vNodes;
 
 class PeerSyncQueryService: public I_PeerSyncQueryService
 {

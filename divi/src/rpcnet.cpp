@@ -28,6 +28,8 @@ using namespace std;
 
 extern std::vector<std::string> vAddedNodes;
 extern CCriticalSection cs_vAddedNodes;
+extern std::vector<CNode*> vNodes;
+extern CCriticalSection cs_vNodes;
 
 Value getconnectioncount(const Array& params, bool fHelp)
 {

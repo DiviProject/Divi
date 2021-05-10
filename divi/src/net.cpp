@@ -41,6 +41,7 @@
 #include <limitedmap.h>
 #include <protocol.h>
 #include <streams.h>
+#include <PeerNotificationOfMintService.h>
 
 #ifdef WIN32
 #include <string.h>
@@ -154,6 +155,7 @@ bool fAddressesInitialized = false;
 std::vector<CNode*> vNodes;
 CCriticalSection cs_vNodes;
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
+PeerNotificationOfMintService peerBlockNotify(vNodes);
 
 map<CInv, CDataStream> mapRelay;
 deque<pair<int64_t, CInv> > vRelayExpiration;
@@ -194,6 +196,10 @@ CAddrMan& GetNetworkAddressManager()
 const I_PeerSyncQueryService& GetPeerSyncQueryService()
 {
     return peerSyncQueryService;
+}
+const I_PeerBlockNotifyService& GetPeerBlockNotifyService()
+{
+    return peerBlockNotify;
 }
 
 void AddOneShot(string strDest)

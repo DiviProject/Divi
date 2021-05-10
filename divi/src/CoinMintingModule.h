@@ -27,6 +27,7 @@ class Settings;
 class CCoinsViewCache;
 class CFeeRate;
 class MasternodeModule;
+class I_PeerBlockNotifyService;
 
 class CoinMintingModule
 {
@@ -47,7 +48,7 @@ public:
         const CFeeRate& relayTxFeeCalculator,
         CCoinsViewCache* baseCoinsViewCache,
         CTxMemPool& mempool,
-        std::vector<CNode*>& peers,
+        const I_PeerBlockNotifyService& peers,
         CWallet& wallet,
         BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
         BlockMap& blockIndexByHash,

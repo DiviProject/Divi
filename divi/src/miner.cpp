@@ -32,7 +32,6 @@ extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;
-extern std::vector<CNode*> vNodes;
 
 LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight()
 {
@@ -122,7 +121,7 @@ void ThreadStakeMinter(CWallet* pwallet)
             FeeAndPriorityCalculator::instance().getFeeRateQuote(),
             pcoinsTip,
             mempool,
-            vNodes,
+            GetPeerBlockNotifyService(),
             *pwallet,
             mapHashedBlocks,
             mapBlockIndex,
@@ -155,7 +154,7 @@ void static ThreadPoWMinter(CWallet* pwallet,bool fGenerate)
             FeeAndPriorityCalculator::instance().getFeeRateQuote(),
             pcoinsTip,
             mempool,
-            vNodes,
+            GetPeerBlockNotifyService(),
             *pwallet,
             mapHashedBlocks,
             mapBlockIndex,

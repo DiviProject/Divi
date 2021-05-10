@@ -63,8 +63,6 @@ extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern CWallet* pwalletMain;
-extern std::vector<CNode*> vNodes;
-extern CCriticalSection cs_vNodes;
 
 bool GetAddressIndex(bool addresIndexEnabled,
                      CBlockTreeDB* pblocktree,
@@ -96,65 +94,26 @@ Value ban(const Array& params, bool fHelp)
             "  \"SuccessStatus\": xxxxx, (bool) wether a node was able to be removed\n"
             "}\n");
 
-    constexpr int64_t lifetimeBan = int64_t( (~uint64_t(0)) >> 8 );
-    static_assert(lifetimeBan > 0,"Ban times should not be negative!");
     if(params.size() > 0 && strcmp(params[0].get_str().c_str(),"outdated")==0 )
     {
-        auto getSubVersion = [](std::string rawSubversion)
-        {
-            std::string delimiter = ": ";
-            return rawSubversion.substr(rawSubversion.find(delimiter)+2);
-        };
-        auto versionToIndexConverter = [](std::string subVersion)
-        {
-            std::replace(subVersion.begin(),subVersion.end(),'.',' ');
-            std::istringstream iss(subVersion);
-            std::vector<std::string> results(std::istream_iterator<std::string>{iss},
-                                            std::istream_iterator<std::string>());
-            int64_t versionIndex = 0;
-            for(int versionNumberIndex = 0; versionNumberIndex < 4 ; ++versionNumberIndex)
-            {
-                versionIndex = versionIndex | (std::stoi(results[versionNumberIndex]) << (21 -7*versionNumberIndex) );
-            }
-            return versionIndex;
-        };
-        int64_t referenceVersionIndex = versionToIndexConverter(
-            getSubVersion(FormatSubVersion(std::vector<std::string>()))
-            );
-
-        LOCK(cs_vNodes);
+        std::vector<std::string> bannedNodeAddresses = BanOutdatedPeers();
+        Array array(bannedNodeAddresses.begin(),bannedNodeAddresses.end());
         Object bannedNodes;
-        Array array;
-        for (CNode* pnode: vNodes)
-        {
-            std::string subVersion = getSubVersion(pnode->cleanSubVer);
-            if(versionToIndexConverter(subVersion) < referenceVersionIndex)
-            {
-                PeerBanningService::Ban(pnode->addr,lifetimeBan);
-                array.push_back(pnode->addr.ToString() );
-                pnode->fDisconnect = true;
-            }
-        }
         bannedNodes.push_back(Pair("Banned",array));
         return bannedNodes;
     }
     else
     {
         CNetAddr addressToBan(params[0].get_str());
-        LOCK(cs_vNodes);
-        for (CNode* pnode: vNodes)
-        {
-            if(strcmp(addressToBan.ToString().c_str(), pnode->addr.ToString().c_str() ) == 0)
-            {
-                PeerBanningService::Ban(pnode->addr,lifetimeBan);
-                pnode->fDisconnect = true;
-                Object obj;
-                obj.push_back(Pair("Banned", addressToBan.ToString()));
-                return obj;
-            }
-        }
         Object obj;
-        obj.push_back(Pair("Banned", "Could not find matching node to ban" ));
+        if(BanSpecificPeer(addressToBan))
+        {
+            obj.push_back(Pair("Banned",addressToBan.ToString()));
+        }
+        else
+        {
+            obj.push_back(Pair("Banned", "Could not find matching node to ban" ));
+        }
         return obj;
     }
     return Value();
@@ -204,7 +163,7 @@ Value getinfo(const Array& params, bool fHelp)
 #endif
     obj.push_back(Pair("blocks", (int)chainActive.Height()));
     obj.push_back(Pair("timeoffset", GetTimeOffset()));
-    obj.push_back(Pair("connections", (int)vNodes.size()));
+    obj.push_back(Pair("connections", (int) GetPeerCount() ));
     obj.push_back(Pair("proxy", (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : string())));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
@@ -1183,7 +1142,7 @@ Value getstakingstatus(const Array& params, bool fHelp)
 
     Object obj;
     obj.push_back(Pair("validtime", chainActive.Tip()->nTime > 1471482000));
-    obj.push_back(Pair("haveconnections", !vNodes.empty()));
+    obj.push_back(Pair("haveconnections", GetPeerCount()>0 ));
     if (pwalletMain) {
         obj.push_back(Pair("walletunlocked", !pwalletMain->IsLocked()));
         obj.push_back(Pair("mintablecoins", pwalletMain->MintableCoins()));

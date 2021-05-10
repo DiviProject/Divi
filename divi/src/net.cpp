@@ -42,6 +42,7 @@
 #include <protocol.h>
 #include <streams.h>
 #include <PeerNotificationOfMintService.h>
+#include <NodeStats.h>
 
 #ifdef WIN32
 #include <string.h>
@@ -200,6 +201,97 @@ const I_PeerSyncQueryService& GetPeerSyncQueryService()
 const I_PeerBlockNotifyService& GetPeerBlockNotifyService()
 {
     return peerBlockNotify;
+}
+constexpr int64_t lifetimeBan = int64_t( (~uint64_t(0)) >> 8 );
+static_assert(lifetimeBan > 0,"Ban times should not be negative!");
+std::vector<std::string> BanOutdatedPeers()
+{
+    auto getSubVersion = [](std::string rawSubversion)
+    {
+        std::string delimiter = ": ";
+        return rawSubversion.substr(rawSubversion.find(delimiter)+2);
+    };
+    auto versionToIndexConverter = [](std::string subVersion)
+    {
+        std::replace(subVersion.begin(),subVersion.end(),'.',' ');
+        std::istringstream iss(subVersion);
+        std::vector<std::string> results(std::istream_iterator<std::string>{iss},
+                                        std::istream_iterator<std::string>());
+        int64_t versionIndex = 0;
+        for(int versionNumberIndex = 0; versionNumberIndex < 4 ; ++versionNumberIndex)
+        {
+            versionIndex = versionIndex | (std::stoi(results[versionNumberIndex]) << (21 -7*versionNumberIndex) );
+        }
+        return versionIndex;
+    };
+    int64_t referenceVersionIndex = versionToIndexConverter(
+        getSubVersion(FormatSubVersion(std::vector<std::string>()))
+        );
+
+    std::vector<std::string> bannedNodeAddresses;
+    LOCK(cs_vNodes);
+    for (CNode* pnode: vNodes)
+    {
+        std::string subVersion = getSubVersion(pnode->cleanSubVer);
+        if(versionToIndexConverter(subVersion) < referenceVersionIndex)
+        {
+            PeerBanningService::Ban(pnode->addr,lifetimeBan);
+            bannedNodeAddresses.push_back(pnode->addr.ToString() );
+            pnode->fDisconnect = true;
+        }
+    }
+    return bannedNodeAddresses;
+}
+bool BanSpecificPeer(const CNetAddr& address)
+{
+    LOCK(cs_vNodes);
+    for (CNode* pnode: vNodes)
+    {
+        if(strcmp(address.ToString().c_str(), pnode->addr.ToString().c_str() ) == 0)
+        {
+            PeerBanningService::Ban(pnode->addr,lifetimeBan);
+            pnode->fDisconnect = true;
+            return true;
+        }
+    }
+    return false;
+}
+int GetPeerCount()
+{
+    LOCK(cs_vNodes);
+    return vNodes.size();
+}
+int SchedulePingingPeers()
+{
+    LOCK(cs_vNodes);
+    for(CNode* pNode: vNodes)
+    {
+        pNode->fPingQueued = true;
+    }
+}
+NodeConnectionStatus GetConnectionStatus(const CService& addrNode)
+{
+    LOCK(cs_vNodes);
+    for(CNode* pnode: vNodes)
+    {
+        if (pnode->addr == addrNode)
+        {
+            return (pnode->fInbound)? NodeConnectionStatus::INBOUND: NodeConnectionStatus::OUTBOUND;
+        }
+    }
+    return NodeConnectionStatus::NOT_CONNECTED;
+}
+
+void GetNodeStats(std::vector<CNodeStats>& vstats)
+{
+    vstats.clear();
+
+    LOCK(cs_vNodes);
+    vstats.reserve(vNodes.size());
+    for(CNode* pnode: vNodes)
+    {
+        vstats.emplace_back(pnode);
+    }
 }
 
 void AddOneShot(string strDest)

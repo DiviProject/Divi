@@ -111,6 +111,34 @@ struct ListenSocket {
 };
 }
 
+class PeerSyncQueryService: public I_PeerSyncQueryService
+{
+private:
+    const std::vector<CNode*>& peers_;
+    CCriticalSection& peersLock_;
+public:
+    PeerSyncQueryService(
+        const std::vector<CNode*>& peers,
+        CCriticalSection& peersLock
+        ): peers_(peers)
+        , peersLock_(peersLock)
+    {
+    }
+    virtual std::vector<CNode*> GetSporkSyncedOrInboundNodes() const
+    {
+        std::vector<CNode*> vSporkSyncedNodes;
+        {
+        TRY_LOCK(peersLock_, lockRecv);
+        if (!lockRecv) return {};
+
+        std::copy_if(std::begin(peers_), std::end(peers_), std::back_inserter(vSporkSyncedNodes), [](const CNode *node) {
+            return node->fInbound || node->AreSporksSynced();
+        });
+        }
+        return vSporkSyncedNodes;
+    }
+};
+
 //
 // Global state variables
 //
@@ -125,6 +153,8 @@ bool fAddressesInitialized = false;
 
 std::vector<CNode*> vNodes;
 CCriticalSection cs_vNodes;
+PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
+
 map<CInv, CDataStream> mapRelay;
 deque<pair<int64_t, CInv> > vRelayExpiration;
 CCriticalSection cs_mapRelay;
@@ -160,6 +190,10 @@ int GetMaxConnections()
 CAddrMan& GetNetworkAddressManager()
 {
     return addrman;
+}
+const I_PeerSyncQueryService& GetPeerSyncQueryService()
+{
+    return peerSyncQueryService;
 }
 
 void AddOneShot(string strDest)

@@ -13,6 +13,7 @@
 #include <Node.h>
 #include <NetworkLocalAddressHelpers.h>
 #include <I_PeerSyncQueryService.h>
+#include <I_PeerBlockNotifyService.h>
 
 #include <deque>
 #include <stdint.h>
@@ -54,6 +55,7 @@ const bool& IsListening();
 int GetMaxConnections();
 CAddrMan& GetNetworkAddressManager();
 const I_PeerSyncQueryService& GetPeerSyncQueryService();
+const I_PeerBlockNotifyService& GetPeerBlockNotifyService();
 
 bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv);
 class CTransaction;

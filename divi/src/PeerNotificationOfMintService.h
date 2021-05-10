@@ -1,10 +1,11 @@
 #ifndef PEER_NOTIFICATION_OF_MINT_SERVICE_H
 #define PEER_NOTIFICATION_OF_MINT_SERVICE_H
 #include <vector>
+#include <I_PeerBlockNotifyService.h>
 class CNode;
 class uint256;
 
-class PeerNotificationOfMintService
+class PeerNotificationOfMintService: public I_PeerBlockNotifyService
 {
 private:
     std::vector<CNode*>& peers_;

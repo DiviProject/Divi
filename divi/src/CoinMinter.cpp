@@ -4,7 +4,7 @@
 #include <utiltime.h>
 #include <chain.h>
 #include <chainparams.h>
-#include <PeerNotificationOfMintService.h>
+#include <I_PeerBlockNotifyService.h>
 #include <masternode-sync.h>
 #include <utilmoneystr.h>
 #include <timedata.h>
@@ -28,14 +28,14 @@ CoinMinter::CoinMinter(
     CWallet* pwallet,
     const CChain& chain,
     const CChainParams& chainParameters,
-    std::vector<CNode*>& peers,
+    const I_PeerBlockNotifyService& peerNotifier,
     const CMasternodeSync& masternodeSynchronization,
     HashedBlockMap& mapHashedBlocks,
     CTxMemPool& transactionMemoryPool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): blockSubsidies_( blockSubsidies )
     , blockFactory_( blockFactory )
-    , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
+    , peerNotifier_( peerNotifier)
     , mintingIsRequested_(false)
     , pwallet_(pwallet)
     , chain_(chain)
@@ -80,7 +80,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
     bool chainTipIsSyncedEnough = !(chainTip? chainTip->nTime < minimumChainTipTimestampForMinting: IsBlockchainSynced());
     bool stakingRequirementsAreMet =
         chainTipIsSyncedEnough &&
-        peerNotifier_->havePeersToNotify() &&
+        peerNotifier_.havePeersToNotify() &&
         !pwallet_->IsLocked() &&
         !(pwallet_->GetStakingBalance() <= 0) &&
         masternodeSync_.IsSynced();
@@ -153,7 +153,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
     if (!ProcessNewBlock(state, NULL, block))
         return error("DIVIMiner : ProcessNewBlock, block not accepted");
 
-    peerNotifier_->notifyPeers(block->GetHash());
+    peerNotifier_.notifyPeers(block->GetHash());
 
     return true;
 }
@@ -297,7 +297,7 @@ bool CoinMinter::createProofOfWorkBlock(
         // Check for stop or if block needs to be rebuilt
         boost::this_thread::interruption_point();
         // Regtest mode doesn't require peers
-        if (peerNotifier_->havePeersToNotify() && chainParameters_.MiningRequiresPeers())
+        if (peerNotifier_.havePeersToNotify() && chainParameters_.MiningRequiresPeers())
             break;
         if (block->nNonce >= 0xffff0000)
             break;

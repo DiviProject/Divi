@@ -12,7 +12,7 @@
 class CWallet;
 class CChain;
 class CChainParams;
-class PeerNotificationOfMintService;
+class I_PeerBlockNotifyService;
 class CNode;
 class CMasternodeSync;
 class CReserveKey;
@@ -32,7 +32,7 @@ class CoinMinter: public I_CoinMinter
     static constexpr int64_t fiveMinutes_ = 5 * 60;
     const I_BlockSubsidyProvider& blockSubsidies_;
     I_BlockFactory& blockFactory_;
-    std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
+    const I_PeerBlockNotifyService& peerNotifier_;
 
     bool mintingIsRequested_;
     CWallet* pwallet_;
@@ -76,7 +76,7 @@ public:
         CWallet* pwallet,
         const CChain& chain,
         const CChainParams& chainParameters,
-        std::vector<CNode*>& peers,
+        const I_PeerBlockNotifyService& peers,
         const CMasternodeSync& masternodeSynchronization,
         HashedBlockMap& mapHashedBlocks,
         CTxMemPool& mempool,

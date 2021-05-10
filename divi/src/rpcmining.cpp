@@ -51,7 +51,6 @@ extern CCoinsViewCache* pcoinsTip;
 extern BlockMap mapBlockIndex;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern std::vector<CNode*> vNodes;
 
 LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
 #ifdef ENABLE_WALLET
@@ -113,7 +112,7 @@ Value setgenerate(const Array& params, bool fHelp)
             FeeAndPriorityCalculator::instance().getFeeRateQuote(),
             pcoinsTip,
             mempool,
-            vNodes,
+            GetPeerBlockNotifyService(),
             *pwalletMain,
             mapHashedBlocks,
             mapBlockIndex,
@@ -192,7 +191,7 @@ Value generateblock(const Array& params, bool fHelp)
         FeeAndPriorityCalculator::instance().getFeeRateQuote(),
         pcoinsTip,
         mempool,
-        vNodes,
+        GetPeerBlockNotifyService(),
         *pwalletMain,
         mapHashedBlocks,
         mapBlockIndex,

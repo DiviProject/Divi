@@ -32,6 +32,7 @@ extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;
+extern std::vector<CNode*> vNodes;
 
 LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight()
 {

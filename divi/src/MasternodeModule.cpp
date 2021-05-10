@@ -36,36 +36,6 @@
 bool fLiteMode = false;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
-extern std::vector<CNode*> vNodes;
-extern CCriticalSection cs_vNodes;
-
-class PeerSyncQueryService: public I_PeerSyncQueryService
-{
-private:
-    const std::vector<CNode*>& peers_;
-    CCriticalSection& peersLock_;
-public:
-    PeerSyncQueryService(
-        const std::vector<CNode*>& peers,
-        CCriticalSection& peersLock
-        ): peers_(peers)
-        , peersLock_(peersLock)
-    {
-    }
-    virtual std::vector<CNode*> GetSporkSyncedOrInboundNodes() const
-    {
-        std::vector<CNode*> vSporkSyncedNodes;
-        {
-        TRY_LOCK(peersLock_, lockRecv);
-        if (!lockRecv) return {};
-
-        std::copy_if(std::begin(peers_), std::end(peers_), std::back_inserter(vSporkSyncedNodes), [](const CNode *node) {
-            return node->fInbound || node->AreSporksSynced();
-        });
-        }
-        return vSporkSyncedNodes;
-    }
-};
 
 class LocalClock final: public I_Clock
 {
@@ -87,13 +57,12 @@ public:
 
 LocalClock localClock;
 BlockchainSyncQueryService blockchainSyncQueryService;
-PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
-MasternodeModule mnModule(localClock,blockchainSyncQueryService,peerSyncQueryService,chainActive,mapBlockIndex,GetNetworkAddressManager());
+MasternodeModule mnModule(localClock,blockchainSyncQueryService,GetPeerSyncQueryService(),chainActive,mapBlockIndex,GetNetworkAddressManager());
 
 MasternodeModule::MasternodeModule(
     const I_Clock& clock,
     const I_BlockchainSyncQueryService& blockchainSyncQueryService,
-    const PeerSyncQueryService& peerSyncQueryService,
+    const I_PeerSyncQueryService& peerSyncQueryService,
     const CChain& activeChain,
     const BlockMap& blockIndexByHash,
     CAddrMan& addressManager

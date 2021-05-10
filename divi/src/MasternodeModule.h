@@ -23,7 +23,7 @@ class MasternodePaymentData;
 class CMasternodeConfig;
 class CMasternodeMan;
 class CActiveMasternode;
-class PeerSyncQueryService;
+class I_PeerSyncQueryService;
 class I_Clock;
 class I_BlockchainSyncQueryService;
 class CNetFulfilledRequestManager;
@@ -47,7 +47,7 @@ public:
     MasternodeModule(
         const I_Clock& clock,
         const I_BlockchainSyncQueryService& blockchainSyncQueryService,
-        const PeerSyncQueryService& peerSyncQueryService,
+        const I_PeerSyncQueryService& peerSyncQueryService,
         const CChain& activeChain,
         const BlockMap& blockIndexByHash,
         CAddrMan& addressManager);

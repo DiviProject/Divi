@@ -34,6 +34,7 @@ class CWallet;
 class CInv;
 class CDataStream;
 class uint256;
+class CNodeStats;
 
 namespace boost
 {
@@ -67,6 +68,18 @@ void RelayInv(CInv& inv);
 void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate);
 void DeterministicallyRelayAddressToLimitedPeers(const CAddress& addr,int numberOfNodes);
 void RelayAlertToPeers(const CAlert& alert);
+std::vector<std::string> BanOutdatedPeers();
+bool BanSpecificPeer(const CNetAddr& address);
+int GetPeerCount();
+int SchedulePingingPeers();
+enum NodeConnectionStatus
+{
+    INBOUND,
+    OUTBOUND,
+    NOT_CONNECTED,
+};
+NodeConnectionStatus GetConnectionStatus(const CService& addrNode);
+void GetNodeStats(std::vector<CNodeStats>& vstats);
 
 class UIMessenger;
 bool AlertsAreEnabled();

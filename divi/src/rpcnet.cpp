@@ -18,6 +18,7 @@
 #include "chainparams.h"
 #include <FeeRate.h>
 #include <FeeAndPriorityCalculator.h>
+#include <NodeStats.h>
 
 #include <boost/foreach.hpp>
 
@@ -28,8 +29,6 @@ using namespace std;
 
 extern std::vector<std::string> vAddedNodes;
 extern CCriticalSection cs_vAddedNodes;
-extern std::vector<CNode*> vNodes;
-extern CCriticalSection cs_vNodes;
 
 Value getconnectioncount(const Array& params, bool fHelp)
 {
@@ -42,8 +41,7 @@ Value getconnectioncount(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getconnectioncount", "") + HelpExampleRpc("getconnectioncount", ""));
 
-    LOCK(cs_vNodes);
-    return (int)vNodes.size();
+    return GetPeerCount();
 }
 
 Value ping(const Array& params, bool fHelp)
@@ -58,83 +56,8 @@ Value ping(const Array& params, bool fHelp)
             HelpExampleCli("ping", "") + HelpExampleRpc("ping", ""));
 
     // Request that each node send a ping during next message processing pass
-    LOCK(cs_vNodes);
-    BOOST_FOREACH (CNode* pNode, vNodes) {
-        pNode->fPingQueued = true;
-    }
-
+    SchedulePingingPeers();
     return Value::null;
-}
-
-class CNodeStats
-{
-public:
-    NodeId nodeid;
-    uint64_t nServices;
-    int64_t nLastSend;
-    int64_t nLastRecv;
-    int64_t nTimeConnected;
-    std::string addrName;
-    int nVersion;
-    std::string cleanSubVer;
-    bool fInbound;
-    int nStartingHeight;
-    uint64_t nSendBytes;
-    uint64_t nRecvBytes;
-    bool fWhitelisted;
-    double dPingTime;
-    double dPingWait;
-    std::string addrLocal;
-
-    CNodeStats(CNode*);
-};
-#undef X
-#define X(name) name = pnode->name
-CNodeStats::CNodeStats(CNode* pnode)
-{
-    nodeid = pnode->GetId();
-    X(nServices);
-    X(nLastSend);
-    X(nLastRecv);
-    X(nTimeConnected);
-    X(addrName);
-    X(nVersion);
-    X(cleanSubVer);
-    X(fInbound);
-    X(nStartingHeight);
-    X(nSendBytes);
-    X(nRecvBytes);
-    X(fWhitelisted);
-
-    // It is common for nodes with good ping times to suddenly become lagged,
-    // due to a new block arriving or other large transfer.
-    // Merely reporting pingtime might fool the caller into thinking the node was still responsive,
-    // since pingtime does not update until the ping is complete, which might take a while.
-    // So, if a ping is taking an unusually long time in flight,
-    // the caller can immediately detect that this is happening.
-    int64_t nPingUsecWait = 0;
-    if ((0 != pnode->nPingNonceSent) && (0 != pnode->nPingUsecStart)) {
-        nPingUsecWait = GetTimeMicros() - pnode->nPingUsecStart;
-    }
-
-    // Raw ping time is in microseconds, but show it to user as whole seconds (DIVI users should be well used to small numbers with many decimal places by now :)
-    dPingTime = (((double)pnode->nPingUsecTime) / 1e6);
-    dPingWait = (((double)nPingUsecWait) / 1e6);
-
-    // Leave string empty if addrLocal invalid (not filled in yet)
-    addrLocal = pnode->addrLocal.IsValid() ? pnode->addrLocal.ToString() : "";
-}
-#undef X
-
-static void CopyNodeStats(std::vector<CNodeStats>& vstats)
-{
-    vstats.clear();
-
-    LOCK(cs_vNodes);
-    vstats.reserve(vNodes.size());
-    BOOST_FOREACH (CNode* pnode, vNodes) {
-        vstats.emplace_back(pnode);
-    }
 }
 
 Value getpeerinfo(const Array& params, bool fHelp)
@@ -175,7 +98,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
             HelpExampleCli("getpeerinfo", "") + HelpExampleRpc("getpeerinfo", ""));
 
     std::vector<CNodeStats> vstats;
-    CopyNodeStats(vstats);
+    GetNodeStats(vstats);
 
     Array ret;
 
@@ -338,7 +261,6 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
         }
     }
 
-    LOCK(cs_vNodes);
     for (std::list<std::pair<std::string, std::vector<CService> > >::iterator it = laddedAddreses.begin(); it != laddedAddreses.end(); it++) {
         Object obj;
         obj.push_back(Pair("addednode", it->first));
@@ -349,13 +271,13 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
             bool fFound = false;
             Object node;
             node.push_back(Pair("address", addrNode.ToString()));
-            BOOST_FOREACH (CNode* pnode, vNodes)
-                if (pnode->addr == addrNode) {
-                    fFound = true;
-                    fConnected = true;
-                    node.push_back(Pair("connected", pnode->fInbound ? "inbound" : "outbound"));
-                    break;
-                }
+            NodeConnectionStatus connectionStatus = GetConnectionStatus(addrNode);
+            if(connectionStatus != NodeConnectionStatus::NOT_CONNECTED)
+            {
+                fFound = true;
+                fConnected = true;
+                node.push_back(Pair("connected", (connectionStatus == NodeConnectionStatus::INBOUND)? "inbound" : "outbound"));
+            }
             if (!fFound)
                 node.push_back(Pair("connected", "false"));
             addresses.push_back(node);
@@ -454,7 +376,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
     obj.push_back(Pair("localservices", strprintf("%016x", GetLocalServices())));
     obj.push_back(Pair("timeoffset", GetTimeOffset()));
-    obj.push_back(Pair("connections", (int)vNodes.size()));
+    obj.push_back(Pair("connections", (int)GetPeerCount()));
     obj.push_back(Pair("networks", GetNetworksInfo()));
     obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getFeeRateQuote().GetFeePerK() )));
     Array localAddresses;

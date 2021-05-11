@@ -1531,11 +1531,34 @@ void DeterministicallyRelayAddressToLimitedPeers(const CAddress& addr,int number
         ((*mi).second)->PushAddress(addr);
 }
 
+bool ShouldRelayAlertToPeer(const CAlert& alert, CNode* pnode)
+{
+    if (!alert.IsInEffect())
+        return false;
+    // don't relay to nodes which haven't sent their version message
+    if (pnode->nVersion == 0)
+        return false;
+    // returns true if wasn't already contained in the set
+    if (pnode->setKnown.insert(alert.GetHash()).second) {
+        if (alert.AppliesTo(pnode->nVersion, pnode->strSubVer) ||
+            alert.AppliesToMe() ||
+            GetAdjustedTime() < alert.nRelayUntil) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void RelayAlertToPeers(const CAlert& alert)
 {
     LOCK(cs_vNodes);
     for(CNode* pnode: vNodes)
-            alert.RelayTo(pnode);
+    {
+        if(ShouldRelayAlertToPeer(alert,pnode))
+        {
+            pnode->PushMessage("alert", alert);
+        }
+    }
 }
 
 bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv)

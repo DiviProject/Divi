@@ -263,8 +263,15 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
             return;
         }
 
-        std::string strError = "";
-        if (!CheckMasternodeWinnerValidity(winner,pfrom,strError))
+        CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
+        if (!pmn)
+        {
+            std::string strError = strprintf("Unknown Masternode %s", winner.vinMasternode.prevout.hash.ToString());
+            LogPrint("masternode","%s - %s\n",__func__, strError);
+            masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
+            return;
+        }
+        if (!CheckMasternodeWinnerValidity(winner,*pmn))
         {
             return;
         }
@@ -318,19 +325,11 @@ bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymen
 
     return false;
 }
-bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
+bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CMasternode& masternode) const
 {
-    CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
-
-    if (!pmn) {
-        strError = strprintf("Unknown Masternode %s", winner.vinMasternode.prevout.hash.ToString());
-        LogPrint("masternode","%s - %s\n",__func__, strError);
-        masternodeSynchronization_.AskForMN(pnode, winner.vinMasternode);
-        return false;
-    }
-
-    if (pmn->protocolVersion < ActiveProtocol()) {
-        strError = strprintf("Masternode protocol too old %d - req %d", pmn->protocolVersion, ActiveProtocol());
+    std::string strError ="";
+    if (masternode.protocolVersion < ActiveProtocol()) {
+        strError = strprintf("Masternode protocol too old %d - req %d", masternode.protocolVersion, ActiveProtocol());
         LogPrint("masternode","%s - %s\n",__func__, strError);
         return false;
     }
@@ -338,8 +337,8 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePayment
     /* Before accepting a payment as valid, explicitly check that the
        masternode is active.  GetMasternodeRank includes this check, but
        has a cache on results so double-checking doesn't hurt.  */
-    masternodeManager_.Check(*pmn);
-    if (!pmn->IsEnabled()) {
+    masternodeManager_.Check(masternode);
+    if (!masternode.IsEnabled()) {
         strError = strprintf("Masternode %s is not active", winner.vinMasternode.prevout.hash.ToString());
         LogPrint("masternode", "%s - %s\n",__func__, strError);
         return false;

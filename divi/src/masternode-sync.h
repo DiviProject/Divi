@@ -22,6 +22,7 @@ class I_PeerSyncQueryService;
 class I_Clock;
 class I_BlockchainSyncQueryService;
 class CNetFulfilledRequestManager;
+class CNode;
 //
 // CMasternodeSync : Sync masternode assets in stages
 //

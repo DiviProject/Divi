@@ -8,7 +8,6 @@
 
 #include "key.h"
 #include "masternode.h"
-#include "net.h"
 #include "sync.h"
 
 #include <memory>
@@ -23,6 +22,7 @@ class MasternodeNetworkMessageManager;
 class CChain;
 class BlockMap;
 class CAddrMan;
+class CNode;
 
 class CMasternodeMan
 {

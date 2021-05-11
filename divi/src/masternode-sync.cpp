@@ -18,6 +18,7 @@
 #include <I_Clock.h>
 #include <I_PeerSyncQueryService.h>
 #include <I_BlockchainSyncQueryService.h>
+#include <Node.h>
 // clang-format on
 
 #include <algorithm>

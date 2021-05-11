@@ -99,17 +99,17 @@ public:
     bool Cancels(const CAlert& alert) const;
     bool AppliesTo(int nVersion, std::string strSubVerIn) const;
     bool AppliesToMe() const;
-    bool RelayTo(CNode* pnode) const;
     bool CheckSignature() const;
     bool ProcessAlert(const Settings& settings,bool fThread = true); // fThread means run -alertnotify in a free-running thread
     static void Notify(const Settings& settings,const std::string& strMessage, bool fThread);
     static void GetHighestPriorityWarning(int& nPriority, std::string& strStatusBar);
-    static void RelayAlerts(CNode* peer);
+    static std::vector<CAlert> GetAllAlerts();
 
     /*
      * Get copy of (active) alert object by hash. Returns a null alert if it is not found.
      */
     static CAlert getAlertByHash(const uint256& hash);
+
 };
 
 #endif // BITCOIN_ALERT_H

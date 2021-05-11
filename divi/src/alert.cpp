@@ -246,32 +246,14 @@ void CAlert::GetHighestPriorityWarning(int& nPriority, std::string& strStatusBar
     }
 }
 
-// Relay alerts
-
-bool CAlert::RelayTo(CNode* pnode) const
+std::vector<CAlert> CAlert::GetAllAlerts()
 {
-    if (!IsInEffect())
-        return false;
-    // don't relay to nodes which haven't sent their version message
-    if (pnode->nVersion == 0)
-        return false;
-    // returns true if wasn't already contained in the set
-    if (pnode->setKnown.insert(GetHash()).second) {
-        if (AppliesTo(pnode->nVersion, pnode->strSubVer) ||
-            AppliesToMe() ||
-            GetAdjustedTime() < nRelayUntil) {
-            pnode->PushMessage("alert", *this);
-            return true;
-        }
-    }
-    return false;
-}
-
-void CAlert::RelayAlerts(CNode* peer)
-{
+    std::vector<CAlert> allAlerts;
     LOCK(cs_mapAlerts);
+    allAlerts.reserve(mapAlerts.size());
     for (const std::pair<const uint256, CAlert>& item: mapAlerts)
     {
-        item.second.RelayTo(peer);
+        allAlerts.push_back(item.second);
     }
+    return allAlerts;
 }

@@ -102,14 +102,12 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
         }
 
         LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service);
-        CNode* pnode = ConnectNode(masternodeIPAddress, NULL, false);
-        if (!pnode)
+        if (!CheckNodeIsAcceptingConnections(masternodeIPAddress))
         {
             notCapableReason = "Could not connect to " + service.ToString();
             LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
             return;
         }
-        pnode->Release();
 
         // Choose coins to use
         notCapableReason = "Could not find suitable coins!";

@@ -43,6 +43,7 @@ class thread_group;
 
 void AddressCurrentlyConnected(const CService& addr);
 CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuScationMaster = false);
+bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo);
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound = NULL, const char* strDest = NULL, bool fOneShot = false);
 void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain);
 bool StopNode();

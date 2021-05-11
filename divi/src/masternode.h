@@ -7,7 +7,7 @@
 #define MASTERNODE_H
 
 #include <pubkey.h>
-#include <net.h>
+#include <netbase.h>
 #include <sync.h>
 #include <primitives/transaction.h>
 #include <masternode-tier.h>
@@ -26,6 +26,7 @@ class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
 class CMasternodeMan;
+class CDataStream;
 
 //
 // The Masternode Class. For managing the Obfuscation process. It contains the input of the 10000 PIV, signature to prove

@@ -23,6 +23,7 @@
 #include <blockmap.h>
 #include <TransactionDiskAccessor.h>
 #include <NodeState.h>
+#include <Node.h>
 
 extern bool ShutdownRequested();
 

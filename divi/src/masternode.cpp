@@ -11,6 +11,8 @@
 #include <timedata.h>
 #include <script/standard.h>
 #include <chainparams.h>
+#include <streams.h>
+#include <net.h>
 
 CAmount CMasternode::GetTierCollateralAmount(const MasternodeTier tier)
 {

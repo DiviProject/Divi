@@ -365,6 +365,14 @@ CNode* FindNode(const CService& addr)
     return NULL;
 }
 
+bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo)
+{
+    CNode* pnode = ConnectNode(addrToConnectTo, NULL, false);
+    bool connectionSuccessful = static_cast<bool>(pnode);
+    pnode->Release();
+    return connectionSuccessful;
+}
+
 CNode* ConnectNode(CAddress addrConnect, const char* pszDest, bool obfuScationMaster)
 {
     if (pszDest == NULL) {

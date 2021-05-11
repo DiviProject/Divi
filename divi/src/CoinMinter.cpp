@@ -12,7 +12,6 @@
 #include <I_BlockFactory.h>
 #include <BlockTemplate.h>
 #include <BlockSigning.h>
-#include <ValidationState.h>
 #include <txmempool.h>
 #include <I_BlockSubsidyProvider.h>
 #include <Logging.h>
@@ -20,7 +19,7 @@
 #include <ThreadManagementHelpers.h>
 
 constexpr int hashingDelay = 45;
-bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
+extern bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey);
 
 CoinMinter::CoinMinter(
     const I_BlockSubsidyProvider& blockSubsidies,
@@ -31,8 +30,7 @@ CoinMinter::CoinMinter(
     const I_PeerBlockNotifyService& peerNotifier,
     const CMasternodeSync& masternodeSynchronization,
     HashedBlockMap& mapHashedBlocks,
-    CTxMemPool& transactionMemoryPool,
-    AnnotatedMixin<boost::recursive_mutex>& mainCS
+    CTxMemPool& transactionMemoryPool
     ): blockSubsidies_( blockSubsidies )
     , blockFactory_( blockFactory )
     , peerNotifier_( peerNotifier)
@@ -41,7 +39,6 @@ CoinMinter::CoinMinter(
     , chain_(chain)
     , chainParameters_(chainParameters)
     , mempool_(transactionMemoryPool)
-    , mainCS_(mainCS)
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)
     , haveMintableCoins_(false)
@@ -138,24 +135,11 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
     LogPrintf("%s\n", *block);
     LogPrintf("generated %s\n", FormatMoney(block->vtx[0].vout[0].nValue));
 
-    // Found a solution
-    {
-        LOCK(mainCS_);
-        if (block->hashPrevBlock != chain_.Tip()->GetBlockHash())
-            return error("DIVIMiner : generated block is stale");
-    }
-
-    // Remove key from key pool
-    reservekey.KeepKey();
-
-    // Process this block the same as if we had received it from another node
-    CValidationState state;
-    if (!ProcessNewBlock(state, NULL, block))
-        return error("DIVIMiner : ProcessNewBlock, block not accepted");
-
-    peerNotifier_.notifyPeers(block->GetHash());
-
-    return true;
+    bool shouldKeepKey = false;
+    bool successfulBlock = ProcessNewBlockFoundByMe(block,shouldKeepKey);
+    if(shouldKeepKey) reservekey.KeepKey();
+    if(successfulBlock) peerNotifier_.notifyPeers(block->GetHash());
+    return successfulBlock;
 }
 
 void CoinMinter::IncrementExtraNonce(CBlock* block,const CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const

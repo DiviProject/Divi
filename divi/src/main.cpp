@@ -2409,6 +2409,24 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
     return true;
 }
+bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey)
+{
+    // Found a solution
+    shouldKeepKey = false;
+    {
+        LOCK(cs_main);
+        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+            return error("%s : generated block is stale",__func__);
+    }
+    shouldKeepKey = true;
+
+    // Process this block the same as if we had received it from another node
+    CValidationState state;
+    if (!ProcessNewBlock(state, NULL, pblock))
+        return error("%s : ProcessNewBlock, block not accepted",__func__);
+
+    return true;
+}
 
 bool AbortNode(const std::string& strMessage, const std::string& userMessage)
 {

@@ -94,8 +94,7 @@ CoinMintingModule::CoinMintingModule(
         peerNotifier,
         masternodeModule.getMasternodeSynchronization(),
         hashedBlockTimestampsByHeight,
-        mempool,
-        mainCS))
+        mempool))
 {
 }
 

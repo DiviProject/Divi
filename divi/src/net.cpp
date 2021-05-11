@@ -261,7 +261,7 @@ int GetPeerCount()
     LOCK(cs_vNodes);
     return vNodes.size();
 }
-int SchedulePingingPeers()
+void SchedulePingingPeers()
 {
     LOCK(cs_vNodes);
     for(CNode* pNode: vNodes)

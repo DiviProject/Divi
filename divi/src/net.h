@@ -72,7 +72,7 @@ void RelayAlertToPeers(const CAlert& alert);
 std::vector<std::string> BanOutdatedPeers();
 bool BanSpecificPeer(const CNetAddr& address);
 int GetPeerCount();
-int SchedulePingingPeers();
+void SchedulePingingPeers();
 enum NodeConnectionStatus
 {
     INBOUND,

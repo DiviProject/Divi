@@ -1560,6 +1560,17 @@ void RelayAlertToPeers(const CAlert& alert)
         }
     }
 }
+void RelayAllAlertsTo(CNode* peer)
+{
+    const std::vector<CAlert> allAlerts  = CAlert::GetAllAlerts();
+    for(const CAlert& alert: allAlerts)
+    {
+        if(ShouldRelayAlertToPeer(alert,peer))
+        {
+            peer->PushMessage("alert", alert);
+        }
+    }
+}
 
 bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv)
 {

@@ -3308,7 +3308,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
 
         // Relay alerts
-        CAlert::RelayAlerts(pfrom);
+        RelayAllAlertsTo(pfrom);
 
         pfrom->fSuccessfullyConnected = true;
 

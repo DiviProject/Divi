@@ -69,6 +69,7 @@ void RelayInv(CInv& inv);
 void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate);
 void DeterministicallyRelayAddressToLimitedPeers(const CAddress& addr,int numberOfNodes);
 void RelayAlertToPeers(const CAlert& alert);
+void RelayAllAlertsTo(CNode* peer);
 std::vector<std::string> BanOutdatedPeers();
 bool BanSpecificPeer(const CNetAddr& address);
 int GetPeerCount();

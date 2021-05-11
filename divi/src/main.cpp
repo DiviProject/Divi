@@ -2367,7 +2367,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
     // NovaCoin: check proof-of-stake block signature
     if (!CheckBlockSignature(*pblock))
-        return error("ProcessNewBlock() : bad proof-of-stake block signature");
+        return error("%s : bad proof-of-stake block signature",__func__);
 
     if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
         //if we get this far, check if the prev block is our prev block, if not then request sync and return false
@@ -2423,7 +2423,7 @@ bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey)
     // Process this block the same as if we had received it from another node
     CValidationState state;
     if (!ProcessNewBlock(state, NULL, pblock))
-        return error("%s : ProcessNewBlock, block not accepted",__func__);
+        return error("%s : block not accepted",__func__);
 
     return true;
 }

@@ -23,8 +23,6 @@ class CBlockHeader;
 class I_BlockFactory;
 class CBlockTemplate;
 class CTxMemPool;
-template <typename MutexObj>
-class AnnotatedMixin;
 class I_BlockSubsidyProvider;
 
 class CoinMinter: public I_CoinMinter
@@ -39,7 +37,6 @@ class CoinMinter: public I_CoinMinter
     const CChain& chain_;
     const CChainParams& chainParameters_;
     CTxMemPool& mempool_;
-    AnnotatedMixin<boost::recursive_mutex>& mainCS_;
     const CMasternodeSync& masternodeSync_;
     HashedBlockMap& mapHashedBlocks_;
     bool haveMintableCoins_;
@@ -79,8 +76,7 @@ public:
         const I_PeerBlockNotifyService& peers,
         const CMasternodeSync& masternodeSynchronization,
         HashedBlockMap& mapHashedBlocks,
-        CTxMemPool& mempool,
-        AnnotatedMixin<boost::recursive_mutex>& mainCS);
+        CTxMemPool& mempool);
 
     virtual bool CanMintCoins();
     virtual void sleep(uint64_t milliseconds) const;

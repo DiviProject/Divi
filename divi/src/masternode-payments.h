@@ -61,7 +61,7 @@ private:
 
     bool GetBlockPayee(const uint256& seedHash, CScript& payee) const;
     bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;
-    bool CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const;
+    bool CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CMasternode& masternode) const;
 public:
     static const int MNPAYMENTS_SIGNATURES_REQUIRED;
     static const int MNPAYMENTS_SIGNATURES_TOTAL;

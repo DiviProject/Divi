@@ -4223,6 +4223,24 @@ static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, CNodeState* stat
         }
     }
 }
+void CollectNonBlockDataToRequestAndRequestIt(CNode* pto, int64_t nNow, std::vector<CInv>& vGetData)
+{
+    while (!pto->fDisconnect && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow)
+    {
+        const CInv& inv = (*pto->mapAskFor.begin()).second;
+        if (!AlreadyHave(inv)) {
+            LogPrint("net", "Requesting %s peer=%d\n", inv, pto->id);
+            vGetData.push_back(inv);
+            if (vGetData.size() >= 1000) {
+                pto->PushMessage("getdata", vGetData);
+                vGetData.clear();
+            }
+        }
+        pto->mapAskFor.erase(pto->mapAskFor.begin());
+    }
+    if (!vGetData.empty())
+        pto->PushMessage("getdata", vGetData);
+}
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
@@ -4273,20 +4291,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         //
         // Message: getdata (non-blocks)
         //
-        while (!pto->fDisconnect && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow) {
-            const CInv& inv = (*pto->mapAskFor.begin()).second;
-            if (!AlreadyHave(inv)) {
-                LogPrint("net", "Requesting %s peer=%d\n", inv, pto->id);
-                vGetData.push_back(inv);
-                if (vGetData.size() >= 1000) {
-                    pto->PushMessage("getdata", vGetData);
-                    vGetData.clear();
-                }
-            }
-            pto->mapAskFor.erase(pto->mapAskFor.begin());
-        }
-        if (!vGetData.empty())
-            pto->PushMessage("getdata", vGetData);
+        CollectNonBlockDataToRequestAndRequestIt(pto,nNow,vGetData);
     }
     return true;
 }

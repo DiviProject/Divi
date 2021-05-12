@@ -1370,7 +1370,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return false;
     }
     CalculateFees(block.IsProofOfWork(),pindex,nExpectedMint);
-    CheckMintTotalsAndBlockPayees(block,pindex,incentives,nExpectedMint,state);
+    if (!CheckMintTotalsAndBlockPayees(block,pindex,incentives,nExpectedMint,state))
+        return false;
 
     if (!fVerifyingBlocks) {
         if (block.nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint)

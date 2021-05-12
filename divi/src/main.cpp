@@ -4134,7 +4134,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         BanIfRequested(pto,state);
 
         for(const CBlockReject& reject: state->rejects)
-                pto->PushMessage("reject", (string) "block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
+                pto->PushMessage("reject", (std::string) "block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
         state->rejects.clear();
 
         // Start block sync

@@ -4142,19 +4142,23 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         BanIfRequested(pto,state);
         CommunicateRejectedBlocksToPeer(pto,state->rejects);
 
-        // Start block sync
         if (pindexBestHeader == NULL)
             pindexBestHeader = chainActive.Tip();
+
+        // Start block sync
         bool fFetch = state->fPreferredDownload || (nPreferredDownload == 0 && !pto->fClient && !pto->fOneShot); // Download if this is a nice peer, or we have no nice peers and this one might do.
-        if (!state->fSyncStarted && !pto->fClient && fFetch /*&& !fImporting*/ && !fReindex) {
-            // Only actively request headers from a single peer, unless we're close to end of initial download.
-            if (nSyncStarted == 0 || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 6 * 60 * 60) { // NOTE: was "close to today" and 24h in Bitcoin
-                state->fSyncStarted = true;
-                nSyncStarted++;
-                //CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
-                //LogPrint("net", "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id, pto->nStartingHeight);
-                //pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
-                pto->PushMessage("getblocks", chainActive.GetLocator(chainActive.Tip()), uint256(0));
+        if(fFetch)
+        {
+            if (!state->fSyncStarted && !pto->fClient && !fReindex) {
+                // Only actively request headers from a single peer, unless we're close to end of initial download.
+                if (nSyncStarted == 0 || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 6 * 60 * 60) { // NOTE: was "close to today" and 24h in Bitcoin
+                    state->fSyncStarted = true;
+                    nSyncStarted++;
+                    //CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
+                    //LogPrint("net", "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id, pto->nStartingHeight);
+                    //pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
+                    pto->PushMessage("getblocks", chainActive.GetLocator(chainActive.Tip()), uint256(0));
+                }
             }
         }
 

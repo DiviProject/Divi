@@ -11,12 +11,12 @@
 #include <uint256.h>
 #include <mruset.h>
 #include <stdint.h>
+#include <NodeId.h>
 
 #include <boost/signals2/signal.hpp>
 #include <boost/thread/condition_variable.hpp>
 
 class CBloomFilter;
-typedef int NodeId;
 
 /** The maximum number of entries in an 'inv' protocol message */
 constexpr unsigned int MAX_INV_SZ = 50000;

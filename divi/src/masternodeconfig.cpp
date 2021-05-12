@@ -4,10 +4,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 // clang-format off
-#include "net.h"
 #include "masternodeconfig.h"
 #include "ui_interface.h"
-#include <base58.h>
 #include <boost/foreach.hpp>
 #include <Settings.h>
 #include <DataDirectory.h>

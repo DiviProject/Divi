@@ -4184,6 +4184,25 @@ static void SendInventoryToPeer(CNode* pto, bool fSendTrickle)
     if (!vInv.empty())
         pto->PushMessage("inv", vInv);
 }
+static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto, CNodeState* state)
+{
+    if (!pto->fDisconnect && state->nStallingSince && state->nStallingSince < nNow - 1000000 * BLOCK_STALLING_TIMEOUT) {
+        // Stalling only triggers when the block download window cannot move. During normal steady state,
+        // the download window should be much larger than the to-be-downloaded set of blocks, so disconnection
+        // should only happen during initial block download.
+        LogPrintf("Peer=%d is stalling block download, disconnecting\n", pto->id);
+        pto->fDisconnect = true;
+    }
+    // In case there is a block that has been in flight from this peer for (2 + 0.5 * N) times the block interval
+    // (with N the number of validated blocks that were in flight at the time it was requested), disconnect due to
+    // timeout. We compensate for in-flight blocks to prevent killing off peers due to our own downstream link
+    // being saturated. We only count validated in-flight blocks so peers can't advertize nonexisting block hashes
+    // to unreasonably increase our timeout.
+    if (!pto->fDisconnect && state->vBlocksInFlight.size() > 0 && state->vBlocksInFlight.front().nTime < nNow - 500000 * Params().TargetSpacing() * (4 + state->vBlocksInFlight.front().nValidatedQueuedBefore)) {
+        LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", state->vBlocksInFlight.front().hash, pto->id);
+        pto->fDisconnect = true;
+    }
+}
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
@@ -4223,22 +4242,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
         // Detect whether we're stalling
         int64_t nNow = GetTimeMicros();
-        if (!pto->fDisconnect && state->nStallingSince && state->nStallingSince < nNow - 1000000 * BLOCK_STALLING_TIMEOUT) {
-            // Stalling only triggers when the block download window cannot move. During normal steady state,
-            // the download window should be much larger than the to-be-downloaded set of blocks, so disconnection
-            // should only happen during initial block download.
-            LogPrintf("Peer=%d is stalling block download, disconnecting\n", pto->id);
-            pto->fDisconnect = true;
-        }
-        // In case there is a block that has been in flight from this peer for (2 + 0.5 * N) times the block interval
-        // (with N the number of validated blocks that were in flight at the time it was requested), disconnect due to
-        // timeout. We compensate for in-flight blocks to prevent killing off peers due to our own downstream link
-        // being saturated. We only count validated in-flight blocks so peers can't advertize nonexisting block hashes
-        // to unreasonably increase our timeout.
-        if (!pto->fDisconnect && state->vBlocksInFlight.size() > 0 && state->vBlocksInFlight.front().nTime < nNow - 500000 * Params().TargetSpacing() * (4 + state->vBlocksInFlight.front().nValidatedQueuedBefore)) {
-            LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", state->vBlocksInFlight.front().hash, pto->id);
-            pto->fDisconnect = true;
-        }
+        RequestDisconnectionFromNodeIfStalling(nNow,pto,state);
 
         //
         // Message: getdata (blocks)

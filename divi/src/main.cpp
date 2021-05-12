@@ -4096,6 +4096,29 @@ static CNodeState* GetNodeState(NodeId nodeID)
         return nullptr;
     return State(nodeID);
 }
+static void BanIfRequested(CNode* pto, CNodeState* state)
+{
+    if (state->fShouldBan)
+    {
+        if (pto->fWhitelisted)
+        {
+            LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr);
+        }
+        else
+        {
+            pto->fDisconnect = true;
+            if (pto->addr.IsLocal())
+            {
+                LogPrintf("Warning: not banning local peer %s!\n", pto->addr);
+            }
+            else
+            {
+                PeerBanningService::Ban(GetTime(),pto->addr);
+            }
+        }
+        state->fShouldBan = false;
+    }
+}
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
@@ -4108,20 +4131,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
         CNodeState* state = GetNodeState(pto->GetId());
         if(!state) return true;
-
-        if (state->fShouldBan) {
-            if (pto->fWhitelisted)
-                LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr);
-            else {
-                pto->fDisconnect = true;
-                if (pto->addr.IsLocal())
-                    LogPrintf("Warning: not banning local peer %s!\n", pto->addr);
-                else {
-                    PeerBanningService::Ban(GetTime(),pto->addr);
-                }
-            }
-            state->fShouldBan = false;
-        }
+        BanIfRequested(pto,state);
 
         for(const CBlockReject& reject: state->rejects)
                 pto->PushMessage("reject", (string) "block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);

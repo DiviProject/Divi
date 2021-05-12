@@ -4203,6 +4203,26 @@ static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto, CNo
         pto->fDisconnect = true;
     }
 }
+static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, CNodeState* state, std::vector<CInv>& vGetData)
+{
+    if (!pto->fDisconnect && !pto->fClient && state->nBlocksInFlight < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
+        std::vector<CBlockIndex*> vToDownload;
+        NodeId staller = -1;
+        FindNextBlocksToDownload(pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - state->nBlocksInFlight, vToDownload, staller);
+        for(CBlockIndex* pindex: vToDownload) {
+            vGetData.push_back(CInv(MSG_BLOCK, pindex->GetBlockHash()));
+            MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockHash(), pindex);
+            LogPrintf("Requesting block %s (%d) peer=%d\n", pindex->GetBlockHash(),
+                        pindex->nHeight, pto->id);
+        }
+        if (state->nBlocksInFlight == 0 && staller != -1) {
+            if (State(staller)->nStallingSince == 0) {
+                State(staller)->nStallingSince = nNow;
+                LogPrint("net", "Stall started peer=%d\n", staller);
+            }
+        }
+    }
+}
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
@@ -4248,23 +4268,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // Message: getdata (blocks)
         //
         std::vector<CInv> vGetData;
-        if (!pto->fDisconnect && !pto->fClient && fFetch && state->nBlocksInFlight < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
-            std::vector<CBlockIndex*> vToDownload;
-            NodeId staller = -1;
-            FindNextBlocksToDownload(pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - state->nBlocksInFlight, vToDownload, staller);
-            for(CBlockIndex* pindex: vToDownload) {
-                vGetData.push_back(CInv(MSG_BLOCK, pindex->GetBlockHash()));
-                MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockHash(), pindex);
-                LogPrintf("Requesting block %s (%d) peer=%d\n", pindex->GetBlockHash(),
-                          pindex->nHeight, pto->id);
-            }
-            if (state->nBlocksInFlight == 0 && staller != -1) {
-                if (State(staller)->nStallingSince == 0) {
-                    State(staller)->nStallingSince = nNow;
-                    LogPrint("net", "Stall started peer=%d\n", staller);
-                }
-            }
-        }
+        if(fFetch) CollectBlockDataToRequest(nNow,pto,state,vGetData);
 
         //
         // Message: getdata (non-blocks)

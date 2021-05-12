@@ -4244,9 +4244,6 @@ void CollectNonBlockDataToRequestAndRequestIt(CNode* pto, int64_t nNow, std::vec
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
-        //
-        // Message: addr
-        //
         if (fSendTrickle) {
             SendAddresses(pto);
         }
@@ -4265,33 +4262,18 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         {
             BeginSyncingWithPeer(pto, state);
         }
-
-        // Resend wallet transactions that haven't gotten in a block yet
-        // Except during reindex, importing and IBD, when old wallet
-        // transactions become unconfirmed and spams other nodes.
         if (!fReindex)
         {
-            g_signals.Broadcast();
+            g_signals.RebroadcastWalletTransactions();
         }
 
-        //
-        // Message: inventory
-        //
         SendInventoryToPeer(pto,fSendTrickle);
 
-        // Detect whether we're stalling
         int64_t nNow = GetTimeMicros();
         RequestDisconnectionFromNodeIfStalling(nNow,pto,state);
 
-        //
-        // Message: getdata (blocks)
-        //
         std::vector<CInv> vGetData;
         if(fFetch) CollectBlockDataToRequest(nNow,pto,state,vGetData);
-
-        //
-        // Message: getdata (non-blocks)
-        //
         CollectNonBlockDataToRequestAndRequestIt(pto,nNow,vGetData);
     }
     return true;

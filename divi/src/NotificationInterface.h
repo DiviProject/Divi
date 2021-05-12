@@ -34,7 +34,7 @@ struct MainNotificationSignals {
     /** Notifies listeners about an inventory item being seen on the network. */
     boost::signals2::signal<void (const uint256 &)> Inventory;
     /** Tells listeners to broadcast their data. */
-    boost::signals2::signal<void ()> Broadcast;
+    boost::signals2::signal<void ()> RebroadcastWalletTransactions;
     /** Notifies listeners of a block validation result */
     boost::signals2::signal<void (const CBlock&, const CValidationState&)> BlockChecked;
     /** Notifies listeners that a key for mining is required (coinbase) */

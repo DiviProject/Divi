@@ -4119,6 +4119,14 @@ static void BanIfRequested(CNode* pto, CNodeState* state)
         state->fShouldBan = false;
     }
 }
+static void CommunicateRejectedBlocksToPeer(CNode* pto, std::vector<CBlockReject>& rejectedBlocks)
+{
+    for(const CBlockReject& reject: rejectedBlocks)
+    {
+        pto->PushMessage("reject", (std::string) "block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
+    }
+    rejectedBlocks.clear();
+}
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
@@ -4132,10 +4140,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         CNodeState* state = GetNodeState(pto->GetId());
         if(!state) return true;
         BanIfRequested(pto,state);
-
-        for(const CBlockReject& reject: state->rejects)
-                pto->PushMessage("reject", (std::string) "block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
-        state->rejects.clear();
+        CommunicateRejectedBlocksToPeer(pto,state->rejects);
 
         // Start block sync
         if (pindexBestHeader == NULL)

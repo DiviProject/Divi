@@ -4141,6 +4141,49 @@ static void BeginSyncingWithPeer(CNode* pto, CNodeState* state)
         }
     }
 }
+static void SendInventoryToPeer(CNode* pto, bool fSendTrickle)
+{
+    std::vector<CInv> vInv;
+    {
+        std::vector<CInv> vInvWait;
+
+        LOCK(pto->cs_inventory);
+        vInv.reserve(pto->vInventoryToSend.size());
+        vInvWait.reserve(pto->vInventoryToSend.size());
+        for (const auto& inv : pto->vInventoryToSend) {
+            if (pto->setInventoryKnown.count(inv) > 0)
+                continue;
+
+            // trickle out tx inv to protect privacy
+            if (inv.type == MSG_TX && !fSendTrickle) {
+                // 1/4 of tx invs blast to all immediately
+                static uint256 hashSalt;
+                if (hashSalt == 0)
+                    hashSalt = GetRandHash();
+                uint256 hashRand = inv.hash ^ hashSalt;
+                hashRand = Hash(BEGIN(hashRand), END(hashRand));
+                bool fTrickleWait = ((hashRand & 3) != 0);
+
+                if (fTrickleWait) {
+                    vInvWait.push_back(inv);
+                    continue;
+                }
+            }
+
+            // returns true if wasn't already contained in the set
+            if (pto->setInventoryKnown.insert(inv).second) {
+                vInv.push_back(inv);
+                if (vInv.size() >= 1000) {
+                    pto->PushMessage("inv", vInv);
+                    vInv.clear();
+                }
+            }
+        }
+        pto->vInventoryToSend = std::move(vInvWait);
+    }
+    if (!vInv.empty())
+        pto->PushMessage("inv", vInv);
+}
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
@@ -4176,46 +4219,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         //
         // Message: inventory
         //
-        std::vector<CInv> vInv;
-        {
-            std::vector<CInv> vInvWait;
-
-            LOCK(pto->cs_inventory);
-            vInv.reserve(pto->vInventoryToSend.size());
-            vInvWait.reserve(pto->vInventoryToSend.size());
-            for (const auto& inv : pto->vInventoryToSend) {
-                if (pto->setInventoryKnown.count(inv) > 0)
-                    continue;
-
-                // trickle out tx inv to protect privacy
-                if (inv.type == MSG_TX && !fSendTrickle) {
-                    // 1/4 of tx invs blast to all immediately
-                    static uint256 hashSalt;
-                    if (hashSalt == 0)
-                        hashSalt = GetRandHash();
-                    uint256 hashRand = inv.hash ^ hashSalt;
-                    hashRand = Hash(BEGIN(hashRand), END(hashRand));
-                    bool fTrickleWait = ((hashRand & 3) != 0);
-
-                    if (fTrickleWait) {
-                        vInvWait.push_back(inv);
-                        continue;
-                    }
-                }
-
-                // returns true if wasn't already contained in the set
-                if (pto->setInventoryKnown.insert(inv).second) {
-                    vInv.push_back(inv);
-                    if (vInv.size() >= 1000) {
-                        pto->PushMessage("inv", vInv);
-                        vInv.clear();
-                    }
-                }
-            }
-            pto->vInventoryToSend = std::move(vInvWait);
-        }
-        if (!vInv.empty())
-            pto->PushMessage("inv", vInv);
+        SendInventoryToPeer(pto,fSendTrickle);
 
         // Detect whether we're stalling
         int64_t nNow = GetTimeMicros();

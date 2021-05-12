@@ -4070,7 +4070,25 @@ bool ProcessMessages(CNode* pfrom)
     return fOk;
 }
 
-
+static void SendAddresses(CNode* pto)
+{
+    std::vector<CAddress> vAddr;
+    vAddr.reserve(pto->vAddrToSend.size());
+    for(const CAddress& addr: pto->vAddrToSend) {
+        // returns true if wasn't already contained in the set
+        if (pto->setAddrKnown.insert(addr).second) {
+            vAddr.push_back(addr);
+            // receiver rejects addr messages larger than 1000
+            if (vAddr.size() >= 1000) {
+                pto->PushMessage("addr", vAddr);
+                vAddr.clear();
+            }
+        }
+    }
+    pto->vAddrToSend.clear();
+    if (!vAddr.empty())
+        pto->PushMessage("addr", vAddr);
+}
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
@@ -4078,22 +4096,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // Message: addr
         //
         if (fSendTrickle) {
-            std::vector<CAddress> vAddr;
-            vAddr.reserve(pto->vAddrToSend.size());
-            for(const CAddress& addr: pto->vAddrToSend) {
-                // returns true if wasn't already contained in the set
-                if (pto->setAddrKnown.insert(addr).second) {
-                    vAddr.push_back(addr);
-                    // receiver rejects addr messages larger than 1000
-                    if (vAddr.size() >= 1000) {
-                        pto->PushMessage("addr", vAddr);
-                        vAddr.clear();
-                    }
-                }
-            }
-            pto->vAddrToSend.clear();
-            if (!vAddr.empty())
-                pto->PushMessage("addr", vAddr);
+            SendAddresses(pto);
         }
 
         CNodeState* state;

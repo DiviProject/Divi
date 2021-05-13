@@ -41,7 +41,7 @@ namespace boost
 class thread_group;
 } // namespace boost
 
-void AddressCurrentlyConnected(const CService& addr);
+void RecordAddressAsCurrentlyConnected(const CService& addr);
 CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuScationMaster = false);
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo);
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound = NULL, const char* strDest = NULL, bool fOneShot = false);

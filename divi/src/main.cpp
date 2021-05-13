@@ -229,19 +229,13 @@ int GetHeight()
     }
 }
 
-/** Check whether the last unknown block a peer advertized is not yet known. */
-void ProcessBlockAvailability(NodeId nodeid)
-{
-    ProcessBlockAvailability(mapBlockIndex,nodeid);
-}
-
 /** Update tracking information about which blocks a peer is assumed to have. */
 void UpdateBlockAvailability(NodeId nodeid, const uint256& hash)
 {
     CNodeState* state = State(nodeid);
     assert(state != NULL);
 
-    ProcessBlockAvailability(nodeid);
+    ProcessBlockAvailability(mapBlockIndex,nodeid);
 
     BlockMap::iterator it = mapBlockIndex.find(hash);
     if (it != mapBlockIndex.end() && it->second->nChainWork > 0) {
@@ -286,7 +280,7 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBl
     assert(state != NULL);
 
     // Make sure pindexBestKnownBlock is up to date, we'll need it.
-    ProcessBlockAvailability(nodeid);
+    ProcessBlockAvailability(mapBlockIndex,nodeid);
 
     if (state->pindexBestKnownBlock == NULL || state->pindexBestKnownBlock->nChainWork < chainActive.Tip()->nChainWork) {
         // This peer has nothing interesting.

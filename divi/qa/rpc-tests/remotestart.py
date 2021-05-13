@@ -27,7 +27,7 @@ class MnRemoteStartTest (BitcoinTestFramework):
 
   def __init__ (self):
     super ().__init__ ()
-    self.base_args = ["-debug"]
+    self.base_args = ["-debug=masternode", "-debug=mocktime"]
 
   def add_options(self, parser):
           parser.add_option("--outdated_ping", dest="outdated_ping", default=False, action="store_true",

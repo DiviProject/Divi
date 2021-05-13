@@ -28,6 +28,7 @@ class MasternodePaymentData;
 class MasternodeNetworkMessageManager;
 class CChain;
 class CNetFulfilledRequestManager;
+class CNode;
 //
 // Masternode Payments Class
 // Keeps track of who should get paid for which blocks

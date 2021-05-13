@@ -564,4 +564,7 @@ public:
     const CBlockIndex* FindFork(const CBlockIndex* pindex) const;
 };
 
+/** Find the last common ancestor two blocks have.
+ *  Both pa and pb must be non-NULL. */
+CBlockIndex* LastCommonAncestor(CBlockIndex* pa, CBlockIndex* pb);
 #endif // BITCOIN_CHAIN_H

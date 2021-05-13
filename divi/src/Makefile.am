@@ -202,6 +202,7 @@ BITCOIN_CORE_H = \
   ActiveChainManager.h \
   IndexDatabaseUpdateCollector.h \
   NodeState.h \
+  NodeStateRegistry.h \
   BlockRejects.h\
   QueuedBlock.h \
   main.h \
@@ -384,6 +385,7 @@ libbitcoin_server_a_SOURCES = \
   ActiveChainManager.cpp \
   IndexDatabaseUpdateCollector.cpp \
   NodeState.cpp \
+  NodeStateRegistry.cpp \
   main.cpp \
   OrphanTransactions.cpp \
   WalletLoggingHelper.cpp \
@@ -489,6 +491,7 @@ libbitcoin_wallet_a_SOURCES = \
   masternodeconfig.cpp \
   MasternodeNetworkMessageManager.cpp \
   NodeState.cpp \
+  NodeStateRegistry.cpp \
   masternodeman.cpp \
   netfulfilledman.cpp \
   reservekey.cpp \
@@ -577,6 +580,7 @@ libbitcoin_common_a_SOURCES = \
   chainparams.cpp \
   coins.cpp \
   NodeState.cpp \
+  NodeStateRegistry.cpp \
   FeeAndPriorityCalculator.cpp \
   compressor.cpp \
   destination.cpp \

@@ -20,4 +20,5 @@ void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex
 bool BlockIsInFlight(const uint256& hash);
 NodeId GetSourceOfInFlightBlock(const uint256& hash);
 void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid);
+void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid, const uint256& hash);
 #endif// NODE_STATE_REGISTRY_H

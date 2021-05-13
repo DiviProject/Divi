@@ -134,3 +134,21 @@ void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid)
         }
     }
 }
+/** Update tracking information about which blocks a peer is assumed to have. */
+void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid, const uint256& hash)
+{
+    CNodeState* state = State(nodeid);
+    assert(state != NULL);
+
+    ProcessBlockAvailability(blockIndicesByHash,nodeid);
+
+    BlockMap::const_iterator it = blockIndicesByHash.find(hash);
+    if (it != blockIndicesByHash.end() && it->second->nChainWork > 0) {
+        // An actually better block was announced.
+        if (state->pindexBestKnownBlock == NULL || it->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
+            state->pindexBestKnownBlock = it->second;
+    } else {
+        // An unknown block was announced; just assume that the latest one is the best one.
+        state->hashLastUnknownBlock = hash;
+    }
+}

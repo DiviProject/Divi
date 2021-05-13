@@ -229,12 +229,6 @@ int GetHeight()
     }
 }
 
-/** Update tracking information about which blocks a peer is assumed to have. */
-void UpdateBlockAvailability(NodeId nodeid, const uint256& hash)
-{
-    UpdateBlockAvailability(mapBlockIndex,nodeid,hash);
-}
-
 /** Find the last common ancestor two blocks have.
  *  Both pa and pb must be non-NULL. */
 CBlockIndex* LastCommonAncestor(CBlockIndex* pa, CBlockIndex* pb)
@@ -3320,7 +3314,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
 
             if (inv.type == MSG_BLOCK) {
-                UpdateBlockAvailability(pfrom->GetId(), inv.hash);
+                UpdateBlockAvailability(mapBlockIndex,pfrom->GetId(), inv.hash);
                 if (!fAlreadyHave && !fImporting && !fReindex && !BlockIsInFlight(inv.hash)) {
                     // Add this to the list of blocks to request
                     vToFetch.push_back(inv);
@@ -3593,7 +3587,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
 
         if (pindexLast)
-            UpdateBlockAvailability(pfrom->GetId(), pindexLast->GetBlockHash());
+            UpdateBlockAvailability(mapBlockIndex,pfrom->GetId(), pindexLast->GetBlockHash());
 
         if (nCount == MAX_HEADERS_RESULTS && pindexLast) {
             // Headers message had its maximum size; the peer may have more headers.

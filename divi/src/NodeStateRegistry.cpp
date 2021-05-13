@@ -119,7 +119,7 @@ NodeId GetSourceOfInFlightBlock(const uint256& hash)
 {
     return mapBlocksInFlight[hash].first;
 }
-
+/** Check whether the last unknown block a peer advertized is not yet known. */
 void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid)
 {
     CNodeState* state = State(nodeid);

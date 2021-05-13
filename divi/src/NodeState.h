@@ -4,7 +4,7 @@
 #include <string>
 #include <list>
 #include <uint256.h>
-#include <net.h>
+#include <netbase.h>
 #include <BlockRejects.h>
 #include <QueuedBlock.h>
 

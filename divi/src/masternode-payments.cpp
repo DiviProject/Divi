@@ -31,6 +31,7 @@
 #include <MasternodeNetworkMessageManager.h>
 #include <timedata.h>
 #include <NodeState.h>
+#include <Node.h>
 
 extern CCriticalSection cs_main;
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED = 6;

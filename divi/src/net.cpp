@@ -326,7 +326,7 @@ void AdvertizeLocal(CNode* pnode)
     }
 }
 
-void AddressCurrentlyConnected(const CService& addr)
+void RecordAddressAsCurrentlyConnected(const CService& addr)
 {
     addrman.Connected(addr);
 }

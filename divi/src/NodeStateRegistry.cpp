@@ -8,6 +8,7 @@
 #include <uint256.h>
 #include <chain.h>
 #include <utiltime.h>
+#include <blockmap.h>
 
 extern CCriticalSection cs_main;
 
@@ -117,4 +118,19 @@ bool BlockIsInFlight(const uint256& hash)
 NodeId GetSourceOfInFlightBlock(const uint256& hash)
 {
     return mapBlocksInFlight[hash].first;
+}
+
+void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid)
+{
+    CNodeState* state = State(nodeid);
+    assert(state != NULL);
+
+    if (state->hashLastUnknownBlock != 0) {
+        BlockMap::const_iterator itOld = blockIndicesByHash.find(state->hashLastUnknownBlock);
+        if (itOld != blockIndicesByHash.end() && itOld->second->nChainWork > 0) {
+            if (state->pindexBestKnownBlock == NULL || itOld->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
+                state->pindexBestKnownBlock = itOld->second;
+            state->hashLastUnknownBlock = uint256(0);
+        }
+    }
 }

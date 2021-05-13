@@ -232,17 +232,7 @@ int GetHeight()
 /** Check whether the last unknown block a peer advertized is not yet known. */
 void ProcessBlockAvailability(NodeId nodeid)
 {
-    CNodeState* state = State(nodeid);
-    assert(state != NULL);
-
-    if (state->hashLastUnknownBlock != 0) {
-        BlockMap::iterator itOld = mapBlockIndex.find(state->hashLastUnknownBlock);
-        if (itOld != mapBlockIndex.end() && itOld->second->nChainWork > 0) {
-            if (state->pindexBestKnownBlock == NULL || itOld->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
-                state->pindexBestKnownBlock = itOld->second;
-            state->hashLastUnknownBlock = uint256(0);
-        }
-    }
+    ProcessBlockAvailability(mapBlockIndex,nodeid);
 }
 
 /** Update tracking information about which blocks a peer is assumed to have. */

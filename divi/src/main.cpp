@@ -228,14 +228,6 @@ int GetHeight()
         return chainActive.Height();
     }
 }
-
-/** Update pindexLastCommonBlock and add not-in-flight missing successors to vBlocks, until it has
- *  at most count entries. */
-void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBlockIndex*>& vBlocks, NodeId& nodeStaller)
-{
-    FindNextBlocksToDownload(mapBlockIndex,chainActive,nodeid,count,vBlocks,nodeStaller);
-}
-
 } // anon namespace
 
 bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats)
@@ -4000,7 +3992,7 @@ static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, CNodeState* stat
     if (!pto->fDisconnect && !pto->fClient && state->nBlocksInFlight < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
         std::vector<CBlockIndex*> vToDownload;
         NodeId staller = -1;
-        FindNextBlocksToDownload(pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - state->nBlocksInFlight, vToDownload, staller);
+        FindNextBlocksToDownload(mapBlockIndex,chainActive, pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - state->nBlocksInFlight, vToDownload, staller);
         for(CBlockIndex* pindex: vToDownload) {
             vGetData.push_back(CInv(MSG_BLOCK, pindex->GetBlockHash()));
             MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockHash(), pindex);

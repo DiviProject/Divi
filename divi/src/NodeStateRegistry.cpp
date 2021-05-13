@@ -47,7 +47,7 @@ void FinalizeNode(NodeId nodeid)
         nSyncStarted--;
 
     if (state->nMisbehavior == 0 && state->fCurrentlyConnected) {
-        AddressCurrentlyConnected(state->address);
+        RecordAddressAsCurrentlyConnected(state->address);
     }
 
     for(const QueuedBlock& entry: state->vBlocksInFlight)

@@ -133,3 +133,21 @@ void CBlockIndex::BuildSkip()
     if (pprev)
         pskip = pprev->GetAncestor(GetSkipHeight(nHeight));
 }
+
+CBlockIndex* LastCommonAncestor(CBlockIndex* pa, CBlockIndex* pb)
+{
+    if (pa->nHeight > pb->nHeight) {
+        pa = pa->GetAncestor(pb->nHeight);
+    } else if (pb->nHeight > pa->nHeight) {
+        pb = pb->GetAncestor(pa->nHeight);
+    }
+
+    while (pa != pb && pa && pb) {
+        pa = pa->pprev;
+        pb = pb->pprev;
+    }
+
+    // Eventually all chain branches meet at the genesis block.
+    assert(pa == pb);
+    return pa;
+}

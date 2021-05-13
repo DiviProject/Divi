@@ -2,6 +2,7 @@
 
 #include <Logging.h>
 #include <Settings.h>
+#include <NodeStateRegistry.h>
 extern Settings& settings;
 
 CNodeState::CNodeState(
@@ -16,17 +17,6 @@ CNodeState::CNodeState(
     , nBlocksInFlight(0)
     , fPreferredDownload(false)
 {
-}
-
-/** Map maintaining per-node state. Requires cs_main. */
-std::map<NodeId, CNodeState> mapNodeState;
-// Requires cs_main.
-CNodeState* State(int pnode)
-{
-    std::map<NodeId, CNodeState>::iterator it = mapNodeState.find(pnode);
-    if (it == mapNodeState.end())
-        return NULL;
-    return &it->second;
 }
 
 void Misbehaving(int pnode, int howmuch)

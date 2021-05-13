@@ -27,7 +27,7 @@ class MnVaultsTest (BitcoinTestFramework):
 
   def __init__ (self):
     super (MnVaultsTest, self).__init__ ()
-    self.base_args = ["-debug", "-nolistenonion"]
+    self.base_args = ["-debug=masternode", "-debug=mocktime", "-nolistenonion"]
     self.cfg = None
 
   def setup_chain (self):

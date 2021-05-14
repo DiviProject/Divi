@@ -13,10 +13,10 @@
 #include <stdint.h>
 #include <NodeId.h>
 
-#include <boost/signals2/signal.hpp>
 #include <boost/thread/condition_variable.hpp>
 
 class CBloomFilter;
+class CNodeSignals;
 
 /** The maximum number of entries in an 'inv' protocol message */
 constexpr unsigned int MAX_INV_SZ = 50000;
@@ -26,16 +26,6 @@ enum NodeBufferStatus
     HAS_SPACE,
     IS_FULL,
     IS_OVERFLOWED,
-};
-
-// Signals for message handling
-class CNode;
-struct CNodeSignals {
-    boost::signals2::signal<int()> GetHeight;
-    boost::signals2::signal<bool(CNode*)> ProcessMessages;
-    boost::signals2::signal<bool(CNode*, bool)> SendMessages;
-    boost::signals2::signal<void(NodeId, const std::string, const CAddress&)> InitializeNode;
-    boost::signals2::signal<void(NodeId)> FinalizeNode;
 };
 
 class CNetMessage

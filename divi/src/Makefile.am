@@ -203,6 +203,7 @@ BITCOIN_CORE_H = \
   IndexDatabaseUpdateCollector.h \
   NodeState.h \
   NodeStateRegistry.h \
+  NodeSignals.h \
   BlockRejects.h\
   QueuedBlock.h \
   main.h \

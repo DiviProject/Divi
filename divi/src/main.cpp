@@ -71,6 +71,7 @@
 #include <PeerBanningService.h>
 #include <utilstrencodings.h>
 #include <NodeStateRegistry.h>
+#include <Node.h>
 
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;

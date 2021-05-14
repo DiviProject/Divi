@@ -20,6 +20,7 @@
 #include <primitives/transaction.h>
 #include <PeerBanningService.h>
 #include <NodeState.h>
+#include <Node.h>
 #include <random.h>
 
 

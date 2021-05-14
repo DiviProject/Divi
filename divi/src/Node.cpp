@@ -13,6 +13,7 @@
 #include <timedata.h>
 #include <utiltime.h>
 #include <utilstrencodings.h>
+#include <NodeSignals.h>
 
 extern Settings& settings;
 uint64_t nLocalHostNonce = 0;

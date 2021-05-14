@@ -10,9 +10,11 @@ class uint256;
 class CBlockIndex;
 class BlockMap;
 class CAddress;
+class CAddrMan;
 
 // Requires cs_main.
 CNodeState* State(NodeId nodeId);
+CAddrMan& GetNetworkAddressManager();
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr);
 void FinalizeNode(NodeId nodeid);
 void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus);

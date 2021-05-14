@@ -59,13 +59,13 @@ void FinalizeNode(NodeId nodeid)
     mapNodeState.erase(nodeid);
 }
 
-void UpdatePreferredDownload(CNode* node)
+void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
 {
-    CNodeState* state = State(node->GetId());
+    CNodeState* state = State(nodeId);
     nPreferredDownload -= state->fPreferredDownload;
 
     // Whether this node should be marked as a preferred download node.
-    state->fPreferredDownload = node->IsPreferredDownloadSource();
+    state->fPreferredDownload = updatedStatus;
 
     nPreferredDownload += state->fPreferredDownload;
 }

@@ -144,7 +144,7 @@ CNode::CNode(CNodeSignals* nodeSignals, SOCKET hSocketIn, CAddress addrIn, std::
         PushVersion();
 
     assert(nodeSignals_);
-    nodeSignals_->InitializeNode(GetId(), this);
+    nodeSignals_->InitializeNode(GetId(), addrName,addr);
 }
 
 CNode::~CNode()

@@ -2,6 +2,7 @@
 #define NODE_STATE_REGISTRY_H
 #include <NodeId.h>
 #include <vector>
+#include <string>
 
 class CChain;
 class CNode;
@@ -9,10 +10,11 @@ struct CNodeState;
 class uint256;
 class CBlockIndex;
 class BlockMap;
+class CAddress;
 
 // Requires cs_main.
 CNodeState* State(NodeId nodeId);
-void InitializeNode(NodeId nodeid, const CNode* pnode);
+void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr);
 void FinalizeNode(NodeId nodeid);
 void UpdatePreferredDownload(CNode* node, CNodeState* state);
 bool HavePreferredDownloadPeers();

@@ -62,12 +62,13 @@ void FinalizeNode(NodeId nodeid)
 void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
 {
     CNodeState* state = State(nodeId);
-    nPreferredDownload -= state->fPreferredDownload;
+    if(state->fPreferredDownload != updatedStatus)
+    {
+        nPreferredDownload += (updatedStatus)? 1:-1;
+    }
 
     // Whether this node should be marked as a preferred download node.
     state->fPreferredDownload = updatedStatus;
-
-    nPreferredDownload += state->fPreferredDownload;
 }
 
 bool HavePreferredDownloadPeers()

@@ -3071,7 +3071,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         pfrom->fClient = !(pfrom->nServices & NODE_NETWORK);
 
         // Potentially mark this peer as a preferred download peer.
-        UpdatePreferredDownload(pfrom, State(pfrom->GetId()));
+        UpdatePreferredDownload(pfrom);
 
         // Change version
         pfrom->PushMessage("verack");

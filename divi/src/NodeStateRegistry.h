@@ -16,7 +16,7 @@ class CAddress;
 CNodeState* State(NodeId nodeId);
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr);
 void FinalizeNode(NodeId nodeid);
-void UpdatePreferredDownload(CNode* node, CNodeState* state);
+void UpdatePreferredDownload(CNode* node);
 bool HavePreferredDownloadPeers();
 int SyncStartedNodeCount();
 void RecordNodeStartedToSync();

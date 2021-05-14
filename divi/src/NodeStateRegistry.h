@@ -5,7 +5,6 @@
 #include <string>
 
 class CChain;
-class CNode;
 struct CNodeState;
 class uint256;
 class CBlockIndex;
@@ -16,7 +15,7 @@ class CAddress;
 CNodeState* State(NodeId nodeId);
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr);
 void FinalizeNode(NodeId nodeid);
-void UpdatePreferredDownload(CNode* node);
+void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus);
 bool HavePreferredDownloadPeers();
 int SyncStartedNodeCount();
 void RecordNodeStartedToSync();

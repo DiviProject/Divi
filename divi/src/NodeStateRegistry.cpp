@@ -65,7 +65,7 @@ void UpdatePreferredDownload(CNode* node)
     nPreferredDownload -= state->fPreferredDownload;
 
     // Whether this node should be marked as a preferred download node.
-    state->fPreferredDownload = (!node->fInbound || node->fWhitelisted) && !node->fOneShot && !node->fClient;
+    state->fPreferredDownload = node->IsPreferredDownloadSource();
 
     nPreferredDownload += state->fPreferredDownload;
 }

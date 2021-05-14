@@ -563,6 +563,11 @@ void CNode::MaybeSendPing()
     }
 }
 
+bool CNode::IsPreferredDownloadSource() const
+{
+    return (!fInbound || fWhitelisted) && !fOneShot && !fClient;
+}
+
 void CNode::ClearInventoryItem(const CInv& inv)
 {
     mapAlreadyAskedFor.erase(inv);

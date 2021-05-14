@@ -31,12 +31,12 @@ CNodeState* State(NodeId nodeId)
     return &it->second;
 }
 
-void InitializeNode(NodeId nodeid, const CNode* pnode)
+void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr)
 {
     LOCK(cs_main);
     CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState())).first->second;
-    state.name = pnode->addrName;
-    state.address = pnode->addr;
+    state.name = addressName;
+    state.address = addr;
 }
 
 void FinalizeNode(NodeId nodeid)

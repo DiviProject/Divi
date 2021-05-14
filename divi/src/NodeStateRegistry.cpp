@@ -1,9 +1,9 @@
 #include <NodeStateRegistry.h>
 
+#include <addrman.h>
 #include <NodeState.h>
 #include <sync.h>
 #include <NodeId.h>
-#include <net.h>
 #include <OrphanTransactions.h>
 #include <uint256.h>
 #include <chain.h>
@@ -22,6 +22,15 @@ int numberOfPreferredDownloadSources = 0;
 int nSyncStarted = 0;
 /** Map maintaining per-node state. Requires cs_main. */
 std::map<NodeId, CNodeState> mapNodeState;
+CAddrMan addrman;
+CAddrMan& GetNetworkAddressManager()
+{
+    return addrman;
+}
+void RecordAddressAsCurrentlyConnected(const CService& addr)
+{
+    addrman.Connected(addr);
+}
 // Requires cs_main.
 CNodeState* State(NodeId nodeId)
 {

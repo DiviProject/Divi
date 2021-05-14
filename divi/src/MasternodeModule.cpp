@@ -17,6 +17,7 @@
 #include <streams.h>
 #include <net.h>
 #include <Node.h>
+#include <NodeStateRegistry.h>
 #include <base58address.h>
 #include <flat-database.h>
 #include <uiMessenger.h>

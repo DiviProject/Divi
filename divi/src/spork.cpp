@@ -8,6 +8,7 @@
 #include "base58.h"
 #include "key.h"
 #include "net.h"
+#include <Node.h>
 #include "protocol.h"
 #include "obfuscation.h"
 #include "sync.h"

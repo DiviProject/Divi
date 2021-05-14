@@ -43,6 +43,7 @@
 #include <streams.h>
 #include <PeerNotificationOfMintService.h>
 #include <NodeStats.h>
+#include <Node.h>
 
 #ifdef WIN32
 #include <string.h>

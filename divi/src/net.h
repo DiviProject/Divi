@@ -10,7 +10,7 @@
 #include "compat.h"
 #include "netbase.h"
 #include "sync.h"
-#include <Node.h>
+#include <NodeSignals.h>
 #include <NetworkLocalAddressHelpers.h>
 #include <I_PeerSyncQueryService.h>
 #include <I_PeerBlockNotifyService.h>

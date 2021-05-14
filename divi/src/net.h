@@ -41,7 +41,6 @@ namespace boost
 class thread_group;
 } // namespace boost
 
-void RecordAddressAsCurrentlyConnected(const CService& addr);
 CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuScationMaster = false);
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo);
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound = NULL, const char* strDest = NULL, bool fOneShot = false);
@@ -49,13 +48,14 @@ void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain);
 bool StopNode();
 
 CNodeSignals& GetNodeSignals();
+void RegisterNodeSignals(CNodeSignals& nodeSignals);
+void UnregisterNodeSignals(CNodeSignals& nodeSignals);
 
 bool PeersLocalAddressIsGood(CNode* pnode);
 void AdvertizeLocal(CNode* pnode);
 
 const bool& IsListening();
 int GetMaxConnections();
-CAddrMan& GetNetworkAddressManager();
 const I_PeerSyncQueryService& GetPeerSyncQueryService();
 const I_PeerBlockNotifyService& GetPeerBlockNotifyService();
 

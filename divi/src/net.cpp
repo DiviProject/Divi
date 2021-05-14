@@ -43,6 +43,7 @@
 #include <streams.h>
 #include <PeerNotificationOfMintService.h>
 #include <NodeStats.h>
+#include <NodeStateRegistry.h>
 #include <Node.h>
 
 #ifdef WIN32
@@ -150,7 +151,6 @@ bool fListen = true;
 
 static CNode* pnodeLocalHost = NULL;
 static std::vector<ListenSocket> vhListenSocket;
-CAddrMan addrman;
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
@@ -181,6 +181,25 @@ CNodeSignals& GetNodeSignals()
 {
     return globalNodeSignals;
 }
+/** Register with a network node to receive its signals */
+void RegisterNodeSignals(CNodeSignals& nodeSignals)
+{
+    nodeSignals.GetHeight.connect(&GetHeight);
+    nodeSignals.ProcessMessages.connect(&ProcessMessages);
+    nodeSignals.SendMessages.connect(&SendMessages);
+    nodeSignals.InitializeNode.connect(&InitializeNode);
+    nodeSignals.FinalizeNode.connect(&FinalizeNode);
+}
+/** Unregister a network node */
+void UnregisterNodeSignals(CNodeSignals& nodeSignals)
+{
+    nodeSignals.GetHeight.disconnect(&GetHeight);
+    nodeSignals.ProcessMessages.disconnect(&ProcessMessages);
+    nodeSignals.SendMessages.disconnect(&SendMessages);
+    nodeSignals.InitializeNode.disconnect(&InitializeNode);
+    nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
+}
+
 
 const bool& IsListening()
 {
@@ -191,10 +210,6 @@ int GetMaxConnections()
     return nMaxConnections;
 }
 
-CAddrMan& GetNetworkAddressManager()
-{
-    return addrman;
-}
 const I_PeerSyncQueryService& GetPeerSyncQueryService()
 {
     return peerSyncQueryService;
@@ -327,11 +342,6 @@ void AdvertizeLocal(CNode* pnode)
     }
 }
 
-void RecordAddressAsCurrentlyConnected(const CService& addr)
-{
-    addrman.Connected(addr);
-}
-
 CNode* FindNode(const CNetAddr& ip)
 {
     LOCK(cs_vNodes);
@@ -398,6 +408,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest, bool obfuScationMa
         pszDest ? 0.0 : (double)(GetAdjustedTime() - addrConnect.nTime) / 3600.0);
 
     // Connect
+    CAddrMan& addrman = GetNetworkAddressManager();
     SOCKET hSocket;
     bool proxyConnectionFailed = false;
     if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort(), nConnectTimeout, &proxyConnectionFailed) :
@@ -848,6 +859,7 @@ void MapPort(bool)
 
 void ThreadDNSAddressSeed()
 {
+    CAddrMan& addrman = GetNetworkAddressManager();
     // goal: only query DNS seeds if address need is acute
     if ((addrman.size() > 0) &&
         (!settings.GetBoolArg("-forcednsseed", false))) {
@@ -890,6 +902,7 @@ void ThreadDNSAddressSeed()
 
 void DumpAddresses()
 {
+    CAddrMan& addrman =GetNetworkAddressManager();
     int64_t nStart = GetTimeMillis();
 
     CAddrDB adb;
@@ -919,6 +932,7 @@ void static ProcessOneShot()
 
 void ThreadOpenConnections()
 {
+    CAddrMan& addrman = GetNetworkAddressManager();
     // Connect to specific addresses
     if (settings.ParameterIsSet("-connect")) {
         const auto& connections = settings.GetMultiParameter("-connect");
@@ -1384,11 +1398,11 @@ void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain)
     int64_t nStart = GetTimeMillis();
     {
         CAddrDB adb;
-        if (!adb.Read(addrman))
+        if (!adb.Read(GetNetworkAddressManager()))
             LogPrintf("Invalid or missing peers.dat; recreating\n");
     }
     LogPrintf("Loaded %i addresses from peers.dat  %dms\n",
-        addrman.size(), GetTimeMillis() - nStart);
+        GetNetworkAddressManager().size(), GetTimeMillis() - nStart);
     fAddressesInitialized = true;
 
     if (semOutbound == NULL) {

@@ -216,8 +216,6 @@ void SyncWithWallets(const CTransaction& tx, const CBlock* pblock)
 //
 // Registration of network node signals.
 //
-namespace
-{
 int GetHeight()
 {
     while (true) {
@@ -229,7 +227,6 @@ int GetHeight()
         return chainActive.Height();
     }
 }
-} // anon namespace
 
 bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats)
 {
@@ -245,24 +242,6 @@ bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats)
             stats.vHeightInFlight.push_back(queue.pindex->nHeight);
     }
     return true;
-}
-
-void RegisterNodeSignals(CNodeSignals& nodeSignals)
-{
-    nodeSignals.GetHeight.connect(&GetHeight);
-    nodeSignals.ProcessMessages.connect(&ProcessMessages);
-    nodeSignals.SendMessages.connect(&SendMessages);
-    nodeSignals.InitializeNode.connect(&InitializeNode);
-    nodeSignals.FinalizeNode.connect(&FinalizeNode);
-}
-
-void UnregisterNodeSignals(CNodeSignals& nodeSignals)
-{
-    nodeSignals.GetHeight.disconnect(&GetHeight);
-    nodeSignals.ProcessMessages.disconnect(&ProcessMessages);
-    nodeSignals.SendMessages.disconnect(&SendMessages);
-    nodeSignals.InitializeNode.disconnect(&InitializeNode);
-    nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
 }
 
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator)

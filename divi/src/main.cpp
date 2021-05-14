@@ -2928,46 +2928,6 @@ void static ProcessGetData(CNode* pfrom)
                         pushed = true;
                     }
                 }
-                //if (!pushed && inv.type == MSG_BUDGET_VOTE) {
-                //    if (budget.mapSeenMasternodeBudgetVotes.count(inv.hash)) {
-                //        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                //        ss.reserve(1000);
-                //        ss << budget.mapSeenMasternodeBudgetVotes[inv.hash];
-                //        pfrom->PushMessage("mvote", ss);
-                //        pushed = true;
-                //    }
-                //}
-
-                //if (!pushed && inv.type == MSG_BUDGET_PROPOSAL) {
-                //    if (budget.mapSeenMasternodeBudgetProposals.count(inv.hash)) {
-                //        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                //        ss.reserve(1000);
-                //        ss << budget.mapSeenMasternodeBudgetProposals[inv.hash];
-                //        pfrom->PushMessage("mprop", ss);
-                //        pushed = true;
-                //    }
-                //}
-
-                //if (!pushed && inv.type == MSG_BUDGET_FINALIZED_VOTE) {
-                //    if (budget.mapSeenFinalizedBudgetVotes.count(inv.hash)) {
-                //        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                //        ss.reserve(1000);
-                //        ss << budget.mapSeenFinalizedBudgetVotes[inv.hash];
-                //        pfrom->PushMessage("fbvote", ss);
-                //        pushed = true;
-                //    }
-                //}
-
-                //if (!pushed && inv.type == MSG_BUDGET_FINALIZED) {
-                //    if (budget.mapSeenFinalizedBudgets.count(inv.hash)) {
-                //        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                //        ss.reserve(1000);
-                //        ss << budget.mapSeenFinalizedBudgets[inv.hash];
-                //        pfrom->PushMessage("fbs", ss);
-                //        pushed = true;
-                //    }
-                //}
-
                 if (!pushed && inv.type == MSG_MASTERNODE_ANNOUNCE)
                 {
                     if(ShareMasternodeBroadcastWithPeer(pfrom,inv.hash))
@@ -3011,7 +2971,6 @@ void static ProcessGetData(CNode* pfrom)
     }
 }
 
-bool fRequestedSporksIDB = false;
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived)
 {
     static CAddrMan& addrman = GetNetworkAddressManager();

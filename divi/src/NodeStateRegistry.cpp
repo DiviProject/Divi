@@ -17,7 +17,7 @@ int nQueuedValidatedHeaders = 0;
 std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> > mapBlocksInFlight;
 
 /** Number of preferable block download peers. */
-int nPreferredDownload = 0;
+int numberOfPreferredDownloadSources = 0;
 /** Number of nodes with fSyncStarted. */
 int nSyncStarted = 0;
 /** Map maintaining per-node state. Requires cs_main. */
@@ -54,7 +54,7 @@ void FinalizeNode(NodeId nodeid)
     for(const QueuedBlock& entry: state->vBlocksInFlight)
             mapBlocksInFlight.erase(entry.hash);
     EraseOrphansFor(nodeid);
-    nPreferredDownload -= state->fPreferredDownload;
+    numberOfPreferredDownloadSources -= state->fPreferredDownload;
 
     mapNodeState.erase(nodeid);
 }
@@ -64,7 +64,7 @@ void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
     CNodeState* state = State(nodeId);
     if(state->fPreferredDownload != updatedStatus)
     {
-        nPreferredDownload += (updatedStatus)? 1:-1;
+        numberOfPreferredDownloadSources += (updatedStatus)? 1:-1;
     }
 
     // Whether this node should be marked as a preferred download node.
@@ -73,7 +73,7 @@ void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
 
 bool HavePreferredDownloadPeers()
 {
-    return nPreferredDownload > 0;
+    return numberOfPreferredDownloadSources > 0;
 }
 int SyncStartedNodeCount()
 {

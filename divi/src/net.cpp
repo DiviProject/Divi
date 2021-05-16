@@ -376,15 +376,7 @@ CNode* FindNode(const CService& addr)
     return NULL;
 }
 
-bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo)
-{
-    CNode* pnode = ConnectNode(addrToConnectTo, NULL, false);
-    bool connectionSuccessful = static_cast<bool>(pnode);
-    pnode->Release();
-    return connectionSuccessful;
-}
-
-CNode* ConnectNode(CAddress addrConnect, const char* pszDest, bool obfuScationMaster)
+CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuScationMaster)
 {
     if (pszDest == NULL) {
         // we clean masternode connections in CMasternodeMan::ProcessMasternodeConnections()
@@ -441,6 +433,13 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest, bool obfuScationMa
     }
 
     return NULL;
+}
+bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo)
+{
+    CNode* pnode = ConnectNode(addrToConnectTo, NULL, false);
+    bool connectionSuccessful = static_cast<bool>(pnode);
+    pnode->Release();
+    return connectionSuccessful;
 }
 
 static list<CNode*> vNodesDisconnected;
@@ -1111,7 +1110,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
     } else if (FindNode(pszDest))
         return false;
 
-    CNode* pnode = ConnectNode(addrConnect, pszDest);
+    CNode* pnode = ConnectNode(addrConnect, pszDest,false);
     boost::this_thread::interruption_point();
 
     if (!pnode)

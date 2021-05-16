@@ -376,19 +376,17 @@ CNode* FindNode(const CService& addr)
     return NULL;
 }
 
-CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuScationMaster)
+CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
 {
     if (pszDest == NULL) {
         // we clean masternode connections in CMasternodeMan::ProcessMasternodeConnections()
         // so should be safe to skip this and connect to local Hot MN on CActiveMasternode::ManageStatus()
-        if (IsLocal(addrConnect) && !obfuScationMaster)
+        if (IsLocal(addrConnect))
             return NULL;
 
         // Look for an existing connection
         CNode* pnode = FindNode((CService)addrConnect);
         if (pnode) {
-            pnode->fObfuScationMaster = obfuScationMaster;
-
             pnode->AddRef();
             return pnode;
         }
@@ -423,7 +421,6 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuSc
         }
 
         pnode->nTimeConnected = GetTime();
-        if (obfuScationMaster) pnode->fObfuScationMaster = true;
 
         return pnode;
     } else if (!proxyConnectionFailed) {
@@ -436,7 +433,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuSc
 }
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo)
 {
-    CNode* pnode = ConnectNode(addrToConnectTo, NULL, false);
+    CNode* pnode = ConnectNode(addrToConnectTo, NULL);
     bool connectionSuccessful = static_cast<bool>(pnode);
     pnode->Release();
     return connectionSuccessful;
@@ -1110,7 +1107,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
     } else if (FindNode(pszDest))
         return false;
 
-    CNode* pnode = ConnectNode(addrConnect, pszDest,false);
+    CNode* pnode = ConnectNode(addrConnect, pszDest);
     boost::this_thread::interruption_point();
 
     if (!pnode)

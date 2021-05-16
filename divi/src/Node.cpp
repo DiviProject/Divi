@@ -127,7 +127,6 @@ CNode::CNode(CNodeSignals* nodeSignals, SOCKET hSocketIn, CAddress addrIn, std::
     nPingUsecStart = 0;
     nPingUsecTime = 0;
     fPingQueued = false;
-    fObfuScationMaster = false;
     nodeSignals_ = nodeSignals;
 
     {

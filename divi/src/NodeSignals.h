@@ -7,7 +7,6 @@ class CAddress;
 // Signals for message handling
 class CNode;
 struct CNodeSignals {
-    boost::signals2::signal<bool(CNode*)> ProcessMessages;
     boost::signals2::signal<bool(CNode*, bool)> SendMessages;
     boost::signals2::signal<void(NodeId, const std::string, const CAddress&)> InitializeNode;
     boost::signals2::signal<void(NodeId)> FinalizeNode;

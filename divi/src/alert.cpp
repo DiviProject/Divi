@@ -7,12 +7,12 @@
 
 #include "chainparams.h"
 #include "clientversion.h"
-#include <Node.h>
 #include "pubkey.h"
 #include "timedata.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "Settings.h"
+#include <streams.h>
 #include <algorithm>
 #include <map>
 #include <stdint.h>

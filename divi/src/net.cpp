@@ -413,6 +413,8 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
 
         // Add node
         CNode* pnode = new CNode(&GetNodeSignals(),hSocket, addrConnect, pszDest ? pszDest : "", false);
+        if (pnode->hSocket != INVALID_SOCKET && !pnode->fInbound)
+            pnode->PushVersion();
         pnode->AddRef();
 
         {

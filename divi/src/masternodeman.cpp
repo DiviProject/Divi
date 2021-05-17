@@ -22,7 +22,7 @@
 #include <chain.h>
 #include <blockmap.h>
 #include <TransactionDiskAccessor.h>
-#include <NodeState.h>
+#include <NodeStateRegistry.h>
 #include <Node.h>
 
 extern bool ShutdownRequested();

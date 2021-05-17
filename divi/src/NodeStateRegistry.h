@@ -34,4 +34,7 @@ void FindNextBlocksToDownload(
     unsigned int count,
     std::vector<CBlockIndex*>& vBlocks,
     NodeId& nodeStaller);
+// Requires cs_main.
+/** Increase a node's misbehavior score. */
+void Misbehaving(NodeId nodeId, int howmuch);
 #endif// NODE_STATE_REGISTRY_H

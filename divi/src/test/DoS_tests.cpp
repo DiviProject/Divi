@@ -19,7 +19,7 @@
 #include <OrphanTransactions.h>
 #include <primitives/transaction.h>
 #include <PeerBanningService.h>
-#include <NodeState.h>
+#include <NodeStateRegistry.h>
 #include <Node.h>
 #include <random.h>
 

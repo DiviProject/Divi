@@ -189,7 +189,7 @@ public:
     void AskFor(const CInv& inv);
     void SocketSendData();
 
-    void PushVersion();
+    void PushVersion(int currentChainTipHeight);
     void SetSporkCount(int nSporkCountIn);
     bool AreSporksSynced() const;
 

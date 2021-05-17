@@ -27,7 +27,7 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 #include <ValidationState.h>
-#include <NodeState.h>
+#include <NodeStateRegistry.h>
 #include <utilstrencodings.h>
 
 extern bool fLiteMode;

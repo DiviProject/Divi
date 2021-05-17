@@ -47,7 +47,4 @@ struct CNodeState {
     CNodeState();
 };
 
-// Requires cs_main.
-/** Increase a node's misbehavior score. */
-void Misbehaving(int pnode, int howmuch);
 #endif// NODE_STATE_H

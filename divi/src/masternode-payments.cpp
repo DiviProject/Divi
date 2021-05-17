@@ -30,7 +30,7 @@
 #include <MasternodeHelpers.h>
 #include <MasternodeNetworkMessageManager.h>
 #include <timedata.h>
-#include <NodeState.h>
+#include <NodeStateRegistry.h>
 #include <Node.h>
 
 extern CCriticalSection cs_main;

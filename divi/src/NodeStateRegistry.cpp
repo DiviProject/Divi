@@ -20,8 +20,6 @@ std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> > mapBlock
 
 /** Number of preferable block download peers. */
 int numberOfPreferredDownloadSources = 0;
-/** Number of nodes with fSyncStarted. */
-int nSyncStarted = 0;
 /** Map maintaining per-node state. Requires cs_main. */
 std::map<NodeId, CNodeState> mapNodeState;
 CAddrMan addrman;
@@ -55,9 +53,6 @@ void FinalizeNode(NodeId nodeid)
     LOCK(cs_main);
     CNodeState* state = State(nodeid);
 
-    if (state->fSyncStarted)
-        nSyncStarted--;
-
     if (state->nMisbehavior == 0 && state->fCurrentlyConnected) {
         RecordAddressAsCurrentlyConnected(state->address);
     }
@@ -85,14 +80,6 @@ void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
 bool HavePreferredDownloadPeers()
 {
     return numberOfPreferredDownloadSources > 0;
-}
-int SyncStartedNodeCount()
-{
-    return nSyncStarted;
-}
-void RecordNodeStartedToSync()
-{
-    ++nSyncStarted;
 }
 
 // Requires cs_main.

@@ -17,6 +17,9 @@ class CBlockIndex;
  * and we're no longer holding the node's locks.
  */
 struct CNodeState {
+private:
+    static int countOfNodesAlreadySyncing;
+public:
     //! The peer's address
     CService address;
     //! Whether we have a fully established connection.
@@ -45,6 +48,9 @@ struct CNodeState {
     bool fPreferredDownload;
 
     CNodeState();
+    ~CNodeState();
+    void RecordNodeStartedToSync();
+    static bool NodeSyncStarted();
 };
 
 #endif// NODE_STATE_H

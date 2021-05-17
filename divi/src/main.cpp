@@ -3838,9 +3838,8 @@ static void BeginSyncingWithPeer(CNode* pto, CNodeState* state)
 {
     if (!state->fSyncStarted && !pto->fClient && !fReindex) {
         // Only actively request headers from a single peer, unless we're close to end of initial download.
-        if ( !(SyncStartedNodeCount()>0) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 6 * 60 * 60) { // NOTE: was "close to today" and 24h in Bitcoin
-            state->fSyncStarted = true;
-            RecordNodeStartedToSync();
+        if ( !CNodeState::NodeSyncStarted() || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 6 * 60 * 60) { // NOTE: was "close to today" and 24h in Bitcoin
+            state->RecordNodeStartedToSync();
             //CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
             //LogPrint("net", "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id, pto->nStartingHeight);
             //pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));

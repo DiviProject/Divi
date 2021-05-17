@@ -2,6 +2,8 @@
 
 /** Number of nodes with fSyncStarted. */
 int CNodeState::countOfNodesAlreadySyncing = 0;
+/** Number of preferable block download peers. */
+int CNodeState::numberOfPreferredDownloadSources = 0;
 
 CNodeState::CNodeState(
     ): fCurrentlyConnected(false)
@@ -28,7 +30,19 @@ void CNodeState::RecordNodeStartedToSync()
     fSyncStarted = true;
     ++countOfNodesAlreadySyncing;
 }
+void CNodeState::UpdatePreferredDownload(bool updatedStatus)
+{
+    if(fPreferredDownload != updatedStatus)
+    {
+        numberOfPreferredDownloadSources += (updatedStatus)? 1:-1;
+    }
+    fPreferredDownload = updatedStatus;
+}
 bool CNodeState::NodeSyncStarted()
 {
     return countOfNodesAlreadySyncing > 0;
+}
+bool CNodeState::HavePreferredDownloadPeers()
+{
+    return numberOfPreferredDownloadSources > 0;
 }

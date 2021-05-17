@@ -19,6 +19,7 @@ class CBlockIndex;
 struct CNodeState {
 private:
     static int countOfNodesAlreadySyncing;
+    static int numberOfPreferredDownloadSources;
 public:
     //! The peer's address
     CService address;
@@ -50,7 +51,9 @@ public:
     CNodeState();
     ~CNodeState();
     void RecordNodeStartedToSync();
+    void UpdatePreferredDownload(bool updatedStatus);
     static bool NodeSyncStarted();
+    static bool HavePreferredDownloadPeers();
 };
 
 #endif// NODE_STATE_H

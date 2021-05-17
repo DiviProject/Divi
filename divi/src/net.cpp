@@ -184,7 +184,6 @@ CNodeSignals& GetNodeSignals()
 /** Register with a network node to receive its signals */
 void RegisterNodeSignals(CNodeSignals& nodeSignals)
 {
-    nodeSignals.GetHeight.connect(&GetHeight);
     nodeSignals.ProcessMessages.connect(&ProcessMessages);
     nodeSignals.SendMessages.connect(&SendMessages);
     nodeSignals.InitializeNode.connect(&InitializeNode);
@@ -193,7 +192,6 @@ void RegisterNodeSignals(CNodeSignals& nodeSignals)
 /** Unregister a network node */
 void UnregisterNodeSignals(CNodeSignals& nodeSignals)
 {
-    nodeSignals.GetHeight.disconnect(&GetHeight);
     nodeSignals.ProcessMessages.disconnect(&ProcessMessages);
     nodeSignals.SendMessages.disconnect(&SendMessages);
     nodeSignals.InitializeNode.disconnect(&InitializeNode);
@@ -414,7 +412,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
         // Add node
         CNode* pnode = new CNode(&GetNodeSignals(),hSocket, addrConnect, pszDest ? pszDest : "", false);
         if (pnode->hSocket != INVALID_SOCKET && !pnode->fInbound)
-            pnode->PushVersion();
+            pnode->PushVersion(GetHeight());
         pnode->AddRef();
 
         {

@@ -479,21 +479,19 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastComma
     return fDisconnect;
 }
 
-void CNode::PushVersion()
+void CNode::PushVersion(int currentChainTipHeight)
 {
-    int nBestHeight = nodeSignals_->GetHeight().get_value_or(0);
-
     /// when NTP implemented, change to just nTime = GetAdjustedTime()
     int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
     CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService("0.0.0.0", 0)));
     CAddress addrMe = GetLocalAddress(&addr);
     GetRandBytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
     if (ShouldLogPeerIPs())
-        LogPrint("net", "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%d\n", PROTOCOL_VERSION, nBestHeight, addrMe, addrYou, id);
+        LogPrint("net", "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%d\n", PROTOCOL_VERSION, currentChainTipHeight, addrMe, addrYou, id);
     else
-        LogPrint("net", "send version message: version %d, blocks=%d, us=%s, peer=%d\n", PROTOCOL_VERSION, nBestHeight, addrMe, id);
+        LogPrint("net", "send version message: version %d, blocks=%d, us=%s, peer=%d\n", PROTOCOL_VERSION, currentChainTipHeight, addrMe, id);
     PushMessage("version", PROTOCOL_VERSION, GetLocalServices(), nTime, addrYou, addrMe,
-                nLocalHostNonce, FormatSubVersion(std::vector<std::string>()), nBestHeight, true);
+                nLocalHostNonce, FormatSubVersion(std::vector<std::string>()), currentChainTipHeight, true);
 }
 
 void CNode::SetSporkCount(int nSporkCountIn)

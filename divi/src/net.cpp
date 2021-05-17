@@ -184,7 +184,6 @@ CNodeSignals& GetNodeSignals()
 /** Register with a network node to receive its signals */
 void RegisterNodeSignals(CNodeSignals& nodeSignals)
 {
-    nodeSignals.ProcessMessages.connect(&ProcessMessages);
     nodeSignals.SendMessages.connect(&SendMessages);
     nodeSignals.InitializeNode.connect(&InitializeNode);
     nodeSignals.FinalizeNode.connect(&FinalizeNode);
@@ -192,7 +191,6 @@ void RegisterNodeSignals(CNodeSignals& nodeSignals)
 /** Unregister a network node */
 void UnregisterNodeSignals(CNodeSignals& nodeSignals)
 {
-    nodeSignals.ProcessMessages.disconnect(&ProcessMessages);
     nodeSignals.SendMessages.disconnect(&SendMessages);
     nodeSignals.InitializeNode.disconnect(&InitializeNode);
     nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
@@ -1160,7 +1158,7 @@ void ThreadMessageHandler()
             {
                 TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
                 if (lockRecv) {
-                    if (!nodeSignals.ProcessMessages(pnode))
+                    if (!ProcessMessages(pnode))
                         pnode->CloseSocketDisconnect();
 
                     if (pnode->GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)

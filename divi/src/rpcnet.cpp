@@ -20,6 +20,9 @@
 #include <FeeRate.h>
 #include <FeeAndPriorityCalculator.h>
 #include <NodeStats.h>
+#include <QueuedBlock.h>
+#include <NodeState.h>
+#include <NodeStateRegistry.h>
 
 #include <boost/foreach.hpp>
 
@@ -30,6 +33,30 @@ using namespace std;
 
 extern std::vector<std::string> vAddedNodes;
 extern CCriticalSection cs_vAddedNodes;
+extern CCriticalSection cs_main;
+
+struct CNodeStateStats {
+    int nMisbehavior;
+    int nSyncHeight;
+    int nCommonHeight;
+    std::vector<int> vHeightInFlight;
+};
+/** Get statistics from node state */
+bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats)
+{
+    LOCK(cs_main);
+    CNodeState* state = State(nodeid);
+    if (state == NULL)
+        return false;
+    stats.nMisbehavior = state->nMisbehavior;
+    stats.nSyncHeight = state->pindexBestKnownBlock ? state->pindexBestKnownBlock->nHeight : -1;
+    stats.nCommonHeight = state->pindexLastCommonBlock ? state->pindexLastCommonBlock->nHeight : -1;
+    for(const QueuedBlock& queue: state->vBlocksInFlight) {
+        if (queue.pindex)
+            stats.vHeightInFlight.push_back(queue.pindex->nHeight);
+    }
+    return true;
+}
 
 Value getconnectioncount(const Array& params, bool fHelp)
 {

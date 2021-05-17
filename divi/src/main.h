@@ -32,7 +32,6 @@ class CInv;
 class CScriptCheck;
 class NotificationInterface;
 class CValidationState;
-struct CNodeStateStats;
 class CNode;
 struct CNodeSignals;
 class CTxMemPool;
@@ -101,20 +100,11 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlr
 CBlockIndex* InsertBlockIndex(uint256 hash);
 /** Abort with a message */
 bool AbortNode(const std::string& msg, const std::string& userMessage);
-/** Get statistics from node state */
-bool GetNodeStateStats(int nodeid, CNodeStateStats& stats);
 /** Flush all state, indexes and buffers to disk. */
 void FlushStateToDisk();
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
-
-struct CNodeStateStats {
-    int nMisbehavior;
-    int nSyncHeight;
-    int nCommonHeight;
-    std::vector<int> vHeightInFlight;
-};
 
 /**
  * Check transaction inputs, and make sure any

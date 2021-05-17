@@ -139,10 +139,6 @@ CNode::CNode(CNodeSignals* nodeSignals, SOCKET hSocketIn, CAddress addrIn, std::
     else
         LogPrint("net", "Added connection peer=%d\n", id);
 
-    // Be shy and don't send version until we hear
-    if (hSocket != INVALID_SOCKET && !fInbound)
-        PushVersion();
-
     assert(nodeSignals_);
     nodeSignals_->InitializeNode(GetId(), addrName,addr);
 }

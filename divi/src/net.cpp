@@ -1158,7 +1158,7 @@ void ThreadMessageHandler()
             {
                 TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
                 if (lockRecv) {
-                    if (!ProcessMessages(pnode))
+                    if (!ProcessReceivedMessages(pnode))
                         pnode->CloseSocketDisconnect();
 
                     if (pnode->GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)

@@ -18,7 +18,6 @@ CAddrMan& GetNetworkAddressManager();
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr);
 void FinalizeNode(NodeId nodeid);
 void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus);
-bool HavePreferredDownloadPeers();
 void MarkBlockAsReceived(const uint256& hash);
 void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex = nullptr);
 bool BlockIsInFlight(const uint256& hash);

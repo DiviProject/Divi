@@ -18,8 +18,6 @@ extern CCriticalSection cs_main;
 int nQueuedValidatedHeaders = 0;
 std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> > mapBlocksInFlight;
 
-/** Number of preferable block download peers. */
-int numberOfPreferredDownloadSources = 0;
 /** Map maintaining per-node state. Requires cs_main. */
 std::map<NodeId, CNodeState> mapNodeState;
 CAddrMan addrman;
@@ -60,26 +58,12 @@ void FinalizeNode(NodeId nodeid)
     for(const QueuedBlock& entry: state->vBlocksInFlight)
             mapBlocksInFlight.erase(entry.hash);
     EraseOrphansFor(nodeid);
-    numberOfPreferredDownloadSources -= state->fPreferredDownload;
-
     mapNodeState.erase(nodeid);
 }
 
 void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
 {
-    CNodeState* state = State(nodeId);
-    if(state->fPreferredDownload != updatedStatus)
-    {
-        numberOfPreferredDownloadSources += (updatedStatus)? 1:-1;
-    }
-
-    // Whether this node should be marked as a preferred download node.
-    state->fPreferredDownload = updatedStatus;
-}
-
-bool HavePreferredDownloadPeers()
-{
-    return numberOfPreferredDownloadSources > 0;
+    State(nodeId)->UpdatePreferredDownload(updatedStatus);
 }
 
 // Requires cs_main.

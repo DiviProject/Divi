@@ -3963,7 +3963,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             pindexBestHeader = chainActive.Tip();
 
         // Start block sync
-        bool fFetch = state->fPreferredDownload || (!HavePreferredDownloadPeers() && !pto->fClient && !pto->fOneShot); // Download if this is a nice peer, or we have no nice peers and this one might do.
+        bool fFetch = state->fPreferredDownload || (!CNodeState::HavePreferredDownloadPeers() && !pto->fClient && !pto->fOneShot); // Download if this is a nice peer, or we have no nice peers and this one might do.
         if(fFetch)
         {
             BeginSyncingWithPeer(pto, state);

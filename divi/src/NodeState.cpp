@@ -6,7 +6,9 @@ int CNodeState::countOfNodesAlreadySyncing = 0;
 int CNodeState::numberOfPreferredDownloadSources = 0;
 
 CNodeState::CNodeState(
-    ): fCurrentlyConnected(false)
+    NodeId nodeIdValue
+    ): nodeId(nodeIdValue)
+    , fCurrentlyConnected(false)
     , nMisbehavior(0)
     , fShouldBan(false)
     , pindexBestKnownBlock(nullptr)

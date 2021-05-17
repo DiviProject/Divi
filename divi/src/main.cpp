@@ -3010,11 +3010,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             if (IsListening() && !IsInitialBlockDownload()) {
                 CAddress addr = GetLocalAddress(&pfrom->addr);
                 if (addr.IsRoutable()) {
-                    LogPrintf("ProcessMessages: advertizing address %s\n", addr);
+                    LogPrintf("%s: advertizing address %s\n",__func__, addr);
                     pfrom->PushAddress(addr);
                 } else if (PeersLocalAddressIsGood(pfrom)) {
                     addr.SetIP(pfrom->addrLocal);
-                    LogPrintf("ProcessMessages: advertizing address %s\n", addr);
+                    LogPrintf("%s: advertizing address %s\n",__func__, addr);
                     pfrom->PushAddress(addr);
                 }
             }
@@ -3678,7 +3678,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 }
 
 // requires LOCK(cs_vRecvMsg)
-bool ProcessMessages(CNode* pfrom)
+bool ProcessReceivedMessages(CNode* pfrom)
 {
     // Message format
     //  (4) message start
@@ -3713,7 +3713,7 @@ bool ProcessMessages(CNode* pfrom)
 
         // Scan for message start
         if (memcmp(msg.hdr.pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) != 0) {
-            LogPrintf("PROCESSMESSAGE: INVALID MESSAGESTART %s peer=%d\n", SanitizeString(msg.hdr.GetCommand()), pfrom->id);
+            LogPrintf("%s: INVALID MESSAGESTART %s peer=%d\n",__func__, SanitizeString(msg.hdr.GetCommand()), pfrom->id);
             fOk = false;
             break;
         }
@@ -3721,7 +3721,7 @@ bool ProcessMessages(CNode* pfrom)
         // Read header
         CMessageHeader& hdr = msg.hdr;
         if (!hdr.IsValid()) {
-            LogPrintf("PROCESSMESSAGE: ERRORS IN HEADER %s peer=%d\n", SanitizeString(hdr.GetCommand()), pfrom->id);
+            LogPrintf("%s: ERRORS IN HEADER %s peer=%d\n",__func__, SanitizeString(hdr.GetCommand()), pfrom->id);
             continue;
         }
         string strCommand = hdr.GetCommand();
@@ -3735,8 +3735,8 @@ bool ProcessMessages(CNode* pfrom)
         unsigned int nChecksum = 0;
         memcpy(&nChecksum, &hash, sizeof(nChecksum));
         if (nChecksum != hdr.nChecksum) {
-            LogPrintf("ProcessMessages(%s, %u bytes): CHECKSUM ERROR nChecksum=%08x hdr.nChecksum=%08x\n",
-                      SanitizeString(strCommand), nMessageSize, nChecksum, hdr.nChecksum);
+            LogPrintf("%s(%s, %u bytes): CHECKSUM ERROR nChecksum=%08x hdr.nChecksum=%08x\n",
+                      __func__,SanitizeString(strCommand), nMessageSize, nChecksum, hdr.nChecksum);
             continue;
         }
 
@@ -3749,23 +3749,23 @@ bool ProcessMessages(CNode* pfrom)
             pfrom->PushMessage("reject", strCommand, REJECT_MALFORMED, string("error parsing message"));
             if (strstr(e.what(), "end of data")) {
                 // Allow exceptions from under-length message on vRecv
-                LogPrintf("ProcessMessages(%s, %u bytes): Exception '%s' caught, normally caused by a message being shorter than its stated length\n", SanitizeString(strCommand), nMessageSize, e.what());
+                LogPrintf("%s(%s, %u bytes): Exception '%s' caught, normally caused by a message being shorter than its stated length\n",__func__, SanitizeString(strCommand), nMessageSize, e.what());
             } else if (strstr(e.what(), "size too large")) {
                 // Allow exceptions from over-long size
-                LogPrintf("ProcessMessages(%s, %u bytes): Exception '%s' caught\n", SanitizeString(strCommand), nMessageSize, e.what());
+                LogPrintf("%s(%s, %u bytes): Exception '%s' caught\n",__func__, SanitizeString(strCommand), nMessageSize, e.what());
             } else {
-                PrintExceptionContinue(&e, "ProcessMessages()");
+                PrintExceptionContinue(&e, __func__);
             }
         } catch (boost::thread_interrupted) {
             throw;
         } catch (std::exception& e) {
-            PrintExceptionContinue(&e, "ProcessMessages()");
+            PrintExceptionContinue(&e, __func__);
         } catch (...) {
-            PrintExceptionContinue(NULL, "ProcessMessages()");
+            PrintExceptionContinue(NULL, __func__);
         }
 
         if (!fRet)
-            LogPrintf("ProcessMessage(%s, %u bytes) FAILED peer=%d\n", SanitizeString(strCommand), nMessageSize, pfrom->id);
+            LogPrintf("%s(%s, %u bytes) FAILED peer=%d\n",__func__, SanitizeString(strCommand), nMessageSize, pfrom->id);
 
         break;
     }

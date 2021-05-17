@@ -41,7 +41,7 @@ CNodeState* State(NodeId nodeId)
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr)
 {
     LOCK(cs_main);
-    CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState())).first->second;
+    CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState(nodeid))).first->second;
     state.name = addressName;
     state.address = addr;
 }

@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <list>
+#include <NodeId.h>
 #include <uint256.h>
 #include <netbase.h>
 #include <BlockRejects.h>
@@ -21,6 +22,7 @@ private:
     static int countOfNodesAlreadySyncing;
     static int numberOfPreferredDownloadSources;
 public:
+    NodeId nodeId;
     //! The peer's address
     CService address;
     //! Whether we have a fully established connection.
@@ -48,7 +50,7 @@ public:
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
 
-    CNodeState();
+    CNodeState(NodeId nodeIdValue);
     ~CNodeState();
     void RecordNodeStartedToSync();
     void UpdatePreferredDownload(bool updatedStatus);

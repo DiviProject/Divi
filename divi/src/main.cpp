@@ -3800,7 +3800,7 @@ static CNodeState* GetNodeState(NodeId nodeID)
         return nullptr;
     return State(nodeID);
 }
-static void BanIfRequested(CNode* pto, CNodeState* state)
+static void BanAndDisconnectIfNotWhitelisted(CNode* pto)
 {
     if (pto->fWhitelisted)
     {
@@ -3946,7 +3946,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
         if(state->fShouldBan)
         {
-            BanIfRequested(pto,state);
+            BanAndDisconnectIfNotWhitelisted(pto);
             state->fShouldBan = false;
         }
         CommunicateRejectedBlocksToPeer(pto,state->rejects);

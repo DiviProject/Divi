@@ -3802,8 +3802,6 @@ static CNodeState* GetNodeState(NodeId nodeID)
 }
 static void BanIfRequested(CNode* pto, CNodeState* state)
 {
-    if (state->fShouldBan)
-    {
         if (pto->fWhitelisted)
         {
             LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr);
@@ -3821,7 +3819,6 @@ static void BanIfRequested(CNode* pto, CNodeState* state)
             }
         }
         state->fShouldBan = false;
-    }
 }
 static void CommunicateRejectedBlocksToPeer(CNode* pto, std::vector<CBlockReject>& rejectedBlocks)
 {
@@ -3947,7 +3944,9 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
         CNodeState* state = GetNodeState(pto->GetId());
         if(!state) return true;
-        BanIfRequested(pto,state);
+
+        if(state->fShouldBan)
+            BanIfRequested(pto,state);
         CommunicateRejectedBlocksToPeer(pto,state->rejects);
 
         if (pindexBestHeader == NULL)

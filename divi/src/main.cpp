@@ -859,12 +859,7 @@ void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
         std::map<uint256, NodeId>::iterator it = mapBlockSource.find(pindex->GetBlockHash());
         if (it != mapBlockSource.end()) {
             CBlockReject reject = {state.GetRejectCode(), state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), pindex->GetBlockHash()};
-            if(State(it->second))
-            {
-                State(it->second)->rejects.push_back(reject);
-                if (nDoS > 0)
-                    Misbehaving(it->second, nDoS);
-            }
+            RecordInvalidBlockFromPeer(it->second,reject,nDoS);
         }
     }
     if (!state.CorruptionPossible()) {

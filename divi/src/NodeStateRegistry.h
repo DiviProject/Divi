@@ -11,9 +11,11 @@ class CBlockIndex;
 class BlockMap;
 class CAddress;
 class CAddrMan;
+class CBlockReject;
 
 // Requires cs_main.
 CNodeState* State(NodeId nodeId);
+void RecordInvalidBlockFromPeer(NodeId nodeId, const CBlockReject& blockReject, int nDoS);
 CAddrMan& GetNetworkAddressManager();
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr);
 void FinalizeNode(NodeId nodeid);

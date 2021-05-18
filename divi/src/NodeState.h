@@ -11,7 +11,7 @@
 
 class BlocksInFlightRegistry;
 class CBlockIndex;
-
+class CAddrMan;
 /**
  * Maintain validation-specific state about nodes, protected by cs_main, instead
  * by CNode's own locks. This simplifies asynchronous operation, where
@@ -23,6 +23,7 @@ private:
     static int countOfNodesAlreadySyncing;
     static int numberOfPreferredDownloadSources;
     BlocksInFlightRegistry& blocksInFlightRegistry_;
+    CAddrMan& addressManager_;
 public:
     NodeId nodeId;
     //! The peer's address
@@ -52,7 +53,7 @@ public:
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
 
-    CNodeState(NodeId nodeIdValue,BlocksInFlightRegistry& blocksInFlightRegistry);
+    CNodeState(NodeId nodeIdValue,BlocksInFlightRegistry& blocksInFlightRegistry,CAddrMan& addressManager);
     ~CNodeState();
     void RecordNodeStartedToSync();
     void UpdatePreferredDownload(bool updatedStatus);

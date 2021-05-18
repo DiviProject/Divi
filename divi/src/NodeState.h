@@ -9,6 +9,7 @@
 #include <BlockRejects.h>
 #include <QueuedBlock.h>
 
+class BlocksInFlightRegistry;
 class CBlockIndex;
 
 /**
@@ -21,6 +22,7 @@ struct CNodeState {
 private:
     static int countOfNodesAlreadySyncing;
     static int numberOfPreferredDownloadSources;
+    BlocksInFlightRegistry& blocksInFlightRegistry_;
 public:
     NodeId nodeId;
     //! The peer's address
@@ -50,12 +52,13 @@ public:
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
 
-    CNodeState(NodeId nodeIdValue);
+    CNodeState(NodeId nodeIdValue,BlocksInFlightRegistry& blocksInFlightRegistry);
     ~CNodeState();
     void RecordNodeStartedToSync();
     void UpdatePreferredDownload(bool updatedStatus);
     static bool NodeSyncStarted();
     static bool HavePreferredDownloadPeers();
+    void MarkBlockAsInFlight(const uint256& hash, CBlockIndex* pindex = nullptr);
 };
 
 #endif// NODE_STATE_H

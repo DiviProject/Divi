@@ -38,6 +38,13 @@ void UpdateStateToCurrentlyConnected(NodeId nodeId)
     LOCK(cs_main);
     State(nodeId)->fCurrentlyConnected = true;
 }
+void UpdateStallingTimestamp(NodeId nodeId, int64_t currentTimestamp)
+{
+    if (State(nodeId)->nStallingSince == 0) {
+        State(nodeId)->nStallingSince = currentTimestamp;
+        LogPrint("net", "Stall started peer=%d\n", nodeId);
+    }
+}
 void Misbehaving(CNodeState* state, int howmuch)
 {
     if (howmuch == 0)

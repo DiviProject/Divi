@@ -3919,10 +3919,7 @@ static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, CNodeState* stat
                         pindex->nHeight, pto->id);
         }
         if (state->nBlocksInFlight == 0 && staller != -1) {
-            if (State(staller)->nStallingSince == 0) {
-                State(staller)->nStallingSince = nNow;
-                LogPrint("net", "Stall started peer=%d\n", staller);
-            }
+            UpdateStallingTimestamp(staller,nNow);
         }
     }
 }

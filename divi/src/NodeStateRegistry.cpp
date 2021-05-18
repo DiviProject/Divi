@@ -33,7 +33,11 @@ CNodeState* State(NodeId nodeId)
         return NULL;
     return &it->second;
 }
-
+void UpdateStateToCurrentlyConnected(NodeId nodeId)
+{
+    LOCK(cs_main);
+    State(nodeId)->fCurrentlyConnected = true;
+}
 void Misbehaving(CNodeState* state, int howmuch)
 {
     if (howmuch == 0)

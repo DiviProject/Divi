@@ -16,7 +16,7 @@ extern CCriticalSection cs_main;
 
 /** Number of blocks in flight with validated headers. */
 int nQueuedValidatedHeaders = 0;
-std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> > mapBlocksInFlight;
+std::map<uint256, std::pair<CNodeState*, std::list<QueuedBlock>::iterator> > mapBlocksInFlight;
 
 /** Map maintaining per-node state. Requires cs_main. */
 std::map<NodeId, CNodeState> mapNodeState;
@@ -69,9 +69,9 @@ void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
 // Requires cs_main.
 void MarkBlockAsReceived(const uint256& hash)
 {
-    std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> >::iterator itInFlight = mapBlocksInFlight.find(hash);
+    std::map<uint256, std::pair<CNodeState*, std::list<QueuedBlock>::iterator> >::iterator itInFlight = mapBlocksInFlight.find(hash);
     if (itInFlight != mapBlocksInFlight.end()) {
-        CNodeState* state = State(itInFlight->second.first);
+        CNodeState* state = itInFlight->second.first;
         nQueuedValidatedHeaders -= itInFlight->second.second->fValidatedHeaders;
         state->vBlocksInFlight.erase(itInFlight->second.second);
         state->nBlocksInFlight--;
@@ -93,7 +93,7 @@ void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex
     nQueuedValidatedHeaders += newentry.fValidatedHeaders;
     std::list<QueuedBlock>::iterator it = state->vBlocksInFlight.insert(state->vBlocksInFlight.end(), newentry);
     state->nBlocksInFlight++;
-    mapBlocksInFlight[hash] = std::make_pair(nodeid, it);
+    mapBlocksInFlight[hash] = std::make_pair(state, it);
 }
 bool BlockIsInFlight(const uint256& hash)
 {
@@ -101,7 +101,7 @@ bool BlockIsInFlight(const uint256& hash)
 }
 NodeId GetSourceOfInFlightBlock(const uint256& hash)
 {
-    return mapBlocksInFlight[hash].first;
+    return mapBlocksInFlight[hash].first->nodeId;
 }
 /** Check whether the last unknown block a peer advertized is not yet known. */
 void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid)

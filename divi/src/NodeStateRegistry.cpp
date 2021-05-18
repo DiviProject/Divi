@@ -10,13 +10,13 @@
 #include <utiltime.h>
 #include <blockmap.h>
 #include <Settings.h>
+#include <BlocksInFlightRegistry.h>
 
 extern Settings& settings;
 extern CCriticalSection cs_main;
 
 /** Number of blocks in flight with validated headers. */
-int nQueuedValidatedHeaders = 0;
-std::map<uint256, std::pair<CNodeState*, std::list<QueuedBlock>::iterator> > mapBlocksInFlight;
+BlocksInFlightRegistry blocksInFlightRegistry;
 
 /** Map maintaining per-node state. Requires cs_main. */
 std::map<NodeId, CNodeState> mapNodeState;
@@ -41,7 +41,7 @@ CNodeState* State(NodeId nodeId)
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr)
 {
     LOCK(cs_main);
-    CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState(nodeid))).first->second;
+    CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState(nodeid,blocksInFlightRegistry))).first->second;
     state.name = addressName;
     state.address = addr;
 }
@@ -55,8 +55,6 @@ void FinalizeNode(NodeId nodeid)
         RecordAddressAsCurrentlyConnected(state->address);
     }
 
-    for(const QueuedBlock& entry: state->vBlocksInFlight)
-            mapBlocksInFlight.erase(entry.hash);
     EraseOrphansFor(nodeid);
     mapNodeState.erase(nodeid);
 }
@@ -69,15 +67,7 @@ void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
 // Requires cs_main.
 void MarkBlockAsReceived(const uint256& hash)
 {
-    std::map<uint256, std::pair<CNodeState*, std::list<QueuedBlock>::iterator> >::iterator itInFlight = mapBlocksInFlight.find(hash);
-    if (itInFlight != mapBlocksInFlight.end()) {
-        CNodeState* state = itInFlight->second.first;
-        nQueuedValidatedHeaders -= itInFlight->second.second->fValidatedHeaders;
-        state->vBlocksInFlight.erase(itInFlight->second.second);
-        state->nBlocksInFlight--;
-        state->nStallingSince = 0;
-        mapBlocksInFlight.erase(itInFlight);
-    }
+    blocksInFlightRegistry.MarkBlockAsReceived(hash);
 }
 
 // Requires cs_main.
@@ -85,23 +75,15 @@ void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex
 {
     CNodeState* state = State(nodeid);
     assert(state != NULL);
-
-    // Make sure it's not listed somewhere already.
-    MarkBlockAsReceived(hash);
-
-    QueuedBlock newentry = {hash, pindex, GetTimeMicros(), nQueuedValidatedHeaders, pindex != NULL};
-    nQueuedValidatedHeaders += newentry.fValidatedHeaders;
-    std::list<QueuedBlock>::iterator it = state->vBlocksInFlight.insert(state->vBlocksInFlight.end(), newentry);
-    state->nBlocksInFlight++;
-    mapBlocksInFlight[hash] = std::make_pair(state, it);
+    blocksInFlightRegistry.MarkBlockAsInFlight(state,hash,pindex);
 }
 bool BlockIsInFlight(const uint256& hash)
 {
-    return mapBlocksInFlight.count(hash)> 0;
+    return blocksInFlightRegistry.BlockIsInFlight(hash);
 }
 NodeId GetSourceOfInFlightBlock(const uint256& hash)
 {
-    return mapBlocksInFlight[hash].first->nodeId;
+    return blocksInFlightRegistry.GetSourceOfInFlightBlock(hash);
 }
 /** Check whether the last unknown block a peer advertized is not yet known. */
 void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid)

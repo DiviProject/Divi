@@ -45,6 +45,7 @@ void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress
 void FinalizeNode(NodeId nodeid)
 {
     LOCK(cs_main);
+    State(nodeid)->Finalize();
     mapNodeState.erase(nodeid);
 }
 

@@ -31,6 +31,10 @@ CNodeState::CNodeState(
 
 CNodeState::~CNodeState()
 {
+}
+
+void CNodeState::Finalize()
+{
     if(fSyncStarted) --countOfNodesAlreadySyncing;
     if(fPreferredDownload) --numberOfPreferredDownloadSources;
     if (nMisbehavior == 0 && fCurrentlyConnected) {

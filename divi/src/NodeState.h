@@ -60,6 +60,7 @@ public:
     static bool NodeSyncStarted();
     static bool HavePreferredDownloadPeers();
     void MarkBlockAsInFlight(const uint256& hash, CBlockIndex* pindex = nullptr);
+    void Finalize();
 };
 
 #endif// NODE_STATE_H

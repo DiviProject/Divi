@@ -3,6 +3,7 @@
 #include <NodeId.h>
 #include <vector>
 #include <string>
+#include <stdint.h>
 
 class CChain;
 struct CNodeState;
@@ -17,6 +18,7 @@ class CBlockReject;
 CNodeState* State(NodeId nodeId);
 void RecordInvalidBlockFromPeer(NodeId nodeId, const CBlockReject& blockReject, int nDoS);
 void UpdateStateToCurrentlyConnected(NodeId nodeId);
+void UpdateStallingTimestamp(NodeId nodeId, int64_t currentTimestamp);
 CAddrMan& GetNetworkAddressManager();
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr);
 void FinalizeNode(NodeId nodeid);

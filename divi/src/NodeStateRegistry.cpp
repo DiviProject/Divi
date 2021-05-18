@@ -33,6 +33,32 @@ CNodeState* State(NodeId nodeId)
         return NULL;
     return &it->second;
 }
+
+void Misbehaving(CNodeState* state, int howmuch)
+{
+    if (howmuch == 0)
+        return;
+
+    if (state == NULL)
+        return;
+
+    state->nMisbehavior += howmuch;
+    int banscore = settings.GetArg("-banscore", 100);
+    if (state->nMisbehavior >= banscore && state->nMisbehavior - howmuch < banscore) {
+        LogPrintf("Misbehaving: %s (%d -> %d) BAN THRESHOLD EXCEEDED\n", state->name, state->nMisbehavior - howmuch, state->nMisbehavior);
+        state->fShouldBan = true;
+    } else
+        LogPrintf("Misbehaving: %s (%d -> %d)\n", state->name, state->nMisbehavior - howmuch, state->nMisbehavior);
+}
+
+void Misbehaving(NodeId nodeId, int howmuch)
+{
+    if (howmuch == 0)
+        return;
+    CNodeState* state = State(nodeId);
+    Misbehaving(state,howmuch);
+}
+
 void RecordInvalidBlockFromPeer(NodeId nodeId, const CBlockReject& blockReject, int nDoS)
 {
     CNodeState* nodeState = State(nodeId);
@@ -40,7 +66,7 @@ void RecordInvalidBlockFromPeer(NodeId nodeId, const CBlockReject& blockReject, 
     {
         nodeState->rejects.push_back(blockReject);
         if (nDoS > 0)
-            Misbehaving(nodeId, nDoS);
+            Misbehaving(nodeState, nDoS);
     }
 }
 
@@ -208,22 +234,4 @@ void FindNextBlocksToDownload(
             }
         }
     }
-}
-
-void Misbehaving(NodeId nodeId, int howmuch)
-{
-    if (howmuch == 0)
-        return;
-
-    CNodeState* state = State(nodeId);
-    if (state == NULL)
-        return;
-
-    state->nMisbehavior += howmuch;
-    int banscore = settings.GetArg("-banscore", 100);
-    if (state->nMisbehavior >= banscore && state->nMisbehavior - howmuch < banscore) {
-        LogPrintf("Misbehaving: %s (%d -> %d) BAN THRESHOLD EXCEEDED\n", state->name, state->nMisbehavior - howmuch, state->nMisbehavior);
-        state->fShouldBan = true;
-    } else
-        LogPrintf("Misbehaving: %s (%d -> %d)\n", state->name, state->nMisbehavior - howmuch, state->nMisbehavior);
 }

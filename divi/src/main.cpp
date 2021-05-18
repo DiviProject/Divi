@@ -3818,7 +3818,6 @@ static void BanIfRequested(CNode* pto, CNodeState* state)
             PeerBanningService::Ban(GetTime(),pto->addr);
         }
     }
-    state->fShouldBan = false;
 }
 static void CommunicateRejectedBlocksToPeer(CNode* pto, std::vector<CBlockReject>& rejectedBlocks)
 {
@@ -3946,7 +3945,10 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         if(!state) return true;
 
         if(state->fShouldBan)
+        {
             BanIfRequested(pto,state);
+            state->fShouldBan = false;
+        }
         CommunicateRejectedBlocksToPeer(pto,state->rejects);
 
         if (pindexBestHeader == NULL)

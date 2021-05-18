@@ -55,7 +55,6 @@ void FinalizeNode(NodeId nodeid)
         RecordAddressAsCurrentlyConnected(state->address);
     }
 
-    EraseOrphansFor(nodeid);
     mapNodeState.erase(nodeid);
 }
 

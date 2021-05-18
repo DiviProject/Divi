@@ -2,6 +2,7 @@
 
 #include <BlocksInFlightRegistry.h>
 #include <OrphanTransactions.h>
+#include <addrman.h>
 
 /** Number of nodes with fSyncStarted. */
 int CNodeState::countOfNodesAlreadySyncing = 0;
@@ -10,8 +11,10 @@ int CNodeState::numberOfPreferredDownloadSources = 0;
 
 CNodeState::CNodeState(
     NodeId nodeIdValue,
-    BlocksInFlightRegistry& blocksInFlightRegistry
+    BlocksInFlightRegistry& blocksInFlightRegistry,
+    CAddrMan& addressManager
     ): blocksInFlightRegistry_(blocksInFlightRegistry)
+    , addressManager_(addressManager)
     , nodeId(nodeIdValue)
     , fCurrentlyConnected(false)
     , nMisbehavior(0)
@@ -30,6 +33,9 @@ CNodeState::~CNodeState()
 {
     if(fSyncStarted) --countOfNodesAlreadySyncing;
     if(fPreferredDownload) --numberOfPreferredDownloadSources;
+    if (nMisbehavior == 0 && fCurrentlyConnected) {
+        addressManager_.Connected(address);
+    }
     for(const QueuedBlock& entry: vBlocksInFlight)
         blocksInFlightRegistry_.DiscardBlockInFlight(entry.hash);
     EraseOrphansFor(nodeId);

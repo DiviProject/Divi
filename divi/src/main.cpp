@@ -3802,23 +3802,23 @@ static CNodeState* GetNodeState(NodeId nodeID)
 }
 static void BanIfRequested(CNode* pto, CNodeState* state)
 {
-        if (pto->fWhitelisted)
+    if (pto->fWhitelisted)
+    {
+        LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr);
+    }
+    else
+    {
+        pto->fDisconnect = true;
+        if (pto->addr.IsLocal())
         {
-            LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr);
+            LogPrintf("Warning: not banning local peer %s!\n", pto->addr);
         }
         else
         {
-            pto->fDisconnect = true;
-            if (pto->addr.IsLocal())
-            {
-                LogPrintf("Warning: not banning local peer %s!\n", pto->addr);
-            }
-            else
-            {
-                PeerBanningService::Ban(GetTime(),pto->addr);
-            }
+            PeerBanningService::Ban(GetTime(),pto->addr);
         }
-        state->fShouldBan = false;
+    }
+    state->fShouldBan = false;
 }
 static void CommunicateRejectedBlocksToPeer(CNode* pto, std::vector<CBlockReject>& rejectedBlocks)
 {

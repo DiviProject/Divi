@@ -25,10 +25,6 @@ CAddrMan& GetNetworkAddressManager()
 {
     return addrman;
 }
-void RecordAddressAsCurrentlyConnected(const CService& addr)
-{
-    addrman.Connected(addr);
-}
 // Requires cs_main.
 CNodeState* State(NodeId nodeId)
 {
@@ -41,7 +37,7 @@ CNodeState* State(NodeId nodeId)
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr)
 {
     LOCK(cs_main);
-    CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState(nodeid,blocksInFlightRegistry))).first->second;
+    CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState(nodeid,blocksInFlightRegistry,addrman))).first->second;
     state.name = addressName;
     state.address = addr;
 }
@@ -49,12 +45,6 @@ void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress
 void FinalizeNode(NodeId nodeid)
 {
     LOCK(cs_main);
-    CNodeState* state = State(nodeid);
-
-    if (state->nMisbehavior == 0 && state->fCurrentlyConnected) {
-        RecordAddressAsCurrentlyConnected(state->address);
-    }
-
     mapNodeState.erase(nodeid);
 }
 

@@ -1,6 +1,7 @@
 #include <NodeState.h>
 
 #include <BlocksInFlightRegistry.h>
+#include <OrphanTransactions.h>
 
 /** Number of nodes with fSyncStarted. */
 int CNodeState::countOfNodesAlreadySyncing = 0;
@@ -31,6 +32,7 @@ CNodeState::~CNodeState()
     if(fPreferredDownload) --numberOfPreferredDownloadSources;
     for(const QueuedBlock& entry: vBlocksInFlight)
         blocksInFlightRegistry_.DiscardBlockInFlight(entry.hash);
+    EraseOrphansFor(nodeId);
 }
 
 void CNodeState::RecordNodeStartedToSync()

@@ -146,16 +146,3 @@ bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree)
         LogPrintf("%s : %s\n", __func__, state.GetRejectReason());
     return fAccepted;
 }
-
-bool CMerkleTx::IsTransactionLockTimedOut() const
-{
-    return 0;
-
-    //compile consessus vote
-    std::map<uint256, CTransactionLock>::iterator i = mapTxLocks.find(GetHash());
-    if (i != mapTxLocks.end()) {
-        return GetTime() > (*i).second.nTimeout;
-    }
-
-    return false;
-}

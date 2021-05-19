@@ -19,8 +19,6 @@ using namespace boost;
 
 std::map<uint256, CTransaction> mapTxLockReq;
 std::map<uint256, CTransaction> mapTxLockReqRejected;
-std::map<uint256, CConsensusVote> mapTxLockVote;
-std::map<uint256, CTransactionLock> mapTxLocks;
 std::map<COutPoint, uint256> mapLockedInputs;
 std::map<uint256, int64_t> mapUnknownVotes; //track votes with no tx for DOS
 

@@ -8,17 +8,6 @@
 
 #include <primitives/transaction.h>
 #include <string>
-/*
-    At 15 signatures, 1/2 of the masternode network can be owned by
-    one party without comprimising the security of SwiftX
-    (1000/2150.0)**10 = 0.00047382219560689856
-    (1000/2900.0)**10 = 2.3769498616783657e-05
-
-    ### getting 5 of 10 signatures w/ 1000 nodes of 2900
-    (1000/2900.0)**5 = 0.004875397277841433
-*/
-#define SWIFTTX_SIGNATURES_REQUIRED 6
-#define SWIFTTX_SIGNATURES_TOTAL 10
 
 class CDataStream;
 class CNode;
@@ -26,35 +15,11 @@ class CConsensusVote;
 class CTransaction;
 class CTransactionLock;
 
-static const int MIN_SWIFTTX_PROTO_VERSION = 70103;
-
 extern std::map<uint256, CTransaction> mapTxLockReq;
 extern std::map<uint256, CTransaction> mapTxLockReqRejected;
 extern std::map<uint256, CConsensusVote> mapTxLockVote;
 extern std::map<uint256, CTransactionLock> mapTxLocks;
 extern std::map<COutPoint, uint256> mapLockedInputs;
-extern int nCompleteTXLocks;
-
-
-int64_t CreateNewLock(CTransaction tx);
-
-bool IsIXTXValid(const CTransaction& txCollateral);
-
-// if two conflicting locks are approved by the network, they will cancel out
-bool CheckForConflictingLocks(CTransaction& tx);
-
-void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
-
-//check if we need to vote on this transaction
-void DoConsensusVote(CTransaction& tx, int64_t nBlockHeight);
-
-//process consensus vote message
-bool ProcessConsensusVote(CNode* pnode, CConsensusVote& ctx);
-
-// keep transaction locks in memory for an hour
-void CleanTransactionLocksList();
-
-int64_t GetAverageVoteTime();
 
 class CConsensusVote
 {

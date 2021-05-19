@@ -183,7 +183,6 @@ BITCOIN_CORE_H = \
   ProofOfStakeModule.h \
   StakeModifierIntervalHelpers.h \
   StakingData.h \
-  swifttx.h \
   key.h \
   keystore.h \
   LegacyBlockSubsidies.h \
@@ -460,7 +459,6 @@ libbitcoin_wallet_a_SOURCES = \
   crypto/aes.cpp \
   crypter.cpp \
   keypool.cpp \
-  swifttx.cpp \
   LegacyBlockSubsidies.cpp \
   Logging-wallet.cpp \
   masternode.cpp \

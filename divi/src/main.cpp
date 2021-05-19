@@ -3074,7 +3074,7 @@ bool static AlreadyHave(const CInv& inv)
         return mapTxLockReq.count(inv.hash) ||
                 mapTxLockReqRejected.count(inv.hash);
     case MSG_TXLOCK_VOTE:
-        return mapTxLockVote.count(inv.hash);
+        return false;
     case MSG_SPORK:
         return SporkDataIsKnown(inv.hash);
     case MSG_MASTERNODE_WINNER:
@@ -3186,15 +3186,6 @@ void static ProcessGetData(CNode* pfrom)
                         ss.reserve(1000);
                         ss << tx;
                         pfrom->PushMessage("tx", ss);
-                        pushed = true;
-                    }
-                }
-                if (!pushed && inv.type == MSG_TXLOCK_VOTE) {
-                    if (mapTxLockVote.count(inv.hash)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << mapTxLockVote[inv.hash];
-                        pfrom->PushMessage("txlvote", ss);
                         pushed = true;
                     }
                 }

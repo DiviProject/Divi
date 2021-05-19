@@ -17,8 +17,6 @@ class CTransactionLock;
 
 extern std::map<uint256, CTransaction> mapTxLockReq;
 extern std::map<uint256, CTransaction> mapTxLockReqRejected;
-extern std::map<uint256, CConsensusVote> mapTxLockVote;
-extern std::map<uint256, CTransactionLock> mapTxLocks;
 extern std::map<COutPoint, uint256> mapLockedInputs;
 
 class CConsensusVote

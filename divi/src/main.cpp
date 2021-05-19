@@ -2955,7 +2955,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
         if (pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand))
+        {
+            PeerBanningService::Ban(GetTime(),pfrom->addr);
             return false;
+        }
 
         if (pfrom->nVersion == 10300)
             pfrom->nVersion = 300;
@@ -3449,7 +3452,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                     }
                 }
                 //disconnect this node if its old protocol version
-                pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand);
+                if(pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand))
+                {
+                    PeerBanningService::Ban(GetTime(),pfrom->addr);
+                }
             } else {
                 LogPrint("net", "%s : Already processed block %s, skipping ProcessNewBlock()\n", __func__, block.GetHash());
             }

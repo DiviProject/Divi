@@ -1,7 +1,6 @@
 #include <WalletTx.h>
 
 #include <Logging.h>
-#include <swifttx.h>
 #include <script/standard.h>
 
 void RelayTransaction(const CTransaction& tx);

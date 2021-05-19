@@ -34,7 +34,6 @@
 #include "script/standard.h"
 #include "spork.h"
 #include "sporkdb.h"
-#include "swifttx.h"
 #include "sync.h"
 #include "tinyformat.h"
 #include "txdb.h"

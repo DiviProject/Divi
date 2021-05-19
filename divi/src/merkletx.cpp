@@ -5,7 +5,6 @@
 #include <chain.h>
 #include <txmempool.h>
 #include <ValidationState.h>
-#include <swifttx.h>
 #include <spork.h>
 #include <blockmap.h>
 #include <Logging.h>

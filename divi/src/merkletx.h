@@ -55,6 +55,5 @@ public:
     bool IsInMainChain() const;
     int GetBlocksToMaturity() const;
     bool AcceptToMemoryPool(bool fLimitFree);
-    bool IsTransactionLockTimedOut() const;
 };
 #endif// MERKLE_TX_H

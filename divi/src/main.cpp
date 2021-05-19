@@ -814,18 +814,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         return false;
     }
 
-    // ----------- swiftTX transaction scanning -----------
-
-    BOOST_FOREACH (const CTxIn& in, tx.vin) {
-        if (mapLockedInputs.count(in.prevout)) {
-            if (mapLockedInputs[in.prevout] != tx.GetHash()) {
-                return state.DoS(0,
-                                 error("%s : conflicts with existing transaction lock: %s",__func__, reason),
-                                 REJECT_INVALID, "tx-lock-conflict");
-            }
-        }
-    }
-
     // Check for conflicts with in-memory transactions
     {
         LOCK(pool.cs); // protect pool.mapNextTx
@@ -2144,28 +2132,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleR
                 return state.DoS(100, error("%s : more than one coinstake",__func__));
     }
 
-    // ----------- swiftTX transaction scanning -----------
-    const CSporkManager& sporkManager = GetSporkManager();
-    if (sporkManager.IsSporkActive(SPORK_3_SWIFTTX_BLOCK_FILTERING)) {
-        BOOST_FOREACH (const CTransaction& tx, block.vtx) {
-            if (!tx.IsCoinBase()) {
-                //only reject blocks when it's based on complete consensus
-                BOOST_FOREACH (const CTxIn& in, tx.vin) {
-                    if (mapLockedInputs.count(in.prevout)) {
-                        if (mapLockedInputs[in.prevout] != tx.GetHash()) {
-                            mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
-                            LogPrintf("%s : found conflicting transaction with transaction lock %s %s\n",__func__, mapLockedInputs[in.prevout], tx.ToStringShort());
-                            return state.DoS(0, error("%s : found conflicting transaction with transaction lock",__func__),
-                                             REJECT_INVALID, "conflicting-tx-ix");
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        LogPrintf("%s : skipping transaction locking checks\n",__func__);
-    }
-
     // Check transactions
     for (const CTransaction& tx : block.vtx) {
         if (!CheckTransaction(tx, state))
@@ -3071,8 +3037,7 @@ bool static AlreadyHave(const CInv& inv)
     case MSG_BLOCK:
         return mapBlockIndex.count(inv.hash);
     case MSG_TXLOCK_REQUEST:
-        return mapTxLockReq.count(inv.hash) ||
-                mapTxLockReqRejected.count(inv.hash);
+        return false;
     case MSG_TXLOCK_VOTE:
         return false;
     case MSG_SPORK:
@@ -3186,15 +3151,6 @@ void static ProcessGetData(CNode* pfrom)
                         ss.reserve(1000);
                         ss << tx;
                         pfrom->PushMessage("tx", ss);
-                        pushed = true;
-                    }
-                }
-                if (!pushed && inv.type == MSG_TXLOCK_REQUEST) {
-                    if (mapTxLockReq.count(inv.hash)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << mapTxLockReq[inv.hash];
-                        pfrom->PushMessage("ix", ss);
                         pushed = true;
                     }
                 }

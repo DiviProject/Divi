@@ -7,7 +7,6 @@
 #include <limitedmap.h>
 #include <Logging.h>
 #include <NetworkLocalAddressHelpers.h>
-#include <PeerBanningService.h>
 #include <random.h>
 #include <Settings.h>
 #include <timedata.h>
@@ -473,7 +472,6 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastComma
         LogPrintf("%s : peer=%d using obsolete version %i; disconnecting\n", __func__, id, nVersion);
         PushMessage("reject", strLastCommand, REJECT_OBSOLETE, strprintf("Version must be %d or greater", ActiveProtocol()));
         fDisconnect = true;
-        PeerBanningService::Ban(GetTime(),addr);
     }
 
     return fDisconnect;

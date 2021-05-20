@@ -27,6 +27,7 @@ private:
 
     //! Accumulated misbehaviour score for this peer.
     int nMisbehavior;
+    std::list<QueuedBlock>& vBlocksInFlight;
 public:
     NodeId nodeId;
     //! The peer's address
@@ -47,7 +48,6 @@ public:
     bool fSyncStarted;
     //! Since when we're stalling block download progress (in microseconds), or 0.
     int64_t nStallingSince;
-    std::list<QueuedBlock> vBlocksInFlight;
     int nBlocksInFlight;
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
@@ -61,6 +61,8 @@ public:
     void Finalize();
     void ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold);
     int GetMisbehaviourPenalty() const;
+    bool BlockDownloadTimedOut(int64_t nNow, int64_t targetSpacing) const;
+    std::vector<int> GetBlockHeightsInFlight() const;
 };
 
 #endif// NODE_STATE_H

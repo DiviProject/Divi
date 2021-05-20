@@ -4,6 +4,7 @@
 #include <OrphanTransactions.h>
 #include <addrman.h>
 #include <Logging.h>
+#include <chain.h>
 
 /** Number of nodes with fSyncStarted. */
 int CNodeState::countOfNodesAlreadySyncing = 0;
@@ -17,6 +18,7 @@ CNodeState::CNodeState(
     ): blocksInFlightRegistry_(blocksInFlightRegistry)
     , addressManager_(addressManager)
     , nMisbehavior(0)
+    , vBlocksInFlight(blocksInFlightRegistry_.RegisterNodedId(nodeIdValue))
     , nodeId(nodeIdValue)
     , fCurrentlyConnected(false)
     , fShouldBan(false)
@@ -41,8 +43,7 @@ void CNodeState::Finalize()
     if (nMisbehavior == 0 && fCurrentlyConnected) {
         addressManager_.Connected(address);
     }
-    for(const QueuedBlock& entry: vBlocksInFlight)
-        blocksInFlightRegistry_.DiscardBlockInFlight(entry.hash);
+    blocksInFlightRegistry_.UnregisterNodeId(nodeId);
     EraseOrphansFor(nodeId);
 }
 
@@ -80,4 +81,27 @@ void CNodeState::ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold)
 int CNodeState::GetMisbehaviourPenalty() const
 {
     return nMisbehavior;
+}
+
+bool CNodeState::BlockDownloadTimedOut(int64_t nNow, int64_t targetSpacing) const
+{
+    const int64_t maxTimeout = nNow - 500000 * targetSpacing * (4 + vBlocksInFlight.front().nValidatedQueuedBefore);
+    const bool timedOut = vBlocksInFlight.size() > 0 &&
+        vBlocksInFlight.front().nTime < maxTimeout;
+    if(timedOut)
+    {
+        LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", vBlocksInFlight.front().hash, nodeId);
+    }
+    return timedOut;
+}
+
+std::vector<int> CNodeState::GetBlockHeightsInFlight() const
+{
+    std::vector<int> blockHeights;
+    blockHeights.reserve(vBlocksInFlight.size());
+    for(const QueuedBlock& queue: vBlocksInFlight) {
+        if (queue.pindex)
+            blockHeights.push_back(queue.pindex->nHeight);
+    }
+    return blockHeights;
 }

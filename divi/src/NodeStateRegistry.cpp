@@ -40,10 +40,7 @@ void UpdateStateToCurrentlyConnected(NodeId nodeId)
 }
 void UpdateStallingTimestamp(NodeId nodeId, int64_t currentTimestamp)
 {
-    if (State(nodeId)->nStallingSince == 0) {
-        State(nodeId)->nStallingSince = currentTimestamp;
-        LogPrint("net", "Stall started peer=%d\n", nodeId);
-    }
+    State(nodeId)->RecordWhenStallingBegan(currentTimestamp);
 }
 bool Misbehaving(CNodeState* state, int howmuch)
 {

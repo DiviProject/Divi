@@ -58,7 +58,6 @@ public:
     void UpdatePreferredDownload(bool updatedStatus);
     static bool NodeSyncStarted();
     static bool HavePreferredDownloadPeers();
-    void MarkBlockAsInFlight(const uint256& hash, CBlockIndex* pindex = nullptr);
     void Finalize();
     void ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold);
     int GetMisbehaviourPenalty() const;

@@ -67,11 +67,6 @@ bool CNodeState::HavePreferredDownloadPeers()
 {
     return numberOfPreferredDownloadSources > 0;
 }
-// Requires cs_main.
-void CNodeState::MarkBlockAsInFlight(const uint256& hash, CBlockIndex* pindex)
-{
-    blocksInFlightRegistry_.MarkBlockAsInFlight(this,hash,pindex);
-}
 void CNodeState::ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold)
 {
     int previousMisbehavior = nMisbehavior;

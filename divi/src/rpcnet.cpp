@@ -48,7 +48,7 @@ bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats)
     const CNodeState* state = State(nodeid);
     if (state == NULL)
         return false;
-    stats.nMisbehavior = state->nMisbehavior;
+    stats.nMisbehavior = state->GetMisbehaviourPenalty();
     stats.nSyncHeight = state->pindexBestKnownBlock ? state->pindexBestKnownBlock->nHeight : -1;
     stats.nCommonHeight = state->pindexLastCommonBlock ? state->pindexLastCommonBlock->nHeight : -1;
     for(const QueuedBlock& queue: state->vBlocksInFlight) {

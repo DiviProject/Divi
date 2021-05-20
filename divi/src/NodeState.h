@@ -24,14 +24,15 @@ private:
     static int numberOfPreferredDownloadSources;
     BlocksInFlightRegistry& blocksInFlightRegistry_;
     CAddrMan& addressManager_;
+
+    //! Accumulated misbehaviour score for this peer.
+    int nMisbehavior;
 public:
     NodeId nodeId;
     //! The peer's address
     CService address;
     //! Whether we have a fully established connection.
     bool fCurrentlyConnected;
-    //! Accumulated misbehaviour score for this peer.
-    int nMisbehavior;
     //! Whether this peer should be disconnected and banned (unless whitelisted).
     bool fShouldBan;
     //! String name of this peer (debugging/logging purposes).
@@ -59,6 +60,8 @@ public:
     static bool HavePreferredDownloadPeers();
     void MarkBlockAsInFlight(const uint256& hash, CBlockIndex* pindex = nullptr);
     void Finalize();
+    void ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold);
+    int GetMisbehaviourPenalty() const;
 };
 
 #endif// NODE_STATE_H

@@ -3,6 +3,7 @@
 #include <BlocksInFlightRegistry.h>
 #include <OrphanTransactions.h>
 #include <addrman.h>
+#include <Logging.h>
 
 /** Number of nodes with fSyncStarted. */
 int CNodeState::countOfNodesAlreadySyncing = 0;
@@ -15,9 +16,9 @@ CNodeState::CNodeState(
     CAddrMan& addressManager
     ): blocksInFlightRegistry_(blocksInFlightRegistry)
     , addressManager_(addressManager)
+    , nMisbehavior(0)
     , nodeId(nodeIdValue)
     , fCurrentlyConnected(false)
-    , nMisbehavior(0)
     , fShouldBan(false)
     , pindexBestKnownBlock(nullptr)
     , hashLastUnknownBlock(uint256(0))
@@ -70,4 +71,18 @@ bool CNodeState::HavePreferredDownloadPeers()
 void CNodeState::MarkBlockAsInFlight(const uint256& hash, CBlockIndex* pindex)
 {
     blocksInFlightRegistry_.MarkBlockAsInFlight(this,hash,pindex);
+}
+void CNodeState::ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold)
+{
+    int previousMisbehavior = nMisbehavior;
+    nMisbehavior += penaltyAmount;
+    if (nMisbehavior >= banthreshold && previousMisbehavior < banthreshold) {
+        LogPrintf("Misbehaving: %s (%d -> %d) BAN THRESHOLD EXCEEDED\n", name, previousMisbehavior, nMisbehavior);
+        fShouldBan = true;
+    } else
+        LogPrintf("Misbehaving: %s (%d -> %d)\n", name, previousMisbehavior, nMisbehavior);
+}
+int CNodeState::GetMisbehaviourPenalty() const
+{
+    return nMisbehavior;
 }

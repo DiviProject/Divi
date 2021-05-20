@@ -30,6 +30,8 @@ private:
     //! Since when we're stalling block download progress (in microseconds), or 0.
     std::list<QueuedBlock>& vBlocksInFlight;
     int64_t nStallingSince;
+    //! Whether we've started headers synchronization with this peer.
+    bool fSyncStarted;
 public:
     NodeId nodeId;
     //! The peer's address
@@ -46,13 +48,12 @@ public:
     uint256 hashLastUnknownBlock;
     //! The last full block we both have.
     CBlockIndex* pindexLastCommonBlock;
-    //! Whether we've started headers synchronization with this peer.
-    bool fSyncStarted;
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
 
     CNodeState(NodeId nodeIdValue,BlocksInFlightRegistry& blocksInFlightRegistry,CAddrMan& addressManager);
     ~CNodeState();
+    bool Syncing() const;
     void RecordNodeStartedToSync();
     void UpdatePreferredDownload(bool updatedStatus);
     static bool NodeSyncStarted();

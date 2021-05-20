@@ -20,13 +20,13 @@ CNodeState::CNodeState(
     , nMisbehavior(0)
     , vBlocksInFlight(blocksInFlightRegistry_.RegisterNodedId(nodeIdValue))
     , nStallingSince(0)
+    , fSyncStarted(false)
     , nodeId(nodeIdValue)
     , fCurrentlyConnected(false)
     , fShouldBan(false)
     , pindexBestKnownBlock(nullptr)
     , hashLastUnknownBlock(uint256(0))
     , pindexLastCommonBlock(nullptr)
-    , fSyncStarted(false)
     , fPreferredDownload(false)
 {
 }
@@ -45,7 +45,10 @@ void CNodeState::Finalize()
     blocksInFlightRegistry_.UnregisterNodeId(nodeId);
     EraseOrphansFor(nodeId);
 }
-
+bool CNodeState::Syncing() const
+{
+    return fSyncStarted;
+}
 void CNodeState::RecordNodeStartedToSync()
 {
     fSyncStarted = true;

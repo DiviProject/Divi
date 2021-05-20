@@ -3847,7 +3847,7 @@ static void CommunicateRejectedBlocksToPeer(CNode* pto)
 }
 static void BeginSyncingWithPeer(CNode* pto, CNodeState* state)
 {
-    if (!state->fSyncStarted && !pto->fClient && !fReindex) {
+    if (!state->Syncing() && !pto->fClient && !fReindex) {
         // Only actively request headers from a single peer, unless we're close to end of initial download.
         if ( !CNodeState::NodeSyncStarted() || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 6 * 60 * 60) { // NOTE: was "close to today" and 24h in Bitcoin
             state->RecordNodeStartedToSync();

@@ -16,7 +16,6 @@ class CBlockReject;
 
 // Requires cs_main.
 CNodeState* State(NodeId nodeId);
-void RecordInvalidBlockFromPeer(NodeId nodeId, const CBlockReject& blockReject, int nDoS);
 void UpdateStateToCurrentlyConnected(NodeId nodeId);
 void UpdateStallingTimestamp(NodeId nodeId, int64_t currentTimestamp);
 CAddrMan& GetNetworkAddressManager();

@@ -852,14 +852,24 @@ void InvalidChainFound(CBlockIndex* pindexNew)
     CheckForkWarningConditions();
 }
 
+//! List of asynchronously-determined block rejections to notify this peer about.
+CCriticalSection cs_RejectedBlocks;
+std::map<NodeId, std::vector<CBlockReject>> rejectedBlocksByNodeId;
 void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
 {
     int nDoS = 0;
     if (state.IsInvalid(nDoS)) {
         std::map<uint256, NodeId>::iterator it = mapBlockSource.find(pindex->GetBlockHash());
         if (it != mapBlockSource.end()) {
-            CBlockReject reject = {state.GetRejectCode(), state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), pindex->GetBlockHash()};
-            RecordInvalidBlockFromPeer(it->second,reject,nDoS);
+            if(Misbehaving(it->second,nDoS))
+            {
+                LOCK(cs_RejectedBlocks);
+                std::vector<CBlockReject>& rejectedBlocks = rejectedBlocksByNodeId[it->second];
+                rejectedBlocks.emplace_back(
+                    state.GetRejectCode(),
+                    state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH),
+                    pindex->GetBlockHash());
+            }
         }
     }
     if (!state.CorruptionPossible()) {
@@ -3825,8 +3835,10 @@ static void BanAndDisconnectIfNotWhitelisted(CNode* pto)
         }
     }
 }
-static void CommunicateRejectedBlocksToPeer(CNode* pto, std::vector<CBlockReject>& rejectedBlocks)
+static void CommunicateRejectedBlocksToPeer(CNode* pto)
 {
+    LOCK(cs_RejectedBlocks);
+    std::vector<CBlockReject>& rejectedBlocks = rejectedBlocksByNodeId[pto->GetId()];
     for(const CBlockReject& reject: rejectedBlocks)
     {
         pto->PushMessage("reject", (std::string) "block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
@@ -3955,7 +3967,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             BanAndDisconnectIfNotWhitelisted(pto);
             state->fShouldBan = false;
         }
-        CommunicateRejectedBlocksToPeer(pto,state->rejects);
+        CommunicateRejectedBlocksToPeer(pto);
 
         if (pindexBestHeader == NULL)
             pindexBestHeader = chainActive.Tip();

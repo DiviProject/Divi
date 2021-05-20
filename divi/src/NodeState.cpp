@@ -19,7 +19,6 @@ CNodeState::CNodeState(
     , addressManager_(addressManager)
     , nMisbehavior(0)
     , vBlocksInFlight(blocksInFlightRegistry_.RegisterNodedId(nodeIdValue))
-    , nStallingSince(0)
     , fSyncStarted(false)
     , nodeId(nodeIdValue)
     , fCurrentlyConnected(false)
@@ -83,33 +82,6 @@ void CNodeState::ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold)
 int CNodeState::GetMisbehaviourPenalty() const
 {
     return nMisbehavior;
-}
-
-bool CNodeState::BlockDownloadTimedOut(int64_t nNow, int64_t targetSpacing) const
-{
-    const int64_t maxTimeout = nNow - 500000 * targetSpacing * (4 + vBlocksInFlight.front().nValidatedQueuedBefore);
-    const bool timedOut = vBlocksInFlight.size() > 0 &&
-        vBlocksInFlight.front().nTime < maxTimeout;
-    if(timedOut)
-    {
-        LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", vBlocksInFlight.front().hash, nodeId);
-    }
-    return timedOut;
-}
-bool CNodeState::BlockDownloadIsStalling(int64_t nNow, int64_t stallingWindow) const
-{
-    return nStallingSince > 0 && nStallingSince < nNow - stallingWindow;
-}
-void CNodeState::RecordWhenStallingBegan(int64_t currentTimestamp)
-{
-    if (nStallingSince == 0) {
-        nStallingSince = currentTimestamp;
-        LogPrint("net", "Stall started peer=%d\n", nodeId);
-    }
-}
-void CNodeState::ResetStallingTimestamp()
-{
-    nStallingSince = 0;
 }
 std::vector<int> CNodeState::GetBlockHeightsInFlight() const
 {

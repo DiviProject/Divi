@@ -45,13 +45,13 @@ void UpdateStallingTimestamp(NodeId nodeId, int64_t currentTimestamp)
         LogPrint("net", "Stall started peer=%d\n", nodeId);
     }
 }
-void Misbehaving(CNodeState* state, int howmuch)
+bool Misbehaving(CNodeState* state, int howmuch)
 {
-    if (howmuch == 0)
-        return;
-
     if (state == NULL)
-        return;
+        return false;
+
+    if (howmuch == 0)
+        return true;
 
     state->nMisbehavior += howmuch;
     int banscore = settings.GetArg("-banscore", 100);
@@ -60,14 +60,14 @@ void Misbehaving(CNodeState* state, int howmuch)
         state->fShouldBan = true;
     } else
         LogPrintf("Misbehaving: %s (%d -> %d)\n", state->name, state->nMisbehavior - howmuch, state->nMisbehavior);
+
+    return true;
 }
 
-void Misbehaving(NodeId nodeId, int howmuch)
+bool Misbehaving(NodeId nodeId, int howmuch)
 {
-    if (howmuch == 0)
-        return;
     CNodeState* state = State(nodeId);
-    Misbehaving(state,howmuch);
+    return Misbehaving(state,howmuch);
 }
 
 void RecordInvalidBlockFromPeer(NodeId nodeId, const CBlockReject& blockReject, int nDoS)

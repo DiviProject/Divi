@@ -3912,8 +3912,7 @@ static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto, CNo
     // timeout. We compensate for in-flight blocks to prevent killing off peers due to our own downstream link
     // being saturated. We only count validated in-flight blocks so peers can't advertize nonexisting block hashes
     // to unreasonably increase our timeout.
-    if (!pto->fDisconnect && state->vBlocksInFlight.size() > 0 && state->vBlocksInFlight.front().nTime < nNow - 500000 * Params().TargetSpacing() * (4 + state->vBlocksInFlight.front().nValidatedQueuedBefore)) {
-        LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", state->vBlocksInFlight.front().hash, pto->id);
+    if (!pto->fDisconnect && state->BlockDownloadTimedOut(nNow,Params().TargetSpacing())) {
         pto->fDisconnect = true;
     }
 }

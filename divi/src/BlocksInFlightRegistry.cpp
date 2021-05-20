@@ -5,10 +5,23 @@
 #include <utiltime.h>
 
 BlocksInFlightRegistry::BlocksInFlightRegistry(
-    ): blocksInFlight_()
+    ): blocksInFlightByNodeId_()
+    , blocksInFlight_()
     , queuedValidatedHeadersCount_(0)
 {
 
+}
+
+std::list<QueuedBlock>& BlocksInFlightRegistry::RegisterNodedId(NodeId nodeId)
+{
+    return blocksInFlightByNodeId_[nodeId];
+}
+void BlocksInFlightRegistry::UnregisterNodeId(NodeId nodeId)
+{
+    if(blocksInFlightByNodeId_.count(nodeId)==0) return;
+    for(const QueuedBlock& entry: blocksInFlightByNodeId_[nodeId])
+        DiscardBlockInFlight(entry.hash);
+    blocksInFlightByNodeId_.erase(nodeId);
 }
 // Requires cs_main.
 void BlocksInFlightRegistry::MarkBlockAsReceived(const uint256& hash)
@@ -17,7 +30,7 @@ void BlocksInFlightRegistry::MarkBlockAsReceived(const uint256& hash)
     if (itInFlight != blocksInFlight_.end()) {
         CNodeState* state = itInFlight->second.first;
         queuedValidatedHeadersCount_ -= itInFlight->second.second->fValidatedHeaders;
-        state->vBlocksInFlight.erase(itInFlight->second.second);
+        blocksInFlightByNodeId_[state->nodeId].erase(itInFlight->second.second);
         state->nBlocksInFlight--;
         state->nStallingSince = 0;
         blocksInFlight_.erase(itInFlight);
@@ -33,7 +46,8 @@ void BlocksInFlightRegistry::MarkBlockAsInFlight(CNodeState* nodeState, const ui
 
     QueuedBlock newentry = {hash, pindex, GetTimeMicros(), queuedValidatedHeadersCount_, pindex != NULL};
     queuedValidatedHeadersCount_ += newentry.fValidatedHeaders;
-    std::list<QueuedBlock>::iterator it = nodeState->vBlocksInFlight.insert(nodeState->vBlocksInFlight.end(), newentry);
+    std::list<QueuedBlock>& blocksInFlight = blocksInFlightByNodeId_[nodeState->nodeId];
+    std::list<QueuedBlock>::iterator it = blocksInFlight.insert(blocksInFlight.end(), newentry);
     nodeState->nBlocksInFlight++;
     blocksInFlight_[hash] = std::make_pair(nodeState, it);
 }

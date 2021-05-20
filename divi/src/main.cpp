@@ -3900,7 +3900,7 @@ static void SendInventoryToPeer(CNode* pto, bool fSendTrickle)
 }
 static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto, CNodeState* state)
 {
-    if (!pto->fDisconnect && state->nStallingSince && state->nStallingSince < nNow - 1000000 * BLOCK_STALLING_TIMEOUT) {
+    if (!pto->fDisconnect && state->BlockDownloadIsStalling(nNow, 1000000 * BLOCK_STALLING_TIMEOUT)) {
         // Stalling only triggers when the block download window cannot move. During normal steady state,
         // the download window should be much larger than the to-be-downloaded set of blocks, so disconnection
         // should only happen during initial block download.

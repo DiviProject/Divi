@@ -31,7 +31,6 @@ void BlocksInFlightRegistry::MarkBlockAsReceived(const uint256& hash)
         CNodeState* state = itInFlight->second.first;
         queuedValidatedHeadersCount_ -= itInFlight->second.second->fValidatedHeaders;
         blocksInFlightByNodeId_[state->nodeId].erase(itInFlight->second.second);
-        state->nBlocksInFlight--;
         state->ResetStallingTimestamp();
         blocksInFlight_.erase(itInFlight);
     }
@@ -48,7 +47,6 @@ void BlocksInFlightRegistry::MarkBlockAsInFlight(CNodeState* nodeState, const ui
     queuedValidatedHeadersCount_ += newentry.fValidatedHeaders;
     std::list<QueuedBlock>& blocksInFlight = blocksInFlightByNodeId_[nodeState->nodeId];
     std::list<QueuedBlock>::iterator it = blocksInFlight.insert(blocksInFlight.end(), newentry);
-    nodeState->nBlocksInFlight++;
     blocksInFlight_[hash] = std::make_pair(nodeState, it);
 }
 // Requires cs_main.

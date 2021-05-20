@@ -27,7 +27,6 @@ CNodeState::CNodeState(
     , hashLastUnknownBlock(uint256(0))
     , pindexLastCommonBlock(nullptr)
     , fSyncStarted(false)
-    , nBlocksInFlight(0)
     , fPreferredDownload(false)
 {
 }
@@ -118,4 +117,8 @@ std::vector<int> CNodeState::GetBlockHeightsInFlight() const
             blockHeights.push_back(queue.pindex->nHeight);
     }
     return blockHeights;
+}
+int CNodeState::GetNumberOfBlocksInFlight() const
+{
+    return vBlocksInFlight.size();
 }

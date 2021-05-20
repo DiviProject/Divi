@@ -38,5 +38,5 @@ void FindNextBlocksToDownload(
     NodeId& nodeStaller);
 // Requires cs_main.
 /** Increase a node's misbehavior score. */
-void Misbehaving(NodeId nodeId, int howmuch);
+bool Misbehaving(NodeId nodeId, int howmuch);
 #endif// NODE_STATE_REGISTRY_H

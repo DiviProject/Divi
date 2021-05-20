@@ -70,17 +70,6 @@ bool Misbehaving(NodeId nodeId, int howmuch)
     return Misbehaving(state,howmuch);
 }
 
-void RecordInvalidBlockFromPeer(NodeId nodeId, const CBlockReject& blockReject, int nDoS)
-{
-    CNodeState* nodeState = State(nodeId);
-    if(nodeState)
-    {
-        nodeState->rejects.push_back(blockReject);
-        if (nDoS > 0)
-            Misbehaving(nodeState, nDoS);
-    }
-}
-
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr)
 {
     LOCK(cs_main);

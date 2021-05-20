@@ -36,8 +36,6 @@ public:
     bool fShouldBan;
     //! String name of this peer (debugging/logging purposes).
     std::string name;
-    //! List of asynchronously-determined block rejections to notify this peer about.
-    std::vector<CBlockReject> rejects;
     //! The best known block we know this peer has announced.
     CBlockIndex* pindexBestKnownBlock;
     //! The hash of the last unknown block this peer has announced.

@@ -27,6 +27,7 @@ private:
 
     //! Accumulated misbehaviour score for this peer.
     int nMisbehavior;
+    //! Since when we're stalling block download progress (in microseconds), or 0.
     std::list<QueuedBlock>& vBlocksInFlight;
     int64_t nStallingSince;
 public:
@@ -47,8 +48,6 @@ public:
     CBlockIndex* pindexLastCommonBlock;
     //! Whether we've started headers synchronization with this peer.
     bool fSyncStarted;
-    //! Since when we're stalling block download progress (in microseconds), or 0.
-    int nBlocksInFlight;
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
 
@@ -66,6 +65,7 @@ public:
     void RecordWhenStallingBegan(int64_t currentTimestamp);
     void ResetStallingTimestamp();
     std::vector<int> GetBlockHeightsInFlight() const;
+    int GetNumberOfBlocksInFlight() const;
 };
 
 #endif// NODE_STATE_H

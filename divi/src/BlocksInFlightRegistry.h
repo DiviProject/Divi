@@ -13,6 +13,7 @@ class BlocksInFlightRegistry
 {
 private:
     std::map<NodeId, std::list<QueuedBlock>> blocksInFlightByNodeId_;
+    std::map<NodeId, int64_t> stallingStartTimestampByNodeId_;
     std::map<uint256, std::pair<CNodeState*, std::list<QueuedBlock>::iterator> > blocksInFlight_;
     int queuedValidatedHeadersCount_;
 public:
@@ -24,5 +25,9 @@ public:
     void DiscardBlockInFlight(const uint256& hash);
     bool BlockIsInFlight(const uint256& hash);
     NodeId GetSourceOfInFlightBlock(const uint256& hash);
+
+    bool BlockDownloadTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing) const;
+    bool BlockDownloadIsStalling(NodeId nodeId, int64_t nNow, int64_t stallingWindow) const;
+    void RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp);
 };
 #endif// BLOCKS_IN_FLIGHT_REGISTRY_H

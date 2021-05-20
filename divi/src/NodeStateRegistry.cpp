@@ -38,10 +38,6 @@ void UpdateStateToCurrentlyConnected(NodeId nodeId)
     LOCK(cs_main);
     State(nodeId)->fCurrentlyConnected = true;
 }
-void UpdateStallingTimestamp(NodeId nodeId, int64_t currentTimestamp)
-{
-    State(nodeId)->RecordWhenStallingBegan(currentTimestamp);
-}
 bool Misbehaving(CNodeState* state, int howmuch)
 {
     if (state == NULL)
@@ -225,4 +221,16 @@ void FindNextBlocksToDownload(
             }
         }
     }
+}
+bool BlockDownloadTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing)
+{
+    return blocksInFlightRegistry.BlockDownloadTimedOut(nodeId,nNow,targetSpacing);
+}
+bool BlockDownloadIsStalling(NodeId nodeId, int64_t nNow, int64_t stallingWindow)
+{
+    return blocksInFlightRegistry.BlockDownloadIsStalling(nodeId,nNow,stallingWindow);
+}
+void RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp)
+{
+    blocksInFlightRegistry.RecordWhenStallingBegan(nodeId,currentTimestamp);
 }

@@ -3,9 +3,11 @@
 #include <chain.h>
 #include <NodeState.h>
 #include <utiltime.h>
+#include <Logging.h>
 
 BlocksInFlightRegistry::BlocksInFlightRegistry(
     ): blocksInFlightByNodeId_()
+    , stallingStartTimestampByNodeId_()
     , blocksInFlight_()
     , queuedValidatedHeadersCount_(0)
 {
@@ -14,6 +16,7 @@ BlocksInFlightRegistry::BlocksInFlightRegistry(
 
 std::list<QueuedBlock>& BlocksInFlightRegistry::RegisterNodedId(NodeId nodeId)
 {
+    stallingStartTimestampByNodeId_[nodeId] = 0;
     return blocksInFlightByNodeId_[nodeId];
 }
 void BlocksInFlightRegistry::UnregisterNodeId(NodeId nodeId)
@@ -22,6 +25,7 @@ void BlocksInFlightRegistry::UnregisterNodeId(NodeId nodeId)
     for(const QueuedBlock& entry: blocksInFlightByNodeId_[nodeId])
         DiscardBlockInFlight(entry.hash);
     blocksInFlightByNodeId_.erase(nodeId);
+    stallingStartTimestampByNodeId_.erase(nodeId);
 }
 // Requires cs_main.
 void BlocksInFlightRegistry::MarkBlockAsReceived(const uint256& hash)
@@ -31,7 +35,7 @@ void BlocksInFlightRegistry::MarkBlockAsReceived(const uint256& hash)
         CNodeState* state = itInFlight->second.first;
         queuedValidatedHeadersCount_ -= itInFlight->second.second->fValidatedHeaders;
         blocksInFlightByNodeId_[state->nodeId].erase(itInFlight->second.second);
-        state->ResetStallingTimestamp();
+        stallingStartTimestampByNodeId_[state->nodeId] = 0;
         blocksInFlight_.erase(itInFlight);
     }
 }
@@ -61,4 +65,39 @@ bool BlocksInFlightRegistry::BlockIsInFlight(const uint256& hash)
 NodeId BlocksInFlightRegistry::GetSourceOfInFlightBlock(const uint256& hash)
 {
     return blocksInFlight_[hash].first->nodeId;
+}
+
+bool BlocksInFlightRegistry::BlockDownloadTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing) const
+{
+    auto it = blocksInFlightByNodeId_.find(nodeId);
+    if(it != blocksInFlightByNodeId_.end())
+    {
+        const std::list<QueuedBlock>& vBlocksInFlight = it->second;
+        const int64_t maxTimeout = nNow - 500000 * targetSpacing * (4 + vBlocksInFlight.front().nValidatedQueuedBefore);
+        const bool timedOut = vBlocksInFlight.size() > 0 &&
+            vBlocksInFlight.front().nTime < maxTimeout;
+        if(timedOut)
+        {
+            LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", vBlocksInFlight.front().hash, nodeId);
+        }
+        return timedOut;
+    }
+    return false;
+}
+bool BlocksInFlightRegistry::BlockDownloadIsStalling(NodeId nodeId, int64_t nNow, int64_t stallingWindow) const
+{
+    if(stallingStartTimestampByNodeId_.count(nodeId)==0) return false;
+    const int64_t& nStallingSince = stallingStartTimestampByNodeId_.find(nodeId)->second;
+    return nStallingSince > 0 && nStallingSince < nNow - stallingWindow;
+}
+
+void BlocksInFlightRegistry::RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp)
+{
+    if(stallingStartTimestampByNodeId_.count(nodeId)==0) return;
+    int64_t& nStallingSince = stallingStartTimestampByNodeId_[nodeId];
+    if(nStallingSince==0)
+    {
+        nStallingSince = currentTimestamp;
+        LogPrint("net", "Stall started peer=%d\n", nodeId);
+    }
 }

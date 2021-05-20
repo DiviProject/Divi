@@ -32,7 +32,7 @@ void BlocksInFlightRegistry::MarkBlockAsReceived(const uint256& hash)
         queuedValidatedHeadersCount_ -= itInFlight->second.second->fValidatedHeaders;
         blocksInFlightByNodeId_[state->nodeId].erase(itInFlight->second.second);
         state->nBlocksInFlight--;
-        state->nStallingSince = 0;
+        state->ResetStallingTimestamp();
         blocksInFlight_.erase(itInFlight);
     }
 }

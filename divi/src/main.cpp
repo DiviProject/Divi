@@ -3900,7 +3900,7 @@ static void SendInventoryToPeer(CNode* pto, bool fSendTrickle)
 }
 static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto, CNodeState* state)
 {
-    if (!pto->fDisconnect && state->BlockDownloadIsStalling(nNow, 1000000 * BLOCK_STALLING_TIMEOUT)) {
+    if (!pto->fDisconnect && BlockDownloadIsStalling(pto->GetId(),nNow, 1000000 * BLOCK_STALLING_TIMEOUT)  ) {
         // Stalling only triggers when the block download window cannot move. During normal steady state,
         // the download window should be much larger than the to-be-downloaded set of blocks, so disconnection
         // should only happen during initial block download.
@@ -3912,7 +3912,7 @@ static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto, CNo
     // timeout. We compensate for in-flight blocks to prevent killing off peers due to our own downstream link
     // being saturated. We only count validated in-flight blocks so peers can't advertize nonexisting block hashes
     // to unreasonably increase our timeout.
-    if (!pto->fDisconnect && state->BlockDownloadTimedOut(nNow,Params().TargetSpacing())) {
+    if (!pto->fDisconnect && BlockDownloadTimedOut(pto->GetId(),nNow,Params().TargetSpacing()) ) {
         pto->fDisconnect = true;
     }
 }
@@ -3929,7 +3929,7 @@ static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, CNodeState* stat
                         pindex->nHeight, pto->id);
         }
         if (state->GetNumberOfBlocksInFlight() == 0 && staller != -1) {
-            UpdateStallingTimestamp(staller,nNow);
+            RecordWhenStallingBegan(staller,nNow);
         }
     }
 }

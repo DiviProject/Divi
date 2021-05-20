@@ -17,7 +17,6 @@ class CBlockReject;
 // Requires cs_main.
 CNodeState* State(NodeId nodeId);
 void UpdateStateToCurrentlyConnected(NodeId nodeId);
-void UpdateStallingTimestamp(NodeId nodeId, int64_t currentTimestamp);
 CAddrMan& GetNetworkAddressManager();
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr);
 void FinalizeNode(NodeId nodeid);
@@ -35,6 +34,10 @@ void FindNextBlocksToDownload(
     unsigned int count,
     std::vector<CBlockIndex*>& vBlocks,
     NodeId& nodeStaller);
+
+bool BlockDownloadTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing);
+bool BlockDownloadIsStalling(NodeId nodeId, int64_t nNow, int64_t stallingWindow);
+void RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp);
 // Requires cs_main.
 /** Increase a node's misbehavior score. */
 bool Misbehaving(NodeId nodeId, int howmuch);

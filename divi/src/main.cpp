@@ -3127,7 +3127,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
 
         std::vector<CInv> vToFetch;
-
+        std::vector<const CInv*> blockInventory;
+        blockInventory.reserve(vInv.size());
         for (unsigned int nInv = 0; nInv < vInv.size(); nInv++) {
             const CInv& inv = vInv[nInv];
 
@@ -3143,10 +3144,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
             if (inv.type == MSG_BLOCK) {
                 UpdateBlockAvailability(mapBlockIndex,pfrom->GetId(), inv.hash);
-                if (!fAlreadyHave && !fImporting && !fReindex && !BlockIsInFlight(inv.hash)) {
+                if (!fAlreadyHave && !fImporting && !fReindex) {
                     // Add this to the list of blocks to request
-                    vToFetch.push_back(inv);
-                    LogPrint("net", "getblocks (%d) %s to peer=%d\n", pindexBestHeader->nHeight, inv.hash, pfrom->id);
+                    blockInventory.push_back(&inv);
                 }
             }
 
@@ -3156,6 +3156,17 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_OVERFLOWED) {
                 Misbehaving(pfrom->GetId(), 50);
                 return error("send buffer size() = %u", pfrom->nSendSize);
+            }
+        }
+        {
+            LOCK(cs_main);
+            for(const CInv* blockInventoryReference: blockInventory)
+            {
+                if(!BlockIsInFlight(blockInventoryReference->hash))
+                {
+                    vToFetch.push_back(*blockInventoryReference);
+                    LogPrint("net", "getblocks (%d) %s to peer=%d\n", pindexBestHeader->nHeight, blockInventoryReference->hash, pfrom->id);
+                }
             }
         }
 
@@ -3986,10 +3997,12 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         SendInventoryToPeer(pto,fSendTrickle);
 
         int64_t nNow = GetTimeMicros();
-        RequestDisconnectionFromNodeIfStalling(nNow,pto,state);
-
         std::vector<CInv> vGetData;
-        if(fFetch) CollectBlockDataToRequest(nNow,pto,state,vGetData);
+        {
+            LOCK(cs_main);
+            RequestDisconnectionFromNodeIfStalling(nNow,pto,state);
+            if(fFetch) CollectBlockDataToRequest(nNow,pto,state,vGetData);
+        }
         CollectNonBlockDataToRequestAndRequestIt(pto,nNow,vGetData);
     }
     return true;

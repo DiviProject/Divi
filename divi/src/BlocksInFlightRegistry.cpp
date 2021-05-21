@@ -13,6 +13,7 @@ BlocksInFlightRegistry::BlocksInFlightRegistry(
 
 void BlocksInFlightRegistry::RegisterNodedId(NodeId nodeId)
 {
+    if(nodeSyncByNodeId_.count(nodeId)>0) return;
     nodeSyncByNodeId_[nodeId] = NodeBlockSync();
 }
 void BlocksInFlightRegistry::UnregisterNodeId(NodeId nodeId)

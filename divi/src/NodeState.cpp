@@ -85,15 +85,9 @@ int CNodeState::GetMisbehaviourPenalty() const
 }
 std::vector<int> CNodeState::GetBlockHeightsInFlight() const
 {
-    std::vector<int> blockHeights;
-    blockHeights.reserve(vBlocksInFlight.size());
-    for(const QueuedBlock& queue: vBlocksInFlight) {
-        if (queue.pindex)
-            blockHeights.push_back(queue.pindex->nHeight);
-    }
-    return blockHeights;
+    return blocksInFlightRegistry_.GetBlockHeightsInFlight(nodeId);
 }
 int CNodeState::GetNumberOfBlocksInFlight() const
 {
-    return vBlocksInFlight.size();
+    return blocksInFlightRegistry_.GetNumberOfBlocksInFlight(nodeId);
 }

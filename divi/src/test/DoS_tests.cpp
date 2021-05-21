@@ -16,6 +16,7 @@
 #include <Settings.h>
 #include <stdint.h>
 #include <utiltime.h>
+#include <main.h>
 #include <OrphanTransactions.h>
 #include <primitives/transaction.h>
 #include <PeerBanningService.h>
@@ -63,7 +64,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     CNode dummyNode1(&nodeSignals,INVALID_SOCKET, addr1, "", true);
     dummyNode1.nVersion = 1;
     Misbehaving(dummyNode1.GetId(), 100); // Should get banned
-    nodeSignals.SendMessages(&dummyNode1, false);
+    SendMessages(&dummyNode1, false);
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr1));
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),ToIP(0xa0b0c001|0x0000ff00))); // Different IP, not banned
 
@@ -71,11 +72,11 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     CNode dummyNode2(&nodeSignals,INVALID_SOCKET, addr2, "", true);
     dummyNode2.nVersion = 1;
     Misbehaving(dummyNode2.GetId(), 50);
-    nodeSignals.SendMessages(&dummyNode2, false);
+    SendMessages(&dummyNode2, false);
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),addr2)); // 2 not banned yet...
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr1));  // ... but 1 still should be
     Misbehaving(dummyNode2.GetId(), 50);
-    nodeSignals.SendMessages(&dummyNode2, false);
+    SendMessages(&dummyNode2, false);
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr2));
 }
 
@@ -88,13 +89,13 @@ BOOST_AUTO_TEST_CASE(DoS_banscore)
     CNode dummyNode1(&nodeSignals,INVALID_SOCKET, addr1, "", true);
     dummyNode1.nVersion = 1;
     Misbehaving(dummyNode1.GetId(), 100);
-    nodeSignals.SendMessages(&dummyNode1, false);
+    SendMessages(&dummyNode1, false);
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),addr1));
     Misbehaving(dummyNode1.GetId(), 10);
-    nodeSignals.SendMessages(&dummyNode1, false);
+    SendMessages(&dummyNode1, false);
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),addr1));
     Misbehaving(dummyNode1.GetId(), 1);
-    nodeSignals.SendMessages(&dummyNode1, false);
+    SendMessages(&dummyNode1, false);
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr1));
     settings.ForceRemoveArg("-banscore");
 }
@@ -111,7 +112,7 @@ BOOST_AUTO_TEST_CASE(DoS_bantime)
     dummyNode.nVersion = 1;
 
     Misbehaving(dummyNode.GetId(), 100);
-    nodeSignals.SendMessages(&dummyNode, false);
+    SendMessages(&dummyNode, false);
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr));
 
     SetMockTime(nStartTime+60*60);

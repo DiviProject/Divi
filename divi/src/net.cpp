@@ -184,14 +184,12 @@ CNodeSignals& GetNodeSignals()
 /** Register with a network node to receive its signals */
 void RegisterNodeSignals(CNodeSignals& nodeSignals)
 {
-    nodeSignals.SendMessages.connect(&SendMessages);
     nodeSignals.InitializeNode.connect(&InitializeNode);
     nodeSignals.FinalizeNode.connect(&FinalizeNode);
 }
 /** Unregister a network node */
 void UnregisterNodeSignals(CNodeSignals& nodeSignals)
 {
-    nodeSignals.SendMessages.disconnect(&SendMessages);
     nodeSignals.InitializeNode.disconnect(&InitializeNode);
     nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
 }
@@ -1124,7 +1122,6 @@ void ThreadMessageHandler()
 {
     boost::mutex condition_mutex;
     boost::unique_lock<boost::mutex> lock(condition_mutex);
-    static CNodeSignals& nodeSignals = GetNodeSignals();
 
     /* We periodically rebroadcast our address.  This is the last time
        we did a broadcast.  */
@@ -1205,8 +1202,7 @@ void ThreadMessageHandler()
             if (pnode->CanSendMessagesToPeer())
             {
                 TRY_LOCK(pnode->cs_vSend, lockSend);
-                if (lockSend)
-                    nodeSignals.SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
+                if (lockSend) SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
             }
             boost::this_thread::interruption_point();
         }

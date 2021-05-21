@@ -101,3 +101,21 @@ void BlocksInFlightRegistry::RecordWhenStallingBegan(NodeId nodeId, int64_t curr
         LogPrint("net", "Stall started peer=%d\n", nodeId);
     }
 }
+
+std::vector<int> BlocksInFlightRegistry::GetBlockHeightsInFlight(NodeId nodeId) const
+{
+    if(blocksInFlightByNodeId_.count(nodeId)==0) return {};
+    std::vector<int> blockHeights;
+    const std::list<QueuedBlock>& blocksInFlight = blocksInFlightByNodeId_.find(nodeId)->second;
+    blockHeights.reserve(blocksInFlight.size());
+    for(const QueuedBlock& queue: blocksInFlight) {
+        if (queue.pindex)
+            blockHeights.push_back(queue.pindex->nHeight);
+    }
+    return blockHeights;
+}
+int BlocksInFlightRegistry::GetNumberOfBlocksInFlight(NodeId nodeId) const
+{
+    if(blocksInFlightByNodeId_.count(nodeId)==0) return 0;
+    return blocksInFlightByNodeId_.find(nodeId)->second.size();
+}

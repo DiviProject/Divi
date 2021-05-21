@@ -29,5 +29,7 @@ public:
     bool BlockDownloadTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing) const;
     bool BlockDownloadIsStalling(NodeId nodeId, int64_t nNow, int64_t stallingWindow) const;
     void RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp);
+    std::vector<int> GetBlockHeightsInFlight(NodeId nodeId) const;
+    int GetNumberOfBlocksInFlight(NodeId nodeId) const;
 };
 #endif// BLOCKS_IN_FLIGHT_REGISTRY_H

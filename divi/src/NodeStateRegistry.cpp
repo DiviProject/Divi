@@ -94,10 +94,7 @@ bool BlockIsInFlight(const uint256& hash)
 {
     return blocksInFlightRegistry.BlockIsInFlight(hash);
 }
-NodeId GetSourceOfInFlightBlock(const uint256& hash)
-{
-    return blocksInFlightRegistry.GetSourceOfInFlightBlock(hash);
-}
+
 /** Check whether the last unknown block a peer advertized is not yet known. */
 void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid)
 {
@@ -217,7 +214,7 @@ void FindNextBlocksToDownload(
                 }
             } else if (waitingfor == -1) {
                 // This is the first already-in-flight block.
-                waitingfor = GetSourceOfInFlightBlock(pindex->GetBlockHash());
+                waitingfor = blocksInFlightRegistry.GetSourceOfInFlightBlock(pindex->GetBlockHash());
             }
         }
     }

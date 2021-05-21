@@ -67,7 +67,7 @@ NodeId BlocksInFlightRegistry::GetSourceOfInFlightBlock(const uint256& hash)
     return blocksInFlight_[hash].first->nodeId;
 }
 
-bool BlocksInFlightRegistry::BlockDownloadTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing) const
+bool BlocksInFlightRegistry::BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing) const
 {
     auto it = blocksInFlightByNodeId_.find(nodeId);
     if(it != blocksInFlightByNodeId_.end())
@@ -84,7 +84,7 @@ bool BlocksInFlightRegistry::BlockDownloadTimedOut(NodeId nodeId, int64_t nNow, 
     }
     return false;
 }
-bool BlocksInFlightRegistry::BlockDownloadIsStalling(NodeId nodeId, int64_t nNow, int64_t stallingWindow) const
+bool BlocksInFlightRegistry::BlockDownloadHasStalled(NodeId nodeId, int64_t nNow, int64_t stallingWindow) const
 {
     if(stallingStartTimestampByNodeId_.count(nodeId)==0) return false;
     const int64_t& nStallingSince = stallingStartTimestampByNodeId_.find(nodeId)->second;

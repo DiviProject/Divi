@@ -219,13 +219,13 @@ void FindNextBlocksToDownload(
         }
     }
 }
-bool BlockDownloadTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing)
+bool BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing)
 {
-    return blocksInFlightRegistry.BlockDownloadTimedOut(nodeId,nNow,targetSpacing);
+    return blocksInFlightRegistry.BlockDownloadHasTimedOut(nodeId,nNow,targetSpacing);
 }
-bool BlockDownloadIsStalling(NodeId nodeId, int64_t nNow, int64_t stallingWindow)
+bool BlockDownloadHasStalled(NodeId nodeId, int64_t nNow, int64_t stallingWindow)
 {
-    return blocksInFlightRegistry.BlockDownloadIsStalling(nodeId,nNow,stallingWindow);
+    return blocksInFlightRegistry.BlockDownloadHasStalled(nodeId,nNow,stallingWindow);
 }
 void RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp)
 {

@@ -20,7 +20,7 @@ void BlocksInFlightRegistry::UnregisterNodeId(NodeId nodeId)
 {
     if(nodeSyncByNodeId_.count(nodeId)==0) return;
     for(const QueuedBlock& entry: nodeSyncByNodeId_[nodeId].blocksInFlight)
-        DiscardBlockInFlight(entry.hash);
+        allBlocksInFlight_.erase(entry.hash);
     nodeSyncByNodeId_.erase(nodeId);
 }
 // Requires cs_main.
@@ -49,10 +49,6 @@ void BlocksInFlightRegistry::MarkBlockAsInFlight(NodeId nodeId, const uint256& h
     allBlocksInFlight_[hash] = std::make_pair(nodeId, it);
 }
 // Requires cs_main.
-void BlocksInFlightRegistry::DiscardBlockInFlight(const uint256& hash)
-{
-    allBlocksInFlight_.erase(hash);
-}
 bool BlocksInFlightRegistry::BlockIsInFlight(const uint256& hash)
 {
     return allBlocksInFlight_.count(hash)> 0;

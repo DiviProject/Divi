@@ -9,16 +9,38 @@ struct CNodeState;
 class uint256;
 class CBlockIndex;
 
+class NodeBlockSync
+{
+public:
+    std::list<QueuedBlock> blocksInFlight;
+    int64_t stallingTimestamp;
+    NodeBlockSync(): blocksInFlight(), stallingTimestamp(0)
+    {
+    }
+    void RecordReceivedBlock(std::list<QueuedBlock>::iterator it)
+    {
+        blocksInFlight.erase(it);
+        stallingTimestamp = 0;
+    }
+    bool RecordSyncStalling(int64_t currentTimestamp)
+    {
+        if(stallingTimestamp==0)
+        {
+            stallingTimestamp = currentTimestamp;
+            return true;
+        }
+        return false;
+    }
+};
 class BlocksInFlightRegistry
 {
 private:
-    std::map<NodeId, std::list<QueuedBlock>> blocksInFlightByNodeId_;
-    std::map<NodeId, int64_t> stallingStartTimestampByNodeId_;
-    std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> > blocksInFlight_;
+    std::map<NodeId, NodeBlockSync> nodeSyncByNodeId_;
+    std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> > allBlocksInFlight_;
     int queuedValidatedHeadersCount_;
 public:
     BlocksInFlightRegistry();
-    std::list<QueuedBlock>& RegisterNodedId(NodeId nodeId);
+    void RegisterNodedId(NodeId nodeId);
     void UnregisterNodeId(NodeId nodeId);
     void MarkBlockAsReceived(const uint256& hash);
     void MarkBlockAsInFlight(NodeId nodeId, const uint256& hash, CBlockIndex* pindex = nullptr);

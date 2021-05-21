@@ -5,72 +5,68 @@
 #include <Logging.h>
 
 BlocksInFlightRegistry::BlocksInFlightRegistry(
-    ): blocksInFlightByNodeId_()
-    , stallingStartTimestampByNodeId_()
-    , blocksInFlight_()
+    ): nodeSyncByNodeId_()
+    , allBlocksInFlight_()
     , queuedValidatedHeadersCount_(0)
 {
-
 }
 
-std::list<QueuedBlock>& BlocksInFlightRegistry::RegisterNodedId(NodeId nodeId)
+void BlocksInFlightRegistry::RegisterNodedId(NodeId nodeId)
 {
-    stallingStartTimestampByNodeId_[nodeId] = 0;
-    return blocksInFlightByNodeId_[nodeId];
+    nodeSyncByNodeId_[nodeId] = NodeBlockSync();
 }
 void BlocksInFlightRegistry::UnregisterNodeId(NodeId nodeId)
 {
-    if(blocksInFlightByNodeId_.count(nodeId)==0) return;
-    for(const QueuedBlock& entry: blocksInFlightByNodeId_[nodeId])
+    if(nodeSyncByNodeId_.count(nodeId)==0) return;
+    for(const QueuedBlock& entry: nodeSyncByNodeId_[nodeId].blocksInFlight)
         DiscardBlockInFlight(entry.hash);
-    blocksInFlightByNodeId_.erase(nodeId);
-    stallingStartTimestampByNodeId_.erase(nodeId);
+    nodeSyncByNodeId_.erase(nodeId);
 }
 // Requires cs_main.
 void BlocksInFlightRegistry::MarkBlockAsReceived(const uint256& hash)
 {
-    std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> >::iterator itInFlight = blocksInFlight_.find(hash);
-    if (itInFlight != blocksInFlight_.end()) {
+    std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> >::iterator itInFlight = allBlocksInFlight_.find(hash);
+    if (itInFlight != allBlocksInFlight_.end()) {
         NodeId nodeId = itInFlight->second.first;
         queuedValidatedHeadersCount_ -= itInFlight->second.second->fValidatedHeaders;
-        blocksInFlightByNodeId_[nodeId].erase(itInFlight->second.second);
-        stallingStartTimestampByNodeId_[nodeId] = 0;
-        blocksInFlight_.erase(itInFlight);
+        nodeSyncByNodeId_[nodeId].RecordReceivedBlock(itInFlight->second.second);
+        allBlocksInFlight_.erase(itInFlight);
     }
 }
 
 // Requires cs_main.
 void BlocksInFlightRegistry::MarkBlockAsInFlight(NodeId nodeId, const uint256& hash, CBlockIndex* pindex)
 {
+    assert(nodeSyncByNodeId_.count(nodeId)>0);
     // Make sure it's not listed somewhere already.
     MarkBlockAsReceived(hash);
 
     QueuedBlock newentry = {hash, pindex, GetTimeMicros(), queuedValidatedHeadersCount_, pindex != NULL};
     queuedValidatedHeadersCount_ += newentry.fValidatedHeaders;
-    std::list<QueuedBlock>& blocksInFlight = blocksInFlightByNodeId_[nodeId];
+    std::list<QueuedBlock>& blocksInFlight = nodeSyncByNodeId_[nodeId].blocksInFlight;
     std::list<QueuedBlock>::iterator it = blocksInFlight.insert(blocksInFlight.end(), newentry);
-    blocksInFlight_[hash] = std::make_pair(nodeId, it);
+    allBlocksInFlight_[hash] = std::make_pair(nodeId, it);
 }
 // Requires cs_main.
 void BlocksInFlightRegistry::DiscardBlockInFlight(const uint256& hash)
 {
-    blocksInFlight_.erase(hash);
+    allBlocksInFlight_.erase(hash);
 }
 bool BlocksInFlightRegistry::BlockIsInFlight(const uint256& hash)
 {
-    return blocksInFlight_.count(hash)> 0;
+    return allBlocksInFlight_.count(hash)> 0;
 }
 NodeId BlocksInFlightRegistry::GetSourceOfInFlightBlock(const uint256& hash)
 {
-    return blocksInFlight_[hash].first;
+    return allBlocksInFlight_[hash].first;
 }
 
 bool BlocksInFlightRegistry::BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing) const
 {
-    auto it = blocksInFlightByNodeId_.find(nodeId);
-    if(it != blocksInFlightByNodeId_.end())
+    auto it = nodeSyncByNodeId_.find(nodeId);
+    if(it != nodeSyncByNodeId_.end())
     {
-        const std::list<QueuedBlock>& vBlocksInFlight = it->second;
+        const std::list<QueuedBlock>& vBlocksInFlight = it->second.blocksInFlight;
         const int64_t maxTimeout = nNow - 500000 * targetSpacing * (4 + vBlocksInFlight.front().nValidatedQueuedBefore);
         const bool timedOut = vBlocksInFlight.size() > 0 &&
             vBlocksInFlight.front().nTime < maxTimeout;
@@ -84,27 +80,25 @@ bool BlocksInFlightRegistry::BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNo
 }
 bool BlocksInFlightRegistry::BlockDownloadHasStalled(NodeId nodeId, int64_t nNow, int64_t stallingWindow) const
 {
-    if(stallingStartTimestampByNodeId_.count(nodeId)==0) return false;
-    const int64_t& nStallingSince = stallingStartTimestampByNodeId_.find(nodeId)->second;
+    if(nodeSyncByNodeId_.count(nodeId)==0) return false;
+    const int64_t& nStallingSince = nodeSyncByNodeId_.find(nodeId)->second.stallingTimestamp;
     return nStallingSince > 0 && nStallingSince < nNow - stallingWindow;
 }
 
 void BlocksInFlightRegistry::RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp)
 {
-    if(stallingStartTimestampByNodeId_.count(nodeId)==0) return;
-    int64_t& nStallingSince = stallingStartTimestampByNodeId_[nodeId];
-    if(nStallingSince==0)
+    if(nodeSyncByNodeId_.count(nodeId)==0) return;
+    if(nodeSyncByNodeId_[nodeId].RecordSyncStalling(currentTimestamp))
     {
-        nStallingSince = currentTimestamp;
         LogPrint("net", "Stall started peer=%d\n", nodeId);
     }
 }
 
 std::vector<int> BlocksInFlightRegistry::GetBlockHeightsInFlight(NodeId nodeId) const
 {
-    if(blocksInFlightByNodeId_.count(nodeId)==0) return {};
+    if(nodeSyncByNodeId_.count(nodeId)==0) return {};
     std::vector<int> blockHeights;
-    const std::list<QueuedBlock>& blocksInFlight = blocksInFlightByNodeId_.find(nodeId)->second;
+    const std::list<QueuedBlock>& blocksInFlight = nodeSyncByNodeId_.find(nodeId)->second.blocksInFlight;
     blockHeights.reserve(blocksInFlight.size());
     for(const QueuedBlock& queue: blocksInFlight) {
         if (queue.pindex)
@@ -114,6 +108,6 @@ std::vector<int> BlocksInFlightRegistry::GetBlockHeightsInFlight(NodeId nodeId) 
 }
 int BlocksInFlightRegistry::GetNumberOfBlocksInFlight(NodeId nodeId) const
 {
-    if(blocksInFlightByNodeId_.count(nodeId)==0) return 0;
-    return blocksInFlightByNodeId_.find(nodeId)->second.size();
+    if(nodeSyncByNodeId_.count(nodeId)==0) return 0;
+    return nodeSyncByNodeId_.find(nodeId)->second.blocksInFlight.size();
 }

@@ -86,9 +86,7 @@ void MarkBlockAsReceived(const uint256& hash)
 // Requires cs_main.
 void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex)
 {
-    CNodeState* state = State(nodeid);
-    assert(state != NULL);
-    blocksInFlightRegistry.MarkBlockAsInFlight(state,hash,pindex);
+    blocksInFlightRegistry.MarkBlockAsInFlight(nodeid,hash,pindex);
 }
 bool BlockIsInFlight(const uint256& hash)
 {

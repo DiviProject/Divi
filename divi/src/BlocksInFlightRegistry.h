@@ -14,14 +14,14 @@ class BlocksInFlightRegistry
 private:
     std::map<NodeId, std::list<QueuedBlock>> blocksInFlightByNodeId_;
     std::map<NodeId, int64_t> stallingStartTimestampByNodeId_;
-    std::map<uint256, std::pair<CNodeState*, std::list<QueuedBlock>::iterator> > blocksInFlight_;
+    std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> > blocksInFlight_;
     int queuedValidatedHeadersCount_;
 public:
     BlocksInFlightRegistry();
     std::list<QueuedBlock>& RegisterNodedId(NodeId nodeId);
     void UnregisterNodeId(NodeId nodeId);
     void MarkBlockAsReceived(const uint256& hash);
-    void MarkBlockAsInFlight(CNodeState* nodeState, const uint256& hash, CBlockIndex* pindex = nullptr);
+    void MarkBlockAsInFlight(NodeId nodeId, const uint256& hash, CBlockIndex* pindex = nullptr);
     void DiscardBlockInFlight(const uint256& hash);
     bool BlockIsInFlight(const uint256& hash);
     NodeId GetSourceOfInFlightBlock(const uint256& hash);

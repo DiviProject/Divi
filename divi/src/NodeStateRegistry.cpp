@@ -60,15 +60,17 @@ bool Misbehaving(NodeId nodeId, int howmuch)
 void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr)
 {
     LOCK(cs_main);
-    CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState(nodeid,blocksInFlightRegistry,addrman))).first->second;
+    CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState(nodeid,addrman))).first->second;
     state.name = addressName;
     state.address = addr;
+    blocksInFlightRegistry.RegisterNodedId(state.nodeId);
 }
 
 void FinalizeNode(NodeId nodeid)
 {
     LOCK(cs_main);
     State(nodeid)->Finalize();
+    blocksInFlightRegistry.UnregisterNodeId(nodeid);
     mapNodeState.erase(nodeid);
 }
 

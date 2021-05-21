@@ -159,7 +159,8 @@ Value generateblock(const Array& params, bool fHelp)
             "1. options          (object, optional) extra options for generating the block\n"
             "    {\n"
             "      \"extratx\" : [\"hex\", ...],   (array of strings, optional) transactions to include as hex\n"
-            "      \"coinstake\" : \"hex\"         (string, optional) coinstake transaction to use as hex\n"
+            "      \"coinstake\" : \"hex\",        (string, optional) coinstake transaction to use as hex\n"
+            "      \"ignoreMempool\" : true,       (bool, optional) if set, do not include mempool transactions\n"
             "    }\n"
             "\nResult\n"
             "blockhash     (string) hash of the generated block\n"
@@ -170,7 +171,7 @@ Value generateblock(const Array& params, bool fHelp)
     Object options;
     if (params.size() > 0)
         options = params[0].get_obj();
-    RPCTypeCheck(options, map_list_of("extratx", array_type)("coinstake", str_type), true);
+    RPCTypeCheck(options, map_list_of("extratx", array_type)("coinstake", str_type)("ignoreMempool", bool_type), true);
 
     if (pwalletMain == NULL)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
@@ -219,6 +220,10 @@ Value generateblock(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "TX is not a coinstake");
         blockFactory->setCustomCoinstake(tx);
     }
+
+    const Value& ignoreMempool = find_value(options, "ignoreMempool");
+    if (ignoreMempool.type() != null_type)
+        blockFactory->setIgnoreMempool(ignoreMempool.get_bool());
 
     const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
 

@@ -6,8 +6,6 @@
 #include <NodeId.h>
 #include <uint256.h>
 #include <netbase.h>
-#include <BlockRejects.h>
-#include <QueuedBlock.h>
 
 class BlocksInFlightRegistry;
 class CBlockIndex;
@@ -27,8 +25,6 @@ private:
 
     //! Accumulated misbehaviour score for this peer.
     int nMisbehavior;
-    //! Since when we're stalling block download progress (in microseconds), or 0.
-    const std::list<QueuedBlock>& vBlocksInFlight;
     //! Whether we've started headers synchronization with this peer.
     bool fSyncStarted;
 public:

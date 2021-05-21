@@ -18,7 +18,6 @@ CNodeState::CNodeState(
     ): blocksInFlightRegistry_(blocksInFlightRegistry)
     , addressManager_(addressManager)
     , nMisbehavior(0)
-    , vBlocksInFlight(blocksInFlightRegistry_.RegisterNodedId(nodeIdValue))
     , fSyncStarted(false)
     , nodeId(nodeIdValue)
     , fCurrentlyConnected(false)
@@ -28,6 +27,7 @@ CNodeState::CNodeState(
     , pindexLastCommonBlock(nullptr)
     , fPreferredDownload(false)
 {
+    blocksInFlightRegistry.RegisterNodedId(nodeIdValue);
 }
 
 CNodeState::~CNodeState()

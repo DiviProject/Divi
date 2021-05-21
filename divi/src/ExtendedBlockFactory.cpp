@@ -27,6 +27,12 @@ CBlockTemplate* ExtendedBlockFactory::CreateNewBlockWithKey(CReserveKey& reserve
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake));
     CBlock& block = pblocktemplate->block;
 
+    if (ignoreMempool_) {
+        const unsigned targetSize = (block.IsProofOfStake() ? 2 : 1);
+        assert(block.vtx.size() >= targetSize);
+        block.vtx.resize(targetSize);
+    }
+
     for (const auto& tx : extraTransactions_)
         block.vtx.push_back(*tx);
 
@@ -56,4 +62,9 @@ void ExtendedBlockFactory::addExtraTransaction(const CTransaction& tx)
 void ExtendedBlockFactory::setCustomCoinstake(const CTransaction& tx)
 {
     customCoinstake_.reset(new CTransaction(tx));
+}
+
+void ExtendedBlockFactory::setIgnoreMempool(const bool val)
+{
+    ignoreMempool_ = val;
 }

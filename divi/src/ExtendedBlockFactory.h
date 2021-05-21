@@ -23,6 +23,10 @@ private:
     std::vector<std::shared_ptr<CTransaction>> extraTransactions_;
     std::unique_ptr<CTransaction> customCoinstake_;
 
+    /** If set to true, then the generated block will not use any
+     *  mempool transactions.  */
+    bool ignoreMempool_ = false;
+
 public:
     ExtendedBlockFactory(
         I_BlockTransactionCollector& blockTransactionCollector,
@@ -35,5 +39,6 @@ public:
     CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake) override;
     void addExtraTransaction(const CTransaction& tx);
     void setCustomCoinstake(const CTransaction& tx);
+    void setIgnoreMempool(bool val);
 };
 #endif// EXTENDED_BLOCK_FACTORY_H

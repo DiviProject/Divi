@@ -3910,7 +3910,7 @@ static void SendInventoryToPeer(CNode* pto, bool fSendTrickle)
     if (!vInv.empty())
         pto->PushMessage("inv", vInv);
 }
-static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto, CNodeState* state)
+static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto)
 {
     if (!pto->fDisconnect && BlockDownloadHasStalled(pto->GetId(),nNow, 1000000 * BLOCK_STALLING_TIMEOUT)  ) {
         // Stalling only triggers when the block download window cannot move. During normal steady state,
@@ -3928,7 +3928,7 @@ static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto, CNo
         pto->fDisconnect = true;
     }
 }
-static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, CNodeState* state, std::vector<CInv>& vGetData)
+static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, std::vector<CInv>& vGetData)
 {
     if (!pto->fDisconnect && !pto->fClient && GetNumberOfBlocksInFlight(pto->GetId()) < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
         std::vector<CBlockIndex*> vToDownload;
@@ -4000,8 +4000,8 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         std::vector<CInv> vGetData;
         {
             LOCK(cs_main);
-            RequestDisconnectionFromNodeIfStalling(nNow,pto,state);
-            if(fFetch) CollectBlockDataToRequest(nNow,pto,state,vGetData);
+            RequestDisconnectionFromNodeIfStalling(nNow,pto);
+            if(fFetch) CollectBlockDataToRequest(nNow,pto,vGetData);
         }
         CollectNonBlockDataToRequestAndRequestIt(pto,nNow,vGetData);
     }

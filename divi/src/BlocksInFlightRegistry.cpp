@@ -1,7 +1,6 @@
 #include <BlocksInFlightRegistry.h>
 #include <uint256.h>
 #include <chain.h>
-#include <NodeState.h>
 #include <utiltime.h>
 #include <Logging.h>
 
@@ -30,28 +29,27 @@ void BlocksInFlightRegistry::UnregisterNodeId(NodeId nodeId)
 // Requires cs_main.
 void BlocksInFlightRegistry::MarkBlockAsReceived(const uint256& hash)
 {
-    std::map<uint256, std::pair<CNodeState*, std::list<QueuedBlock>::iterator> >::iterator itInFlight = blocksInFlight_.find(hash);
+    std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> >::iterator itInFlight = blocksInFlight_.find(hash);
     if (itInFlight != blocksInFlight_.end()) {
-        CNodeState* state = itInFlight->second.first;
+        NodeId nodeId = itInFlight->second.first;
         queuedValidatedHeadersCount_ -= itInFlight->second.second->fValidatedHeaders;
-        blocksInFlightByNodeId_[state->nodeId].erase(itInFlight->second.second);
-        stallingStartTimestampByNodeId_[state->nodeId] = 0;
+        blocksInFlightByNodeId_[nodeId].erase(itInFlight->second.second);
+        stallingStartTimestampByNodeId_[nodeId] = 0;
         blocksInFlight_.erase(itInFlight);
     }
 }
 
 // Requires cs_main.
-void BlocksInFlightRegistry::MarkBlockAsInFlight(CNodeState* nodeState, const uint256& hash, CBlockIndex* pindex)
+void BlocksInFlightRegistry::MarkBlockAsInFlight(NodeId nodeId, const uint256& hash, CBlockIndex* pindex)
 {
-    assert(nodeState != NULL);
     // Make sure it's not listed somewhere already.
     MarkBlockAsReceived(hash);
 
     QueuedBlock newentry = {hash, pindex, GetTimeMicros(), queuedValidatedHeadersCount_, pindex != NULL};
     queuedValidatedHeadersCount_ += newentry.fValidatedHeaders;
-    std::list<QueuedBlock>& blocksInFlight = blocksInFlightByNodeId_[nodeState->nodeId];
+    std::list<QueuedBlock>& blocksInFlight = blocksInFlightByNodeId_[nodeId];
     std::list<QueuedBlock>::iterator it = blocksInFlight.insert(blocksInFlight.end(), newentry);
-    blocksInFlight_[hash] = std::make_pair(nodeState, it);
+    blocksInFlight_[hash] = std::make_pair(nodeId, it);
 }
 // Requires cs_main.
 void BlocksInFlightRegistry::DiscardBlockInFlight(const uint256& hash)
@@ -64,7 +62,7 @@ bool BlocksInFlightRegistry::BlockIsInFlight(const uint256& hash)
 }
 NodeId BlocksInFlightRegistry::GetSourceOfInFlightBlock(const uint256& hash)
 {
-    return blocksInFlight_[hash].first->nodeId;
+    return blocksInFlight_[hash].first;
 }
 
 bool BlocksInFlightRegistry::BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing) const

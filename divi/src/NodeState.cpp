@@ -83,11 +83,3 @@ int CNodeState::GetMisbehaviourPenalty() const
 {
     return nMisbehavior;
 }
-std::vector<int> CNodeState::GetBlockHeightsInFlight() const
-{
-    return blocksInFlightRegistry_.GetBlockHeightsInFlight(nodeId);
-}
-int CNodeState::GetNumberOfBlocksInFlight() const
-{
-    return blocksInFlightRegistry_.GetNumberOfBlocksInFlight(nodeId);
-}

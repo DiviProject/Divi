@@ -103,6 +103,7 @@ BASE_SCRIPTS = [
     'remotestart.py',
     'remotestart.py --outdated_ping',
     'smartfees.py',
+    'spent_index_mempool.py',
     'sync.py',
     'txindex.py',
     'txn_doublespend.py',

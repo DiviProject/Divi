@@ -60,8 +60,6 @@ public:
     void Finalize();
     void ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold);
     int GetMisbehaviourPenalty() const;
-    std::vector<int> GetBlockHeightsInFlight() const;
-    int GetNumberOfBlocksInFlight() const;
 };
 
 #endif// NODE_STATE_H

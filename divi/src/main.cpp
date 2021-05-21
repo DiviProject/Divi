@@ -3918,17 +3918,17 @@ static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto, CNo
 }
 static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, CNodeState* state, std::vector<CInv>& vGetData)
 {
-    if (!pto->fDisconnect && !pto->fClient && state->GetNumberOfBlocksInFlight() < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
+    if (!pto->fDisconnect && !pto->fClient && GetNumberOfBlocksInFlight(pto->GetId()) < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
         std::vector<CBlockIndex*> vToDownload;
         NodeId staller = -1;
-        FindNextBlocksToDownload(mapBlockIndex,chainActive, pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - state->GetNumberOfBlocksInFlight(), vToDownload, staller);
+        FindNextBlocksToDownload(mapBlockIndex,chainActive, pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - GetNumberOfBlocksInFlight(pto->GetId()), vToDownload, staller);
         for(CBlockIndex* pindex: vToDownload) {
             vGetData.push_back(CInv(MSG_BLOCK, pindex->GetBlockHash()));
             MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockHash(), pindex);
             LogPrintf("Requesting block %s (%d) peer=%d\n", pindex->GetBlockHash(),
                         pindex->nHeight, pto->id);
         }
-        if (state->GetNumberOfBlocksInFlight() == 0 && staller != -1) {
+        if (GetNumberOfBlocksInFlight(pto->GetId()) == 0 && staller != -1) {
             RecordWhenStallingBegan(staller,nNow);
         }
     }

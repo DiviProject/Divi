@@ -234,3 +234,11 @@ void RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp)
 {
     blocksInFlightRegistry.RecordWhenStallingBegan(nodeId,currentTimestamp);
 }
+std::vector<int> GetBlockHeightsInFlight(NodeId nodeId)
+{
+    return blocksInFlightRegistry.GetBlockHeightsInFlight(nodeId);
+}
+int GetNumberOfBlocksInFlight(NodeId nodeId)
+{
+    return blocksInFlightRegistry.GetNumberOfBlocksInFlight(nodeId);
+}

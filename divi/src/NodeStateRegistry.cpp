@@ -82,16 +82,19 @@ void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
 // Requires cs_main.
 void MarkBlockAsReceived(const uint256& hash)
 {
+    AssertLockHeld(cs_main);
     blocksInFlightRegistry.MarkBlockAsReceived(hash);
 }
 
 // Requires cs_main.
 void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex)
 {
+    AssertLockHeld(cs_main);
     blocksInFlightRegistry.MarkBlockAsInFlight(nodeid,hash,pindex);
 }
 bool BlockIsInFlight(const uint256& hash)
 {
+    AssertLockHeld(cs_main);
     return blocksInFlightRegistry.BlockIsInFlight(hash);
 }
 
@@ -174,6 +177,7 @@ void FindNextBlocksToDownload(
     int nWindowEnd = state->pindexLastCommonBlock->nHeight + BLOCK_DOWNLOAD_WINDOW;
     int nMaxHeight = std::min<int>(state->pindexBestKnownBlock->nHeight, nWindowEnd + 1);
     NodeId waitingfor = -1;
+    AssertLockHeld(cs_main);
     while (pindexWalk->nHeight < nMaxHeight) {
         // Read up to 128 (or more, if more blocks than that are needed) successors of pindexWalk (towards
         // pindexBestKnownBlock) into vToFetch. We fetch 128, because CBlockIndex::GetAncestor may be as expensive
@@ -221,21 +225,26 @@ void FindNextBlocksToDownload(
 }
 bool BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing)
 {
+    AssertLockHeld(cs_main);
     return blocksInFlightRegistry.BlockDownloadHasTimedOut(nodeId,nNow,targetSpacing);
 }
 bool BlockDownloadHasStalled(NodeId nodeId, int64_t nNow, int64_t stallingWindow)
 {
+    AssertLockHeld(cs_main);
     return blocksInFlightRegistry.BlockDownloadHasStalled(nodeId,nNow,stallingWindow);
 }
 void RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp)
 {
+    AssertLockHeld(cs_main);
     blocksInFlightRegistry.RecordWhenStallingBegan(nodeId,currentTimestamp);
 }
 std::vector<int> GetBlockHeightsInFlight(NodeId nodeId)
 {
+    AssertLockHeld(cs_main);
     return blocksInFlightRegistry.GetBlockHeightsInFlight(nodeId);
 }
 int GetNumberOfBlocksInFlight(NodeId nodeId)
 {
+    AssertLockHeld(cs_main);
     return blocksInFlightRegistry.GetNumberOfBlocksInFlight(nodeId);
 }

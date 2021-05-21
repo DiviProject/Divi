@@ -485,13 +485,13 @@ void CTxMemPool::addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewC
     mapAddressInserted.insert(std::make_pair(txhash, inserted));
 }
 
-bool CTxMemPool::getAddressIndex(std::vector<std::pair<uint160, int> > &addresses,
+bool CTxMemPool::getAddressIndex(const std::vector<std::pair<uint160, int> > &addresses,
                                  std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> > &results)
 {
     LOCK(cs);
-    for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        addressDeltaMap::iterator ait = mapAddress.lower_bound(CMempoolAddressDeltaKey((*it).second, (*it).first));
-        while (ait != mapAddress.end() && (*ait).first.addressBytes == (*it).first && (*ait).first.type == (*it).second) {
+    for (const auto& it : addresses) {
+        auto ait = mapAddress.lower_bound(CMempoolAddressDeltaKey(it.second, it.first));
+        while (ait != mapAddress.end() && ait->first.addressBytes == it.first && ait->first.type == it.second) {
             results.push_back(*ait);
             ait++;
         }
@@ -551,7 +551,7 @@ void CTxMemPool::addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCac
     mapSpentInserted.insert(std::make_pair(txhash, inserted));
 }
 
-bool CTxMemPool::getSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value)
+bool CTxMemPool::getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value)
 {
     LOCK(cs);
     mapSpentIndex::iterator it;
@@ -564,9 +564,9 @@ bool CTxMemPool::getSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value)
     return false;
 }
 
-bool CTxMemPool::removeSpentIndex(const uint256 txhash)
+bool CTxMemPool::removeSpentIndex(const uint256& txhash)
 {
-    LOCK(cs);
+    AssertLockHeld(cs);
     mapSpentIndexInserted::iterator it = mapSpentInserted.find(txhash);
 
     if (it != mapSpentInserted.end()) {
@@ -604,6 +604,9 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
             txToRemove.pop_front();
             if (!mapTx.count(hash))
                 continue;
+
+            removeSpentIndex(hash);
+
             const CTransaction& tx = mapTx[hash].GetTx();
             if (fRecursive) {
                 for (unsigned int i = 0; i < tx.vout.size(); i++) {

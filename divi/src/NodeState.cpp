@@ -1,6 +1,5 @@
 #include <NodeState.h>
 
-#include <BlocksInFlightRegistry.h>
 #include <OrphanTransactions.h>
 #include <addrman.h>
 #include <Logging.h>
@@ -13,10 +12,8 @@ int CNodeState::numberOfPreferredDownloadSources = 0;
 
 CNodeState::CNodeState(
     NodeId nodeIdValue,
-    BlocksInFlightRegistry& blocksInFlightRegistry,
     CAddrMan& addressManager
-    ): blocksInFlightRegistry_(blocksInFlightRegistry)
-    , addressManager_(addressManager)
+    ): addressManager_(addressManager)
     , nMisbehavior(0)
     , fSyncStarted(false)
     , nodeId(nodeIdValue)
@@ -27,7 +24,6 @@ CNodeState::CNodeState(
     , pindexLastCommonBlock(nullptr)
     , fPreferredDownload(false)
 {
-    blocksInFlightRegistry.RegisterNodedId(nodeIdValue);
 }
 
 CNodeState::~CNodeState()
@@ -41,7 +37,6 @@ void CNodeState::Finalize()
     if (nMisbehavior == 0 && fCurrentlyConnected) {
         addressManager_.Connected(address);
     }
-    blocksInFlightRegistry_.UnregisterNodeId(nodeId);
     EraseOrphansFor(nodeId);
 }
 bool CNodeState::Syncing() const

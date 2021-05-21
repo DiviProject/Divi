@@ -7,7 +7,6 @@
 #include <uint256.h>
 #include <netbase.h>
 
-class BlocksInFlightRegistry;
 class CBlockIndex;
 class CAddrMan;
 /**
@@ -20,7 +19,6 @@ struct CNodeState {
 private:
     static int countOfNodesAlreadySyncing;
     static int numberOfPreferredDownloadSources;
-    BlocksInFlightRegistry& blocksInFlightRegistry_;
     CAddrMan& addressManager_;
 
     //! Accumulated misbehaviour score for this peer.
@@ -46,7 +44,7 @@ public:
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
 
-    CNodeState(NodeId nodeIdValue,BlocksInFlightRegistry& blocksInFlightRegistry,CAddrMan& addressManager);
+    CNodeState(NodeId nodeIdValue,CAddrMan& addressManager);
     ~CNodeState();
     bool Syncing() const;
     void RecordNodeStartedToSync();

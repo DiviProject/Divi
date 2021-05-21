@@ -97,6 +97,36 @@ bool BlockIsInFlight(const uint256& hash)
     AssertLockHeld(cs_main);
     return blocksInFlightRegistry.BlockIsInFlight(hash);
 }
+bool BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing)
+{
+    AssertLockHeld(cs_main);
+    return blocksInFlightRegistry.BlockDownloadHasTimedOut(nodeId,nNow,targetSpacing);
+}
+bool BlockDownloadHasStalled(NodeId nodeId, int64_t nNow, int64_t stallingWindow)
+{
+    AssertLockHeld(cs_main);
+    return blocksInFlightRegistry.BlockDownloadHasStalled(nodeId,nNow,stallingWindow);
+}
+void RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp)
+{
+    AssertLockHeld(cs_main);
+    blocksInFlightRegistry.RecordWhenStallingBegan(nodeId,currentTimestamp);
+}
+std::vector<int> GetBlockHeightsInFlight(NodeId nodeId)
+{
+    AssertLockHeld(cs_main);
+    return blocksInFlightRegistry.GetBlockHeightsInFlight(nodeId);
+}
+int GetNumberOfBlocksInFlight(NodeId nodeId)
+{
+    AssertLockHeld(cs_main);
+    return blocksInFlightRegistry.GetNumberOfBlocksInFlight(nodeId);
+}
+NodeId GetSourceOfInFlightBlock(const uint256& blockhash)
+{
+    AssertLockHeld(cs_main);
+    return blocksInFlightRegistry.GetSourceOfInFlightBlock(blockhash);
+}
 
 /** Check whether the last unknown block a peer advertized is not yet known. */
 void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid)
@@ -218,33 +248,8 @@ void FindNextBlocksToDownload(
                 }
             } else if (waitingfor == -1) {
                 // This is the first already-in-flight block.
-                waitingfor = blocksInFlightRegistry.GetSourceOfInFlightBlock(pindex->GetBlockHash());
+                waitingfor = GetSourceOfInFlightBlock(pindex->GetBlockHash());
             }
         }
     }
-}
-bool BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing)
-{
-    AssertLockHeld(cs_main);
-    return blocksInFlightRegistry.BlockDownloadHasTimedOut(nodeId,nNow,targetSpacing);
-}
-bool BlockDownloadHasStalled(NodeId nodeId, int64_t nNow, int64_t stallingWindow)
-{
-    AssertLockHeld(cs_main);
-    return blocksInFlightRegistry.BlockDownloadHasStalled(nodeId,nNow,stallingWindow);
-}
-void RecordWhenStallingBegan(NodeId nodeId, int64_t currentTimestamp)
-{
-    AssertLockHeld(cs_main);
-    blocksInFlightRegistry.RecordWhenStallingBegan(nodeId,currentTimestamp);
-}
-std::vector<int> GetBlockHeightsInFlight(NodeId nodeId)
-{
-    AssertLockHeld(cs_main);
-    return blocksInFlightRegistry.GetBlockHeightsInFlight(nodeId);
-}
-int GetNumberOfBlocksInFlight(NodeId nodeId)
-{
-    AssertLockHeld(cs_main);
-    return blocksInFlightRegistry.GetNumberOfBlocksInFlight(nodeId);
 }

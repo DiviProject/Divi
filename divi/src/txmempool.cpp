@@ -605,6 +605,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
             if (!mapTx.count(hash))
                 continue;
 
+            removeAddressIndex(hash);
             removeSpentIndex(hash);
 
             const CTransaction& tx = mapTx[hash].GetTx();

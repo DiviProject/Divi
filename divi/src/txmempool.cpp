@@ -361,8 +361,11 @@ public:
 };
 
 
-CTxMemPool::CTxMemPool(const CFeeRate& _minRelayFee) : nTransactionsUpdated(0),
-                                                       minRelayFee(_minRelayFee)
+CTxMemPool::CTxMemPool(const CFeeRate& _minRelayFee,
+                       const bool& addressIndex, const bool& spentIndex)
+    : nTransactionsUpdated(0),
+      minRelayFee(_minRelayFee),
+      fAddressIndex_(addressIndex), fSpentIndex_(spentIndex)
 {
     // Sanity checks off by default for performance, because otherwise
     // accepting transactions becomes O(N^2) where N is the number
@@ -408,7 +411,7 @@ void CTxMemPool::AddTransactionsUpdated(unsigned int n)
 }
 
 
-bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry)
+bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry, const CCoinsViewCache& view)
 {
     // Add to memory pool without checking anything.
     // Used by main.cpp AcceptToMemoryPool(), which DOES do
@@ -424,6 +427,17 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry)
         nTransactionsUpdated++;
         totalTxSize += entry.GetTxSize();
     }
+
+    // Add memory address index
+    if (fAddressIndex_) {
+        addAddressIndex(entry, view);
+    }
+
+    // Add memory spent index
+    if (fSpentIndex_) {
+        addSpentIndex(entry, view);
+    }
+
     return true;
 }
 

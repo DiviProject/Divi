@@ -3,7 +3,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-# Tests the spent index interaction with transactions that are
+# Tests the address and spent index interaction with transactions that are
 # only in the mempool.
 
 from test_framework import BitcoinTestFramework
@@ -13,10 +13,10 @@ from util import *
 from decimal import Decimal
 
 
-class SpentIndexMempoolTest (BitcoinTestFramework):
+class MempoolIndicesTest (BitcoinTestFramework):
 
     def setup_network (self):
-        args = ["-debug", "-spentindex=1"]
+        args = ["-addressindex=1", "-spentindex=1"]
         self.nodes = start_nodes (1, self.options.tmpdir, extra_args=[args])
         self.node = self.nodes[0]
         self.is_network_split = False
@@ -51,6 +51,10 @@ class SpentIndexMempoolTest (BitcoinTestFramework):
           "index": 0,
           "height": -1,
         })
+        delta = self.node.getaddressmempool ({"addresses": [utxo["address"]]})
+        assert_equal (len (delta), 1)
+        assert_equal (delta[0]["address"], utxo["address"])
+        assert_equal (delta[0]["satoshis"], -100_000_000 * utxo["amount"])
 
         # Double-spend the UTXO in a block with another transaction.
         # The spent data should reflect that (instead of the original
@@ -65,7 +69,8 @@ class SpentIndexMempoolTest (BitcoinTestFramework):
           "index": 0,
           "height": self.node.getblockcount (),
         })
+        assert_equal (self.node.getaddressmempool ({"addresses": [utxo["address"]]}), [])
 
 
 if __name__ == '__main__':
-    SpentIndexMempoolTest ().main ()
+    MempoolIndicesTest ().main ()

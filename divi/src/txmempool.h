@@ -105,6 +105,11 @@ private:
     CFeeRate minRelayFee; //! Passed to constructor to avoid dependency on main
     uint64_t totalTxSize; //! sum of all mempool tx' byte sizes
 
+    /* The mempool reads these flags, which are passed by reference in the
+       constructor and refer to the globals in main (normally at least).  */
+    const bool& fAddressIndex_;
+    const bool& fSpentIndex_;
+
     typedef std::map<CMempoolAddressDeltaKey, CMempoolAddressDelta, CMempoolAddressDeltaKeyCompare> addressDeltaMap;
     addressDeltaMap mapAddress;
 
@@ -124,12 +129,19 @@ private:
      *  of mapTx in case of segwit light.  */
     std::map<uint256, const CTxMemPoolEntry*> mapBareTxid;
 
+    void addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
+    bool removeAddressIndex(const uint256 txhash);
+
+    void addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
+    bool removeSpentIndex(const uint256& txhash);
+
 public:
     mutable CCriticalSection cs;
     std::map<uint256, CTxMemPoolEntry> mapTx;
     std::map<COutPoint, CInPoint> mapNextTx;
 
-    CTxMemPool(const CFeeRate& _minRelayFee);
+    explicit CTxMemPool(const CFeeRate& _minRelayFee,
+                        const bool& addressIndex, const bool& spentIndex);
     ~CTxMemPool();
 
     /**
@@ -141,7 +153,7 @@ public:
     void check(const CCoinsViewCache* pcoins) const;
     void setSanityCheck(bool _fSanityCheck) { fSanityCheck = _fSanityCheck; }
 
-    bool addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry);
+    bool addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry, const CCoinsViewCache& view);
     void remove(const CTransaction& tx, std::list<CTransaction>& removed, bool fRecursive = false);
     void removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned int nMemPoolHeight);
     void removeConflicts(const CTransaction& tx, std::list<CTransaction>& removed);
@@ -152,14 +164,10 @@ public:
     unsigned int GetTransactionsUpdated() const;
     void AddTransactionsUpdated(unsigned int n);
 
-    void addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
-    bool getAddressIndex(std::vector<std::pair<uint160, int> > &addresses,
+    bool getAddressIndex(const std::vector<std::pair<uint160, int> > &addresses,
                          std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> > &results);
-    bool removeAddressIndex(const uint256 txhash);
 
-    void addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
-    bool getSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
-    bool removeSpentIndex(const uint256 txhash);
+    bool getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
     /** Affect CreateNewBlock prioritisation of transactions */
     void PrioritiseTransaction(const uint256 hash, const std::string strHash, double dPriorityDelta, const CAmount& nFeeDelta);

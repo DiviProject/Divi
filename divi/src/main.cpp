@@ -114,7 +114,7 @@ CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
-CTxMemPool mempool(feeAndPriorityCalculator.getFeeRateQuote());
+CTxMemPool mempool(feeAndPriorityCalculator.getFeeRateQuote(), fAddressIndex, fSpentIndex);
 
 static void CheckBlockIndex();
 
@@ -918,17 +918,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         }
 
         // Store transaction in memory
-        pool.addUnchecked(hash, entry);
-
-        // Add memory address index
-        if (fAddressIndex) {
-            pool.addAddressIndex(entry, view);
-        }
-
-        // Add memory spent index
-        if (fSpentIndex) {
-            pool.addSpentIndex(entry, view);
-        }
+        pool.addUnchecked(hash, entry, view);
     }
 
     SyncWithWallets(tx, NULL);

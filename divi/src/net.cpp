@@ -492,6 +492,30 @@ public:
     }
 };
 
+static void DisconnectUnusedNodes()
+{
+    LOCK(cs_vNodes);
+    // Disconnect unused nodes
+    std::vector<CNode*> vNodesCopy = vNodes;
+    BOOST_FOREACH (CNode* pnode, vNodesCopy) {
+        if (pnode->fDisconnect ||
+            (pnode->GetRefCount() <= 0 && pnode->vRecvMsg.empty() && pnode->nSendSize == 0 && pnode->ssSend.empty())) {
+            // remove from vNodes
+            vNodes.erase(remove(vNodes.begin(), vNodes.end(), pnode), vNodes.end());
+
+            // release outbound grant (if any)
+            pnode->grantOutbound.Release();
+
+            // close socket and cleanup
+            pnode->CloseSocketDisconnect();
+
+            // hold in disconnected pool until all refs are released
+            if (pnode->fNetworkNode || pnode->fInbound)
+                pnode->Release();
+            vNodesDisconnected.push_back(pnode);
+        }
+    }
+}
 void ThreadSocketHandler()
 {
     unsigned int nPrevNodeCount = 0;
@@ -499,29 +523,7 @@ void ThreadSocketHandler()
         //
         // Disconnect nodes
         //
-        {
-            LOCK(cs_vNodes);
-            // Disconnect unused nodes
-            std::vector<CNode*> vNodesCopy = vNodes;
-            BOOST_FOREACH (CNode* pnode, vNodesCopy) {
-                if (pnode->fDisconnect ||
-                    (pnode->GetRefCount() <= 0 && pnode->vRecvMsg.empty() && pnode->nSendSize == 0 && pnode->ssSend.empty())) {
-                    // remove from vNodes
-                    vNodes.erase(remove(vNodes.begin(), vNodes.end(), pnode), vNodes.end());
-
-                    // release outbound grant (if any)
-                    pnode->grantOutbound.Release();
-
-                    // close socket and cleanup
-                    pnode->CloseSocketDisconnect();
-
-                    // hold in disconnected pool until all refs are released
-                    if (pnode->fNetworkNode || pnode->fInbound)
-                        pnode->Release();
-                    vNodesDisconnected.push_back(pnode);
-                }
-            }
-        }
+        DisconnectUnusedNodes();
         {
             // Delete disconnected nodes
             list<CNode*> vNodesDisconnectedCopy = vNodesDisconnected;

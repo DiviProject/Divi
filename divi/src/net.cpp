@@ -516,6 +516,32 @@ static void DisconnectUnusedNodes()
         }
     }
 }
+void DeleteDisconnectedNodes()
+{
+    // Delete disconnected nodes
+    list<CNode*> vNodesDisconnectedCopy = vNodesDisconnected;
+    BOOST_FOREACH (CNode* pnode, vNodesDisconnectedCopy) {
+        // wait until threads are done using it
+        if (pnode->GetRefCount() <= 0) {
+            bool fDelete = false;
+            {
+                TRY_LOCK(pnode->cs_vSend, lockSend);
+                if (lockSend) {
+                    TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
+                    if (lockRecv) {
+                        TRY_LOCK(pnode->cs_inventory, lockInv);
+                        if (lockInv)
+                            fDelete = true;
+                    }
+                }
+            }
+            if (fDelete) {
+                vNodesDisconnected.remove(pnode);
+                delete pnode;
+            }
+        }
+    }
+}
 void ThreadSocketHandler()
 {
     unsigned int nPrevNodeCount = 0;
@@ -524,31 +550,7 @@ void ThreadSocketHandler()
         // Disconnect nodes
         //
         DisconnectUnusedNodes();
-        {
-            // Delete disconnected nodes
-            list<CNode*> vNodesDisconnectedCopy = vNodesDisconnected;
-            BOOST_FOREACH (CNode* pnode, vNodesDisconnectedCopy) {
-                // wait until threads are done using it
-                if (pnode->GetRefCount() <= 0) {
-                    bool fDelete = false;
-                    {
-                        TRY_LOCK(pnode->cs_vSend, lockSend);
-                        if (lockSend) {
-                            TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
-                            if (lockRecv) {
-                                TRY_LOCK(pnode->cs_inventory, lockInv);
-                                if (lockInv)
-                                    fDelete = true;
-                            }
-                        }
-                    }
-                    if (fDelete) {
-                        vNodesDisconnected.remove(pnode);
-                        delete pnode;
-                    }
-                }
-            }
-        }
+        DeleteDisconnectedNodes();
         size_t vNodesSize;
         {
             LOCK(cs_vNodes);

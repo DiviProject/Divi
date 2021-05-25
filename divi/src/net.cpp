@@ -551,11 +551,7 @@ void ThreadSocketHandler()
         //
         DisconnectUnusedNodes();
         DeleteDisconnectedNodes();
-        size_t vNodesSize;
-        {
-            LOCK(cs_vNodes);
-            vNodesSize = vNodes.size();
-        }
+        size_t vNodesSize = GetPeerCount();
         if(vNodesSize != nPrevNodeCount) {
             nPrevNodeCount = vNodesSize;
             uiInterface.NotifyNumConnectionsChanged(nPrevNodeCount);

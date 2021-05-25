@@ -149,6 +149,8 @@ CNode::~CNode()
     if (pfilter)
         delete pfilter;
 
+    // Network connections can be unused (nRefCount=0), connected (nRefCount=1), in-use (nRefCount > 1)
+    assert(nRefCount<2);
     nodeSignals_->FinalizeNode(GetId());
 }
 

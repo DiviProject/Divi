@@ -431,7 +431,7 @@ bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo)
 {
     CNode* pnode = ConnectNode(addrToConnectTo, NULL);
     bool connectionSuccessful = static_cast<bool>(pnode);
-    pnode->Release();
+    if(connectionSuccessful) pnode->Release();
     return connectionSuccessful;
 }
 
@@ -454,6 +454,43 @@ void AddWhitelistedRange(const CSubNet& subnet)
     LOCK(cs_vWhitelistedRange);
     vWhitelistedRange.push_back(subnet);
 }
+
+class ThreadSafeNodesCopy
+{
+private:
+    CCriticalSection& nodesLock_;
+    std::vector<CNode*> copyOfNodes;
+    bool clearedCopy;
+public:
+    ThreadSafeNodesCopy(
+        CCriticalSection& nodesLock,
+        const std::vector<CNode*>& originalNodes
+        ): nodesLock_(nodesLock)
+        , copyOfNodes()
+        , clearedCopy(true)
+    {
+        LOCK(nodesLock_);
+        copyOfNodes = originalNodes;
+        for(CNode* pnode: copyOfNodes)
+            pnode->AddRef();
+        clearedCopy = false;
+    }
+    ~ThreadSafeNodesCopy()
+    {
+        if(!clearedCopy) ClearCopy();
+    }
+    void ClearCopy()
+    {
+        LOCK(nodesLock_);
+        for(CNode* pnode: copyOfNodes)
+            pnode->Release();
+        clearedCopy = true;
+    }
+    std::vector<CNode*>& Nodes()
+    {
+        return copyOfNodes;
+    }
+};
 
 void ThreadSocketHandler()
 {
@@ -654,14 +691,8 @@ void ThreadSocketHandler()
         //
         // Service each socket
         //
-        std::vector<CNode*> vNodesCopy;
-        {
-            LOCK(cs_vNodes);
-            vNodesCopy = vNodes;
-            BOOST_FOREACH (CNode* pnode, vNodesCopy)
-                pnode->AddRef();
-        }
-        BOOST_FOREACH (CNode* pnode, vNodesCopy) {
+        ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
+        BOOST_FOREACH (CNode* pnode, safeNodesCopy.Nodes()) {
             boost::this_thread::interruption_point();
 
             //
@@ -731,11 +762,7 @@ void ThreadSocketHandler()
                 }
             }
         }
-        {
-            LOCK(cs_vNodes);
-            BOOST_FOREACH (CNode* pnode, vNodesCopy)
-                pnode->Release();
-        }
+        safeNodesCopy.ClearCopy();
     }
 }
 
@@ -1104,6 +1131,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
         return false;
 
     CNode* pnode = ConnectNode(addrConnect, pszDest);
+    if(pnode && pnode->GetRefCount() > 1) pnode->Release();
     boost::this_thread::interruption_point();
 
     if (!pnode)
@@ -1129,14 +1157,8 @@ void ThreadMessageHandler()
 
     SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
     while (true) {
-        std::vector<CNode*> vNodesCopy;
-        {
-            LOCK(cs_vNodes);
-            vNodesCopy = vNodes;
-            BOOST_FOREACH (CNode* pnode, vNodesCopy) {
-                pnode->AddRef();
-            }
-        }
+        ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
+        std::vector<CNode*>& vNodesCopy = safeNodesCopy.Nodes();
 
         bool rebroadcast = (!IsInitialBlockDownload() && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
 
@@ -1208,11 +1230,7 @@ void ThreadMessageHandler()
         }
 
 
-        {
-            LOCK(cs_vNodes);
-            BOOST_FOREACH (CNode* pnode, vNodesCopy)
-                pnode->Release();
-        }
+        safeNodesCopy.ClearCopy();
 
         if (fSleep)
             messageHandlerCondition.timed_wait(lock, boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(100));

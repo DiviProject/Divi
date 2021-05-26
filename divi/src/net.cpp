@@ -738,7 +738,6 @@ public:
     }
 };
 
-
 void ThreadSocketHandler()
 {
     unsigned int nPrevNodeCount = 0;
@@ -754,190 +753,25 @@ void ThreadSocketHandler()
             uiInterface.NotifyNumConnectionsChanged(nPrevNodeCount);
         }
 
-        //
-        // Find which sockets have data to receive
-        //
-        struct timeval timeout;
-        timeout.tv_sec = 0;
-        timeout.tv_usec = 50000; // frequency to poll pnode->vSend
+        SocketsProcessor socketsProcessor;
+        socketsProcessor.ProcessListeningSockets(vhListenSocket);
+        socketsProcessor.AssignNodesToSendOrReceiveTasks(cs_vNodes,vNodes);
 
-        fd_set fdsetRecv;
-        fd_set fdsetSend;
-        fd_set fdsetError;
-        FD_ZERO(&fdsetRecv);
-        FD_ZERO(&fdsetSend);
-        FD_ZERO(&fdsetError);
-        SOCKET hSocketMax = 0;
-        bool have_fds = false;
-
-        BOOST_FOREACH (const ListenSocket& hListenSocket, vhListenSocket) {
-            FD_SET(hListenSocket.socket, &fdsetRecv);
-            hSocketMax = max(hSocketMax, hListenSocket.socket);
-            have_fds = true;
-        }
-
-        {
-            LOCK(cs_vNodes);
-            BOOST_FOREACH (CNode* pnode, vNodes) {
-                if (pnode->hSocket == INVALID_SOCKET)
-                    continue;
-                FD_SET(pnode->hSocket, &fdsetError);
-                hSocketMax = max(hSocketMax, pnode->hSocket);
-                have_fds = true;
-
-                // Implement the following logic:
-                // * If there is data to send, select() for sending data. As this only
-                //   happens when optimistic write failed, we choose to first drain the
-                //   write buffer in this case before receiving more. This avoids
-                //   needlessly queueing received data, if the remote peer is not themselves
-                //   receiving data. This means properly utilizing TCP flow control signalling.
-                // * Otherwise, if there is no (complete) message in the receive buffer,
-                //   or there is space left in the buffer, select() for receiving data.
-                // * (if neither of the above applies, there is certainly one message
-                //   in the receiver buffer ready to be processed).
-                // Together, that means that at least one of the following is always possible,
-                // so we don't deadlock:
-                // * We send some data.
-                // * We wait for data to be received (and disconnect after timeout).
-                // * We process a message in the buffer (message handler thread).
-                {
-                    TRY_LOCK(pnode->cs_vSend, lockSend);
-                    if (lockSend && !pnode->vSendMsg.empty()) {
-                        FD_SET(pnode->hSocket, &fdsetSend);
-                        continue;
-                    }
-                }
-                {
-                    TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
-                    if (lockRecv &&
-                        (pnode->vRecvMsg.empty() ||
-                        !pnode->vRecvMsg.front().complete() ||
-                        pnode->IsAvailableToReceive()))
-                    {
-                        FD_SET(pnode->hSocket, &fdsetRecv);
-                    }
-                }
-            }
-        }
-
-        int nSelect = select(have_fds ? hSocketMax + 1 : 0,
-            &fdsetRecv, &fdsetSend, &fdsetError, &timeout);
+        int nSelect = socketsProcessor.CheckSocketCanBeSelected();
         boost::this_thread::interruption_point();
-
-        if (nSelect == SOCKET_ERROR) {
-            if (have_fds) {
-                int nErr = WSAGetLastError();
-                LogPrintf("socket select error %s\n", NetworkErrorString(nErr));
-                for (unsigned int i = 0; i <= hSocketMax; i++)
-                    FD_SET(i, &fdsetRecv);
-            }
-            FD_ZERO(&fdsetSend);
-            FD_ZERO(&fdsetError);
-            MilliSleep(timeout.tv_usec / 1000);
-        }
-
-        //
-        // Accept new connections
-        //
-        BOOST_FOREACH (const ListenSocket& hListenSocket, vhListenSocket) {
-            if (hListenSocket.socket != INVALID_SOCKET && FD_ISSET(hListenSocket.socket, &fdsetRecv)) {
-                struct sockaddr_storage sockaddr;
-                socklen_t len = sizeof(sockaddr);
-                SOCKET hSocket = accept(hListenSocket.socket, (struct sockaddr*)&sockaddr, &len);
-                CAddress addr;
-                int nInbound = 0;
-
-                if (hSocket != INVALID_SOCKET)
-                    if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
-                        LogPrintf("Warning: Unknown socket family\n");
-
-                bool whitelisted = hListenSocket.whitelisted || IsWhitelistedRange(addr);
-                {
-                    LOCK(cs_vNodes);
-                    BOOST_FOREACH (CNode* pnode, vNodes)
-                        if (pnode->fInbound)
-                            nInbound++;
-                }
-
-                if (hSocket == INVALID_SOCKET) {
-                    int nErr = WSAGetLastError();
-                    if (nErr != WSAEWOULDBLOCK)
-                        LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
-                } else if (!IsSelectableSocket(hSocket)) {
-                    LogPrintf("connection from %s dropped: non-selectable socket\n", addr);
-                    CloseSocket(hSocket);
-                } else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS) {
-                    LogPrint("net", "connection from %s dropped (full)\n", addr);
-                    CloseSocket(hSocket);
-                } else if (PeerBanningService::IsBanned(GetTime(),addr) && !whitelisted) {
-                    LogPrintf("connection from %s dropped (banned)\n", addr);
-                    CloseSocket(hSocket);
-                } else {
-                    CNode* pnode = new CNode(&GetNodeSignals(),hSocket, addr, "", true);
-                    pnode->AddRef();
-                    pnode->fWhitelisted = whitelisted;
-
-                    {
-                        LOCK(cs_vNodes);
-                        vNodes.push_back(pnode);
-                    }
-                }
-            }
-        }
+        socketsProcessor.ProcessSocketErrorCode(nSelect);
+        socketsProcessor.AcceptNewConnections(vhListenSocket,cs_vNodes,vNodes);
 
         //
         // Service each socket
         //
         ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
-        BOOST_FOREACH (CNode* pnode, safeNodesCopy.Nodes()) {
+        for(CNode* pnode: safeNodesCopy.Nodes())
+        {
             boost::this_thread::interruption_point();
 
-            //
-            // Receive
-            //
-            if (pnode->hSocket == INVALID_SOCKET)
+            if(!socketsProcessor.ReceiveMessagesFromPeer(pnode) || !socketsProcessor.SendMessagesToPeer(pnode))
                 continue;
-            if (FD_ISSET(pnode->hSocket, &fdsetRecv) || FD_ISSET(pnode->hSocket, &fdsetError)) {
-                TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
-                if (lockRecv) {
-                    {
-                        // typical socket buffer is 8K-64K
-                        char pchBuf[0x10000];
-                        int nBytes = recv(pnode->hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
-                        if (nBytes > 0) {
-                            if (!pnode->ReceiveMsgBytes(pchBuf, nBytes,messageHandlerCondition))
-                                pnode->CloseSocketDisconnect();
-                            pnode->nLastRecv = GetTime();
-                            pnode->nRecvBytes += nBytes;
-                            NetworkUsageStats::RecordBytesRecv(nBytes);
-                        } else if (nBytes == 0) {
-                            // socket closed gracefully
-                            if (!pnode->fDisconnect)
-                                LogPrint("net", "socket closed\n");
-                            pnode->CloseSocketDisconnect();
-                        } else if (nBytes < 0) {
-                            // error
-                            int nErr = WSAGetLastError();
-                            if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS) {
-                                if (!pnode->fDisconnect)
-                                    LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
-                                pnode->CloseSocketDisconnect();
-                            }
-                        }
-                    }
-                }
-            }
-
-            //
-            // Send
-            //
-            if (pnode->hSocket == INVALID_SOCKET)
-                continue;
-            if (FD_ISSET(pnode->hSocket, &fdsetSend)) {
-                TRY_LOCK(pnode->cs_vSend, lockSend);
-                if (lockSend)
-                    pnode->SocketSendData();
-            }
 
             //
             // Inactivity checking

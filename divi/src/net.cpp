@@ -157,7 +157,7 @@ bool fAddressesInitialized = false;
 std::vector<CNode*> vNodes;
 CCriticalSection cs_vNodes;
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
-PeerNotificationOfMintService peerBlockNotify(vNodes);
+PeerNotificationOfMintService peerBlockNotify(vNodes,cs_vNodes);
 
 map<CInv, CDataStream> mapRelay;
 deque<pair<int64_t, CInv> > vRelayExpiration;

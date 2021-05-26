@@ -771,6 +771,96 @@ void ThreadSocketHandler()
     }
 }
 
+void ThreadMessageHandler()
+{
+    boost::mutex condition_mutex;
+    boost::unique_lock<boost::mutex> lock(condition_mutex);
+
+    /* We periodically rebroadcast our address.  This is the last time
+       we did a broadcast.  */
+    int64_t nLastRebroadcast = 0;
+
+    SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
+    while (true) {
+        ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
+        std::vector<CNode*>& vNodesCopy = safeNodesCopy.Nodes();
+
+        bool rebroadcast = (!IsInitialBlockDownload() && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
+
+        // Poll the connected nodes for messages
+        CNode* pnodeTrickle = NULL;
+        if (!vNodesCopy.empty())
+            pnodeTrickle = vNodesCopy[GetRand(vNodesCopy.size())];
+
+        bool fSleep = true;
+
+        BOOST_FOREACH (CNode* pnode, vNodesCopy) {
+            if (pnode->fDisconnect)
+                continue;
+
+            // Receive messages
+            {
+                TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
+                if (lockRecv) {
+                    if (!ProcessReceivedMessages(pnode))
+                        pnode->CloseSocketDisconnect();
+
+                    if (pnode->GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)
+                    {
+                        if (!pnode->vRecvGetData.empty() || (!pnode->vRecvMsg.empty() && pnode->vRecvMsg[0].complete())) {
+                            fSleep = false;
+                        }
+                    }
+                }
+            }
+            boost::this_thread::interruption_point();
+
+            // Handle potential ping messages first.
+            if (pnode->CanSendMessagesToPeer())
+            {
+                TRY_LOCK(pnode->cs_vSend, lockSend);
+                if (lockSend)
+                    pnode->MaybeSendPing();
+            }
+            boost::this_thread::interruption_point();
+
+            // Rebroadcasting is done for all nodes after the ping
+            // of the first; this is to mimic previous behaviour.
+            if (rebroadcast) {
+                for (auto* pnode2 : vNodesCopy) {
+                    TRY_LOCK(pnode2->cs_vSend, lockSend);
+                    if (!lockSend)
+                        continue;
+
+                    // Periodically clear setAddrKnown to allow refresh broadcasts
+                    if (nLastRebroadcast > 0)
+                        pnode2->setAddrKnown.clear();
+
+                    // Rebroadcast our address
+                    AdvertizeLocal(pnode2);
+                    boost::this_thread::interruption_point();
+                }
+
+                nLastRebroadcast = GetTime();
+                rebroadcast = false;
+            }
+
+            // Send messages
+            if (pnode->CanSendMessagesToPeer())
+            {
+                TRY_LOCK(pnode->cs_vSend, lockSend);
+                if (lockSend) SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
+            }
+            boost::this_thread::interruption_point();
+        }
+
+
+        safeNodesCopy.ClearCopy();
+
+        if (fSleep)
+            messageHandlerCondition.timed_wait(lock, boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(100));
+    }
+}
 
 #ifdef USE_UPNP
 void ThreadMapPort()
@@ -1148,98 +1238,6 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
         pnode->fOneShot = true;
 
     return true;
-}
-
-
-void ThreadMessageHandler()
-{
-    boost::mutex condition_mutex;
-    boost::unique_lock<boost::mutex> lock(condition_mutex);
-
-    /* We periodically rebroadcast our address.  This is the last time
-       we did a broadcast.  */
-    int64_t nLastRebroadcast = 0;
-
-    SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
-    while (true) {
-        ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
-        std::vector<CNode*>& vNodesCopy = safeNodesCopy.Nodes();
-
-        bool rebroadcast = (!IsInitialBlockDownload() && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
-
-        // Poll the connected nodes for messages
-        CNode* pnodeTrickle = NULL;
-        if (!vNodesCopy.empty())
-            pnodeTrickle = vNodesCopy[GetRand(vNodesCopy.size())];
-
-        bool fSleep = true;
-
-        BOOST_FOREACH (CNode* pnode, vNodesCopy) {
-            if (pnode->fDisconnect)
-                continue;
-
-            // Receive messages
-            {
-                TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
-                if (lockRecv) {
-                    if (!ProcessReceivedMessages(pnode))
-                        pnode->CloseSocketDisconnect();
-
-                    if (pnode->GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)
-                    {
-                        if (!pnode->vRecvGetData.empty() || (!pnode->vRecvMsg.empty() && pnode->vRecvMsg[0].complete())) {
-                            fSleep = false;
-                        }
-                    }
-                }
-            }
-            boost::this_thread::interruption_point();
-
-            // Handle potential ping messages first.
-            if (pnode->CanSendMessagesToPeer())
-            {
-                TRY_LOCK(pnode->cs_vSend, lockSend);
-                if (lockSend)
-                    pnode->MaybeSendPing();
-            }
-            boost::this_thread::interruption_point();
-
-            // Rebroadcasting is done for all nodes after the ping
-            // of the first; this is to mimic previous behaviour.
-            if (rebroadcast) {
-                for (auto* pnode2 : vNodesCopy) {
-                    TRY_LOCK(pnode2->cs_vSend, lockSend);
-                    if (!lockSend)
-                        continue;
-
-                    // Periodically clear setAddrKnown to allow refresh broadcasts
-                    if (nLastRebroadcast > 0)
-                        pnode2->setAddrKnown.clear();
-
-                    // Rebroadcast our address
-                    AdvertizeLocal(pnode2);
-                    boost::this_thread::interruption_point();
-                }
-
-                nLastRebroadcast = GetTime();
-                rebroadcast = false;
-            }
-
-            // Send messages
-            if (pnode->CanSendMessagesToPeer())
-            {
-                TRY_LOCK(pnode->cs_vSend, lockSend);
-                if (lockSend) SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
-            }
-            boost::this_thread::interruption_point();
-        }
-
-
-        safeNodesCopy.ClearCopy();
-
-        if (fSleep)
-            messageHandlerCondition.timed_wait(lock, boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(100));
-    }
 }
 
 void ThreadBackupWallet(const CWallet* wallet)

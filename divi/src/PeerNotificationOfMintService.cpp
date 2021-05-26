@@ -4,8 +4,10 @@
 #include <protocol.h>
 
 PeerNotificationOfMintService::PeerNotificationOfMintService(
-    std::vector<CNode*>& peers
+    std::vector<CNode*>& peers,
+    CCriticalSection& peersLock
     ): peers_(peers)
+    , peersLock_(peersLock)
 {
 
 }
@@ -16,6 +18,7 @@ bool PeerNotificationOfMintService::havePeersToNotify() const
 }
 void PeerNotificationOfMintService::notifyPeers(const uint256& blockHash) const
 {
+    LOCK(peersLock_);
     for (CNode* peer : peers_)
     {
         peer->PushInventory(CInv(MSG_BLOCK, blockHash));

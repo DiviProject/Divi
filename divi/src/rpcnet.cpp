@@ -35,26 +35,6 @@ extern std::vector<std::string> vAddedNodes;
 extern CCriticalSection cs_vAddedNodes;
 extern CCriticalSection cs_main;
 
-struct CNodeStateStats {
-    int nMisbehavior;
-    int nSyncHeight;
-    int nCommonHeight;
-    std::vector<int> vHeightInFlight;
-};
-/** Get statistics from node state */
-bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats)
-{
-    LOCK(cs_main);
-    const CNodeState* state = State(nodeid);
-    if (state == NULL)
-        return false;
-    stats.nMisbehavior = state->GetMisbehaviourPenalty();
-    stats.nSyncHeight = state->pindexBestKnownBlock ? state->pindexBestKnownBlock->nHeight : -1;
-    stats.nCommonHeight = state->pindexLastCommonBlock ? state->pindexLastCommonBlock->nHeight : -1;
-    stats.vHeightInFlight = GetBlockHeightsInFlight(nodeid);
-    return true;
-}
-
 Value getconnectioncount(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -122,15 +102,18 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getpeerinfo", "") + HelpExampleRpc("getpeerinfo", ""));
 
-    std::vector<CNodeStats> vstats;
-    GetNodeStats(vstats);
+    std::vector<std::pair<CNodeStats,CNodeStateStats>> allStats;
+    {
+        LOCK(cs_main);
+        GetNodeStateStats(allStats);
+    }
 
     Array ret;
-
-    BOOST_FOREACH (const CNodeStats& stats, vstats) {
+    for(const std::pair<CNodeStats,CNodeStateStats>& statsPair: allStats)
+    {
+        const CNodeStats& stats = statsPair.first;
+        const CNodeStateStats& statestats = statsPair.second;
         Object obj;
-        CNodeStateStats statestats;
-        bool fStateStats = GetNodeStateStats(stats.nodeid, statestats);
         obj.push_back(Pair("id", stats.nodeid));
         obj.push_back(Pair("addr", stats.addrName));
         if (!(stats.addrLocal.empty()))
@@ -151,12 +134,14 @@ Value getpeerinfo(const Array& params, bool fHelp)
         obj.push_back(Pair("subver", stats.cleanSubVer));
         obj.push_back(Pair("inbound", stats.fInbound));
         obj.push_back(Pair("startingheight", stats.nStartingHeight));
-        if (fStateStats) {
+        if(statestats.stateFound)
+        {
             obj.push_back(Pair("banscore", statestats.nMisbehavior));
             obj.push_back(Pair("synced_headers", statestats.nSyncHeight));
             obj.push_back(Pair("synced_blocks", statestats.nCommonHeight));
             Array heights;
-            BOOST_FOREACH (int height, statestats.vHeightInFlight) {
+            for(int height: statestats.vHeightInFlight)
+            {
                 heights.push_back(height);
             }
             obj.push_back(Pair("inflight", heights));

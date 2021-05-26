@@ -45,6 +45,7 @@
 #include <NodeStats.h>
 #include <NodeStateRegistry.h>
 #include <Node.h>
+#include <NodeState.h>
 
 #ifdef WIN32
 #include <string.h>
@@ -292,7 +293,7 @@ NodeConnectionStatus GetConnectionStatus(const CService& addrNode)
     return NodeConnectionStatus::NOT_CONNECTED;
 }
 
-void GetNodeStats(std::vector<CNodeStats>& vstats)
+void GetNodeStateStats(std::vector<std::pair<CNodeStats,CNodeStateStats>>& vstats)
 {
     vstats.clear();
 
@@ -300,8 +301,19 @@ void GetNodeStats(std::vector<CNodeStats>& vstats)
     vstats.reserve(vNodes.size());
     for(CNode* pnode: vNodes)
     {
-        vstats.emplace_back(pnode);
+        const CNodeState* state = State(pnode->GetId());
+        CNodeStateStats stateStats;
+        stateStats.stateFound = static_cast<bool>(state);
+        if(stateStats.stateFound)
+        {
+            stateStats.nMisbehavior = state->GetMisbehaviourPenalty();
+            stateStats.nSyncHeight = state->pindexBestKnownBlock ? state->pindexBestKnownBlock->nHeight : -1;
+            stateStats.nCommonHeight = state->pindexLastCommonBlock ? state->pindexLastCommonBlock->nHeight : -1;
+            stateStats.vHeightInFlight = GetBlockHeightsInFlight(state->nodeId);
+        }
+        vstats.push_back(std::make_pair(CNodeStats(pnode),stateStats));
     }
+
 }
 
 void AddOneShot(string strDest)

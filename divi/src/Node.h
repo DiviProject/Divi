@@ -188,6 +188,7 @@ public:
     void PushInventory(const CInv& inv);
     void AskFor(const CInv& inv);
     void SocketSendData();
+    void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
 
     void PushVersion(int currentChainTipHeight);
     void SetSporkCount(int nSporkCountIn);

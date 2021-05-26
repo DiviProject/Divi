@@ -687,7 +687,7 @@ public:
         }
     }
 
-    bool ReceiveMessagesFromPeer(CNode* pnode)
+    bool ReceiveMessagesFromPeer(CNode* pnode, boost::condition_variable& messageHandlerCondition)
     {
         if (pnode->hSocket == INVALID_SOCKET)
             return false;
@@ -695,33 +695,7 @@ public:
         {
             TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
             if (lockRecv)
-            {
-                {
-                    // typical socket buffer is 8K-64K
-                    char pchBuf[0x10000];
-                    int nBytes = recv(pnode->hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
-                    if (nBytes > 0) {
-                        if (!pnode->ReceiveMsgBytes(pchBuf, nBytes,messageHandlerCondition))
-                            pnode->CloseSocketDisconnect();
-                        pnode->nLastRecv = GetTime();
-                        pnode->nRecvBytes += nBytes;
-                        NetworkUsageStats::RecordBytesRecv(nBytes);
-                    } else if (nBytes == 0) {
-                        // socket closed gracefully
-                        if (!pnode->fDisconnect)
-                            LogPrint("net", "socket closed\n");
-                        pnode->CloseSocketDisconnect();
-                    } else if (nBytes < 0) {
-                        // error
-                        int nErr = WSAGetLastError();
-                        if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS) {
-                            if (!pnode->fDisconnect)
-                                LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
-                            pnode->CloseSocketDisconnect();
-                        }
-                    }
-                }
-            }
+                pnode->SocketReceiveData(messageHandlerCondition);
         }
         return true;
     }
@@ -770,7 +744,7 @@ void ThreadSocketHandler()
         {
             boost::this_thread::interruption_point();
 
-            if(!socketsProcessor.ReceiveMessagesFromPeer(pnode) || !socketsProcessor.SendMessagesToPeer(pnode))
+            if(!socketsProcessor.ReceiveMessagesFromPeer(pnode,messageHandlerCondition) || !socketsProcessor.SendMessagesToPeer(pnode))
                 continue;
 
             //

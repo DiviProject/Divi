@@ -273,6 +273,33 @@ void CNode::SocketSendData()
     vSendMsg.erase(vSendMsg.begin(), it);
 }
 
+// Requires LOCK(cs_vRecvMsg)
+void CNode::SocketReceiveData(boost::condition_variable& messageHandlerCondition)
+{
+    // typical socket buffer is 8K-64K
+    char pchBuf[0x10000];
+    int nBytes = recv(hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
+    if (nBytes > 0) {
+        if (!ReceiveMsgBytes(pchBuf, nBytes,messageHandlerCondition))
+            CloseSocketDisconnect();
+        nLastRecv = GetTime();
+        nRecvBytes += nBytes;
+        NetworkUsageStats::RecordBytesRecv(nBytes);
+    } else if (nBytes == 0) {
+        // socket closed gracefully
+        if (!fDisconnect)
+            LogPrint("net", "socket closed\n");
+        CloseSocketDisconnect();
+    } else if (nBytes < 0) {
+        // error
+        int nErr = WSAGetLastError();
+        if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS) {
+            if (!fDisconnect)
+                LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
+            CloseSocketDisconnect();
+        }
+    }
+}
 
 void CNode::PushAddress(const CAddress& addr)
 {

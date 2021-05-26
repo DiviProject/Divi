@@ -542,6 +542,203 @@ void DeleteDisconnectedNodes()
         }
     }
 }
+
+class SocketsProcessor
+{
+private:
+    struct timeval timeout;
+    fd_set fdsetRecv;
+    fd_set fdsetSend;
+    fd_set fdsetError;
+    SOCKET hSocketMax;
+    bool have_fds;
+public:
+    SocketsProcessor(): hSocketMax(0), have_fds(false)
+    {
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 50000; // frequency to poll pnode->vSend
+        FD_ZERO(&fdsetRecv);
+        FD_ZERO(&fdsetSend);
+        FD_ZERO(&fdsetError);
+    }
+
+    void ProcessListeningSockets(const std::vector<ListenSocket>& listeningSockets)
+    {
+        for (const ListenSocket& hListenSocket: listeningSockets)
+        {
+            FD_SET(hListenSocket.socket, &fdsetRecv);
+            hSocketMax = max(hSocketMax, hListenSocket.socket);
+            have_fds = true;
+        }
+    }
+    // Implement the following logic in AssignNodesToSendOrReceiveTasks:
+    // * If there is data to send, select() for sending data. As this only
+    //   happens when optimistic write failed, we choose to first drain the
+    //   write buffer in this case before receiving more. This avoids
+    //   needlessly queueing received data, if the remote peer is not themselves
+    //   receiving data. This means properly utilizing TCP flow control signalling.
+    // * Otherwise, if there is no (complete) message in the receive buffer,
+    //   or there is space left in the buffer, select() for receiving data.
+    // * (if neither of the above applies, there is certainly one message
+    //   in the receiver buffer ready to be processed).
+    // Together, that means that at least one of the following is always possible,
+    // so we don't deadlock:
+    // * We send some data.
+    // * We wait for data to be received (and disconnect after timeout).
+    // * We process a message in the buffer (message handler thread).
+    void AssignNodesToSendOrReceiveTasks(CCriticalSection& nodesLock, std::vector<CNode*>& nodes)
+    {
+        LOCK(nodesLock);
+        for(CNode* pnode: nodes)
+        {
+            if (pnode->hSocket == INVALID_SOCKET)
+                continue;
+            FD_SET(pnode->hSocket, &fdsetError);
+            hSocketMax = max(hSocketMax, pnode->hSocket);
+            have_fds = true;
+            {
+                TRY_LOCK(pnode->cs_vSend, lockSend);
+                if (lockSend && !pnode->vSendMsg.empty()) {
+                    FD_SET(pnode->hSocket, &fdsetSend);
+                    continue;
+                }
+            }
+            {
+                TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
+                if (lockRecv &&
+                    (pnode->vRecvMsg.empty() ||
+                    !pnode->vRecvMsg.front().complete() ||
+                    pnode->IsAvailableToReceive()))
+                {
+                    FD_SET(pnode->hSocket, &fdsetRecv);
+                }
+            }
+        }
+    }
+    int CheckSocketCanBeSelected()
+    {
+        return select(have_fds ? hSocketMax + 1 : 0,
+            &fdsetRecv, &fdsetSend, &fdsetError, &timeout);
+    }
+    void ProcessSocketErrorCode(int socketErrorCode)
+    {
+        if (socketErrorCode == SOCKET_ERROR)
+        {
+            if (have_fds)
+            {
+                int nErr = WSAGetLastError();
+                LogPrintf("socket select error %s\n", NetworkErrorString(nErr));
+                for (unsigned int i = 0; i <= hSocketMax; i++)
+                    FD_SET(i, &fdsetRecv);
+            }
+            FD_ZERO(&fdsetSend);
+            FD_ZERO(&fdsetError);
+            MilliSleep(timeout.tv_usec / 1000);
+        }
+    }
+    void AcceptNewConnections(const std::vector<ListenSocket>& listeningSockets, CCriticalSection& nodesLock, std::vector<CNode*>& nodes)
+    {
+        for(const ListenSocket& hListenSocket: listeningSockets)
+        {
+            if (hListenSocket.socket != INVALID_SOCKET && FD_ISSET(hListenSocket.socket, &fdsetRecv))
+            {
+                struct sockaddr_storage sockaddr;
+                socklen_t len = sizeof(sockaddr);
+                SOCKET hSocket = accept(hListenSocket.socket, (struct sockaddr*)&sockaddr, &len);
+                CAddress addr;
+                int nInbound = 0;
+
+                if (hSocket != INVALID_SOCKET)
+                    if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
+                        LogPrintf("Warning: Unknown socket family\n");
+
+                bool whitelisted = hListenSocket.whitelisted || IsWhitelistedRange(addr);
+                {
+                    LOCK(nodesLock);
+                    BOOST_FOREACH (CNode* pnode, nodes)
+                        if (pnode->fInbound)
+                            nInbound++;
+                }
+
+                if (hSocket == INVALID_SOCKET) {
+                    int nErr = WSAGetLastError();
+                    if (nErr != WSAEWOULDBLOCK)
+                        LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
+                } else if (!IsSelectableSocket(hSocket)) {
+                    LogPrintf("connection from %s dropped: non-selectable socket\n", addr);
+                    CloseSocket(hSocket);
+                } else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS) {
+                    LogPrint("net", "connection from %s dropped (full)\n", addr);
+                    CloseSocket(hSocket);
+                } else if (PeerBanningService::IsBanned(GetTime(),addr) && !whitelisted) {
+                    LogPrintf("connection from %s dropped (banned)\n", addr);
+                    CloseSocket(hSocket);
+                } else {
+                    CNode* pnode = new CNode(&GetNodeSignals(),hSocket, addr, "", true);
+                    pnode->AddRef();
+                    pnode->fWhitelisted = whitelisted;
+
+                    {
+                        LOCK(nodesLock);
+                        nodes.push_back(pnode);
+                    }
+                }
+            }
+        }
+    }
+
+    bool ReceiveMessagesFromPeer(CNode* pnode)
+    {
+        if (pnode->hSocket == INVALID_SOCKET)
+            return false;
+        if (FD_ISSET(pnode->hSocket, &fdsetRecv) || FD_ISSET(pnode->hSocket, &fdsetError))
+        {
+            TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
+            if (lockRecv)
+            {
+                {
+                    // typical socket buffer is 8K-64K
+                    char pchBuf[0x10000];
+                    int nBytes = recv(pnode->hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
+                    if (nBytes > 0) {
+                        if (!pnode->ReceiveMsgBytes(pchBuf, nBytes,messageHandlerCondition))
+                            pnode->CloseSocketDisconnect();
+                        pnode->nLastRecv = GetTime();
+                        pnode->nRecvBytes += nBytes;
+                        NetworkUsageStats::RecordBytesRecv(nBytes);
+                    } else if (nBytes == 0) {
+                        // socket closed gracefully
+                        if (!pnode->fDisconnect)
+                            LogPrint("net", "socket closed\n");
+                        pnode->CloseSocketDisconnect();
+                    } else if (nBytes < 0) {
+                        // error
+                        int nErr = WSAGetLastError();
+                        if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS) {
+                            if (!pnode->fDisconnect)
+                                LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
+                            pnode->CloseSocketDisconnect();
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    bool SendMessagesToPeer(CNode* pnode)
+    {
+        if (pnode->hSocket == INVALID_SOCKET)
+            return false;
+        if (FD_ISSET(pnode->hSocket, &fdsetSend)) {
+            TRY_LOCK(pnode->cs_vSend, lockSend);
+            if (lockSend)
+                pnode->SocketSendData();
+        }
+        return true;
+    }
+};
+
+
 void ThreadSocketHandler()
 {
     unsigned int nPrevNodeCount = 0;

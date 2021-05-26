@@ -35,6 +35,7 @@ class CInv;
 class CDataStream;
 class uint256;
 class CNodeStats;
+class CNodeStateStats;
 
 namespace boost
 {
@@ -80,7 +81,23 @@ enum NodeConnectionStatus
     NOT_CONNECTED,
 };
 NodeConnectionStatus GetConnectionStatus(const CService& addrNode);
-void GetNodeStats(std::vector<CNodeStats>& vstats);
+
+struct CNodeStateStats {
+    bool stateFound;
+    int nMisbehavior;
+    int nSyncHeight;
+    int nCommonHeight;
+    std::vector<int> vHeightInFlight;
+    CNodeStateStats(
+        ): stateFound(false)
+        , nMisbehavior(0)
+        , nSyncHeight(-1)
+        , nCommonHeight(-1)
+        , vHeightInFlight()
+    {
+    }
+};
+void GetNodeStateStats(std::vector<std::pair<CNodeStats,CNodeStateStats>>& vstats);
 
 class UIMessenger;
 bool AlertsAreEnabled();

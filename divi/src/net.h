@@ -47,6 +47,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
 void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain);
 bool StopNode();
 
+CAddrMan& GetNetworkAddressManager();
 CNodeSignals& GetNodeSignals();
 void RegisterNodeSignals(CNodeSignals& nodeSignals);
 void UnregisterNodeSignals(CNodeSignals& nodeSignals);

@@ -3,11 +3,11 @@
 #include <boost/signals2/signal.hpp>
 #include <string>
 #include <NodeId.h>
-class CAddress;
+class CNodeState;
 // Signals for message handling
 class CNode;
 struct CNodeSignals {
-    boost::signals2::signal<void(NodeId, const std::string, const CAddress&)> InitializeNode;
+    boost::signals2::signal<void(NodeId, CNodeState&)> InitializeNode;
     boost::signals2::signal<void(NodeId)> FinalizeNode;
 };
 #endif// NODE_SIGNALS_H

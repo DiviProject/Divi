@@ -150,7 +150,6 @@ public:
 bool fDiscover = true;
 bool fListen = true;
 
-static CNode* pnodeLocalHost = NULL;
 static std::vector<ListenSocket> vhListenSocket;
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
@@ -1440,9 +1439,6 @@ void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain)
         semOutbound = new CSemaphore(nMaxOutbound);
     }
 
-    if (pnodeLocalHost == NULL)
-        pnodeLocalHost = new CNode(&GetNodeSignals(),GetNetworkAddressManager(),INVALID_SOCKET, CAddress(CService("127.0.0.1", 0), GetLocalServices()));
-
     Discover(threadGroup);
 
     //
@@ -1532,8 +1528,6 @@ public:
         vhListenSocket.clear();
         delete semOutbound;
         semOutbound = NULL;
-        delete pnodeLocalHost;
-        pnodeLocalHost = NULL;
 
 #ifdef WIN32
         // Shutdown Windows Sockets

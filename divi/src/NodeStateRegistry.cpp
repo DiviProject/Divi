@@ -1,6 +1,5 @@
 #include <NodeStateRegistry.h>
 
-#include <addrman.h>
 #include <NodeState.h>
 #include <sync.h>
 #include <NodeId.h>
@@ -20,11 +19,7 @@ BlocksInFlightRegistry blocksInFlightRegistry;
 
 /** Map maintaining per-node state. Requires cs_main. */
 std::map<NodeId, CNodeState*> mapNodeState;
-CAddrMan addrman;
-CAddrMan& GetNetworkAddressManager()
-{
-    return addrman;
-}
+
 // Requires cs_main.
 CNodeState* State(NodeId nodeId)
 {

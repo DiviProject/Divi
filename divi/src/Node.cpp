@@ -13,6 +13,7 @@
 #include <utiltime.h>
 #include <utilstrencodings.h>
 #include <NodeSignals.h>
+#include <NodeState.h>
 
 extern Settings& settings;
 uint64_t nLocalHostNonce = 0;
@@ -92,7 +93,15 @@ NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
 limitedmap<CInv, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);
 
-CNode::CNode(CNodeSignals* nodeSignals, SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000)
+CNode::CNode(
+    CNodeSignals* nodeSignals,
+    CAddrMan& addressMananger,
+    SOCKET hSocketIn,
+    CAddress addrIn,
+    std::string addrNameIn,
+    bool fInboundIn
+    ) : ssSend(SER_NETWORK, INIT_PROTO_VERSION)
+    , setAddrKnown(5000)
 {
     nServices = 0;
     hSocket = hSocketIn;
@@ -140,6 +149,9 @@ CNode::CNode(CNodeSignals* nodeSignals, SOCKET hSocketIn, CAddress addrIn, std::
 
     assert(nodeSignals_);
     nodeSignals_->InitializeNode(GetId(), addrName,addr);
+    nodeState_.reset(new CNodeState(id,addressMananger));
+    nodeState_->name = addrName;
+    nodeState_->address = addr;
 }
 
 CNode::~CNode()
@@ -152,6 +164,7 @@ CNode::~CNode()
     // Network connections can be unused (nRefCount=0), connected (nRefCount=1), in-use (nRefCount > 1)
     assert(nRefCount<2);
     nodeSignals_->FinalizeNode(GetId());
+    nodeState_.reset();
 }
 
 NodeBufferStatus CNode::GetSendBufferStatus() const

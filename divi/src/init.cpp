@@ -321,6 +321,7 @@ void MainShutdown()
     delete pwalletMain;
     pwalletMain = NULL;
 #endif
+    CleanupP2PConnections();
     LogPrintf("%s: done\n", __func__);
 }
 

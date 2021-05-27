@@ -418,7 +418,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
         addrman.Attempt(addrConnect);
 
         // Add node
-        CNode* pnode = new CNode(&GetNodeSignals(),hSocket, addrConnect, pszDest ? pszDest : "", false);
+        CNode* pnode = new CNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addrConnect, pszDest ? pszDest : "", false);
         if (pnode->hSocket != INVALID_SOCKET && !pnode->fInbound)
             pnode->PushVersion(GetHeight());
         pnode->AddRef();
@@ -686,7 +686,7 @@ public:
                     LogPrintf("connection from %s dropped (banned)\n", addr);
                     CloseSocket(hSocket);
                 } else {
-                    CNode* pnode = new CNode(&GetNodeSignals(),hSocket, addr, "", true);
+                    CNode* pnode = new CNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addr, "", true);
                     pnode->AddRef();
                     pnode->fWhitelisted = whitelisted;
 
@@ -1435,7 +1435,7 @@ void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain)
     }
 
     if (pnodeLocalHost == NULL)
-        pnodeLocalHost = new CNode(&GetNodeSignals(),INVALID_SOCKET, CAddress(CService("127.0.0.1", 0), GetLocalServices()));
+        pnodeLocalHost = new CNode(&GetNodeSignals(),GetNetworkAddressManager(),INVALID_SOCKET, CAddress(CService("127.0.0.1", 0), GetLocalServices()));
 
     Discover(threadGroup);
 

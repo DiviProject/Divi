@@ -3292,10 +3292,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CInv inv(MSG_TX, tx.GetHash());
         pfrom->AddInventoryKnown(inv);
 
-        LOCK(cs_main);
-
         bool fMissingInputs = false;
         CValidationState state;
+
+        {
+        LOCK(cs_main);
 
         CNode::ClearInventoryItem(inv);
 
@@ -3367,6 +3368,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
             RelayTransaction(tx);
         }
+        } // cs_main
 
         int nDoS = 0;
         if (state.IsInvalid(nDoS)) {

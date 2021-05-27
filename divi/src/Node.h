@@ -12,11 +12,14 @@
 #include <mruset.h>
 #include <stdint.h>
 #include <NodeId.h>
+#include <memory>
 
 #include <boost/thread/condition_variable.hpp>
 
 class CBloomFilter;
 class CNodeSignals;
+class CNodeState;
+class CAddrMan;
 
 /** The maximum number of entries in an 'inv' protocol message */
 constexpr unsigned int MAX_INV_SZ = 50000;
@@ -108,6 +111,7 @@ protected:
     void Fuzz(int nChance); // modifies ssSend
 
     CNodeSignals* nodeSignals_;
+    std::unique_ptr<CNodeState> nodeState_;
 public:
     uint256 hashContinue;
     int nStartingHeight;
@@ -137,7 +141,7 @@ public:
 
     int nSporksSynced = 0;
 
-    CNode(CNodeSignals* nodeSignals, SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn = false);
+    CNode(CNodeSignals* nodeSignals, CAddrMan& addressMananger, SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn = false);
     ~CNode();
 
 private:

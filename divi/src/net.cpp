@@ -176,12 +176,18 @@ CCriticalSection cs_vAddedNodes;
 static CSemaphore* semOutbound = NULL;
 boost::condition_variable messageHandlerCondition;
 
+static CAddrMan addrman;
+CAddrMan& GetNetworkAddressManager()
+{
+    return addrman;
+}
 // Signals for message handling
 static CNodeSignals globalNodeSignals;
 CNodeSignals& GetNodeSignals()
 {
     return globalNodeSignals;
 }
+
 /** Register with a network node to receive its signals */
 void RegisterNodeSignals(CNodeSignals& nodeSignals)
 {

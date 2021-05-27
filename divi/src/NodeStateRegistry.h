@@ -17,7 +17,6 @@ class CBlockReject;
 // Requires cs_main.
 CNodeState* State(NodeId nodeId);
 void UpdateStateToCurrentlyConnected(NodeId nodeId);
-CAddrMan& GetNetworkAddressManager();
 void InitializeNode(CNodeState& nodeState);
 void FinalizeNode(CNodeState& nodeState);
 void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus);

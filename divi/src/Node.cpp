@@ -163,6 +163,7 @@ CNode::~CNode()
 
     // Network connections can be unused (nRefCount=0), connected (nRefCount=1), in-use (nRefCount > 1)
     assert(nRefCount<2);
+    nodeState_->Finalize();
     nodeSignals_->FinalizeNode(*nodeState_);
     nodeState_.reset();
 }

@@ -151,7 +151,7 @@ CNode::CNode(
     nodeState_.reset(new CNodeState(id,addressMananger));
     nodeState_->name = addrName;
     nodeState_->address = addr;
-    nodeSignals_->InitializeNode(GetId(), *nodeState_);
+    nodeSignals_->InitializeNode(*nodeState_);
 }
 
 CNode::~CNode()
@@ -163,7 +163,7 @@ CNode::~CNode()
 
     // Network connections can be unused (nRefCount=0), connected (nRefCount=1), in-use (nRefCount > 1)
     assert(nRefCount<2);
-    nodeSignals_->FinalizeNode(GetId());
+    nodeSignals_->FinalizeNode(*nodeState_);
     nodeState_.reset();
 }
 

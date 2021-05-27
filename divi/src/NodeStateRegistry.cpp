@@ -57,19 +57,19 @@ bool Misbehaving(NodeId nodeId, int howmuch)
     return Misbehaving(state,howmuch);
 }
 
-void InitializeNode(NodeId nodeid,  CNodeState& nodeState)
+void InitializeNode(CNodeState& nodeState)
 {
     LOCK(cs_main);
-    CNodeState* state = mapNodeState.insert(std::make_pair(nodeid, &nodeState)).first->second;
+    CNodeState* state = mapNodeState.insert(std::make_pair(nodeState.nodeId, &nodeState)).first->second;
     blocksInFlightRegistry.RegisterNodedId(state->nodeId);
 }
 
-void FinalizeNode(NodeId nodeid)
+void FinalizeNode(CNodeState& nodeState)
 {
     LOCK(cs_main);
-    State(nodeid)->Finalize();
-    blocksInFlightRegistry.UnregisterNodeId(nodeid);
-    mapNodeState.erase(nodeid);
+    nodeState.Finalize();
+    blocksInFlightRegistry.UnregisterNodeId(nodeState.nodeId);
+    mapNodeState.erase(nodeState.nodeId);
 }
 
 void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)

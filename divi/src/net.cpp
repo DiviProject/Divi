@@ -1502,40 +1502,40 @@ bool StopNode()
     return true;
 }
 
-class CNetCleanup
-{
-public:
-    CNetCleanup() {}
-
-    ~CNetCleanup()
+void CleanupP2PConnections()
+ {
+    // Close sockets
+    LOCK(cs_vNodes);
+    for(CNode* pnode: vNodes)
     {
-        // Close sockets
-        BOOST_FOREACH (CNode* pnode, vNodes)
-            if (pnode->hSocket != INVALID_SOCKET)
-                CloseSocket(pnode->hSocket);
-        BOOST_FOREACH (ListenSocket& hListenSocket, vhListenSocket)
-            if (hListenSocket.socket != INVALID_SOCKET)
-                if (!CloseSocket(hListenSocket.socket))
-                    LogPrintf("CloseSocket(hListenSocket) failed with error %s\n", NetworkErrorString(WSAGetLastError()));
-
-        // clean up some globals (to help leak detection)
-        BOOST_FOREACH (CNode* pnode, vNodes)
-            delete pnode;
-        BOOST_FOREACH (CNode* pnode, vNodesDisconnected)
-            delete pnode;
-        vNodes.clear();
-        vNodesDisconnected.clear();
-        vhListenSocket.clear();
-        delete semOutbound;
-        semOutbound = NULL;
+        if (pnode->hSocket != INVALID_SOCKET)
+            CloseSocket(pnode->hSocket);
+    }
+    for(ListenSocket& hListenSocket: vhListenSocket)
+    {
+        if (hListenSocket.socket != INVALID_SOCKET && !CloseSocket(hListenSocket.socket))
+            LogPrintf("CloseSocket(hListenSocket) failed with error %s\n", NetworkErrorString(WSAGetLastError()));
+    }
+    // clean up some globals (to help leak detection)
+    vhListenSocket.clear();
+    for(CNode* pnode: vNodes)
+    {
+        delete pnode;
+    }
+    vNodes.clear();
+    for(CNode* pnode: vNodesDisconnected)
+    {
+        delete pnode;
+    }
+    vNodesDisconnected.clear();
+    delete semOutbound;
+    semOutbound = NULL;
 
 #ifdef WIN32
-        // Shutdown Windows Sockets
-        WSACleanup();
+    // Shutdown Windows Sockets
+    WSACleanup();
 #endif
-    }
-} instance_of_cnetcleanup;
-
+}
 void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate)
 {
     LOCK(cs_vNodes);

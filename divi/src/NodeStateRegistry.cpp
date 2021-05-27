@@ -62,7 +62,6 @@ void InitializeNode(CNodeState& nodeState)
 void FinalizeNode(CNodeState& nodeState)
 {
     LOCK(cs_main);
-    nodeState.Finalize();
     blocksInFlightRegistry.UnregisterNodeId(nodeState.nodeId);
     mapNodeState.erase(nodeState.nodeId);
 }

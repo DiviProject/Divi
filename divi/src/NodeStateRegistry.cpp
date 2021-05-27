@@ -19,7 +19,7 @@ extern CCriticalSection cs_main;
 BlocksInFlightRegistry blocksInFlightRegistry;
 
 /** Map maintaining per-node state. Requires cs_main. */
-std::map<NodeId, CNodeState> mapNodeState;
+std::map<NodeId, CNodeState*> mapNodeState;
 CAddrMan addrman;
 CAddrMan& GetNetworkAddressManager()
 {
@@ -28,10 +28,10 @@ CAddrMan& GetNetworkAddressManager()
 // Requires cs_main.
 CNodeState* State(NodeId nodeId)
 {
-    std::map<NodeId, CNodeState>::iterator it = mapNodeState.find(nodeId);
+    std::map<NodeId, CNodeState*>::iterator it = mapNodeState.find(nodeId);
     if (it == mapNodeState.end())
         return NULL;
-    return &it->second;
+    return it->second;
 }
 void UpdateStateToCurrentlyConnected(NodeId nodeId)
 {
@@ -57,13 +57,11 @@ bool Misbehaving(NodeId nodeId, int howmuch)
     return Misbehaving(state,howmuch);
 }
 
-void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr)
+void InitializeNode(NodeId nodeid,  CNodeState& nodeState)
 {
     LOCK(cs_main);
-    CNodeState& state = mapNodeState.insert(std::make_pair(nodeid, CNodeState(nodeid,addrman))).first->second;
-    state.name = addressName;
-    state.address = addr;
-    blocksInFlightRegistry.RegisterNodedId(state.nodeId);
+    CNodeState* state = mapNodeState.insert(std::make_pair(nodeid, &nodeState)).first->second;
+    blocksInFlightRegistry.RegisterNodedId(state->nodeId);
 }
 
 void FinalizeNode(NodeId nodeid)

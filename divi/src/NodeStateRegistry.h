@@ -18,7 +18,7 @@ class CBlockReject;
 CNodeState* State(NodeId nodeId);
 void UpdateStateToCurrentlyConnected(NodeId nodeId);
 CAddrMan& GetNetworkAddressManager();
-void InitializeNode(NodeId nodeid, const std::string addressName, const CAddress& addr);
+void InitializeNode(NodeId nodeid, CNodeState& nodeState);
 void FinalizeNode(NodeId nodeid);
 void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus);
 void MarkBlockAsReceived(const uint256& hash);

@@ -148,10 +148,10 @@ CNode::CNode(
         LogPrint("net", "Added connection peer=%d\n", id);
 
     assert(nodeSignals_);
-    nodeSignals_->InitializeNode(GetId(), addrName,addr);
     nodeState_.reset(new CNodeState(id,addressMananger));
     nodeState_->name = addrName;
     nodeState_->address = addr;
+    nodeSignals_->InitializeNode(GetId(), *nodeState_);
 }
 
 CNode::~CNode()

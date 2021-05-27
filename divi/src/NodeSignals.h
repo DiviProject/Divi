@@ -8,6 +8,6 @@ class CNodeState;
 class CNode;
 struct CNodeSignals {
     boost::signals2::signal<void(CNodeState&)> InitializeNode;
-    boost::signals2::signal<void(CNodeState&)> FinalizeNode;
+    boost::signals2::signal<void(NodeId)> FinalizeNode;
 };
 #endif// NODE_SIGNALS_H

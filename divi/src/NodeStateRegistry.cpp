@@ -59,11 +59,11 @@ void InitializeNode(CNodeState& nodeState)
     blocksInFlightRegistry.RegisterNodedId(state->nodeId);
 }
 
-void FinalizeNode(CNodeState& nodeState)
+void FinalizeNode(NodeId nodeId)
 {
     LOCK(cs_main);
-    blocksInFlightRegistry.UnregisterNodeId(nodeState.nodeId);
-    mapNodeState.erase(nodeState.nodeId);
+    blocksInFlightRegistry.UnregisterNodeId(nodeId);
+    mapNodeState.erase(nodeId);
 }
 
 void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)

@@ -306,7 +306,7 @@ void GetNodeStateStats(std::vector<std::pair<CNodeStats,CNodeStateStats>>& vstat
     vstats.reserve(vNodes.size());
     for(CNode* pnode: vNodes)
     {
-        const CNodeState* state = State(pnode->GetId());
+        const CNodeState* state = pnode->GetNodeState();
         CNodeStateStats stateStats;
         stateStats.stateFound = static_cast<bool>(state);
         if(stateStats.stateFound)

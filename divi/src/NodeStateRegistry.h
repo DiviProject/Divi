@@ -19,7 +19,6 @@ CNodeState* State(NodeId nodeId);
 void UpdateStateToCurrentlyConnected(NodeId nodeId);
 void InitializeNode(CNodeState& nodeState);
 void FinalizeNode(NodeId nodeId);
-void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus);
 void MarkBlockAsReceived(const uint256& hash);
 void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex = nullptr);
 bool BlockIsInFlight(const uint256& hash);

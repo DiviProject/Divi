@@ -176,7 +176,10 @@ void CNode::UpdatePreferredDownloadStatus()
 {
     nodeState_->UpdatePreferredDownload(IsPreferredDownloadSource());
 }
-
+void CNode::SetToCurrentlyConnected()
+{
+    nodeState_->fCurrentlyConnected = true;
+}
 NodeBufferStatus CNode::GetSendBufferStatus() const
 {
     if(nSendSize < SendBufferSize())

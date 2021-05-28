@@ -111,11 +111,8 @@ NodeId GetSourceOfInFlightBlock(const uint256& blockhash)
 }
 
 /** Check whether the last unknown block a peer advertized is not yet known. */
-void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid)
+void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, CNodeState* state)
 {
-    CNodeState* state = State(nodeid);
-    assert(state != NULL);
-
     if (state->hashLastUnknownBlock != 0) {
         BlockMap::const_iterator itOld = blockIndicesByHash.find(state->hashLastUnknownBlock);
         if (itOld != blockIndicesByHash.end() && itOld->second->nChainWork > 0) {
@@ -131,7 +128,7 @@ void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid, 
     CNodeState* state = State(nodeid);
     assert(state != NULL);
 
-    ProcessBlockAvailability(blockIndicesByHash,nodeid);
+    ProcessBlockAvailability(blockIndicesByHash,state);
 
     BlockMap::const_iterator it = blockIndicesByHash.find(hash);
     if (it != blockIndicesByHash.end() && it->second->nChainWork > 0) {
@@ -162,7 +159,7 @@ void FindNextBlocksToDownload(
     assert(state != NULL);
 
     // Make sure pindexBestKnownBlock is up to date, we'll need it.
-    ProcessBlockAvailability(blockIndicesByHash,nodeid);
+    ProcessBlockAvailability(blockIndicesByHash,state);
 
     if (state->pindexBestKnownBlock == NULL || state->pindexBestKnownBlock->nChainWork < activeChain.Tip()->nChainWork) {
         // This peer has nothing interesting.

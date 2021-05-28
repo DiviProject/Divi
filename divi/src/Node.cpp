@@ -168,6 +168,11 @@ CNode::~CNode()
     nodeState_.reset();
 }
 
+CNodeState* CNode::GetNodeState()
+{
+    return nodeState_.get();
+}
+
 NodeBufferStatus CNode::GetSendBufferStatus() const
 {
     if(nSendSize < SendBufferSize())

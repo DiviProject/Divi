@@ -175,6 +175,7 @@ public:
         }
     }
 
+    CNodeState* GetNodeState();
     NodeBufferStatus GetSendBufferStatus() const;
     bool IsSelfConnection(uint64_t otherNonce) const;
     NodeId GetId() const;

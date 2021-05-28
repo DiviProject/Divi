@@ -42,11 +42,6 @@ void FinalizeNode(NodeId nodeId)
     mapNodeState.erase(nodeId);
 }
 
-void UpdateStateToCurrentlyConnected(NodeId nodeId)
-{
-    LOCK(cs_main);
-    State(nodeId)->fCurrentlyConnected = true;
-}
 bool Misbehaving(CNodeState* state, int howmuch)
 {
     if (state == NULL)

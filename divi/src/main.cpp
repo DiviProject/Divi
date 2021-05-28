@@ -3074,7 +3074,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         // Mark this node as currently connected, so we update its timestamp later.
         if (pfrom->fNetworkNode) {
-            UpdateStateToCurrentlyConnected(pfrom->GetId());
+            LOCK(cs_main);
+            pfrom->SetToCurrentlyConnected();
         }
     }
 

@@ -66,11 +66,6 @@ bool Misbehaving(NodeId nodeId, int howmuch)
     return Misbehaving(state,howmuch);
 }
 
-void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)
-{
-    State(nodeId)->UpdatePreferredDownload(updatedStatus);
-}
-
 // Requires cs_main.
 void MarkBlockAsReceived(const uint256& hash)
 {

@@ -3823,13 +3823,7 @@ static void SendAddresses(CNode* pto)
     if (!vAddr.empty())
         pto->PushMessage("addr", vAddr);
 }
-static CNodeState* GetNodeState(NodeId nodeID)
-{
-    TRY_LOCK(cs_main, lockMain);
-    if (!lockMain)
-        return nullptr;
-    return State(nodeID);
-}
+
 static void BanAndDisconnectIfNotWhitelisted(CNode* pto)
 {
     if (pto->fWhitelisted)
@@ -3972,9 +3966,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             SendAddresses(pto);
         }
 
-        CNodeState* state = GetNodeState(pto->GetId());
-        if(!state) return true;
-
+        CNodeState* state = pto->GetNodeState();
         if(state->fShouldBan)
         {
             BanAndDisconnectIfNotWhitelisted(pto);

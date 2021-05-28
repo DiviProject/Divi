@@ -63,7 +63,7 @@ def random_transaction(nodes, amount, min_fee, fee_increment, fee_variants):
     to_node = random.choice(nodes)
     fee = min_fee + fee_increment*random.randint(0,fee_variants)
 
-    (total_in, inputs) = gather_inputs(from_node, amount+fee)
+    (total_in, inputs) = gather_inputs(from_node, amount+fee,confirmations_required=0)
     outputs = make_change(from_node, total_in, amount, fee)
     outputs[to_node.getnewaddress()] = float(amount)
 
@@ -96,11 +96,10 @@ class EstimateFeeTest(BitcoinTestFramework):
 
         self.is_network_split = False
         self.sync_all()
-        
 
     def run_test(self):
-        for i in range(3):
-          self.nodes[i].setgenerate(True, 10)
+        for node in self.nodes:
+          node.setgenerate(True, 10)
           self.sync_all()
         self.nodes[0].setgenerate(True, 20)
         self.sync_all()
@@ -108,7 +107,7 @@ class EstimateFeeTest(BitcoinTestFramework):
         # Prime the memory pool with pairs of transactions
         # (high-priority, random fee and zero-priority, random fee)
         min_fee = Decimal("0.001")
-        fees_per_kb = [];
+        fees_per_kb = []
         for i in range(12):
             (txdata, fee) = random_zeropri_transaction(self.nodes, Decimal("1.1"),
                                                        min_fee, min_fee, 20)
@@ -132,10 +131,9 @@ class EstimateFeeTest(BitcoinTestFramework):
                 raise AssertionError("Estimated fee (%f) out of range (%f,%f)"%(float(e), min(fees_per_kb), max(fees_per_kb)))
 
         # Generate transactions while mining 30 more blocks, this time with node1:
-        for i in range(30):
-            for j in range(random.randrange(6-4,6+4)):
-                (_, txhex, fee) = random_transaction(self.nodes, Decimal("1.1"),
-                                                     Decimal("0.0"), min_fee, 20)
+        for _ in range(30):
+            for _ in range(random.randrange(6-4,6+4)):
+                (_, txhex, fee) = random_transaction(self.nodes, Decimal("1.1"), Decimal("0.0"), min_fee, 20)
                 tx_kbytes = (len(txhex)/2)/1000.0
                 fees_per_kb.append(float(fee)/tx_kbytes)
             sync_mempools(self.nodes)

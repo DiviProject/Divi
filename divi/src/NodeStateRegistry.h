@@ -21,7 +21,6 @@ void FinalizeNode(NodeId nodeId);
 void MarkBlockAsReceived(const uint256& hash);
 void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex = nullptr);
 bool BlockIsInFlight(const uint256& hash);
-void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid);
 void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid, const uint256& hash);
 void FindNextBlocksToDownload(
     const BlockMap& blockIndicesByHash,

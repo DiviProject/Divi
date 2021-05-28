@@ -172,6 +172,10 @@ CNodeState* CNode::GetNodeState()
 {
     return nodeState_.get();
 }
+void CNode::UpdatePreferredDownloadStatus()
+{
+    nodeState_->UpdatePreferredDownload(IsPreferredDownloadSource());
+}
 
 NodeBufferStatus CNode::GetSendBufferStatus() const
 {

@@ -28,6 +28,20 @@ CNodeState* State(NodeId nodeId)
         return NULL;
     return it->second;
 }
+void InitializeNode(CNodeState& nodeState)
+{
+    LOCK(cs_main);
+    CNodeState* state = mapNodeState.insert(std::make_pair(nodeState.nodeId, &nodeState)).first->second;
+    blocksInFlightRegistry.RegisterNodedId(state->nodeId);
+}
+
+void FinalizeNode(NodeId nodeId)
+{
+    LOCK(cs_main);
+    blocksInFlightRegistry.UnregisterNodeId(nodeId);
+    mapNodeState.erase(nodeId);
+}
+
 void UpdateStateToCurrentlyConnected(NodeId nodeId)
 {
     LOCK(cs_main);
@@ -50,20 +64,6 @@ bool Misbehaving(NodeId nodeId, int howmuch)
 {
     CNodeState* state = State(nodeId);
     return Misbehaving(state,howmuch);
-}
-
-void InitializeNode(CNodeState& nodeState)
-{
-    LOCK(cs_main);
-    CNodeState* state = mapNodeState.insert(std::make_pair(nodeState.nodeId, &nodeState)).first->second;
-    blocksInFlightRegistry.RegisterNodedId(state->nodeId);
-}
-
-void FinalizeNode(NodeId nodeId)
-{
-    LOCK(cs_main);
-    blocksInFlightRegistry.UnregisterNodeId(nodeId);
-    mapNodeState.erase(nodeId);
 }
 
 void UpdatePreferredDownload(NodeId nodeId, bool updatedStatus)

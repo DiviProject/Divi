@@ -38,4 +38,5 @@ int GetNumberOfBlocksInFlight(NodeId nodeId);
 // Requires cs_main.
 /** Increase a node's misbehavior score. */
 bool Misbehaving(NodeId nodeId, int howmuch);
+bool Misbehaving(CNodeState* state, int howmuch);
 #endif// NODE_STATE_REGISTRY_H

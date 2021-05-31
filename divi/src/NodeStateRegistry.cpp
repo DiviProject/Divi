@@ -57,6 +57,7 @@ bool Misbehaving(CNodeState* state, int howmuch)
 
 bool Misbehaving(NodeId nodeId, int howmuch)
 {
+    AssertLockHeld(cs_main);
     CNodeState* state = State(nodeId);
     return Misbehaving(state,howmuch);
 }

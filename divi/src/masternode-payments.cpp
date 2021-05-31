@@ -226,7 +226,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
         if (networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr, "mnget"))
         {
             LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
-            Misbehaving(pfrom->GetId(), 20);
+            Misbehaving(pfrom->GetNodeState(), 20);
             return;
         }
 
@@ -284,7 +284,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
 
         if (!CheckMasternodeWinnerSignature(winner)) {
             LogPrintf("%s : - invalid signature\n", __func__);
-            if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetId(), 20);
+            if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetNodeState(), 20);
             // it could just be a non-synced masternode
             masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
             return;

@@ -20,6 +20,7 @@ private:
     static int countOfNodesAlreadySyncing;
     static int numberOfPreferredDownloadSources;
     CAddrMan& addressManager_;
+    int banThreshold_;
 
     //! Accumulated misbehaviour score for this peer.
     int nMisbehavior;
@@ -52,8 +53,9 @@ public:
     static bool NodeSyncStarted();
     static bool HavePreferredDownloadPeers();
     void Finalize();
-    void ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold);
+    void ApplyMisbehavingPenalty(int penaltyAmount);
     int GetMisbehaviourPenalty() const;
+    void SetBanScoreThreshold(int banThreshold);
 };
 
 #endif// NODE_STATE_H

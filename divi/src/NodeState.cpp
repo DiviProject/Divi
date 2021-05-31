@@ -14,6 +14,7 @@ CNodeState::CNodeState(
     NodeId nodeIdValue,
     CAddrMan& addressManager
     ): addressManager_(addressManager)
+    , banThreshold_(0)
     , nMisbehavior(0)
     , fSyncStarted(false)
     , nodeId(nodeIdValue)
@@ -64,11 +65,11 @@ bool CNodeState::HavePreferredDownloadPeers()
 {
     return numberOfPreferredDownloadSources > 0;
 }
-void CNodeState::ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold)
+void CNodeState::ApplyMisbehavingPenalty(int penaltyAmount)
 {
     int previousMisbehavior = nMisbehavior;
     nMisbehavior += penaltyAmount;
-    if (nMisbehavior >= banthreshold && previousMisbehavior < banthreshold) {
+    if (nMisbehavior >= banThreshold_ && previousMisbehavior < banThreshold_) {
         LogPrintf("Misbehaving: %s (%d -> %d) BAN THRESHOLD EXCEEDED\n", name, previousMisbehavior, nMisbehavior);
         fShouldBan = true;
     } else
@@ -77,4 +78,8 @@ void CNodeState::ApplyMisbehavingPenalty(int penaltyAmount, int banthreshold)
 int CNodeState::GetMisbehaviourPenalty() const
 {
     return nMisbehavior;
+}
+void CNodeState::SetBanScoreThreshold(int banThreshold)
+{
+    banThreshold_ = banThreshold;
 }

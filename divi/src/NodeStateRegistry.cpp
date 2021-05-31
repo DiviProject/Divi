@@ -32,6 +32,7 @@ void InitializeNode(CNodeState& nodeState)
 {
     LOCK(cs_main);
     CNodeState* state = mapNodeState.insert(std::make_pair(nodeState.nodeId, &nodeState)).first->second;
+    state->SetBanScoreThreshold(settings.GetArg("-banscore", 100));
     blocksInFlightRegistry.RegisterNodedId(state->nodeId);
 }
 
@@ -50,8 +51,7 @@ bool Misbehaving(CNodeState* state, int howmuch)
     if (howmuch == 0)
         return true;
 
-    int banscore = settings.GetArg("-banscore", 100);
-    state->ApplyMisbehavingPenalty(howmuch,banscore);
+    state->ApplyMisbehavingPenalty(howmuch);
     return true;
 }
 

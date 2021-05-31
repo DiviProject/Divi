@@ -5,7 +5,7 @@ suites:
 - "trusty"
 architectures:
 - "amd64"
-packages: 
+packages:
 - "ca-certificates"
 - "curl"
 - "g++"
@@ -28,7 +28,7 @@ packages:
 - "python-setuptools"
 - "fonts-tuffy"
 remotes:
-- "url": "https://github.com/Divicoin/Divi.git"
+- "url": "https://github.com/DiviProject/Divi"
   "dir": "divi"
 files:
 - "MacOSX10.9.sdk.tar.xz"

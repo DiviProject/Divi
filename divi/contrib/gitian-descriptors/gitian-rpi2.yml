@@ -2,14 +2,14 @@
 name: "divi-raspberry-0.1"
 enable_cache: true
 suites:
-- "precise"
+- "trusty"
 architectures:
 - "amd64"
 packages:
 - "g++-multilib"
 - "git-core"
 - "pkg-config"
-- "autoconf2.13"
+- "autoconf"
 - "libtool"
 - "automake"
 - "faketime"
@@ -28,8 +28,8 @@ script: |
   CONFIGFLAGS="--enable-upnp-default --without-gui --disable-tests --disable-zerocoin --enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests"
   FAKETIME_HOST_PROGS=""
   FAKETIME_PROGS="date ar ranlib nm strip"
-  
-  mkdir -p ${BUILD_DIR}/toolchain 
+
+  mkdir -p ${BUILD_DIR}/toolchain
   tar -C ${BUILD_DIR}/toolchain -xf ${BUILD_DIR}/raspberrypi-tools.tar.gz
   export TOOLCHAIN_BIN=${BUILD_DIR}/toolchain/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
   export PATH=$PATH:$TOOLCHAIN_BIN

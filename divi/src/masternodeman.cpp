@@ -418,7 +418,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* 
     if (!CheckAndUpdateMasternode(mnb,nDoS))
     {
         if (nDoS > 0 && pfrom != nullptr)
-            Misbehaving(pfrom->GetId(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS);
         return false;
     }
 
@@ -427,7 +427,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* 
     if (!IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<MasternodeTier>(mnb.nTier))) {
         LogPrintf("%s : mnb - Got mismatched pubkey and vin\n", __func__);
         if (pfrom != nullptr)
-            Misbehaving(pfrom->GetId(), 33);
+            Misbehaving(pfrom->GetNodeState(), 33);
         return false;
     }
 
@@ -437,7 +437,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* 
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash);
         if (nDoS > 0 && pfrom != nullptr)
-            Misbehaving(pfrom->GetId(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS);
         return false;
     }
 
@@ -448,7 +448,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* 
     {
         LogPrintf("%s : mnb - attached ping is invalid\n", __func__);
         if (pfrom != nullptr)
-            Misbehaving(pfrom->GetId(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS);
         return false;
     }
 
@@ -505,7 +505,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
     if (nDoS > 0) {
         // if anything significant failed, mark that node
         if (pfrom != nullptr)
-            Misbehaving(pfrom->GetId(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS);
     } else {
         // if the masternode is known, don't ask for the mnb, just return
         if (pmn != nullptr) return false;
@@ -552,7 +552,7 @@ bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
     {
         if(networkMessageManager_.peerHasRequestedMasternodeListTooOften(pfrom->addr))
         {
-            Misbehaving(pfrom->GetId(), 34);
+            Misbehaving(pfrom->GetNodeState(), 34);
             return true;
         }
     }

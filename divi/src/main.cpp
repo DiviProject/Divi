@@ -3144,7 +3144,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
 
             if (inv.type == MSG_BLOCK) {
-                UpdateBlockAvailability(mapBlockIndex,pfrom->GetId(), inv.hash);
+                UpdateBlockAvailability(mapBlockIndex,pfrom->GetNodeState(), inv.hash);
                 if (!fAlreadyHave && !fImporting && !fReindex) {
                     // Add this to the list of blocks to request
                     blockInventory.push_back(&inv);
@@ -3429,7 +3429,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
 
         if (pindexLast)
-            UpdateBlockAvailability(mapBlockIndex,pfrom->GetId(), pindexLast->GetBlockHash());
+            UpdateBlockAvailability(mapBlockIndex,pfrom->GetNodeState(), pindexLast->GetBlockHash());
 
         if (nCount == MAX_HEADERS_RESULTS && pindexLast) {
             // Headers message had its maximum size; the peer may have more headers.
@@ -3930,7 +3930,7 @@ static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, std::vector<CInv
     if (!pto->fDisconnect && !pto->fClient && GetNumberOfBlocksInFlight(pto->GetId()) < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
         std::vector<CBlockIndex*> vToDownload;
         NodeId staller = -1;
-        FindNextBlocksToDownload(mapBlockIndex,chainActive, pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - GetNumberOfBlocksInFlight(pto->GetId()), vToDownload, staller);
+        FindNextBlocksToDownload(mapBlockIndex,chainActive, pto->GetNodeState(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - GetNumberOfBlocksInFlight(pto->GetId()), vToDownload, staller);
         for(CBlockIndex* pindex: vToDownload) {
             vGetData.push_back(CInv(MSG_BLOCK, pindex->GetBlockHash()));
             MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockHash(), pindex);

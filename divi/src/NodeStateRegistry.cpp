@@ -123,11 +123,9 @@ void ProcessBlockAvailability(const BlockMap& blockIndicesByHash, CNodeState* st
     }
 }
 /** Update tracking information about which blocks a peer is assumed to have. */
-void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid, const uint256& hash)
+void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, CNodeState* state, const uint256& hash)
 {
-    CNodeState* state = State(nodeid);
     assert(state != NULL);
-
     ProcessBlockAvailability(blockIndicesByHash,state);
 
     BlockMap::const_iterator it = blockIndicesByHash.find(hash);
@@ -146,7 +144,7 @@ void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid, 
 void FindNextBlocksToDownload(
     const BlockMap& blockIndicesByHash,
     const CChain& activeChain,
-    NodeId nodeid,
+    CNodeState* state,
     unsigned int count,
     std::vector<CBlockIndex*>& vBlocks,
     NodeId& nodeStaller)
@@ -155,7 +153,6 @@ void FindNextBlocksToDownload(
         return;
 
     vBlocks.reserve(vBlocks.size() + count);
-    CNodeState* state = State(nodeid);
     assert(state != NULL);
 
     // Make sure pindexBestKnownBlock is up to date, we'll need it.
@@ -213,9 +210,11 @@ void FindNextBlocksToDownload(
             } else if (!BlockIsInFlight(pindex->GetBlockHash()))
             {
                 // The block is not already downloaded, and not yet in flight.
-                if (pindex->nHeight > nWindowEnd) {
+                if (pindex->nHeight > nWindowEnd)
+                {
                     // We reached the end of the window.
-                    if (vBlocks.size() == 0 && waitingfor != nodeid) {
+                    if (vBlocks.size() == 0 && waitingfor != state->nodeId)
+                    {
                         // We aren't able to fetch anything, but we would be if the download window was one larger.
                         nodeStaller = waitingfor;
                     }

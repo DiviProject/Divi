@@ -21,11 +21,11 @@ void FinalizeNode(NodeId nodeId);
 void MarkBlockAsReceived(const uint256& hash);
 void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex = nullptr);
 bool BlockIsInFlight(const uint256& hash);
-void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, NodeId nodeid, const uint256& hash);
+void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, CNodeState* state, const uint256& hash);
 void FindNextBlocksToDownload(
     const BlockMap& blockIndicesByHash,
     const CChain& activeChain,
-    NodeId nodeid,
+    CNodeState* state,
     unsigned int count,
     std::vector<CBlockIndex*>& vBlocks,
     NodeId& nodeStaller);

@@ -3825,7 +3825,7 @@ static void SendAddresses(CNode* pto)
         pto->PushMessage("addr", vAddr);
 }
 
-static void BanAndDisconnectIfNotWhitelisted(CNode* pto)
+static void CheckForBanAndDisconnectIfNotWhitelisted(CNode* pto)
 {
     CNodeState* nodeState = pto->GetNodeState();
     if(!nodeState->fShouldBan) return;
@@ -3971,7 +3971,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             SendAddresses(pto);
         }
 
-        BanAndDisconnectIfNotWhitelisted(pto);
+        CheckForBanAndDisconnectIfNotWhitelisted(pto);
         CommunicateRejectedBlocksToPeer(pto);
 
         if (pindexBestHeader == NULL)

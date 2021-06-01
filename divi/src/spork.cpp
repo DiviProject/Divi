@@ -200,10 +200,10 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
             return;
         }
 
-        if(!spork.CheckSignature(sporkPubKey)) {
-            LOCK(cs_main);
+        if(!spork.CheckSignature(sporkPubKey))
+        {
             LogPrintf("CSporkManager::ProcessSpork -- ERROR: invalid signature\n");
-            Misbehaving(pfrom->GetId(), 100);
+            Misbehaving(pfrom->GetNodeState(), 100);
             return;
         }
         if(!pSporkDB_)

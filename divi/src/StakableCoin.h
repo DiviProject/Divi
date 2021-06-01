@@ -5,31 +5,29 @@
 struct StakableCoin
 {
     const CTransaction* tx;
-    unsigned outputIndex;
-    uint256 blockHashOfFirstConfirmation;
     COutPoint utxo;
+    uint256 blockHashOfFirstConfirmation;
 
-    StakableCoin(
-        ): tx(nullptr)
-        , outputIndex(0u)
-        , blockHashOfFirstConfirmation(0u)
-        , utxo(uint256(0),outputIndex)
-    {
-    }
-
-    StakableCoin(
-        const CTransaction* txIn,
-        unsigned outputIndexIn,
+    explicit StakableCoin(
+        const CTransaction& txIn,
+        const COutPoint& utxoIn,
         uint256 blockHashIn
-        ): tx(txIn)
-        , outputIndex(outputIndexIn)
+        ): tx(&txIn)
         , blockHashOfFirstConfirmation(blockHashIn)
-        , utxo( tx?tx->GetHash():uint256(0), outputIndex)
+        , utxo(utxoIn)
     {
     }
+
     bool operator<(const StakableCoin& other) const
     {
         return utxo < other.utxo;
     }
+
+    /** Convenience method to access the staked tx out.  */
+    const CTxOut& GetTxOut() const
+    {
+        return tx->vout[utxo.n];
+    }
+
 };
 #endif//STAKABLE_COIN_H

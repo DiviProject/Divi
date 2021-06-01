@@ -127,8 +127,8 @@ bool PoSTransactionCreator::SetSuportedStakingScript(
     const StakableCoin& stakableCoin,
     CMutableTransaction& txNew)
 {
-    txNew.vin.push_back(CTxIn(stakableCoin.tx->GetHash(), stakableCoin.outputIndex));
-    txNew.vout.push_back(CTxOut(0, stakableCoin.tx->vout[stakableCoin.outputIndex].scriptPubKey ));
+    txNew.vin.emplace_back(stakableCoin.utxo);
+    txNew.vout.emplace_back(0, stakableCoin.GetTxOut().scriptPubKey);
 
     return true;
 }
@@ -144,10 +144,10 @@ void PoSTransactionCreator::CombineUtxos(
     std::vector<StakableCoin> vCombineCandidates;
     for(const StakableCoin& pcoin : stakedCoins_->asSet())
     {
-        if(pcoin.tx->vout[pcoin.outputIndex].scriptPubKey == txNew.vout[1].scriptPubKey &&
+        if(pcoin.GetTxOut().scriptPubKey == txNew.vout[1].scriptPubKey &&
             pcoin.tx->GetHash() != txNew.vin[0].prevout.hash)
         {
-            if(pcoin.tx->vout[pcoin.outputIndex].nValue + nCredit > nCombineThreshold)
+            if(pcoin.GetTxOut().nValue + nCredit > nCombineThreshold)
                 continue;
 
             vCombineCandidates.push_back(pcoin);
@@ -156,18 +156,18 @@ void PoSTransactionCreator::CombineUtxos(
 
     std::sort(std::begin(vCombineCandidates), std::end(vCombineCandidates),
         [](const StakableCoin &left, const StakableCoin &right) {
-            return left.tx->vout[left.outputIndex].nValue < right.tx->vout[right.outputIndex].nValue;
+            return left.GetTxOut().nValue < right.GetTxOut().nValue;
         });
 
     for(const auto& pcoin : vCombineCandidates)
     {
         if (txNew.vin.size() >= maxInputs ||
             nCredit > nCombineThreshold ||
-            nCredit + pcoin.tx->vout[pcoin.outputIndex].nValue > nCombineThreshold)
+            nCredit + pcoin.GetTxOut().nValue > nCombineThreshold)
             break;
 
-        txNew.vin.push_back(CTxIn(pcoin.tx->GetHash(), pcoin.outputIndex));
-        nCredit += pcoin.tx->vout[pcoin.outputIndex].nValue;
+        txNew.vin.emplace_back(pcoin.utxo);
+        nCredit += pcoin.GetTxOut().nValue;
         walletTransactions.push_back(pcoin.tx);
     }
 }
@@ -190,8 +190,8 @@ bool PoSTransactionCreator::FindHashproof(
         nBits,
         static_cast<unsigned>(it->second->GetBlockTime()),
         it->second->GetBlockHash(),
-        COutPoint(stakeData.tx->GetHash(), stakeData.outputIndex),
-        stakeData.tx->vout[stakeData.outputIndex].nValue,
+        stakeData.utxo,
+        stakeData.GetTxOut().nValue,
         chainTip->GetBlockHash());
     HashproofCreationResult hashproofResult = proofGenerator_.CreateHashproofTimestamp(stakingData,nTxNewTime);
     if(!hashproofResult.failedAtSetup())
@@ -215,7 +215,7 @@ bool PoSTransactionCreator::FindHashproof(
     return false;
 }
 
-StakableCoin PoSTransactionCreator::FindProofOfStake(
+const StakableCoin* PoSTransactionCreator::FindProofOfStake(
     const CBlockIndex* chainTip,
     uint32_t blockBits,
     CMutableTransaction& txCoinStake,
@@ -224,22 +224,22 @@ StakableCoin PoSTransactionCreator::FindProofOfStake(
 {
     for (const StakableCoin& pcoin: stakedCoins_->asSet())
     {
-        if(!IsSupportedScript(pcoin.tx->vout[pcoin.outputIndex].scriptPubKey,isVaultScript))
+        if(!IsSupportedScript(pcoin.GetTxOut().scriptPubKey,isVaultScript))
         {
             continue;
         }
         if(chainTip->nHeight != activeChain_.Height())
         {
             hashproofTimestampMinimumValue_ = 0;
-            return StakableCoin();
+            return nullptr;
         }
         if(FindHashproof(chainTip,blockBits, nTxNewTime, pcoin,txCoinStake) )
         {
-            return pcoin;
+            return &pcoin;
         }
     }
     hashproofTimestampMinimumValue_ = nTxNewTime;
-    return StakableCoin();
+    return nullptr;
 }
 
 void PoSTransactionCreator::SplitOrCombineUTXOS(
@@ -250,7 +250,7 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
     std::vector<const CTransaction*>& vwtxPrev)
 {
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
-    CAmount nCredit = stakeData.tx->vout[stakeData.outputIndex].nValue + blockSubdidy.nStakeReward;
+    CAmount nCredit = stakeData.GetTxOut().nValue + blockSubdidy.nStakeReward;
     constexpr char autocombineSettingLookup[] = "-autocombine";
     bool autocombine = settings_.GetBoolArg(autocombineSettingLookup,true);
     if (nCredit > stakeSplit )
@@ -302,19 +302,19 @@ bool PoSTransactionCreator::CreateProofOfStake(
     nTxNewTime = std::min(std::max(adjustedTime, minimumTime), maximumTime);
 
     bool isVaultScript = false;
-    StakableCoin successfullyStakableUTXO =
+    const StakableCoin* successfullyStakableUTXO =
         FindProofOfStake(chainTip, blockBits,txCoinStake,nTxNewTime,isVaultScript);
-    if( successfullyStakableUTXO.tx == nullptr)
+    if( successfullyStakableUTXO == nullptr)
     {
         return false;
     }
-    CAmount nCredit = successfullyStakableUTXO.tx->vout[successfullyStakableUTXO.outputIndex].nValue;
+    CAmount nCredit = successfullyStakableUTXO->GetTxOut().nValue;
     if(nCredit == 0)
     {
         return false;
     }
 
-    std::vector<const CTransaction*> vwtxPrev(1, successfullyStakableUTXO.tx);
+    std::vector<const CTransaction*> vwtxPrev(1, successfullyStakableUTXO->tx);
 
     constexpr char stakeSplitSettingLookup[] = "-stakesplitthreshold";
     CAmount stakeSplit = static_cast<CAmount>(settings_.GetArg(stakeSplitSettingLookup,20000)* COIN);
@@ -323,7 +323,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
         stakeSplit = std::max(stakeSplit,20000*COIN);
     }
 
-    SplitOrCombineUTXOS(stakeSplit,chainTip,txCoinStake,successfullyStakableUTXO,vwtxPrev);
+    SplitOrCombineUTXOS(stakeSplit,chainTip,txCoinStake,*successfullyStakableUTXO,vwtxPrev);
     AppendBlockRewardPayoutsToTransaction(chainTip,txCoinStake);
 
     int nIn = 0;

@@ -15,7 +15,6 @@ class CAddrMan;
 class CBlockReject;
 
 // Requires cs_main.
-CNodeState* State(NodeId nodeId);
 void InitializeNode(CNodeState& nodeState);
 void FinalizeNode(NodeId nodeId);
 void MarkBlockAsReceived(const uint256& hash);

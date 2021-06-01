@@ -3827,6 +3827,8 @@ static void SendAddresses(CNode* pto)
 
 static void BanAndDisconnectIfNotWhitelisted(CNode* pto)
 {
+    CNodeState* nodeState = pto->GetNodeState();
+    if(!nodeState->fShouldBan) return;
     if (pto->fWhitelisted)
     {
         LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr);
@@ -3843,6 +3845,7 @@ static void BanAndDisconnectIfNotWhitelisted(CNode* pto)
             PeerBanningService::Ban(GetTime(),pto->addr);
         }
     }
+    nodeState->fShouldBan = false;
 }
 static void CommunicateRejectedBlocksToPeer(CNode* pto)
 {
@@ -3854,8 +3857,9 @@ static void CommunicateRejectedBlocksToPeer(CNode* pto)
     }
     rejectedBlocks.clear();
 }
-static void BeginSyncingWithPeer(CNode* pto, CNodeState* state)
+static void BeginSyncingWithPeer(CNode* pto)
 {
+    CNodeState* state = pto->GetNodeState();
     if (!state->Syncing() && !pto->fClient && !fReindex) {
         // Only actively request headers from a single peer, unless we're close to end of initial download.
         if ( !CNodeState::NodeSyncStarted() || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 6 * 60 * 60) { // NOTE: was "close to today" and 24h in Bitcoin
@@ -3967,22 +3971,18 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             SendAddresses(pto);
         }
 
-        CNodeState* state = pto->GetNodeState();
-        if(state->fShouldBan)
-        {
-            BanAndDisconnectIfNotWhitelisted(pto);
-            state->fShouldBan = false;
-        }
+        BanAndDisconnectIfNotWhitelisted(pto);
         CommunicateRejectedBlocksToPeer(pto);
 
         if (pindexBestHeader == NULL)
             pindexBestHeader = chainActive.Tip();
 
         // Start block sync
+        const CNodeState* state = pto->GetNodeState();
         bool fFetch = state->fPreferredDownload || (!CNodeState::HavePreferredDownloadPeers() && !pto->fClient && !pto->fOneShot); // Download if this is a nice peer, or we have no nice peers and this one might do.
         if(fFetch)
         {
-            BeginSyncingWithPeer(pto, state);
+            BeginSyncingWithPeer(pto);
         }
         if (!fReindex)
         {

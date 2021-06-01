@@ -704,7 +704,7 @@ public:
         }
     }
 
-    bool ReceiveMessagesFromPeer(CNode* pnode, boost::condition_variable& messageHandlerCondition)
+    bool SocketReceiveDataFromPeer(CNode* pnode, boost::condition_variable& messageHandlerCondition)
     {
         if (pnode->hSocket == INVALID_SOCKET)
             return false;
@@ -716,7 +716,7 @@ public:
         }
         return true;
     }
-    bool SendMessagesToPeer(CNode* pnode)
+    bool SocketSendDataToPeer(CNode* pnode)
     {
         if (pnode->hSocket == INVALID_SOCKET)
             return false;
@@ -761,7 +761,7 @@ void ThreadSocketHandler()
         {
             boost::this_thread::interruption_point();
 
-            if(!socketsProcessor.ReceiveMessagesFromPeer(pnode,messageHandlerCondition) || !socketsProcessor.SendMessagesToPeer(pnode))
+            if(!socketsProcessor.SocketReceiveDataFromPeer(pnode,messageHandlerCondition) || !socketsProcessor.SocketSendDataToPeer(pnode))
                 continue;
 
             //

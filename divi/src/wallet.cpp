@@ -1797,7 +1797,7 @@ bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const
             continue;
 
         //add to our stake set
-        setCoins.insert(StakableCoin(out.tx, out.i,out.tx->hashBlock));
+        setCoins.emplace(*out.tx, COutPoint(out.tx->GetHash(), out.i), out.tx->hashBlock);
         nAmountSelected += out.tx->vout[out.i].nValue;
     }
     return true;

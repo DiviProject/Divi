@@ -61,7 +61,7 @@ private:
         const StakableCoin& stakeData,
         CMutableTransaction& txNew);
 
-    StakableCoin FindProofOfStake(
+    const StakableCoin* FindProofOfStake(
         const CBlockIndex* chainTip,
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,

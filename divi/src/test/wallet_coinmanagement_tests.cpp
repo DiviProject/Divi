@@ -395,8 +395,8 @@ BOOST_AUTO_TEST_CASE(willEnsureStakingBalanceAndTotalBalanceAgreeEvenIfTxsBelong
     wallet.FakeAddToChain(secondNormalTx);
 
     std::set<StakableCoin> stakableCoins;
-    stakableCoins.insert(StakableCoin(&firstNormalTx,firstTxOutputIndex,firstNormalTx.hashBlock));
-    stakableCoins.insert(StakableCoin(&secondNormalTx,secondTxOutputIndex,secondNormalTx.hashBlock));
+    stakableCoins.insert(StakableCoin(firstNormalTx,COutPoint(firstNormalTx.GetHash(),firstTxOutputIndex),firstNormalTx.hashBlock));
+    stakableCoins.insert(StakableCoin(secondNormalTx,COutPoint(secondNormalTx.GetHash(),secondTxOutputIndex),secondNormalTx.hashBlock));
     BOOST_CHECK_EQUAL_MESSAGE(stakableCoins.size(),2,"Missing coins in the stakable set");
 }
 

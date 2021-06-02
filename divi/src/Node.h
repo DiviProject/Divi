@@ -185,7 +185,7 @@ public:
     unsigned int GetTotalRecvSize();
     bool IsAvailableToReceive();
 
-    bool ReceiveMsgBytes(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
+    bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
     void SetRecvVersion(int nVersionIn);
     CNode* AddRef();
     void Release();

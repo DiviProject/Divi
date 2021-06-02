@@ -271,6 +271,7 @@ static bool SocketHasErrors(bool shouldLogError)
 // requires LOCK(cs_vSend)
 void CNode::SocketSendData()
 {
+    AssertLockHeld(cs_vSend);
     std::deque<CSerializeData>::iterator it = vSendMsg.begin();
 
     while (it != vSendMsg.end()) {
@@ -313,6 +314,7 @@ void CNode::SocketSendData()
 // Requires LOCK(cs_vRecvMsg)
 void CNode::SocketReceiveData(boost::condition_variable& messageHandlerCondition)
 {
+    AssertLockHeld(cs_vRecvMsg);
     // typical socket buffer is 8K-64K
     char pchBuf[0x10000];
     int nBytes = recv(hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
@@ -477,6 +479,7 @@ void CNode::Fuzz(int nChance)
 // requires LOCK(cs_vRecvMsg)
 bool CNode::ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition)
 {
+    AssertLockHeld(cs_vRecvMsg);
     /** Maximum length of incoming protocol messages (no message over 2 MiB is currently acceptable). */
     static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;
     while (nBytes > 0) {

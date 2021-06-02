@@ -256,6 +256,18 @@ void CNode::PushInventory(const CInv& inv)
         vInventoryToSend.push_back(inv);
 }
 
+static bool SocketHasErrors(bool shouldLogError)
+{
+    int nErr = WSAGetLastError();
+    if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS)
+    {
+        if (shouldLogError)
+            LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
+        return true;
+    }
+    return false;
+}
+
 // requires LOCK(cs_vSend)
 void CNode::SocketSendData()
 {
@@ -281,9 +293,7 @@ void CNode::SocketSendData()
         } else {
             if (nBytes < 0) {
                 // error
-                int nErr = WSAGetLastError();
-                if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS) {
-                    LogPrintf("socket send error %s\n", NetworkErrorString(nErr));
+                if (SocketHasErrors(true)) {
                     CloseSocketDisconnect();
                 }
             }
@@ -318,10 +328,7 @@ void CNode::SocketReceiveData(boost::condition_variable& messageHandlerCondition
         CloseSocketDisconnect();
     } else if (nBytes < 0) {
         // error
-        int nErr = WSAGetLastError();
-        if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS) {
-            if (!fDisconnect)
-                LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
+        if (SocketHasErrors(!fDisconnect)) {
             CloseSocketDisconnect();
         }
     }

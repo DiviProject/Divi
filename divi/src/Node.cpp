@@ -290,12 +290,13 @@ void CNode::SocketSendData()
                 // could not send full message; stop sending more
                 break;
             }
-        } else {
-            if (nBytes < 0) {
+        }
+        else
+        {
+            if (nBytes < 0 && SocketHasErrors(true))
+            {
                 // error
-                if (SocketHasErrors(true)) {
-                    CloseSocketDisconnect();
-                }
+                CloseSocketDisconnect();
             }
             // couldn't send anything at all
             break;
@@ -326,11 +327,11 @@ void CNode::SocketReceiveData(boost::condition_variable& messageHandlerCondition
         if (!fDisconnect)
             LogPrint("net", "socket closed\n");
         CloseSocketDisconnect();
-    } else if (nBytes < 0) {
+    }
+    else if (nBytes < 0 && SocketHasErrors(!fDisconnect))
+    {
         // error
-        if (SocketHasErrors(!fDisconnect)) {
-            CloseSocketDisconnect();
-        }
+        CloseSocketDisconnect();
     }
 }
 

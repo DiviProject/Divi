@@ -306,7 +306,7 @@ void CNode::SocketReceiveData(boost::condition_variable& messageHandlerCondition
     char pchBuf[0x10000];
     int nBytes = recv(hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
     if (nBytes > 0) {
-        if (!ReceiveMsgBytes(pchBuf, nBytes,messageHandlerCondition))
+        if (!ConvertDataBufferToNetworkMessage(pchBuf, nBytes,messageHandlerCondition))
             CloseSocketDisconnect();
         nLastRecv = GetTime();
         nRecvBytes += nBytes;
@@ -467,7 +467,7 @@ void CNode::Fuzz(int nChance)
 }
 
 // requires LOCK(cs_vRecvMsg)
-bool CNode::ReceiveMsgBytes(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition)
+bool CNode::ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition)
 {
     /** Maximum length of incoming protocol messages (no message over 2 MiB is currently acceptable). */
     static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;

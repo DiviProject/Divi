@@ -33,6 +33,7 @@ constexpr char DB_BARETXIDINDEX = 'T';
 constexpr char DB_COINS = 'c';
 constexpr char DB_BESTBLOCKHASH = 'B';
 constexpr char DB_BLOCKINDEX = 'b';
+constexpr char DB_BLOCKFILEINFO = 'f';
 
 } // anonymous namespace
 
@@ -107,12 +108,12 @@ bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex)
 
 bool CBlockTreeDB::WriteBlockFileInfo(int nFile, const CBlockFileInfo& info)
 {
-    return Write(std::make_pair('f', nFile), info);
+    return Write(std::make_pair(DB_BLOCKFILEINFO, nFile), info);
 }
 
 bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo& info)
 {
-    return Read(std::make_pair('f', nFile), info);
+    return Read(std::make_pair(DB_BLOCKFILEINFO, nFile), info);
 }
 
 bool CBlockTreeDB::WriteLastBlockFile(int nFile)

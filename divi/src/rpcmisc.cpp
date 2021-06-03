@@ -589,8 +589,9 @@ bool GetIndexKey(std::string addressString, HashBytesAndAddressType& result,bool
     }
     return false;
 }
-bool getAddressesFromParams(const Array& params, std::vector<std::pair<uint160, int> > &addresses,bool onlyVaults = false)
+bool getAddressesFromParams(const Array& params, std::vector<std::pair<uint160, int> > &addresses)
 {
+    bool onlyVaults = params.size()==2? params[1].get_bool() : false;
     if (params[0].type() == str_type) {
         HashBytesAndAddressType result;
         CBitcoinAddress address(params[0].get_str());
@@ -636,9 +637,9 @@ bool getAddressFromIndex(const int &type, const uint160 &hash, std::string &addr
 
 Value getaddresstxids(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 1)
+    if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddresstxids [addresses] ( start end )\n"
+            "getaddresstxids [addresses] ( start end ) [only_vaults]\n"
             "\nReturns the txids for an address(es) (requires addressindex to be enabled).\n"
             "\nArguments:\n"
             "{\n"
@@ -650,6 +651,7 @@ Value getaddresstxids(const Array& params, bool fHelp)
             "  \"start\" (number) The start block height\n"
             "  \"end\" (number) The end block height\n"
             "}\n"
+            "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult:\n"
             "[\n"
             "  \"transactionid\"  (string) The transaction id\n"
@@ -720,9 +722,9 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
 Value getaddressdeltas(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 1 || params[0].type() != obj_type)
+    if (fHelp || params.size() < 1 || params.size() > 2 || params[0].type() != obj_type)
         throw runtime_error(
-            "getaddressdeltas {addresses:...}\n"
+            "getaddressdeltas {addresses:...} [only_vaults]\n"
             "\nReturns all changes for an address (requires addressindex to be enabled).\n"
             "\nArguments:\n"
             "{\n"
@@ -735,6 +737,7 @@ Value getaddressdeltas(const Array& params, bool fHelp)
             "  \"end\" (number) The end block height\n"
             "  \"chainInfo\" (boolean) Include chain info in results, only applies if start and end specified\n"
             "}\n"
+            "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult:\n"
             "[\n"
             "  {\n"
@@ -844,9 +847,9 @@ Value getaddressdeltas(const Array& params, bool fHelp)
 
 Value getaddressbalance(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 1 || params[0].type() != obj_type)
+    if (fHelp || params.size() < 1 || params.size() > 2 || params[0].type() != obj_type)
         throw runtime_error(
-            "getaddressbalance {addresses:...}\n"
+            "getaddressbalance {addresses:...} [only_vaults]\n"
             "\nReturns the balance for an address(es) (requires addressindex to be enabled).\n"
             "\nArguments:\n"
             "{\n"
@@ -856,6 +859,7 @@ Value getaddressbalance(const Array& params, bool fHelp)
             "      ,...\n"
             "    ]\n"
             "}\n"
+            "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult:\n"
             "{\n"
             "  \"balance\"  (string) The current balance in satoshis\n"
@@ -1042,7 +1046,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
             "    ],\n"
             "  \"chainInfo\"  (boolean) Include chain info with results\n"
             "}\n"
-            "only_vaults (boolean, optional) Only return utxos spendable by the specified addresses\n"
+            "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult\n"
             "[\n"
             "  {\n"
@@ -1068,8 +1072,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
     }
 
     std::vector<std::pair<uint160, int>> addresses;
-    bool onlyVaults = params.size()==2? params[1].get_bool() : false;
-    if (!getAddressesFromParams(params, addresses,onlyVaults)) {
+    if (!getAddressesFromParams(params, addresses)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 

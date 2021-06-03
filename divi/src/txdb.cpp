@@ -30,6 +30,7 @@ constexpr char DB_SPENTINDEX = 'p';
 constexpr char DB_ADDRESSUNSPENTINDEX = 'u';
 constexpr char DB_TXINDEX = 't';
 constexpr char DB_BARETXIDINDEX = 'T';
+constexpr char DB_COINS = 'c';
 
 } // anonymous namespace
 
@@ -40,9 +41,9 @@ CBlockIndex* InsertBlockIndex(uint256 hash);
 void static BatchWriteCoins(CLevelDBBatch& batch, const uint256& hash, const CCoins& coins)
 {
     if (coins.IsPruned())
-        batch.Erase(std::make_pair('c', hash));
+        batch.Erase(std::make_pair(DB_COINS, hash));
     else
-        batch.Write(std::make_pair('c', hash), coins);
+        batch.Write(std::make_pair(DB_COINS, hash), coins);
 }
 
 void static BatchWriteHashBestChain(CLevelDBBatch& batch, const uint256& hash)
@@ -56,12 +57,12 @@ CCoinsViewDB::CCoinsViewDB(size_t nCacheSize, bool fMemory, bool fWipe) : db(Get
 
 bool CCoinsViewDB::GetCoins(const uint256& txid, CCoins& coins) const
 {
-    return db.Read(std::make_pair('c', txid), coins);
+    return db.Read(std::make_pair(DB_COINS, txid), coins);
 }
 
 bool CCoinsViewDB::HaveCoins(const uint256& txid) const
 {
-    return db.Exists(std::make_pair('c', txid));
+    return db.Exists(std::make_pair(DB_COINS, txid));
 }
 
 uint256 CCoinsViewDB::GetBestBlock() const
@@ -155,7 +156,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
             CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
             char chType;
             ssKey >> chType;
-            if (chType == 'c') {
+            if (chType == DB_COINS) {
                 leveldb::Slice slValue = pcursor->value();
                 CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
                 CCoins coins;

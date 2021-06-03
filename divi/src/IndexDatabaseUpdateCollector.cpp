@@ -6,6 +6,7 @@
 #include <primitives/transaction.h>
 #include <vector>
 #include <coins.h>
+#include <script/StakingVaultScript.h>
 
 extern bool fAddressIndex;
 extern bool fSpentIndex;
@@ -15,13 +16,21 @@ HashBytesAndAddressType ComputeHashbytesAndAddressTypeForScript(const CScript& s
     uint160 hashBytes;
     int addressType;
 
-    if (script.IsPayToScriptHash()) {
+    if(IsStakingVaultScript(script))
+    {
+        hashBytes = uint160(std::vector<unsigned char>(script.begin()+2, script.begin()+22));
+        addressType = 3;
+    }
+    else if (script.IsPayToScriptHash())
+    {
         hashBytes = uint160(std::vector<unsigned char>(script.begin()+2, script.begin()+22));
         addressType = 2;
-    } else if (script.IsPayToPublicKeyHash()) {
+    } else if (script.IsPayToPublicKeyHash())
+    {
         hashBytes = uint160(std::vector<unsigned char>(script.begin()+3, script.begin()+23));
         addressType = 1;
-    } else {
+    } else
+    {
         hashBytes.SetNull();
         addressType = 0;
     }

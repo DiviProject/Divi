@@ -109,6 +109,7 @@ BASE_SCRIPTS = [
     'txindex.py',
     'txn_doublespend.py',
     'txn_doublespend.py --mineblock',
+    'VaultUtxoIndexing.py',
     'vaultfork.py',
     'wallet.py',
     'walletbackup.py',

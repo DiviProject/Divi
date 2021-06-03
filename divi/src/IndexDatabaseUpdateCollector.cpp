@@ -6,12 +6,10 @@
 #include <primitives/transaction.h>
 #include <vector>
 #include <coins.h>
-#include <utility>
 
 extern bool fAddressIndex;
 extern bool fSpentIndex;
 
-typedef std::pair<uint160,int> HashBytesAndAddressType;
 HashBytesAndAddressType ComputeHashbytesAndAddressTypeForScript(const CScript& script)
 {
     uint160 hashBytes;

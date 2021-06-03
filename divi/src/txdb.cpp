@@ -36,6 +36,7 @@ constexpr char DB_BLOCKINDEX = 'b';
 constexpr char DB_BLOCKFILEINFO = 'f';
 constexpr char DB_LASTBLOCKFILE = 'l';
 constexpr char DB_REINDEXINGFLAG = 'R';
+constexpr char DB_NAMEDFLAG = 'F';
 
 } // anonymous namespace
 
@@ -224,13 +225,13 @@ bool CBlockTreeDB::WriteTxIndex(const std::vector<TxIndexEntry>& vect)
 
 bool CBlockTreeDB::WriteFlag(const std::string& name, bool fValue)
 {
-    return Write(std::make_pair('F', name), fValue ? '1' : '0');
+    return Write(std::make_pair(DB_NAMEDFLAG, name), fValue ? '1' : '0');
 }
 
 bool CBlockTreeDB::ReadFlag(const std::string& name, bool& fValue)
 {
     char ch;
-    if (!Read(std::make_pair('F', name), ch))
+    if (!Read(std::make_pair(DB_NAMEDFLAG, name), ch))
         return false;
     fValue = ch == '1';
     return true;

@@ -42,8 +42,10 @@ class VaultUtxoIndexing (BitcoinTestFramework):
             self.owner_vault_addresses.append(owner_node_address)
 
         self.owner.setgenerate(True,50)
+        self.vault_hashes = []
         for vault_datum in self.vault_data:
             assert self.staker.addvault(vault_datum["vault"],vault_datum["txhash"])["succeeded"]
+            self.vault_hashes.append(vault_datum["txhash"])
         sync_blocks(self.nodes)
 
     def run_test (self):
@@ -52,9 +54,19 @@ class VaultUtxoIndexing (BitcoinTestFramework):
         # Check that vault utxos are found when querying by address
         for addr in self.owner_vault_addresses:
             utxos = self.owner.getaddressutxos(addr, True)
-            print(utxos)
             assert_equal(len(utxos),1)
+            assert_equal(self.owner.getaddressbalance({"addresses":[addr]},True)["balance"],10000*COIN)
 
+            balance_updates = self.owner.getaddressdeltas({"addresses":[addr],"start": int(1),"end":int(52)},True)
+            assert_equal(balance_updates[0]["satoshis"], 10000*COIN)
+
+            balance_updates = self.owner.getaddressdeltas({"addresses":[addr],"start": int(52),"end":int(100)},True)
+            assert_equal( len(balance_updates), 0)
+
+        found_txids = self.owner.getaddresstxids({"addresses":self.owner_vault_addresses},True)
+        for hash in self.vault_hashes:
+            assert hash in found_txids
+        assert_equal(len(found_txids),len(self.vault_hashes))
 
 
 

@@ -35,6 +35,7 @@ constexpr char DB_BESTBLOCKHASH = 'B';
 constexpr char DB_BLOCKINDEX = 'b';
 constexpr char DB_BLOCKFILEINFO = 'f';
 constexpr char DB_LASTBLOCKFILE = 'l';
+constexpr char DB_REINDEXINGFLAG = 'R';
 
 } // anonymous namespace
 
@@ -129,14 +130,14 @@ bool CBlockTreeDB::ReadLastBlockFile(int& nFile)
 bool CBlockTreeDB::WriteReindexing(bool fReindexing)
 {
     if (fReindexing)
-        return Write('R', '1');
+        return Write(DB_REINDEXINGFLAG, '1');
     else
-        return Erase('R');
+        return Erase(DB_REINDEXINGFLAG);
 }
 
 bool CBlockTreeDB::ReadReindexing(bool& fReindexing)
 {
-    fReindexing = Exists('R');
+    fReindexing = Exists(DB_REINDEXINGFLAG);
     return true;
 }
 

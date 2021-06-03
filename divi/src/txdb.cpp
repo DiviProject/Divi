@@ -34,6 +34,7 @@ constexpr char DB_COINS = 'c';
 constexpr char DB_BESTBLOCKHASH = 'B';
 constexpr char DB_BLOCKINDEX = 'b';
 constexpr char DB_BLOCKFILEINFO = 'f';
+constexpr char DB_LASTBLOCKFILE = 'l';
 
 } // anonymous namespace
 
@@ -118,7 +119,11 @@ bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo& info)
 
 bool CBlockTreeDB::WriteLastBlockFile(int nFile)
 {
-    return Write('l', nFile);
+    return Write(DB_LASTBLOCKFILE, nFile);
+}
+bool CBlockTreeDB::ReadLastBlockFile(int& nFile)
+{
+    return Read(DB_LASTBLOCKFILE, nFile);
 }
 
 bool CBlockTreeDB::WriteReindexing(bool fReindexing)
@@ -133,11 +138,6 @@ bool CBlockTreeDB::ReadReindexing(bool& fReindexing)
 {
     fReindexing = Exists('R');
     return true;
-}
-
-bool CBlockTreeDB::ReadLastBlockFile(int& nFile)
-{
-    return Read('l', nFile);
 }
 
 bool CCoinsViewDB::GetStats(CCoinsStats& stats) const

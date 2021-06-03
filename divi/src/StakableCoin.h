@@ -13,8 +13,8 @@ struct StakableCoin
         const COutPoint& utxoIn,
         uint256 blockHashIn
         ): tx(&txIn)
-        , blockHashOfFirstConfirmation(blockHashIn)
         , utxo(utxoIn)
+        , blockHashOfFirstConfirmation(blockHashIn)
     {
     }
 

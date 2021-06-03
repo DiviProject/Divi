@@ -32,6 +32,7 @@ constexpr char DB_TXINDEX = 't';
 constexpr char DB_BARETXIDINDEX = 'T';
 constexpr char DB_COINS = 'c';
 constexpr char DB_BESTBLOCKHASH = 'B';
+constexpr char DB_BLOCKINDEX = 'b';
 
 } // anonymous namespace
 
@@ -101,7 +102,7 @@ CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CLevel
 
 bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex)
 {
-    return Write(std::make_pair('b', blockindex.GetBlockHash()), blockindex);
+    return Write(std::make_pair(DB_BLOCKINDEX, blockindex.GetBlockHash()), blockindex);
 }
 
 bool CBlockTreeDB::WriteBlockFileInfo(int nFile, const CBlockFileInfo& info)
@@ -248,7 +249,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
     boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
 
     CDataStream ssKeySet(SER_DISK, CLIENT_VERSION);
-    ssKeySet << make_pair('b', uint256(0));
+    ssKeySet << make_pair(DB_BLOCKINDEX, uint256(0));
     pcursor->Seek(ssKeySet.str());
 
     // Load mapBlockIndex
@@ -260,7 +261,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
             CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
             char chType;
             ssKey >> chType;
-            if (chType == 'b') {
+            if (chType == DB_BLOCKINDEX) {
                 leveldb::Slice slValue = pcursor->value();
                 CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
                 CDiskBlockIndex diskindex;

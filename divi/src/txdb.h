@@ -78,8 +78,6 @@ public:
                                  std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &vect);
     bool WriteFlag(const std::string& name, bool fValue);
     bool ReadFlag(const std::string& name, bool& fValue);
-    bool WriteInt(const std::string& name, int nValue);
-    bool ReadInt(const std::string& name, int& nValue);
     bool LoadBlockIndexGuts();
 };
 

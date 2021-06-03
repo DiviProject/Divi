@@ -31,6 +31,7 @@ constexpr char DB_ADDRESSUNSPENTINDEX = 'u';
 constexpr char DB_TXINDEX = 't';
 constexpr char DB_BARETXIDINDEX = 'T';
 constexpr char DB_COINS = 'c';
+constexpr char DB_BESTBLOCKHASH = 'B';
 
 } // anonymous namespace
 
@@ -48,7 +49,7 @@ void static BatchWriteCoins(CLevelDBBatch& batch, const uint256& hash, const CCo
 
 void static BatchWriteHashBestChain(CLevelDBBatch& batch, const uint256& hash)
 {
-    batch.Write('B', hash);
+    batch.Write(DB_BESTBLOCKHASH, hash);
 }
 
 CCoinsViewDB::CCoinsViewDB(size_t nCacheSize, bool fMemory, bool fWipe) : db(GetDataDir() / "chainstate", nCacheSize, fMemory, fWipe)
@@ -67,10 +68,10 @@ bool CCoinsViewDB::HaveCoins(const uint256& txid) const
 
 uint256 CCoinsViewDB::GetBestBlock() const
 {
-    uint256 hashBestChain;
-    if (!db.Read('B', hashBestChain))
+    uint256 bestBlockHash;
+    if (!db.Read(DB_BESTBLOCKHASH, bestBlockHash))
         return uint256(0);
-    return hashBestChain;
+    return bestBlockHash;
 }
 
 bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)

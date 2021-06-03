@@ -51,7 +51,8 @@ class VaultUtxoIndexing (BitcoinTestFramework):
 
         # Check that vault utxos are found when querying by address
         for addr in self.owner_vault_addresses:
-            utxos = self.owner.getaddressutxos(addr)
+            utxos = self.owner.getaddressutxos(addr, True)
+            print(utxos)
             assert_equal(len(utxos),1)
 
 

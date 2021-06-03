@@ -34,6 +34,7 @@
 #include <MasternodeHelpers.h>
 #include <FeeAndPriorityCalculator.h>
 #include <PeerBanningService.h>
+#include <IndexDatabaseUpdateCollector.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -569,17 +570,27 @@ Value setmocktime(const Array& params, bool fHelp)
 
     return Value::null;
 }
-
+bool GetIndexKey(std::string addressString, HashBytesAndAddressType& result)
+{
+    CBitcoinAddress address(addressString);
+    if(address.IsValid())
+    {
+        CScript destinationScript = GetScriptForDestination(address.Get());
+        result = ComputeHashbytesAndAddressTypeForScript(destinationScript);
+        return result.second > 0;
+    }
+    return false;
+}
 bool getAddressesFromParams(const Array& params, std::vector<std::pair<uint160, int> > &addresses)
 {
     if (params[0].type() == str_type) {
+        HashBytesAndAddressType result;
         CBitcoinAddress address(params[0].get_str());
-        uint160 hashBytes;
-        int type = 0;
-        if (!address.GetIndexKey(hashBytes, type)) {
+        if (!GetIndexKey(params[0].get_str(), result))
+        {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
         }
-        addresses.push_back(std::make_pair(hashBytes, type));
+        addresses.push_back(result);
     } else if (params[0].type() == obj_type) {
         Value addressValues = find_value(params[0].get_obj(), "addresses");
         if (addressValues.type() != array_type) {
@@ -587,16 +598,14 @@ bool getAddressesFromParams(const Array& params, std::vector<std::pair<uint160, 
         }
 
         std::vector<Value> values(addressValues.get_array());// = addressValues.getValues();
-
-        for (std::vector<Value>::iterator it = values.begin(); it != values.end(); ++it) {
-
-            CBitcoinAddress address(it->get_str());
-            uint160 hashBytes;
-            int type = 0;
-            if (!address.GetIndexKey(hashBytes, type)) {
+        for (std::vector<Value>::iterator it = values.begin(); it != values.end(); ++it)
+        {
+            HashBytesAndAddressType result;
+            if (!GetIndexKey(it->get_str(),result))
+            {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
             }
-            addresses.push_back(std::make_pair(hashBytes, type));
+            addresses.push_back(result);
         }
     } else {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");

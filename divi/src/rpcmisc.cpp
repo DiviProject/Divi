@@ -570,23 +570,31 @@ Value setmocktime(const Array& params, bool fHelp)
 
     return Value::null;
 }
-bool GetIndexKey(std::string addressString, HashBytesAndAddressType& result)
+bool GetIndexKey(std::string addressString, HashBytesAndAddressType& result,bool onlyVaults)
 {
     CBitcoinAddress address(addressString);
     if(address.IsValid())
     {
         CScript destinationScript = GetScriptForDestination(address.Get());
+        if(onlyVaults && address.IsScript())
+        {
+            return false;
+        }
         result = ComputeHashbytesAndAddressTypeForScript(destinationScript);
+        if(onlyVaults)
+        {
+            result.second = 3;
+        }
         return result.second > 0;
     }
     return false;
 }
-bool getAddressesFromParams(const Array& params, std::vector<std::pair<uint160, int> > &addresses)
+bool getAddressesFromParams(const Array& params, std::vector<std::pair<uint160, int> > &addresses,bool onlyVaults = false)
 {
     if (params[0].type() == str_type) {
         HashBytesAndAddressType result;
         CBitcoinAddress address(params[0].get_str());
-        if (!GetIndexKey(params[0].get_str(), result))
+        if (!GetIndexKey(params[0].get_str(), result,onlyVaults))
         {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
         }
@@ -601,7 +609,7 @@ bool getAddressesFromParams(const Array& params, std::vector<std::pair<uint160, 
         for (std::vector<Value>::iterator it = values.begin(); it != values.end(); ++it)
         {
             HashBytesAndAddressType result;
-            if (!GetIndexKey(it->get_str(),result))
+            if (!GetIndexKey(it->get_str(),result,onlyVaults))
             {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
             }
@@ -618,7 +626,7 @@ bool getAddressFromIndex(const int &type, const uint160 &hash, std::string &addr
 {
     if (type == 2) {
         address = CBitcoinAddress(CScriptID(hash)).ToString();
-    } else if (type == 1) {
+    } else if (type == 1 || type == 3) {
         address = CBitcoinAddress(CKeyID(hash)).ToString();
     } else {
         return false;
@@ -1021,9 +1029,9 @@ Value getspentinfo(const Array& params, bool fHelp)
 
 Value getaddressutxos(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 1)
+    if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddressutxos {addresses:...}\n"
+            "getaddressutxos {addresses:...} [only_vaults]\n"
             "\nReturns all unspent outputs for an address (requires addressindex to be enabled).\n"
             "\nArguments:\n"
             "{\n"
@@ -1034,6 +1042,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
             "    ],\n"
             "  \"chainInfo\"  (boolean) Include chain info with results\n"
             "}\n"
+            "only_vaults (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult\n"
             "[\n"
             "  {\n"
@@ -1059,8 +1068,8 @@ Value getaddressutxos(const Array& params, bool fHelp)
     }
 
     std::vector<std::pair<uint160, int>> addresses;
-
-    if (!getAddressesFromParams(params, addresses)) {
+    bool onlyVaults = params.size()==2? params[1].get_bool() : false;
+    if (!getAddressesFromParams(params, addresses,onlyVaults)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 

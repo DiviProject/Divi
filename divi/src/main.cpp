@@ -2772,8 +2772,7 @@ bool static AlreadyHave(const CInv& inv)
     case MSG_TX: {
         bool txInMap = false;
         txInMap = mempool.exists(inv.hash);
-        return txInMap || OrphanTransactionIsKnown(inv.hash) ||
-                pcoinsTip->HaveCoins(inv.hash);
+        return txInMap || OrphanTransactionIsKnown(inv.hash);
     }
 
     case MSG_BLOCK:

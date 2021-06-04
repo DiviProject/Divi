@@ -199,6 +199,8 @@ public:
     bool SocketIsValid() const;
     void SocketSendData();
     void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
+    bool TrySocketSendData(fd_set* fdsetSend);
+    bool TrySocketReceiveData(fd_set* fdsetRecv,fd_set* fdsetError, boost::condition_variable& messageHandlerCondition);
 
     void PushVersion(int currentChainTipHeight);
     void SetSporkCount(int nSporkCountIn);

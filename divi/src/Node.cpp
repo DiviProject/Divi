@@ -336,7 +336,28 @@ void CNode::SocketReceiveData(boost::condition_variable& messageHandlerCondition
         CloseSocketDisconnect();
     }
 }
-
+void CNode::RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax)
+{
+    FD_SET(hSocket, fdsetError);
+    hSocketMax = std::max(hSocketMax, hSocket);
+    {
+        TRY_LOCK(cs_vSend, lockSend);
+        if (lockSend && !vSendMsg.empty()) {
+            FD_SET(hSocket, fdsetSend);
+            return;
+        }
+    }
+    {
+        TRY_LOCK(cs_vRecvMsg, lockRecv);
+        if (lockRecv &&
+            (vRecvMsg.empty() ||
+            !vRecvMsg.front().complete() ||
+            IsAvailableToReceive()))
+        {
+            FD_SET(hSocket, fdsetRecv);
+        }
+    }
+}
 bool CNode::SocketIsValid() const
 {
     return hSocket != INVALID_SOCKET;

@@ -194,6 +194,8 @@ public:
     void AddInventoryKnown(const CInv& inv);
     void PushInventory(const CInv& inv);
     void AskFor(const CInv& inv);
+
+    void RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax);
     bool SocketIsValid() const;
     void SocketSendData();
     void SocketReceiveData(boost::condition_variable& messageHandlerCondition);

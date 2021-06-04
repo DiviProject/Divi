@@ -610,26 +610,8 @@ public:
         {
             if (!pnode->SocketIsValid())
                 continue;
-            FD_SET(pnode->hSocket, &fdsetError);
-            hSocketMax = max(hSocketMax, pnode->hSocket);
             have_fds = true;
-            {
-                TRY_LOCK(pnode->cs_vSend, lockSend);
-                if (lockSend && !pnode->vSendMsg.empty()) {
-                    FD_SET(pnode->hSocket, &fdsetSend);
-                    continue;
-                }
-            }
-            {
-                TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
-                if (lockRecv &&
-                    (pnode->vRecvMsg.empty() ||
-                    !pnode->vRecvMsg.front().complete() ||
-                    pnode->IsAvailableToReceive()))
-                {
-                    FD_SET(pnode->hSocket, &fdsetRecv);
-                }
-            }
+            pnode->RegisterFileDescriptors(&fdsetError, &fdsetSend,&fdsetRecv,hSocketMax);
         }
     }
     int CheckSocketCanBeSelected()

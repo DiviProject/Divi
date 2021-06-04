@@ -424,7 +424,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
 
         // Add node
         CNode* pnode = new CNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addrConnect, pszDest ? pszDest : "", false);
-        if (pnode->hSocket != INVALID_SOCKET && !pnode->fInbound)
+        if (pnode->SocketIsValid() && !pnode->fInbound)
             pnode->PushVersion(GetHeight());
         pnode->AddRef();
 
@@ -608,7 +608,7 @@ public:
         LOCK(nodesLock);
         for(CNode* pnode: nodes)
         {
-            if (pnode->hSocket == INVALID_SOCKET)
+            if (!pnode->SocketIsValid())
                 continue;
             FD_SET(pnode->hSocket, &fdsetError);
             hSocketMax = max(hSocketMax, pnode->hSocket);
@@ -706,7 +706,7 @@ public:
 
     bool SocketReceiveDataFromPeer(CNode* pnode, boost::condition_variable& messageHandlerCondition)
     {
-        if (pnode->hSocket == INVALID_SOCKET)
+        if (!pnode->SocketIsValid())
             return false;
         if (FD_ISSET(pnode->hSocket, &fdsetRecv) || FD_ISSET(pnode->hSocket, &fdsetError))
         {
@@ -718,7 +718,7 @@ public:
     }
     bool SocketSendDataToPeer(CNode* pnode)
     {
-        if (pnode->hSocket == INVALID_SOCKET)
+        if (!pnode->SocketIsValid())
             return false;
         if (FD_ISSET(pnode->hSocket, &fdsetSend)) {
             TRY_LOCK(pnode->cs_vSend, lockSend);

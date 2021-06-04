@@ -93,6 +93,222 @@ NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
 limitedmap<CInv, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);
 
+static bool SocketHasErrors(bool shouldLogError)
+{
+    int nErr = WSAGetLastError();
+    if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS)
+    {
+        if (shouldLogError)
+            LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
+        return true;
+    }
+    return false;
+}
+
+SocketConnection::SocketConnection(
+    SOCKET hSocketIn
+    ): hSocket(hSocketIn)
+    , ssSend(SER_NETWORK, INIT_PROTO_VERSION)
+    , nSendSize(0)
+    , nSendOffset(0)
+    , nSendBytes(0)
+    , vSendMsg()
+    , cs_vSend()
+    , vRecvMsg()
+    , cs_vRecvMsg()
+    , nRecvBytes(0)
+    , nRecvVersion(INIT_PROTO_VERSION)
+    , nLastSend(0)
+    , nLastRecv(0)
+    , fDisconnect(false)
+{
+}
+
+// requires LOCK(cs_vSend)
+void SocketConnection::SocketSendData()
+{
+    AssertLockHeld(cs_vSend);
+    std::deque<CSerializeData>::iterator it = vSendMsg.begin();
+
+    while (it != vSendMsg.end()) {
+        const CSerializeData& data = *it;
+        assert(data.size() > nSendOffset);
+        int nBytes = send(hSocket, &data[nSendOffset], data.size() - nSendOffset, MSG_NOSIGNAL | MSG_DONTWAIT);
+        if (nBytes > 0) {
+            nLastSend = GetTime();
+            nSendBytes += nBytes;
+            nSendOffset += nBytes;
+            NetworkUsageStats::RecordBytesSent(nBytes);
+            if (nSendOffset == data.size()) {
+                nSendOffset = 0;
+                nSendSize -= data.size();
+                it++;
+            } else {
+                // could not send full message; stop sending more
+                break;
+            }
+        }
+        else
+        {
+            if (nBytes < 0 && SocketHasErrors(true))
+            {
+                // error
+                CloseSocketDisconnect();
+            }
+            // couldn't send anything at all
+            break;
+        }
+    }
+
+    if (it == vSendMsg.end()) {
+        assert(nSendOffset == 0);
+        assert(nSendSize == 0);
+    }
+    vSendMsg.erase(vSendMsg.begin(), it);
+}
+
+// Requires LOCK(cs_vRecvMsg)
+void SocketConnection::SocketReceiveData(boost::condition_variable& messageHandlerCondition)
+{
+    AssertLockHeld(cs_vRecvMsg);
+    // typical socket buffer is 8K-64K
+    char pchBuf[0x10000];
+    int nBytes = recv(hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
+    if (nBytes > 0) {
+        if (!ConvertDataBufferToNetworkMessage(pchBuf, nBytes,messageHandlerCondition))
+            CloseSocketDisconnect();
+        nLastRecv = GetTime();
+        nRecvBytes += nBytes;
+        NetworkUsageStats::RecordBytesRecv(nBytes);
+    } else if (nBytes == 0) {
+        // socket closed gracefully
+        if (!fDisconnect)
+            LogPrint("net", "socket closed\n");
+        CloseSocketDisconnect();
+    }
+    else if (nBytes < 0 && SocketHasErrors(!fDisconnect))
+    {
+        // error
+        CloseSocketDisconnect();
+    }
+}
+void SocketConnection::RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax)
+{
+    FD_SET(hSocket, fdsetError);
+    hSocketMax = std::max(hSocketMax, hSocket);
+    {
+        TRY_LOCK(cs_vSend, lockSend);
+        if (lockSend && !vSendMsg.empty()) {
+            FD_SET(hSocket, fdsetSend);
+            return;
+        }
+    }
+    {
+        TRY_LOCK(cs_vRecvMsg, lockRecv);
+        if (lockRecv &&
+            (vRecvMsg.empty() ||
+            !vRecvMsg.front().complete() ||
+            IsAvailableToReceive()))
+        {
+            FD_SET(hSocket, fdsetRecv);
+        }
+    }
+}
+bool SocketConnection::SocketIsValid() const
+{
+    return hSocket != INVALID_SOCKET;
+}
+
+bool SocketConnection::TrySocketSendData(fd_set* fdsetSend)
+{
+    if (!SocketIsValid())
+        return false;
+    if (FD_ISSET(hSocket, fdsetSend)) {
+        TRY_LOCK(cs_vSend, lockSend);
+        if (lockSend)
+            SocketSendData();
+    }
+    return true;
+}
+bool SocketConnection::TrySocketReceiveData(fd_set* fdsetRecv,fd_set* fdsetError, boost::condition_variable& messageHandlerCondition)
+{
+    if (!SocketIsValid())
+        return false;
+    if (FD_ISSET(hSocket, fdsetRecv) || FD_ISSET(hSocket, fdsetError))
+    {
+        TRY_LOCK(cs_vRecvMsg, lockRecv);
+        if (lockRecv)
+            SocketReceiveData(messageHandlerCondition);
+    }
+    return true;
+}
+
+void SocketConnection::CloseSocketDisconnect()
+{
+    fDisconnect = true;
+    if (hSocket != INVALID_SOCKET) {
+        LogPrint("net", "disconnecting peer\n");
+        CloseSocket(hSocket);
+    }
+
+    // in case this fails, we'll empty the recv buffer when the CNode is deleted
+    TRY_LOCK(cs_vRecvMsg, lockRecv);
+    if (lockRecv)
+        vRecvMsg.clear();
+}
+bool SocketConnection::IsAvailableToReceive()
+{
+    return GetTotalRecvSize() <= ReceiveFloodSize();
+}
+// requires LOCK(cs_vRecvMsg)
+unsigned int SocketConnection::GetTotalRecvSize()
+{
+    unsigned int total = 0;
+    for(const CNetMessage& msg: vRecvMsg)
+        total += msg.vRecv.size() + 24;
+    return total;
+}
+// requires LOCK(cs_vRecvMsg)
+bool SocketConnection::ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition)
+{
+    AssertLockHeld(cs_vRecvMsg);
+    /** Maximum length of incoming protocol messages (no message over 2 MiB is currently acceptable). */
+    static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;
+    while (nBytes > 0) {
+        // get current incomplete message, or create a new one
+        if (vRecvMsg.empty() ||
+            vRecvMsg.back().complete())
+            vRecvMsg.push_back(CNetMessage(SER_NETWORK, nRecvVersion));
+
+        CNetMessage& msg = vRecvMsg.back();
+
+        // absorb network data
+        int handled;
+        if (!msg.in_data)
+            handled = msg.readHeader(pch, nBytes);
+        else
+            handled = msg.readData(pch, nBytes);
+
+        if (handled < 0)
+            return false;
+
+        if (msg.in_data && msg.hdr.nMessageSize > MAX_PROTOCOL_MESSAGE_LENGTH) {
+            LogPrint("net", "Oversized message from peer, disconnecting");
+            return false;
+        }
+
+        pch += handled;
+        nBytes -= handled;
+
+        if (msg.complete()) {
+            msg.nTime = GetTimeMicros();
+            messageHandlerCondition.notify_one();
+        }
+    }
+
+    return true;
+}
+
 CNode::CNode(
     CNodeSignals* nodeSignals,
     CAddrMan& addressMananger,
@@ -100,7 +316,7 @@ CNode::CNode(
     CAddress addrIn,
     std::string addrNameIn,
     bool fInboundIn
-    ) : ssSend(SER_NETWORK, INIT_PROTO_VERSION)
+    ) : SocketConnection(hSocketIn)
     , setAddrKnown(5000)
 {
     nServices = 0;
@@ -209,24 +425,13 @@ int CNode::GetRefCount()
     assert(nRefCount >= 0);
     return nRefCount;
 }
-// requires LOCK(cs_vRecvMsg)
-unsigned int CNode::GetTotalRecvSize()
-{
-    unsigned int total = 0;
-    for(const CNetMessage& msg: vRecvMsg)
-        total += msg.vRecv.size() + 24;
-    return total;
-}
+
 // requires LOCK(cs_vRecvMsg)
 void CNode::SetRecvVersion(int nVersionIn)
 {
     nRecvVersion = nVersionIn;
     for(CNetMessage& msg: vRecvMsg)
         msg.SetVersion(nVersionIn);
-}
-bool CNode::IsAvailableToReceive()
-{
-    return GetTotalRecvSize() <= ReceiveFloodSize();
 }
 
 CNode* CNode::AddRef()
@@ -254,137 +459,6 @@ void CNode::PushInventory(const CInv& inv)
     LOCK(cs_inventory);
     if (setInventoryKnown.count(inv) == 0)
         vInventoryToSend.push_back(inv);
-}
-
-static bool SocketHasErrors(bool shouldLogError)
-{
-    int nErr = WSAGetLastError();
-    if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS)
-    {
-        if (shouldLogError)
-            LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
-        return true;
-    }
-    return false;
-}
-
-// requires LOCK(cs_vSend)
-void CNode::SocketSendData()
-{
-    AssertLockHeld(cs_vSend);
-    std::deque<CSerializeData>::iterator it = vSendMsg.begin();
-
-    while (it != vSendMsg.end()) {
-        const CSerializeData& data = *it;
-        assert(data.size() > nSendOffset);
-        int nBytes = send(hSocket, &data[nSendOffset], data.size() - nSendOffset, MSG_NOSIGNAL | MSG_DONTWAIT);
-        if (nBytes > 0) {
-            nLastSend = GetTime();
-            nSendBytes += nBytes;
-            nSendOffset += nBytes;
-            NetworkUsageStats::RecordBytesSent(nBytes);
-            if (nSendOffset == data.size()) {
-                nSendOffset = 0;
-                nSendSize -= data.size();
-                it++;
-            } else {
-                // could not send full message; stop sending more
-                break;
-            }
-        }
-        else
-        {
-            if (nBytes < 0 && SocketHasErrors(true))
-            {
-                // error
-                CloseSocketDisconnect();
-            }
-            // couldn't send anything at all
-            break;
-        }
-    }
-
-    if (it == vSendMsg.end()) {
-        assert(nSendOffset == 0);
-        assert(nSendSize == 0);
-    }
-    vSendMsg.erase(vSendMsg.begin(), it);
-}
-
-// Requires LOCK(cs_vRecvMsg)
-void CNode::SocketReceiveData(boost::condition_variable& messageHandlerCondition)
-{
-    AssertLockHeld(cs_vRecvMsg);
-    // typical socket buffer is 8K-64K
-    char pchBuf[0x10000];
-    int nBytes = recv(hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
-    if (nBytes > 0) {
-        if (!ConvertDataBufferToNetworkMessage(pchBuf, nBytes,messageHandlerCondition))
-            CloseSocketDisconnect();
-        nLastRecv = GetTime();
-        nRecvBytes += nBytes;
-        NetworkUsageStats::RecordBytesRecv(nBytes);
-    } else if (nBytes == 0) {
-        // socket closed gracefully
-        if (!fDisconnect)
-            LogPrint("net", "socket closed\n");
-        CloseSocketDisconnect();
-    }
-    else if (nBytes < 0 && SocketHasErrors(!fDisconnect))
-    {
-        // error
-        CloseSocketDisconnect();
-    }
-}
-void CNode::RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax)
-{
-    FD_SET(hSocket, fdsetError);
-    hSocketMax = std::max(hSocketMax, hSocket);
-    {
-        TRY_LOCK(cs_vSend, lockSend);
-        if (lockSend && !vSendMsg.empty()) {
-            FD_SET(hSocket, fdsetSend);
-            return;
-        }
-    }
-    {
-        TRY_LOCK(cs_vRecvMsg, lockRecv);
-        if (lockRecv &&
-            (vRecvMsg.empty() ||
-            !vRecvMsg.front().complete() ||
-            IsAvailableToReceive()))
-        {
-            FD_SET(hSocket, fdsetRecv);
-        }
-    }
-}
-bool CNode::SocketIsValid() const
-{
-    return hSocket != INVALID_SOCKET;
-}
-
-bool CNode::TrySocketSendData(fd_set* fdsetSend)
-{
-    if (!SocketIsValid())
-        return false;
-    if (FD_ISSET(hSocket, fdsetSend)) {
-        TRY_LOCK(cs_vSend, lockSend);
-        if (lockSend)
-            SocketSendData();
-    }
-    return true;
-}
-bool CNode::TrySocketReceiveData(fd_set* fdsetRecv,fd_set* fdsetError, boost::condition_variable& messageHandlerCondition)
-{
-    if (!SocketIsValid())
-        return false;
-    if (FD_ISSET(hSocket, fdsetRecv) || FD_ISSET(hSocket, fdsetError))
-    {
-        TRY_LOCK(cs_vRecvMsg, lockRecv);
-        if (lockRecv)
-            SocketReceiveData(messageHandlerCondition);
-    }
-    return true;
 }
 
 void CNode::PushAddress(const CAddress& addr)
@@ -526,60 +600,6 @@ void CNode::Fuzz(int nChance)
     Fuzz(2);
 }
 
-// requires LOCK(cs_vRecvMsg)
-bool CNode::ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition)
-{
-    AssertLockHeld(cs_vRecvMsg);
-    /** Maximum length of incoming protocol messages (no message over 2 MiB is currently acceptable). */
-    static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;
-    while (nBytes > 0) {
-        // get current incomplete message, or create a new one
-        if (vRecvMsg.empty() ||
-            vRecvMsg.back().complete())
-            vRecvMsg.push_back(CNetMessage(SER_NETWORK, nRecvVersion));
-
-        CNetMessage& msg = vRecvMsg.back();
-
-        // absorb network data
-        int handled;
-        if (!msg.in_data)
-            handled = msg.readHeader(pch, nBytes);
-        else
-            handled = msg.readData(pch, nBytes);
-
-        if (handled < 0)
-            return false;
-
-        if (msg.in_data && msg.hdr.nMessageSize > MAX_PROTOCOL_MESSAGE_LENGTH) {
-            LogPrint("net", "Oversized message from peer=%i, disconnecting", GetId());
-            return false;
-        }
-
-        pch += handled;
-        nBytes -= handled;
-
-        if (msg.complete()) {
-            msg.nTime = GetTimeMicros();
-            messageHandlerCondition.notify_one();
-        }
-    }
-
-    return true;
-}
-
-void CNode::CloseSocketDisconnect()
-{
-    fDisconnect = true;
-    if (hSocket != INVALID_SOCKET) {
-        LogPrint("net", "disconnecting peer=%d\n", id);
-        CloseSocket(hSocket);
-    }
-
-    // in case this fails, we'll empty the recv buffer when the CNode is deleted
-    TRY_LOCK(cs_vRecvMsg, lockRecv);
-    if (lockRecv)
-        vRecvMsg.clear();
-}
 
 bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand)
 {

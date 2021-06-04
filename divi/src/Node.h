@@ -50,11 +50,9 @@ public:
     int readData(const char* pch, unsigned int nBytes);
 };
 
-class CNode
+class SocketConnection
 {
 public:
-    // socket
-    uint64_t nServices;
     SOCKET hSocket;
     CDataStream ssSend;
     size_t nSendSize;   // total size of all vSendMsg entries
@@ -63,7 +61,6 @@ public:
     std::deque<CSerializeData> vSendMsg;
     CCriticalSection cs_vSend;
 
-    std::deque<CInv> vRecvGetData;
     std::deque<CNetMessage> vRecvMsg;
     CCriticalSection cs_vRecvMsg;
     uint64_t nRecvBytes;
@@ -71,6 +68,26 @@ public:
 
     int64_t nLastSend;
     int64_t nLastRecv;
+    bool fDisconnect;
+public:
+    SocketConnection(SOCKET hSocketIn);
+    void RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax);
+    bool SocketIsValid() const;
+    void SocketSendData();
+    void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
+    bool TrySocketSendData(fd_set* fdsetSend);
+    bool TrySocketReceiveData(fd_set* fdsetRecv,fd_set* fdsetError, boost::condition_variable& messageHandlerCondition);
+    void CloseSocketDisconnect();
+    bool IsAvailableToReceive();
+    unsigned int GetTotalRecvSize();
+    bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
+};
+
+class CNode: public SocketConnection
+{
+public:
+    uint64_t nServices;
+    std::deque<CInv> vRecvGetData;
     int64_t nTimeConnected;
     CAddress addr;
     std::string addrName;
@@ -87,7 +104,6 @@ public:
     bool fInbound;
     bool fNetworkNode;
     bool fSuccessfullyConnected;
-    bool fDisconnect;
     // We use fRelayTxes for two purposes -
     // a) it allows us to not relay tx invs before receiving the peer's version message
     // b) the peer may tell us in their version message that we should not relay tx invs
@@ -195,18 +211,10 @@ public:
     void PushInventory(const CInv& inv);
     void AskFor(const CInv& inv);
 
-    void RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax);
-    bool SocketIsValid() const;
-    void SocketSendData();
-    void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
-    bool TrySocketSendData(fd_set* fdsetSend);
-    bool TrySocketReceiveData(fd_set* fdsetRecv,fd_set* fdsetError, boost::condition_variable& messageHandlerCondition);
-
     void PushVersion(int currentChainTipHeight);
     void SetSporkCount(int nSporkCountIn);
     bool AreSporksSynced() const;
 
-    void CloseSocketDisconnect();
     bool DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand = "");
     bool CanSendMessagesToPeer() const;
     void MaybeSendPing();

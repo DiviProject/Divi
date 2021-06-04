@@ -363,6 +363,30 @@ bool CNode::SocketIsValid() const
     return hSocket != INVALID_SOCKET;
 }
 
+bool CNode::TrySocketSendData(fd_set* fdsetSend)
+{
+    if (!SocketIsValid())
+        return false;
+    if (FD_ISSET(hSocket, fdsetSend)) {
+        TRY_LOCK(cs_vSend, lockSend);
+        if (lockSend)
+            SocketSendData();
+    }
+    return true;
+}
+bool CNode::TrySocketReceiveData(fd_set* fdsetRecv,fd_set* fdsetError, boost::condition_variable& messageHandlerCondition)
+{
+    if (!SocketIsValid())
+        return false;
+    if (FD_ISSET(hSocket, fdsetRecv) || FD_ISSET(hSocket, fdsetError))
+    {
+        TRY_LOCK(cs_vRecvMsg, lockRecv);
+        if (lockRecv)
+            SocketReceiveData(messageHandlerCondition);
+    }
+    return true;
+}
+
 void CNode::PushAddress(const CAddress& addr)
 {
     /** The maximum number of new addresses to accumulate before announcing. */

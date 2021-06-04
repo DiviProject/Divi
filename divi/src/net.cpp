@@ -688,26 +688,11 @@ public:
 
     bool SocketReceiveDataFromPeer(CNode* pnode, boost::condition_variable& messageHandlerCondition)
     {
-        if (!pnode->SocketIsValid())
-            return false;
-        if (FD_ISSET(pnode->hSocket, &fdsetRecv) || FD_ISSET(pnode->hSocket, &fdsetError))
-        {
-            TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
-            if (lockRecv)
-                pnode->SocketReceiveData(messageHandlerCondition);
-        }
-        return true;
+        return pnode->TrySocketReceiveData(&fdsetRecv, &fdsetError, messageHandlerCondition);
     }
     bool SocketSendDataToPeer(CNode* pnode)
     {
-        if (!pnode->SocketIsValid())
-            return false;
-        if (FD_ISSET(pnode->hSocket, &fdsetSend)) {
-            TRY_LOCK(pnode->cs_vSend, lockSend);
-            if (lockSend)
-                pnode->SocketSendData();
-        }
-        return true;
+        return pnode->TrySocketSendData(&fdsetSend);
     }
 };
 

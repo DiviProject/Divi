@@ -337,6 +337,11 @@ void CNode::SocketReceiveData(boost::condition_variable& messageHandlerCondition
     }
 }
 
+bool CNode::SocketIsValid() const
+{
+    return hSocket != INVALID_SOCKET;
+}
+
 void CNode::PushAddress(const CAddress& addr)
 {
     /** The maximum number of new addresses to accumulate before announcing. */

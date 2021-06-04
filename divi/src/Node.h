@@ -194,6 +194,7 @@ public:
     void AddInventoryKnown(const CInv& inv);
     void PushInventory(const CInv& inv);
     void AskFor(const CInv& inv);
+    bool SocketIsValid() const;
     void SocketSendData();
     void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
 

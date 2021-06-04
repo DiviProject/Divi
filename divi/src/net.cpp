@@ -1508,9 +1508,9 @@ void CleanupP2PConnections()
     LOCK(cs_vNodes);
     for(CNode* pnode: vNodes)
     {
-        if (pnode->hSocket != INVALID_SOCKET)
-            CloseSocket(pnode->hSocket);
+        delete pnode;
     }
+    vNodes.clear();
     for(ListenSocket& hListenSocket: vhListenSocket)
     {
         if (hListenSocket.socket != INVALID_SOCKET && !CloseSocket(hListenSocket.socket))
@@ -1518,11 +1518,6 @@ void CleanupP2PConnections()
     }
     // clean up some globals (to help leak detection)
     vhListenSocket.clear();
-    for(CNode* pnode: vNodes)
-    {
-        delete pnode;
-    }
-    vNodes.clear();
     for(CNode* pnode: vNodesDisconnected)
     {
         delete pnode;

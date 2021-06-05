@@ -8,8 +8,8 @@ CNodeStats::CNodeStats(CNode* pnode)
 {
     nodeid = pnode->GetId();
     X(nServices);
-    X(nLastSend);
-    X(nLastRecv);
+    nLastSend = pnode->GetLastTimeDataSent();
+    nLastRecv = pnode->GetLastTimeDataReceived();
     X(nTimeConnected);
     X(addrName);
     X(nVersion);

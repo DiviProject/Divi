@@ -66,9 +66,9 @@ public:
     uint64_t nRecvBytes;
     int nRecvVersion;
 
+protected:
     int64_t nLastSend;
     int64_t nLastRecv;
-protected:
     bool fDisconnect;
 public:
     SocketConnection(SOCKET hSocketIn);
@@ -84,6 +84,8 @@ public:
     bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
     bool IsFlaggedForDisconnection() const;
     void FlagForDisconnection();
+    int64_t GetLastTimeDataSent() const;
+    int64_t GetLastTimeDataReceived() const;
 };
 
 class CNode: public SocketConnection

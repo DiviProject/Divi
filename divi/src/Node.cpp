@@ -316,6 +316,14 @@ void SocketConnection::FlagForDisconnection()
 {
     fDisconnect = true;
 }
+int64_t SocketConnection::GetLastTimeDataSent() const
+{
+    return nLastSend;
+}
+int64_t SocketConnection::GetLastTimeDataReceived() const
+{
+    return nLastRecv;
+}
 
 
 CNode::CNode(

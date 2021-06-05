@@ -308,6 +308,15 @@ bool SocketConnection::ConvertDataBufferToNetworkMessage(const char* pch, unsign
 
     return true;
 }
+bool SocketConnection::IsFlaggedForDisconnection() const
+{
+    return fDisconnect;
+}
+void SocketConnection::FlagForDisconnection()
+{
+    fDisconnect = true;
+}
+
 
 CNode::CNode(
     CNodeSignals* nodeSignals,

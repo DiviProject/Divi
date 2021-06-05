@@ -64,9 +64,9 @@ public:
     std::deque<CNetMessage> vRecvMsg;
     CCriticalSection cs_vRecvMsg;
     uint64_t nRecvBytes;
-    int nRecvVersion;
 
 protected:
+    int nRecvVersion;
     int64_t nLastSend;
     int64_t nLastRecv;
     bool fDisconnect;
@@ -86,6 +86,7 @@ public:
     void FlagForDisconnection();
     int64_t GetLastTimeDataSent() const;
     int64_t GetLastTimeDataReceived() const;
+    void SetRecvVersion(int nVersionIn);
 };
 
 class CNode: public SocketConnection
@@ -207,7 +208,6 @@ public:
     bool IsAvailableToReceive();
 
     bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
-    void SetRecvVersion(int nVersionIn);
     CNode* AddRef();
     void Release();
     void AddAddressKnown(const CAddress& addr);

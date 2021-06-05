@@ -324,7 +324,13 @@ int64_t SocketConnection::GetLastTimeDataReceived() const
 {
     return nLastRecv;
 }
-
+void SocketConnection::SetRecvVersion(int nVersionIn)
+{
+    AssertLockHeld(cs_vRecvMsg);
+    nRecvVersion = nVersionIn;
+    for(CNetMessage& msg: vRecvMsg)
+        msg.SetVersion(nVersionIn);
+}
 
 CNode::CNode(
     CNodeSignals* nodeSignals,
@@ -441,14 +447,6 @@ int CNode::GetRefCount()
 {
     assert(nRefCount >= 0);
     return nRefCount;
-}
-
-// requires LOCK(cs_vRecvMsg)
-void CNode::SetRecvVersion(int nVersionIn)
-{
-    nRecvVersion = nVersionIn;
-    for(CNetMessage& msg: vRecvMsg)
-        msg.SetVersion(nVersionIn);
 }
 
 CNode* CNode::AddRef()

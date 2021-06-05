@@ -2989,7 +2989,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (pfrom->IsSelfConnection(nNonce))
         {
             LogPrintf("connected to self at %s, disconnecting\n", pfrom->addr);
-            pfrom->fDisconnect = true;
+            pfrom->FlagForDisconnection();
             return true;
         }
 
@@ -3114,7 +3114,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (vAddr.size() < 1000)
             pfrom->fGetAddr = false;
         if (pfrom->fOneShot)
-            pfrom->fDisconnect = true;
+            pfrom->FlagForDisconnection();
     }
 
 
@@ -3723,7 +3723,7 @@ bool ProcessReceivedMessages(CNode* pfrom)
     if (!pfrom->vRecvGetData.empty()) return fOk;
 
     std::deque<CNetMessage>::iterator it = pfrom->vRecvMsg.begin();
-    while (!pfrom->fDisconnect && it != pfrom->vRecvMsg.end()) {
+    while (!pfrom->IsFlaggedForDisconnection() && it != pfrom->vRecvMsg.end()) {
         // Don't bother if send buffer is too full to respond anyway
         if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_FULL)
             break;
@@ -3798,7 +3798,7 @@ bool ProcessReceivedMessages(CNode* pfrom)
     }
 
     // In case the connection got shut down, its receive buffer was wiped
-    if (!pfrom->fDisconnect)
+    if (!pfrom->IsFlaggedForDisconnection())
         pfrom->vRecvMsg.erase(pfrom->vRecvMsg.begin(), it);
 
     return fOk;
@@ -3834,7 +3834,7 @@ static void CheckForBanAndDisconnectIfNotWhitelisted(CNode* pto)
     }
     else
     {
-        pto->fDisconnect = true;
+        pto->FlagForDisconnection();
         if (pto->addr.IsLocal())
         {
             LogPrintf("Warning: not banning local peer %s!\n", pto->addr);
@@ -3912,25 +3912,25 @@ static void SendInventoryToPeer(CNode* pto, bool fSendTrickle)
 }
 static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto)
 {
-    if (!pto->fDisconnect && BlockDownloadHasStalled(pto->GetId(),nNow, 1000000 * BLOCK_STALLING_TIMEOUT)  ) {
+    if (!pto->IsFlaggedForDisconnection() && BlockDownloadHasStalled(pto->GetId(),nNow, 1000000 * BLOCK_STALLING_TIMEOUT)  ) {
         // Stalling only triggers when the block download window cannot move. During normal steady state,
         // the download window should be much larger than the to-be-downloaded set of blocks, so disconnection
         // should only happen during initial block download.
         LogPrintf("Peer=%d is stalling block download, disconnecting\n", pto->id);
-        pto->fDisconnect = true;
+        pto->FlagForDisconnection();
     }
     // In case there is a block that has been in flight from this peer for (2 + 0.5 * N) times the block interval
     // (with N the number of validated blocks that were in flight at the time it was requested), disconnect due to
     // timeout. We compensate for in-flight blocks to prevent killing off peers due to our own downstream link
     // being saturated. We only count validated in-flight blocks so peers can't advertize nonexisting block hashes
     // to unreasonably increase our timeout.
-    if (!pto->fDisconnect && BlockDownloadHasTimedOut(pto->GetId(),nNow,Params().TargetSpacing()) ) {
-        pto->fDisconnect = true;
+    if (!pto->IsFlaggedForDisconnection() && BlockDownloadHasTimedOut(pto->GetId(),nNow,Params().TargetSpacing()) ) {
+        pto->FlagForDisconnection();
     }
 }
 static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, std::vector<CInv>& vGetData)
 {
-    if (!pto->fDisconnect && !pto->fClient && GetNumberOfBlocksInFlight(pto->GetId()) < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
+    if (!pto->IsFlaggedForDisconnection() && !pto->fClient && GetNumberOfBlocksInFlight(pto->GetId()) < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
         std::vector<CBlockIndex*> vToDownload;
         NodeId staller = -1;
         FindNextBlocksToDownload(mapBlockIndex,chainActive, pto->GetNodeState(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - GetNumberOfBlocksInFlight(pto->GetId()), vToDownload, staller);
@@ -3947,7 +3947,7 @@ static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, std::vector<CInv
 }
 void CollectNonBlockDataToRequestAndRequestIt(CNode* pto, int64_t nNow, std::vector<CInv>& vGetData)
 {
-    while (!pto->fDisconnect && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow)
+    while (!pto->IsFlaggedForDisconnection() && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow)
     {
         const CInv& inv = (*pto->mapAskFor.begin()).second;
         if (!AlreadyHave(inv)) {

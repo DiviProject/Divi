@@ -791,9 +791,7 @@ void ThreadMessageHandler()
             // Handle potential ping messages first.
             if (pnode->CanSendMessagesToPeer())
             {
-                TRY_LOCK(pnode->cs_vSend, lockSend);
-                if (lockSend)
-                    pnode->MaybeSendPing();
+                pnode->MaybeSendPing();
             }
             boost::this_thread::interruption_point();
 

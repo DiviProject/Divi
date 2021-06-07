@@ -702,6 +702,8 @@ bool CNode::CanSendMessagesToPeer() const
      *  if we should.  */
 void CNode::MaybeSendPing()
 {
+    TRY_LOCK(cs_vSend, lockSend);
+    if (!lockSend) return;
     /** Time between pings automatically sent out for latency probing and keepalive (in seconds). */
     static const int PING_INTERVAL = 2 * 60;
     bool pingSend = false;

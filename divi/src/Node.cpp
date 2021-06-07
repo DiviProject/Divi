@@ -411,6 +411,27 @@ CNode::~CNode()
     nodeState_.reset();
 }
 
+bool CNode::IsInUse()
+{
+    if (GetRefCount() <= 0)
+    {
+        {
+            TRY_LOCK(cs_vSend, lockSend);
+            if (lockSend)
+            {
+                TRY_LOCK(cs_vRecvMsg, lockRecv);
+                if (lockRecv)
+                {
+                    TRY_LOCK(cs_inventory, lockInv);
+                    if (lockInv)
+                        return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
 CNodeState* CNode::GetNodeState()
 {
     return nodeState_.get();
@@ -447,7 +468,7 @@ NodeId CNode::GetId() const
 {
     return id;
 }
-int CNode::GetRefCount()
+int CNode::GetRefCount() const
 {
     assert(nRefCount >= 0);
     return nRefCount;

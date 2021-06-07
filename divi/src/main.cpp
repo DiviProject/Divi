@@ -3747,15 +3747,12 @@ bool ProcessReceivedMessages(CNode* pfrom)
     if (!pfrom->vRecvGetData.empty()) return fOk;
 
     std::deque<CNetMessage>::iterator it = pfrom->vRecvMsg.begin();
-    while (!pfrom->IsFlaggedForDisconnection() && it != pfrom->vRecvMsg.end()) {
-        // Don't bother if send buffer is too full to respond anyway
-        if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_FULL)
-            break;
-
-        // end, if an incomplete message is found
-        if (!it->complete())
-            break;
-
+    while(
+        !pfrom->IsFlaggedForDisconnection() &&
+        it != pfrom->vRecvMsg.end() &&
+        pfrom->GetSendBufferStatus()!=NodeBufferStatus::IS_FULL && // needed, to allow responding
+        it->complete() ) // end, if an incomplete message is found
+    {
         // get next message
         CNetMessage& msg = *it;
         // at this point, any failure means we can delete the current message

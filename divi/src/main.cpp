@@ -3752,15 +3752,14 @@ bool ProcessReceivedMessages(CNode* pfrom)
         if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_FULL)
             break;
 
-        // get next message
-        CNetMessage& msg = *it;
-
         // end, if an incomplete message is found
-        if (!msg.complete())
+        if (!it->complete())
             break;
 
+        // get next message
+        CNetMessage& msg = *it;
         // at this point, any failure means we can delete the current message
-        it++;
+        ++it;
 
         NetworkMessageState messageStatus = CheckNetworkMessageHeader(pfrom, msg, fOk);
         if(messageStatus == NetworkMessageState::STOP_PROCESSING)

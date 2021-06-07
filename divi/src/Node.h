@@ -201,6 +201,7 @@ public:
     void ProcessReceiveMessages(bool& shouldSleep);
     void ProcessSendMessages(bool trickle);
     bool IsInUse();
+    bool CanBeDisconnected() const;
     CNodeState* GetNodeState();
     void UpdatePreferredDownloadStatus();
     void SetToCurrentlyConnected();

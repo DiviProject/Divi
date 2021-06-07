@@ -17,7 +17,7 @@ CNodeStats::CNodeStats(CNode* pnode)
     X(fInbound);
     X(nStartingHeight);
     X(nSendBytes);
-    X(nRecvBytes);
+    nRecvBytes = pnode->GetTotalBytesReceived();
     X(fWhitelisted);
 
     // It is common for nodes with good ping times to suddenly become lagged,

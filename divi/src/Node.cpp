@@ -331,6 +331,10 @@ void SocketConnection::SetRecvVersion(int nVersionIn)
     for(CNetMessage& msg: vRecvMsg)
         msg.SetVersion(nVersionIn);
 }
+uint64_t SocketConnection::GetTotalBytesReceived() const
+{
+    return nRecvBytes;
+}
 
 CNode::CNode(
     CNodeSignals* nodeSignals,

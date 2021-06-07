@@ -63,9 +63,9 @@ public:
 
     std::deque<CNetMessage> vRecvMsg;
     CCriticalSection cs_vRecvMsg;
+protected:
     uint64_t nRecvBytes;
 
-protected:
     int nRecvVersion;
     int64_t nLastSend;
     int64_t nLastRecv;
@@ -87,6 +87,7 @@ public:
     int64_t GetLastTimeDataSent() const;
     int64_t GetLastTimeDataReceived() const;
     void SetRecvVersion(int nVersionIn);
+    uint64_t GetTotalBytesReceived() const;
 };
 
 class CNode: public SocketConnection

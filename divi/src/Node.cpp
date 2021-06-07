@@ -410,7 +410,32 @@ CNode::~CNode()
     nodeState_->Finalize();
     nodeState_.reset();
 }
+void CNode::ProcessReceiveMessages(bool& shouldSleep)
+{
+    TRY_LOCK(cs_vRecvMsg, lockRecv);
+    if (lockRecv)
+    {
+        bool result = *(nodeSignals_->ProcessReceivedMessages(this));
+        if (!result)
+            CloseSocketDisconnect();
 
+        if (GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)
+        {
+            if (!vRecvGetData.empty() || (!vRecvMsg.empty() && vRecvMsg[0].complete()))
+            {
+                shouldSleep = false;
+            }
+        }
+    }
+}
+void CNode::ProcessSendMessages(bool trickle)
+{
+    TRY_LOCK(cs_vSend, lockSend);
+    if(lockSend)
+    {
+        nodeSignals_->SendMessages(this,trickle || fWhitelisted);
+    }
+}
 bool CNode::IsInUse()
 {
     if (GetRefCount() <= 0)

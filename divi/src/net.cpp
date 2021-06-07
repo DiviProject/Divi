@@ -192,12 +192,16 @@ void RegisterNodeSignals(CNodeSignals& nodeSignals)
 {
     nodeSignals.InitializeNode.connect(&InitializeNode);
     nodeSignals.FinalizeNode.connect(&FinalizeNode);
+    nodeSignals.ProcessReceivedMessages.connect(&ProcessReceivedMessages);
+    nodeSignals.SendMessages.connect(&SendMessages);
 }
 /** Unregister a network node */
 void UnregisterNodeSignals(CNodeSignals& nodeSignals)
 {
     nodeSignals.InitializeNode.disconnect(&InitializeNode);
     nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
+    nodeSignals.ProcessReceivedMessages.disconnect(&ProcessReceivedMessages);
+    nodeSignals.SendMessages.disconnect(&SendMessages);
 }
 
 
@@ -772,20 +776,7 @@ void ThreadMessageHandler()
                 continue;
 
             // Receive messages
-            {
-                TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
-                if (lockRecv) {
-                    if (!ProcessReceivedMessages(pnode))
-                        pnode->CloseSocketDisconnect();
-
-                    if (pnode->GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)
-                    {
-                        if (!pnode->vRecvGetData.empty() || (!pnode->vRecvMsg.empty() && pnode->vRecvMsg[0].complete())) {
-                            fSleep = false;
-                        }
-                    }
-                }
-            }
+            pnode->ProcessReceiveMessages(fSleep);
             boost::this_thread::interruption_point();
 
             // Handle potential ping messages first.
@@ -819,8 +810,7 @@ void ThreadMessageHandler()
             // Send messages
             if (pnode->CanSendMessagesToPeer())
             {
-                TRY_LOCK(pnode->cs_vSend, lockSend);
-                if (lockSend) SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
+                pnode->ProcessSendMessages(pnode == pnodeTrickle);
             }
             boost::this_thread::interruption_point();
         }

@@ -2951,7 +2951,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         return true;
     }
 
-    if (strCommand == "version") {
+    if (strCommand == "version")
+    {
         // Each connection can only send one version message
         if (pfrom->nVersion != 0) {
             pfrom->PushMessage("reject", strCommand, REJECT_DUPLICATE, string("Duplicate version message"));
@@ -3059,16 +3060,14 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         AddTimeData(pfrom->addr, nTime);
     }
-
-
-    else if (pfrom->nVersion == 0) {
+    else if (pfrom->nVersion == 0)
+    {
         // Must have a version message before anything else
         Misbehaving(pfrom->GetNodeState(), 1);
         return false;
     }
-
-
-    else if (strCommand == "verack") {
+    else if (strCommand == "verack")
+    {
         pfrom->SetRecvVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 
         // Mark this node as currently connected, so we update its timestamp later.
@@ -3077,9 +3076,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             pfrom->SetToCurrentlyConnected();
         }
     }
-
-
-    else if (strCommand == "addr") {
+    else if (strCommand == "addr")
+    {
         std::vector<CAddress> vAddr;
         vRecv >> vAddr;
 
@@ -3116,9 +3114,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (pfrom->fOneShot)
             pfrom->FlagForDisconnection();
     }
-
-
-    else if (strCommand == "inv") {
+    else if (strCommand == "inv")
+    {
         std::vector<CInv> vInv;
         vRecv >> vInv;
         if (vInv.size() > MAX_INV_SZ) {
@@ -3173,9 +3170,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (!vToFetch.empty())
             pfrom->PushMessage("getdata", vToFetch);
     }
-
-
-    else if (strCommand == "getdata") {
+    else if (strCommand == "getdata")
+    {
         std::vector<CInv> vInv;
         vRecv >> vInv;
         if (vInv.size() > MAX_INV_SZ) {
@@ -3191,9 +3187,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         pfrom->vRecvGetData.insert(pfrom->vRecvGetData.end(), vInv.begin(), vInv.end());
         ProcessGetData(pfrom);
     }
-
-
-    else if (strCommand == "getblocks" || strCommand == "getheaders") {
+    else if (strCommand == "getblocks" || strCommand == "getheaders")
+    {
         CBlockLocator locator;
         uint256 hashStop;
         vRecv >> locator >> hashStop;
@@ -3237,9 +3232,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (!vInv.empty())
             pfrom->PushMessage("inv", vInv);
     }
-
-
-    else if (strCommand == "headers" && Params().HeadersFirstSyncingActive()) {
+    else if (strCommand == "headers" && Params().HeadersFirstSyncingActive())
+    {
         CBlockLocator locator;
         uint256 hashStop;
         vRecv >> locator >> hashStop;
@@ -3274,9 +3268,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
         pfrom->PushMessage("headers", vHeaders);
     }
-
-
-    else if (strCommand == "tx" || strCommand == "dstx") {
+    else if (strCommand == "tx" || strCommand == "dstx")
+    {
         std::vector<uint256> vWorkQueue;
         std::vector<uint256> vEraseQueue;
         CTransaction tx;
@@ -3353,7 +3346,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             }
 
             for(uint256 hash: vEraseQueue)EraseOrphanTx(hash);
-        } else if (fMissingInputs) {
+        }
+        else if (fMissingInputs)
+        {
             AddOrphanTx(tx, pfrom->GetId());
 
             // DoS prevention: do not allow mapOrphanTransactions to grow unbounded
@@ -3381,8 +3376,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 Misbehaving(pfrom->GetNodeState(), nDoS);
         }
     }
-
-
     else if (strCommand == "headers" && Params().HeadersFirstSyncingActive() && !fImporting && !fReindex) // Ignore headers received while importing
     {
         std::vector<CBlockHeader> headers;
@@ -3440,7 +3433,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         CheckBlockIndex();
     }
-
     else if (strCommand == "block" && !fImporting && !fReindex) // Ignore blocks received while importing
     {
         CBlock block;
@@ -3485,22 +3477,20 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             }
         }
     }
-
-
     // This asymmetric behavior for inbound and outbound connections was introduced
     // to prevent a fingerprinting attack: an attacker can send specific fake addresses
     // to users' AddrMan and later request them by sending getaddr messages.
     // Making users (which are behind NAT and can only make outgoing connections) ignore
     // getaddr message mitigates the attack.
-    else if ((strCommand == "getaddr") && (pfrom->fInbound)) {
+    else if ((strCommand == "getaddr") && (pfrom->fInbound))
+    {
         pfrom->vAddrToSend.clear();
         std::vector<CAddress> vAddr = addrman.GetAddr();
         for(const CAddress& addr: vAddr)
                 pfrom->PushAddress(addr);
     }
-
-
-    else if (strCommand == "mempool") {
+    else if (strCommand == "mempool")
+    {
         LOCK2(cs_main, pfrom->cs_filter);
 
         std::vector<uint256> vtxid;
@@ -3522,9 +3512,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (vInv.size() > 0)
             pfrom->PushMessage("inv", vInv);
     }
-
-
-    else if (strCommand == "ping") {
+    else if (strCommand == "ping")
+    {
         if (pfrom->nVersion > BIP0031_VERSION) {
             uint64_t nonce = 0;
             vRecv >> nonce;
@@ -3542,9 +3531,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             pfrom->PushMessage("pong", nonce);
         }
     }
-
-
-    else if (strCommand == "pong") {
+    else if (strCommand == "pong")
+    {
         int64_t pingUsecEnd = nTimeReceived;
         uint64_t nonce = 0;
         size_t nAvail = vRecv.in_avail();
@@ -3598,9 +3586,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             pfrom->nPingNonceSent = 0;
         }
     }
-
-
-    else if (strCommand == "alert" && AlertsAreEnabled()) {
+    else if (strCommand == "alert" && AlertsAreEnabled())
+    {
         CAlert alert;
         vRecv >> alert;
 
@@ -3621,16 +3608,16 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             }
         }
     }
-
     else if (!BloomFiltersAreEnabled() &&
              (strCommand == "filterload" ||
               strCommand == "filteradd" ||
-              strCommand == "filterclear")) {
+              strCommand == "filterclear"))
+    {
         LogPrintf("bloom message=%s\n", strCommand);
         Misbehaving(pfrom->GetNodeState(), 100);
     }
-
-    else if (strCommand == "filterload") {
+    else if (strCommand == "filterload")
+    {
         CBloomFilter filter;
         vRecv >> filter;
 
@@ -3645,9 +3632,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
         pfrom->fRelayTxes = true;
     }
-
-
-    else if (strCommand == "filteradd") {
+    else if (strCommand == "filteradd")
+    {
         std::vector<unsigned char> vData;
         vRecv >> vData;
 
@@ -3663,17 +3649,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 Misbehaving(pfrom->GetNodeState(), 100);
         }
     }
-
-
-    else if (strCommand == "filterclear") {
+    else if (strCommand == "filterclear")
+    {
         LOCK(pfrom->cs_filter);
         delete pfrom->pfilter;
         pfrom->pfilter = new CBloomFilter();
         pfrom->fRelayTxes = true;
     }
-
-
-    else if (strCommand == "reject") {
+    else if (strCommand == "reject")
+    {
         if (fDebug) {
             try {
                 string strMsg;
@@ -3699,7 +3683,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         ProcessSpork(pfrom, strCommand, vRecv);
         ProcessMasternodeMessages(pfrom,strCommand,vRecv);
     }
-
 
     return true;
 }

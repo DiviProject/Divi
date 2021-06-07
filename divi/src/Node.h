@@ -198,13 +198,14 @@ public:
         }
     }
 
+    bool IsInUse();
     CNodeState* GetNodeState();
     void UpdatePreferredDownloadStatus();
     void SetToCurrentlyConnected();
     NodeBufferStatus GetSendBufferStatus() const;
     bool IsSelfConnection(uint64_t otherNonce) const;
     NodeId GetId() const;
-    int GetRefCount();
+    int GetRefCount() const;
     unsigned int GetTotalRecvSize();
     bool IsAvailableToReceive();
 

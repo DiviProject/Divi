@@ -456,6 +456,10 @@ bool CNode::IsInUse()
     }
     return true;
 }
+bool CNode::CanBeDisconnected() const
+{
+    return GetRefCount() <= 0 && vRecvMsg.empty() && nSendSize == 0 && ssSend.empty();
+}
 
 CNodeState* CNode::GetNodeState()
 {

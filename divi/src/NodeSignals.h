@@ -9,5 +9,7 @@ class CNode;
 struct CNodeSignals {
     boost::signals2::signal<void(CNodeState&)> InitializeNode;
     boost::signals2::signal<void(NodeId)> FinalizeNode;
+    boost::signals2::signal<bool(CNode*)> ProcessReceivedMessages;
+    boost::signals2::signal<bool(CNode*,bool)> SendMessages;
 };
 #endif// NODE_SIGNALS_H

@@ -3687,6 +3687,47 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     return true;
 }
 
+enum NetworkMessageState
+{
+    SKIP_MESSAGE,
+    STOP_PROCESSING,
+    VALID,
+};
+static NetworkMessageState CheckNetworkMessageHeader(
+    CNode* pfrom,
+    CNetMessage& msg,
+    bool& fOk)
+{
+    // Scan for message start
+    if (memcmp(msg.hdr.pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) != 0) {
+        LogPrintf("%s: INVALID MESSAGESTART %s peer=%d\n",__func__, SanitizeString(msg.hdr.GetCommand()), pfrom->id);
+        fOk = false;
+        return NetworkMessageState::STOP_PROCESSING;
+    }
+
+    // Read header
+    CMessageHeader& hdr = msg.hdr;
+    if (!hdr.IsValid()) {
+        LogPrintf("%s: ERRORS IN HEADER %s peer=%d\n",__func__, SanitizeString(hdr.GetCommand()), pfrom->id);
+        return NetworkMessageState::SKIP_MESSAGE;
+    }
+
+    // Message size
+    const unsigned int nMessageSize = hdr.nMessageSize;
+
+    // Checksum
+    CDataStream& vRecv = msg.vRecv;
+    uint256 hash = Hash(vRecv.begin(), vRecv.begin() + nMessageSize);
+    unsigned int nChecksum = 0;
+    memcpy(&nChecksum, &hash, sizeof(nChecksum));
+    if (nChecksum != hdr.nChecksum) {
+        LogPrintf("%s(%s, %u bytes): CHECKSUM ERROR nChecksum=%08x hdr.nChecksum=%08x\n",
+                    __func__,SanitizeString(hdr.GetCommand()), nMessageSize, nChecksum, hdr.nChecksum);
+        return NetworkMessageState::SKIP_MESSAGE;
+    }
+    return NetworkMessageState::VALID;
+}
+
 // requires LOCK(cs_vRecvMsg)
 bool ProcessReceivedMessages(CNode* pfrom)
 {
@@ -3721,48 +3762,31 @@ bool ProcessReceivedMessages(CNode* pfrom)
         // at this point, any failure means we can delete the current message
         it++;
 
-        // Scan for message start
-        if (memcmp(msg.hdr.pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) != 0) {
-            LogPrintf("%s: INVALID MESSAGESTART %s peer=%d\n",__func__, SanitizeString(msg.hdr.GetCommand()), pfrom->id);
-            fOk = false;
+        NetworkMessageState messageStatus = CheckNetworkMessageHeader(pfrom, msg, fOk);
+        if(messageStatus == NetworkMessageState::STOP_PROCESSING)
+        {
             break;
         }
-
-        // Read header
-        CMessageHeader& hdr = msg.hdr;
-        if (!hdr.IsValid()) {
-            LogPrintf("%s: ERRORS IN HEADER %s peer=%d\n",__func__, SanitizeString(hdr.GetCommand()), pfrom->id);
+        else if(messageStatus == NetworkMessageState::SKIP_MESSAGE)
+        {
             continue;
         }
-        string strCommand = hdr.GetCommand();
-
-        // Message size
-        unsigned int nMessageSize = hdr.nMessageSize;
-
-        // Checksum
-        CDataStream& vRecv = msg.vRecv;
-        uint256 hash = Hash(vRecv.begin(), vRecv.begin() + nMessageSize);
-        unsigned int nChecksum = 0;
-        memcpy(&nChecksum, &hash, sizeof(nChecksum));
-        if (nChecksum != hdr.nChecksum) {
-            LogPrintf("%s(%s, %u bytes): CHECKSUM ERROR nChecksum=%08x hdr.nChecksum=%08x\n",
-                      __func__,SanitizeString(strCommand), nMessageSize, nChecksum, hdr.nChecksum);
-            continue;
-        }
+        const CMessageHeader& hdr = msg.hdr;
+        std::string strCommand = msg.hdr.GetCommand();
 
         // Process message
         bool fRet = false;
         try {
-            fRet = ProcessMessage(pfrom, strCommand, vRecv, msg.nTime);
+            fRet = ProcessMessage(pfrom, strCommand, msg.vRecv, msg.nTime);
             boost::this_thread::interruption_point();
         } catch (std::ios_base::failure& e) {
             pfrom->PushMessage("reject", strCommand, REJECT_MALFORMED, string("error parsing message"));
             if (strstr(e.what(), "end of data")) {
                 // Allow exceptions from under-length message on vRecv
-                LogPrintf("%s(%s, %u bytes): Exception '%s' caught, normally caused by a message being shorter than its stated length\n",__func__, SanitizeString(strCommand), nMessageSize, e.what());
+                LogPrintf("%s(%s, %u bytes): Exception '%s' caught, normally caused by a message being shorter than its stated length\n",__func__, SanitizeString(strCommand), hdr.nMessageSize, e.what());
             } else if (strstr(e.what(), "size too large")) {
                 // Allow exceptions from over-long size
-                LogPrintf("%s(%s, %u bytes): Exception '%s' caught\n",__func__, SanitizeString(strCommand), nMessageSize, e.what());
+                LogPrintf("%s(%s, %u bytes): Exception '%s' caught\n",__func__, SanitizeString(strCommand), hdr.nMessageSize, e.what());
             } else {
                 PrintExceptionContinue(&e, __func__);
             }
@@ -3775,7 +3799,7 @@ bool ProcessReceivedMessages(CNode* pfrom)
         }
 
         if (!fRet)
-            LogPrintf("%s(%s, %u bytes) FAILED peer=%d\n",__func__, SanitizeString(strCommand), nMessageSize, pfrom->id);
+            LogPrintf("%s(%s, %u bytes) FAILED peer=%d\n",__func__, SanitizeString(strCommand), hdr.nMessageSize, pfrom->id);
 
         break;
     }

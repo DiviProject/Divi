@@ -74,31 +74,37 @@ static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch,
     std::string secondMismatch = "";
     fprintf(stderr, "POTENTIAL DEADLOCK DETECTED\n");
 
-    BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, s2) {
-        if (i.first == mismatch.first)
+    std::string priorLockStackState = "";
+    BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & lockIdAndLocation, s2) {
+        if (lockIdAndLocation.first == mismatch.first)
         {
-            lockOrderData += std::string("\tFirst: ") +i.second.ToString() + "\n";
+            lockOrderData += std::string("\tFirst: ") +lockIdAndLocation.second.ToString() + "\n";
         }
-        if (i.first == mismatch.second)
+        if (lockIdAndLocation.first == mismatch.second)
         {
-            lockOrderData += std::string("\tSecond: ") +i.second.ToString() + "\n";
+            lockOrderData += std::string("\tSecond: ") +lockIdAndLocation.second.ToString() + "\n";
         }
-        LogPrintf(" %s\n", i.second);
+        priorLockStackState += lockIdAndLocation.second.ToString() + " |";
+        LogPrintf(" %s\n", lockIdAndLocation.second);
     }
+    lockOrderData += std::string("\n")+priorLockStackState;
 
-    lockOrderData += "\nCurrent Order:\n";
+    std::string currentLockStackState = "";
+    lockOrderData += "\n\nCurrent Order:\n";
     LogPrintf("Current lock order is:\n");
-    BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, s1) {
-        if (i.first == mismatch.first)
+    BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & lockIdAndLocation, s1) {
+        if (lockIdAndLocation.first == mismatch.first)
         {
-            lockOrderData += std::string("\tFirst: ") +i.second.ToString() + "\n";
+            lockOrderData += std::string("\tFirst: ") +lockIdAndLocation.second.ToString() + "\n";
         }
-        if (i.first == mismatch.second)
+        if (lockIdAndLocation.first == mismatch.second)
         {
-            lockOrderData += std::string("\tSecond: ") +i.second.ToString() + "\n";
+            lockOrderData += std::string("\tSecond: ") +lockIdAndLocation.second.ToString() + "\n";
         }
-        LogPrintf(" %s\n", i.second);
+        currentLockStackState += lockIdAndLocation.second.ToString() + " |";
+        LogPrintf(" %s\n", lockIdAndLocation.second);
     }
+    lockOrderData+=std::string("\n")+currentLockStackState;
 
     tfm::format(std::cerr, "Assertion failed: detected inconsistent lock order for %s, details in debug log.\n%s", s2.back().second.ToString(),lockOrderData.c_str());
     abort();

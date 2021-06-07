@@ -62,8 +62,8 @@ public:
     CCriticalSection cs_vSend;
 
     std::deque<CNetMessage> vRecvMsg;
-    CCriticalSection cs_vRecvMsg;
 protected:
+    CCriticalSection cs_vRecvMsg;
     uint64_t nRecvBytes;
 
     int nRecvVersion;
@@ -198,6 +198,8 @@ public:
         }
     }
 
+    void ProcessReceiveMessages(bool& shouldSleep);
+    void ProcessSendMessages(bool trickle);
     bool IsInUse();
     CNodeState* GetNodeState();
     void UpdatePreferredDownloadStatus();

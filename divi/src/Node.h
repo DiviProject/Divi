@@ -208,7 +208,6 @@ public:
     unsigned int GetTotalRecvSize();
     bool IsAvailableToReceive();
 
-    bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
     CNode* AddRef();
     void Release();
     void AddAddressKnown(const CAddress& addr);

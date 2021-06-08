@@ -106,7 +106,7 @@ void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
     std::shared_ptr<COrphan>& porphan,
     const CTransaction& tx,
     const CTxIn& txin,
-    std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions) const
+    DependingTransactionsMap& dependentTransactions) const
 {
     if (porphan == nullptr)
         porphan = std::make_shared<COrphan>(&tx);
@@ -138,7 +138,7 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority (
 }
 
 void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue (
-    std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions,
+    DependingTransactionsMap& dependentTransactions,
     const uint256& hash,
     std::vector<TxPriority>& vecPriority,
     TxPriorityCompare& comparer) const
@@ -184,7 +184,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
 
 std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTransactions (
     const int& nHeight,
-    std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions,
+    DependingTransactionsMap& dependentTransactions,
     CCoinsViewCache& view) const
 {
     std::vector<TxPriority> vecPriority;
@@ -272,7 +272,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     std::vector<TxPriority>& vecPriority,
     const int& nHeight,
     CCoinsViewCache& view,
-    std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions) const
+    DependingTransactionsMap& dependentTransactions) const
 {
     std::vector<PrioritizedTransactionData> prioritizedTransactions;
 
@@ -350,7 +350,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     CCoinsViewCache& view,
     CBlockTemplate& blocktemplate) const
 {
-    std::map<uint256, std::vector<std::shared_ptr<COrphan>>> dependentTransactions;
+    DependingTransactionsMap dependentTransactions;
 
     std::vector<TxPriority> vecPriority =
         PrioritizeMempoolTransactions(nHeight, dependentTransactions, view);

@@ -50,6 +50,8 @@ class CChain;
 class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 {
 private:
+    using DependingTransactionsMap = std::map<uint256, std::vector<std::shared_ptr<COrphan>>>;
+
     CCoinsViewCache* baseCoinsViewCache_;
     const CChain& activeChain_;
     CTxMemPool& mempool_;
@@ -58,13 +60,14 @@ private:
     const unsigned blockMaxSize_;
     const unsigned blockPrioritySize_;
     const unsigned blockMinSize_;
+
 private:
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     void RecordOrphanTransaction (
         std::shared_ptr<COrphan>& porphan,
         const CTransaction& tx,
         const CTxIn& txin,
-        std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& mapDependers) const;
+        DependingTransactionsMap& mapDependers) const;
 
     void ComputeTransactionPriority (
         double& dPriority,
@@ -74,7 +77,7 @@ private:
         std::vector<TxPriority>& vecPriority,
         const CTransaction* mempoolTx) const;
     void AddDependingTransactionsToPriorityQueue (
-        std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& mapDependers,
+        DependingTransactionsMap& mapDependers,
         const uint256& hash,
         std::vector<TxPriority>& vecPriority,
         TxPriorityCompare& comparer) const;
@@ -93,7 +96,7 @@ private:
 
     std::vector<TxPriority> PrioritizeMempoolTransactions (
         const int& nHeight,
-        std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& mapDependers,
+        DependingTransactionsMap& mapDependers,
         CCoinsViewCache& view) const;
 
     void PrioritizeFeePastPrioritySize (
@@ -107,7 +110,7 @@ private:
         std::vector<TxPriority>& vecPriority,
         const int& nHeight,
         CCoinsViewCache& view,
-        std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& mapDependers) const;
+        DependingTransactionsMap& mapDependers) const;
     void AddTransactionsToBlockIfPossible (
         const int& nHeight,
         CCoinsViewCache& view,

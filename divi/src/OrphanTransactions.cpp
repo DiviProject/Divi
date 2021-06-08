@@ -27,7 +27,7 @@ std::map<uint256, std::set<uint256> > mapOrphanTransactionsByPrev;
 const std::set<uint256>& GetOrphanSpendingTransactionIds(const uint256& txHash)
 {
     static std::set<uint256> emptySet;
-    std::map<uint256, std::set<uint256> >::const_iterator it = mapOrphanTransactionsByPrev.find(txHash);
+    const auto it = mapOrphanTransactionsByPrev.find(txHash);
     if(it == mapOrphanTransactionsByPrev.end()) return emptySet;
 
     return it->second;
@@ -76,7 +76,7 @@ void EraseOrphanTx(uint256 hash)
     if (it == mapOrphanTransactions.end())
         return;
     BOOST_FOREACH (const CTxIn& txin, it->second.tx.vin) {
-        std::map<uint256, std::set<uint256> >::iterator itPrev = mapOrphanTransactionsByPrev.find(txin.prevout.hash);
+        const auto itPrev = mapOrphanTransactionsByPrev.find(txin.prevout.hash);
         if (itPrev == mapOrphanTransactionsByPrev.end())
             continue;
         itPrev->second.erase(hash);

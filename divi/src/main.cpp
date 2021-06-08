@@ -3749,8 +3749,8 @@ bool ProcessReceivedMessages(CNode* pfrom)
     std::deque<CNetMessage>::iterator it = pfrom->vRecvMsg.begin();
     while(
         !pfrom->IsFlaggedForDisconnection() &&
-        it != pfrom->vRecvMsg.end() &&
         pfrom->GetSendBufferStatus()!=NodeBufferStatus::IS_FULL && // needed, to allow responding
+        it != pfrom->vRecvMsg.end() &&
         it->complete() ) // end, if an incomplete message is found
     {
         // get next message

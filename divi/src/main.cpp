@@ -2794,6 +2794,62 @@ bool static AlreadyHave(const CInv& inv)
     return true;
 }
 
+static bool PushKnownInventory(CNode* pfrom, const CInv& inv)
+{
+    bool pushed = false;
+    InventoryType type = static_cast<InventoryType>(inv.type);
+    switch (type)
+    {
+    case InventoryType::MSG_TX:
+        {
+            CTransaction tx;
+            if (mempool.lookup(inv.hash, tx))
+            {
+                CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                ss.reserve(1000);
+                ss << tx;
+                pfrom->PushMessage("tx", ss);
+                pushed = true;
+            }
+        }
+        break;
+    case InventoryType::MSG_SPORK:
+        if (ShareSporkDataWithPeer(pfrom,inv.hash))
+        {
+            pushed = true;
+        }
+        break;
+    case InventoryType::MSG_MASTERNODE_WINNER:
+        if(ShareMasternodeWinnerWithPeer(pfrom,inv.hash))
+        {
+            pushed = true;
+        }
+        break;
+    case InventoryType::MSG_MASTERNODE_ANNOUNCE:
+        if(ShareMasternodeBroadcastWithPeer(pfrom,inv.hash))
+        {
+            pushed = true;
+        }
+        break;
+    case InventoryType::MSG_MASTERNODE_PING:
+        if(ShareMasternodePingWithPeer(pfrom,inv.hash))
+        {
+            pushed = true;
+        }
+        break;
+    case InventoryType::MSG_FILTERED_BLOCK:
+    case InventoryType::MSG_TXLOCK_REQUEST:
+    case InventoryType::MSG_BUDGET_VOTE:
+    case InventoryType::MSG_MASTERNODE_SCANNING_ERROR:
+    case InventoryType::MSG_BUDGET_PROPOSAL:
+    case InventoryType::MSG_BUDGET_FINALIZED:
+    case InventoryType::MSG_BUDGET_FINALIZED_VOTE:
+    case InventoryType::MSG_MASTERNODE_QUORUM:
+    default:
+        break;
+    }
+    return pushed;
+}
 
 void static ProcessGetData(CNode* pfrom)
 {
@@ -2872,46 +2928,14 @@ void static ProcessGetData(CNode* pfrom)
                         pfrom->hashContinue = 0;
                     }
                 }
-            } else if (inv.IsKnownType()) {
+            }
+            else if (inv.IsKnownType())
+            {
                 // Send stream from relay memory
                 bool pushed = RepeatRelayedInventory(pfrom,inv);
-
-                if (!pushed && inv.type == MSG_TX) {
-                    CTransaction tx;
-                    if (mempool.lookup(inv.hash, tx)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << tx;
-                        pfrom->PushMessage("tx", ss);
-                        pushed = true;
-                    }
-                }
-                if (!pushed && inv.type == MSG_SPORK) {
-                    if (ShareSporkDataWithPeer(pfrom,inv.hash))
-                    {
-                        pushed = true;
-                    }
-                }
-                if (!pushed && inv.type == MSG_MASTERNODE_WINNER) {
-                    if(ShareMasternodeWinnerWithPeer(pfrom,inv.hash))
-                    {
-                        pushed = true;
-                    }
-                }
-                if (!pushed && inv.type == MSG_MASTERNODE_ANNOUNCE)
+                if(!pushed)
                 {
-                    if(ShareMasternodeBroadcastWithPeer(pfrom,inv.hash))
-                    {
-                        pushed = true;
-                    }
-                }
-
-                if (!pushed && inv.type == MSG_MASTERNODE_PING)
-                {
-                    if(ShareMasternodePingWithPeer(pfrom,inv.hash))
-                    {
-                        pushed = true;
-                    }
+                    pushed = PushKnownInventory(pfrom,inv);
                 }
 
                 if (!pushed) {

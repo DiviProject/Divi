@@ -2858,7 +2858,7 @@ static std::pair<const CBlockIndex*, bool> GetBlockIndexOfRequestedBlock(NodeId 
                 send = mi->second->IsValid(BLOCK_VALID_SCRIPTS) && (pindexBestHeader != NULL) &&
                         (chainActive.Height() - mi->second->nHeight < Params().MaxReorganizationDepth());
                 if (!send) {
-                    LogPrintf("ProcessGetData(): ignoring request from peer=%i for old block that isn't in the main chain\n", nodeId);
+                    LogPrintf("%s: ignoring request from peer=%i for old block that isn't in the main chain\n",__func__, nodeId);
                 }
             }
         }

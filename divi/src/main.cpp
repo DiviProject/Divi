@@ -2854,30 +2854,33 @@ void static ProcessGetData(CNode* pfrom)
             boost::this_thread::interruption_point();
             it++;
 
-            if (inv.GetType() == MSG_BLOCK || inv.GetType() == MSG_FILTERED_BLOCK) {
+            if (inv.GetType() == MSG_BLOCK || inv.GetType() == MSG_FILTERED_BLOCK)
+            {
                 bool send = false;
                 const CBlockIndex* pindex;
                 {
-                LOCK(cs_main);
-                const auto mi = mapBlockIndex.find(inv.GetHash());
-                if (mi != mapBlockIndex.end()) {
-                    pindex = mi->second;
-                    if (chainActive.Contains(mi->second)) {
-                        send = true;
-                    } else {
-                        // To prevent fingerprinting attacks, only send blocks outside of the active
-                        // chain if they are valid, and no more than a max reorg depth than the best header
-                        // chain we know about.
-                        send = mi->second->IsValid(BLOCK_VALID_SCRIPTS) && (pindexBestHeader != NULL) &&
-                                (chainActive.Height() - mi->second->nHeight < Params().MaxReorganizationDepth());
-                        if (!send) {
-                            LogPrintf("ProcessGetData(): ignoring request from peer=%i for old block that isn't in the main chain\n", pfrom->GetId());
+                    LOCK(cs_main);
+                    const auto mi = mapBlockIndex.find(inv.GetHash());
+                    if (mi != mapBlockIndex.end())
+                    {
+                        pindex = mi->second;
+                        if (chainActive.Contains(mi->second)) {
+                            send = true;
+                        } else {
+                            // To prevent fingerprinting attacks, only send blocks outside of the active
+                            // chain if they are valid, and no more than a max reorg depth than the best header
+                            // chain we know about.
+                            send = mi->second->IsValid(BLOCK_VALID_SCRIPTS) && (pindexBestHeader != NULL) &&
+                                    (chainActive.Height() - mi->second->nHeight < Params().MaxReorganizationDepth());
+                            if (!send) {
+                                LogPrintf("ProcessGetData(): ignoring request from peer=%i for old block that isn't in the main chain\n", pfrom->GetId());
+                            }
                         }
                     }
                 }
-                }
                 // Don't send not-validated blocks
-                if (send && (pindex->nStatus & BLOCK_HAVE_DATA)) {
+                if (send && (pindex->nStatus & BLOCK_HAVE_DATA))
+                {
                     // Send block from disk
                     CBlock block;
                     if (!ReadBlockFromDisk(block, pindex))

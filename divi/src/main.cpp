@@ -2801,11 +2801,10 @@ void static ProcessGetData(CNode* pfrom)
 
     std::vector<CInv> vNotFound;
 
-    while (it != pfrom->vRecvGetData.end()) {
-        // Don't bother if send buffer is too full to respond anyway
-        if (pfrom->GetSendBufferStatus() == NodeBufferStatus::IS_FULL)
-            break;
-
+    while (
+        it != pfrom->vRecvGetData.end() &&
+        pfrom->GetSendBufferStatus() != NodeBufferStatus::IS_FULL)
+    {
         const CInv& inv = *it;
         {
             boost::this_thread::interruption_point();

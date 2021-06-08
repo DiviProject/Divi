@@ -31,7 +31,19 @@ static const char* ppszTypeName[] = {
     "mn announce",
     "mn ping"
 };
-static const std::map<std::string,InventoryType>
+
+template <typename T1, typename  T2>
+static std::map<T2,T1> ReverseMap(const std::map<T1,T2>& forwardMap)
+{
+    std::map<T2,T1> reversedMap;
+    for(const std::pair<T1,T2>& pair: forwardMap)
+    {
+        reversedMap[pair.second] = pair.first;
+    }
+    return reversedMap;
+}
+
+static const std::map<std::string,int>
 inventoryTypeByName = {
     {"tx",MSG_TX},
     {"block",MSG_BLOCK},
@@ -48,6 +60,8 @@ inventoryTypeByName = {
     {"mn quorum",MSG_MASTERNODE_QUORUM},
     {"mn announce",MSG_MASTERNODE_ANNOUNCE},
     {"mn ping",MSG_MASTERNODE_PING}};
+static const std::map<int,std::string> inventoryNameByType = ReverseMap(inventoryTypeByName);
+
 static const int maxInventoryId = (int)inventoryTypeByName.size();
 
 CMessageHeader::CMessageHeader()
@@ -159,10 +173,12 @@ bool CInv::IsMasterNodeType() const{
 
 const char* CInv::GetCommand() const
 {
-    if (!IsKnownType())
+    static const char* unknownType = "ERROR";
+    if (!IsKnownType()){
         LogPrint("net", "CInv::GetCommand() : type=%d unknown type", type);
-
-    return ppszTypeName[type];
+        return unknownType;
+    }
+    return inventoryNameByType.find(type)->second.c_str();
 }
 
 std::string CInv::ToString() const

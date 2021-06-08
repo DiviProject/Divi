@@ -84,7 +84,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)
     CLevelDBBatch batch;
     size_t count = 0;
     size_t changed = 0;
-    for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) {
+    for (auto it = mapCoins.begin(); it != mapCoins.end();) {
         if (it->second.flags & CCoinsCacheEntry::DIRTY) {
             BatchWriteCoins(batch, it->first, it->second.coins);
             changed++;

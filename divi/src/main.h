@@ -184,6 +184,6 @@ bool GetAddressUnspent(bool addresIndexEnabled,
                       int type,
                       std::vector<std::pair<CAddressUnspentKey,
                       CAddressUnspentValue> > &unspentOutputs);
-bool GetSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
+bool GetSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
 #endif // BITCOIN_MAIN_H

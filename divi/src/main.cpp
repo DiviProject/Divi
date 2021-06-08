@@ -709,7 +709,7 @@ bool GetAddressUnspent(bool addresIndexEnabled,
     return true;
 }
 
-bool GetSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value)
+bool GetSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value)
 {
     if (!fSpentIndex)
         return false;

@@ -437,7 +437,7 @@ bool CBlockTreeDB::ReadAddressIndex(uint160 addressHash, int type,
     return true;
 }
 
-bool CBlockTreeDB::ReadSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value) {
+bool CBlockTreeDB::ReadSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value) {
     return Read(make_pair(DB_SPENTINDEX, key), value);
 }
 

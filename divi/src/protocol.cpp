@@ -125,7 +125,7 @@ CInv::CInv()
 
 CInv::CInv(int typeIn, const uint256& hashIn)
 {
-    type = (typeIn > maxInventoryId)? 0 : typeIn;
+    type = (typeIn > maxInventoryId || typeIn < 0)? 0 : typeIn;
     hash = hashIn;
 }
 

@@ -2865,6 +2865,41 @@ static std::pair<const CBlockIndex*, bool> GetBlockIndexOfRequestedBlock(NodeId 
     }
     return std::make_pair(pindex,send);
 }
+
+static void PushCorrespondingBlockToPeer(CNode* pfrom, const CBlockIndex* blockToPush,bool isBlock)
+{
+    // Send block from disk
+    CBlock block;
+    if (!ReadBlockFromDisk(block, blockToPush))
+        assert(!"cannot load block from disk");
+    if (isBlock)
+    {
+        pfrom->PushMessage("block", block);
+    }
+    else // MSG_FILTERED_BLOCK)
+    {
+        LOCK(pfrom->cs_filter);
+        if (pfrom->pfilter) {
+            CMerkleBlock merkleBlock(block, *pfrom->pfilter);
+            pfrom->PushMessage("merkleblock", merkleBlock);
+            // CMerkleBlock just contains hashes, so also push any transactions in the block the client did not see
+            // This avoids hurting performance by pointlessly requiring a round-trip
+            // Note that there is currently no way for a node to request any single transactions we didnt send here -
+            // they must either disconnect and retry or request the full block.
+            // Thus, the protocol spec specified allows for us to provide duplicate txn here,
+            // however we MUST always provide at least what the remote peer needs
+            typedef std::pair<unsigned int, uint256> PairType;
+            for(PairType& pair: merkleBlock.vMatchedTxn)
+            {
+                if (!pfrom->setInventoryKnown.count(CInv(MSG_TX, pair.second)))
+                    pfrom->PushMessage("tx", block.vtx[pair.first]);
+            }
+        }
+        // else
+        // no response
+    }
+}
+
 void static ProcessGetData(CNode* pfrom)
 {
     std::deque<CInv>::iterator it = pfrom->vRecvGetData.begin();
@@ -2887,32 +2922,7 @@ void static ProcessGetData(CNode* pfrom)
                 if (blockIndexAndSendStatus.second &&
                     (blockIndexAndSendStatus.first->nStatus & BLOCK_HAVE_DATA))
                 {
-                    // Send block from disk
-                    CBlock block;
-                    if (!ReadBlockFromDisk(block, blockIndexAndSendStatus.first))
-                        assert(!"cannot load block from disk");
-                    if (inv.GetType() == MSG_BLOCK)
-                        pfrom->PushMessage("block", block);
-                    else // MSG_FILTERED_BLOCK)
-                    {
-                        LOCK(pfrom->cs_filter);
-                        if (pfrom->pfilter) {
-                            CMerkleBlock merkleBlock(block, *pfrom->pfilter);
-                            pfrom->PushMessage("merkleblock", merkleBlock);
-                            // CMerkleBlock just contains hashes, so also push any transactions in the block the client did not see
-                            // This avoids hurting performance by pointlessly requiring a round-trip
-                            // Note that there is currently no way for a node to request any single transactions we didnt send here -
-                            // they must either disconnect and retry or request the full block.
-                            // Thus, the protocol spec specified allows for us to provide duplicate txn here,
-                            // however we MUST always provide at least what the remote peer needs
-                            typedef std::pair<unsigned int, uint256> PairType;
-                            for(PairType& pair: merkleBlock.vMatchedTxn)
-                                    if (!pfrom->setInventoryKnown.count(CInv(MSG_TX, pair.second)))
-                                    pfrom->PushMessage("tx", block.vtx[pair.first]);
-                        }
-                        // else
-                        // no response
-                    }
+                    PushCorrespondingBlockToPeer(pfrom, blockIndexAndSendStatus.first,inv.GetType() == MSG_BLOCK);
 
                     // Trigger them to send a getblocks request for the next batch of inventory
                     if (inv.GetHash() == pfrom->hashContinue) {

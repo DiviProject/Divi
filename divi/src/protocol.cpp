@@ -31,6 +31,24 @@ static const char* ppszTypeName[] = {
     "mn announce",
     "mn ping"
 };
+static const std::map<std::string,InventoryType>
+inventoryTypeByName = {
+    {"tx",MSG_TX},
+    {"block",MSG_BLOCK},
+    {"filtered block",MSG_FILTERED_BLOCK},
+    {"tx lock request",MSG_TXLOCK_REQUEST},
+    {"tx lock vote",MSG_TXLOCK_VOTE},
+    {"spork",MSG_SPORK},
+    {"mn winner",MSG_MASTERNODE_WINNER},
+    {"mn scan error",MSG_MASTERNODE_SCANNING_ERROR},
+    {"mn budget vote",MSG_BUDGET_VOTE},
+    {"mn budget proposal",MSG_BUDGET_PROPOSAL},
+    {"mn budget finalized",MSG_BUDGET_FINALIZED},
+    {"mn budget finalized vote",MSG_BUDGET_FINALIZED_VOTE},
+    {"mn quorum",MSG_MASTERNODE_QUORUM},
+    {"mn announce",MSG_MASTERNODE_ANNOUNCE},
+    {"mn ping",MSG_MASTERNODE_PING}};
+static const int maxInventoryId = (int)inventoryTypeByName.size();
 
 CMessageHeader::CMessageHeader()
 {
@@ -107,21 +125,21 @@ CInv::CInv()
 
 CInv::CInv(int typeIn, const uint256& hashIn)
 {
-    type = typeIn;
+    type = (typeIn > maxInventoryId)? 0 : typeIn;
     hash = hashIn;
 }
 
 CInv::CInv(const std::string& strType, const uint256& hashIn)
 {
-    unsigned int i;
-    for (i = 1; i < ARRAYLEN(ppszTypeName); i++) {
-        if (strType == ppszTypeName[i]) {
-            type = i;
-            break;
-        }
+    if(inventoryTypeByName.count(strType) > 0)
+    {
+        type = inventoryTypeByName.find(strType)->second;
     }
-    if (i == ARRAYLEN(ppszTypeName))
+    else
+    {
+        type = 0;
         LogPrint("net", "CInv::CInv(string, uint256) : unknown type '%s'", strType);
+    }
     hash = hashIn;
 }
 
@@ -132,7 +150,7 @@ bool operator<(const CInv& a, const CInv& b)
 
 bool CInv::IsKnownType() const
 {
-    return (type >= 1 && type < (int)ARRAYLEN(ppszTypeName));
+    return (type >= 1 && type <= maxInventoryId );
 }
 
 bool CInv::IsMasterNodeType() const{

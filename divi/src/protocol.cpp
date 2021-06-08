@@ -169,3 +169,12 @@ std::string CInv::ToString() const
 {
     return strprintf("%s %s", GetCommand(), hash.ToString());
 }
+
+uint256 CInv::GetHash() const
+{
+    return hash;
+}
+int CInv::GetType() const
+{
+    return type;
+}

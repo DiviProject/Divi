@@ -166,8 +166,9 @@ public:
     const char* GetCommand() const;
     std::string ToString() const;
 
-    // TODO: make private (improves encapsulation)
-public:
+    uint256 GetHash() const;
+    int GetType() const;
+private:
     int type;
     uint256 hash;
 };

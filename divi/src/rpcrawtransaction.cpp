@@ -481,8 +481,7 @@ Value createrawtransaction(const Array& params, bool fHelp)
         if (nOutput < 0)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, vout must be positive");
 
-        CTxIn in(COutPoint(txid, nOutput));
-        rawTx.vin.push_back(in);
+        rawTx.vin.emplace_back(COutPoint(txid, nOutput));
     }
 
     set<CBitcoinAddress> setAddress;

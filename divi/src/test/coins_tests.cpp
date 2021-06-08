@@ -24,7 +24,7 @@ class CCoinsViewTest : public CCoinsView
 public:
     bool GetCoins(const uint256& txid, CCoins& coins) const
     {
-        std::map<uint256, CCoins>::const_iterator it = map_.find(txid);
+        auto it = map_.find(txid);
         if (it == map_.end()) {
             return false;
         }
@@ -46,7 +46,7 @@ public:
 
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)
     {
-        for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end(); ) {
+        for (auto it = mapCoins.begin(); it != mapCoins.end(); ) {
             map_[it->first] = it->second.coins;
             if (it->second.coins.IsPruned() && insecure_rand() % 3 == 0) {
                 // Randomly delete empty entries on write.
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(coins_cache_simulation_test)
 
         // Once every 1000 iterations and at the end, verify the full cache.
         if (insecure_rand() % 1000 == 1 || i == NUM_SIMULATION_ITERATIONS - 1) {
-            for (std::map<uint256, CCoins>::iterator it = result.begin(); it != result.end(); it++) {
+            for (auto it = result.begin(); it != result.end(); it++) {
                 const CCoins* coins = stack.back()->AccessCoins(it->first);
                 if (coins) {
                     BOOST_CHECK(*coins == it->second);

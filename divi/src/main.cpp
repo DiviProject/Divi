@@ -1318,7 +1318,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
                 InvalidBlockFound(pindexNew, state);
             return error("%s : ConnectBlock %s failed",__func__, pindexNew->GetBlockHash());
         }
-        mapBlockSource.erase(inv.hash);
+        mapBlockSource.erase(inv.GetHash());
         nTime3 = GetTimeMicros();
         nTimeConnectTotal += nTime3 - nTime2;
         LogPrint("bench", "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001, nTimeConnectTotal * 0.000001);
@@ -2768,27 +2768,27 @@ string GetWarnings(string strFor)
 
 bool static AlreadyHave(const CInv& inv)
 {
-    switch (inv.type) {
+    switch (inv.GetType()) {
     case MSG_TX: {
         bool txInMap = false;
-        txInMap = mempool.exists(inv.hash);
-        return txInMap || OrphanTransactionIsKnown(inv.hash);
+        txInMap = mempool.exists(inv.GetHash());
+        return txInMap || OrphanTransactionIsKnown(inv.GetHash());
     }
 
     case MSG_BLOCK:
-        return mapBlockIndex.count(inv.hash);
+        return mapBlockIndex.count(inv.GetHash());
     case MSG_TXLOCK_REQUEST:
         return false;
     case MSG_TXLOCK_VOTE:
         return false;
     case MSG_SPORK:
-        return SporkDataIsKnown(inv.hash);
+        return SporkDataIsKnown(inv.GetHash());
     case MSG_MASTERNODE_WINNER:
-        return MasternodeWinnerIsKnown(inv.hash);
+        return MasternodeWinnerIsKnown(inv.GetHash());
     case MSG_MASTERNODE_ANNOUNCE:
-        return MasternodeIsKnown(inv.hash);
+        return MasternodeIsKnown(inv.GetHash());
     case MSG_MASTERNODE_PING:
-        return MasternodePingIsKnown(inv.hash);
+        return MasternodePingIsKnown(inv.GetHash());
     }
     // Don't know what it is, just say we already got one
     return true;
@@ -2797,13 +2797,13 @@ bool static AlreadyHave(const CInv& inv)
 static bool PushKnownInventory(CNode* pfrom, const CInv& inv)
 {
     bool pushed = false;
-    InventoryType type = static_cast<InventoryType>(inv.type);
+    InventoryType type = static_cast<InventoryType>(inv.GetType());
     switch (type)
     {
     case InventoryType::MSG_TX:
         {
             CTransaction tx;
-            if (mempool.lookup(inv.hash, tx))
+            if (mempool.lookup(inv.GetHash(), tx))
             {
                 CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                 ss.reserve(1000);
@@ -2814,25 +2814,25 @@ static bool PushKnownInventory(CNode* pfrom, const CInv& inv)
         }
         break;
     case InventoryType::MSG_SPORK:
-        if (ShareSporkDataWithPeer(pfrom,inv.hash))
+        if (ShareSporkDataWithPeer(pfrom,inv.GetHash()))
         {
             pushed = true;
         }
         break;
     case InventoryType::MSG_MASTERNODE_WINNER:
-        if(ShareMasternodeWinnerWithPeer(pfrom,inv.hash))
+        if(ShareMasternodeWinnerWithPeer(pfrom,inv.GetHash()))
         {
             pushed = true;
         }
         break;
     case InventoryType::MSG_MASTERNODE_ANNOUNCE:
-        if(ShareMasternodeBroadcastWithPeer(pfrom,inv.hash))
+        if(ShareMasternodeBroadcastWithPeer(pfrom,inv.GetHash()))
         {
             pushed = true;
         }
         break;
     case InventoryType::MSG_MASTERNODE_PING:
-        if(ShareMasternodePingWithPeer(pfrom,inv.hash))
+        if(ShareMasternodePingWithPeer(pfrom,inv.GetHash()))
         {
             pushed = true;
         }
@@ -2866,12 +2866,12 @@ void static ProcessGetData(CNode* pfrom)
             boost::this_thread::interruption_point();
             it++;
 
-            if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK) {
+            if (inv.GetType() == MSG_BLOCK || inv.GetType() == MSG_FILTERED_BLOCK) {
                 bool send = false;
                 const CBlockIndex* pindex;
                 {
                 LOCK(cs_main);
-                const auto mi = mapBlockIndex.find(inv.hash);
+                const auto mi = mapBlockIndex.find(inv.GetHash());
                 if (mi != mapBlockIndex.end()) {
                     pindex = mi->second;
                     if (chainActive.Contains(mi->second)) {
@@ -2894,7 +2894,7 @@ void static ProcessGetData(CNode* pfrom)
                     CBlock block;
                     if (!ReadBlockFromDisk(block, pindex))
                         assert(!"cannot load block from disk");
-                    if (inv.type == MSG_BLOCK)
+                    if (inv.GetType() == MSG_BLOCK)
                         pfrom->PushMessage("block", block);
                     else // MSG_FILTERED_BLOCK)
                     {
@@ -2918,7 +2918,7 @@ void static ProcessGetData(CNode* pfrom)
                     }
 
                     // Trigger them to send a getblocks request for the next batch of inventory
-                    if (inv.hash == pfrom->hashContinue) {
+                    if (inv.GetHash() == pfrom->hashContinue) {
                         // Bypass PushInventory, this must send even if redundant,
                         // and we want it right after the last block so they don't
                         // wait for other stuff first.
@@ -2944,9 +2944,9 @@ void static ProcessGetData(CNode* pfrom)
             }
 
             // Track requests for our stuff.
-            g_signals.Inventory(inv.hash);
+            g_signals.Inventory(inv.GetHash());
 
-            if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK)
+            if (inv.GetType() == MSG_BLOCK || inv.GetType() == MSG_FILTERED_BLOCK)
                 break;
         }
     }
@@ -3158,12 +3158,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             bool fAlreadyHave = AlreadyHave(inv);
             LogPrint("net", "got inv: %s  %s peer=%d\n", inv, fAlreadyHave ? "have" : "new", pfrom->id);
 
-            if (!fAlreadyHave && !fImporting && !fReindex && inv.type != MSG_BLOCK)
+            if (!fAlreadyHave && !fImporting && !fReindex && inv.GetType() != MSG_BLOCK)
                 pfrom->AskFor(inv);
 
 
-            if (inv.type == MSG_BLOCK) {
-                UpdateBlockAvailability(mapBlockIndex,pfrom->GetNodeState(), inv.hash);
+            if (inv.GetType() == MSG_BLOCK) {
+                UpdateBlockAvailability(mapBlockIndex,pfrom->GetNodeState(), inv.GetHash());
                 if (!fAlreadyHave && !fImporting && !fReindex) {
                     // Add this to the list of blocks to request
                     blockInventory.push_back(&inv);
@@ -3171,7 +3171,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             }
 
             // Track requests for our stuff
-            g_signals.Inventory(inv.hash);
+            g_signals.Inventory(inv.GetHash());
 
             if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_OVERFLOWED) {
                 Misbehaving(pfrom->GetNodeState(), 50);
@@ -3182,10 +3182,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             LOCK(cs_main);
             for(const CInv* blockInventoryReference: blockInventory)
             {
-                if(!BlockIsInFlight(blockInventoryReference->hash))
+                if(!BlockIsInFlight(blockInventoryReference->GetHash()))
                 {
                     vToFetch.push_back(*blockInventoryReference);
-                    LogPrint("net", "getblocks (%d) %s to peer=%d\n", pindexBestHeader->nHeight, blockInventoryReference->hash, pfrom->id);
+                    LogPrint("net", "getblocks (%d) %s to peer=%d\n", pindexBestHeader->nHeight, blockInventoryReference->GetHash(), pfrom->id);
                 }
             }
         }
@@ -3320,7 +3320,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         {
             mempool.check(pcoinsTip, mapBlockIndex);
             RelayTransaction(tx);
-            vWorkQueue.push_back(inv.hash);
+            vWorkQueue.push_back(inv.GetHash());
 
             LogPrint("mempool", "%s: peer=%d %s : accepted %s (poolsz %u)\n",
                     __func__,
@@ -3394,7 +3394,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                      pfrom->id, pfrom->cleanSubVer,
                      state.GetRejectReason());
             pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),
-                               state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.hash);
+                               state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.GetHash());
             if (nDoS > 0)
                 Misbehaving(pfrom->GetNodeState(), nDoS);
         }
@@ -3462,7 +3462,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vRecv >> block;
         uint256 hashBlock = block.GetHash();
         CInv inv(MSG_BLOCK, hashBlock);
-        LogPrint("net", "received block %s peer=%d\n", inv.hash, pfrom->id);
+        LogPrint("net", "received block %s peer=%d\n", inv.GetHash(), pfrom->id);
 
         //sometimes we will be sent their most recent block and its not the one we want, in that case tell where we are
         if (!mapBlockIndex.count(block.hashPrevBlock)) {
@@ -3484,7 +3484,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 int nDoS;
                 if(state.IsInvalid(nDoS)) {
                     pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),
-                                       state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.hash);
+                                       state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.GetHash());
                     if(nDoS > 0) {
                         TRY_LOCK(cs_main, lockMain);
                         if(lockMain) Misbehaving(pfrom->GetNodeState(), nDoS);
@@ -3907,12 +3907,12 @@ static void SendInventoryToPeer(CNode* pto, bool fSendTrickle)
                 continue;
 
             // trickle out tx inv to protect privacy
-            if (inv.type == MSG_TX && !fSendTrickle) {
+            if (inv.GetType() == MSG_TX && !fSendTrickle) {
                 // 1/4 of tx invs blast to all immediately
                 static uint256 hashSalt;
                 if (hashSalt == 0)
                     hashSalt = GetRandHash();
-                uint256 hashRand = inv.hash ^ hashSalt;
+                uint256 hashRand = inv.GetHash() ^ hashSalt;
                 hashRand = Hash(BEGIN(hashRand), END(hashRand));
                 bool fTrickleWait = ((hashRand & 3) != 0);
 

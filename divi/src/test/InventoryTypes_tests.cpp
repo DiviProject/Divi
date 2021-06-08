@@ -29,18 +29,18 @@ BOOST_AUTO_TEST_CASE(willCheckInventoryCommandsCanBeConvertedToMatchingTypes)
     {
         CInv inv(inventoryId,0);
         CInv copiedInventory(inv.GetCommand(),0);
-        BOOST_CHECK_MESSAGE(inv.type==copiedInventory.type, "Inventory type does not match inventory command");
+        BOOST_CHECK_MESSAGE(inv.GetType()==copiedInventory.GetType(), "Inventory type does not match inventory command");
     }
     {
         CInv inv(0,0);
         CInv copiedInventory(inv.GetCommand(),0);
-        BOOST_CHECK_MESSAGE(inv.type==copiedInventory.type, "Inventory type does not match inventory command");
+        BOOST_CHECK_MESSAGE(inv.GetType()==copiedInventory.GetType(), "Inventory type does not match inventory command");
     }
     {
         CInv inv(MSG_MASTERNODE_PING+1,0);
         CInv copiedInventory(inv.GetCommand(),0);
-        BOOST_CHECK_MESSAGE(inv.type==copiedInventory.type, "Inventory type for invalid object was copied into a valid type");
-        BOOST_CHECK_MESSAGE(copiedInventory.type == 0, "Erroneous inventory object has been assigned valid type");
+        BOOST_CHECK_MESSAGE(inv.GetType()==copiedInventory.GetType(), "Inventory type for invalid object was copied into a valid type");
+        BOOST_CHECK_MESSAGE(copiedInventory.GetType() == 0, "Erroneous inventory object has been assigned valid type");
     }
 }
 BOOST_AUTO_TEST_CASE(willCheckForPositiveInventoryIds)

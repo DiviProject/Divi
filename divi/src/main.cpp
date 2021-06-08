@@ -2839,6 +2839,32 @@ static bool PushKnownInventory(CNode* pfrom, const CInv& inv)
     return pushed;
 }
 
+static std::pair<const CBlockIndex*, bool> GetBlockIndexOfRequestedBlock(NodeId nodeId, const uint256& blockHash)
+{
+    bool send = false;
+    CBlockIndex* pindex = nullptr;
+    {
+        LOCK(cs_main);
+        const auto mi = mapBlockIndex.find(blockHash);
+        if (mi != mapBlockIndex.end())
+        {
+            pindex = mi->second;
+            if (chainActive.Contains(mi->second)) {
+                send = true;
+            } else {
+                // To prevent fingerprinting attacks, only send blocks outside of the active
+                // chain if they are valid, and no more than a max reorg depth than the best header
+                // chain we know about.
+                send = mi->second->IsValid(BLOCK_VALID_SCRIPTS) && (pindexBestHeader != NULL) &&
+                        (chainActive.Height() - mi->second->nHeight < Params().MaxReorganizationDepth());
+                if (!send) {
+                    LogPrintf("ProcessGetData(): ignoring request from peer=%i for old block that isn't in the main chain\n", nodeId);
+                }
+            }
+        }
+    }
+    return std::make_pair(pindex,send);
+}
 void static ProcessGetData(CNode* pfrom)
 {
     std::deque<CInv>::iterator it = pfrom->vRecvGetData.begin();
@@ -2856,34 +2882,14 @@ void static ProcessGetData(CNode* pfrom)
 
             if (inv.GetType() == MSG_BLOCK || inv.GetType() == MSG_FILTERED_BLOCK)
             {
-                bool send = false;
-                const CBlockIndex* pindex;
-                {
-                    LOCK(cs_main);
-                    const auto mi = mapBlockIndex.find(inv.GetHash());
-                    if (mi != mapBlockIndex.end())
-                    {
-                        pindex = mi->second;
-                        if (chainActive.Contains(mi->second)) {
-                            send = true;
-                        } else {
-                            // To prevent fingerprinting attacks, only send blocks outside of the active
-                            // chain if they are valid, and no more than a max reorg depth than the best header
-                            // chain we know about.
-                            send = mi->second->IsValid(BLOCK_VALID_SCRIPTS) && (pindexBestHeader != NULL) &&
-                                    (chainActive.Height() - mi->second->nHeight < Params().MaxReorganizationDepth());
-                            if (!send) {
-                                LogPrintf("ProcessGetData(): ignoring request from peer=%i for old block that isn't in the main chain\n", pfrom->GetId());
-                            }
-                        }
-                    }
-                }
+                std::pair<const CBlockIndex*, bool> blockIndexAndSendStatus = GetBlockIndexOfRequestedBlock(pfrom->GetId(),inv.GetHash());
                 // Don't send not-validated blocks
-                if (send && (pindex->nStatus & BLOCK_HAVE_DATA))
+                if (blockIndexAndSendStatus.second &&
+                    (blockIndexAndSendStatus.first->nStatus & BLOCK_HAVE_DATA))
                 {
                     // Send block from disk
                     CBlock block;
-                    if (!ReadBlockFromDisk(block, pindex))
+                    if (!ReadBlockFromDisk(block, blockIndexAndSendStatus.first))
                         assert(!"cannot load block from disk");
                     if (inv.GetType() == MSG_BLOCK)
                         pfrom->PushMessage("block", block);

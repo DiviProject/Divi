@@ -2940,7 +2940,11 @@ void static ProcessGetData(CNode* pfrom)
             {
                 // Send stream from relay memory
                 bool pushed = RepeatRelayedInventory(pfrom,inv);
-                if(!pushed)
+
+                if(pushed)
+                {
+                }
+                else
                 {
                     pushed = PushKnownInventory(pfrom,inv);
                 }

@@ -204,8 +204,7 @@ static void MutateTxAddInput(CMutableTransaction& tx, const string& strInput)
         throw runtime_error("invalid TX input vout");
 
     // append to transaction input list
-    CTxIn txin(txid, vout);
-    tx.vin.push_back(txin);
+    tx.vin.emplace_back(COutPoint(txid, vout));
 }
 
 static void MutateTxAddOutAddr(CMutableTransaction& tx, const string& strInput)

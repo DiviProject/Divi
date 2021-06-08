@@ -22,13 +22,14 @@ public:
     uint32_t n;
 
     COutPoint();
-    COutPoint(uint256 hashIn, uint32_t nIn);
+    COutPoint(const uint256& hashIn, uint32_t nIn);
 
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-        READWRITE(FLATDATA(*this));
+        READWRITE(hash);
+        READWRITE(n);
     }
 
     void SetNull();
@@ -56,7 +57,7 @@ public:
 
     CTxIn();
     explicit CTxIn(COutPoint prevoutIn, CScript scriptSigIn=CScript(), uint32_t nSequenceIn=std::numeric_limits<uint32_t>::max());
-    CTxIn(uint256 hashPrevTx, uint32_t nOut, CScript scriptSigIn=CScript(), uint32_t nSequenceIn=std::numeric_limits<uint32_t>::max());
+    CTxIn(const uint256& hashPrevTx, uint32_t nOut, CScript scriptSigIn=CScript(), uint32_t nSequenceIn=std::numeric_limits<uint32_t>::max());
 
     ADD_SERIALIZE_METHODS;
 

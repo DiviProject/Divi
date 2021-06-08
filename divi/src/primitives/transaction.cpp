@@ -18,7 +18,10 @@
 
 
 COutPoint::COutPoint() { SetNull(); }
-COutPoint::COutPoint(uint256 hashIn, uint32_t nIn) { hash = hashIn; n = nIn; }
+COutPoint::COutPoint(const uint256& hashIn, uint32_t nIn)
+  : hash(hashIn), n(nIn)
+{}
+
 void COutPoint::SetNull() { hash.SetNull(); n = (uint32_t) -1; }
 bool COutPoint::IsNull() const { return (hash.IsNull() && n == (uint32_t) -1); }
 bool operator<(const COutPoint& a, const COutPoint& b)
@@ -80,7 +83,7 @@ CTxIn::CTxIn(COutPoint prevoutIn, CScript scriptSigIn, uint32_t nSequenceIn)
     nSequence = nSequenceIn;
 }
 
-CTxIn::CTxIn(uint256 hashPrevTx, uint32_t nOut, CScript scriptSigIn, uint32_t nSequenceIn)
+CTxIn::CTxIn(const uint256& hashPrevTx, uint32_t nOut, CScript scriptSigIn, uint32_t nSequenceIn)
 {
     prevout = COutPoint(hashPrevTx, nOut);
     scriptSig = scriptSigIn;

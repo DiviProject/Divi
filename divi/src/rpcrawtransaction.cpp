@@ -93,7 +93,7 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
 
             // Add address and value info if spentindex enabled
             CSpentIndexValue spentInfo;
-            CSpentIndexKey spentKey(txin.prevout.hash, txin.prevout.n);
+            const CSpentIndexKey spentKey(txin.prevout.hash, txin.prevout.n);
             if (GetSpentIndex(spentKey, spentInfo)) {
                 in.push_back(Pair("value", ValueFromAmount(spentInfo.satoshis)));
                 in.push_back(Pair("valueSat", spentInfo.satoshis));

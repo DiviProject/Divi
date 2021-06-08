@@ -2946,8 +2946,7 @@ void static ProcessGetData(CNode* pfrom)
                 }
                 else
                 {
-                    pushed = PushKnownInventory(pfrom,inv);
-                    if (!pushed)
+                    if (!PushKnownInventory(pfrom,inv))
                     {
                         vNotFound.push_back(inv);
                     }

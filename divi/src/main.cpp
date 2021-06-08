@@ -2814,28 +2814,16 @@ static bool PushKnownInventory(CNode* pfrom, const CInv& inv)
         }
         break;
     case InventoryType::MSG_SPORK:
-        if (ShareSporkDataWithPeer(pfrom,inv.GetHash()))
-        {
-            pushed = true;
-        }
+        pushed = ShareSporkDataWithPeer(pfrom,inv.GetHash());
         break;
     case InventoryType::MSG_MASTERNODE_WINNER:
-        if(ShareMasternodeWinnerWithPeer(pfrom,inv.GetHash()))
-        {
-            pushed = true;
-        }
+        pushed = ShareMasternodeWinnerWithPeer(pfrom,inv.GetHash());
         break;
     case InventoryType::MSG_MASTERNODE_ANNOUNCE:
-        if(ShareMasternodeBroadcastWithPeer(pfrom,inv.GetHash()))
-        {
-            pushed = true;
-        }
+        pushed = ShareMasternodeBroadcastWithPeer(pfrom,inv.GetHash());
         break;
     case InventoryType::MSG_MASTERNODE_PING:
-        if(ShareMasternodePingWithPeer(pfrom,inv.GetHash()))
-        {
-            pushed = true;
-        }
+        pushed = ShareMasternodePingWithPeer(pfrom,inv.GetHash());
         break;
     case InventoryType::MSG_FILTERED_BLOCK:
     case InventoryType::MSG_TXLOCK_REQUEST:

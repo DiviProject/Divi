@@ -14,7 +14,6 @@ class CTransaction;
 class CBlock;
 class CWalletTx;
 class uint256;
-using TransactionsByHash = std::map<uint256,CWalletTx>;
 
 class I_VaultManagerDatabase;
 class WalletTransactionRecord;

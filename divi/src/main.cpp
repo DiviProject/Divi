@@ -2939,12 +2939,9 @@ void static ProcessGetData(CNode* pfrom)
             else if (inv.IsKnownType())
             {
                 // Send stream from relay memory
-                if(!RepeatRelayedInventory(pfrom,inv))
+                if(!RepeatRelayedInventory(pfrom,inv) && !PushKnownInventory(pfrom,inv))
                 {
-                    if (!PushKnownInventory(pfrom,inv))
-                    {
-                        vNotFound.push_back(inv);
-                    }
+                    vNotFound.push_back(inv);
                 }
             }
 

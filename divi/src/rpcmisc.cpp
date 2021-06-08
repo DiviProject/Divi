@@ -75,7 +75,7 @@ bool GetAddressIndex(bool addresIndexEnabled,
 
 std::string GetWarnings(std::string strFor);
 
-bool GetSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
+bool GetSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
 bool GetAddressUnspent(bool addresIndexEnabled,
                       CBlockTreeDB* pblocktree,
@@ -1016,7 +1016,7 @@ Value getspentinfo(const Array& params, bool fHelp)
     uint256 txid = ParseHashV(txidValue, "txid");
     int outputIndex = indexValue.get_int();
 
-    CSpentIndexKey key(txid, outputIndex);
+    const CSpentIndexKey key(txid, outputIndex);
     CSpentIndexValue value;
 
     if (!GetSpentIndex(key, value)) {

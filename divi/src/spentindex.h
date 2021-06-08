@@ -22,7 +22,7 @@ struct CSpentIndexKey {
         READWRITE(outputIndex);
     }
 
-    CSpentIndexKey(uint256 t, unsigned int i) {
+    CSpentIndexKey(const uint256& t, unsigned int i) {
         txid = t;
         outputIndex = i;
     }

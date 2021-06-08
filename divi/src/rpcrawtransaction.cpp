@@ -120,10 +120,15 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
         ScriptPubKeyToJSON(txout.scriptPubKey, o, true);
         out.push_back(Pair("scriptPubKey", o));
 
-        // Add spent information if spentindex is enabled
+        // Add spent information if spentindex is enabled.  We don't know
+        // whether or not segwit light is in effect for the transaction,
+        // so we simply try looking up by both txid and bare txid as at
+        // most one of them can match anyway.
         CSpentIndexValue spentInfo;
-        CSpentIndexKey spentKey(txid, i);
-        if (GetSpentIndex(spentKey, spentInfo)) {
+        bool found = GetSpentIndex(CSpentIndexKey(txid, i), spentInfo);
+        if (!found)
+          found = GetSpentIndex(CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
+        if (found) {
             out.push_back(Pair("spentTxId", spentInfo.txid.GetHex()));
             out.push_back(Pair("spentIndex", (int)spentInfo.inputIndex));
             out.push_back(Pair("spentHeight", spentInfo.blockHeight));
@@ -878,9 +883,19 @@ Value sendrawtransaction(const Array& params, bool fHelp)
         fOverrideFees = params[1].get_bool();
 
     CCoinsViewCache& view = *pcoinsTip;
+    const bool fHaveMempool = mempool.exists(hashTx);
+
+    /* We use the UTXO set as heuristic about whether or not a transaction
+       has already been confirmed.  This is not 100% accurate (as all outputs
+       could have been spent), but useful in practice.  Since we don't know
+       whether or not segwit light has been in effect for the transaction,
+       we just try locating both txid and bare txid as at most one of them
+       can match anyway.  */
     const CCoins* existingCoins = view.AccessCoins(hashTx);
-    bool fHaveMempool = mempool.exists(hashTx);
-    bool fHaveChain = existingCoins && existingCoins->nHeight < 1000000000;
+    if (existingCoins == nullptr)
+        existingCoins = view.AccessCoins(tx.GetBareTxid());
+    const bool fHaveChain = existingCoins && existingCoins->nHeight < 1000000000;
+
     if (!fHaveMempool && !fHaveChain) {
         // push to local node and sync with wallets
         std::pair<CAmount,bool> feeTotalsAndStatus = ComputeFeeTotalsAndIfInputsAreKnown(tx);

@@ -22,7 +22,7 @@ class CCoinsViewTest : public CCoinsView
     std::map<uint256, CCoins> map_;
 
 public:
-    bool GetCoins(const uint256& txid, CCoins& coins) const
+    bool GetCoins(const uint256& txid, CCoins& coins) const override
     {
         auto it = map_.find(txid);
         if (it == map_.end()) {
@@ -36,15 +36,15 @@ public:
         return true;
     }
 
-    bool HaveCoins(const uint256& txid) const
+    bool HaveCoins(const uint256& txid) const override
     {
         CCoins coins;
         return GetCoins(txid, coins);
     }
 
-    uint256 GetBestBlock() const { return hashBestBlock_; }
+    uint256 GetBestBlock() const override { return hashBestBlock_; }
 
-    bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)
+    bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override
     {
         for (auto it = mapCoins.begin(); it != mapCoins.end(); ) {
             map_[it->first] = it->second.coins;
@@ -59,7 +59,7 @@ public:
         return true;
     }
 
-    bool GetStats(CCoinsStats& stats) const { return false; }
+    bool GetStats(CCoinsStats& stats) const override { return false; }
 };
 }
 

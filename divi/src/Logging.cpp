@@ -10,6 +10,7 @@
 #include <DataDirectory.h>
 #include <chainparamsbase.h>
 #include <uint256.h>
+#include <serialize.h>
 #include <Settings.h>
 
 bool fDebug = false;
@@ -25,17 +26,6 @@ LOG_FORMAT_WITH_TOSTRING(uint256)
 
 namespace
 {
-template <class T, class TAl>
-inline T* begin_ptr(std::vector<T, TAl>& v)
-{
-    return v.empty() ? NULL : &v[0];
-}
-/** Get begin pointer of vector (const version) */
-template <class T, class TAl>
-inline const T* begin_ptr(const std::vector<T, TAl>& v)
-{
-    return v.empty() ? NULL : &v[0];
-}
 
 FILE* fileout = nullptr;
 

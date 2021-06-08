@@ -13,25 +13,6 @@
 #include <arpa/inet.h>
 #endif
 
-static const char* ppszTypeName[] = {
-    "ERROR",
-    "tx",
-    "block",
-    "filtered block",
-    "tx lock request",
-    "tx lock vote",
-    "spork",
-    "mn winner",
-    "mn scan error",
-    "mn budget vote",
-    "mn budget proposal",
-    "mn budget finalized",
-    "mn budget finalized vote",
-    "mn quorum",
-    "mn announce",
-    "mn ping"
-};
-
 template <typename T1, typename  T2>
 static std::map<T2,T1> ReverseMap(const std::map<T1,T2>& forwardMap)
 {

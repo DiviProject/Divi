@@ -3694,13 +3694,13 @@ enum NetworkMessageState
     VALID,
 };
 static NetworkMessageState CheckNetworkMessageHeader(
-    CNode* pfrom,
+    NodeId id,
     CNetMessage& msg,
     bool& fOk)
 {
     // Scan for message start
     if (memcmp(msg.hdr.pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) != 0) {
-        LogPrintf("%s: INVALID MESSAGESTART %s peer=%d\n",__func__, SanitizeString(msg.hdr.GetCommand()), pfrom->id);
+        LogPrintf("%s: INVALID MESSAGESTART %s peer=%d\n",__func__, SanitizeString(msg.hdr.GetCommand()), id);
         fOk = false;
         return NetworkMessageState::STOP_PROCESSING;
     }
@@ -3708,7 +3708,7 @@ static NetworkMessageState CheckNetworkMessageHeader(
     // Read header
     CMessageHeader& hdr = msg.hdr;
     if (!hdr.IsValid()) {
-        LogPrintf("%s: ERRORS IN HEADER %s peer=%d\n",__func__, SanitizeString(hdr.GetCommand()), pfrom->id);
+        LogPrintf("%s: ERRORS IN HEADER %s peer=%d\n",__func__, SanitizeString(hdr.GetCommand()), id);
         return NetworkMessageState::SKIP_MESSAGE;
     }
 
@@ -3758,7 +3758,7 @@ bool ProcessReceivedMessages(CNode* pfrom)
         // at this point, any failure means we can delete the current message
         ++it;
 
-        NetworkMessageState messageStatus = CheckNetworkMessageHeader(pfrom, msg, fOk);
+        NetworkMessageState messageStatus = CheckNetworkMessageHeader(pfrom->GetId(), msg, fOk);
         if(messageStatus == NetworkMessageState::STOP_PROCESSING)
         {
             break;

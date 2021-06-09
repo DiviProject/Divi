@@ -73,25 +73,24 @@ public:
     bool fSuccessfullyConnected;
 
 protected:
-    SOCKET hSocket;
-    size_t nSendSize;   // total size of all vSendMsg entries
-    size_t nSendOffset; // offset inside the first vSendMsg already sent
-    uint64_t nSendBytes;
-
     CDataStream ssSend;
     std::deque<CSerializeData> vSendMsg;
     CCriticalSection cs_vSend;
 
     std::deque<CNetMessage> vRecvMsg;
     CCriticalSection cs_vRecvMsg;
+private:
+    SOCKET hSocket;
+    size_t nSendSize;   // total size of all vSendMsg entries
+    size_t nSendOffset; // offset inside the first vSendMsg already sent
+    uint64_t nSendBytes;
     uint64_t nRecvBytes;
 
     int nRecvVersion;
     int64_t nLastSend;
     int64_t nLastRecv;
-
-private:
     bool fDisconnect;
+
     // TODO: Document the postcondition of this function.  Is cs_vSend locked?
     void BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend);
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
@@ -115,6 +114,7 @@ protected:
 public:
 
     SocketConnection(SOCKET hSocketIn);
+    void CloseSocket();
     void RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax);
     bool SocketIsValid() const;
     void SocketSendData();

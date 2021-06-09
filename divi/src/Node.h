@@ -70,6 +70,7 @@ public:
 class SocketConnection
 {
 public:
+    bool fSuccessfullyConnected;
     SOCKET hSocket;
     CDataStream ssSend;
     size_t nSendSize;   // total size of all vSendMsg entries
@@ -87,7 +88,29 @@ protected:
     int64_t nLastSend;
     int64_t nLastRecv;
     bool fDisconnect;
+private:
+    // TODO: Document the postcondition of this function.  Is cs_vSend locked?
+    void BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend);
+    // TODO: Document the precondition of this function.  Is cs_vSend locked?
+    void AbortMessage() UNLOCK_FUNCTION(cs_vSend);
+    // TODO: Document the precondition of this function.  Is cs_vSend locked?
+    void EndMessage(NodeId id) UNLOCK_FUNCTION(cs_vSend);
+
+protected:
+    template <typename ...Args>
+    void PushMessageAndLogNodeId(NodeId nodeId, const char* pszCommand, Args&&... args)
+    {
+        try {
+            BeginMessage(pszCommand);
+            NetworkMessageSerializer::SerializeNextArgument(ssSend,std::forward<Args>(args)...);
+            EndMessage(nodeId);
+        } catch (...) {
+            AbortMessage();
+            throw;
+        }
+    }
 public:
+
     SocketConnection(SOCKET hSocketIn);
     void RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax);
     bool SocketIsValid() const;
@@ -127,7 +150,6 @@ public:
     bool fClient;
     bool fInbound;
     bool fNetworkNode;
-    bool fSuccessfullyConnected;
     // We use fRelayTxes for two purposes -
     // a) it allows us to not relay tx invs before receiving the peer's version message
     // b) the peer may tell us in their version message that we should not relay tx invs
@@ -184,26 +206,11 @@ public:
     CNode(CNodeSignals* nodeSignals, CAddrMan& addressMananger, SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn = false);
     ~CNode();
 
-private:
-    // TODO: Document the postcondition of this function.  Is cs_vSend locked?
-    void BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend);
-    // TODO: Document the precondition of this function.  Is cs_vSend locked?
-    void AbortMessage() UNLOCK_FUNCTION(cs_vSend);
-    // TODO: Document the precondition of this function.  Is cs_vSend locked?
-    void EndMessage() UNLOCK_FUNCTION(cs_vSend);
-
 public:
     template <typename ...Args>
     void PushMessage(const char* pszCommand, Args&&... args)
     {
-        try {
-            BeginMessage(pszCommand);
-            NetworkMessageSerializer::SerializeNextArgument(ssSend,std::forward<Args>(args)...);
-            EndMessage();
-        } catch (...) {
-            AbortMessage();
-            throw;
-        }
+        SocketConnection::PushMessageAndLogNodeId(id,pszCommand,std::forward<Args>(args)...);
     }
 
     void ProcessReceiveMessages(bool& shouldSleep);

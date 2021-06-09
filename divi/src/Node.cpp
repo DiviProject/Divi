@@ -131,21 +131,26 @@ static bool SocketHasErrors(bool shouldLogError)
 SocketConnection::SocketConnection(
     SOCKET hSocketIn
     ): fSuccessfullyConnected(false)
-    , hSocket(hSocketIn)
-    , nSendSize(0)
-    , nSendOffset(0)
-    , nSendBytes(0)
     , ssSend(SER_NETWORK, INIT_PROTO_VERSION)
     , vSendMsg()
     , cs_vSend()
     , vRecvMsg()
     , cs_vRecvMsg()
+    , hSocket(hSocketIn)
+    , nSendSize(0)
+    , nSendOffset(0)
+    , nSendBytes(0)
     , nRecvBytes(0)
     , nRecvVersion(INIT_PROTO_VERSION)
     , nLastSend(0)
     , nLastRecv(0)
     , fDisconnect(false)
 {
+}
+
+void SocketConnection::CloseSocket()
+{
+    ::CloseSocket(hSocket);
 }
 
 // requires LOCK(cs_vSend)
@@ -272,7 +277,7 @@ void SocketConnection::CloseSocketDisconnect()
     fDisconnect = true;
     if (hSocket != INVALID_SOCKET) {
         LogPrint("net", "disconnecting peer\n");
-        CloseSocket(hSocket);
+        CloseSocket();
     }
 
     // in case this fails, we'll empty the recv buffer when the CNode is deleted
@@ -465,12 +470,6 @@ CNode::CNode(
     , setAddrKnown(5000)
 {
     nServices = 0;
-    hSocket = hSocketIn;
-    nRecvVersion = INIT_PROTO_VERSION;
-    nLastSend = 0;
-    nLastRecv = 0;
-    nSendBytes = 0;
-    nRecvBytes = 0;
     nTimeConnected = GetTime();
     addr = addrIn;
     addrName = addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn;
@@ -482,8 +481,6 @@ CNode::CNode(
     fInbound = fInboundIn;
     fNetworkNode = false;
     nRefCount = 0;
-    nSendSize = 0;
-    nSendOffset = 0;
     hashContinue = 0;
     nStartingHeight = -1;
     fGetAddr = false;
@@ -515,7 +512,7 @@ CNode::CNode(
 
 CNode::~CNode()
 {
-    CloseSocket(hSocket);
+    CloseSocket();
 
     if (pfilter)
         delete pfilter;
@@ -588,7 +585,7 @@ bool CNode::IsInUse()
 }
 bool CNode::CanBeDisconnected() const
 {
-    return GetRefCount() <= 0 && vRecvMsg.empty() && nSendSize == 0 && ssSend.empty();
+    return GetRefCount() <= 0 && vRecvMsg.empty() && GetSendQueueBytes() == 0 && ssSend.empty();
 }
 
 CNodeState* CNode::GetNodeState()
@@ -605,11 +602,12 @@ void CNode::SetToCurrentlyConnected()
 }
 NodeBufferStatus CNode::GetSendBufferStatus() const
 {
-    if(nSendSize < SendBufferSize())
+    const size_t sendBufferBytes = GetSendQueueBytes();
+    if(sendBufferBytes < SendBufferSize())
     {
         return NodeBufferStatus::HAS_SPACE;
     }
-    else if(nSendSize > (SendBufferSize()*2) )
+    else if(sendBufferBytes > (SendBufferSize()*2) )
     {
         return NodeBufferStatus::IS_OVERFLOWED;
     }

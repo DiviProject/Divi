@@ -690,8 +690,7 @@ void CNode::AskFor(const CInv& inv)
 
 bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand)
 {
-    fDisconnect = false;
-    if (nVersion < nVersionRequired) {
+    if (!fDisconnect && nVersion < nVersionRequired) {
         LogPrintf("%s : peer=%d using obsolete version %i; disconnecting\n", __func__, id, nVersion);
         PushMessage("reject", strLastCommand, REJECT_OBSOLETE, strprintf("Version must be %d or greater", ActiveProtocol()));
         fDisconnect = true;

@@ -604,17 +604,13 @@ void CNode::AskFor(const CInv& inv)
 void CNode::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
 {
     ENTER_CRITICAL_SECTION(cs_vSend);
-    assert(ssSend.size() == 0);
-    ssSend << CMessageHeader(pszCommand, 0);
-    LogPrint("net", "sending: %s ", SanitizeString(pszCommand));
+    NetworkMessageSerializer::BeginMessage(ssSend,pszCommand);
 }
 
 void CNode::AbortMessage() UNLOCK_FUNCTION(cs_vSend)
 {
     ssSend.clear();
-
     LEAVE_CRITICAL_SECTION(cs_vSend);
-
     LogPrint("net", "(aborted)\n");
 }
 
@@ -635,16 +631,8 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend)
         return;
 
     // Set the size
-    unsigned int nSize = ssSend.size() - CMessageHeader::HEADER_SIZE;
-    memcpy((char*)&ssSend[CMessageHeader::MESSAGE_SIZE_OFFSET], &nSize, sizeof(nSize));
-
-    // Set the checksum
-    uint256 hash = Hash(ssSend.begin() + CMessageHeader::HEADER_SIZE, ssSend.end());
-    unsigned int nChecksum = 0;
-    memcpy(&nChecksum, &hash, sizeof(nChecksum));
-    assert(ssSend.size() >= CMessageHeader::CHECKSUM_OFFSET + sizeof(nChecksum));
-    memcpy((char*)&ssSend[CMessageHeader::CHECKSUM_OFFSET], &nChecksum, sizeof(nChecksum));
-
+    unsigned int nSize = 0u;
+    NetworkMessageSerializer::EndMessage(ssSend,nSize);
     LogPrint("net", "(%d bytes) peer=%d\n", nSize, id);
 
     std::deque<CSerializeData>::iterator it = vSendMsg.insert(vSendMsg.end(), CSerializeData());

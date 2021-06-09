@@ -89,8 +89,9 @@ protected:
     int nRecvVersion;
     int64_t nLastSend;
     int64_t nLastRecv;
-    bool fDisconnect;
+
 private:
+    bool fDisconnect;
     // TODO: Document the postcondition of this function.  Is cs_vSend locked?
     void BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend);
     // TODO: Document the precondition of this function.  Is cs_vSend locked?

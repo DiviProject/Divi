@@ -481,7 +481,6 @@ CNode::CNode(
     fClient = false; // set by version message
     fInbound = fInboundIn;
     fNetworkNode = false;
-    fDisconnect = false;
     nRefCount = 0;
     nSendSize = 0;
     nSendOffset = 0;
@@ -711,13 +710,13 @@ void CNode::AskFor(const CInv& inv)
 
 bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand)
 {
-    if (!fDisconnect && nVersion < nVersionRequired) {
+    if (!IsFlaggedForDisconnection() && nVersion < nVersionRequired) {
         LogPrintf("%s : peer=%d using obsolete version %i; disconnecting\n", __func__, id, nVersion);
         PushMessage("reject", strLastCommand, REJECT_OBSOLETE, strprintf("Version must be %d or greater", ActiveProtocol()));
-        fDisconnect = true;
+        FlagForDisconnection();
     }
 
-    return fDisconnect;
+    return IsFlaggedForDisconnection();
 }
 
 void CNode::PushVersion(int currentChainTipHeight)

@@ -227,6 +227,7 @@ public:
         Cleanup();
     }
 
+    std::string ToString() const;
 
 };
 

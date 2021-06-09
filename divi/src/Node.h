@@ -128,6 +128,7 @@ public:
     int64_t GetLastTimeDataReceived() const;
     void SetRecvVersion(int nVersionIn);
     uint64_t GetTotalBytesReceived() const;
+    std::deque<CNetMessage>& GetReceivedMessageQueue();
 };
 
 class CNode: public SocketConnection

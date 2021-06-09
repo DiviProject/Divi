@@ -3771,12 +3771,13 @@ bool ProcessReceivedMessages(CNode* pfrom)
     // this maintains the order of responses
     if (!pfrom->vRecvGetData.empty()) return fOk;
 
-    std::deque<CNetMessage>::iterator iteratorToCurrentMessageToProcess = pfrom->vRecvMsg.begin();
-    std::deque<CNetMessage>::iterator iteratorToNextMessageToProcess = pfrom->vRecvMsg.begin();
+    std::deque<CNetMessage>& receivedMessageQueue = pfrom->GetReceivedMessageQueue();
+    std::deque<CNetMessage>::iterator iteratorToCurrentMessageToProcess = receivedMessageQueue.begin();
+    std::deque<CNetMessage>::iterator iteratorToNextMessageToProcess = receivedMessageQueue.begin();
     while(
         !pfrom->IsFlaggedForDisconnection() &&
         pfrom->GetSendBufferStatus()!=NodeBufferStatus::IS_FULL && // needed, to allow responding
-        iteratorToCurrentMessageToProcess != pfrom->vRecvMsg.end() &&
+        iteratorToCurrentMessageToProcess != receivedMessageQueue.end() &&
         iteratorToCurrentMessageToProcess->complete()) // end, if an incomplete message is found
     {
         // get next message
@@ -3827,7 +3828,7 @@ bool ProcessReceivedMessages(CNode* pfrom)
 
     // In case the connection got shut down, its receive buffer was wiped
     if (!pfrom->IsFlaggedForDisconnection())
-        pfrom->vRecvMsg.erase(pfrom->vRecvMsg.begin(), iteratorToNextMessageToProcess);
+        receivedMessageQueue.erase(receivedMessageQueue.begin(), iteratorToNextMessageToProcess);
 
     return fOk;
 }

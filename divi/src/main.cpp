@@ -3720,7 +3720,7 @@ enum NetworkMessageState
 };
 static NetworkMessageState CheckNetworkMessageHeader(
     NodeId id,
-    CNetMessage& msg,
+    const CNetMessage& msg,
     bool& fOk)
 {
     // Scan for message start
@@ -3731,7 +3731,7 @@ static NetworkMessageState CheckNetworkMessageHeader(
     }
 
     // Read header
-    CMessageHeader& hdr = msg.hdr;
+    const CMessageHeader& hdr = msg.hdr;
     if (!hdr.IsValid()) {
         LogPrintf("%s: ERRORS IN HEADER %s peer=%d\n",__func__, SanitizeString(hdr.GetCommand()), id);
         return NetworkMessageState::SKIP_MESSAGE;
@@ -3741,7 +3741,7 @@ static NetworkMessageState CheckNetworkMessageHeader(
     const unsigned int nMessageSize = hdr.nMessageSize;
 
     // Checksum
-    CDataStream& vRecv = msg.vRecv;
+    const CDataStream& vRecv = msg.vRecv;
     uint256 hash = Hash(vRecv.begin(), vRecv.begin() + nMessageSize);
     unsigned int nChecksum = 0;
     memcpy(&nChecksum, &hash, sizeof(nChecksum));

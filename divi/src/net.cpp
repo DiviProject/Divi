@@ -187,24 +187,6 @@ CNodeSignals& GetNodeSignals()
     return globalNodeSignals;
 }
 
-/** Register with a network node to receive its signals */
-void RegisterNodeSignals(CNodeSignals& nodeSignals)
-{
-    nodeSignals.InitializeNode.connect(&InitializeNode);
-    nodeSignals.FinalizeNode.connect(&FinalizeNode);
-    nodeSignals.ProcessReceivedMessages.connect(&ProcessReceivedMessages);
-    nodeSignals.SendMessages.connect(&SendMessages);
-}
-/** Unregister a network node */
-void UnregisterNodeSignals(CNodeSignals& nodeSignals)
-{
-    nodeSignals.InitializeNode.disconnect(&InitializeNode);
-    nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
-    nodeSignals.ProcessReceivedMessages.disconnect(&ProcessReceivedMessages);
-    nodeSignals.SendMessages.disconnect(&SendMessages);
-}
-
-
 const bool& IsListening()
 {
     return fListen;
@@ -356,6 +338,25 @@ void AdvertizeLocal(CNode* pnode)
         }
     }
 }
+/** Register with a network node to receive its signals */
+void RegisterNodeSignals(CNodeSignals& nodeSignals)
+{
+    nodeSignals.InitializeNode.connect(&InitializeNode);
+    nodeSignals.FinalizeNode.connect(&FinalizeNode);
+    nodeSignals.ProcessReceivedMessages.connect(&ProcessReceivedMessages);
+    nodeSignals.SendMessages.connect(&SendMessages);
+    nodeSignals.AdvertizeLocalAddress.connect(&AdvertizeLocal);
+}
+/** Unregister a network node */
+void UnregisterNodeSignals(CNodeSignals& nodeSignals)
+{
+    nodeSignals.InitializeNode.disconnect(&InitializeNode);
+    nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
+    nodeSignals.ProcessReceivedMessages.disconnect(&ProcessReceivedMessages);
+    nodeSignals.SendMessages.disconnect(&SendMessages);
+    nodeSignals.AdvertizeLocalAddress.connect(&AdvertizeLocal);
+}
+
 
 CNode* FindNode(const CNetAddr& ip)
 {
@@ -788,17 +789,9 @@ void ThreadMessageHandler()
             // Rebroadcasting is done for all nodes after the ping
             // of the first; this is to mimic previous behaviour.
             if (rebroadcast) {
-                for (auto* pnode2 : vNodesCopy) {
-                    TRY_LOCK(pnode2->cs_vSend, lockSend);
-                    if (!lockSend)
-                        continue;
-
-                    // Periodically clear setAddrKnown to allow refresh broadcasts
-                    if (nLastRebroadcast > 0)
-                        pnode2->setAddrKnown.clear();
-
-                    // Rebroadcast our address
-                    AdvertizeLocal(pnode2);
+                for (auto* pnode2 : vNodesCopy)
+                {
+                    pnode2->AdvertizeLocalAddress(nLastRebroadcast);
                     boost::this_thread::interruption_point();
                 }
 

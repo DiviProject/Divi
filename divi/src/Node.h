@@ -71,12 +71,13 @@ class SocketConnection
 {
 public:
     bool fSuccessfullyConnected;
+
+protected:
     SOCKET hSocket;
     size_t nSendSize;   // total size of all vSendMsg entries
     size_t nSendOffset; // offset inside the first vSendMsg already sent
     uint64_t nSendBytes;
 
-protected:
     CDataStream ssSend;
     std::deque<CSerializeData> vSendMsg;
     CCriticalSection cs_vSend;
@@ -131,6 +132,7 @@ public:
     uint64_t GetTotalBytesReceived() const;
     std::deque<CNetMessage>& GetReceivedMessageQueue();
     void SetSerializationVersion(int versionNumber);
+    size_t GetSendQueueBytes() const;
 };
 
 class CNode: public SocketConnection

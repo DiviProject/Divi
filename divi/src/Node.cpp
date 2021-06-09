@@ -449,6 +449,10 @@ void SocketConnection::SetSerializationVersion(int versionNumber)
 {
     ssSend.SetVersion(versionNumber);
 }
+size_t SocketConnection::GetSendQueueBytes() const
+{
+    return nSendSize;
+}
 
 CNode::CNode(
     CNodeSignals* nodeSignals,

@@ -89,6 +89,29 @@ int CNetMessage::readData(const char* pch, unsigned int nBytes)
     return nCopy;
 }
 
+void NetworkMessageSerializer::BeginMessage(CDataStream& dataStream,const char* pszCommand)
+{
+    assert(dataStream.size() == 0);
+    dataStream << CMessageHeader(pszCommand, 0);
+    LogPrint("net", "sending: %s ", SanitizeString(pszCommand));
+}
+void NetworkMessageSerializer::EndMessage(CDataStream& dataStream, unsigned& dataSize)
+{
+    if (dataStream.size() == 0)
+        return;
+
+    // Set the size
+    dataSize = dataStream.size() - CMessageHeader::HEADER_SIZE;
+    memcpy((char*)&dataStream[CMessageHeader::MESSAGE_SIZE_OFFSET], &dataSize, sizeof(dataSize));
+
+    // Set the checksum
+    uint256 hash = Hash(dataStream.begin() + CMessageHeader::HEADER_SIZE, dataStream.end());
+    unsigned int nChecksum = 0;
+    memcpy(&nChecksum, &hash, sizeof(nChecksum));
+    assert(dataStream.size() >= CMessageHeader::CHECKSUM_OFFSET + sizeof(nChecksum));
+    memcpy((char*)&dataStream[CMessageHeader::CHECKSUM_OFFSET], &nChecksum, sizeof(nChecksum));
+}
+
 NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
 limitedmap<CInv, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);

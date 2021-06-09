@@ -130,7 +130,8 @@ static bool SocketHasErrors(bool shouldLogError)
 
 SocketConnection::SocketConnection(
     SOCKET hSocketIn
-    ): hSocket(hSocketIn)
+    ): fSuccessfullyConnected(false)
+    , hSocket(hSocketIn)
     , ssSend(SER_NETWORK, INIT_PROTO_VERSION)
     , nSendSize(0)
     , nSendOffset(0)
@@ -359,6 +360,88 @@ uint64_t SocketConnection::GetTotalBytesReceived() const
     return nRecvBytes;
 }
 
+void SocketConnection::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
+{
+    ENTER_CRITICAL_SECTION(cs_vSend);
+    NetworkMessageSerializer::BeginMessage(ssSend,pszCommand);
+}
+
+void SocketConnection::AbortMessage() UNLOCK_FUNCTION(cs_vSend)
+{
+    ssSend.clear();
+    LEAVE_CRITICAL_SECTION(cs_vSend);
+    LogPrint("net", "(aborted)\n");
+}
+
+
+static void Fuzz(int nChance,bool& fSuccessfullyConnected, CDataStream& ssSend)
+{
+    if (!fSuccessfullyConnected) return; // Don't fuzz initial handshake
+    if (GetRand(nChance) != 0) return;   // Fuzz 1 of every nChance messages
+
+    switch (GetRand(3)) {
+    case 0:
+        // xor a random byte with a random value:
+        if (!ssSend.empty()) {
+            CDataStream::size_type pos = GetRand(ssSend.size());
+            ssSend[pos] ^= (unsigned char)(GetRand(256));
+        }
+        break;
+    case 1:
+        // delete a random byte:
+        if (!ssSend.empty()) {
+            CDataStream::size_type pos = GetRand(ssSend.size());
+            ssSend.erase(ssSend.begin() + pos);
+        }
+        break;
+    case 2:
+        // insert a random byte at a random position
+        {
+            CDataStream::size_type pos = GetRand(ssSend.size());
+            char ch = (char)GetRand(256);
+            ssSend.insert(ssSend.begin() + pos, ch);
+        }
+        break;
+    }
+    // Chance of more than one change half the time:
+    // (more changes exponentially less likely):
+    Fuzz(2,fSuccessfullyConnected,ssSend);
+}
+
+void SocketConnection::EndMessage(NodeId id) UNLOCK_FUNCTION(cs_vSend)
+{
+    // The -*messagestest options are intentionally not documented in the help message,
+    // since they are only used during development to debug the networking code and are
+    // not intended for end-users.
+    if (settings.ParameterIsSet("-dropmessagestest") && GetRand(settings.GetArg("-dropmessagestest", 2)) == 0) {
+        LogPrint("net", "dropmessages DROPPING SEND MESSAGE\n");
+        AbortMessage();
+        return;
+    }
+    if (settings.ParameterIsSet("-fuzzmessagestest"))
+        Fuzz(settings.GetArg("-fuzzmessagestest", 10),fSuccessfullyConnected,ssSend);
+
+    if (ssSend.size() == 0)
+        return;
+
+    // Set the size
+    unsigned int nSize = 0u;
+    NetworkMessageSerializer::EndMessage(ssSend,nSize);
+    LogPrint("net", "(%d bytes) peer=%d\n", nSize, id);
+
+    std::deque<CSerializeData>::iterator it = vSendMsg.insert(vSendMsg.end(), CSerializeData());
+    ssSend.GetAndClear(*it);
+    nSendSize += (*it).size();
+
+    // If write queue empty, attempt "optimistic write"
+    if (it == vSendMsg.begin())
+        SocketSendData();
+
+    LEAVE_CRITICAL_SECTION(cs_vSend);
+}
+
+
+
 CNode::CNode(
     CNodeSignals* nodeSignals,
     CAddrMan& addressMananger,
@@ -386,7 +469,6 @@ CNode::CNode(
     fClient = false; // set by version message
     fInbound = fInboundIn;
     fNetworkNode = false;
-    fSuccessfullyConnected = false;
     fDisconnect = false;
     nRefCount = 0;
     nSendSize = 0;
@@ -600,86 +682,6 @@ void CNode::AskFor(const CInv& inv)
         mapAlreadyAskedFor.insert(std::make_pair(inv, nRequestTime));
     mapAskFor.insert(std::make_pair(nRequestTime, inv));
 }
-
-void CNode::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
-{
-    ENTER_CRITICAL_SECTION(cs_vSend);
-    NetworkMessageSerializer::BeginMessage(ssSend,pszCommand);
-}
-
-void CNode::AbortMessage() UNLOCK_FUNCTION(cs_vSend)
-{
-    ssSend.clear();
-    LEAVE_CRITICAL_SECTION(cs_vSend);
-    LogPrint("net", "(aborted)\n");
-}
-
-void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend)
-{
-    // The -*messagestest options are intentionally not documented in the help message,
-    // since they are only used during development to debug the networking code and are
-    // not intended for end-users.
-    if (settings.ParameterIsSet("-dropmessagestest") && GetRand(settings.GetArg("-dropmessagestest", 2)) == 0) {
-        LogPrint("net", "dropmessages DROPPING SEND MESSAGE\n");
-        AbortMessage();
-        return;
-    }
-    if (settings.ParameterIsSet("-fuzzmessagestest"))
-        Fuzz(settings.GetArg("-fuzzmessagestest", 10));
-
-    if (ssSend.size() == 0)
-        return;
-
-    // Set the size
-    unsigned int nSize = 0u;
-    NetworkMessageSerializer::EndMessage(ssSend,nSize);
-    LogPrint("net", "(%d bytes) peer=%d\n", nSize, id);
-
-    std::deque<CSerializeData>::iterator it = vSendMsg.insert(vSendMsg.end(), CSerializeData());
-    ssSend.GetAndClear(*it);
-    nSendSize += (*it).size();
-
-    // If write queue empty, attempt "optimistic write"
-    if (it == vSendMsg.begin())
-        SocketSendData();
-
-    LEAVE_CRITICAL_SECTION(cs_vSend);
-}
-
-void CNode::Fuzz(int nChance)
-{
-    if (!fSuccessfullyConnected) return; // Don't fuzz initial handshake
-    if (GetRand(nChance) != 0) return;   // Fuzz 1 of every nChance messages
-
-    switch (GetRand(3)) {
-    case 0:
-        // xor a random byte with a random value:
-        if (!ssSend.empty()) {
-            CDataStream::size_type pos = GetRand(ssSend.size());
-            ssSend[pos] ^= (unsigned char)(GetRand(256));
-        }
-        break;
-    case 1:
-        // delete a random byte:
-        if (!ssSend.empty()) {
-            CDataStream::size_type pos = GetRand(ssSend.size());
-            ssSend.erase(ssSend.begin() + pos);
-        }
-        break;
-    case 2:
-        // insert a random byte at a random position
-        {
-            CDataStream::size_type pos = GetRand(ssSend.size());
-            char ch = (char)GetRand(256);
-            ssSend.insert(ssSend.begin() + pos, ch);
-        }
-        break;
-    }
-    // Chance of more than one change half the time:
-    // (more changes exponentially less likely):
-    Fuzz(2);
-}
-
 
 bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand)
 {

@@ -440,6 +440,11 @@ void SocketConnection::EndMessage(NodeId id) UNLOCK_FUNCTION(cs_vSend)
     LEAVE_CRITICAL_SECTION(cs_vSend);
 }
 
+std::deque<CNetMessage>& SocketConnection::GetReceivedMessageQueue()
+{
+    AssertLockHeld(cs_vRecvMsg);
+    return vRecvMsg;
+}
 
 
 CNode::CNode(

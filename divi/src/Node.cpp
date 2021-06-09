@@ -546,6 +546,20 @@ void CNode::ProcessSendMessages(bool trickle)
         nodeSignals_->SendMessages(this,trickle || fWhitelisted);
     }
 }
+
+void CNode::AdvertizeLocalAddress(int64_t rebroadcastTimestamp)
+{
+    TRY_LOCK(cs_vSend, lockSend);
+    if (!lockSend) return;
+
+    // Periodically clear setAddrKnown to allow refresh broadcasts
+    if (rebroadcastTimestamp > 0)
+        setAddrKnown.clear();
+
+    // Rebroadcast our address
+    nodeSignals_->AdvertizeLocalAddress(this);
+}
+
 bool CNode::IsInUse()
 {
     if (GetRefCount() <= 0)

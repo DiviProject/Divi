@@ -216,6 +216,8 @@ public:
 
     void ProcessReceiveMessages(bool& shouldSleep);
     void ProcessSendMessages(bool trickle);
+
+    void AdvertizeLocalAddress(int64_t rebroadcastTimestamp);
     bool IsInUse();
     bool CanBeDisconnected() const;
     CNodeState* GetNodeState();

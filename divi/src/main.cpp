@@ -3771,17 +3771,17 @@ bool ProcessReceivedMessages(CNode* pfrom)
     // this maintains the order of responses
     if (!pfrom->vRecvGetData.empty()) return fOk;
 
-    std::deque<CNetMessage>::iterator it = pfrom->vRecvMsg.begin();
+    std::deque<CNetMessage>::iterator iteratorToCurrentMessageToProcess = pfrom->vRecvMsg.begin();
+    std::deque<CNetMessage>::iterator iteratorToNextMessageToProcess = pfrom->vRecvMsg.begin();
     while(
         !pfrom->IsFlaggedForDisconnection() &&
         pfrom->GetSendBufferStatus()!=NodeBufferStatus::IS_FULL && // needed, to allow responding
-        it != pfrom->vRecvMsg.end() &&
-        it->complete() ) // end, if an incomplete message is found
+        iteratorToCurrentMessageToProcess != pfrom->vRecvMsg.end() &&
+        iteratorToCurrentMessageToProcess->complete()) // end, if an incomplete message is found
     {
         // get next message
-        CNetMessage& msg = *it;
-        // at this point, any failure means we can delete the current message
-        ++it;
+        CNetMessage& msg = *iteratorToCurrentMessageToProcess;
+        iteratorToNextMessageToProcess = ++iteratorToCurrentMessageToProcess;
 
         NetworkMessageState messageStatus = CheckNetworkMessageHeader(pfrom->GetId(), msg, fOk);
         if(messageStatus == NetworkMessageState::STOP_PROCESSING)
@@ -3827,7 +3827,7 @@ bool ProcessReceivedMessages(CNode* pfrom)
 
     // In case the connection got shut down, its receive buffer was wiped
     if (!pfrom->IsFlaggedForDisconnection())
-        pfrom->vRecvMsg.erase(pfrom->vRecvMsg.begin(), it);
+        pfrom->vRecvMsg.erase(pfrom->vRecvMsg.begin(), iteratorToNextMessageToProcess);
 
     return fOk;
 }

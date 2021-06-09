@@ -3829,6 +3829,8 @@ bool ProcessReceivedMessages(CNode* pfrom)
     // In case the connection got shut down, its receive buffer was wiped
     if (!pfrom->IsFlaggedForDisconnection())
         receivedMessageQueue.erase(receivedMessageQueue.begin(), iteratorToNextMessageToProcess);
+    else
+        receivedMessageQueue.clear();
 
     return fOk;
 }

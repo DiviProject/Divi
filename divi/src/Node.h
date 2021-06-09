@@ -50,6 +50,23 @@ public:
     int readData(const char* pch, unsigned int nBytes);
 };
 
+class NetworkMessageSerializer
+{
+public:
+    static void BeginMessage(CDataStream& dataStream, const char* pszCommand);
+    static void EndMessage(CDataStream& dataStream, unsigned& dataSize);
+
+    static void SerializeNextArgument(CDataStream& dataStream)
+    {
+    }
+    template <typename T1, typename ...Args>
+    static void SerializeNextArgument(CDataStream& dataStream,const T1& nextArgument, Args&&... args)
+    {
+        dataStream << nextArgument;
+        SerializeNextArgument(dataStream,std::forward<Args>(args)...);
+    }
+};
+
 class SocketConnection
 {
 public:

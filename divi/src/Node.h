@@ -192,22 +192,13 @@ private:
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
     void EndMessage() UNLOCK_FUNCTION(cs_vSend);
 
-    void PushMessageInternal()
-    {
-    }
-    template <typename T1, typename ...Args>
-    void PushMessageInternal(const T1& nextArgument, Args&&... args)
-    {
-        ssSend << nextArgument;
-        PushMessageInternal(std::forward<Args>(args)...);
-    }
 public:
     template <typename ...Args>
     void PushMessage(const char* pszCommand, Args&&... args)
     {
         try {
             BeginMessage(pszCommand);
-            PushMessageInternal(std::forward<Args>(args)...);
+            NetworkMessageSerializer::SerializeNextArgument(ssSend,std::forward<Args>(args)...);
             EndMessage();
         } catch (...) {
             AbortMessage();

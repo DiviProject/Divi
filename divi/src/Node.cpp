@@ -132,10 +132,10 @@ SocketConnection::SocketConnection(
     SOCKET hSocketIn
     ): fSuccessfullyConnected(false)
     , hSocket(hSocketIn)
-    , ssSend(SER_NETWORK, INIT_PROTO_VERSION)
     , nSendSize(0)
     , nSendOffset(0)
     , nSendBytes(0)
+    , ssSend(SER_NETWORK, INIT_PROTO_VERSION)
     , vSendMsg()
     , cs_vSend()
     , vRecvMsg()
@@ -445,7 +445,10 @@ std::deque<CNetMessage>& SocketConnection::GetReceivedMessageQueue()
     AssertLockHeld(cs_vRecvMsg);
     return vRecvMsg;
 }
-
+void SocketConnection::SetSerializationVersion(int versionNumber)
+{
+    ssSend.SetVersion(versionNumber);
+}
 
 CNode::CNode(
     CNodeSignals* nodeSignals,

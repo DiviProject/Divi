@@ -22,6 +22,11 @@ public:
         , activeMasternode_(new CActiveMasternode(*configurations_, masternodesEnabled_))
     {
     }
+    ~ActiveMasternodeTestFixture()
+    {
+        activeMasternode_.reset();
+        configurations_.reset();
+    }
 
     void AddDummyConfiguration(CTxIn txIn, CService service)
     {

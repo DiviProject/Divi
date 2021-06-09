@@ -8,6 +8,7 @@
 #include "random.h"
 
 #include <assert.h>
+#include <sstream>
 
 #include "FeeAndPriorityCalculator.h"
 
@@ -137,6 +138,19 @@ bool CCoins::Spend(const int nPos)
 {
     CTxInUndo undo;
     return Spend(nPos, undo);
+}
+
+std::string CCoins::ToString() const
+{
+    std::ostringstream res;
+    res << "CCoins(coinbase=" << fCoinBase << ", coinstake=" << fCoinStake;
+    res << ", height=" << nHeight << ", version=" << nVersion << "):";
+    res << std::endl;
+
+    for (const auto& out : vout)
+      res << "  " << out.ToString() << std::endl;
+
+    return res.str();
 }
 
 

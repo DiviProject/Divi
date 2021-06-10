@@ -233,10 +233,7 @@ void SocketConnection::RegisterFileDescriptors(I_CommunicationRegistrar<SOCKET>&
     }
     {
         TRY_LOCK(cs_vRecvMsg, lockRecv);
-        if (lockRecv &&
-            (vRecvMsg.empty() ||
-            !vRecvMsg.front().complete() ||
-            IsAvailableToReceive()))
+        if (lockRecv && IsAvailableToReceive())
         {
             registrar.RegisterForReceive(hSocket);
         }
@@ -286,11 +283,13 @@ void SocketConnection::CloseSocketDisconnect()
 }
 bool SocketConnection::IsAvailableToReceive()
 {
-    return GetTotalRecvSize() <= ReceiveFloodSize();
+    AssertLockHeld(cs_vRecvMsg);
+    return vRecvMsg.empty() || !vRecvMsg.front().complete() || GetTotalRecvSize() <= ReceiveFloodSize();
 }
 // requires LOCK(cs_vRecvMsg)
 unsigned int SocketConnection::GetTotalRecvSize()
 {
+    AssertLockHeld(cs_vRecvMsg);
     unsigned int total = 0;
     for(const CNetMessage& msg: vRecvMsg)
         total += msg.vRecv.size() + 24;
@@ -304,8 +303,7 @@ bool SocketConnection::ConvertDataBufferToNetworkMessage(const char* pch, unsign
     static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;
     while (nBytes > 0) {
         // get current incomplete message, or create a new one
-        if (vRecvMsg.empty() ||
-            vRecvMsg.back().complete())
+        if (vRecvMsg.empty() || vRecvMsg.back().complete())
             vRecvMsg.push_back(CNetMessage(SER_NETWORK, nRecvVersion));
 
         CNetMessage& msg = vRecvMsg.back();

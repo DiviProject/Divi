@@ -92,7 +92,8 @@ bool ActiveChainManager::DisconnectBlock(
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
-        const TxReversalStatus status = UpdateCoinsReversingTransaction(tx,view,blockUndo.vtxundo[transactionIndex-1],pindex->nHeight);
+        const auto* undo = (transactionIndex > 0 ? &blockUndo.vtxundo[transactionIndex - 1] : nullptr);
+        const TxReversalStatus status = UpdateCoinsReversingTransaction(tx, view, undo, pindex->nHeight);
         if(!CheckTxReversalStatus(status,fClean))
         {
             return false;

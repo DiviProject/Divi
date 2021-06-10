@@ -525,9 +525,6 @@ static void DisconnectUnusedNodes()
             // remove from vNodes
             vNodes.erase(remove(vNodes.begin(), vNodes.end(), pnode), vNodes.end());
 
-            // release outbound grant (if any)
-            pnode->grantOutbound.Release();
-
             // close socket and cleanup
             pnode->CloseSocketDisconnect();
 
@@ -1017,11 +1014,8 @@ void static ProcessOneShot()
         vOneShots.pop_front();
     }
     CAddress addr;
-    CSemaphoreGrant grant(*semOutbound, true);
-    if (grant) {
-        if (!OpenNetworkConnection(addr, &grant, strDest.c_str(), true))
-            AddOneShot(strDest);
-    }
+    if (!OpenNetworkConnection(addr,strDest.c_str(), true))
+        AddOneShot(strDest);
 }
 
 void ThreadOpenConnections()
@@ -1037,7 +1031,7 @@ void ThreadOpenConnections()
                 ProcessOneShot();
                 BOOST_FOREACH (string strAddr, connections) {
                     CAddress addr;
-                    OpenNetworkConnection(addr, NULL, strAddr.c_str());
+                    OpenNetworkConnection(addr, strAddr.c_str());
                     for (int i = 0; i < 10 && i < nLoop; i++) {
                         MilliSleep(500);
                     }
@@ -1054,7 +1048,6 @@ void ThreadOpenConnections()
 
         MilliSleep(500);
 
-        CSemaphoreGrant grant(*semOutbound);
         boost::this_thread::interruption_point();
 
         // Add seed nodes if DNS seeds are all down (an infrastructure attack?).
@@ -1119,7 +1112,7 @@ void ThreadOpenConnections()
         }
 
         if (addrConnect.IsValid())
-            OpenNetworkConnection(addrConnect, &grant);
+            OpenNetworkConnection(addrConnect);
     }
 }
 
@@ -1140,8 +1133,7 @@ void ThreadOpenAddedConnections()
             }
             BOOST_FOREACH (string& strAddNode, lAddresses) {
                 CAddress addr;
-                CSemaphoreGrant grant(*semOutbound);
-                OpenNetworkConnection(addr, &grant, strAddNode.c_str());
+                OpenNetworkConnection(addr, strAddNode.c_str());
                 MilliSleep(500);
             }
             MilliSleep(120000); // Retry every 2 minutes
@@ -1182,8 +1174,7 @@ void ThreadOpenAddedConnections()
                         }
         }
         BOOST_FOREACH (std::vector<CService>& vserv, lservAddressesToAdd) {
-            CSemaphoreGrant grant(*semOutbound);
-            OpenNetworkConnection(CAddress(vserv[i % vserv.size()]), &grant);
+            OpenNetworkConnection(CAddress(vserv[i % vserv.size()]));
             MilliSleep(500);
         }
         MilliSleep(120000); // Retry every 2 minutes
@@ -1191,7 +1182,7 @@ void ThreadOpenAddedConnections()
 }
 
 // if successful, this moves the passed grant to the constructed node
-bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound, const char* pszDest, bool fOneShot)
+bool OpenNetworkConnection(const CAddress& addrConnect, const char* pszDest, bool fOneShot)
 {
     //
     // Initiate outbound network connection
@@ -1211,8 +1202,6 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOu
 
     if (!pnode)
         return false;
-    if (grantOutbound)
-        grantOutbound->MoveTo(pnode->grantOutbound);
     pnode->fNetworkNode = true;
     if (fOneShot)
         pnode->fOneShot = true;

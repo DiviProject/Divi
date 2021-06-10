@@ -629,7 +629,7 @@ public:
             if (!pnode->SocketIsValid())
                 continue;
             have_fds = true;
-            pnode->RegisterFileDescriptors(*this);
+            pnode->RegisterCommunication(*this);
         }
     }
     int CheckSocketCanBeSelected()

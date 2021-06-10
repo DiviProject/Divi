@@ -112,6 +112,36 @@ void NetworkMessageSerializer::EndMessage(CDataStream& dataStream, unsigned& dat
     memcpy((char*)&dataStream[CMessageHeader::CHECKSUM_OFFSET], &nChecksum, sizeof(nChecksum));
 }
 
+NetworkMessageSerializer::DeserializationStatus NetworkMessageSerializer::DeserializeNetworkMessageFromBuffer(const char*& buffer,unsigned& bytes,CNetMessage& msg)
+{
+    constexpr unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;
+    while (bytes > 0) {
+        // get current incomplete message, or create a new one
+
+        // absorb network data
+        int handled;
+        if (!msg.in_data)
+            handled = msg.readHeader(buffer, bytes);
+        else
+            handled = msg.readData(buffer, bytes);
+
+        if (handled < 0)
+            return FAILURE;
+
+        if (msg.in_data && msg.hdr.nMessageSize > MAX_PROTOCOL_MESSAGE_LENGTH) {
+            LogPrint("net", "Oversized message from peer, disconnecting");
+            return FAILURE;
+        }
+
+        buffer += handled;
+        bytes -= handled;
+
+        if (msg.complete()) return SUCCESS;
+    }
+
+    return MISSING_DATA;
+}
+
 NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
 limitedmap<CInv, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);
@@ -300,7 +330,6 @@ bool SocketConnection::ConvertDataBufferToNetworkMessage(const char* pch, unsign
 {
     AssertLockHeld(cs_vRecvMsg);
     /** Maximum length of incoming protocol messages (no message over 2 MiB is currently acceptable). */
-    static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;
     while (nBytes > 0) {
         // get current incomplete message, or create a new one
         if (vRecvMsg.empty() || vRecvMsg.back().complete())
@@ -309,26 +338,15 @@ bool SocketConnection::ConvertDataBufferToNetworkMessage(const char* pch, unsign
         CNetMessage& msg = vRecvMsg.back();
 
         // absorb network data
-        int handled;
-        if (!msg.in_data)
-            handled = msg.readHeader(pch, nBytes);
-        else
-            handled = msg.readData(pch, nBytes);
-
-        if (handled < 0)
-            return false;
-
-        if (msg.in_data && msg.hdr.nMessageSize > MAX_PROTOCOL_MESSAGE_LENGTH) {
-            LogPrint("net", "Oversized message from peer, disconnecting");
-            return false;
-        }
-
-        pch += handled;
-        nBytes -= handled;
-
-        if (msg.complete()) {
+        auto deserializationStatus = NetworkMessageSerializer::DeserializeNetworkMessageFromBuffer(pch,nBytes,msg);
+        if(deserializationStatus == NetworkMessageSerializer::SUCCESS)
+        {
             msg.nTime = GetTimeMicros();
             messageHandlerCondition.notify_one();
+        }
+        else if(deserializationStatus == NetworkMessageSerializer::FAILURE)
+        {
+            return false;
         }
     }
 

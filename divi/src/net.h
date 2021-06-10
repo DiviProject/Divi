@@ -43,7 +43,7 @@ class thread_group;
 } // namespace boost
 
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo);
-bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound = NULL, const char* strDest = NULL, bool fOneShot = false);
+bool OpenNetworkConnection(const CAddress& addrConnect, const char* strDest = NULL, bool fOneShot = false);
 void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain);
 bool StopNode();
 void CleanupP2PConnections();

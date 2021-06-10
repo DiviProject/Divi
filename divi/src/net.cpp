@@ -45,6 +45,7 @@
 #include <NodeStats.h>
 #include <NodeStateRegistry.h>
 #include <Node.h>
+#include <I_CommunicationRegistrar.h>
 #include <NodeState.h>
 
 #ifdef WIN32
@@ -551,7 +552,7 @@ void DeleteDisconnectedNodes()
     }
 }
 
-class SocketsProcessor
+class SocketsProcessor final: public I_CommunicationRegistrar<SOCKET>
 {
 private:
     struct timeval timeout;
@@ -568,6 +569,32 @@ public:
         FD_ZERO(&fdsetRecv);
         FD_ZERO(&fdsetSend);
         FD_ZERO(&fdsetError);
+    }
+
+    virtual void RegisterForErrors(SOCKET hSocket)
+    {
+        FD_SET(hSocket, &fdsetError);
+        hSocketMax = std::max(hSocketMax, hSocket);
+    }
+    virtual void RegisterForSend(SOCKET hSocket)
+    {
+        FD_SET(hSocket, &fdsetSend);
+    }
+    virtual void RegisterForReceive(SOCKET hSocket)
+    {
+        FD_SET(hSocket, &fdsetRecv);
+    }
+    virtual bool IsRegisteredForErrors(SOCKET hSocket) const
+    {
+        return FD_ISSET(hSocket, &fdsetError);
+    }
+    virtual bool IsRegisteredForSend(SOCKET hSocket) const
+    {
+        return FD_ISSET(hSocket, &fdsetSend);
+    }
+    virtual bool IsRegisteredForReceive(SOCKET hSocket) const
+    {
+        return FD_ISSET(hSocket, &fdsetRecv);
     }
 
     void ProcessListeningSockets(const std::vector<ListenSocket>& listeningSockets)
@@ -602,7 +629,7 @@ public:
             if (!pnode->SocketIsValid())
                 continue;
             have_fds = true;
-            pnode->RegisterFileDescriptors(&fdsetError, &fdsetSend,&fdsetRecv,hSocketMax);
+            pnode->RegisterFileDescriptors(*this);
         }
     }
     int CheckSocketCanBeSelected()
@@ -679,11 +706,11 @@ public:
 
     bool SocketReceiveDataFromPeer(CNode* pnode, boost::condition_variable& messageHandlerCondition)
     {
-        return pnode->TrySocketReceiveData(&fdsetRecv, &fdsetError, messageHandlerCondition);
+        return pnode->TrySocketReceiveData(*this, messageHandlerCondition);
     }
     bool SocketSendDataToPeer(CNode* pnode)
     {
-        return pnode->TrySocketSendData(&fdsetSend);
+        return pnode->TrySocketSendData(*this);
     }
 };
 

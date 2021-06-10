@@ -221,14 +221,13 @@ void SocketConnection::SocketReceiveData(boost::condition_variable& messageHandl
         CloseSocketDisconnect();
     }
 }
-void SocketConnection::RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax)
+void SocketConnection::RegisterFileDescriptors(I_CommunicationRegistrar<SOCKET>& registrar)
 {
-    FD_SET(hSocket, fdsetError);
-    hSocketMax = std::max(hSocketMax, hSocket);
+    registrar.RegisterForErrors(hSocket);
     {
         TRY_LOCK(cs_vSend, lockSend);
         if (lockSend && !vSendMsg.empty()) {
-            FD_SET(hSocket, fdsetSend);
+            registrar.RegisterForSend(hSocket);
             return;
         }
     }
@@ -239,7 +238,7 @@ void SocketConnection::RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdset
             !vRecvMsg.front().complete() ||
             IsAvailableToReceive()))
         {
-            FD_SET(hSocket, fdsetRecv);
+            registrar.RegisterForReceive(hSocket);
         }
     }
 }
@@ -248,22 +247,22 @@ bool SocketConnection::SocketIsValid() const
     return hSocket != INVALID_SOCKET;
 }
 
-bool SocketConnection::TrySocketSendData(fd_set* fdsetSend)
+bool SocketConnection::TrySocketSendData(const I_CommunicationRegistrar<SOCKET>& registrar)
 {
     if (!SocketIsValid())
         return false;
-    if (FD_ISSET(hSocket, fdsetSend)) {
+    if (registrar.IsRegisteredForSend(hSocket)) {
         TRY_LOCK(cs_vSend, lockSend);
         if (lockSend)
             SocketSendData();
     }
     return true;
 }
-bool SocketConnection::TrySocketReceiveData(fd_set* fdsetRecv,fd_set* fdsetError, boost::condition_variable& messageHandlerCondition)
+bool SocketConnection::TrySocketReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
 {
     if (!SocketIsValid())
         return false;
-    if (FD_ISSET(hSocket, fdsetRecv) || FD_ISSET(hSocket, fdsetError))
+    if (registrar.IsRegisteredForReceive(hSocket) || registrar.IsRegisteredForErrors(hSocket))
     {
         TRY_LOCK(cs_vRecvMsg, lockRecv);
         if (lockRecv)

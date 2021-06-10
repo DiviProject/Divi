@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <NodeId.h>
 #include <memory>
+#include <I_CommunicationRegistrar.h>
 
 #include <boost/thread/condition_variable.hpp>
 
@@ -115,12 +116,12 @@ public:
 
     SocketConnection(SOCKET hSocketIn);
     void CloseSocket();
-    void RegisterFileDescriptors(fd_set* fdsetError, fd_set* fdsetSend, fd_set* fdsetRecv,SOCKET& hSocketMax);
+    void RegisterFileDescriptors(I_CommunicationRegistrar<SOCKET>& registrar);
     bool SocketIsValid() const;
     void SocketSendData();
     void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
-    bool TrySocketSendData(fd_set* fdsetSend);
-    bool TrySocketReceiveData(fd_set* fdsetRecv,fd_set* fdsetError, boost::condition_variable& messageHandlerCondition);
+    bool TrySocketSendData(const I_CommunicationRegistrar<SOCKET>& registrar);
+    bool TrySocketReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
     void CloseSocketDisconnect();
     bool IsAvailableToReceive();
     unsigned int GetTotalRecvSize();

@@ -173,7 +173,6 @@ CCriticalSection cs_setservAddNodeAddresses;
 std::vector<std::string> vAddedNodes;
 CCriticalSection cs_vAddedNodes;
 
-static CSemaphore* semOutbound = NULL;
 boost::condition_variable messageHandlerCondition;
 
 static CAddrMan addrman;
@@ -1385,12 +1384,6 @@ void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain)
         GetNetworkAddressManager().size(), GetTimeMillis() - nStart);
     fAddressesInitialized = true;
 
-    if (semOutbound == NULL) {
-        // initialize semaphore
-        int nMaxOutbound = min(MAX_OUTBOUND_CONNECTIONS, nMaxConnections);
-        semOutbound = new CSemaphore(nMaxOutbound);
-    }
-
     Discover(threadGroup);
 
     //
@@ -1442,9 +1435,6 @@ bool StopNode()
 {
     LogPrintf("StopNode()\n");
     MapPort(false);
-    if (semOutbound)
-        for (int i = 0; i < MAX_OUTBOUND_CONNECTIONS; i++)
-            semOutbound->post();
 
     if (fAddressesInitialized) {
         DumpAddresses();
@@ -1475,8 +1465,6 @@ void CleanupP2PConnections()
         delete pnode;
     }
     vNodesDisconnected.clear();
-    delete semOutbound;
-    semOutbound = NULL;
 
 #ifdef WIN32
     // Shutdown Windows Sockets

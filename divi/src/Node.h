@@ -66,6 +66,13 @@ public:
         dataStream << nextArgument;
         SerializeNextArgument(dataStream,std::forward<Args>(args)...);
     }
+    enum DeserializationStatus
+    {
+        MISSING_DATA,
+        FAILURE,
+        SUCCESS,
+    };
+    static DeserializationStatus DeserializeNetworkMessageFromBuffer(const char*& buffer,unsigned& bytes,CNetMessage& msg);
 };
 
 class SocketConnection

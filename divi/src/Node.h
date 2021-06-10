@@ -125,7 +125,7 @@ public:
     bool SocketIsValid() const;
     void CloseSocket();
     void CloseSocketDisconnect();
-    void RegisterFileDescriptors(I_CommunicationRegistrar<SOCKET>& registrar);
+    void RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar);
     bool TrySocketSendData(const I_CommunicationRegistrar<SOCKET>& registrar);
     bool TrySocketReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
 

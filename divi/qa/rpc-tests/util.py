@@ -128,7 +128,12 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
     if os.getenv("RUNNER") is not None:
       binary.append(os.getenv("RUNNER"))
     binary.append(os.getenv("BITCOIND", "divid"))
-    args = binary + ["-datadir="+datadir, "-keypool=1", "-discover=0", "-rest"]
+    # By default, Divi checks if Tor is running on the system and if it is,
+    # then the real Tor instance will be used as proxy for .onion
+    # connections even if -proxy is set otherwise, and it will try to set up
+    # a hidden service listening.  To avoid this behaviour (which we don't want
+    # in tests), we turn off Tor control with -nolistenonion.
+    args = binary + ["-datadir="+datadir, "-keypool=1", "-discover=0", "-rest", "-nolistenonion"]
     if extra_args is not None: args.extend(extra_args)
     bitcoind_processes[i] = subprocess.Popen(args)
     devnull = open("/dev/null", "w+")

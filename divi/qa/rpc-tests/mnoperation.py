@@ -27,7 +27,7 @@ class MnStatusTest (BitcoinTestFramework):
 
   def __init__ (self):
     super ().__init__ ()
-    self.base_args = ["-debug=masternode", "-debug=mocktime", "-nolistenonion"]
+    self.base_args = ["-debug=masternode", "-debug=mocktime"]
 
   def setup_chain (self):
     for i in range (7):

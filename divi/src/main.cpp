@@ -3040,7 +3040,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             pfrom->PushMessage("sporkcount", GetSporkManager().GetActiveSporkCount());
         }
 
-        pfrom->SetSerializationVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+        pfrom->SetOutboundSerializationVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 
         if (!pfrom->fInbound) {
             // Advertise our address
@@ -3093,7 +3093,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
     else if (strCommand == "verack")
     {
-        pfrom->SetRecvVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+        pfrom->SetInboundSerializationVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 
         // Mark this node as currently connected, so we update its timestamp later.
         if (pfrom->fNetworkNode) {

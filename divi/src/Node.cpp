@@ -350,13 +350,6 @@ int64_t SocketConnection::GetLastTimeDataReceived() const
 {
     return nLastRecv;
 }
-void SocketConnection::SetRecvVersion(int nVersionIn)
-{
-    AssertLockHeld(cs_vRecvMsg);
-    nRecvVersion = nVersionIn;
-    for(CNetMessage& msg: vRecvMsg)
-        msg.SetVersion(nVersionIn);
-}
 uint64_t SocketConnection::GetTotalBytesReceived() const
 {
     return nRecvBytes;
@@ -447,7 +440,14 @@ std::deque<CNetMessage>& SocketConnection::GetReceivedMessageQueue()
     AssertLockHeld(cs_vRecvMsg);
     return vRecvMsg;
 }
-void SocketConnection::SetSerializationVersion(int versionNumber)
+void SocketConnection::SetInboundSerializationVersion(int versionNumber)
+{
+    AssertLockHeld(cs_vRecvMsg);
+    nRecvVersion = versionNumber;
+    for(CNetMessage& msg: vRecvMsg)
+        msg.SetVersion(versionNumber);
+}
+void SocketConnection::SetOutboundSerializationVersion(int versionNumber)
 {
     ssSend.SetVersion(versionNumber);
 }

@@ -112,20 +112,23 @@ protected:
             throw;
         }
     }
+private:
+    void SocketSendData();
+    void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
+    bool IsAvailableToReceive();
+    bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
+
 public:
 
     SocketConnection(SOCKET hSocketIn);
-    void CloseSocket();
-    void RegisterFileDescriptors(I_CommunicationRegistrar<SOCKET>& registrar);
     bool SocketIsValid() const;
-    void SocketSendData();
-    void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
+    void CloseSocket();
+    void CloseSocketDisconnect();
+    void RegisterFileDescriptors(I_CommunicationRegistrar<SOCKET>& registrar);
     bool TrySocketSendData(const I_CommunicationRegistrar<SOCKET>& registrar);
     bool TrySocketReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
-    void CloseSocketDisconnect();
-    bool IsAvailableToReceive();
+
     unsigned int GetTotalRecvSize();
-    bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
     bool IsFlaggedForDisconnection() const;
     void FlagForDisconnection();
     int64_t GetLastTimeDataSent() const;
@@ -234,7 +237,6 @@ public:
     NodeId GetId() const;
     int GetRefCount() const;
     unsigned int GetTotalRecvSize();
-    bool IsAvailableToReceive();
 
     CNode* AddRef();
     void Release();

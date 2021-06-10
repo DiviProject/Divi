@@ -131,13 +131,13 @@ public:
 
     void SetInboundSerializationVersion(int versionNumber);
     void SetOutboundSerializationVersion(int versionNumber);
-
     bool IsFlaggedForDisconnection() const;
     void FlagForDisconnection();
+    std::deque<CNetMessage>& GetReceivedMessageQueue();
+
     int64_t GetLastTimeDataSent() const;
     int64_t GetLastTimeDataReceived() const;
     uint64_t GetTotalBytesReceived() const;
-    std::deque<CNetMessage>& GetReceivedMessageQueue();
     size_t GetSendQueueBytes() const;
 };
 

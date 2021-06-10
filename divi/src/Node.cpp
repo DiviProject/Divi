@@ -221,7 +221,7 @@ void SocketConnection::SocketReceiveData(boost::condition_variable& messageHandl
         CloseSocketDisconnect();
     }
 }
-void SocketConnection::RegisterFileDescriptors(I_CommunicationRegistrar<SOCKET>& registrar)
+void SocketConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
 {
     registrar.RegisterForErrors(hSocket);
     {

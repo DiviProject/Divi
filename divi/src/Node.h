@@ -117,6 +117,7 @@ private:
     void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
     bool IsAvailableToReceive();
     bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
+    unsigned int GetTotalRecvSize();
 
 public:
 
@@ -128,7 +129,6 @@ public:
     bool TrySocketSendData(const I_CommunicationRegistrar<SOCKET>& registrar);
     bool TrySocketReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
 
-    unsigned int GetTotalRecvSize();
     bool IsFlaggedForDisconnection() const;
     void FlagForDisconnection();
     int64_t GetLastTimeDataSent() const;
@@ -236,7 +236,6 @@ public:
     bool IsSelfConnection(uint64_t otherNonce) const;
     NodeId GetId() const;
     int GetRefCount() const;
-    unsigned int GetTotalRecvSize();
 
     CNode* AddRef();
     void Release();

@@ -129,14 +129,15 @@ public:
     bool TrySocketSendData(const I_CommunicationRegistrar<SOCKET>& registrar);
     bool TrySocketReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
 
+    void SetInboundSerializationVersion(int versionNumber);
+    void SetOutboundSerializationVersion(int versionNumber);
+
     bool IsFlaggedForDisconnection() const;
     void FlagForDisconnection();
     int64_t GetLastTimeDataSent() const;
     int64_t GetLastTimeDataReceived() const;
-    void SetRecvVersion(int nVersionIn);
     uint64_t GetTotalBytesReceived() const;
     std::deque<CNetMessage>& GetReceivedMessageQueue();
-    void SetSerializationVersion(int versionNumber);
     size_t GetSendQueueBytes() const;
 };
 

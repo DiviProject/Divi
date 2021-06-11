@@ -18,8 +18,9 @@
 extern Settings& settings;
 uint64_t nLocalHostNonce = 0;
 
+// These quantities are measured in bytes
 unsigned int MaxSendBufferSize() { return 1000 * settings.GetArg("-maxsendbuffer", 1 * 1000); }
-unsigned int ReceiveFloodSize() { return 1000 * settings.GetArg("-maxreceivebuffer", 5 * 1000); }
+unsigned int MaxReceiveBufferSize() { return 1000 * settings.GetArg("-maxreceivebuffer", 5 * 1000); }
 
 CNetMessage::CNetMessage(int nTypeIn, int nVersionIn) : hdrbuf(nTypeIn, nVersionIn), vRecv(nTypeIn, nVersionIn)
 {
@@ -335,7 +336,7 @@ void SocketConnection::CloseSocketDisconnect()
 bool SocketConnection::IsAvailableToReceive()
 {
     AssertLockHeld(cs_vRecvMsg);
-    return vRecvMsg.empty() || !vRecvMsg.front().complete() || GetTotalRecvSize() <= ReceiveFloodSize();
+    return vRecvMsg.empty() || !vRecvMsg.front().complete() || GetTotalRecvSize() <= MaxReceiveBufferSize();
 }
 // requires LOCK(cs_vRecvMsg)
 unsigned int SocketConnection::GetTotalRecvSize()

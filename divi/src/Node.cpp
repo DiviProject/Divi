@@ -210,6 +210,14 @@ void SocketChannel::close()
 {
     CloseSocket(socket_);
 }
+SOCKET SocketChannel::getSocket() const
+{
+    return socket_;
+}
+bool SocketChannel::isValid() const
+{
+    return socket_ != INVALID_SOCKET;
+}
 
 QueuedMessageConnection::QueuedMessageConnection(
     SOCKET hSocketIn
@@ -220,7 +228,7 @@ QueuedMessageConnection::QueuedMessageConnection(
     , cs_vSend()
     , vRecvMsg()
     , cs_vRecvMsg()
-    , hSocket(hSocketIn)
+    , channel_(hSocketIn)
     , nSendSize(0)
     , nSendOffset(0)
     , nRecvVersion(INIT_PROTO_VERSION)
@@ -230,7 +238,7 @@ QueuedMessageConnection::QueuedMessageConnection(
 
 void QueuedMessageConnection::CloseCommsChannel()
 {
-    ::CloseSocket(hSocket);
+    channel_.close();
 }
 
 // requires LOCK(cs_vSend)
@@ -242,7 +250,7 @@ void QueuedMessageConnection::SendData()
     while (it != vSendMsg.end()) {
         const CSerializeData& data = *it;
         assert(data.size() > nSendOffset);
-        int nBytes = send(hSocket, &data[nSendOffset], data.size() - nSendOffset, MSG_NOSIGNAL | MSG_DONTWAIT);
+        int nBytes = channel_.sendData(&data[nSendOffset], data.size() - nSendOffset);
         if (nBytes > 0) {
             dataLogger.RecordSentBytes(nBytes);
             nSendOffset += nBytes;
@@ -280,7 +288,7 @@ void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHand
     AssertLockHeld(cs_vRecvMsg);
     // typical socket buffer is 8K-64K
     char pchBuf[0x10000];
-    int nBytes = recv(hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
+    int nBytes = channel_.receiveData(pchBuf, sizeof(pchBuf));
     if (nBytes > 0) {
         if (!ConvertDataBufferToNetworkMessage(pchBuf, nBytes,messageHandlerCondition))
             CloseCommsAndDisconnect();
@@ -299,11 +307,11 @@ void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHand
 }
 void QueuedMessageConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
 {
-    registrar.RegisterForErrors(hSocket);
+    registrar.RegisterForErrors(channel_.getSocket());
     {
         TRY_LOCK(cs_vSend, lockSend);
         if (lockSend && !vSendMsg.empty()) {
-            registrar.RegisterForSend(hSocket);
+            registrar.RegisterForSend(channel_.getSocket());
             return;
         }
     }
@@ -311,20 +319,20 @@ void QueuedMessageConnection::RegisterCommunication(I_CommunicationRegistrar<SOC
         TRY_LOCK(cs_vRecvMsg, lockRecv);
         if (lockRecv && IsAvailableToReceive())
         {
-            registrar.RegisterForReceive(hSocket);
+            registrar.RegisterForReceive(channel_.getSocket());
         }
     }
 }
 bool QueuedMessageConnection::CommunicationChannelIsValid() const
 {
-    return hSocket != INVALID_SOCKET;
+    return channel_.isValid();
 }
 
 bool QueuedMessageConnection::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
 {
     if (!CommunicationChannelIsValid())
         return false;
-    if (registrar.IsRegisteredForSend(hSocket)) {
+    if (registrar.IsRegisteredForSend(channel_.getSocket())) {
         TRY_LOCK(cs_vSend, lockSend);
         if (lockSend)
             SendData();
@@ -335,7 +343,7 @@ bool QueuedMessageConnection::TryReceiveData(const I_CommunicationRegistrar<SOCK
 {
     if (!CommunicationChannelIsValid())
         return false;
-    if (registrar.IsRegisteredForReceive(hSocket) || registrar.IsRegisteredForErrors(hSocket))
+    if (registrar.IsRegisteredForReceive(channel_.getSocket()) || registrar.IsRegisteredForErrors(channel_.getSocket()))
     {
         TRY_LOCK(cs_vRecvMsg, lockRecv);
         if (lockRecv)
@@ -347,7 +355,7 @@ bool QueuedMessageConnection::TryReceiveData(const I_CommunicationRegistrar<SOCK
 void QueuedMessageConnection::CloseCommsAndDisconnect()
 {
     fDisconnect = true;
-    if (hSocket != INVALID_SOCKET) {
+    if (channel_.isValid()) {
         LogPrint("net", "disconnecting peer\n");
         CloseCommsChannel();
     }

@@ -143,7 +143,7 @@ private:
 public:
 
     SocketConnection(SOCKET hSocketIn);
-    bool SocketIsValid() const;
+    bool CommunicationChannelIsValid() const;
     void CloseSocket();
     void CloseSocketDisconnect();
     void RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar);

@@ -291,14 +291,14 @@ void SocketConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& r
         }
     }
 }
-bool SocketConnection::SocketIsValid() const
+bool SocketConnection::CommunicationChannelIsValid() const
 {
     return hSocket != INVALID_SOCKET;
 }
 
 bool SocketConnection::TrySocketSendData(const I_CommunicationRegistrar<SOCKET>& registrar)
 {
-    if (!SocketIsValid())
+    if (!CommunicationChannelIsValid())
         return false;
     if (registrar.IsRegisteredForSend(hSocket)) {
         TRY_LOCK(cs_vSend, lockSend);
@@ -309,7 +309,7 @@ bool SocketConnection::TrySocketSendData(const I_CommunicationRegistrar<SOCKET>&
 }
 bool SocketConnection::TrySocketReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
 {
-    if (!SocketIsValid())
+    if (!CommunicationChannelIsValid())
         return false;
     if (registrar.IsRegisteredForReceive(hSocket) || registrar.IsRegisteredForErrors(hSocket))
     {

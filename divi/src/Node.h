@@ -93,6 +93,26 @@ public:
     uint64_t GetTotalBytesSent() const;
 };
 
+class I_CommunicationChannel
+{
+public:
+    ~I_CommunicationChannel(){}
+    virtual int sendData(const void* buffer, size_t len) const = 0;
+    virtual int receiveData(void* buffer, size_t len) const = 0;
+    virtual void close() = 0;
+};
+
+class SocketChannel final: public I_CommunicationChannel
+{
+private:
+    SOCKET socket_;
+public:
+    SocketChannel(SOCKET socket);
+    virtual int sendData(const void* buffer, size_t len) const;
+    virtual int receiveData(void* buffer, size_t len) const;
+    virtual void close();
+};
+
 class SocketConnection
 {
 public:

@@ -146,11 +146,11 @@ public:
 
     SocketConnection(SOCKET hSocketIn);
     bool CommunicationChannelIsValid() const;
-    void CloseSocket();
-    void CloseSocketDisconnect();
+    void CloseCommsChannel();
+    void CloseCommsAndDisconnect();
     void RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar);
-    bool TrySocketSendData(const I_CommunicationRegistrar<SOCKET>& registrar);
-    bool TrySocketReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
+    bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar);
+    bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
 
     void SetInboundSerializationVersion(int versionNumber);
     void SetOutboundSerializationVersion(int versionNumber);

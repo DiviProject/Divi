@@ -212,7 +212,7 @@ SocketConnection::SocketConnection(
 {
 }
 
-void SocketConnection::CloseSocket()
+void SocketConnection::CloseCommsChannel()
 {
     ::CloseSocket(hSocket);
 }
@@ -244,7 +244,7 @@ void SocketConnection::SocketSendData()
             if (nBytes < 0 && SocketHasErrors(true))
             {
                 // error
-                CloseSocketDisconnect();
+                CloseCommsAndDisconnect();
             }
             // couldn't send anything at all
             break;
@@ -267,18 +267,18 @@ void SocketConnection::SocketReceiveData(boost::condition_variable& messageHandl
     int nBytes = recv(hSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
     if (nBytes > 0) {
         if (!ConvertDataBufferToNetworkMessage(pchBuf, nBytes,messageHandlerCondition))
-            CloseSocketDisconnect();
+            CloseCommsAndDisconnect();
         RecordReceivedBytes(nBytes);
     } else if (nBytes == 0) {
         // socket closed gracefully
         if (!fDisconnect)
             LogPrint("net", "socket closed\n");
-        CloseSocketDisconnect();
+        CloseCommsAndDisconnect();
     }
     else if (nBytes < 0 && SocketHasErrors(!fDisconnect))
     {
         // error
-        CloseSocketDisconnect();
+        CloseCommsAndDisconnect();
     }
 }
 void SocketConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
@@ -304,7 +304,7 @@ bool SocketConnection::CommunicationChannelIsValid() const
     return hSocket != INVALID_SOCKET;
 }
 
-bool SocketConnection::TrySocketSendData(const I_CommunicationRegistrar<SOCKET>& registrar)
+bool SocketConnection::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
 {
     if (!CommunicationChannelIsValid())
         return false;
@@ -315,7 +315,7 @@ bool SocketConnection::TrySocketSendData(const I_CommunicationRegistrar<SOCKET>&
     }
     return true;
 }
-bool SocketConnection::TrySocketReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
+bool SocketConnection::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
 {
     if (!CommunicationChannelIsValid())
         return false;
@@ -328,12 +328,12 @@ bool SocketConnection::TrySocketReceiveData(const I_CommunicationRegistrar<SOCKE
     return true;
 }
 
-void SocketConnection::CloseSocketDisconnect()
+void SocketConnection::CloseCommsAndDisconnect()
 {
     fDisconnect = true;
     if (hSocket != INVALID_SOCKET) {
         LogPrint("net", "disconnecting peer\n");
-        CloseSocket();
+        CloseCommsChannel();
     }
 
     // in case this fails, we'll empty the recv buffer when the CNode is deleted
@@ -542,7 +542,7 @@ CNode::CNode(
 
 CNode::~CNode()
 {
-    CloseSocket();
+    CloseCommsChannel();
 
     if (pfilter)
         delete pfilter;
@@ -566,7 +566,7 @@ void CNode::ProcessReceiveMessages(bool& shouldSleep)
     {
         bool result = *(nodeSignals_->ProcessReceivedMessages(this));
         if (!result)
-            CloseSocketDisconnect();
+            CloseCommsAndDisconnect();
 
         if (GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)
         {

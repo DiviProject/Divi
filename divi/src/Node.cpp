@@ -442,7 +442,7 @@ static void Fuzz(int nChance,bool& fSuccessfullyConnected, CDataStream& ssSend)
     Fuzz(2,fSuccessfullyConnected,ssSend);
 }
 
-void SocketConnection::EndMessage(NodeId id) UNLOCK_FUNCTION(cs_vSend)
+void SocketConnection::EndMessage(unsigned int& messageDataSize, NodeId id) UNLOCK_FUNCTION(cs_vSend)
 {
     // The -*messagestest options are intentionally not documented in the help message,
     // since they are only used during development to debug the networking code and are
@@ -459,9 +459,8 @@ void SocketConnection::EndMessage(NodeId id) UNLOCK_FUNCTION(cs_vSend)
         return;
 
     // Set the size
-    unsigned int nSize = 0u;
-    NetworkMessageSerializer::EndMessage(ssSend,nSize);
-    LogPrint("net", "(%d bytes) peer=%d\n", nSize, id);
+    NetworkMessageSerializer::EndMessage(ssSend,messageDataSize);
+    LogPrint("net", "(%d bytes) peer=%d\n", messageDataSize, id);
 
     std::deque<CSerializeData>::iterator it = vSendMsg.insert(vSendMsg.end(), CSerializeData());
     ssSend.GetAndClear(*it);

@@ -18,7 +18,7 @@
 extern Settings& settings;
 uint64_t nLocalHostNonce = 0;
 
-unsigned int SendBufferSize() { return 1000 * settings.GetArg("-maxsendbuffer", 1 * 1000); }
+unsigned int MaxSendBufferSize() { return 1000 * settings.GetArg("-maxsendbuffer", 1 * 1000); }
 unsigned int ReceiveFloodSize() { return 1000 * settings.GetArg("-maxreceivebuffer", 5 * 1000); }
 
 CNetMessage::CNetMessage(int nTypeIn, int nVersionIn) : hdrbuf(nTypeIn, nVersionIn), vRecv(nTypeIn, nVersionIn)
@@ -372,7 +372,11 @@ uint64_t SocketConnection::GetTotalBytesReceived() const
 {
     return nRecvBytes;
 }
-size_t SocketConnection::GetSendQueueBytes() const
+size_t SocketConnection::GetTotalBytesSent() const
+{
+    return nSentBytes;
+}
+size_t SocketConnection::GetSendBufferSize() const
 {
     return nSendSize;
 }
@@ -499,7 +503,7 @@ CNode::CNode(
     nStartingHeight = -1;
     fGetAddr = false;
     fRelayTxes = false;
-    setInventoryKnown.max_size(SendBufferSize() / 1000);
+    setInventoryKnown.max_size(MaxSendBufferSize() / 1000);
     pfilter = new CBloomFilter();
     nPingNonceSent = 0;
     nPingUsecStart = 0;
@@ -599,7 +603,7 @@ bool CNode::IsInUse()
 }
 bool CNode::CanBeDisconnected() const
 {
-    return GetRefCount() <= 0 && vRecvMsg.empty() && GetSendQueueBytes() == 0 && ssSend.empty();
+    return GetRefCount() <= 0 && vRecvMsg.empty() && GetSendBufferSize() == 0 && ssSend.empty();
 }
 
 CNodeState* CNode::GetNodeState()
@@ -616,12 +620,12 @@ void CNode::SetToCurrentlyConnected()
 }
 NodeBufferStatus CNode::GetSendBufferStatus() const
 {
-    const size_t sendBufferBytes = GetSendQueueBytes();
-    if(sendBufferBytes < SendBufferSize())
+    const size_t sendBufferSize = GetSendBufferSize();
+    if(sendBufferSize < MaxSendBufferSize())
     {
         return NodeBufferStatus::HAS_SPACE;
     }
-    else if(sendBufferBytes > (SendBufferSize()*2) )
+    else if(sendBufferSize > (MaxSendBufferSize()*2) )
     {
         return NodeBufferStatus::IS_OVERFLOWED;
     }

@@ -582,6 +582,30 @@ void CNode::ProcessSendMessages(bool trickle)
     }
 }
 
+void CNode::CheckForInnactivity()
+{
+    /** Time after which to disconnect, after waiting for a ping response (or inactivity). */
+    constexpr int TIMEOUT_INTERVAL = 20 * 60;
+    int64_t nTime = GetTime();
+    int64_t lastTimeDataSent = GetLastTimeDataSent();
+    int64_t lastTimeDataReceived = GetLastTimeDataReceived();
+    if (nTime - nTimeConnected > 60) {
+        if (lastTimeDataReceived == 0 || lastTimeDataSent == 0) {
+            LogPrint("net", "socket no message in first 60 seconds, %d %d from %d\n", lastTimeDataReceived != 0, lastTimeDataSent != 0, id);
+            FlagForDisconnection();
+        } else if (nTime - lastTimeDataSent > TIMEOUT_INTERVAL) {
+            LogPrintf("socket sending timeout: %is\n", nTime - lastTimeDataSent);
+            FlagForDisconnection();
+        } else if (nTime - lastTimeDataReceived > (nVersion > BIP0031_VERSION ? TIMEOUT_INTERVAL : 90 * 60)) {
+            LogPrintf("socket receive timeout: %is\n", nTime - lastTimeDataReceived);
+            FlagForDisconnection();
+        } else if (nPingNonceSent && nPingUsecStart + TIMEOUT_INTERVAL * 1000000 < GetTimeMicros()) {
+            LogPrintf("ping timeout: %fs\n", 0.000001 * (GetTimeMicros() - nPingUsecStart));
+            FlagForDisconnection();
+        }
+    }
+}
+
 void CNode::AdvertizeLocalAddress(int64_t rebroadcastTimestamp)
 {
     TRY_LOCK(cs_vSend, lockSend);

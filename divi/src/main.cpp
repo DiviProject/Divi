@@ -3177,7 +3177,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
             if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_OVERFLOWED) {
                 Misbehaving(pfrom->GetNodeState(), 50);
-                return error("send buffer size() = %u", pfrom->GetSendBufferSize());
+                return error("Peer %d has exceeded send buffer size", pfrom->GetId());
             }
         }
         {

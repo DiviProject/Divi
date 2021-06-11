@@ -372,7 +372,10 @@ uint64_t SocketConnection::GetTotalBytesReceived() const
 {
     return nRecvBytes;
 }
-
+size_t SocketConnection::GetSendQueueBytes() const
+{
+    return nSendSize;
+}
 void SocketConnection::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
 {
     ENTER_CRITICAL_SECTION(cs_vSend);
@@ -468,10 +471,6 @@ void SocketConnection::SetInboundSerializationVersion(int versionNumber)
 void SocketConnection::SetOutboundSerializationVersion(int versionNumber)
 {
     ssSend.SetVersion(versionNumber);
-}
-size_t SocketConnection::GetSendQueueBytes() const
-{
-    return nSendSize;
 }
 
 CNode::CNode(

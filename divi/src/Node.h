@@ -122,10 +122,9 @@ private:
 
 protected:
     template <typename ...Args>
-    void PushMessageAndLogNodeId(NodeId nodeId, const char* pszCommand, Args&&... args)
+    void PushMessageAndLogNodeId(unsigned int& messageDataSize, NodeId nodeId, const char* pszCommand, Args&&... args)
     {
         try {
-            unsigned int messageDataSize = 0;
             BeginMessage(pszCommand);
             NetworkMessageSerializer::SerializeNextArgument(ssSend,std::forward<Args>(args)...);
             EndMessage(messageDataSize,nodeId);
@@ -239,7 +238,8 @@ public:
     template <typename ...Args>
     void PushMessage(const char* pszCommand, Args&&... args)
     {
-        SocketConnection::PushMessageAndLogNodeId(id,pszCommand,std::forward<Args>(args)...);
+        unsigned int messageDataSize = 0u;
+        SocketConnection::PushMessageAndLogNodeId(messageDataSize,id,pszCommand,std::forward<Args>(args)...);
     }
 
     void ProcessReceiveMessages(bool& shouldSleep);

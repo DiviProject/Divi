@@ -77,7 +77,7 @@ public:
 
 class CommunicationLogger
 {
-protected:
+private:
     int64_t nLastSend;
     int64_t nLastRecv;
     uint64_t nSendBytes;
@@ -85,6 +85,8 @@ protected:
 
 public:
     CommunicationLogger();
+    void RecordSentBytes(int additionalBytes);
+    void RecordReceivedBytes(int additionalBytes);
     int64_t GetLastTimeDataSent() const;
     int64_t GetLastTimeDataReceived() const;
     uint64_t GetTotalBytesReceived() const;

@@ -64,8 +64,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
-/** Time after which to disconnect, after waiting for a ping response (or inactivity). */
-constexpr int TIMEOUT_INTERVAL = 20 * 60;
 /** -listen default */
 constexpr bool DEFAULT_LISTEN = true;
 /** -upnp default */
@@ -748,24 +746,7 @@ void ThreadSocketHandler()
             //
             // Inactivity checking
             //
-            int64_t nTime = GetTime();
-            int64_t lastTimeDataSent = pnode->GetLastTimeDataSent();
-            int64_t lastTimeDataReceived = pnode->GetLastTimeDataReceived();
-            if (nTime - pnode->nTimeConnected > 60) {
-                if (lastTimeDataReceived == 0 || lastTimeDataSent == 0) {
-                    LogPrint("net", "socket no message in first 60 seconds, %d %d from %d\n", lastTimeDataReceived != 0, lastTimeDataSent != 0, pnode->id);
-                    pnode->FlagForDisconnection();
-                } else if (nTime - lastTimeDataSent > TIMEOUT_INTERVAL) {
-                    LogPrintf("socket sending timeout: %is\n", nTime - lastTimeDataSent);
-                    pnode->FlagForDisconnection();
-                } else if (nTime - lastTimeDataReceived > (pnode->nVersion > BIP0031_VERSION ? TIMEOUT_INTERVAL : 90 * 60)) {
-                    LogPrintf("socket receive timeout: %is\n", nTime - lastTimeDataReceived);
-                    pnode->FlagForDisconnection();
-                } else if (pnode->nPingNonceSent && pnode->nPingUsecStart + TIMEOUT_INTERVAL * 1000000 < GetTimeMicros()) {
-                    LogPrintf("ping timeout: %fs\n", 0.000001 * (GetTimeMicros() - pnode->nPingUsecStart));
-                    pnode->FlagForDisconnection();
-                }
-            }
+            pnode->CheckForInnactivity();
         }
         safeNodesCopy.ClearCopy();
     }

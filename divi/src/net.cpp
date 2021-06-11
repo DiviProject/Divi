@@ -429,7 +429,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
 
         // Add node
         CNode* pnode = new CNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addrConnect, pszDest ? pszDest : "", false);
-        if (pnode->SocketIsValid() && !pnode->fInbound)
+        if (pnode->CommunicationChannelIsValid() && !pnode->fInbound)
             pnode->PushVersion(GetHeight());
         pnode->AddRef();
 
@@ -622,7 +622,7 @@ public:
         LOCK(nodesLock);
         for(CNode* pnode: nodes)
         {
-            if (!pnode->SocketIsValid())
+            if (!pnode->CommunicationChannelIsValid())
                 continue;
             have_fds = true;
             pnode->RegisterCommunication(*this);

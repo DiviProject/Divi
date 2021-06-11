@@ -75,7 +75,23 @@ public:
     static DeserializationStatus DeserializeNetworkMessageFromBuffer(const char*& buffer,unsigned& bytes,CNetMessage& msg);
 };
 
-class SocketConnection
+class CommunicationLogger
+{
+protected:
+    int64_t nLastSend;
+    int64_t nLastRecv;
+    uint64_t nSendBytes;
+    uint64_t nRecvBytes;
+
+public:
+    CommunicationLogger();
+    int64_t GetLastTimeDataSent() const;
+    int64_t GetLastTimeDataReceived() const;
+    uint64_t GetTotalBytesReceived() const;
+    uint64_t GetTotalBytesSent() const;
+};
+
+class SocketConnection: public CommunicationLogger
 {
 public:
     bool fSuccessfullyConnected;
@@ -91,12 +107,8 @@ private:
     SOCKET hSocket;
     size_t nSendSize;   // total size of all vSendMsg entries
     size_t nSendOffset; // offset inside the first vSendMsg already sent
-    uint64_t nSendBytes;
-    uint64_t nRecvBytes;
 
     int nRecvVersion;
-    int64_t nLastSend;
-    int64_t nLastRecv;
     bool fDisconnect;
 
     // TODO: Document the postcondition of this function.  Is cs_vSend locked?
@@ -142,10 +154,6 @@ public:
     void FlagForDisconnection();
     std::deque<CNetMessage>& GetReceivedMessageQueue();
 
-    int64_t GetLastTimeDataSent() const;
-    int64_t GetLastTimeDataReceived() const;
-    uint64_t GetTotalBytesReceived() const;
-    uint64_t GetTotalBytesSent() const;
     size_t GetSendBufferSize() const;
 };
 

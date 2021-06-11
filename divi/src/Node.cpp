@@ -142,6 +142,30 @@ NetworkMessageSerializer::DeserializationStatus NetworkMessageSerializer::Deseri
     return MISSING_DATA;
 }
 
+CommunicationLogger::CommunicationLogger(
+    ): nLastSend(0)
+    , nLastRecv(0)
+    , nSendBytes(0)
+    , nRecvBytes(0)
+{
+}
+int64_t CommunicationLogger::GetLastTimeDataSent() const
+{
+    return nLastSend;
+}
+int64_t CommunicationLogger::GetLastTimeDataReceived() const
+{
+    return nLastRecv;
+}
+uint64_t CommunicationLogger::GetTotalBytesReceived() const
+{
+    return nRecvBytes;
+}
+uint64_t CommunicationLogger::GetTotalBytesSent() const
+{
+    return nSendBytes;
+}
+
 NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
 limitedmap<CInv, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);
@@ -160,7 +184,8 @@ static bool SocketHasErrors(bool shouldLogError)
 
 SocketConnection::SocketConnection(
     SOCKET hSocketIn
-    ): fSuccessfullyConnected(false)
+    ): CommunicationLogger()
+    , fSuccessfullyConnected(false)
     , ssSend(SER_NETWORK, INIT_PROTO_VERSION)
     , vSendMsg()
     , cs_vSend()
@@ -169,11 +194,7 @@ SocketConnection::SocketConnection(
     , hSocket(hSocketIn)
     , nSendSize(0)
     , nSendOffset(0)
-    , nSendBytes(0)
-    , nRecvBytes(0)
     , nRecvVersion(INIT_PROTO_VERSION)
-    , nLastSend(0)
-    , nLastRecv(0)
     , fDisconnect(false)
 {
 }
@@ -359,22 +380,6 @@ bool SocketConnection::IsFlaggedForDisconnection() const
 void SocketConnection::FlagForDisconnection()
 {
     fDisconnect = true;
-}
-int64_t SocketConnection::GetLastTimeDataSent() const
-{
-    return nLastSend;
-}
-int64_t SocketConnection::GetLastTimeDataReceived() const
-{
-    return nLastRecv;
-}
-uint64_t SocketConnection::GetTotalBytesReceived() const
-{
-    return nRecvBytes;
-}
-size_t SocketConnection::GetTotalBytesSent() const
-{
-    return nSentBytes;
 }
 size_t SocketConnection::GetSendBufferSize() const
 {

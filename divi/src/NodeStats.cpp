@@ -16,7 +16,7 @@ CNodeStats::CNodeStats(CNode* pnode)
     X(cleanSubVer);
     X(fInbound);
     X(nStartingHeight);
-    nSendBytes = pnode->GetSendBufferSize();
+    nSendBytes = pnode->GetTotalBytesSent();
     nRecvBytes = pnode->GetTotalBytesReceived();
     X(fWhitelisted);
 

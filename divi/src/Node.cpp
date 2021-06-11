@@ -234,7 +234,7 @@ void SocketConnection::CloseCommsChannel()
 }
 
 // requires LOCK(cs_vSend)
-void SocketConnection::SocketSendData()
+void SocketConnection::SendData()
 {
     AssertLockHeld(cs_vSend);
     std::deque<CSerializeData>::iterator it = vSendMsg.begin();
@@ -275,7 +275,7 @@ void SocketConnection::SocketSendData()
 }
 
 // Requires LOCK(cs_vRecvMsg)
-void SocketConnection::SocketReceiveData(boost::condition_variable& messageHandlerCondition)
+void SocketConnection::ReceiveData(boost::condition_variable& messageHandlerCondition)
 {
     AssertLockHeld(cs_vRecvMsg);
     // typical socket buffer is 8K-64K
@@ -327,7 +327,7 @@ bool SocketConnection::TrySendData(const I_CommunicationRegistrar<SOCKET>& regis
     if (registrar.IsRegisteredForSend(hSocket)) {
         TRY_LOCK(cs_vSend, lockSend);
         if (lockSend)
-            SocketSendData();
+            SendData();
     }
     return true;
 }
@@ -339,7 +339,7 @@ bool SocketConnection::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& re
     {
         TRY_LOCK(cs_vRecvMsg, lockRecv);
         if (lockRecv)
-            SocketReceiveData(messageHandlerCondition);
+            ReceiveData(messageHandlerCondition);
     }
     return true;
 }
@@ -483,7 +483,7 @@ void SocketConnection::EndMessage(unsigned int& messageDataSize) UNLOCK_FUNCTION
 
     // If write queue empty, attempt "optimistic write"
     if (it == vSendMsg.begin())
-        SocketSendData();
+        SendData();
 
     LEAVE_CRITICAL_SECTION(cs_vSend);
 }

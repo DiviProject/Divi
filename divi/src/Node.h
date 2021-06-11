@@ -113,7 +113,7 @@ public:
     virtual void close();
 };
 
-class SocketConnection
+class QueuedMessageConnection
 {
 public:
     bool fSuccessfullyConnected;
@@ -164,7 +164,7 @@ private:
 
 public:
 
-    SocketConnection(SOCKET hSocketIn);
+    QueuedMessageConnection(SOCKET hSocketIn);
     bool CommunicationChannelIsValid() const;
     void CloseCommsChannel();
     void CloseCommsAndDisconnect();
@@ -179,7 +179,7 @@ public:
     std::deque<CNetMessage>& GetReceivedMessageQueue();
 };
 
-class CNode: public SocketConnection
+class CNode: public QueuedMessageConnection
 {
 public:
     uint64_t nServices;
@@ -260,7 +260,7 @@ public:
     void PushMessage(const char* pszCommand, Args&&... args)
     {
         unsigned int messageDataSize = 0u;
-        SocketConnection::PushMessageAndRecordDataSize(messageDataSize,pszCommand,std::forward<Args>(args)...);
+        QueuedMessageConnection::PushMessageAndRecordDataSize(messageDataSize,pszCommand,std::forward<Args>(args)...);
         LogMessageSize(messageDataSize);
     }
 

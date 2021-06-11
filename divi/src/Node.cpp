@@ -211,7 +211,7 @@ void SocketChannel::close()
     CloseSocket(socket_);
 }
 
-SocketConnection::SocketConnection(
+QueuedMessageConnection::QueuedMessageConnection(
     SOCKET hSocketIn
     ): fSuccessfullyConnected(false)
     , dataLogger()
@@ -228,13 +228,13 @@ SocketConnection::SocketConnection(
 {
 }
 
-void SocketConnection::CloseCommsChannel()
+void QueuedMessageConnection::CloseCommsChannel()
 {
     ::CloseSocket(hSocket);
 }
 
 // requires LOCK(cs_vSend)
-void SocketConnection::SendData()
+void QueuedMessageConnection::SendData()
 {
     AssertLockHeld(cs_vSend);
     std::deque<CSerializeData>::iterator it = vSendMsg.begin();
@@ -275,7 +275,7 @@ void SocketConnection::SendData()
 }
 
 // Requires LOCK(cs_vRecvMsg)
-void SocketConnection::ReceiveData(boost::condition_variable& messageHandlerCondition)
+void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHandlerCondition)
 {
     AssertLockHeld(cs_vRecvMsg);
     // typical socket buffer is 8K-64K
@@ -297,7 +297,7 @@ void SocketConnection::ReceiveData(boost::condition_variable& messageHandlerCond
         CloseCommsAndDisconnect();
     }
 }
-void SocketConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
+void QueuedMessageConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
 {
     registrar.RegisterForErrors(hSocket);
     {
@@ -315,12 +315,12 @@ void SocketConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& r
         }
     }
 }
-bool SocketConnection::CommunicationChannelIsValid() const
+bool QueuedMessageConnection::CommunicationChannelIsValid() const
 {
     return hSocket != INVALID_SOCKET;
 }
 
-bool SocketConnection::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
+bool QueuedMessageConnection::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
 {
     if (!CommunicationChannelIsValid())
         return false;
@@ -331,7 +331,7 @@ bool SocketConnection::TrySendData(const I_CommunicationRegistrar<SOCKET>& regis
     }
     return true;
 }
-bool SocketConnection::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
+bool QueuedMessageConnection::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
 {
     if (!CommunicationChannelIsValid())
         return false;
@@ -344,7 +344,7 @@ bool SocketConnection::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& re
     return true;
 }
 
-void SocketConnection::CloseCommsAndDisconnect()
+void QueuedMessageConnection::CloseCommsAndDisconnect()
 {
     fDisconnect = true;
     if (hSocket != INVALID_SOCKET) {
@@ -357,13 +357,13 @@ void SocketConnection::CloseCommsAndDisconnect()
     if (lockRecv)
         vRecvMsg.clear();
 }
-bool SocketConnection::IsAvailableToReceive()
+bool QueuedMessageConnection::IsAvailableToReceive()
 {
     AssertLockHeld(cs_vRecvMsg);
     return vRecvMsg.empty() || !vRecvMsg.front().complete() || GetTotalRecvSize() <= MaxReceiveBufferSize();
 }
 // requires LOCK(cs_vRecvMsg)
-unsigned int SocketConnection::GetTotalRecvSize()
+unsigned int QueuedMessageConnection::GetTotalRecvSize()
 {
     AssertLockHeld(cs_vRecvMsg);
     unsigned int total = 0;
@@ -372,7 +372,7 @@ unsigned int SocketConnection::GetTotalRecvSize()
     return total;
 }
 // requires LOCK(cs_vRecvMsg)
-bool SocketConnection::ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition)
+bool QueuedMessageConnection::ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition)
 {
     AssertLockHeld(cs_vRecvMsg);
     /** Maximum length of incoming protocol messages (no message over 2 MiB is currently acceptable). */
@@ -398,25 +398,25 @@ bool SocketConnection::ConvertDataBufferToNetworkMessage(const char* pch, unsign
 
     return true;
 }
-bool SocketConnection::IsFlaggedForDisconnection() const
+bool QueuedMessageConnection::IsFlaggedForDisconnection() const
 {
     return fDisconnect;
 }
-void SocketConnection::FlagForDisconnection()
+void QueuedMessageConnection::FlagForDisconnection()
 {
     fDisconnect = true;
 }
-size_t SocketConnection::GetSendBufferSize() const
+size_t QueuedMessageConnection::GetSendBufferSize() const
 {
     return nSendSize;
 }
-void SocketConnection::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
+void QueuedMessageConnection::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
 {
     ENTER_CRITICAL_SECTION(cs_vSend);
     NetworkMessageSerializer::BeginMessage(ssSend,pszCommand);
 }
 
-void SocketConnection::AbortMessage() UNLOCK_FUNCTION(cs_vSend)
+void QueuedMessageConnection::AbortMessage() UNLOCK_FUNCTION(cs_vSend)
 {
     ssSend.clear();
     LEAVE_CRITICAL_SECTION(cs_vSend);
@@ -458,7 +458,7 @@ static void Fuzz(int nChance,bool& fSuccessfullyConnected, CDataStream& ssSend)
     Fuzz(2,fSuccessfullyConnected,ssSend);
 }
 
-void SocketConnection::EndMessage(unsigned int& messageDataSize) UNLOCK_FUNCTION(cs_vSend)
+void QueuedMessageConnection::EndMessage(unsigned int& messageDataSize) UNLOCK_FUNCTION(cs_vSend)
 {
     // The -*messagestest options are intentionally not documented in the help message,
     // since they are only used during development to debug the networking code and are
@@ -488,19 +488,19 @@ void SocketConnection::EndMessage(unsigned int& messageDataSize) UNLOCK_FUNCTION
     LEAVE_CRITICAL_SECTION(cs_vSend);
 }
 
-std::deque<CNetMessage>& SocketConnection::GetReceivedMessageQueue()
+std::deque<CNetMessage>& QueuedMessageConnection::GetReceivedMessageQueue()
 {
     AssertLockHeld(cs_vRecvMsg);
     return vRecvMsg;
 }
-void SocketConnection::SetInboundSerializationVersion(int versionNumber)
+void QueuedMessageConnection::SetInboundSerializationVersion(int versionNumber)
 {
     AssertLockHeld(cs_vRecvMsg);
     nRecvVersion = versionNumber;
     for(CNetMessage& msg: vRecvMsg)
         msg.SetVersion(versionNumber);
 }
-void SocketConnection::SetOutboundSerializationVersion(int versionNumber)
+void QueuedMessageConnection::SetOutboundSerializationVersion(int versionNumber)
 {
     ssSend.SetVersion(versionNumber);
 }
@@ -512,7 +512,7 @@ CNode::CNode(
     CAddress addrIn,
     std::string addrNameIn,
     bool fInboundIn
-    ) : SocketConnection(hSocketIn)
+    ) : QueuedMessageConnection(hSocketIn)
     , setAddrKnown(5000)
 {
     nServices = 0;

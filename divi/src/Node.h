@@ -122,7 +122,7 @@ private:
 
 protected:
     template <typename ...Args>
-    void PushMessageAndLogNodeId(unsigned int& messageDataSize, const char* pszCommand, Args&&... args)
+    void PushMessageAndRecordDataSize(unsigned int& messageDataSize, const char* pszCommand, Args&&... args)
     {
         try {
             BeginMessage(pszCommand);
@@ -240,7 +240,7 @@ public:
     void PushMessage(const char* pszCommand, Args&&... args)
     {
         unsigned int messageDataSize = 0u;
-        SocketConnection::PushMessageAndLogNodeId(messageDataSize,pszCommand,std::forward<Args>(args)...);
+        SocketConnection::PushMessageAndRecordDataSize(messageDataSize,pszCommand,std::forward<Args>(args)...);
         LogMessageSize(messageDataSize);
     }
 

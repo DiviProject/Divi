@@ -93,11 +93,11 @@ public:
     uint64_t GetTotalBytesSent() const;
 };
 
-class SocketConnection: public CommunicationLogger
+class SocketConnection
 {
 public:
     bool fSuccessfullyConnected;
-
+    CommunicationLogger dataLogger;
 protected:
     CDataStream ssSend;
     std::deque<CSerializeData> vSendMsg;

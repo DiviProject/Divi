@@ -111,6 +111,9 @@ public:
     virtual int sendData(const void* buffer, size_t len) const;
     virtual int receiveData(void* buffer, size_t len) const;
     virtual void close();
+
+    SOCKET getSocket() const;
+    bool isValid() const;
 };
 
 class QueuedMessageConnection
@@ -126,7 +129,7 @@ protected:
     std::deque<CNetMessage> vRecvMsg;
     CCriticalSection cs_vRecvMsg;
 private:
-    SOCKET hSocket;
+    SocketChannel channel_;
     size_t nSendSize;   // total size of all vSendMsg entries
     size_t nSendOffset; // offset inside the first vSendMsg already sent
 

@@ -523,7 +523,7 @@ static void DisconnectUnusedNodes()
             vNodes.erase(remove(vNodes.begin(), vNodes.end(), pnode), vNodes.end());
 
             // close socket and cleanup
-            pnode->CloseSocketDisconnect();
+            pnode->CloseCommsAndDisconnect();
 
             // hold in disconnected pool until all refs are released
             if (pnode->fNetworkNode || pnode->fInbound)
@@ -700,11 +700,11 @@ public:
 
     bool SocketReceiveDataFromPeer(CNode* pnode, boost::condition_variable& messageHandlerCondition)
     {
-        return pnode->TrySocketReceiveData(*this, messageHandlerCondition);
+        return pnode->TryReceiveData(*this, messageHandlerCondition);
     }
     bool SocketSendDataToPeer(CNode* pnode)
     {
-        return pnode->TrySocketSendData(*this);
+        return pnode->TrySendData(*this);
     }
 };
 

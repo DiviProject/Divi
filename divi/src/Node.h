@@ -131,6 +131,8 @@ protected:
             throw;
         }
     }
+    size_t GetSendBufferSize() const;
+
 private:
     void SocketSendData();
     void SocketReceiveData(boost::condition_variable& messageHandlerCondition);
@@ -153,8 +155,6 @@ public:
     bool IsFlaggedForDisconnection() const;
     void FlagForDisconnection();
     std::deque<CNetMessage>& GetReceivedMessageQueue();
-
-    size_t GetSendBufferSize() const;
 };
 
 class CNode: public SocketConnection

@@ -23,6 +23,6 @@ public:
     double dPingWait;
     std::string addrLocal;
 
-    CNodeStats(CNode*);
+    CNodeStats(const CNode*);
 };
 #endif// NODE_STATS_H

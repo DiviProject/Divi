@@ -4,20 +4,20 @@
 #include <utiltime.h>
 #undef X
 #define X(name) name = pnode->name
-CNodeStats::CNodeStats(CNode* pnode)
+CNodeStats::CNodeStats(const CNode* pnode)
 {
     nodeid = pnode->GetId();
     X(nServices);
-    nLastSend = pnode->GetLastTimeDataSent();
-    nLastRecv = pnode->GetLastTimeDataReceived();
+    nLastSend = pnode->dataLogger.GetLastTimeDataSent();
+    nLastRecv = pnode->dataLogger.GetLastTimeDataReceived();
     X(nTimeConnected);
     X(addrName);
     X(nVersion);
     X(cleanSubVer);
     X(fInbound);
     X(nStartingHeight);
-    nSendBytes = pnode->GetTotalBytesSent();
-    nRecvBytes = pnode->GetTotalBytesReceived();
+    nSendBytes = pnode->dataLogger.GetTotalBytesSent();
+    nRecvBytes = pnode->dataLogger.GetTotalBytesReceived();
     X(fWhitelisted);
 
     // It is common for nodes with good ping times to suddenly become lagged,

@@ -197,8 +197,8 @@ static bool SocketHasErrors(bool shouldLogError)
 
 SocketConnection::SocketConnection(
     SOCKET hSocketIn
-    ): CommunicationLogger()
-    , fSuccessfullyConnected(false)
+    ): fSuccessfullyConnected(false)
+    , dataLogger()
     , ssSend(SER_NETWORK, INIT_PROTO_VERSION)
     , vSendMsg()
     , cs_vSend()
@@ -228,7 +228,7 @@ void SocketConnection::SocketSendData()
         assert(data.size() > nSendOffset);
         int nBytes = send(hSocket, &data[nSendOffset], data.size() - nSendOffset, MSG_NOSIGNAL | MSG_DONTWAIT);
         if (nBytes > 0) {
-            RecordSentBytes(nBytes);
+            dataLogger.RecordSentBytes(nBytes);
             nSendOffset += nBytes;
             if (nSendOffset == data.size()) {
                 nSendOffset = 0;
@@ -268,7 +268,7 @@ void SocketConnection::SocketReceiveData(boost::condition_variable& messageHandl
     if (nBytes > 0) {
         if (!ConvertDataBufferToNetworkMessage(pchBuf, nBytes,messageHandlerCondition))
             CloseCommsAndDisconnect();
-        RecordReceivedBytes(nBytes);
+        dataLogger.RecordReceivedBytes(nBytes);
     } else if (nBytes == 0) {
         // socket closed gracefully
         if (!fDisconnect)
@@ -591,8 +591,8 @@ void CNode::CheckForInnactivity()
     /** Time after which to disconnect, after waiting for a ping response (or inactivity). */
     constexpr int TIMEOUT_INTERVAL = 20 * 60;
     int64_t nTime = GetTime();
-    int64_t lastTimeDataSent = GetLastTimeDataSent();
-    int64_t lastTimeDataReceived = GetLastTimeDataReceived();
+    int64_t lastTimeDataSent = dataLogger.GetLastTimeDataSent();
+    int64_t lastTimeDataReceived = dataLogger.GetLastTimeDataReceived();
     if (nTime - nTimeConnected > 60) {
         if (lastTimeDataReceived == 0 || lastTimeDataSent == 0) {
             LogPrint("net", "socket no message in first 60 seconds, %d %d from %d\n", lastTimeDataReceived != 0, lastTimeDataSent != 0, id);

@@ -118,16 +118,17 @@ private:
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
     void AbortMessage() UNLOCK_FUNCTION(cs_vSend);
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
-    void EndMessage(NodeId id) UNLOCK_FUNCTION(cs_vSend);
+    void EndMessage(unsigned int& messageDataSize, NodeId id) UNLOCK_FUNCTION(cs_vSend);
 
 protected:
     template <typename ...Args>
     void PushMessageAndLogNodeId(NodeId nodeId, const char* pszCommand, Args&&... args)
     {
         try {
+            unsigned int messageDataSize = 0;
             BeginMessage(pszCommand);
             NetworkMessageSerializer::SerializeNextArgument(ssSend,std::forward<Args>(args)...);
-            EndMessage(nodeId);
+            EndMessage(messageDataSize,nodeId);
         } catch (...) {
             AbortMessage();
             throw;

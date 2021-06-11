@@ -150,6 +150,18 @@ CommunicationLogger::CommunicationLogger(
     , nRecvBytes(0)
 {
 }
+void CommunicationLogger::RecordSentBytes(int additionalBytes)
+{
+    nLastSend = GetTime();
+    nSendBytes += additionalBytes;
+    NetworkUsageStats::RecordBytesSent(additionalBytes);
+}
+void CommunicationLogger::RecordReceivedBytes(int additionalBytes)
+{
+    nLastRecv = GetTime();
+    nRecvBytes += additionalBytes;
+    NetworkUsageStats::RecordBytesRecv(additionalBytes);
+}
 int64_t CommunicationLogger::GetLastTimeDataSent() const
 {
     return nLastSend;
@@ -216,10 +228,8 @@ void SocketConnection::SocketSendData()
         assert(data.size() > nSendOffset);
         int nBytes = send(hSocket, &data[nSendOffset], data.size() - nSendOffset, MSG_NOSIGNAL | MSG_DONTWAIT);
         if (nBytes > 0) {
-            nLastSend = GetTime();
-            nSendBytes += nBytes;
+            RecordSentBytes(nBytes);
             nSendOffset += nBytes;
-            NetworkUsageStats::RecordBytesSent(nBytes);
             if (nSendOffset == data.size()) {
                 nSendOffset = 0;
                 nSendSize -= data.size();
@@ -258,9 +268,7 @@ void SocketConnection::SocketReceiveData(boost::condition_variable& messageHandl
     if (nBytes > 0) {
         if (!ConvertDataBufferToNetworkMessage(pchBuf, nBytes,messageHandlerCondition))
             CloseSocketDisconnect();
-        nLastRecv = GetTime();
-        nRecvBytes += nBytes;
-        NetworkUsageStats::RecordBytesRecv(nBytes);
+        RecordReceivedBytes(nBytes);
     } else if (nBytes == 0) {
         // socket closed gracefully
         if (!fDisconnect)

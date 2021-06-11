@@ -118,16 +118,16 @@ private:
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
     void AbortMessage() UNLOCK_FUNCTION(cs_vSend);
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
-    void EndMessage(unsigned int& messageDataSize, NodeId id) UNLOCK_FUNCTION(cs_vSend);
+    void EndMessage(unsigned int& messageDataSize) UNLOCK_FUNCTION(cs_vSend);
 
 protected:
     template <typename ...Args>
-    void PushMessageAndLogNodeId(unsigned int& messageDataSize, NodeId nodeId, const char* pszCommand, Args&&... args)
+    void PushMessageAndLogNodeId(unsigned int& messageDataSize, const char* pszCommand, Args&&... args)
     {
         try {
             BeginMessage(pszCommand);
             NetworkMessageSerializer::SerializeNextArgument(ssSend,std::forward<Args>(args)...);
-            EndMessage(messageDataSize,nodeId);
+            EndMessage(messageDataSize);
         } catch (...) {
             AbortMessage();
             throw;
@@ -234,12 +234,14 @@ public:
     CNode(CNodeSignals* nodeSignals, CAddrMan& addressMananger, SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn = false);
     ~CNode();
 
+    void LogMessageSize(unsigned int messageDataSize) const;
 public:
     template <typename ...Args>
     void PushMessage(const char* pszCommand, Args&&... args)
     {
         unsigned int messageDataSize = 0u;
-        SocketConnection::PushMessageAndLogNodeId(messageDataSize,id,pszCommand,std::forward<Args>(args)...);
+        SocketConnection::PushMessageAndLogNodeId(messageDataSize,pszCommand,std::forward<Args>(args)...);
+        LogMessageSize(messageDataSize);
     }
 
     void ProcessReceiveMessages(bool& shouldSleep);

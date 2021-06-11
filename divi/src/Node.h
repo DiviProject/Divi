@@ -145,7 +145,8 @@ public:
     int64_t GetLastTimeDataSent() const;
     int64_t GetLastTimeDataReceived() const;
     uint64_t GetTotalBytesReceived() const;
-    size_t GetSendQueueBytes() const;
+    uint64_t GetTotalBytesSent() const;
+    size_t GetSendBufferSize() const;
 };
 
 class CNode: public SocketConnection

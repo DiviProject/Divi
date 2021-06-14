@@ -270,6 +270,8 @@ public:
 
     void ProcessReceiveMessages(bool& shouldSleep);
     void ProcessSendMessages(bool trickle);
+    void RespondToRequestForData();
+    void RecordRequestForData(std::vector<CInv>& inventoryRequested);
 
     void CheckForInnactivity();
     void AdvertizeLocalAddress(int64_t rebroadcastTimestamp);

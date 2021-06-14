@@ -2967,6 +2967,11 @@ void static ProcessGetData(CNode* pfrom)
     }
 }
 
+void RespondToRequestForDataFrom(CNode* pfrom)
+{
+    ProcessGetData(pfrom);
+}
+
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived)
 {
     static CAddrMan& addrman = GetNetworkAddressManager();

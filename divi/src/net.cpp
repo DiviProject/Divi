@@ -343,6 +343,7 @@ void RegisterNodeSignals(CNodeSignals& nodeSignals)
     nodeSignals.FinalizeNode.connect(&FinalizeNode);
     nodeSignals.ProcessReceivedMessages.connect(&ProcessReceivedMessages);
     nodeSignals.SendMessages.connect(&SendMessages);
+    nodeSignals.RespondToRequestForDataFrom.connect(&RespondToRequestForDataFrom);
     nodeSignals.AdvertizeLocalAddress.connect(&AdvertizeLocal);
 }
 /** Unregister a network node */
@@ -352,6 +353,7 @@ void UnregisterNodeSignals(CNodeSignals& nodeSignals)
     nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
     nodeSignals.ProcessReceivedMessages.disconnect(&ProcessReceivedMessages);
     nodeSignals.SendMessages.disconnect(&SendMessages);
+    nodeSignals.RespondToRequestForDataFrom.connect(&RespondToRequestForDataFrom);
     nodeSignals.AdvertizeLocalAddress.connect(&AdvertizeLocal);
 }
 

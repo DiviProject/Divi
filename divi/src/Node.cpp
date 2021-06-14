@@ -525,6 +525,7 @@ CNode::CNode(
     std::string addrNameIn,
     bool fInboundIn
     ) : QueuedMessageConnection(hSocketIn)
+    , vRecvGetData()
     , setAddrKnown(5000)
 {
     nServices = 0;

@@ -422,6 +422,23 @@ bool QueuedMessageConnection::SendAndReceiveBuffersAreEmpty() const
 {
     return vRecvMsg.empty() && ssSend.empty();
 }
+NodeBufferStatus QueuedMessageConnection::GetSendBufferStatus() const
+{
+    const size_t sendBufferSize = GetSendBufferSize();
+    if(sendBufferSize < MaxSendBufferSize())
+    {
+        return NodeBufferStatus::HAS_SPACE;
+    }
+    else if(sendBufferSize > (MaxSendBufferSize()*2) )
+    {
+        return NodeBufferStatus::IS_OVERFLOWED;
+    }
+    else
+    {
+        return NodeBufferStatus::IS_FULL;
+    }
+}
+
 void QueuedMessageConnection::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
 {
     ENTER_CRITICAL_SECTION(cs_vSend);
@@ -711,22 +728,6 @@ void CNode::UpdatePreferredDownloadStatus()
 void CNode::SetToCurrentlyConnected()
 {
     nodeState_->fCurrentlyConnected = true;
-}
-NodeBufferStatus CNode::GetSendBufferStatus() const
-{
-    const size_t sendBufferSize = GetSendBufferSize();
-    if(sendBufferSize < MaxSendBufferSize())
-    {
-        return NodeBufferStatus::HAS_SPACE;
-    }
-    else if(sendBufferSize > (MaxSendBufferSize()*2) )
-    {
-        return NodeBufferStatus::IS_OVERFLOWED;
-    }
-    else
-    {
-        return NodeBufferStatus::IS_FULL;
-    }
 }
 
 bool CNode::IsSelfConnection(uint64_t otherNonce) const

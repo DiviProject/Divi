@@ -176,6 +176,8 @@ public:
     bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar);
     bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
 
+    NodeBufferStatus GetSendBufferStatus() const;
+
     void SetInboundSerializationVersion(int versionNumber);
     void SetOutboundSerializationVersion(int versionNumber);
     bool IsFlaggedForDisconnection() const;
@@ -282,7 +284,6 @@ public:
     CNodeState* GetNodeState();
     void UpdatePreferredDownloadStatus();
     void SetToCurrentlyConnected();
-    NodeBufferStatus GetSendBufferStatus() const;
     bool IsSelfConnection(uint64_t otherNonce) const;
     NodeId GetId() const;
     int GetRefCount() const;

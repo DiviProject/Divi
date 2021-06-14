@@ -272,6 +272,7 @@ public:
     void ProcessSendMessages(bool trickle);
     bool RespondToRequestForData();
     void RecordRequestForData(std::vector<CInv>& inventoryRequested);
+    std::deque<CInv>& GetRequestForDataQueue();
 
     void CheckForInnactivity();
     void AdvertizeLocalAddress(int64_t rebroadcastTimestamp);

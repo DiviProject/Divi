@@ -632,6 +632,10 @@ void CNode::RecordRequestForData(std::vector<CInv>& inventoryRequested)
 
     vRecvGetData.insert(vRecvGetData.end(), inventoryRequested.begin(), inventoryRequested.end());
 }
+std::deque<CInv>& CNode::GetRequestForDataQueue()
+{
+    return vRecvGetData;
+}
 
 void CNode::CheckForInnactivity()
 {

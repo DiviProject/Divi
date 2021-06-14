@@ -2900,14 +2900,14 @@ static void PushCorrespondingBlockToPeer(CNode* pfrom, const CBlockIndex* blockT
     }
 }
 
-void static ProcessGetData(CNode* pfrom)
+void static ProcessGetData(CNode* pfrom, std::deque<CInv>& requestsForData)
 {
-    std::deque<CInv>::iterator it = pfrom->vRecvGetData.begin();
+    std::deque<CInv>::iterator it = requestsForData.begin();
 
     std::vector<CInv> vNotFound;
 
     while (
-        it != pfrom->vRecvGetData.end() &&
+        it != requestsForData.end() &&
         pfrom->GetSendBufferStatus() != NodeBufferStatus::IS_FULL)
     {
         const CInv& inv = *it;
@@ -2953,7 +2953,7 @@ void static ProcessGetData(CNode* pfrom)
         }
     }
 
-    pfrom->vRecvGetData.erase(pfrom->vRecvGetData.begin(), it);
+    requestsForData.erase(requestsForData.begin(), it);
 
     if (!vNotFound.empty()) {
         // Let the peer know that we didn't find what it asked for, so it doesn't
@@ -2969,7 +2969,7 @@ void static ProcessGetData(CNode* pfrom)
 
 void RespondToRequestForDataFrom(CNode* pfrom)
 {
-    ProcessGetData(pfrom);
+    ProcessGetData(pfrom, pfrom->GetRequestForDataQueue());
 }
 
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived)

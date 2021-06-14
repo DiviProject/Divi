@@ -157,6 +157,7 @@ protected:
         }
     }
     size_t GetSendBufferSize() const;
+    bool SendAndReceiveBuffersAreEmpty() const;
 
 private:
     void SendData();

@@ -270,7 +270,7 @@ public:
 
     void ProcessReceiveMessages(bool& shouldSleep);
     void ProcessSendMessages(bool trickle);
-    void RespondToRequestForData();
+    bool RespondToRequestForData();
     void RecordRequestForData(std::vector<CInv>& inventoryRequested);
 
     void CheckForInnactivity();

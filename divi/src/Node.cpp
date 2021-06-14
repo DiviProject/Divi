@@ -418,6 +418,10 @@ size_t QueuedMessageConnection::GetSendBufferSize() const
 {
     return nSendSize;
 }
+bool QueuedMessageConnection::SendAndReceiveBuffersAreEmpty() const
+{
+    return vRecvMsg.empty() && ssSend.empty();
+}
 void QueuedMessageConnection::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
 {
     ENTER_CRITICAL_SECTION(cs_vSend);
@@ -669,7 +673,7 @@ bool CNode::IsInUse()
 }
 bool CNode::CanBeDisconnected() const
 {
-    return GetRefCount() <= 0 && vRecvMsg.empty() && GetSendBufferSize() == 0 && ssSend.empty();
+    return GetRefCount() <= 0 && SendAndReceiveBuffersAreEmpty();
 }
 
 CNodeState* CNode::GetNodeState()

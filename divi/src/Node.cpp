@@ -613,12 +613,23 @@ void CNode::ProcessSendMessages(bool trickle)
         nodeSignals_->SendMessages(this,trickle || fWhitelisted);
     }
 }
-void CNode::RespondToRequestForData()
+bool CNode::RespondToRequestForData()
 {
-    nodeSignals_->RespondToRequestForDataFrom(this);
+    if (!vRecvGetData.empty())
+        nodeSignals_->RespondToRequestForDataFrom(this);
+
+    // this maintains the order of responses
+    if (!vRecvGetData.empty()) return false;
+
+    return true;
 }
 void CNode::RecordRequestForData(std::vector<CInv>& inventoryRequested)
 {
+    LogPrint("net", "received getdata (%u invsz) peer=%d\n", inventoryRequested.size(), id);
+
+    if (inventoryRequested.size() > 0)
+        LogPrint("net", "received getdata for: %s peer=%d\n", inventoryRequested[0], id);
+
     vRecvGetData.insert(vRecvGetData.end(), inventoryRequested.begin(), inventoryRequested.end());
 }
 

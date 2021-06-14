@@ -185,9 +185,10 @@ public:
 
 class CNode: public QueuedMessageConnection
 {
+private:
+    std::deque<CInv> vRecvGetData;
 public:
     uint64_t nServices;
-    std::deque<CInv> vRecvGetData;
     int64_t nTimeConnected;
     CAddress addr;
     std::string addrName;

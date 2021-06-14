@@ -3209,13 +3209,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             return error("message getdata size() = %u", vInv.size());
         }
 
-        LogPrint("net", "received getdata (%u invsz) peer=%d\n", vInv.size(), pfrom->id);
-
-        if (vInv.size() > 0)
-            LogPrint("net", "received getdata for: %s peer=%d\n", vInv[0], pfrom->id);
-
-        pfrom->vRecvGetData.insert(pfrom->vRecvGetData.end(), vInv.begin(), vInv.end());
-        ProcessGetData(pfrom);
+        pfrom->RecordRequestForData(vInv);
+        pfrom->RespondToRequestForData();
     }
     else if (strCommand == "getblocks" || strCommand == "getheaders")
     {
@@ -3770,11 +3765,8 @@ bool ProcessReceivedMessages(CNode* pfrom)
     //
     bool fOk = true;
 
-    if (!pfrom->vRecvGetData.empty())
-        ProcessGetData(pfrom);
-
     // this maintains the order of responses
-    if (!pfrom->vRecvGetData.empty()) return fOk;
+    if(!pfrom->RespondToRequestForData()) return fOk;
 
     std::deque<CNetMessage>& receivedMessageQueue = pfrom->GetReceivedMessageQueue();
     std::deque<CNetMessage>::iterator iteratorToCurrentMessageToProcess = receivedMessageQueue.begin();

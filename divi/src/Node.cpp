@@ -613,6 +613,14 @@ void CNode::ProcessSendMessages(bool trickle)
         nodeSignals_->SendMessages(this,trickle || fWhitelisted);
     }
 }
+void CNode::RespondToRequestForData()
+{
+    nodeSignals_->RespondToRequestForDataFrom(this);
+}
+void CNode::RecordRequestForData(std::vector<CInv>& inventoryRequested)
+{
+    vRecvGetData.insert(vRecvGetData.end(), inventoryRequested.begin(), inventoryRequested.end());
+}
 
 void CNode::CheckForInnactivity()
 {

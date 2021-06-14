@@ -81,7 +81,7 @@ bool ProcessReceivedMessages(CNode* pfrom);
  * @param[in]   fSendTrickle    When true send the trickled data, otherwise trickle the data until true.
  */
 bool SendMessages(CNode* pto, bool fSendTrickle);
-
+void RespondToRequestForDataFrom(CNode* pfrom);
 // ***TODO*** probably not the right place for these 2
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
 

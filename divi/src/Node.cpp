@@ -220,9 +220,11 @@ bool SocketChannel::isValid() const
 }
 
 QueuedMessageConnection::QueuedMessageConnection(
-    SOCKET hSocketIn
-    ): fSuccessfullyConnected(false)
-    , dataLogger()
+    SOCKET hSocketIn,
+    const bool& fSuccessfullyConnected,
+    CommunicationLogger& dataLogger
+    ): fSuccessfullyConnected_(fSuccessfullyConnected)
+    , dataLogger_(dataLogger)
     , ssSend(SER_NETWORK, INIT_PROTO_VERSION)
     , vSendMsg()
     , cs_vSend()
@@ -252,7 +254,7 @@ void QueuedMessageConnection::SendData()
         assert(data.size() > nSendOffset);
         int nBytes = channel_.sendData(&data[nSendOffset], data.size() - nSendOffset);
         if (nBytes > 0) {
-            dataLogger.RecordSentBytes(nBytes);
+            dataLogger_.RecordSentBytes(nBytes);
             nSendOffset += nBytes;
             if (nSendOffset == data.size()) {
                 nSendOffset = 0;
@@ -292,7 +294,7 @@ void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHand
     if (nBytes > 0) {
         if (!ConvertDataBufferToNetworkMessage(pchBuf, nBytes,messageHandlerCondition))
             CloseCommsAndDisconnect();
-        dataLogger.RecordReceivedBytes(nBytes);
+        dataLogger_.RecordReceivedBytes(nBytes);
     } else if (nBytes == 0) {
         // socket closed gracefully
         if (!fDisconnect)
@@ -465,7 +467,7 @@ void QueuedMessageConnection::AbortMessage() UNLOCK_FUNCTION(cs_vSend)
 }
 
 
-static void Fuzz(int nChance,bool& fSuccessfullyConnected, CDataStream& ssSend)
+static void Fuzz(int nChance,const bool& fSuccessfullyConnected, CDataStream& ssSend)
 {
     if (!fSuccessfullyConnected) return; // Don't fuzz initial handshake
     if (GetRand(nChance) != 0) return;   // Fuzz 1 of every nChance messages
@@ -510,7 +512,7 @@ void QueuedMessageConnection::EndMessage(unsigned int& messageDataSize) UNLOCK_F
         return;
     }
     if (settings.ParameterIsSet("-fuzzmessagestest"))
-        Fuzz(settings.GetArg("-fuzzmessagestest", 10),fSuccessfullyConnected,ssSend);
+        Fuzz(settings.GetArg("-fuzzmessagestest", 10),fSuccessfullyConnected_,ssSend);
 
     if (ssSend.size() == 0)
         return;
@@ -553,7 +555,9 @@ CNode::CNode(
     CAddress addrIn,
     std::string addrNameIn,
     bool fInboundIn
-    ) : QueuedMessageConnection(hSocketIn)
+    ) : fSuccessfullyConnected(false)
+    , dataLogger()
+    , messageConnection_(hSocketIn,fSuccessfullyConnected,dataLogger)
     , vRecvGetData()
     , setAddrKnown(5000)
 {
@@ -600,7 +604,7 @@ CNode::CNode(
 
 CNode::~CNode()
 {
-    CloseCommsChannel();
+    messageConnection_.CloseCommsChannel();
 
     if (pfilter)
         delete pfilter;
@@ -612,6 +616,51 @@ CNode::~CNode()
     nodeState_.reset();
 }
 
+bool CNode::CommunicationChannelIsValid() const
+{
+    return messageConnection_.CommunicationChannelIsValid();
+}
+void CNode::CloseCommsAndDisconnect()
+{
+    messageConnection_.CloseCommsAndDisconnect();
+}
+void CNode::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
+{
+    messageConnection_.RegisterCommunication(registrar);
+}
+bool CNode::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
+{
+    return messageConnection_.TrySendData(registrar);
+}
+bool CNode::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
+{
+    return messageConnection_.TryReceiveData(registrar,messageHandlerCondition);
+}
+NodeBufferStatus CNode::GetSendBufferStatus() const
+{
+    return messageConnection_.GetSendBufferStatus();
+}
+void CNode::SetInboundSerializationVersion(int versionNumber)
+{
+    messageConnection_.SetInboundSerializationVersion(versionNumber);
+}
+void CNode::SetOutboundSerializationVersion(int versionNumber)
+{
+    messageConnection_.SetOutboundSerializationVersion(versionNumber);
+}
+bool CNode::IsFlaggedForDisconnection() const
+{
+    return messageConnection_.IsFlaggedForDisconnection();
+}
+void CNode::FlagForDisconnection()
+{
+    messageConnection_.FlagForDisconnection();
+}
+std::deque<CNetMessage>& CNode::GetReceivedMessageQueue()
+{
+    return messageConnection_.GetReceivedMessageQueue();
+}
+
 void CNode::LogMessageSize(unsigned int messageDataSize) const
 {
     LogPrint("net", "(%d bytes) peer=%d\n", messageDataSize, id);
@@ -619,7 +668,7 @@ void CNode::LogMessageSize(unsigned int messageDataSize) const
 
 void CNode::ProcessReceiveMessages(bool& shouldSleep)
 {
-    TRY_LOCK(GetReceiveLock(), lockRecv);
+    TRY_LOCK(messageConnection_.GetReceiveLock(), lockRecv);
     if (lockRecv)
     {
         bool result = *(nodeSignals_->ProcessReceivedMessages(this));
@@ -628,7 +677,7 @@ void CNode::ProcessReceiveMessages(bool& shouldSleep)
 
         if (GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)
         {
-            if (!vRecvGetData.empty() || HasReceivedACompleteMessage())
+            if (!vRecvGetData.empty() || messageConnection_.HasReceivedACompleteMessage())
             {
                 shouldSleep = false;
             }
@@ -637,7 +686,7 @@ void CNode::ProcessReceiveMessages(bool& shouldSleep)
 }
 void CNode::ProcessSendMessages(bool trickle)
 {
-    TRY_LOCK(GetSendLock(), lockSend);
+    TRY_LOCK(messageConnection_.GetSendLock(), lockSend);
     if(lockSend)
     {
         nodeSignals_->SendMessages(this,trickle || fWhitelisted);
@@ -693,7 +742,7 @@ void CNode::CheckForInnactivity()
 
 void CNode::AdvertizeLocalAddress(int64_t rebroadcastTimestamp)
 {
-    TRY_LOCK(GetSendLock(), lockSend);
+    TRY_LOCK(messageConnection_.GetSendLock(), lockSend);
     if (!lockSend) return;
 
     // Periodically clear setAddrKnown to allow refresh broadcasts
@@ -709,10 +758,10 @@ bool CNode::IsInUse()
     if (GetRefCount() <= 0)
     {
         {
-            TRY_LOCK(GetSendLock(), lockSend);
+            TRY_LOCK(messageConnection_.GetSendLock(), lockSend);
             if (lockSend)
             {
-                TRY_LOCK(GetReceiveLock(), lockRecv);
+                TRY_LOCK(messageConnection_.GetReceiveLock(), lockRecv);
                 if (lockRecv)
                 {
                     TRY_LOCK(cs_inventory, lockInv);
@@ -726,7 +775,7 @@ bool CNode::IsInUse()
 }
 bool CNode::CanBeDisconnected() const
 {
-    return GetRefCount() <= 0 && SendAndReceiveBuffersAreEmpty();
+    return GetRefCount() <= 0 && messageConnection_.SendAndReceiveBuffersAreEmpty();
 }
 
 CNodeState* CNode::GetNodeState()
@@ -891,7 +940,7 @@ bool CNode::CanSendMessagesToPeer() const
      *  if we should.  */
 void CNode::MaybeSendPing()
 {
-    TRY_LOCK(GetSendLock(), lockSend);
+    TRY_LOCK(messageConnection_.GetSendLock(), lockSend);
     if (!lockSend) return;
     /** Time between pings automatically sent out for latency probing and keepalive (in seconds). */
     static const int PING_INTERVAL = 2 * 60;

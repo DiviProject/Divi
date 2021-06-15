@@ -307,24 +307,7 @@ void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHand
         CloseCommsAndDisconnect();
     }
 }
-void QueuedMessageConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket)
-{
-    registrar.RegisterForErrors(socket);
-    {
-        TRY_LOCK(cs_vSend, lockSend);
-        if (lockSend && !vSendMsg.empty()) {
-            registrar.RegisterForSend(socket);
-            return;
-        }
-    }
-    {
-        TRY_LOCK(cs_vRecvMsg, lockRecv);
-        if (lockRecv && IsAvailableToReceive())
-        {
-            registrar.RegisterForReceive(socket);
-        }
-    }
-}
+
 bool QueuedMessageConnection::CommunicationChannelIsValid() const
 {
     return channel_.isValid();
@@ -371,6 +354,11 @@ bool QueuedMessageConnection::IsAvailableToReceive()
 {
     AssertLockHeld(cs_vRecvMsg);
     return vRecvMsg.empty() || !vRecvMsg.front().complete() || GetTotalRecvSize() <= MaxReceiveBufferSize();
+}
+bool QueuedMessageConnection::IsAvailableToSend()
+{
+    AssertLockHeld(cs_vSend);
+    return !vSendMsg.empty();
 }
 // requires LOCK(cs_vRecvMsg)
 unsigned int QueuedMessageConnection::GetTotalRecvSize()
@@ -627,7 +615,22 @@ void CNode::CloseCommsAndDisconnect()
 }
 void CNode::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
 {
-    messageConnection_.RegisterCommunication(registrar,channel_.getSocket());
+    SOCKET socket = channel_.getSocket();
+    registrar.RegisterForErrors(socket);
+    {
+        TRY_LOCK(messageConnection_.GetSendLock(), lockSend);
+        if (lockSend && messageConnection_.IsAvailableToSend()) {
+            registrar.RegisterForSend(socket);
+            return;
+        }
+    }
+    {
+        TRY_LOCK(messageConnection_.GetReceiveLock(), lockRecv);
+        if (lockRecv && messageConnection_.IsAvailableToReceive())
+        {
+            registrar.RegisterForReceive(socket);
+        }
+    }
 }
 bool CNode::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
 {

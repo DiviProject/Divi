@@ -150,7 +150,6 @@ protected:
 private:
     void SendData();
     void ReceiveData(boost::condition_variable& messageHandlerCondition);
-    bool IsAvailableToReceive();
     bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
     unsigned int GetTotalRecvSize();
 
@@ -175,10 +174,11 @@ public:
     bool CommunicationChannelIsValid() const;
     void CloseCommsChannel();
     void CloseCommsAndDisconnect();
-    void RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket);
     bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket);
     bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket, boost::condition_variable& messageHandlerCondition);
 
+    bool IsAvailableToReceive();
+    bool IsAvailableToSend();
     bool SendAndReceiveBuffersAreEmpty() const;
     bool HasReceivedACompleteMessage() const;
     CCriticalSection& GetSendLock();

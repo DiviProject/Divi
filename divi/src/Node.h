@@ -171,11 +171,10 @@ public:
         I_CommunicationChannel& channel,
         const bool& fSuccessfullyConnected,
         CommunicationLogger& dataLogger);
-    bool CommunicationChannelIsValid() const;
     void CloseCommsChannel();
     void CloseCommsAndDisconnect();
-    bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket);
-    bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket, boost::condition_variable& messageHandlerCondition);
+    bool TrySendData();
+    bool TryReceiveData(boost::condition_variable& messageHandlerCondition);
 
     bool IsAvailableToReceive();
     bool IsAvailableToSend();

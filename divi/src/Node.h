@@ -118,10 +118,10 @@ public:
 
 class QueuedMessageConnection
 {
-public:
-    bool fSuccessfullyConnected;
-    CommunicationLogger dataLogger;
 private:
+    const bool& fSuccessfullyConnected_;
+    CommunicationLogger& dataLogger_;
+
     CDataStream ssSend;
     std::deque<CSerializeData> vSendMsg;
     CCriticalSection cs_vSend;
@@ -144,6 +144,16 @@ private:
     void EndMessage(unsigned int& messageDataSize) UNLOCK_FUNCTION(cs_vSend);
 
 protected:
+    size_t GetSendBufferSize() const;
+
+private:
+    void SendData();
+    void ReceiveData(boost::condition_variable& messageHandlerCondition);
+    bool IsAvailableToReceive();
+    bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
+    unsigned int GetTotalRecvSize();
+
+public:
     template <typename ...Args>
     void PushMessageAndRecordDataSize(unsigned int& messageDataSize, const char* pszCommand, Args&&... args)
     {
@@ -156,18 +166,11 @@ protected:
             throw;
         }
     }
-    size_t GetSendBufferSize() const;
 
-private:
-    void SendData();
-    void ReceiveData(boost::condition_variable& messageHandlerCondition);
-    bool IsAvailableToReceive();
-    bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);
-    unsigned int GetTotalRecvSize();
-
-public:
-
-    QueuedMessageConnection(SOCKET hSocketIn);
+    QueuedMessageConnection(
+        SOCKET hSocketIn,
+        const bool& fSuccessfullyConnected,
+        CommunicationLogger& dataLogger);
     bool CommunicationChannelIsValid() const;
     void CloseCommsChannel();
     void CloseCommsAndDisconnect();
@@ -188,8 +191,26 @@ public:
     std::deque<CNetMessage>& GetReceivedMessageQueue();
 };
 
-class CNode: public QueuedMessageConnection
+class CNode
 {
+public:
+    bool fSuccessfullyConnected;
+    CommunicationLogger dataLogger;
+private:
+    QueuedMessageConnection messageConnection_;
+public:
+    bool CommunicationChannelIsValid() const;
+    void CloseCommsAndDisconnect();
+    void RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar);
+    bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar);
+    bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
+    NodeBufferStatus GetSendBufferStatus() const;
+    void SetInboundSerializationVersion(int versionNumber);
+    void SetOutboundSerializationVersion(int versionNumber);
+    bool IsFlaggedForDisconnection() const;
+    void FlagForDisconnection();
+    std::deque<CNetMessage>& GetReceivedMessageQueue();
+
 private:
     std::deque<CInv> vRecvGetData;
 public:
@@ -270,7 +291,7 @@ public:
     void PushMessage(const char* pszCommand, Args&&... args)
     {
         unsigned int messageDataSize = 0u;
-        QueuedMessageConnection::PushMessageAndRecordDataSize(messageDataSize,pszCommand,std::forward<Args>(args)...);
+        messageConnection_.PushMessageAndRecordDataSize(messageDataSize,pszCommand,std::forward<Args>(args)...);
         LogMessageSize(messageDataSize);
     }
 

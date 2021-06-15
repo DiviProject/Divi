@@ -96,7 +96,7 @@ public:
 class I_CommunicationChannel
 {
 public:
-    ~I_CommunicationChannel(){}
+    virtual ~I_CommunicationChannel(){}
     virtual int sendData(const void* buffer, size_t len) const = 0;
     virtual int receiveData(void* buffer, size_t len) const = 0;
     virtual void close() = 0;

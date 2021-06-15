@@ -130,7 +130,7 @@ private:
     std::deque<CNetMessage> vRecvMsg;
     CCriticalSection cs_vRecvMsg;
 
-    SocketChannel& channel_;
+    I_CommunicationChannel& channel_;
     size_t nSendSize;   // total size of all vSendMsg entries
     size_t nSendOffset; // offset inside the first vSendMsg already sent
 
@@ -169,15 +169,15 @@ public:
     }
 
     QueuedMessageConnection(
-        SocketChannel& channel,
+        I_CommunicationChannel& channel,
         const bool& fSuccessfullyConnected,
         CommunicationLogger& dataLogger);
     bool CommunicationChannelIsValid() const;
     void CloseCommsChannel();
     void CloseCommsAndDisconnect();
-    void RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar);
-    bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar);
-    bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
+    void RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket);
+    bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket);
+    bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket, boost::condition_variable& messageHandlerCondition);
 
     bool SendAndReceiveBuffersAreEmpty() const;
     bool HasReceivedACompleteMessage() const;

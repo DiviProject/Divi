@@ -220,7 +220,7 @@ bool SocketChannel::isValid() const
 }
 
 QueuedMessageConnection::QueuedMessageConnection(
-    SocketChannel& channel,
+    I_CommunicationChannel& channel,
     const bool& fSuccessfullyConnected,
     CommunicationLogger& dataLogger
     ): fSuccessfullyConnected_(fSuccessfullyConnected)
@@ -307,13 +307,13 @@ void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHand
         CloseCommsAndDisconnect();
     }
 }
-void QueuedMessageConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
+void QueuedMessageConnection::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar, SOCKET socket)
 {
-    registrar.RegisterForErrors(channel_.getSocket());
+    registrar.RegisterForErrors(socket);
     {
         TRY_LOCK(cs_vSend, lockSend);
         if (lockSend && !vSendMsg.empty()) {
-            registrar.RegisterForSend(channel_.getSocket());
+            registrar.RegisterForSend(socket);
             return;
         }
     }
@@ -321,7 +321,7 @@ void QueuedMessageConnection::RegisterCommunication(I_CommunicationRegistrar<SOC
         TRY_LOCK(cs_vRecvMsg, lockRecv);
         if (lockRecv && IsAvailableToReceive())
         {
-            registrar.RegisterForReceive(channel_.getSocket());
+            registrar.RegisterForReceive(socket);
         }
     }
 }
@@ -330,22 +330,22 @@ bool QueuedMessageConnection::CommunicationChannelIsValid() const
     return channel_.isValid();
 }
 
-bool QueuedMessageConnection::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
+bool QueuedMessageConnection::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar,SOCKET socket)
 {
     if (!CommunicationChannelIsValid())
         return false;
-    if (registrar.IsRegisteredForSend(channel_.getSocket())) {
+    if (registrar.IsRegisteredForSend(socket)) {
         TRY_LOCK(cs_vSend, lockSend);
         if (lockSend)
             SendData();
     }
     return true;
 }
-bool QueuedMessageConnection::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
+bool QueuedMessageConnection::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar,SOCKET socket, boost::condition_variable& messageHandlerCondition)
 {
     if (!CommunicationChannelIsValid())
         return false;
-    if (registrar.IsRegisteredForReceive(channel_.getSocket()) || registrar.IsRegisteredForErrors(channel_.getSocket()))
+    if (registrar.IsRegisteredForReceive(socket) || registrar.IsRegisteredForErrors(socket))
     {
         TRY_LOCK(cs_vRecvMsg, lockRecv);
         if (lockRecv)
@@ -627,15 +627,15 @@ void CNode::CloseCommsAndDisconnect()
 }
 void CNode::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
 {
-    messageConnection_.RegisterCommunication(registrar);
+    messageConnection_.RegisterCommunication(registrar,channel_.getSocket());
 }
 bool CNode::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
 {
-    return messageConnection_.TrySendData(registrar);
+    return messageConnection_.TrySendData(registrar,channel_.getSocket());
 }
 bool CNode::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
 {
-    return messageConnection_.TryReceiveData(registrar,messageHandlerCondition);
+    return messageConnection_.TryReceiveData(registrar,channel_.getSocket(),messageHandlerCondition);
 }
 NodeBufferStatus CNode::GetSendBufferStatus() const
 {

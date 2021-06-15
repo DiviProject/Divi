@@ -273,13 +273,15 @@ public:
 
     void ProcessReceiveMessages(bool& shouldSleep);
     void ProcessSendMessages(bool trickle);
+    void AdvertizeLocalAddress(int64_t rebroadcastTimestamp);
+    bool IsInUse();
+    void MaybeSendPing();
+
     bool RespondToRequestForData();
     void RecordRequestForData(std::vector<CInv>& inventoryRequested);
     std::deque<CInv>& GetRequestForDataQueue();
 
     void CheckForInnactivity();
-    void AdvertizeLocalAddress(int64_t rebroadcastTimestamp);
-    bool IsInUse();
     bool CanBeDisconnected() const;
     CNodeState* GetNodeState();
     void UpdatePreferredDownloadStatus();
@@ -302,7 +304,6 @@ public:
 
     bool DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand = "");
     bool CanSendMessagesToPeer() const;
-    void MaybeSendPing();
     bool IsPreferredDownloadSource() const;
     static void ClearInventoryItem(const CInv& inv);
 };

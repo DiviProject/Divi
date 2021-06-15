@@ -100,6 +100,7 @@ public:
     virtual int sendData(const void* buffer, size_t len) const = 0;
     virtual int receiveData(void* buffer, size_t len) const = 0;
     virtual void close() = 0;
+    virtual bool isValid() const = 0;
 };
 
 class SocketChannel final: public I_CommunicationChannel
@@ -111,9 +112,9 @@ public:
     virtual int sendData(const void* buffer, size_t len) const;
     virtual int receiveData(void* buffer, size_t len) const;
     virtual void close();
+    virtual bool isValid() const;
 
     SOCKET getSocket() const;
-    bool isValid() const;
 };
 
 class QueuedMessageConnection

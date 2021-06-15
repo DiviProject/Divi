@@ -308,32 +308,19 @@ void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHand
     }
 }
 
-bool QueuedMessageConnection::CommunicationChannelIsValid() const
+bool QueuedMessageConnection::TrySendData()
 {
-    return channel_.isValid();
-}
+    TRY_LOCK(cs_vSend, lockSend);
+    if (lockSend)
+        SendData();
 
-bool QueuedMessageConnection::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar,SOCKET socket)
-{
-    if (!CommunicationChannelIsValid())
-        return false;
-    if (registrar.IsRegisteredForSend(socket)) {
-        TRY_LOCK(cs_vSend, lockSend);
-        if (lockSend)
-            SendData();
-    }
     return true;
 }
-bool QueuedMessageConnection::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar,SOCKET socket, boost::condition_variable& messageHandlerCondition)
+bool QueuedMessageConnection::TryReceiveData(boost::condition_variable& messageHandlerCondition)
 {
-    if (!CommunicationChannelIsValid())
-        return false;
-    if (registrar.IsRegisteredForReceive(socket) || registrar.IsRegisteredForErrors(socket))
-    {
-        TRY_LOCK(cs_vRecvMsg, lockRecv);
-        if (lockRecv)
-            ReceiveData(messageHandlerCondition);
-    }
+    TRY_LOCK(cs_vRecvMsg, lockRecv);
+    if (lockRecv)
+        ReceiveData(messageHandlerCondition);
     return true;
 }
 
@@ -607,7 +594,7 @@ CNode::~CNode()
 
 bool CNode::CommunicationChannelIsValid() const
 {
-    return messageConnection_.CommunicationChannelIsValid();
+    return channel_.isValid();
 }
 void CNode::CloseCommsAndDisconnect()
 {
@@ -634,11 +621,22 @@ void CNode::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
 }
 bool CNode::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
 {
-    return messageConnection_.TrySendData(registrar,channel_.getSocket());
+    if (!CommunicationChannelIsValid())
+        return false;
+    if (registrar.IsRegisteredForSend(channel_.getSocket()))
+        return messageConnection_.TrySendData();
+
+    return true;
 }
 bool CNode::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
 {
-    return messageConnection_.TryReceiveData(registrar,channel_.getSocket(),messageHandlerCondition);
+    if (!CommunicationChannelIsValid())
+        return false;
+    SOCKET socket = channel_.getSocket();
+    if (registrar.IsRegisteredForReceive(socket) || registrar.IsRegisteredForErrors(socket))
+        return messageConnection_.TryReceiveData(messageHandlerCondition);
+
+    return true;
 }
 NodeBufferStatus CNode::GetSendBufferStatus() const
 {

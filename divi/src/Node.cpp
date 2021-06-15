@@ -220,7 +220,7 @@ bool SocketChannel::isValid() const
 }
 
 QueuedMessageConnection::QueuedMessageConnection(
-    SOCKET hSocketIn,
+    SocketChannel& channel,
     const bool& fSuccessfullyConnected,
     CommunicationLogger& dataLogger
     ): fSuccessfullyConnected_(fSuccessfullyConnected)
@@ -230,7 +230,7 @@ QueuedMessageConnection::QueuedMessageConnection(
     , cs_vSend()
     , vRecvMsg()
     , cs_vRecvMsg()
-    , channel_(hSocketIn)
+    , channel_(channel)
     , nSendSize(0)
     , nSendOffset(0)
     , nRecvVersion(INIT_PROTO_VERSION)
@@ -557,7 +557,8 @@ CNode::CNode(
     bool fInboundIn
     ) : fSuccessfullyConnected(false)
     , dataLogger()
-    , messageConnection_(hSocketIn,fSuccessfullyConnected,dataLogger)
+    , channel_(hSocketIn)
+    , messageConnection_(channel_,fSuccessfullyConnected,dataLogger)
     , vRecvGetData()
     , setAddrKnown(5000)
 {

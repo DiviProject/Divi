@@ -438,6 +438,18 @@ NodeBufferStatus QueuedMessageConnection::GetSendBufferStatus() const
         return NodeBufferStatus::IS_FULL;
     }
 }
+bool QueuedMessageConnection::HasReceivedACompleteMessage() const
+{
+    return !vRecvMsg.empty() && vRecvMsg[0].complete();
+}
+CCriticalSection& QueuedMessageConnection::GetSendLock()
+{
+    return cs_vSend;
+}
+CCriticalSection& QueuedMessageConnection::GetReceiveLock()
+{
+    return cs_vRecvMsg;
+}
 
 void QueuedMessageConnection::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
 {
@@ -607,7 +619,7 @@ void CNode::LogMessageSize(unsigned int messageDataSize) const
 
 void CNode::ProcessReceiveMessages(bool& shouldSleep)
 {
-    TRY_LOCK(cs_vRecvMsg, lockRecv);
+    TRY_LOCK(GetReceiveLock(), lockRecv);
     if (lockRecv)
     {
         bool result = *(nodeSignals_->ProcessReceivedMessages(this));
@@ -616,7 +628,7 @@ void CNode::ProcessReceiveMessages(bool& shouldSleep)
 
         if (GetSendBufferStatus()==NodeBufferStatus::HAS_SPACE)
         {
-            if (!vRecvGetData.empty() || (!vRecvMsg.empty() && vRecvMsg[0].complete()))
+            if (!vRecvGetData.empty() || HasReceivedACompleteMessage())
             {
                 shouldSleep = false;
             }
@@ -625,7 +637,7 @@ void CNode::ProcessReceiveMessages(bool& shouldSleep)
 }
 void CNode::ProcessSendMessages(bool trickle)
 {
-    TRY_LOCK(cs_vSend, lockSend);
+    TRY_LOCK(GetSendLock(), lockSend);
     if(lockSend)
     {
         nodeSignals_->SendMessages(this,trickle || fWhitelisted);
@@ -681,7 +693,7 @@ void CNode::CheckForInnactivity()
 
 void CNode::AdvertizeLocalAddress(int64_t rebroadcastTimestamp)
 {
-    TRY_LOCK(cs_vSend, lockSend);
+    TRY_LOCK(GetSendLock(), lockSend);
     if (!lockSend) return;
 
     // Periodically clear setAddrKnown to allow refresh broadcasts
@@ -697,10 +709,10 @@ bool CNode::IsInUse()
     if (GetRefCount() <= 0)
     {
         {
-            TRY_LOCK(cs_vSend, lockSend);
+            TRY_LOCK(GetSendLock(), lockSend);
             if (lockSend)
             {
-                TRY_LOCK(cs_vRecvMsg, lockRecv);
+                TRY_LOCK(GetReceiveLock(), lockRecv);
                 if (lockRecv)
                 {
                     TRY_LOCK(cs_inventory, lockInv);
@@ -879,7 +891,7 @@ bool CNode::CanSendMessagesToPeer() const
      *  if we should.  */
 void CNode::MaybeSendPing()
 {
-    TRY_LOCK(cs_vSend, lockSend);
+    TRY_LOCK(GetSendLock(), lockSend);
     if (!lockSend) return;
     /** Time between pings automatically sent out for latency probing and keepalive (in seconds). */
     static const int PING_INTERVAL = 2 * 60;

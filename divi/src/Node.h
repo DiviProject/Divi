@@ -121,14 +121,14 @@ class QueuedMessageConnection
 public:
     bool fSuccessfullyConnected;
     CommunicationLogger dataLogger;
-protected:
+private:
     CDataStream ssSend;
     std::deque<CSerializeData> vSendMsg;
     CCriticalSection cs_vSend;
 
     std::deque<CNetMessage> vRecvMsg;
     CCriticalSection cs_vRecvMsg;
-private:
+
     SocketChannel channel_;
     size_t nSendSize;   // total size of all vSendMsg entries
     size_t nSendOffset; // offset inside the first vSendMsg already sent
@@ -157,7 +157,6 @@ protected:
         }
     }
     size_t GetSendBufferSize() const;
-    bool SendAndReceiveBuffersAreEmpty() const;
 
 private:
     void SendData();
@@ -176,6 +175,10 @@ public:
     bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar);
     bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
 
+    bool SendAndReceiveBuffersAreEmpty() const;
+    bool HasReceivedACompleteMessage() const;
+    CCriticalSection& GetSendLock();
+    CCriticalSection& GetReceiveLock();
     NodeBufferStatus GetSendBufferStatus() const;
 
     void SetInboundSerializationVersion(int versionNumber);

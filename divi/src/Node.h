@@ -167,6 +167,13 @@ public:
     std::deque<CNetMessage>& GetReceivedMessageQueue();
 };
 
+enum CommsMode
+{
+    SEND,
+    RECEIVE,
+    BUSY,
+};
+
 class CNode
 {
 public:
@@ -178,7 +185,7 @@ private:
 public:
     bool CommunicationChannelIsValid() const;
     void CloseCommsAndDisconnect();
-    void RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar);
+    CommsMode SelectCommunicationMode();
     bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar);
     bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
     NodeBufferStatus GetSendBufferStatus() const;

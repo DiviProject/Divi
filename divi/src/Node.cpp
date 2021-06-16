@@ -565,24 +565,22 @@ void CNode::CloseCommsAndDisconnect()
 {
     messageConnection_.CloseCommsAndDisconnect();
 }
-void CNode::RegisterCommunication(I_CommunicationRegistrar<SOCKET>& registrar)
+CommsMode CNode::SelectCommunicationMode()
 {
-    SOCKET socket = channel_.getSocket();
-    registrar.RegisterForErrors(socket);
     {
         TRY_LOCK(messageConnection_.GetSendLock(), lockSend);
         if (lockSend && messageConnection_.IsAvailableToSend()) {
-            registrar.RegisterForSend(socket);
-            return;
+            return CommsMode::SEND;
         }
     }
     {
         TRY_LOCK(messageConnection_.GetReceiveLock(), lockRecv);
         if (lockRecv && messageConnection_.IsAvailableToReceive())
         {
-            registrar.RegisterForReceive(socket);
+            return CommsMode::RECEIVE;
         }
     }
+    return CommsMode::BUSY;
 }
 bool CNode::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
 {

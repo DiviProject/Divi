@@ -47,6 +47,7 @@
 #include <Node.h>
 #include <I_CommunicationRegistrar.h>
 #include <NodeState.h>
+#include <SocketChannel.h>
 
 #ifdef WIN32
 #include <string.h>
@@ -153,8 +154,39 @@ static std::vector<ListenSocket> vhListenSocket;
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
-std::vector<CNode*> vNodes;
-CCriticalSection cs_vNodes;
+static CCriticalSection cs_vNodes;
+class NodesWithSockets
+{
+private:
+    std::vector<CNode*> vNodes_;
+    NodesWithSockets(): vNodes_()
+    {
+    }
+    void deleteNode(CNode* pnode)
+    {
+        delete pnode;
+    }
+public:
+    ~NodesWithSockets()
+    {
+    }
+    static NodesWithSockets& Instance()
+    {
+        static NodesWithSockets nodesWithSockets;
+        return nodesWithSockets;
+    }
+    void recordNode(CNode* pnode)
+    {
+        LOCK(cs_vNodes);
+        vNodes_.push_back(pnode);
+    }
+    std::vector<CNode*>& nodes()
+    {
+        return vNodes_;
+    }
+};
+
+std::vector<CNode*>& vNodes = NodesWithSockets::Instance().nodes();
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
 PeerNotificationOfMintService peerBlockNotify(vNodes,cs_vNodes);
 template <typename ...Args>
@@ -165,10 +197,7 @@ CNode* CreateNode(Args&&... args)
         pnode->PushVersion(GetHeight());
     pnode->AddRef();
 
-    {
-        LOCK(cs_vNodes);
-        vNodes.push_back(pnode);
-    }
+    NodesWithSockets::Instance().recordNode(pnode);
     return pnode;
 }
 
@@ -692,7 +721,7 @@ public:
                     LogPrintf("connection from %s dropped (banned)\n", addr);
                     CloseSocket(hSocket);
                 } else {
-                    CNode* pnode = CreateNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addr, "", true, whitelisted);
+                    CreateNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addr, "", true, whitelisted);
                 }
             }
         }

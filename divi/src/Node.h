@@ -144,10 +144,8 @@ private:
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
     void EndMessage(unsigned int& messageDataSize) UNLOCK_FUNCTION(cs_vSend);
 
-protected:
     size_t GetSendBufferSize() const;
 
-private:
     void SendData();
     void ReceiveData(boost::condition_variable& messageHandlerCondition);
     bool ConvertDataBufferToNetworkMessage(const char* pch, unsigned int nBytes,boost::condition_variable& messageHandlerCondition);

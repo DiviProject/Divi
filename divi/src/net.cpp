@@ -233,6 +233,33 @@ public:
             }
         }
     }
+    void cleanupP2PConnections()
+    {
+        // Close sockets
+        LOCK(cs_vNodes);
+        for(CNode* pnode: vNodes_)
+        {
+            delete pnode;
+        }
+        vNodes_.clear();
+        for(ListenSocket& hListenSocket: listeningSockets_)
+        {
+            if (hListenSocket.socket != INVALID_SOCKET && !CloseSocket(hListenSocket.socket))
+                LogPrintf("CloseSocket(hListenSocket) failed with error %s\n", NetworkErrorString(WSAGetLastError()));
+        }
+        // clean up some globals (to help leak detection)
+        listeningSockets_.clear();
+        for(CNode* pnode: disconnectedNodes_)
+        {
+            delete pnode;
+        }
+        disconnectedNodes_.clear();
+
+    #ifdef WIN32
+        // Shutdown Windows Sockets
+        WSACleanup();
+    #endif
+    }
 };
 
 static std::vector<ListenSocket>& vhListenSocket = NodesWithSockets::Instance().listeningSockets();
@@ -1482,30 +1509,7 @@ bool StopNode()
 
 void CleanupP2PConnections()
  {
-    // Close sockets
-    LOCK(cs_vNodes);
-    for(CNode* pnode: vNodes)
-    {
-        delete pnode;
-    }
-    vNodes.clear();
-    for(ListenSocket& hListenSocket: vhListenSocket)
-    {
-        if (hListenSocket.socket != INVALID_SOCKET && !CloseSocket(hListenSocket.socket))
-            LogPrintf("CloseSocket(hListenSocket) failed with error %s\n", NetworkErrorString(WSAGetLastError()));
-    }
-    // clean up some globals (to help leak detection)
-    vhListenSocket.clear();
-    for(CNode* pnode: vNodesDisconnected)
-    {
-        delete pnode;
-    }
-    vNodesDisconnected.clear();
-
-#ifdef WIN32
-    // Shutdown Windows Sockets
-    WSACleanup();
-#endif
+    NodesWithSockets::Instance().cleanupP2PConnections();
 }
 void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate)
 {

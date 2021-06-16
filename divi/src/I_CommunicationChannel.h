@@ -1,5 +1,6 @@
 #ifndef I_COMMUNICATION_CHANNEL_H
 #define I_COMMUNICATION_CHANNEL_H
+#include <cstdlib>
 class I_CommunicationChannel
 {
 public:

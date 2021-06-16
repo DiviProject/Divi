@@ -15,6 +15,7 @@
 #include <memory>
 #include <I_CommunicationRegistrar.h>
 #include <I_CommunicationChannel.h>
+#include <SocketChannel.h>
 
 #include <boost/thread/condition_variable.hpp>
 
@@ -92,20 +93,6 @@ public:
     int64_t GetLastTimeDataReceived() const;
     uint64_t GetTotalBytesReceived() const;
     uint64_t GetTotalBytesSent() const;
-};
-
-class SocketChannel final: public I_CommunicationChannel
-{
-private:
-    SOCKET socket_;
-public:
-    SocketChannel(SOCKET socket);
-    virtual int sendData(const void* buffer, size_t len) const;
-    virtual int receiveData(void* buffer, size_t len) const;
-    virtual void close();
-    virtual bool isValid() const;
-
-    SOCKET getSocket() const;
 };
 
 class QueuedMessageConnection

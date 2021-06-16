@@ -157,6 +157,20 @@ std::vector<CNode*> vNodes;
 CCriticalSection cs_vNodes;
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
 PeerNotificationOfMintService peerBlockNotify(vNodes,cs_vNodes);
+template <typename ...Args>
+CNode* CreateNode(Args&&... args)
+{
+    CNode* pnode = new CNode(std::forward<Args>(args)...);
+    if (pnode->CommunicationChannelIsValid() && !pnode->fInbound)
+        pnode->PushVersion(GetHeight());
+    pnode->AddRef();
+
+    {
+        LOCK(cs_vNodes);
+        vNodes.push_back(pnode);
+    }
+    return pnode;
+}
 
 map<CInv, CDataStream> mapRelay;
 deque<pair<int64_t, CInv> > vRelayExpiration;
@@ -428,16 +442,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
         addrman.Attempt(addrConnect);
 
         // Add node
-        CNode* pnode = new CNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addrConnect, pszDest ? pszDest : "", false);
-        if (pnode->CommunicationChannelIsValid() && !pnode->fInbound)
-            pnode->PushVersion(GetHeight());
-        pnode->AddRef();
-
-        {
-            LOCK(cs_vNodes);
-            vNodes.push_back(pnode);
-        }
-
+        CNode* pnode = CreateNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addrConnect, pszDest ? pszDest : "", false,false);
         pnode->nTimeConnected = GetTime();
 
         return pnode;
@@ -687,14 +692,7 @@ public:
                     LogPrintf("connection from %s dropped (banned)\n", addr);
                     CloseSocket(hSocket);
                 } else {
-                    CNode* pnode = new CNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addr, "", true);
-                    pnode->AddRef();
-                    pnode->fWhitelisted = whitelisted;
-
-                    {
-                        LOCK(nodesLock);
-                        nodes.push_back(pnode);
-                    }
+                    CNode* pnode = CreateNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addr, "", true, whitelisted);
                 }
             }
         }

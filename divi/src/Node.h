@@ -202,10 +202,10 @@ public:
     // store the sanitized version in cleanSubVer. The original should be used when dealing with
     // the network or wire types and the cleaned string used when displayed or logged.
     std::string strSubVer, cleanSubVer;
+    bool fInbound;
     bool fWhitelisted; // This peer can bypass DoS banning.
     bool fOneShot;
     bool fClient;
-    bool fInbound;
     bool fNetworkNode;
     // We use fRelayTxes for two purposes -
     // a) it allows us to not relay tx invs before receiving the peer's version message
@@ -259,7 +259,14 @@ public:
 
     int nSporksSynced = 0;
 
-    CNode(CNodeSignals* nodeSignals, CAddrMan& addressMananger, SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn = false);
+    CNode(
+        CNodeSignals* nodeSignals,
+        CAddrMan& addressMananger,
+        SOCKET hSocketIn,
+        CAddress addrIn,
+        std::string addrNameIn,
+        bool fInboundIn,
+        bool whiteListed);
     ~CNode();
 
     void LogMessageSize(unsigned int messageDataSize) const;

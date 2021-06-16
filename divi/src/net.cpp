@@ -229,7 +229,7 @@ public:
             if(!pnode->IsInUse())
             {
                 disconnectedNodes_.remove(pnode);
-                delete pnode;
+                deleteNode(pnode);
             }
         }
     }
@@ -239,7 +239,7 @@ public:
         LOCK(cs_vNodes);
         for(CNode* pnode: vNodes_)
         {
-            delete pnode;
+            deleteNode(pnode);
         }
         vNodes_.clear();
         for(ListenSocket& hListenSocket: listeningSockets_)
@@ -251,7 +251,7 @@ public:
         listeningSockets_.clear();
         for(CNode* pnode: disconnectedNodes_)
         {
-            delete pnode;
+            deleteNode(pnode);
         }
         disconnectedNodes_.clear();
 

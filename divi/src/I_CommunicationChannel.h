@@ -9,5 +9,6 @@ public:
     virtual int receiveData(void* buffer, size_t len) const = 0;
     virtual void close() = 0;
     virtual bool isValid() const = 0;
+    virtual bool hasErrors(bool logErrors) const = 0;
 };
 #endif// I_COMMUNICATION_CHANNEL_H

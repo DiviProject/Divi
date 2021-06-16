@@ -183,18 +183,6 @@ NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
 limitedmap<CInv, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);
 
-static bool SocketHasErrors(bool shouldLogError)
-{
-    int nErr = WSAGetLastError();
-    if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS)
-    {
-        if (shouldLogError)
-            LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
-        return true;
-    }
-    return false;
-}
-
 QueuedMessageConnection::QueuedMessageConnection(
     I_CommunicationChannel& channel,
     const bool& fSuccessfullyConnected,
@@ -243,7 +231,7 @@ void QueuedMessageConnection::SendData()
         }
         else
         {
-            if (nBytes < 0 && SocketHasErrors(true))
+            if (nBytes < 0 && channel_.hasErrors(true))
             {
                 // error
                 CloseCommsAndDisconnect();
@@ -277,7 +265,7 @@ void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHand
             LogPrint("net", "socket closed\n");
         CloseCommsAndDisconnect();
     }
-    else if (nBytes < 0 && SocketHasErrors(!fDisconnect))
+    else if (nBytes < 0 && channel_.hasErrors(!fDisconnect))
     {
         // error
         CloseCommsAndDisconnect();

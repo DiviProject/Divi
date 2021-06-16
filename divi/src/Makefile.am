@@ -257,6 +257,7 @@ BITCOIN_CORE_H = \
   AddrDB.h \
   Node.h \
   I_CommunicationRegistrar.h \
+  I_CommunicationChannel.h \
   NodeId.h \
   NodeStats.h \
   NetworkLocalAddressHelpers.h \

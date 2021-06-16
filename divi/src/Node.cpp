@@ -488,16 +488,16 @@ void QueuedMessageConnection::SetOutboundSerializationVersion(int versionNumber)
 }
 
 CNode::CNode(
+    SocketChannel& channel,
     CNodeSignals* nodeSignals,
     CAddrMan& addressMananger,
-    SOCKET hSocketIn,
     CAddress addrIn,
     std::string addrNameIn,
     bool fInboundIn,
     bool whitelisted
     ) : fSuccessfullyConnected(false)
     , dataLogger()
-    , channel_(hSocketIn)
+    , channel_(channel)
     , messageConnection_(channel_,fSuccessfullyConnected,dataLogger)
     , vRecvGetData()
     , fInbound(fInboundIn)

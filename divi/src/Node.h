@@ -173,7 +173,7 @@ public:
     bool fSuccessfullyConnected;
     CommunicationLogger dataLogger;
 private:
-    SocketChannel channel_;
+    SocketChannel& channel_;
     QueuedMessageConnection messageConnection_;
 public:
     bool CommunicationChannelIsValid() const;
@@ -260,9 +260,9 @@ public:
     int nSporksSynced = 0;
 
     CNode(
+        SocketChannel& channel,
         CNodeSignals* nodeSignals,
         CAddrMan& addressMananger,
-        SOCKET hSocketIn,
         CAddress addrIn,
         std::string addrNameIn,
         bool fInboundIn,

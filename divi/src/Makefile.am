@@ -256,6 +256,7 @@ BITCOIN_CORE_H = \
   net.h \
   AddrDB.h \
   Node.h \
+  SocketChannel.h \
   I_CommunicationRegistrar.h \
   I_CommunicationChannel.h \
   NodeId.h \
@@ -421,6 +422,7 @@ libbitcoin_server_a_SOURCES = \
   net.cpp \
   AddrDB.cpp \
   Node.cpp \
+  SocketChannel.cpp \
   NodeStats.cpp \
   NetworkLocalAddressHelpers.cpp \
   PeerBanningService.cpp \

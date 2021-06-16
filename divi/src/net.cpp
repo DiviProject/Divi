@@ -730,7 +730,20 @@ public:
             if (!pnode->CommunicationChannelIsValid())
                 continue;
             have_fds = true;
-            pnode->RegisterCommunication(*this);
+            SOCKET nodeSocket = NodesWithSockets::Instance().getSocketByNodeId(pnode->GetId());
+            RegisterForErrors(nodeSocket);
+            CommsMode mode = pnode->SelectCommunicationMode();
+            switch (mode)
+            {
+            case SEND:
+                RegisterForSend(nodeSocket);
+                break;
+            case RECEIVE:
+                RegisterForReceive(nodeSocket);
+                break;
+            case BUSY:
+                break;
+            }
         }
     }
     int CheckSocketCanBeSelected()

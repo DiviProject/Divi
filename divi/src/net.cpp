@@ -159,7 +159,8 @@ class NodesWithSockets
 private:
     CCriticalSection cs_vNodes;
     std::vector<CNode*> vNodes_;
-    NodesWithSockets(): cs_vNodes(), vNodes_()
+    std::list<CNode*> disconnectedNodes_;
+    NodesWithSockets(): cs_vNodes(), vNodes_(), disconnectedNodes_()
     {
     }
     void deleteNode(CNode* pnode)
@@ -188,10 +189,51 @@ public:
     {
         return vNodes_;
     }
+    std::list<CNode*>& disconnectedNodes()
+    {
+        return disconnectedNodes_;
+    }
+    void disconnectUnusedNodes()
+    {
+        LOCK(cs_vNodes);
+        // Disconnect unused nodes
+        std::vector<CNode*> vNodesCopy = vNodes_;
+        for(CNode* pnode: vNodesCopy)
+        {
+            if (pnode->IsFlaggedForDisconnection() || pnode->CanBeDisconnected())
+            {
+                // remove from vNodes
+                vNodes_.erase(remove(vNodes_.begin(), vNodes_.end(), pnode), vNodes_.end());
+
+                // close socket and cleanup
+                pnode->CloseCommsAndDisconnect();
+
+                // hold in disconnected pool until all refs are released
+                if (pnode->fNetworkNode || pnode->fInbound)
+                    pnode->Release();
+                disconnectedNodes_.push_back(pnode);
+            }
+        }
+    }
+    void deleteDisconnectedNodes()
+    {
+        // Delete disconnected nodes
+        std::list<CNode*> vNodesDisconnectedCopy = disconnectedNodes_;
+        for(CNode* pnode: vNodesDisconnectedCopy)
+        {
+            // wait until threads are done using it
+            if(!pnode->IsInUse())
+            {
+                disconnectedNodes_.remove(pnode);
+                delete pnode;
+            }
+        }
+    }
 };
 
 static CCriticalSection& cs_vNodes = NodesWithSockets::Instance().nodesLock();
 static std::vector<CNode*>& vNodes = NodesWithSockets::Instance().nodes();
+static std::list<CNode*>& vNodesDisconnected = NodesWithSockets::Instance().disconnectedNodes();
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
 PeerNotificationOfMintService peerBlockNotify(vNodes,cs_vNodes);
 template <typename ...Args>
@@ -496,7 +538,6 @@ bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo)
     return connectionSuccessful;
 }
 
-static list<CNode*> vNodesDisconnected;
 static std::vector<CSubNet> vWhitelistedRange;
 static CCriticalSection cs_vWhitelistedRange;
 bool IsWhitelistedRange(const CNetAddr& addr)
@@ -555,36 +596,11 @@ public:
 
 static void DisconnectUnusedNodes()
 {
-    LOCK(cs_vNodes);
-    // Disconnect unused nodes
-    std::vector<CNode*> vNodesCopy = vNodes;
-    BOOST_FOREACH (CNode* pnode, vNodesCopy) {
-        if (pnode->IsFlaggedForDisconnection() || pnode->CanBeDisconnected()) {
-            // remove from vNodes
-            vNodes.erase(remove(vNodes.begin(), vNodes.end(), pnode), vNodes.end());
-
-            // close socket and cleanup
-            pnode->CloseCommsAndDisconnect();
-
-            // hold in disconnected pool until all refs are released
-            if (pnode->fNetworkNode || pnode->fInbound)
-                pnode->Release();
-            vNodesDisconnected.push_back(pnode);
-        }
-    }
+    NodesWithSockets::Instance().disconnectUnusedNodes();
 }
 void DeleteDisconnectedNodes()
 {
-    // Delete disconnected nodes
-    list<CNode*> vNodesDisconnectedCopy = vNodesDisconnected;
-    BOOST_FOREACH (CNode* pnode, vNodesDisconnectedCopy) {
-        // wait until threads are done using it
-        if(!pnode->IsInUse())
-        {
-            vNodesDisconnected.remove(pnode);
-            delete pnode;
-        }
-    }
+    NodesWithSockets::Instance().deleteDisconnectedNodes();
 }
 
 class SocketsProcessor final: public I_CommunicationRegistrar<SOCKET>

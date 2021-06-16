@@ -13,9 +13,7 @@
 #include <stdint.h>
 #include <NodeId.h>
 #include <memory>
-#include <I_CommunicationRegistrar.h>
 #include <I_CommunicationChannel.h>
-#include <SocketChannel.h>
 
 #include <boost/thread/condition_variable.hpp>
 
@@ -180,7 +178,7 @@ public:
     bool fSuccessfullyConnected;
     CommunicationLogger dataLogger;
 private:
-    SocketChannel& channel_;
+    I_CommunicationChannel& channel_;
     QueuedMessageConnection messageConnection_;
 public:
     bool CommunicationChannelIsValid() const;
@@ -267,7 +265,7 @@ public:
     int nSporksSynced = 0;
 
     CNode(
-        SocketChannel& channel,
+        I_CommunicationChannel& channel,
         CNodeSignals* nodeSignals,
         CAddrMan& addressMananger,
         CAddress addrIn,

@@ -1,5 +1,6 @@
 #include <SocketChannel.h>
 #include <netbase.h>
+#include <Logging.h>
 
 SocketChannel::SocketChannel(SOCKET socket): socket_(socket)
 {
@@ -23,4 +24,15 @@ SOCKET SocketChannel::getSocket() const
 bool SocketChannel::isValid() const
 {
     return socket_ != INVALID_SOCKET;
+}
+bool SocketChannel::hasErrors(bool logErrors) const
+{
+    int nErr = WSAGetLastError();
+    if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS)
+    {
+        if (logErrors)
+            LogPrintf("socket recv error %s\n", NetworkErrorString(nErr));
+        return true;
+    }
+    return false;
 }

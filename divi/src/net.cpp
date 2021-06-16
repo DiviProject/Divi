@@ -813,11 +813,22 @@ public:
 
     bool SocketReceiveDataFromPeer(CNode* pnode, boost::condition_variable& messageHandlerCondition)
     {
-        return pnode->TryReceiveData(*this, messageHandlerCondition);
+        if (!pnode->CommunicationChannelIsValid())
+            return false;
+        SOCKET nodeSocket = NodesWithSockets::Instance().getSocketByNodeId(pnode->GetId());
+        if (IsRegisteredForReceive(nodeSocket) || IsRegisteredForErrors(nodeSocket))
+            return pnode->TryReceiveData(messageHandlerCondition);
+        return true;
     }
     bool SocketSendDataToPeer(CNode* pnode)
     {
-        return pnode->TrySendData(*this);
+        if (!pnode->CommunicationChannelIsValid())
+            return false;
+        SOCKET nodeSocket = NodesWithSockets::Instance().getSocketByNodeId(pnode->GetId());
+        if (IsRegisteredForSend(nodeSocket))
+            return pnode->TrySendData();
+
+        return true;
     }
 };
 

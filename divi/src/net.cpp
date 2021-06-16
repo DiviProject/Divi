@@ -154,12 +154,12 @@ static std::vector<ListenSocket> vhListenSocket;
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
-static CCriticalSection cs_vNodes;
 class NodesWithSockets
 {
 private:
+    CCriticalSection cs_vNodes;
     std::vector<CNode*> vNodes_;
-    NodesWithSockets(): vNodes_()
+    NodesWithSockets(): cs_vNodes(), vNodes_()
     {
     }
     void deleteNode(CNode* pnode)
@@ -180,13 +180,18 @@ public:
         LOCK(cs_vNodes);
         vNodes_.push_back(pnode);
     }
+    CCriticalSection& nodesLock()
+    {
+        return cs_vNodes;
+    }
     std::vector<CNode*>& nodes()
     {
         return vNodes_;
     }
 };
 
-std::vector<CNode*>& vNodes = NodesWithSockets::Instance().nodes();
+static CCriticalSection& cs_vNodes = NodesWithSockets::Instance().nodesLock();
+static std::vector<CNode*>& vNodes = NodesWithSockets::Instance().nodes();
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
 PeerNotificationOfMintService peerBlockNotify(vNodes,cs_vNodes);
 template <typename ...Args>

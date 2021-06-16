@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     CNodeSignals& nodeSignals = GetNodeSignals();
     PeerBanningService::ClearBanned();
     CAddress addr1(ToIP(0xa0b0c001));
-    CNode dummyNode1(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr1, "", true);
+    CNode dummyNode1(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr1, "", true,false);
     dummyNode1.nVersion = 1;
     Misbehaving(dummyNode1.GetNodeState(), 100); // Should get banned
     SendMessages(&dummyNode1, false);
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),ToIP(0xa0b0c001|0x0000ff00))); // Different IP, not banned
 
     CAddress addr2(ToIP(0xa0b0c002));
-    CNode dummyNode2(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr2, "", true);
+    CNode dummyNode2(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr2, "", true,false);
     dummyNode2.nVersion = 1;
     Misbehaving(dummyNode2.GetNodeState(), 50);
     SendMessages(&dummyNode2, false);
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(DoS_banscore)
     PeerBanningService::ClearBanned();
     settings.SetParameter("-banscore", "111"); // because 11 is my favorite number
     CAddress addr1(ToIP(0xa0b0c001));
-    CNode dummyNode1(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr1, "", true);
+    CNode dummyNode1(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr1, "", true,false);
     dummyNode1.nVersion = 1;
     Misbehaving(dummyNode1.GetNodeState(), 100);
     SendMessages(&dummyNode1, false);
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(DoS_bantime)
     SetMockTime(nStartTime); // Overrides future calls to GetTime()
 
     CAddress addr(ToIP(0xa0b0c001));
-    CNode dummyNode(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr, "", true);
+    CNode dummyNode(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr, "", true,false);
     dummyNode.nVersion = 1;
 
     Misbehaving(dummyNode.GetNodeState(), 100);

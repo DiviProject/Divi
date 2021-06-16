@@ -493,12 +493,15 @@ CNode::CNode(
     SOCKET hSocketIn,
     CAddress addrIn,
     std::string addrNameIn,
-    bool fInboundIn
+    bool fInboundIn,
+    bool whitelisted
     ) : fSuccessfullyConnected(false)
     , dataLogger()
     , channel_(hSocketIn)
     , messageConnection_(channel_,fSuccessfullyConnected,dataLogger)
     , vRecvGetData()
+    , fInbound(fInboundIn)
+    , fWhitelisted(whitelisted)
     , setAddrKnown(5000)
 {
     nServices = 0;
@@ -507,10 +510,8 @@ CNode::CNode(
     addrName = addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn;
     nVersion = 0;
     strSubVer = "";
-    fWhitelisted = false;
     fOneShot = false;
     fClient = false; // set by version message
-    fInbound = fInboundIn;
     fNetworkNode = false;
     nRefCount = 0;
     hashContinue = 0;

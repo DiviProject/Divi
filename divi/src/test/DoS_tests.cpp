@@ -24,6 +24,7 @@
 #include <Node.h>
 #include <random.h>
 #include <NodeStateRegistry.h>
+#include <SocketChannel.h>
 
 
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
@@ -41,6 +42,11 @@ CService ToIP(uint32_t i)
     struct in_addr s;
     s.s_addr = i;
     return CService(CNetAddr(s), Params().GetDefaultPort());
+}
+static SocketChannel& InvalidSocketChannel()
+{
+    static SocketChannel invalidChannel(INVALID_SOCKET);
+    return invalidChannel;
 }
 struct DoSTestFixture
 {
@@ -62,7 +68,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     CNodeSignals& nodeSignals = GetNodeSignals();
     PeerBanningService::ClearBanned();
     CAddress addr1(ToIP(0xa0b0c001));
-    CNode dummyNode1(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr1, "", true,false);
+    CNode dummyNode1(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", true,false);
     dummyNode1.nVersion = 1;
     Misbehaving(dummyNode1.GetNodeState(), 100); // Should get banned
     SendMessages(&dummyNode1, false);
@@ -70,7 +76,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),ToIP(0xa0b0c001|0x0000ff00))); // Different IP, not banned
 
     CAddress addr2(ToIP(0xa0b0c002));
-    CNode dummyNode2(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr2, "", true,false);
+    CNode dummyNode2(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr2, "", true,false);
     dummyNode2.nVersion = 1;
     Misbehaving(dummyNode2.GetNodeState(), 50);
     SendMessages(&dummyNode2, false);
@@ -87,7 +93,7 @@ BOOST_AUTO_TEST_CASE(DoS_banscore)
     PeerBanningService::ClearBanned();
     settings.SetParameter("-banscore", "111"); // because 11 is my favorite number
     CAddress addr1(ToIP(0xa0b0c001));
-    CNode dummyNode1(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr1, "", true,false);
+    CNode dummyNode1(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", true,false);
     dummyNode1.nVersion = 1;
     Misbehaving(dummyNode1.GetNodeState(), 100);
     SendMessages(&dummyNode1, false);
@@ -109,7 +115,7 @@ BOOST_AUTO_TEST_CASE(DoS_bantime)
     SetMockTime(nStartTime); // Overrides future calls to GetTime()
 
     CAddress addr(ToIP(0xa0b0c001));
-    CNode dummyNode(&nodeSignals,GetNetworkAddressManager(),INVALID_SOCKET, addr, "", true,false);
+    CNode dummyNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr, "", true,false);
     dummyNode.nVersion = 1;
 
     Misbehaving(dummyNode.GetNodeState(), 100);

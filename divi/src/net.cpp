@@ -160,12 +160,16 @@ private:
     std::vector<CNode*> vNodes_;
     std::list<CNode*> disconnectedNodes_;
     std::vector<ListenSocket> listeningSockets_;
-    NodesWithSockets(): cs_vNodes(), vNodes_(), disconnectedNodes_(), listeningSockets_()
+    std::map<NodeId,SocketChannel*> socketChannelsByNodeId_;
+    NodesWithSockets(): cs_vNodes(), vNodes_(), disconnectedNodes_(), listeningSockets_(), socketChannelsByNodeId_()
     {
     }
     void deleteNode(CNode* pnode)
     {
+        NodeId id = pnode->GetId();
         delete pnode;
+        delete socketChannelsByNodeId_[id];
+        socketChannelsByNodeId_.erase(id);
     }
 public:
     ~NodesWithSockets()
@@ -176,10 +180,11 @@ public:
         static NodesWithSockets nodesWithSockets;
         return nodesWithSockets;
     }
-    void recordNode(CNode* pnode)
+    void recordNode(CNode* pnode, SocketChannel* channel)
     {
         LOCK(cs_vNodes);
         vNodes_.push_back(pnode);
+        socketChannelsByNodeId_[pnode->GetId()] = channel;
     }
     CCriticalSection& nodesLock()
     {
@@ -269,14 +274,15 @@ static std::list<CNode*>& vNodesDisconnected = NodesWithSockets::Instance().disc
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
 PeerNotificationOfMintService peerBlockNotify(vNodes,cs_vNodes);
 template <typename ...Args>
-CNode* CreateNode(Args&&... args)
+CNode* CreateNode(SOCKET socket, Args&&... args)
 {
-    CNode* pnode = new CNode(std::forward<Args>(args)...);
+    SocketChannel* channel = new SocketChannel(socket);
+    CNode* pnode = new CNode(*channel,std::forward<Args>(args)...);
     if (pnode->CommunicationChannelIsValid() && !pnode->fInbound)
         pnode->PushVersion(GetHeight());
     pnode->AddRef();
 
-    NodesWithSockets::Instance().recordNode(pnode);
+    NodesWithSockets::Instance().recordNode(pnode,channel);
     return pnode;
 }
 
@@ -550,7 +556,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
         addrman.Attempt(addrConnect);
 
         // Add node
-        CNode* pnode = CreateNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addrConnect, pszDest ? pszDest : "", false,false);
+        CNode* pnode = CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addrConnect, pszDest ? pszDest : "", false,false);
         pnode->nTimeConnected = GetTime();
 
         return pnode;
@@ -774,7 +780,7 @@ public:
                     LogPrintf("connection from %s dropped (banned)\n", addr);
                     CloseSocket(hSocket);
                 } else {
-                    CreateNode(&GetNodeSignals(),GetNetworkAddressManager(),hSocket, addr, "", true, whitelisted);
+                    CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addr, "", true, whitelisted);
                 }
             }
         }

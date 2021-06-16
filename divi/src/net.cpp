@@ -150,7 +150,6 @@ public:
 bool fDiscover = true;
 bool fListen = true;
 
-static std::vector<ListenSocket> vhListenSocket;
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
@@ -160,7 +159,8 @@ private:
     CCriticalSection cs_vNodes;
     std::vector<CNode*> vNodes_;
     std::list<CNode*> disconnectedNodes_;
-    NodesWithSockets(): cs_vNodes(), vNodes_(), disconnectedNodes_()
+    std::vector<ListenSocket> listeningSockets_;
+    NodesWithSockets(): cs_vNodes(), vNodes_(), disconnectedNodes_(), listeningSockets_()
     {
     }
     void deleteNode(CNode* pnode)
@@ -192,6 +192,10 @@ public:
     std::list<CNode*>& disconnectedNodes()
     {
         return disconnectedNodes_;
+    }
+    std::vector<ListenSocket>& listeningSockets()
+    {
+        return listeningSockets_;
     }
     void disconnectUnusedNodes()
     {
@@ -231,6 +235,7 @@ public:
     }
 };
 
+static std::vector<ListenSocket>& vhListenSocket = NodesWithSockets::Instance().listeningSockets();
 static CCriticalSection& cs_vNodes = NodesWithSockets::Instance().nodesLock();
 static std::vector<CNode*>& vNodes = NodesWithSockets::Instance().nodes();
 static std::list<CNode*>& vNodesDisconnected = NodesWithSockets::Instance().disconnectedNodes();

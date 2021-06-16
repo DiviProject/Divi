@@ -582,24 +582,13 @@ CommsMode CNode::SelectCommunicationMode()
     }
     return CommsMode::BUSY;
 }
-bool CNode::TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar)
+bool CNode::TrySendData()
 {
-    if (!CommunicationChannelIsValid())
-        return false;
-    if (registrar.IsRegisteredForSend(channel_.getSocket()))
-        return messageConnection_.TrySendData();
-
-    return true;
+    return messageConnection_.TrySendData();
 }
-bool CNode::TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition)
+bool CNode::TryReceiveData(boost::condition_variable& messageHandlerCondition)
 {
-    if (!CommunicationChannelIsValid())
-        return false;
-    SOCKET socket = channel_.getSocket();
-    if (registrar.IsRegisteredForReceive(socket) || registrar.IsRegisteredForErrors(socket))
-        return messageConnection_.TryReceiveData(messageHandlerCondition);
-
-    return true;
+    return messageConnection_.TryReceiveData(messageHandlerCondition);
 }
 NodeBufferStatus CNode::GetSendBufferStatus() const
 {

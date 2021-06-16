@@ -12,6 +12,7 @@ public:
     virtual int receiveData(void* buffer, size_t len) const;
     virtual void close();
     virtual bool isValid() const;
+    virtual bool hasErrors(bool logErrors) const;
 
     SOCKET getSocket() const;
 };

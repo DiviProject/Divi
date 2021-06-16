@@ -186,8 +186,8 @@ public:
     bool CommunicationChannelIsValid() const;
     void CloseCommsAndDisconnect();
     CommsMode SelectCommunicationMode();
-    bool TrySendData(const I_CommunicationRegistrar<SOCKET>& registrar);
-    bool TryReceiveData(const I_CommunicationRegistrar<SOCKET>& registrar, boost::condition_variable& messageHandlerCondition);
+    bool TrySendData();
+    bool TryReceiveData(boost::condition_variable& messageHandlerCondition);
     NodeBufferStatus GetSendBufferStatus() const;
     void SetInboundSerializationVersion(int versionNumber);
     void SetOutboundSerializationVersion(int versionNumber);

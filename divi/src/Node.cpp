@@ -488,7 +488,7 @@ void QueuedMessageConnection::SetOutboundSerializationVersion(int versionNumber)
 }
 
 CNode::CNode(
-    SocketChannel& channel,
+    I_CommunicationChannel& channel,
     CNodeSignals* nodeSignals,
     CAddrMan& addressMananger,
     CAddress addrIn,

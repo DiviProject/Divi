@@ -265,6 +265,18 @@ public:
         WSACleanup();
     #endif
     }
+    SOCKET getSocketByNodeId(NodeId id) const
+    {
+        auto it = socketChannelsByNodeId_.find(id);
+        if(it != socketChannelsByNodeId_.end())
+        {
+            return it->second->getSocket();
+        }
+        else
+        {
+            return INVALID_SOCKET;
+        }
+    }
 };
 
 static std::vector<ListenSocket>& vhListenSocket = NodesWithSockets::Instance().listeningSockets();

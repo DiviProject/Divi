@@ -133,8 +133,8 @@ public:
     {
         std::vector<CNode*> vSporkSyncedNodes;
         {
-        TRY_LOCK(peersLock_, lockRecv);
-        if (!lockRecv) return {};
+        TRY_LOCK(peersLock_, lockedNodes);
+        if (!lockedNodes) return {};
 
         std::copy_if(std::begin(peers_), std::end(peers_), std::back_inserter(vSporkSyncedNodes), [](const CNode *node) {
             return node->fInbound || node->AreSporksSynced();

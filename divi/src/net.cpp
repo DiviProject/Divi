@@ -152,6 +152,34 @@ bool fListen = true;
 
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
+class NodeWithSocket
+{
+private:
+    std::unique_ptr<SocketChannel> channel_;
+    std::unique_ptr<CNode> node_;
+public:
+    template <typename ...Args>
+    NodeWithSocket(
+        SOCKET socket,
+        Args&&... args
+        ): channel_(new SocketChannel(socket))
+        , node_(new CNode(*channel_,std::forward<Args>(args)...))
+    {
+    }
+    ~NodeWithSocket()
+    {
+        node_.reset();
+        channel_.reset();
+    }
+    CNode* node()
+    {
+        return node_.get();
+    }
+    SOCKET getSocket()
+    {
+        return channel_->getSocket();
+    }
+};
 
 class NodeManager
 {
@@ -160,15 +188,13 @@ private:
     std::vector<CNode*> vNodes_;
     std::list<CNode*> disconnectedNodes_;
     std::vector<ListenSocket> listeningSockets_;
-    std::map<NodeId,SocketChannel*> socketChannelsByNodeId_;
+    std::map<NodeId,std::unique_ptr<NodeWithSocket>> socketChannelsByNodeId_;
     NodeManager(): cs_vNodes(), vNodes_(), disconnectedNodes_(), listeningSockets_(), socketChannelsByNodeId_()
     {
     }
     void deleteNode(CNode* pnode)
     {
         NodeId id = pnode->GetId();
-        delete pnode;
-        delete socketChannelsByNodeId_[id];
         socketChannelsByNodeId_.erase(id);
     }
 public:
@@ -180,11 +206,11 @@ public:
         static NodeManager nodesWithSockets;
         return nodesWithSockets;
     }
-    void recordNode(CNode* pnode, SocketChannel* channel)
+    void recordNode(NodeWithSocket* pnode)
     {
         LOCK(cs_vNodes);
-        vNodes_.push_back(pnode);
-        socketChannelsByNodeId_[pnode->GetId()] = channel;
+        vNodes_.push_back(pnode->node());
+        socketChannelsByNodeId_.insert(std::make_pair(pnode->node()->GetId(),pnode));
     }
     CCriticalSection& nodesLock()
     {
@@ -288,13 +314,13 @@ PeerNotificationOfMintService peerBlockNotify(vNodes,cs_vNodes);
 template <typename ...Args>
 CNode* CreateNode(SOCKET socket, Args&&... args)
 {
-    SocketChannel* channel = new SocketChannel(socket);
-    CNode* pnode = new CNode(*channel,std::forward<Args>(args)...);
+    NodeWithSocket* nodeWithSocket = new NodeWithSocket(socket,std::forward<Args>(args)...);
+    CNode* pnode = nodeWithSocket->node();
     if (pnode->CommunicationChannelIsValid() && !pnode->fInbound)
         pnode->PushVersion(GetHeight());
     pnode->AddRef();
 
-    NodeManager::Instance().recordNode(pnode,channel);
+    NodeManager::Instance().recordNode(nodeWithSocket);
     return pnode;
 }
 

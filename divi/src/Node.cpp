@@ -189,6 +189,7 @@ QueuedMessageConnection::QueuedMessageConnection(
     CommunicationLogger& dataLogger
     ): fSuccessfullyConnected_(fSuccessfullyConnected)
     , dataLogger_(dataLogger)
+    , commsMode_(CommsMode::BUSY)
     , ssSend(SER_NETWORK, INIT_PROTO_VERSION)
     , vSendMsg()
     , cs_vSend()
@@ -202,6 +203,26 @@ QueuedMessageConnection::QueuedMessageConnection(
 {
 }
 
+CommsMode QueuedMessageConnection::SelectCommunicationMode()
+{
+    {
+        TRY_LOCK(cs_vSend, lockSend);
+        if (lockSend && IsAvailableToSend()) {
+            commsMode_= CommsMode::SEND;
+            return commsMode_;
+        }
+    }
+    {
+        TRY_LOCK(cs_vRecvMsg, lockRecv);
+        if (lockRecv && IsAvailableToReceive())
+        {
+            commsMode_= CommsMode::RECEIVE;
+            return commsMode_;
+        }
+    }
+    commsMode_= CommsMode::BUSY;
+    return commsMode_;
+}
 void QueuedMessageConnection::CloseCommsChannel()
 {
     channel_.close();
@@ -275,7 +296,7 @@ void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHand
 bool QueuedMessageConnection::TrySendData()
 {
     TRY_LOCK(cs_vSend, lockSend);
-    if (lockSend)
+    if (lockSend && commsMode_ == SEND)
         SendData();
 
     return true;
@@ -283,7 +304,7 @@ bool QueuedMessageConnection::TrySendData()
 bool QueuedMessageConnection::TryReceiveData(boost::condition_variable& messageHandlerCondition)
 {
     TRY_LOCK(cs_vRecvMsg, lockRecv);
-    if (lockRecv)
+    if (lockRecv && commsMode_ != SEND)
         ReceiveData(messageHandlerCondition);
     return true;
 }
@@ -567,20 +588,7 @@ void CNode::CloseCommsAndDisconnect()
 }
 CommsMode CNode::SelectCommunicationMode()
 {
-    {
-        TRY_LOCK(messageConnection_.GetSendLock(), lockSend);
-        if (lockSend && messageConnection_.IsAvailableToSend()) {
-            return CommsMode::SEND;
-        }
-    }
-    {
-        TRY_LOCK(messageConnection_.GetReceiveLock(), lockRecv);
-        if (lockRecv && messageConnection_.IsAvailableToReceive())
-        {
-            return CommsMode::RECEIVE;
-        }
-    }
-    return CommsMode::BUSY;
+    return messageConnection_.SelectCommunicationMode();
 }
 bool CNode::TrySendData()
 {

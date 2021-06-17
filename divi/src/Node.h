@@ -93,11 +93,19 @@ public:
     uint64_t GetTotalBytesSent() const;
 };
 
+enum CommsMode
+{
+    SEND,
+    RECEIVE,
+    BUSY,
+};
+
 class QueuedMessageConnection
 {
 private:
     const bool& fSuccessfullyConnected_;
     CommunicationLogger& dataLogger_;
+    CommsMode commsMode_;
 
     CDataStream ssSend;
     std::deque<CSerializeData> vSendMsg;
@@ -158,18 +166,12 @@ public:
     CCriticalSection& GetReceiveLock();
     NodeBufferStatus GetSendBufferStatus() const;
 
+    CommsMode SelectCommunicationMode();
     void SetInboundSerializationVersion(int versionNumber);
     void SetOutboundSerializationVersion(int versionNumber);
     bool IsFlaggedForDisconnection() const;
     void FlagForDisconnection();
     std::deque<CNetMessage>& GetReceivedMessageQueue();
-};
-
-enum CommsMode
-{
-    SEND,
-    RECEIVE,
-    BUSY,
 };
 
 class CNode

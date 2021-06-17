@@ -232,11 +232,9 @@ public:
     int nSporksCount = -1;
 
 protected:
-    // Basic fuzz-testing
-    void Fuzz(int nChance); // modifies ssSend
-
     CNodeSignals* nodeSignals_;
     std::unique_ptr<CNodeState> nodeState_;
+
 public:
     uint256 hashContinue;
     int nStartingHeight;

@@ -670,15 +670,6 @@ public:
     }
 };
 
-static void DisconnectUnusedNodes()
-{
-    NodeManager::Instance().disconnectUnusedNodes();
-}
-void DeleteDisconnectedNodes()
-{
-    NodeManager::Instance().deleteDisconnectedNodes();
-}
-
 class SocketsProcessor final: public I_CommunicationRegistrar<SOCKET>
 {
 private:
@@ -865,8 +856,8 @@ void ThreadSocketHandler()
         //
         // Disconnect nodes
         //
-        DisconnectUnusedNodes();
-        DeleteDisconnectedNodes();
+        NodeManager::Instance().disconnectUnusedNodes();
+        NodeManager::Instance().deleteDisconnectedNodes();
         size_t vNodesSize = GetPeerCount();
         if(vNodesSize != nPrevNodeCount) {
             nPrevNodeCount = vNodesSize;

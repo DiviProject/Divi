@@ -153,7 +153,7 @@ bool fListen = true;
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
-class NodesWithSockets
+class NodeManager
 {
 private:
     CCriticalSection cs_vNodes;
@@ -161,7 +161,7 @@ private:
     std::list<CNode*> disconnectedNodes_;
     std::vector<ListenSocket> listeningSockets_;
     std::map<NodeId,SocketChannel*> socketChannelsByNodeId_;
-    NodesWithSockets(): cs_vNodes(), vNodes_(), disconnectedNodes_(), listeningSockets_(), socketChannelsByNodeId_()
+    NodeManager(): cs_vNodes(), vNodes_(), disconnectedNodes_(), listeningSockets_(), socketChannelsByNodeId_()
     {
     }
     void deleteNode(CNode* pnode)
@@ -172,12 +172,12 @@ private:
         socketChannelsByNodeId_.erase(id);
     }
 public:
-    ~NodesWithSockets()
+    ~NodeManager()
     {
     }
-    static NodesWithSockets& Instance()
+    static NodeManager& Instance()
     {
-        static NodesWithSockets nodesWithSockets;
+        static NodeManager nodesWithSockets;
         return nodesWithSockets;
     }
     void recordNode(CNode* pnode, SocketChannel* channel)
@@ -279,10 +279,10 @@ public:
     }
 };
 
-static std::vector<ListenSocket>& vhListenSocket = NodesWithSockets::Instance().listeningSockets();
-static CCriticalSection& cs_vNodes = NodesWithSockets::Instance().nodesLock();
-static std::vector<CNode*>& vNodes = NodesWithSockets::Instance().nodes();
-static std::list<CNode*>& vNodesDisconnected = NodesWithSockets::Instance().disconnectedNodes();
+static std::vector<ListenSocket>& vhListenSocket = NodeManager::Instance().listeningSockets();
+static CCriticalSection& cs_vNodes = NodeManager::Instance().nodesLock();
+static std::vector<CNode*>& vNodes = NodeManager::Instance().nodes();
+static std::list<CNode*>& vNodesDisconnected = NodeManager::Instance().disconnectedNodes();
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
 PeerNotificationOfMintService peerBlockNotify(vNodes,cs_vNodes);
 template <typename ...Args>
@@ -294,7 +294,7 @@ CNode* CreateNode(SOCKET socket, Args&&... args)
         pnode->PushVersion(GetHeight());
     pnode->AddRef();
 
-    NodesWithSockets::Instance().recordNode(pnode,channel);
+    NodeManager::Instance().recordNode(pnode,channel);
     return pnode;
 }
 
@@ -646,11 +646,11 @@ public:
 
 static void DisconnectUnusedNodes()
 {
-    NodesWithSockets::Instance().disconnectUnusedNodes();
+    NodeManager::Instance().disconnectUnusedNodes();
 }
 void DeleteDisconnectedNodes()
 {
-    NodesWithSockets::Instance().deleteDisconnectedNodes();
+    NodeManager::Instance().deleteDisconnectedNodes();
 }
 
 class SocketsProcessor final: public I_CommunicationRegistrar<SOCKET>
@@ -730,7 +730,7 @@ public:
             if (!pnode->CommunicationChannelIsValid())
                 continue;
             have_fds = true;
-            SOCKET nodeSocket = NodesWithSockets::Instance().getSocketByNodeId(pnode->GetId());
+            SOCKET nodeSocket = NodeManager::Instance().getSocketByNodeId(pnode->GetId());
             RegisterForErrors(nodeSocket);
             CommsMode mode = pnode->SelectCommunicationMode();
             switch (mode)
@@ -815,7 +815,7 @@ public:
     {
         if (!pnode->CommunicationChannelIsValid())
             return false;
-        SOCKET nodeSocket = NodesWithSockets::Instance().getSocketByNodeId(pnode->GetId());
+        SOCKET nodeSocket = NodeManager::Instance().getSocketByNodeId(pnode->GetId());
         if (IsRegisteredForReceive(nodeSocket) || IsRegisteredForErrors(nodeSocket))
             return pnode->TryReceiveData(messageHandlerCondition);
         return true;
@@ -824,7 +824,7 @@ public:
     {
         if (!pnode->CommunicationChannelIsValid())
             return false;
-        SOCKET nodeSocket = NodesWithSockets::Instance().getSocketByNodeId(pnode->GetId());
+        SOCKET nodeSocket = NodeManager::Instance().getSocketByNodeId(pnode->GetId());
         if (IsRegisteredForSend(nodeSocket))
             return pnode->TrySendData();
 
@@ -1551,7 +1551,7 @@ bool StopNode()
 
 void CleanupP2PConnections()
  {
-    NodesWithSockets::Instance().cleanupP2PConnections();
+    NodeManager::Instance().cleanupP2PConnections();
 }
 void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate)
 {

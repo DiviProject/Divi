@@ -17,6 +17,7 @@
 #include <sync.h>
 #include <timedata.h>
 #include <utilstrencodings.h>
+#include <MasternodeHelpers.h>
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 template <typename T>
@@ -98,7 +99,14 @@ bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& sig
         }
     }
 
-    if (mnodeman.ProcessBroadcast(activeMasternode, nullptr, mnb))
+    if(!IsBlockchainSynced())
+    {
+        LogPrintf("Warning! Trying to relay broadcast while blockchain sync hasnt completed may fail!");
+    }
+
+    CDataStream reserializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);
+    reserializedBroadcast << mnb;
+    if (mnodeman.ProcessMessage(activeMasternode,nullptr, "mnb", reserializedBroadcast))
     {
         return true;
     }
@@ -134,17 +142,20 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore,std::string alia
             return result;
         }
 
+        CDataStream serializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);
+        serializedBroadcast << mnb;
         if (deferRelay)
         {
-            CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
-            ss << mnb;
-
             result.status = true;
-            result.broadcastData = HexStr(ss.str());
+            result.broadcastData = HexStr(serializedBroadcast.str());
             return result;
         }
 
-        if(!mnodeman.ProcessBroadcast(activeMasternode, nullptr, mnb))
+        if(!IsBlockchainSynced())
+        {
+            LogPrintf("Warning! Trying to relay broadcast while blockchain sync hasnt completed may fail!");
+        }
+        if(!mnodeman.ProcessMessage(activeMasternode,nullptr, "mnb", serializedBroadcast))
         {
             LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin);
             result.status = false;

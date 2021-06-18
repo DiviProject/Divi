@@ -103,4 +103,19 @@ BOOST_AUTO_TEST_CASE(willSetMatchingPubkeyForPrivateKey)
     BOOST_CHECK(activeMasternode_->pubKeyMasternode == expectedPubkey);
 }
 
+BOOST_AUTO_TEST_CASE(willResetStatusToSyncInProgressWhenResyncIsCalled)
+{
+    uint256 dummyHash = GetRandHash();
+    uint32_t out = 0;
+    CTxIn validTxIn (dummyHash, out);
+    CService service;
+
+    AddDummyConfiguration(validTxIn, service);
+    BOOST_CHECK(activeMasternode_->EnableHotColdMasterNode(validTxIn, service));
+    BOOST_CHECK(activeMasternode_->status == ACTIVE_MASTERNODE_STARTED);
+
+    activeMasternode_->FlagBlockchainSyncRequired();
+    BOOST_CHECK(activeMasternode_->status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

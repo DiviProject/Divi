@@ -2,8 +2,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "main.h"
 #include "txmempool.h"
+
+#include "FakeBlockIndexChain.h"
 
 #include <boost/test/unit_test.hpp>
 #include <list>
@@ -30,6 +31,9 @@ protected:
   /** Three grand children.  */
   CMutableTransaction txGrandChild[3];
 
+  /** Our fake blockchain.  */
+  FakeBlockIndexWithHashes fakeChain;
+
   /** The test mempool instance.  */
   CTxMemPool testPool;
 
@@ -42,13 +46,16 @@ protected:
 public:
 
   MempoolTestFixture()
-    : testPool(CFeeRate(0), addressIndex, spentIndex),
+    : fakeChain(1, 1500000000, 1),
+      testPool(CFeeRate(0), addressIndex, spentIndex),
       coinsMemPool(&coinsDummy, testPool), coins(&coinsMemPool)
   {
     CMutableTransaction mtx;
-    mtx.vout.emplace_back(COIN, CScript () << OP_TRUE);
+    mtx.vout.emplace_back(2 * COIN, CScript () << OP_TRUE);
     mtx.vout.emplace_back(COIN, CScript () << OP_TRUE);
     coins.ModifyCoins(mtx.GetHash())->FromTx(mtx, 0);
+
+    coins.SetBestBlock(fakeChain.activeChain->Tip()->GetBlockHash());
 
     txParent.vin.resize(2);
     txParent.vin[0].prevout = COutPoint(mtx.GetHash(), 0);
@@ -61,7 +68,7 @@ public:
     for (int i = 0; i < 3; i++)
     {
         txParent.vout[i].scriptPubKey = CScript() << OP_11 << OP_EQUAL;
-        txParent.vout[i].nValue = 33000LL;
+        txParent.vout[i].nValue = COIN;
     }
     assert(txParent.GetHash() != txParent.GetBareTxid());
 
@@ -73,7 +80,7 @@ public:
         txChild[i].vin[0].prevout.n = i;
         txChild[i].vout.resize(1);
         txChild[i].vout[0].scriptPubKey = CScript() << OP_11 << OP_EQUAL;
-        txChild[i].vout[0].nValue = 11000LL;
+        txChild[i].vout[0].nValue = COIN;
     }
 
     for (int i = 0; i < 3; i++)
@@ -84,8 +91,22 @@ public:
         txGrandChild[i].vin[0].prevout.n = 0;
         txGrandChild[i].vout.resize(1);
         txGrandChild[i].vout[0].scriptPubKey = CScript() << OP_11 << OP_EQUAL;
-        txGrandChild[i].vout[0].nValue = 11000LL;
+        txGrandChild[i].vout[0].nValue = COIN;
     }
+
+    testPool.setSanityCheck(true);
+    testPool.clear();
+  }
+
+  /** Adds the parent, childs and grandchilds to the mempool.  */
+  void AddAll()
+  {
+      testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1), coins);
+      for (int i = 0; i < 3; i++)
+      {
+          testPool.addUnchecked(txChild[i].GetHash(), CTxMemPoolEntry(txChild[i], 0, 0, 0.0, 1), coins);
+          testPool.addUnchecked(txGrandChild[i].GetHash(), CTxMemPoolEntry(txGrandChild[i], 0, 0, 0.0, 1), coins);
+      }
   }
 
 };
@@ -109,12 +130,10 @@ BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
     removed.clear();
     
     // Parent, children, grandchildren:
-    testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1), coins);
-    for (int i = 0; i < 3; i++)
-    {
-        testPool.addUnchecked(txChild[i].GetHash(), CTxMemPoolEntry(txChild[i], 0, 0, 0.0, 1), coins);
-        testPool.addUnchecked(txGrandChild[i].GetHash(), CTxMemPoolEntry(txGrandChild[i], 0, 0, 0.0, 1), coins);
-    }
+    AddAll();
+
+    testPool.check(&coins, *fakeChain.blockIndexByHash);
+
     // Remove Child[0], GrandChild[0] should be removed:
     testPool.remove(txChild[0], removed, true);
     BOOST_CHECK_EQUAL(removed.size(), 2);
@@ -149,12 +168,7 @@ BOOST_AUTO_TEST_CASE(MempoolIndexByBareTxid)
     CTransaction tx;
     std::list<CTransaction> removed;
 
-    testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1), coins);
-    for (int i = 0; i < 3; ++i)
-    {
-        testPool.addUnchecked(txChild[i].GetHash(), CTxMemPoolEntry(txChild[i], 0, 0, 0.0, 1), coins);
-        testPool.addUnchecked(txGrandChild[i].GetHash(), CTxMemPoolEntry(txGrandChild[i], 0, 0, 0.0, 1), coins);
-    }
+    AddAll();
 
     BOOST_CHECK(testPool.lookupBareTxid(txParent.GetBareTxid(), tx));
     BOOST_CHECK(tx.GetHash() == txParent.GetHash());

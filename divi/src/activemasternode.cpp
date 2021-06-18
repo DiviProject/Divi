@@ -17,8 +17,7 @@
 CActiveMasternode::CActiveMasternode(
     const CMasternodeConfig& masternodeConfigurations,
     const bool& masterNodeEnabled
-    ): cs()
-    , masternodeConfigurations_(masternodeConfigurations)
+    ): masternodeConfigurations_(masternodeConfigurations)
     , fMasterNode_(masterNodeEnabled)
     , addressHasBeenSet_(false)
     , masternodeKey_()

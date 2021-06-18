@@ -10,7 +10,6 @@
 #include <pubkey.h>
 #include <netbase.h>
 #include <primitives/transaction.h>
-#include <sync.h>
 
 #define ACTIVE_MASTERNODE_INITIAL 0 // initial state
 #define ACTIVE_MASTERNODE_SYNC_IN_PROCESS 1
@@ -32,7 +31,6 @@ private:
     bool IsThisMasternodeCollateral(const CTxIn& newVin) const;
 private:
     // critical section to protect the inner data structures
-    mutable CCriticalSection cs;
     const CMasternodeConfig& masternodeConfigurations_;
     const bool& fMasterNode_;
     bool addressHasBeenSet_;

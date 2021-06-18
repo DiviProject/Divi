@@ -216,8 +216,6 @@ int CMasternodePayments::GetMinMasternodePaymentsProto() const
 
 void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
-    if (!IsBlockchainSynced()) return;
-
     if (strCommand == "mnget") { //Masternode Payments Request Sync
 
         int nCountNeeded;

@@ -560,8 +560,6 @@ bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
 }
 void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (!IsBlockchainSynced()) return;
-
     LOCK(cs_process_message);
 
     if (strCommand == "mnb") { //Masternode Broadcast

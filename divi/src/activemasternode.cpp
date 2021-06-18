@@ -56,14 +56,6 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
     if (!fMasterNode_) return;
 
     LogPrint("masternode","CActiveMasternode::ManageStatus() - Begin\n");
-
-    //need correct blocks to send ping
-    if (!IsBlockchainSynced()) {
-        status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
-        LogPrintf("CActiveMasternode::ManageStatus() - %s\n", GetStatus());
-        return;
-    }
-
     if (status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS)
         status = ACTIVE_MASTERNODE_INITIAL;
 
@@ -253,5 +245,7 @@ bool CActiveMasternode::UpdatePing(CMasternodePing& mnp) const
 
 void CActiveMasternode::FlagBlockchainSyncRequired()
 {
+    if(!fMasterNode_) return;
     status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
+    LogPrintf("CActiveMasternode::ManageStatus() - %s\n", GetStatus());
 }

@@ -32,6 +32,11 @@ public:
     {
         configurations_->add("dummy configuration", service.ToString(), "", txIn.prevout.hash.ToString(), std::to_string(txIn.prevout.n));
     }
+    void disableMasternode()
+    {
+        masternodesEnabled_ = false;
+        activeMasternode_.reset(new CActiveMasternode(*configurations_, masternodesEnabled_));
+    }
 };
 
 
@@ -103,7 +108,7 @@ BOOST_AUTO_TEST_CASE(willSetMatchingPubkeyForPrivateKey)
     BOOST_CHECK(activeMasternode_->pubKeyMasternode == expectedPubkey);
 }
 
-BOOST_AUTO_TEST_CASE(willResetStatusToSyncInProgressWhenResyncIsCalled)
+BOOST_AUTO_TEST_CASE(willResetStatusToSyncInProgressWhenChainSyncIsRequired)
 {
     uint256 dummyHash = GetRandHash();
     uint32_t out = 0;
@@ -116,6 +121,14 @@ BOOST_AUTO_TEST_CASE(willResetStatusToSyncInProgressWhenResyncIsCalled)
 
     activeMasternode_->FlagBlockchainSyncRequired();
     BOOST_CHECK(activeMasternode_->status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS);
+}
+
+BOOST_AUTO_TEST_CASE(willCannotResetStatusOfInactiveMasternodeWhenChainSyncIsRequired)
+{
+    disableMasternode();
+    activeMasternode_->status = ACTIVE_MASTERNODE_STARTED;
+    activeMasternode_->FlagBlockchainSyncRequired();
+    BOOST_CHECK(activeMasternode_->status == ACTIVE_MASTERNODE_STARTED);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

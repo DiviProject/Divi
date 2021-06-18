@@ -115,6 +115,11 @@ void FakeWallet::AddBlock()
   fakeChain.addBlocks(1, version);
 }
 
+void FakeWallet::AddConfirmations(const unsigned numConf, const int64_t minAge)
+{
+  fakeChain.addBlocks(numConf, version, fakeChain.activeChain->Tip()->nTime + minAge);
+}
+
 const CWalletTx& FakeWallet::AddDefaultTx(const CScript& scriptToPayTo, unsigned& outputIndex,
                                           const CAmount amount)
 {

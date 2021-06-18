@@ -49,6 +49,24 @@ private:
     bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool skipPingChainSyncCheck = false);
+
+    /** Processes a masternode broadcast.  It is verified first, and then
+     *  the masternode updated or added accordingly.
+     *
+     *  If pfrom is null, we assume this is a startmasternode or broadcaststartmasternode
+     *  command.  Otherwise, we apply any potential DoS banscore.
+     *
+     *  Returns true if all was valid, and false if not.  */
+    bool ProcessBroadcast(CActiveMasternode& localMasternode, CNode* pfrom, CMasternodeBroadcast& mnb);
+
+    /** Processes a masternode ping.  It is verified first, and if valid,
+     *  used to update our state and inserted into mapSeenMasternodePing.
+     *
+     *  If pfrom is null, we assume this is from a local RPC command.  Otherwise
+     *  we apply potential DoS banscores.
+     *
+     *  Returns true if the ping message was valid.  */
+    bool ProcessPing(CNode* pfrom, CMasternodePing& mnp);
 public:
 
     CMasternodeMan(
@@ -79,26 +97,7 @@ public:
      *  This method assumes that the ping has already been checked and is valid.
      */
     void RecordSeenPing(const CMasternodePing& mnp);
-
-    /** Processes a masternode broadcast.  It is verified first, and then
-     *  the masternode updated or added accordingly.
-     *
-     *  If pfrom is null, we assume this is a startmasternode or broadcaststartmasternode
-     *  command.  Otherwise, we apply any potential DoS banscore.
-     *
-     *  Returns true if all was valid, and false if not.  */
-    bool ProcessBroadcast(CActiveMasternode& localMasternode, CNode* pfrom, CMasternodeBroadcast& mnb);
-
-    /** Processes a masternode ping.  It is verified first, and if valid,
-     *  used to update our state and inserted into mapSeenMasternodePing.
-     *
-     *  If pfrom is null, we assume this is from a local RPC command.  Otherwise
-     *  we apply potential DoS banscores.
-     *
-     *  Returns true if the ping message was valid.  */
-    bool ProcessPing(CNode* pfrom, CMasternodePing& mnp);
-
-    void ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+    bool ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
 
     std::string ToString() const;
 };

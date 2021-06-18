@@ -558,24 +558,21 @@ bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
     }
     return false;
 }
-void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
+bool CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
     LOCK(cs_process_message);
 
     if (strCommand == "mnb") { //Masternode Broadcast
         CMasternodeBroadcast mnb;
         vRecv >> mnb;
-        if (!ProcessBroadcast(localMasternode,pfrom, mnb))
-          return;
+        return ProcessBroadcast(localMasternode,pfrom, mnb);
     }
-
     else if (strCommand == "mnp") { //Masternode Ping
         CMasternodePing mnp;
         vRecv >> mnp;
 
         LogPrint("masternode", "mnp - Masternode ping, vin: %s\n", mnp.vin.prevout.hash);
-        if (!ProcessPing(pfrom, mnp))
-            return;
+        return ProcessPing(pfrom, mnp);
     } else if (strCommand == "dseg") { //Get Masternode list or specific entry
 
         CTxIn vin;
@@ -591,10 +588,10 @@ void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* p
             if(pmn != nullptr && NotifyPeerOfMasternode(*pmn,pfrom) )
             {
                 LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
-                return;
             }
         }
     }
+    return true;
 }
 
 void CMasternodeMan::Remove(const CTxIn& vin)

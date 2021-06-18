@@ -335,7 +335,7 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
     static CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
     static CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
     static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
-    if(!fLiteMode)
+    if(!fLiteMode && IsBlockchainSynced())
     {
         mnodeman.ProcessMessage(activeMasternode,pfrom, strCommand, vRecv);
         masternodePayments.ProcessMessageMasternodePayments(pfrom, strCommand, vRecv);
@@ -436,6 +436,7 @@ void ThreadMasternodeBackgroundSync()
     RenameThread("divi-obfuscation");
     static const bool regtest = Params().NetworkID() == CBaseChainParams::REGTEST;
 
+    int64_t timestampOfLastReportedWaitOnBlockchainSync = 0;
     int64_t nTimeManageStatus = 0;
     int64_t nTimeConnections = 0;
 
@@ -462,7 +463,15 @@ void ThreadMasternodeBackgroundSync()
             FulfilledMasternodeResyncRequest();
         }
         masternodeSync.Process(regtest);
-        if(!IsBlockchainSynced()) continue;
+        if(!IsBlockchainSynced())
+        {
+            if(now >=  timestampOfLastReportedWaitOnBlockchainSync + MASTERNODE_PING_SECONDS)
+            {
+                timestampOfLastReportedWaitOnBlockchainSync = now;
+                activeMasternode.FlagBlockchainSyncRequired();
+            }
+            continue;
+        }
         // check if we should activate or ping every few minutes,
         // start right after sync is considered to be done
         if (now >= nTimeManageStatus + MASTERNODE_PING_SECONDS) {

@@ -39,6 +39,12 @@ public:
   /** Adds a new block to our fake chain.  */
   void AddBlock();
 
+  /** Adds a couple of new blocks and bumps the time at least
+   *  the given amount.  This can be used to make sure some
+   *  coins fake added to the chain have at least a given age
+   *  and number of confirmations.  */
+  void AddConfirmations(unsigned numConf, int64_t minAge = 0);
+
   /** Adds a new ordinary transaction to the wallet, paying a given amount
    *  to a given script.  The transaction is returned, and the output index
    *  with the output to the requested script is set.  */

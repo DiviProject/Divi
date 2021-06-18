@@ -56,6 +56,7 @@ public:
     bool SetMasternodeAddress(const std::string& masternodeAddress);
     void ManageStatus(CMasternodeMan& masternodeManager);
     std::string GetStatus();
+    void FlagBlockchainSyncRequired();
 
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);

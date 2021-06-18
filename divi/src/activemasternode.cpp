@@ -251,3 +251,8 @@ bool CActiveMasternode::UpdatePing(CMasternodePing& mnp) const
     }
     return false;
 }
+
+void CActiveMasternode::FlagBlockchainSyncRequired()
+{
+    status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
+}

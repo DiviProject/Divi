@@ -255,34 +255,8 @@ bool CMasternodeMan::CheckMasternodeBroadcastContext(CMasternodeBroadcast& mnb, 
 
 bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS)
 {
-    // make sure signature isn't in the future (past is OK)
-    if (mnb.sigTime > GetAdjustedTime() + 60 * 60) {
-        LogPrintf("%s : mnb - Signature rejected, too far into the future %s\n", __func__, mnb.vin.prevout.hash);
-        nDoS = 1;
-        return false;
-    }
-
-    if(!CMasternode::IsTierValid(static_cast<MasternodeTier>(mnb.nTier))) {
-        LogPrintf("%s : mnb - Invalid tier: %d\n", __func__, static_cast<int>(mnb.nTier));
-        nDoS = 20;
-        return false;
-    }
-
-    if (mnb.protocolVersion < ActiveProtocol()) {
-        LogPrint("masternode","mnb - ignoring outdated Masternode %s protocol version %d\n", mnb.vin.prevout.hash, mnb.protocolVersion);
-        return false;
-    }
-
-    if (!mnb.vin.scriptSig.empty()) {
-        LogPrint("masternode","mnb - Ignore Not Empty ScriptSig %s\n", mnb.vin.prevout.hash);
-        return false;
-    }
-
-    std::string errorMessage = "";
-    if(!CObfuScationSigner::VerifySignature<CMasternodeBroadcast>(mnb,mnb.pubKeyCollateralAddress,errorMessage))
+    if(!CheckMasternodeBroadcastContext(mnb,nDoS))
     {
-        LogPrintf("%s : - Got bad Masternode address signature (%s)\n", __func__, errorMessage);
-        nDoS = 100;
         return false;
     }
 

@@ -143,7 +143,6 @@ std::string CMasternode::Status() const
     if (activeState == CMasternode::MASTERNODE_EXPIRED) strStatus = "EXPIRED";
     if (activeState == CMasternode::MASTERNODE_VIN_SPENT) strStatus = "VIN_SPENT";
     if (activeState == CMasternode::MASTERNODE_REMOVE) strStatus = "REMOVE";
-    if (activeState == CMasternode::MASTERNODE_POS_ERROR) strStatus = "POS_ERROR";
 
     return strStatus;
 }
@@ -228,28 +227,6 @@ int64_t CMasternode::DeterministicTimeOffset() const
     uint256 hash = ss.GetHash();
 
     return hash.GetCompact(false) % 150;
-}
-
-std::string CMasternode::GetStatus() const
-{
-    switch (nActiveState) {
-    case CMasternode::MASTERNODE_PRE_ENABLED:
-        return "PRE_ENABLED";
-    case CMasternode::MASTERNODE_ENABLED:
-        return "ENABLED";
-    case CMasternode::MASTERNODE_EXPIRED:
-        return "EXPIRED";
-    case CMasternode::MASTERNODE_OUTPOINT_SPENT:
-        return "OUTPOINT_SPENT";
-    case CMasternode::MASTERNODE_REMOVE:
-        return "REMOVE";
-    case CMasternode::MASTERNODE_WATCHDOG_EXPIRED:
-        return "WATCHDOG_EXPIRED";
-    case CMasternode::MASTERNODE_POSE_BAN:
-        return "POSE_BAN";
-    default:
-        return "UNKNOWN";
-    }
 }
 
 bool CMasternode::IsValidNetAddr() const

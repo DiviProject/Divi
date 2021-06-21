@@ -4,6 +4,7 @@
 #include <scriptCheck.h>
 #include <amount.h>
 
+class BlockMap;
 class CTransaction;
 class CValidationState;
 class CCoinsViewCache;
@@ -21,6 +22,7 @@ bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,
     const CCoinsViewCache& inputs,
+    const BlockMap& blockIndexMap,
     bool fScriptChecks,
     unsigned int flags,
     bool cacheStore,
@@ -29,6 +31,7 @@ bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,
     const CCoinsViewCache& inputs,
+    const BlockMap& blockIndexMap,
     CAmount& nFees,
     CAmount& nValueIn,
     bool fScriptChecks,

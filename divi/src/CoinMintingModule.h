@@ -14,6 +14,7 @@ class I_BlockFactory;
 class CTxMemPool;
 template <typename MutexObj>
 class AnnotatedMixin;
+class BlockMap;
 class I_CoinMinter;
 class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
@@ -44,6 +45,7 @@ public:
         AnnotatedMixin<boost::recursive_mutex>& mainCS,
         const CChainParams& chainParameters,
         const CChain& activeChain,
+        const BlockMap& blockIndexMap,
         const MasternodeModule& masternodeModule,
         const CFeeRate& relayTxFeeCalculator,
         CCoinsViewCache* baseCoinsViewCache,

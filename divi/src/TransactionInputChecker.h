@@ -4,6 +4,7 @@
 #include <checkqueue.h>
 #include <vector>
 
+class BlockMap;
 class CValidationState;
 class CCoinsViewCache;
 class CBlockIndex;
@@ -17,6 +18,7 @@ private:
     std::vector<CScriptCheck> vChecks;
     CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker;
     const CCoinsViewCache& view_;
+    const BlockMap& blockIndexMap_;
     CValidationState& state_;
 
 public:
@@ -24,6 +26,7 @@ public:
     TransactionInputChecker(
         bool checkScripts,
         const CCoinsViewCache& view,
+        const BlockMap& blockIndexMap,
         CValidationState& state);
 
     void ScheduleBackgroundThreadScriptChecking();

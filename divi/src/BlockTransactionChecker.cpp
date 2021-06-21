@@ -41,13 +41,14 @@ BlockTransactionChecker::BlockTransactionChecker(
     CValidationState& state,
     CBlockIndex* pindex,
     CCoinsViewCache& view,
+    const BlockMap& blockIndexMap,
     const int blocksToSkipChecksFor
     ): blockundo_(block.vtx.size() - 1)
     , block_(block)
     , state_(state)
     , pindex_(pindex)
     , view_(view)
-    , txInputChecker_(pindex->nHeight >= blocksToSkipChecksFor,view_,state_)
+    , txInputChecker_(pindex->nHeight >= blocksToSkipChecksFor,view_,blockIndexMap,state_)
     , txLocationRecorder_(pindex_,block_)
 {
 }

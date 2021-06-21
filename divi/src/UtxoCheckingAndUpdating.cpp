@@ -11,8 +11,6 @@
 #include <chainparams.h>
 #include <defaultValues.h>
 
-extern BlockMap mapBlockIndex;
-
 void UpdateCoinsWithTransaction(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight)
 {
     // mark inputs spent
@@ -114,6 +112,7 @@ bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,
     const CCoinsViewCache& inputs,
+    const BlockMap& blockIndexMap,
     bool fScriptChecks,
     unsigned int flags,
     bool cacheStore,
@@ -121,7 +120,7 @@ bool CheckInputs(
 {
     CAmount nFees = 0;
     CAmount nValueIn = 0;
-    return CheckInputs(tx,state,inputs,nFees,nValueIn,fScriptChecks,flags,cacheStore,pvChecks);
+    return CheckInputs(tx,state,inputs,blockIndexMap,nFees,nValueIn,fScriptChecks,flags,cacheStore,pvChecks);
 }
 
 
@@ -129,6 +128,7 @@ bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,
     const CCoinsViewCache& inputs,
+    const BlockMap& blockIndexMap,
     CAmount& nFees,
     CAmount& nValueIn,
     bool fScriptChecks,
@@ -159,7 +159,7 @@ bool CheckInputs(
         // While checking, GetBestBlock() refers to the parent block.
         // This is also true for mempool checks.
         const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-        CBlockIndex* pindexPrev = mapBlockIndex.find(inputs.GetBestBlock())->second;
+        CBlockIndex* pindexPrev = blockIndexMap.find(inputs.GetBestBlock())->second;
         int nSpendHeight = pindexPrev->nHeight + 1;
         for (unsigned int i = 0; i < tx.vin.size(); i++)
         {

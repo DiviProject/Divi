@@ -17,6 +17,7 @@
 #include "primitives/transaction.h"
 #include "sync.h"
 
+class BlockMap;
 class CAutoFile;
 
 inline double AllowFreeThreshold()
@@ -150,7 +151,7 @@ public:
      * all inputs are in the mapNextTx array). If sanity-checking is turned off,
      * check does nothing.
      */
-    void check(const CCoinsViewCache* pcoins) const;
+    void check(const CCoinsViewCache* pcoins, const BlockMap& blockIndexMap) const;
     void setSanityCheck(bool _fSanityCheck) { fSanityCheck = _fSanityCheck; }
 
     bool addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry, const CCoinsViewCache& view);

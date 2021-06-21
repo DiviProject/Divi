@@ -8,6 +8,7 @@
 #include  <TransactionInputChecker.h>
 #include <IndexDatabaseUpdates.h>
 
+class BlockMap;
 class CBlockIndex;
 class CBlock;
 class CValidationState;
@@ -46,6 +47,7 @@ public:
         CValidationState& state,
         CBlockIndex* pindex,
         CCoinsViewCache& view,
+        const BlockMap& blockIndexMap,
         const int blocksToSkipChecksFor);
 
     bool Check(

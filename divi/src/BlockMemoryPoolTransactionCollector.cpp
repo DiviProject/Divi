@@ -87,11 +87,13 @@ BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     const Settings& settings,
     CCoinsViewCache* baseCoinsViewCache,
     const CChain& activeChain,
+    const BlockMap& blockIndexMap,
     CTxMemPool& mempool,
     CCriticalSection& mainCS,
     const CFeeRate& txFeeRate
     ): baseCoinsViewCache_(baseCoinsViewCache)
     , activeChain_(activeChain)
+    , blockIndexMap_(blockIndexMap)
     , mempool_(mempool)
     , mainCS_(mainCS)
     , txFeeRate_(txFeeRate)
@@ -326,7 +328,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         // policy here, but we still have to ensure that the block we
         // create only contains transactions that are valid in new blocks.
         CValidationState state;
-        if (!CheckInputs(tx, state, view, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true)) {
+        if (!CheckInputs(tx, state, view, blockIndexMap_, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true)) {
             continue;
         }
 

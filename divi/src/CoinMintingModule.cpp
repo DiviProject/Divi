@@ -44,6 +44,7 @@ CoinMintingModule::CoinMintingModule(
     AnnotatedMixin<boost::recursive_mutex>& mainCS,
     const CChainParams& chainParameters,
     const CChain& activeChain,
+    const BlockMap& blockIndexMap,
     const MasternodeModule& masternodeModule,
     const CFeeRate& relayTxFeeCalculator,
     CCoinsViewCache* baseCoinsViewCache,
@@ -65,6 +66,7 @@ CoinMintingModule::CoinMintingModule(
         settings,
         baseCoinsViewCache,
         activeChain,
+        blockIndexMap,
         mempool,
         mainCS,
         relayTxFeeCalculator))

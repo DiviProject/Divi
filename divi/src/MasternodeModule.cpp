@@ -84,10 +84,10 @@ MasternodeModule::MasternodeModule(
 
 MasternodeModule::~MasternodeModule()
 {
-    masternodeSync_.reset();
     masternodePayments_.reset();
     activeMasternode_.reset();
     mnodeman_.reset();
+    masternodeSync_.reset();
     masternodeConfig_.reset();
     masternodePaymentData_.reset();
     networkMessageManager_.reset();

@@ -253,13 +253,8 @@ bool CMasternodeMan::CheckMasternodeBroadcastContext(CMasternodeBroadcast& mnb, 
     return true;
 }
 
-bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS)
+bool CMasternodeMan::UpdateMasternodeFromBroadcast(CMasternodeBroadcast& mnb)
 {
-    if(!CheckMasternodeBroadcastContext(mnb,nDoS))
-    {
-        return false;
-    }
-
     //search existing Masternode list, this is where we update existing Masternodes with new mnb broadcasts
     CMasternode* pmn = Find(mnb.vin);
 
@@ -425,10 +420,14 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* 
     }
 
     int nDoS = 0;
-    if (!CheckAndUpdateMasternode(mnb,nDoS))
+    if(!CheckMasternodeBroadcastContext(mnb,nDoS))
     {
         if (nDoS > 0 && pfrom != nullptr)
             Misbehaving(pfrom->GetNodeState(), nDoS);
+        return false;
+    }
+    if (!UpdateMasternodeFromBroadcast(mnb))
+    {
         return false;
     }
 

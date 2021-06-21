@@ -45,10 +45,17 @@ private:
     bool HasRequestedMasternodeSyncTooOften(CNode* pfrom);
     void Remove(const CTxIn& vin);
 
+    enum MnUpdateStatus
+    {
+        MN_NOT_FOUND,
+        MN_UPDATE_INVALID,
+        MN_CANT_BE_UPDATED,
+        MN_UPDATED,
+    };
     bool UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const;
     bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckMasternodeBroadcastContext(CMasternodeBroadcast& mnb, int& nDoS);
-    bool UpdateMasternodeFromBroadcast(CMasternodeBroadcast& mnb);
+    MnUpdateStatus UpdateMasternodeFromBroadcast(CMasternodeBroadcast& mnb);
     bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool skipPingChainSyncCheck = false);
 
     /** Processes a masternode broadcast.  It is verified first, and then

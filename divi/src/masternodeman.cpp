@@ -253,30 +253,31 @@ bool CMasternodeMan::CheckMasternodeBroadcastContext(CMasternodeBroadcast& mnb, 
     return true;
 }
 
-bool CMasternodeMan::UpdateMasternodeFromBroadcast(CMasternodeBroadcast& mnb)
+CMasternodeMan::MnUpdateStatus CMasternodeMan::UpdateMasternodeFromBroadcast(CMasternodeBroadcast& mnb)
 {
     //search existing Masternode list, this is where we update existing Masternodes with new mnb broadcasts
     CMasternode* pmn = Find(mnb.vin);
 
     // no such masternode, nothing to update
     if (pmn == NULL)
-        return true;
+        return MnUpdateStatus::MN_NOT_FOUND;
 
     // this broadcast older than we have, it's bad.
     if (pmn->sigTime > mnb.sigTime) {
         LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (existing broadcast is at %d)\n",
                  mnb.sigTime, mnb.vin.prevout.hash, pmn->sigTime);
-        return false;
+        return MnUpdateStatus::MN_UPDATE_INVALID;
     }
     // masternode is not enabled yet/already, nothing to update
-    if (!pmn->IsEnabled()) return true;
+    if (!pmn->IsEnabled()) return MnUpdateStatus::MN_CANT_BE_UPDATED;
 
     // mn.pubkey = pubkey, IsVinAssociatedWithPubkey is validated once below,
     //   after that they just need to match
     if (pmn->pubKeyCollateralAddress == mnb.pubKeyCollateralAddress && !MasternodeCanBeUpdatedFromBroadcast(*pmn)) {
         //take the newest entry
         LogPrint("masternode","mnb - Got updated entry for %s\n", mnb.vin.prevout.hash);
-        if (UpdateWithNewBroadcast(mnb,*pmn)) {
+        if (UpdateWithNewBroadcast(mnb,*pmn))
+        {
             int unusedDoSValue = 0;
             if (mnb.lastPing != CMasternodePing() &&
                 CheckAndUpdatePing(*pmn,mnb.lastPing,unusedDoSValue))
@@ -290,7 +291,7 @@ bool CMasternodeMan::UpdateMasternodeFromBroadcast(CMasternodeBroadcast& mnb)
         masternodeSynchronization_.RecordMasternodeListUpdate(mnb.GetHash());
     }
 
-    return true;
+    return MnUpdateStatus::MN_UPDATED;
 }
 
 bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, int& nDoS,bool skipPingChainSyncCheck)
@@ -426,7 +427,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* 
             Misbehaving(pfrom->GetNodeState(), nDoS);
         return false;
     }
-    if (!UpdateMasternodeFromBroadcast(mnb))
+    if (UpdateMasternodeFromBroadcast(mnb) == MnUpdateStatus::MN_UPDATE_INVALID)
     {
         return false;
     }

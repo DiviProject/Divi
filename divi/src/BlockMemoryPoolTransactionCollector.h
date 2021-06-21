@@ -16,6 +16,7 @@
 
 #include <I_BlockTransactionCollector.h>
 
+class BlockMap;
 class CTransaction;
 class CTxIn;
 class CBlock;
@@ -54,6 +55,7 @@ private:
 
     CCoinsViewCache* baseCoinsViewCache_;
     const CChain& activeChain_;
+    const BlockMap& blockIndexMap_;
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
     const CFeeRate& txFeeRate_;
@@ -120,6 +122,7 @@ public:
         const Settings& settings,
         CCoinsViewCache* baseCoinsViewCache,
         const CChain& activeChain,
+        const BlockMap& blockIndexMap,
         CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS,
         const CFeeRate& txFeeRate);

@@ -22,12 +22,14 @@ void TransactionInputChecker::ThreadScriptCheck()
 TransactionInputChecker::TransactionInputChecker(
     bool checkScripts,
     const CCoinsViewCache& view,
+    const BlockMap& blockIndexMap,
     CValidationState& state
     ): nSigOps(0u)
     , fScriptChecks(checkScripts)
     , vChecks()
     , multiThreadedScriptChecker(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL )
     , view_(view)
+    , blockIndexMap_(blockIndexMap)
     , state_(state)
 {
 }
@@ -44,7 +46,7 @@ bool TransactionInputChecker::CheckInputsAndUpdateCoinSupplyRecords(
     assert(vChecks.empty());
     CAmount txFees =0;
     CAmount txInputAmount=0;
-    if (!CheckInputs(tx, state_, view_, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
+    if (!CheckInputs(tx, state_, view_, blockIndexMap_, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
     {
         vChecks.clear();
         return false;

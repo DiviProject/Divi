@@ -650,7 +650,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
-        if (!CheckInputs(tx, state, view, true, STANDARD_SCRIPT_VERIFY_FLAGS, true)) {
+        if (!CheckInputs(tx, state, view, mapBlockIndex, true, STANDARD_SCRIPT_VERIFY_FLAGS, true)) {
             return error("%s: : ConnectInputs failed %s",__func__, hash);
         }
 
@@ -663,7 +663,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         // There is a similar check in CreateNewBlock() to prevent creating
         // invalid blocks, however allowing such transactions into the mempool
         // can be exploited as a DoS attack.
-        if (!CheckInputs(tx, state, view, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true)) {
+        if (!CheckInputs(tx, state, view, mapBlockIndex, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true)) {
             return error("%s: : BUG! PLEASE REPORT THIS! ConnectInputs failed against MANDATORY but not STANDARD flags %s",__func__, hash);
         }
 
@@ -1097,7 +1097,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
     IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
-    BlockTransactionChecker blockTxChecker(block,state,pindex,view,blocksToSkipChecksFor);
+    BlockTransactionChecker blockTxChecker(block,state,pindex,view,mapBlockIndex,blocksToSkipChecksFor);
 
     if(!blockTxChecker.Check(nExpectedMint,fJustCheck,indexDatabaseUpdates))
     {
@@ -1240,7 +1240,7 @@ bool static DisconnectTip(CValidationState& state)
 {
     CBlockIndex* pindexDelete = chainActive.Tip();
     assert(pindexDelete);
-    mempool.check(pcoinsTip);
+    mempool.check(pcoinsTip, mapBlockIndex);
     // Read block from disk.
     static const BlockDiskDataReader blockDiskReader;
     static ActiveChainManager chainManager(fAddressIndex,pblocktree,blockDiskReader);
@@ -1266,7 +1266,7 @@ bool static DisconnectTip(CValidationState& state)
             mempool.remove(tx, removed, true);
     }
     mempool.removeCoinbaseSpends(pcoinsTip, pindexDelete->nHeight);
-    mempool.check(pcoinsTip);
+    mempool.check(pcoinsTip, mapBlockIndex);
     // Update chainActive and related variables.
     UpdateTip(pindexDelete->pprev);
     // Let wallets know transactions went from 1-confirmed to
@@ -1290,7 +1290,7 @@ static int64_t nTimePostConnect = 0;
 bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* pblock, bool fAlreadyChecked)
 {
     assert(pindexNew->pprev == chainActive.Tip());
-    mempool.check(pcoinsTip);
+    mempool.check(pcoinsTip, mapBlockIndex);
     CCoinsViewCache view(pcoinsTip);
 
     if (pblock == NULL)
@@ -1341,7 +1341,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     // Remove conflicting transactions from the mempool.
     std::list<CTransaction> txConflicted;
     mempool.removeForBlock(pblock->vtx, pindexNew->nHeight, txConflicted);
-    mempool.check(pcoinsTip);
+    mempool.check(pcoinsTip, mapBlockIndex);
     // Update chainActive & related variables.
     UpdateTip(pindexNew);
     // Tell wallet about transactions that went from mempool
@@ -3302,7 +3302,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         if ( AcceptToMemoryPool(mempool, state, tx, true, &fMissingInputs))
         {
-            mempool.check(pcoinsTip);
+            mempool.check(pcoinsTip, mapBlockIndex);
             RelayTransaction(tx);
             vWorkQueue.push_back(inv.hash);
 
@@ -3348,7 +3348,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                         LogPrint("mempool", "   removed orphan tx %s\n", orphanHash);
                         vEraseQueue.push_back(orphanHash);
                     }
-                    mempool.check(pcoinsTip);
+                    mempool.check(pcoinsTip, mapBlockIndex);
                 }
             }
 

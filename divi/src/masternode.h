@@ -46,15 +46,10 @@ protected:
 public:
     int64_t lastTimeChecked;
     enum state {
-        MASTERNODE_PRE_ENABLED,
         MASTERNODE_ENABLED,
         MASTERNODE_EXPIRED,
-        MASTERNODE_OUTPOINT_SPENT,
         MASTERNODE_REMOVE,
-        MASTERNODE_WATCHDOG_EXPIRED,
-        MASTERNODE_POSE_BAN,
         MASTERNODE_VIN_SPENT,
-        MASTERNODE_POS_ERROR
     };
 
     CTxIn vin;
@@ -102,8 +97,6 @@ public:
     static MasternodeTier GetTierByCollateralAmount(CAmount nCollateral);
     static bool IsTierValid(MasternodeTier tier);
     static std::string TierToString(MasternodeTier tier);
-
-    std::string GetStatus() const;
 
     std::string Status() const;
 

@@ -35,16 +35,17 @@ void PrintLockContention(const char* pszName, const char* pszFile, int nLine)
 //
 
 struct CLockLocation {
-    CLockLocation(const char* pszName, const char* pszFile, int nLine)
+    CLockLocation(const char* pszName, const char* pszFile, int nLine, bool isTryLock)
     {
         mutexName = pszName;
         sourceFile = pszFile;
         sourceLine = nLine;
+        tryLock = isTryLock;
     }
 
     std::string ToString() const
     {
-        return mutexName + "  " + sourceFile + ":" + itostr(sourceLine);
+        return mutexName + "  " + sourceFile + ":" + itostr(sourceLine) +"[TryLock: "+std::to_string(tryLock)+"]";
     }
 
     std::string MutexName() const { return mutexName; }
@@ -53,6 +54,7 @@ private:
     std::string mutexName;
     std::string sourceFile;
     int sourceLine;
+    bool tryLock;
 };
 
 LOG_FORMAT_WITH_TOSTRING(CLockLocation)
@@ -162,7 +164,7 @@ static void pop_lock()
 
 void EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry)
 {
-    push_lock(cs, CLockLocation(pszName, pszFile, nLine), fTry);
+    push_lock(cs, CLockLocation(pszName, pszFile, nLine,fTry), fTry);
 }
 void ConfirmCritical()
 {

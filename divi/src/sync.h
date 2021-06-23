@@ -106,7 +106,7 @@ typedef boost::condition_variable CConditionVariable;
 #ifdef DEBUG_LOCKORDER
 void EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false);
 void ConfirmCritical();
-void LeaveCritical();
+void LeaveCritical(bool fTry = false);
 std::string LocksHeld();
 void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs);
 #else
@@ -114,7 +114,7 @@ void static inline EnterCritical(const char* pszName, const char* pszFile, int n
 {
 }
 void static inline ConfirmCritical() {}
-void static inline LeaveCritical() {}
+void static inline LeaveCritical(bool fTry = false) {}
 void static inline AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs) {}
 #endif
 #define AssertLockHeld(cs) AssertLockHeldInternal(#cs, __FILE__, __LINE__, &cs)
@@ -149,7 +149,7 @@ private:
         lock.try_lock();
         if (!lock.owns_lock())
         {
-            LeaveCritical();
+            LeaveCritical(true);
         }
         else
         {

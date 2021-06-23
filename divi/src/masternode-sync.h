@@ -23,6 +23,7 @@ class I_Clock;
 class I_BlockchainSyncQueryService;
 class CNetFulfilledRequestManager;
 class CNode;
+class CMasternode;
 //
 // CMasternodeSync : Sync masternode assets in stages
 //
@@ -107,6 +108,11 @@ public:
     bool IsMasternodeListSynced() const;
     void AskForMN(CNode* pnode, const CTxIn& vin) const;
     void ClearTimedOutAndExpiredRequests(bool forceExpiredRemoval = false);
+
+    bool HasRequestedMasternodeSyncTooOften(CNode* pfrom);
+    bool NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer);
+    void SyncMasternodeListWithPeer(CNode* peer);
+    void ProcessDSegUpdate(CNode* pfrom,const std::string& strCommand, CDataStream& vRecv);
 };
 
 #endif

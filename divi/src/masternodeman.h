@@ -40,9 +40,6 @@ private:
     CAddrMan& addressManager_;
 
     bool Add(const CMasternode& mn);
-    bool NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer);
-    void SyncMasternodeListWithPeer(CNode* peer);
-    bool HasRequestedMasternodeSyncTooOften(CNode* pfrom);
     void Remove(const CTxIn& vin);
 
     enum MnUpdateStatus

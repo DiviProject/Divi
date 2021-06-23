@@ -56,6 +56,7 @@ public:
     void recordBroadcast(const CMasternodeBroadcast& mnb);
     const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash) const;
     const CMasternodePing& getKnownPing(const uint256& pingHash) const;
+    const CMasternode* find(const CTxIn& vin) const;
 
     ADD_SERIALIZE_METHODS
     template <typename Stream, typename Operation>

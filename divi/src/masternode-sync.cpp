@@ -19,6 +19,7 @@
 #include <I_PeerSyncQueryService.h>
 #include <I_BlockchainSyncQueryService.h>
 #include <Node.h>
+#include <NodeState.h>
 // clang-format on
 
 #include <algorithm>
@@ -72,6 +73,69 @@ void CMasternodeSync::DsegUpdate(CNode* pnode)
     if(networkMessageManager_.recordDsegUpdateAttempt(pnode->addr))
     {
         pnode->PushMessage("dseg", CTxIn());
+    }
+}
+
+bool CMasternodeSync::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
+{
+    bool isLocal = (pfrom->addr.IsRFC1918() || pfrom->addr.IsLocal());
+    if (!isLocal)
+    {
+        if(networkMessageManager_.peerHasRequestedMasternodeListTooOften(pfrom->addr))
+        {
+            constexpr int penaltyForAskingTooManyTimes = 34;
+            pfrom->GetNodeState()->ApplyMisbehavingPenalty(penaltyForAskingTooManyTimes);
+            return true;
+        }
+    }
+    return false;
+}
+bool CMasternodeSync::NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer)
+{
+    if (!mn.addr.IsRFC1918() && mn.IsEnabled())
+    {
+        CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
+        const uint256 hash = mnb.GetHash();
+        peer->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
+        networkMessageManager_.recordBroadcast(mnb);
+        return true;
+    }
+    return false;
+}
+void CMasternodeSync::SyncMasternodeListWithPeer(CNode* peer)
+{
+    LOCK(networkMessageManager_.cs);
+    int nInvCount = 0;
+    for (const CMasternode& mn: networkMessageManager_.masternodes)
+    {
+        if (NotifyPeerOfMasternode(mn,peer))
+        {
+            LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash);
+            nInvCount++;
+        }
+    }
+    peer->PushMessage("ssc", static_cast<int>(MasternodeSyncCode::MASTERNODE_SYNC_LIST), nInvCount);
+    LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, peer->GetId());
+}
+void CMasternodeSync::ProcessDSegUpdate(CNode* pfrom,const std::string& strCommand, CDataStream& vRecv)
+{
+    if (strCommand == "dseg") { //Get Masternode list or specific entry
+
+        CTxIn vin;
+        vRecv >> vin;
+
+        bool peerIsRequestingMasternodeListSync = vin == CTxIn();
+        if (peerIsRequestingMasternodeListSync && !HasRequestedMasternodeSyncTooOften(pfrom)) { //only should ask for this once
+            SyncMasternodeListWithPeer(pfrom);
+        }
+        else if(!peerIsRequestingMasternodeListSync)
+        {
+            const CMasternode* pmn = networkMessageManager_.find(vin);
+            if(pmn != nullptr && NotifyPeerOfMasternode(*pmn,pfrom) )
+            {
+                LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
+            }
+        }
     }
 }
 

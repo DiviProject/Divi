@@ -528,46 +528,6 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
 
     return false;
 }
-bool CMasternodeMan::NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer)
-{
-    if (!mn.addr.IsRFC1918() && mn.IsEnabled())
-    {
-        CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
-        const uint256 hash = mnb.GetHash();
-        peer->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
-        networkMessageManager_.recordBroadcast(mnb);
-        return true;
-    }
-    return false;
-}
-void CMasternodeMan::SyncMasternodeListWithPeer(CNode* peer)
-{
-    LOCK(cs);
-    int nInvCount = 0;
-    for (const CMasternode& mn: networkMessageManager_.masternodes)
-    {
-        if (NotifyPeerOfMasternode(mn,peer))
-        {
-            LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash);
-            nInvCount++;
-        }
-    }
-    peer->PushMessage("ssc", static_cast<int>(MasternodeSyncCode::MASTERNODE_SYNC_LIST), nInvCount);
-    LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, peer->GetId());
-}
-bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
-{
-    bool isLocal = (pfrom->addr.IsRFC1918() || pfrom->addr.IsLocal());
-    if (!isLocal)
-    {
-        if(networkMessageManager_.peerHasRequestedMasternodeListTooOften(pfrom->addr))
-        {
-            Misbehaving(pfrom->GetNodeState(), 34);
-            return true;
-        }
-    }
-    return false;
-}
 
 bool CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {

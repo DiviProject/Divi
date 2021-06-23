@@ -58,11 +58,12 @@ private:
 LOG_FORMAT_WITH_TOSTRING(CLockLocation)
 
 typedef std::vector<std::pair<void*, CLockLocation> > LockStack;
+typedef std::pair<void*,void*> LockOrderID;
 
 static boost::mutex dd_mutex;
-static std::map<std::pair<void*, void*>, LockStack> lockorders;
+static std::map<LockOrderID, LockStack> lockorders;
 static boost::thread_specific_ptr<LockStack> lockstack;
-
+static boost::thread_specific_ptr<std::vector<LockOrderID>> addedLockOrders;
 
 static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch, const LockStack& s1, const LockStack& s2)
 {

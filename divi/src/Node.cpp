@@ -720,11 +720,11 @@ bool CNode::IsInUse()
     if (GetRefCount() <= 0)
     {
         {
-            TRY_LOCK(messageConnection_.GetSendLock(), lockSend);
-            if (lockSend)
+            TRY_LOCK(messageConnection_.GetReceiveLock(), lockRecv);
+            if (lockRecv)
             {
-                TRY_LOCK(messageConnection_.GetReceiveLock(), lockRecv);
-                if (lockRecv)
+                TRY_LOCK(messageConnection_.GetSendLock(), lockSend);
+                if (lockSend)
                 {
                     TRY_LOCK(cs_inventory, lockInv);
                     if (lockInv)

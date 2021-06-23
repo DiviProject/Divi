@@ -21,9 +21,9 @@
 ////////////////////////////////////////////////
 
 /*
- 
- 
- 
+
+
+
 CCriticalSection mutex;
     boost::recursive_mutex mutex;
 
@@ -42,9 +42,9 @@ ENTER_CRITICAL_SECTION(mutex); // no RAII
 
 LEAVE_CRITICAL_SECTION(mutex); // no RAII
     mutex.unlock();
- 
- 
- 
+
+
+
  */
 
 
@@ -105,6 +105,7 @@ typedef boost::condition_variable CConditionVariable;
 
 #ifdef DEBUG_LOCKORDER
 void EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false);
+void ConfirmCritical();
 void LeaveCritical();
 std::string LocksHeld();
 void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs);
@@ -112,6 +113,7 @@ void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine,
 void static inline EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false)
 {
 }
+void static inline ConfirmCritical() {}
 void static inline LeaveCritical() {}
 void static inline AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs) {}
 #endif
@@ -146,7 +148,13 @@ private:
         EnterCritical(pszName, pszFile, nLine, (void*)(lock.mutex()), true);
         lock.try_lock();
         if (!lock.owns_lock())
+        {
             LeaveCritical();
+        }
+        else
+        {
+            ConfirmCritical();
+        }
         return lock.owns_lock();
     }
 

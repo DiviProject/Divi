@@ -115,20 +115,24 @@ static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)
 {
     if (lockstack.get() == NULL)
         lockstack.reset(new LockStack);
+    if(addedLockOrders.get() == NULL)
+        addedLockOrders.reset( new std::vector<LockOrderID>);
 
     LogPrint("lock", "Locking: %s\n", locklocation);
     dd_mutex.lock();
 
     (*lockstack).push_back(std::make_pair(c, locklocation));
 
-    if (!fTry) {
-        BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, (*lockstack)) {
-            if (i.first == c)
-                break;
+    BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, (*lockstack))
+    {
+        if (i.first == c)
+            break;
 
-            std::pair<void*, void*> p1 = std::make_pair(i.first, c);
-            if (lockorders.count(p1))
-                continue;
+        std::pair<void*, void*> p1 = std::make_pair(i.first, c);
+        if (lockorders.count(p1))
+            continue;
+        if (!fTry)
+        {
             lockorders[p1] = (*lockstack);
 
             std::pair<void*, void*> p2 = std::make_pair(c, i.first);
@@ -137,8 +141,12 @@ static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)
                 break;
             }
         }
+        else
+        {
+            addedLockOrders->push_back(p1);
+        }
     }
-    dd_mutex.unlock();
+    if(!fTry) dd_mutex.unlock();
 }
 
 static void pop_lock()
@@ -158,10 +166,25 @@ void EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs
 }
 void ConfirmCritical()
 {
-
+    for(LockOrderID id: *addedLockOrders)
+    {
+        lockorders[id] = (*lockstack);
+        std::pair<void*, void*> otherID = std::make_pair(id.second, id.first);
+        if (lockorders.count(otherID)) {
+            potential_deadlock_detected(id, lockorders[otherID], lockorders[id]);
+            break;
+        }
+    }
+    addedLockOrders->clear();
+    dd_mutex.unlock();
 }
-void LeaveCritical()
+void LeaveCritical(bool fTry)
 {
+    if(fTry)
+    {
+        addedLockOrders->clear();
+        dd_mutex.unlock();
+    }
     pop_lock();
 }
 

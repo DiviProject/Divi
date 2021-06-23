@@ -269,3 +269,14 @@ const CMasternodePing& MasternodeNetworkMessageManager::getKnownPing(const uint2
 {
     return mapSeenMasternodePing.find(pingHash)->second;
 }
+const CMasternode* MasternodeNetworkMessageManager::find(const CTxIn& vin) const
+{
+    LOCK(cs);
+
+    for(const CMasternode& mn: masternodes)
+    {
+        if (mn.vin.prevout == vin.prevout)
+            return &mn;
+    }
+    return nullptr;
+}

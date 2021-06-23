@@ -155,7 +155,10 @@ void EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs
 {
     push_lock(cs, CLockLocation(pszName, pszFile, nLine), fTry);
 }
+void ConfirmCritical()
+{
 
+}
 void LeaveCritical()
 {
     pop_lock();

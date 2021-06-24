@@ -152,15 +152,9 @@ static void push_lock(MutexId c, const CLockLocation& locklocation)
 }
 
 
-static void pop_lock(bool fTry)
+static void pop_lock()
 {
-    if (fDebug) {
-        const CLockLocation& locklocation = (*lockstack).rbegin()->second;
-        LogPrint("lock", "Unlocked: %s\n", locklocation);
-    }
-    if(!fTry) dd_mutex.lock();
     (*lockstack).pop_back();
-    dd_mutex.unlock();
 }
 
 void EnterCritical(const char* pszName, const char* pszFile, int nLine, MutexId cs, bool fTry)
@@ -184,11 +178,11 @@ void ConfirmCritical()
 }
 void LeaveCritical(bool fTry)
 {
-    if(fTry)
-    {
-        addedLockOrders->clear();
-    }
-    pop_lock(fTry);
+    LogPrint("lock", "Unlocked: %s\n", (*lockstack).rbegin()->second);
+    if(!fTry) dd_mutex.lock();
+    addedLockOrders->clear();
+    pop_lock();
+    dd_mutex.unlock();
 }
 
 std::string LocksHeld()

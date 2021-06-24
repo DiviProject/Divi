@@ -54,6 +54,26 @@ LEAVE_CRITICAL_SECTION(mutex); // no RAII
 //                           //
 ///////////////////////////////
 
+#ifdef DEBUG_LOCKORDER
+void EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false);
+void ConfirmCritical();
+void LeaveCritical(bool fTry = false);
+std::string LocksHeld();
+void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs);
+#else
+void static inline EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false)
+{
+}
+void static inline ConfirmCritical() {}
+void static inline LeaveCritical(bool fTry = false) {}
+void static inline AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs) {}
+#endif
+#define AssertLockHeld(cs) AssertLockHeldInternal(#cs, __FILE__, __LINE__, &cs)
+
+#ifdef DEBUG_LOCKCONTENTION
+void PrintLockContention(const char* pszName, const char* pszFile, int nLine);
+#endif
+
 // Template mixin that adds -Wthread-safety locking annotations to a
 // subset of the mutex API.
 template <typename PARENT>
@@ -102,26 +122,6 @@ typedef AnnotatedMixin<boost::mutex> CWaitableCriticalSection;
 
 /** Just a typedef for boost::condition_variable, can be wrapped later if desired */
 typedef boost::condition_variable CConditionVariable;
-
-#ifdef DEBUG_LOCKORDER
-void EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false);
-void ConfirmCritical();
-void LeaveCritical(bool fTry = false);
-std::string LocksHeld();
-void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs);
-#else
-void static inline EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false)
-{
-}
-void static inline ConfirmCritical() {}
-void static inline LeaveCritical(bool fTry = false) {}
-void static inline AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs) {}
-#endif
-#define AssertLockHeld(cs) AssertLockHeldInternal(#cs, __FILE__, __LINE__, &cs)
-
-#ifdef DEBUG_LOCKCONTENTION
-void PrintLockContention(const char* pszName, const char* pszFile, int nLine);
-#endif
 
 /** Wrapper around boost::unique_lock<Mutex> */
 template <typename Mutex>

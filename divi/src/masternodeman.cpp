@@ -87,7 +87,6 @@ CMasternodeMan::CMasternodeMan(
     ):  networkMessageManager_(networkMessageManager)
     , masternodeSynchronization_(masternodeSynchronization)
     , cs(networkMessageManager_.cs)
-    , cs_process_message()
     , activeChain_(activeChain)
     , blockIndicesByHash_(blockIndicesByHash)
     , addressManager_(addressManager)
@@ -531,7 +530,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
 
 bool CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
-    LOCK(cs_process_message);
+    LOCK(networkMessageManager_.cs_process_message);
 
     if (strCommand == "mnb") { //Masternode Broadcast
         CMasternodeBroadcast mnb;
@@ -544,8 +543,6 @@ bool CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* p
 
         LogPrint("masternode", "mnp - Masternode ping, vin: %s\n", mnp.vin.prevout.hash);
         return ProcessPing(pfrom, mnp);
-    } else if (strCommand == "dseg") { //Get Masternode list or specific entry
-        masternodeSynchronization_.ProcessDSegUpdate(pfrom,strCommand,vRecv);
     }
     return true;
 }

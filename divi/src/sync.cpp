@@ -114,13 +114,13 @@ static void potential_deadlock_detected(const std::pair<MutexId, MutexId>& misma
 
 static void push_lock(MutexId c, const CLockLocation& locklocation, bool fTry)
 {
+    LogPrint("lock", "Locking: %s\n", locklocation);
+    dd_mutex.lock();
+
     if (lockstack.get() == NULL)
         lockstack.reset(new LockStack);
     if(addedLockOrders.get() == NULL)
         addedLockOrders.reset( new std::vector<LockOrderID>);
-
-    LogPrint("lock", "Locking: %s\n", locklocation);
-    dd_mutex.lock();
 
     (*lockstack).push_back(std::make_pair(c, locklocation));
 

@@ -112,11 +112,8 @@ static void potential_deadlock_detected(const std::pair<MutexId, MutexId>& misma
     abort();
 }
 
-static void push_lock(MutexId c, const CLockLocation& locklocation, bool fTry)
+static void push_lock(MutexId c, const CLockLocation& locklocation)
 {
-    LogPrint("lock", "Locking: %s\n", locklocation);
-    dd_mutex.lock();
-
     if (lockstack.get() == NULL)
         lockstack.reset(new LockStack);
     if(addedLockOrders.get() == NULL)
@@ -132,7 +129,7 @@ static void push_lock(MutexId c, const CLockLocation& locklocation, bool fTry)
         std::pair<MutexId, MutexId> p1 = std::make_pair(i.first, c);
         if (lockorders.count(p1))
             continue;
-        if (!fTry)
+        if (!locklocation.isTry())
         {
             lockorders[p1] = (*lockstack);
 
@@ -152,7 +149,6 @@ static void push_lock(MutexId c, const CLockLocation& locklocation, bool fTry)
             addedLockOrders->push_back(p1);
         }
     }
-    if(!fTry) dd_mutex.unlock();
 }
 
 
@@ -169,7 +165,11 @@ static void pop_lock(bool fTry)
 
 void EnterCritical(const char* pszName, const char* pszFile, int nLine, MutexId cs, bool fTry)
 {
-    push_lock(cs, CLockLocation(pszName, pszFile, nLine,fTry), fTry);
+    CLockLocation locklocation(pszName, pszFile, nLine,fTry);
+    LogPrint("lock", "Locking: %s\n", locklocation);
+    dd_mutex.lock();
+    push_lock(cs, locklocation);
+    if(!fTry) dd_mutex.unlock();
 }
 void ConfirmCritical()
 {

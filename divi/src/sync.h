@@ -54,21 +54,25 @@ LEAVE_CRITICAL_SECTION(mutex); // no RAII
 //                           //
 ///////////////////////////////
 
+typedef unsigned MutexId;
 #ifdef DEBUG_LOCKORDER
-void EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false);
+void EnterCritical(const char* pszName, const char* pszFile, int nLine, MutexId id, bool fTry = false);
 void ConfirmCritical();
 void LeaveCritical(bool fTry = false);
+void ClearLockOrders();
 std::string LocksHeld();
-void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs);
+void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, MutexId id);
+void RegisterMutexId(unsigned& mutexId);
 #else
-void static inline EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false)
+void static inline EnterCritical(const char* pszName, const char* pszFile, int nLine, MutexId id, bool fTry = false)
 {
 }
 void static inline ConfirmCritical() {}
 void static inline LeaveCritical(bool fTry = false) {}
-void static inline AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, void* cs) {}
+void static inline AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, MutexId id) {}
+void static inline RegisterMutexId(unsigned& mutexId){}
 #endif
-#define AssertLockHeld(cs) AssertLockHeldInternal(#cs, __FILE__, __LINE__, &cs)
+#define AssertLockHeld(cs) AssertLockHeldInternal(#cs, __FILE__, __LINE__, cs.getMutexId())
 
 #ifdef DEBUG_LOCKCONTENTION
 void PrintLockContention(const char* pszName, const char* pszFile, int nLine);
@@ -80,11 +84,15 @@ template <typename PARENT>
 class LOCKABLE AnnotatedMixin : public PARENT
 {
 private:
-
+    unsigned mutexId = 0u;
     /** Number of times the mutex is currently locked (it can be recursive)  */
-    int locks = 0;
+    int locks;
 
 public:
+    AnnotatedMixin(): mutexId(0u), locks(0)
+    {
+        RegisterMutexId(mutexId);
+    }
     ~AnnotatedMixin()
     {
         assert(locks == 0);
@@ -111,6 +119,10 @@ public:
         ++locks;
         return true;
     }
+    unsigned getMutexId() const
+    {
+        return mutexId;
+    }
 };
 
 /** Wrapped boost mutex: supports recursive locking, but no waiting  */
@@ -132,7 +144,8 @@ private:
 
     void Enter(const char* pszName, const char* pszFile, int nLine)
     {
-        EnterCritical(pszName, pszFile, nLine, (void*)(lock.mutex()));
+        auto* mutex = lock.mutex();
+        EnterCritical(pszName, pszFile, nLine, mutex->getMutexId() );
 #ifdef DEBUG_LOCKCONTENTION
         if (!lock.try_lock()) {
             PrintLockContention(pszName, pszFile, nLine);
@@ -145,7 +158,8 @@ private:
 
     bool TryEnter(const char* pszName, const char* pszFile, int nLine)
     {
-        EnterCritical(pszName, pszFile, nLine, (void*)(lock.mutex()), true);
+        auto* mutex = lock.mutex();
+        EnterCritical(pszName, pszFile, nLine, mutex->getMutexId(), true);
         lock.try_lock();
         if (!lock.owns_lock())
         {
@@ -187,7 +201,7 @@ typedef CMutexLock<CCriticalSection> CCriticalBlock;
 
 #define ENTER_CRITICAL_SECTION(cs)                            \
     {                                                         \
-        EnterCritical(#cs, __FILE__, __LINE__, (void*)(&cs)); \
+        EnterCritical(#cs, __FILE__, __LINE__, cs.getMutexId()); \
         (cs).lock();                                          \
     }
 

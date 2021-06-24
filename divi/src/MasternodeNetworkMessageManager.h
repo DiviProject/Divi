@@ -36,6 +36,8 @@ private:
     void clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral);
 public:
     mutable CCriticalSection cs;
+    // critical section to protect the inner data structures specifically on messaging
+    mutable CCriticalSection cs_process_message;
 
     MasternodeNetworkMessageManager();
     std::vector<CMasternode> masternodes;

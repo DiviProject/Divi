@@ -32,9 +32,6 @@ private:
     // critical section to protect the inner data structures
     CCriticalSection& cs;
 
-    // critical section to protect the inner data structures specifically on messaging
-    mutable CCriticalSection cs_process_message;
-
     const CChain& activeChain_;
     const BlockMap& blockIndicesByHash_;
     CAddrMan& addressManager_;

@@ -15,6 +15,8 @@ MasternodeNetworkMessageManager::MasternodeNetworkMessageManager(
     , mWeAskedForMasternodeListEntry()
     , mapSeenMasternodeBroadcast()
     , mapSeenMasternodePing()
+    , cs()
+    , cs_process_message()
     , masternodes()
 {
 

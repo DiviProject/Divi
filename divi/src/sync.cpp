@@ -1,4 +1,3 @@
-// Copyright (c) 2011-2012 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -49,7 +48,7 @@ struct CLockLocation {
     }
 
     std::string MutexName() const { return mutexName; }
-
+    bool isTry() const {return tryLock;}
 private:
     std::string mutexName;
     std::string sourceFile;
@@ -107,7 +106,7 @@ static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch,
         currentLockStackState += lockIdAndLocation.second.ToString() + " |";
         LogPrintf(" %s\n", lockIdAndLocation.second);
     }
-    lockOrderData+=std::string("\n")+currentLockStackState;
+    lockOrderData+=std::string("\n")+currentLockStackState+std::string("\n");
 
     tfm::format(std::cerr, "Assertion failed: detected inconsistent lock order for %s, details in debug log.\n%s", s2.back().second.ToString(),lockOrderData.c_str());
     abort();
@@ -139,8 +138,13 @@ static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)
 
             std::pair<void*, void*> p2 = std::make_pair(c, i.first);
             if (lockorders.count(p2)) {
-                potential_deadlock_detected(p1, lockorders[p2], lockorders[p1]);
-                break;
+                const CLockLocation& currentLock = lockorders[p1].back().second;
+                const CLockLocation& priorLock = lockorders[p2].back().second;
+                if(!(currentLock.isTry() || priorLock.isTry()))
+                {
+                    potential_deadlock_detected(p1, lockorders[p1], lockorders[p2]);
+                    break;
+                }
             }
         }
         else
@@ -151,13 +155,13 @@ static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)
     if(!fTry) dd_mutex.unlock();
 }
 
-static void pop_lock()
+static void pop_lock(bool fTry)
 {
     if (fDebug) {
         const CLockLocation& locklocation = (*lockstack).rbegin()->second;
         LogPrint("lock", "Unlocked: %s\n", locklocation);
     }
-    dd_mutex.lock();
+    if(!fTry) dd_mutex.lock();
     (*lockstack).pop_back();
     dd_mutex.unlock();
 }
@@ -170,12 +174,14 @@ void ConfirmCritical()
 {
     for(LockOrderID id: *addedLockOrders)
     {
+        if (lockorders.count(id)>0)
+            continue;
         lockorders[id] = (*lockstack);
-        std::pair<void*, void*> otherID = std::make_pair(id.second, id.first);
-        if (lockorders.count(otherID)) {
+        //std::pair<void*, void*> otherID = std::make_pair(id.second, id.first);
+        /*if (lockorders.count(otherID)) {
             potential_deadlock_detected(id, lockorders[otherID], lockorders[id]);
             break;
-        }
+        }*/
     }
     addedLockOrders->clear();
     dd_mutex.unlock();
@@ -185,9 +191,8 @@ void LeaveCritical(bool fTry)
     if(fTry)
     {
         addedLockOrders->clear();
-        dd_mutex.unlock();
     }
-    pop_lock();
+    pop_lock(fTry);
 }
 
 std::string LocksHeld()

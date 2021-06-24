@@ -59,20 +59,37 @@ LEAVE_CRITICAL_SECTION(mutex); // no RAII
 template <typename PARENT>
 class LOCKABLE AnnotatedMixin : public PARENT
 {
+private:
+
+    /** Number of times the mutex is currently locked (it can be recursive)  */
+    int locks = 0;
+
 public:
+    ~AnnotatedMixin()
+    {
+        assert(locks == 0);
+    }
+
     void lock() EXCLUSIVE_LOCK_FUNCTION()
     {
         PARENT::lock();
+        ++locks;
     }
 
     void unlock() UNLOCK_FUNCTION()
     {
+        assert(locks > 0);
+        --locks;
         PARENT::unlock();
     }
 
     bool try_lock() EXCLUSIVE_TRYLOCK_FUNCTION(true)
     {
-        return PARENT::try_lock();
+        if (!PARENT::try_lock())
+            return false;
+
+        ++locks;
+        return true;
     }
 };
 

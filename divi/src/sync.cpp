@@ -178,11 +178,6 @@ void ConfirmCritical()
         if (lockorders.count(id)>0)
             continue;
         lockorders[id] = (*lockstack);
-        //std::pair<void*, void*> otherID = std::make_pair(id.second, id.first);
-        /*if (lockorders.count(otherID)) {
-            potential_deadlock_detected(id, lockorders[otherID], lockorders[id]);
-            break;
-        }*/
     }
     addedLockOrders->clear();
     dd_mutex.unlock();

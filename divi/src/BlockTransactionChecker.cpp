@@ -66,12 +66,12 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
         {
             return false;
         }
+        if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx,fJustCheck,pindex_))
+        {
+            return false;
+        }
         if (!tx.IsCoinBase())
         {
-            if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx,fJustCheck,pindex_))
-            {
-                return false;
-            }
             txInputChecker_.ScheduleBackgroundThreadScriptChecking();
         }
         if (!CheckCoinstakeForVaults(tx, nExpectedMint, view_)) {

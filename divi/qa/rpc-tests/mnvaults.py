@@ -177,7 +177,7 @@ class MnVaultsTest (BitcoinTestFramework):
     # Advance some time to simulate starting the node later (e.g. also when
     # restarting it as necessary during operation).
     for _ in range (100):
-      self.advance_time (100)
+      self.advance_time (5)
       time.sleep(0.01)
 
     # Due to advancing the time without having any masternodes, sync will

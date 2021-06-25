@@ -101,7 +101,7 @@ bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& sig
 
     if(!IsBlockchainSynced())
     {
-        LogPrintf("Warning! Trying to relay broadcast while blockchain sync hasnt completed may fail!");
+        LogPrintf("Warning! Trying to relay broadcast while blockchain sync hasnt completed may fail!\n");
     }
 
     CDataStream reserializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);

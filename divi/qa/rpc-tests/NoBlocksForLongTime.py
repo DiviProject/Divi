@@ -188,7 +188,7 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
 
     status = self.nodes[0].mnsync ("status")
     assert_equal (status["IsBlockchainSynced"], False)
-    assert_equal (status["currentMasternodeSyncStatus"], 1)
+    assert_equal (status["currentMasternodeSyncStatus"], 0)
 
     status = self.nodes[1].mnsync ("status")
     assert_equal (status["IsBlockchainSynced"], True)

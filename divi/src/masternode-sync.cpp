@@ -31,15 +31,15 @@ CMasternodeSync::CMasternodeSync(
     CNetFulfilledRequestManager& networkFulfilledRequestManager,
     const I_PeerSyncQueryService& peerSyncService,
     const I_Clock& clock,
-    const I_BlockchainSyncQueryService& blockchainSync,
     MasternodeNetworkMessageManager& networkMessageManager,
     MasternodePaymentData& masternodePaymentData
     ): networkFulfilledRequestManager_(networkFulfilledRequestManager)
     , peerSyncService_(peerSyncService)
     , clock_(clock)
-    , blockchainSync_(blockchainSync)
     , networkMessageManager_(networkMessageManager)
     , masternodePaymentData_(masternodePaymentData)
+    , timestampOfLastMasternodeListUpdate(0)
+    , timestampOfLastMasternodeWinnerUpdate(0)
 {
     Reset();
 }
@@ -51,9 +51,6 @@ bool CMasternodeSync::IsSynced() const
 
 void CMasternodeSync::Reset()
 {
-    waitingForBlockchainSync = false;
-    timestampOfLastMasternodeListUpdate = 0;
-    timestampOfLastMasternodeWinnerUpdate = 0;
     mapSeenSyncMNB.clear();
     mapSeenSyncMNW.clear();
     countOfFailedSyncAttempts = 0;
@@ -383,38 +380,6 @@ void CMasternodeSync::Process(bool networkIsRegtest)
     LogPrint("masternode", "CMasternodeSync::Process() - currentMasternodeSyncStatus %d\n", currentMasternodeSyncStatus);
 
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_INITIAL) ContinueToNextSyncStage();
-
-    // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
-    if (!networkIsRegtest && !blockchainSync_.isBlockchainSynced() && currentMasternodeSyncStatus > MasternodeSyncCode::MASTERNODE_SYNC_SPORKS)
-    {
-        waitingForBlockchainSync = true;
-        return;
-    }
-
-    /* If we were waiting for the blockchain to catch up and that just finished,
-       reset the time for when we started syncing the current asset (which will
-       be masternode list).  Otherwise it may have timed out while we were
-       waiting for the blockchain sync.  */
-    if (waitingForBlockchainSync)
-    {
-        if (currentMasternodeSyncStatus != MASTERNODE_SYNC_LIST)
-        {
-            /* This should not normally happen, since we set
-               waitingForBlockchainSync to true when we reach the item
-               after sporks (which is the masternode list).
-
-               It could happen in edge cases, though, for instance if
-               IsBlockchainSynced was true but was reset to false due to
-               a laptop sleeping, or similar situations.  */
-            LogPrint("masternode", "%s - unexpected masternode sync status, resetting");
-            Reset ();
-            return;
-        }
-
-        lastSyncStageStartTimestamp = clock_.getTime();
-        waitingForBlockchainSync = false;
-        LogPrint("masternode", "%s - blockchain sync is finished, restarting mn list sync\n", __func__);
-    }
 
     std::vector<CNode*> vSporkSyncedNodes = peerSyncService_.GetSporkSyncedOrInboundNodes();
 

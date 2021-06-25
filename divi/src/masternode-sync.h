@@ -20,7 +20,6 @@ class CTxIn;
 #include <string>
 class I_PeerSyncQueryService;
 class I_Clock;
-class I_BlockchainSyncQueryService;
 class CNetFulfilledRequestManager;
 class CNode;
 class CMasternode;
@@ -51,13 +50,9 @@ private:
     CNetFulfilledRequestManager& networkFulfilledRequestManager_;
     const I_PeerSyncQueryService& peerSyncService_;
     const I_Clock& clock_;
-    const I_BlockchainSyncQueryService& blockchainSync_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
 
-    /** Set to true when we delay masternode syncing while the blockchain
-     *  is still catching up.  */
-    bool waitingForBlockchainSync;
 
 public:
     std::map<uint256, int> mapSeenSyncMNB;
@@ -86,7 +81,6 @@ public:
         CNetFulfilledRequestManager& networkFulfilledRequestManager,
         const I_PeerSyncQueryService& peerSyncService,
         const I_Clock& clock,
-        const I_BlockchainSyncQueryService& blockchainSync,
         MasternodeNetworkMessageManager& networkMessageManager,
         MasternodePaymentData& masternodePaymentData);
 

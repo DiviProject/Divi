@@ -58,12 +58,10 @@ public:
 };
 
 LocalClock localClock;
-BlockchainSyncQueryService blockchainSyncQueryService;
-MasternodeModule mnModule(localClock,blockchainSyncQueryService,GetPeerSyncQueryService(),chainActive,mapBlockIndex,GetNetworkAddressManager());
+MasternodeModule mnModule(localClock,GetPeerSyncQueryService(),chainActive,mapBlockIndex,GetNetworkAddressManager());
 
 MasternodeModule::MasternodeModule(
     const I_Clock& clock,
-    const I_BlockchainSyncQueryService& blockchainSyncQueryService,
     const I_PeerSyncQueryService& peerSyncQueryService,
     const CChain& activeChain,
     const BlockMap& blockIndexByHash,
@@ -75,7 +73,7 @@ MasternodeModule::MasternodeModule(
     , networkMessageManager_( new MasternodeNetworkMessageManager)
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
-    , masternodeSync_(new CMasternodeSync(*networkFulfilledRequestManager_,peerSyncQueryService,clock,blockchainSyncQueryService,*networkMessageManager_,*masternodePaymentData_))
+    , masternodeSync_(new CMasternodeSync(*networkFulfilledRequestManager_,peerSyncQueryService,clock,*networkMessageManager_,*masternodePaymentData_))
     , mnodeman_(new CMasternodeMan(*networkMessageManager_,*masternodeSync_,activeChain_,blockIndexByHash_,addressManager))
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*networkFulfilledRequestManager_,*masternodePaymentData_,*networkMessageManager_,*mnodeman_,*masternodeSync_,activeChain_))
@@ -463,7 +461,6 @@ void ThreadMasternodeBackgroundSync()
             masternodePayments.ResetRankingCache();
             FulfilledMasternodeResyncRequest();
         }
-        masternodeSync.Process(regtest);
         if(!IsBlockchainSynced())
         {
             if(now >=  timestampOfLastReportedWaitOnBlockchainSync + MASTERNODE_PING_SECONDS)
@@ -473,6 +470,8 @@ void ThreadMasternodeBackgroundSync()
             }
             continue;
         }
+        masternodeSync.Process(regtest);
+
         // check if we should activate or ping every few minutes,
         // start right after sync is considered to be done
         if (now >= nTimeManageStatus + MASTERNODE_PING_SECONDS) {

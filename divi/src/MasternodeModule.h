@@ -25,7 +25,6 @@ class CMasternodeMan;
 class CActiveMasternode;
 class I_PeerSyncQueryService;
 class I_Clock;
-class I_BlockchainSyncQueryService;
 class CNetFulfilledRequestManager;
 class CAddrMan;
 
@@ -46,7 +45,6 @@ private:
 public:
     MasternodeModule(
         const I_Clock& clock,
-        const I_BlockchainSyncQueryService& blockchainSyncQueryService,
         const I_PeerSyncQueryService& peerSyncQueryService,
         const CChain& activeChain,
         const BlockMap& blockIndexByHash,

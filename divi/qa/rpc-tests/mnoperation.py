@@ -93,11 +93,13 @@ class MnStatusTest (BitcoinTestFramework):
     stop_node (self.nodes[n], n)
     self.nodes[n] = None
 
-  def advance_time (self, dt=1):
+  def advance_time (self, dt=1,delay=None):
     """Advances mocktime by the given number of seconds."""
 
     self.time += dt
     set_node_times (self.nodes, self.time)
+    if delay is not None:
+      time.sleep(delay)
 
   def mine_blocks (self, n):
     """Mines blocks with node 3."""
@@ -198,7 +200,7 @@ class MnStatusTest (BitcoinTestFramework):
     # Use mocktime ticks to advance the sync status
     # of the node quickly.
     for _ in range (100):
-      self.advance_time ()
+      self.advance_time (delay=0.1)
 
     for n in [1, 2, 3]:
       status = self.nodes[n].mnsync ("status")

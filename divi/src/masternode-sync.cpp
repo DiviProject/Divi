@@ -40,6 +40,7 @@ CMasternodeSync::CMasternodeSync(
     , masternodePaymentData_(masternodePaymentData)
     , timestampOfLastMasternodeListUpdate(0)
     , timestampOfLastMasternodeWinnerUpdate(0)
+    , timestampOfLastFailedSync(0)
 {
     Reset();
 }
@@ -264,9 +265,13 @@ bool CMasternodeSync::ShouldWaitForSync(const int64_t now)
     nTimeLastProcess = now;
 
     //try syncing again
-    if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_FAILED && timestampOfLastFailedSync + (1 * 60) < now) {
+    if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_FAILED &&
+        timestampOfLastFailedSync > 0 && timestampOfLastFailedSync + (1 * 60) < now)
+    {
         Reset();
-    } else if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_FAILED) {
+    }
+    else if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_FAILED)
+    {
         return true;
     }
     return false;

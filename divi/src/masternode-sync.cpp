@@ -392,18 +392,13 @@ void CMasternodeSync::Process(bool networkIsRegtest)
     if(vSporkSyncedNodes.size() < 3) {
         return;
     }
+    if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_SPORKS)
+    {
+        ContinueToNextSyncStage();
+    }
 
     for(CNode* pnode: vSporkSyncedNodes)
     {
-        //set to synced
-        if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_SPORKS)
-        {
-            // this has to be safe to do, because we will get here only if we have 3 peers
-            if (totalSuccessivePeerSyncRequests >= 2) ContinueToNextSyncStage();
-            totalSuccessivePeerSyncRequests++;
-            return;
-        }
-
         if (pnode->nVersion >=  ActiveProtocol() &&
             (!MasternodeListIsSynced(pnode,now) || !MasternodeWinnersListIsSync(pnode,now)))
         {

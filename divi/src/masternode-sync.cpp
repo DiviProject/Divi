@@ -283,7 +283,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
     if (lastUpdate > 0 && lastUpdate < now - MASTERNODE_SYNC_TIMEOUT * 2 && totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD)
     { //hasn't received a new item in the last five seconds, so we'll move to the
         ContinueToNextSyncStage();
-        return SyncStatus::FAIL;
+        return SyncStatus::SYNC_STAGE_COMPLETE;
     }
 
     if (networkFulfilledRequestManager_.HasFulfilledRequest(pnode->addr, assetType)) return SyncStatus::SUCCESS;
@@ -315,7 +315,7 @@ bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
             {
                 return false;
             }
-            case SyncStatus::SUCCESS:
+            case SyncStatus::SUCCESS: case SyncStatus::SYNC_STAGE_COMPLETE:
             {
                 return true;
             }
@@ -356,7 +356,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
             {
                 return false;
             }
-            case SyncStatus::SUCCESS:
+            case SyncStatus::SUCCESS: case SyncStatus::SYNC_STAGE_COMPLETE:
             {
                 return true;
             }

@@ -288,12 +288,6 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
             return;
         }
 
-        CTxDestination address1;
-        ExtractDestination(winner.payee, address1);
-        CBitcoinAddress address2(address1);
-
-        //   LogPrint("mnpayments", "mnw - winning vote - Addr %s Height %d bestHeight %d - %s\n", address2, winner.nBlockHeight, nHeight, winner.vinMasternode.prevout.ToStringShort());
-
         if (AddWinningMasternode(winner)) {
             winner.Relay();
             masternodeSynchronization_.RecordMasternodeWinnerUpdate(winner.GetHash());

@@ -29,6 +29,7 @@ class CMasternode;
 enum SyncStatus
 {
     FAIL,
+    SYNC_STAGE_COMPLETE,
     SUCCESS,
     REQUEST_SYNC,
 };

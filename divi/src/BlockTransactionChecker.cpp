@@ -60,7 +60,7 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
     pindex_->nMint = 0;
     for (unsigned int i = 0; i < block_.vtx.size(); i++) {
         const CTransaction& tx = block_.vtx[i];
-        const TransactionLocationReference txLocationRef(tx.GetHash(),pindex_->nHeight,i);
+        const TransactionLocationReference txLocationRef(tx, pindex_->nHeight, i);
 
         if(!txInputChecker_.TotalSigOpsAreBelowMaximum(tx))
         {

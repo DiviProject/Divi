@@ -1000,11 +1000,6 @@ bool CheckMintTotalsAndBlockPayees(
     const CBlockRewards& nExpectedMint,
     CValidationState& state)
 {
-    assert(pindex->pprev);
-    assert(chainActive.Contains(pindex->pprev));
-    assert(mapBlockIndex.find(block.hashPrevBlock) != mapBlockIndex.end());
-    assert(block.hashPrevBlock == pindex->pprev->GetBlockHash());
-    assert(pindex->pprev->nHeight +1 == pindex->nHeight);
     const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
     if (!incentives.IsBlockValueValid(nExpectedMint, pindex->nMint, pindex->nHeight)) {

@@ -638,7 +638,7 @@ void CTxMemPool::removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned in
         const CTransaction& tx = entry.second.GetTx();
         for (const auto& txin : tx.vin) {
             CTransaction tx2;
-            if (lookup(txin.prevout.hash, tx2))
+            if (lookupOutpoint(txin.prevout.hash, tx2))
                 continue;
             const CCoins* coins = pcoins->AccessCoins(txin.prevout.hash);
             if (fSanityCheck) assert(coins);
@@ -723,7 +723,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins, const BlockMap& blockIndex
         for (const auto& txin : tx.vin) {
             // Check that every mempool transaction's inputs refer to available coins, or other mempool tx's.
             CTransaction tx2;
-            if (lookup(txin.prevout.hash, tx2)) {
+            if (lookupOutpoint(txin.prevout.hash, tx2)) {
                 assert(tx2.vout.size() > txin.prevout.n && !tx2.vout[txin.prevout.n].IsNull());
                 fDependsWait = true;
             } else {
@@ -801,6 +801,13 @@ bool CTxMemPool::lookupBareTxid(const uint256& btxid, CTransaction& result) cons
     if (mit == mapBareTxid.end()) return false;
     result = mit->second->GetTx();
     return true;
+}
+
+bool CTxMemPool::lookupOutpoint(const uint256& hash, CTransaction& result) const
+{
+    /* For now (until we add the UTXO hasher and segwit light), the outpoint
+       is just the transaction ID.  */
+    return lookup(hash, result);
 }
 
 CFeeRate CTxMemPool::estimateFee(int nBlocks) const
@@ -882,7 +889,7 @@ bool CCoinsViewMemPool::GetCoins(const uint256& txid, CCoins& coins) const
     // conflict with the underlying cache, and it cannot have pruned entries (as it contains full)
     // transactions. First checking the underlying cache risks returning a pruned entry instead.
     CTransaction tx;
-    if (mempool.lookup(txid, tx)) {
+    if (mempool.lookupOutpoint(txid, tx)) {
         coins = CCoins(tx, MEMPOOL_HEIGHT);
         return true;
     }
@@ -891,5 +898,9 @@ bool CCoinsViewMemPool::GetCoins(const uint256& txid, CCoins& coins) const
 
 bool CCoinsViewMemPool::HaveCoins(const uint256& txid) const
 {
-    return mempool.exists(txid) || base->HaveCoins(txid);
+    CTransaction dummy;
+    if (mempool.lookupOutpoint(txid, dummy))
+        return true;
+
+    return base->HaveCoins(txid);
 }

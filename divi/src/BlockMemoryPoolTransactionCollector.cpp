@@ -206,7 +206,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
             // Read prev transaction
             if (!view.HaveCoins(txin.prevout.hash)) {
                 CTransaction prevTx;
-                if(!mempool_.lookup(txin.prevout.hash, prevTx)) {
+                if(!mempool_.lookupOutpoint(txin.prevout.hash, prevTx)) {
                     // This should never happen; all transactions in the memory
                     // pool should connect to either transactions in the chain
                     // or other transactions in the memory pool.

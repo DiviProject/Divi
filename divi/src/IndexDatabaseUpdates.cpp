@@ -1,5 +1,7 @@
 #include <IndexDatabaseUpdates.h>
 
+#include <primitives/transaction.h>
+
 IndexDatabaseUpdates::IndexDatabaseUpdates(
     ): addressIndex()
     , addressUnspentIndex()
@@ -9,10 +11,10 @@ IndexDatabaseUpdates::IndexDatabaseUpdates(
 }
 
 TransactionLocationReference::TransactionLocationReference(
-    uint256 hashValue,
+    const CTransaction& tx,
     unsigned blockheightValue,
     int transactionIndexValue
-    ): hash(hashValue)
+    ): hash(tx.GetHash())
     , blockHeight(blockheightValue)
     , transactionIndex(transactionIndexValue)
 {

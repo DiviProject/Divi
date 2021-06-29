@@ -5,6 +5,7 @@
 #include <coins.h>
 #include <chain.h>
 #include <blockmap.h>
+#include <IndexDatabaseUpdates.h>
 #include <ValidationState.h>
 #include <utilmoneystr.h>
 #include <undo.h>
@@ -29,7 +30,7 @@ void UpdateCoinsWithTransaction(const CTransaction& tx, CCoinsViewCache& inputs,
 
 static bool RemoveTxOutputsFromCache(
     const CTransaction& tx,
-    const int blockHeight,
+    const TransactionLocationReference& txLocationReference,
     CCoinsViewCache& view)
 {
     bool outputsAvailable = true;
@@ -38,10 +39,10 @@ static bool RemoveTxOutputsFromCache(
     // have outputs available even in the block itself, so we handle that case
     // specially with outsEmpty.
     CCoins outsEmpty;
-    CCoinsModifier outs = view.ModifyCoins(tx.GetHash());
+    CCoinsModifier outs = view.ModifyCoins(txLocationReference.hash);
     outs->ClearUnspendable();
 
-    CCoins outsBlock(tx, blockHeight);
+    CCoins outsBlock(tx, txLocationReference.blockHeight);
     // The CCoins serialization does not serialize negative numbers.
     // No network rules currently depend on the version here, so an inconsistency is harmless
     // but it must be corrected before txout nversion ever influences a network rule.
@@ -86,10 +87,10 @@ static void UpdateCoinsForRestoredInputs(
     coins->vout[out.n] = undo.txout;
 }
 
-TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, CCoinsViewCache& inputs, const CTxUndo* txundo, int nHeight)
+TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, CCoinsViewCache& inputs, const CTxUndo* txundo)
 {
     bool fClean = true;
-    fClean = fClean && RemoveTxOutputsFromCache(tx,nHeight,inputs);
+    fClean = fClean && RemoveTxOutputsFromCache(tx, txLocationReference, inputs);
     if(tx.IsCoinBase()) return fClean? TxReversalStatus::OK : TxReversalStatus::CONTINUE_WITH_ERRORS;
     assert(txundo != nullptr);
     if (txundo->vprevout.size() != tx.vin.size())

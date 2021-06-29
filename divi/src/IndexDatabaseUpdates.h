@@ -6,6 +6,8 @@
 #include <spentindex.h>
 #include <uint256.h>
 
+class CTransaction;
+
 /** One entry in the tx index, which locates transactions on disk by their txid
  *  or bare txid (both keys are possible).  */
 struct TxIndexEntry
@@ -36,7 +38,7 @@ struct TransactionLocationReference
     int transactionIndex;
 
     TransactionLocationReference(
-        uint256 hashValue,
+        const CTransaction& tx,
         unsigned blockheightValue,
         int transactionIndexValue);
 };

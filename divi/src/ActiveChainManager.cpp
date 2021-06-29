@@ -92,15 +92,15 @@ bool ActiveChainManager::DisconnectBlock(
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
+        const TransactionLocationReference txLocationReference(tx, pindex->nHeight, transactionIndex);
         const auto* undo = (transactionIndex > 0 ? &blockUndo.vtxundo[transactionIndex - 1] : nullptr);
-        const TxReversalStatus status = UpdateCoinsReversingTransaction(tx, view, undo, pindex->nHeight);
+        const TxReversalStatus status = UpdateCoinsReversingTransaction(tx, txLocationReference, view, undo);
         if(!CheckTxReversalStatus(status,fClean))
         {
             return false;
         }
         if(!pfClean)
         {
-            TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
             IndexDatabaseUpdateCollector::ReverseTransaction(tx,txLocationReference,view,indexDBUpdates);
         }
     }

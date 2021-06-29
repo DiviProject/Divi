@@ -201,6 +201,10 @@ public:
     bool lookup(const uint256& hash, CTransaction& result) const;
     bool lookupBareTxid(const uint256& btxid, CTransaction& result) const;
 
+    /** Looks up a transaction by its outpoint for spending, taking potential changes
+     *  from the raw txid (e.g. segwit light) into account.  */
+    bool lookupOutpoint(const uint256& hash, CTransaction& result) const;
+
     /** Estimate fee rate needed to get into the next nBlocks */
     CFeeRate estimateFee(int nBlocks) const;
 

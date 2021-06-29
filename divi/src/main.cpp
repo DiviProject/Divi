@@ -1002,30 +1002,12 @@ bool CheckMintTotalsAndBlockPayees(
 {
     assert(pindex->pprev);
     assert(chainActive.Contains(pindex->pprev));
-    const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
-
-    CBlockIndex* chainTip = chainActive.Tip();
-    bool chainTipIsNull = chainTip == NULL;
-    int blockHeight = 0;
     assert(mapBlockIndex.find(block.hashPrevBlock) != mapBlockIndex.end());
     assert(block.hashPrevBlock == pindex->pprev->GetBlockHash());
+    assert(pindex->pprev->nHeight +1 == pindex->nHeight);
+    const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
-    if (!chainTipIsNull)
-    {
-        if (chainTip->GetBlockHash() == block.hashPrevBlock) {
-            blockHeight = chainTip->nHeight + 1;
-        } else { //out of order
-            BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-            if (mi != mapBlockIndex.end() && (*mi).second)
-                blockHeight = (*mi).second->nHeight + 1;
-        }
-    }
-
-    if (blockHeight == 0) {
-        LogPrint("masternode","IsBlockValueValid() : WARNING: Couldn't find previous block\n");
-    }
-
-    if (!chainTipIsNull && !incentives.IsBlockValueValid(nExpectedMint, pindex->nMint, blockHeight)) {
+    if (!incentives.IsBlockValueValid(nExpectedMint, pindex->nMint, pindex->nHeight)) {
         return state.DoS(100,
                          error("%s : reward pays too much (actual=%s vs limit=%s)",
                             __func__,

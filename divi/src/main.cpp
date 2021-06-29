@@ -1000,11 +1000,16 @@ bool CheckMintTotalsAndBlockPayees(
     const CBlockRewards& nExpectedMint,
     CValidationState& state)
 {
+    assert(pindex->pprev);
+    assert(chainActive.Contains(pindex->pprev));
     const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
     CBlockIndex* chainTip = chainActive.Tip();
     bool chainTipIsNull = chainTip == NULL;
     int blockHeight = 0;
+    assert(mapBlockIndex.find(block.hashPrevBlock) != mapBlockIndex.end());
+    assert(block.hashPrevBlock == pindex->pprev->GetBlockHash());
+
     if (!chainTipIsNull)
     {
         if (chainTip->GetBlockHash() == block.hashPrevBlock) {

@@ -73,9 +73,9 @@ MasternodeModule::MasternodeModule(
     , networkMessageManager_( new MasternodeNetworkMessageManager)
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
+    , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodeSync_(new CMasternodeSync(*networkFulfilledRequestManager_,peerSyncQueryService,clock,*networkMessageManager_,*masternodePaymentData_))
     , mnodeman_(new CMasternodeMan(*networkMessageManager_,*masternodeSync_,activeChain_,blockIndexByHash_,addressManager))
-    , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodePayments_(new CMasternodePayments(*networkFulfilledRequestManager_,*masternodePaymentData_,*networkMessageManager_,*mnodeman_,*masternodeSync_,activeChain_))
 {
 }
@@ -83,9 +83,9 @@ MasternodeModule::MasternodeModule(
 MasternodeModule::~MasternodeModule()
 {
     masternodePayments_.reset();
-    activeMasternode_.reset();
     mnodeman_.reset();
     masternodeSync_.reset();
+    activeMasternode_.reset();
     masternodeConfig_.reset();
     masternodePaymentData_.reset();
     networkMessageManager_.reset();

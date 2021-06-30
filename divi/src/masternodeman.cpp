@@ -110,7 +110,7 @@ void CMasternodeMan::ManageLocalMasternode()
         }
     }
     CMasternode* pmn = Find(localActiveMasternode_.vin);
-    if(localActiveMasternode_.ManageStatus(pmn))
+    if(localActiveMasternode_.TryUpdatingPing(pmn))
     {
         RecordSeenPing(pmn->lastPing);
         pmn->lastPing.Relay();

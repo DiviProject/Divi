@@ -106,7 +106,7 @@ bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& sig
 
     CDataStream reserializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);
     reserializedBroadcast << mnb;
-    if (mnodeman.ProcessMessage(activeMasternode,nullptr, "mnb", reserializedBroadcast))
+    if (mnodeman.ProcessMessage(nullptr, "mnb", reserializedBroadcast))
     {
         return true;
     }
@@ -119,7 +119,6 @@ bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& sig
 MasternodeStartResult StartMasternode(const CKeyStore& keyStore,std::string alias, bool deferRelay)
 {
     const auto& mnModule = GetMasternodeModule();
-    auto& activeMasternode = mnModule.getActiveMasternode();
     auto& mnodeman = mnModule.getMasternodeManager();
 
     MasternodeStartResult result;
@@ -155,7 +154,7 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore,std::string alia
         {
             LogPrintf("Warning! Trying to relay broadcast while blockchain sync hasnt completed may fail!");
         }
-        if(!mnodeman.ProcessMessage(activeMasternode,nullptr, "mnb", serializedBroadcast))
+        if(!mnodeman.ProcessMessage(nullptr, "mnb", serializedBroadcast))
         {
             LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin);
             result.status = false;

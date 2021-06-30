@@ -416,7 +416,7 @@ void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
     networkMessageManager_.recordPing(mnp);
 }
 
-bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* pfrom, CMasternodeBroadcast& mnb)
+bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
 {
     if (networkMessageManager_.broadcastIsKnown(mnb.GetHash())) { //seen
         masternodeSynchronization_.RecordMasternodeListUpdate(mnb.GetHash());
@@ -445,7 +445,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* 
     }
 
     // make sure collateral is still unspent
-    const bool isOurBroadcast = localMasternode.IsOurBroadcast(mnb,true);
+    const bool isOurBroadcast = localActiveMasternode_.IsOurBroadcast(mnb,true);
     if (!isOurBroadcast && !CheckInputsForMasternode(mnb,nDoS))
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash);
@@ -489,8 +489,8 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode,CNode* 
     RecordSeenPing(mnb.lastPing);
 
     // if it matches our Masternode privkey, then we've been remotely activated
-    if (mnb.pubKeyMasternode == localMasternode.pubKeyMasternode && mnb.protocolVersion == PROTOCOL_VERSION) {
-        localMasternode.EnableHotColdMasterNode(mnb.vin, mnb.addr);
+    if (mnb.pubKeyMasternode == localActiveMasternode_.pubKeyMasternode && mnb.protocolVersion == PROTOCOL_VERSION) {
+        localActiveMasternode_.EnableHotColdMasterNode(mnb.vin, mnb.addr);
     }
 
     const bool isLocal = mnb.addr.IsRFC1918() || mnb.addr.IsLocal();
@@ -532,13 +532,13 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
     return false;
 }
 
-bool CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
+bool CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "mnb") { //Masternode Broadcast
         LOCK(networkMessageManager_.cs_process_message);
         CMasternodeBroadcast mnb;
         vRecv >> mnb;
-        return ProcessBroadcast(localMasternode,pfrom, mnb);
+        return ProcessBroadcast(pfrom, mnb);
     }
     else if (strCommand == "mnp") { //Masternode Ping
         LOCK(networkMessageManager_.cs_process_message);

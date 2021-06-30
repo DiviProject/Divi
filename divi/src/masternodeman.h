@@ -99,7 +99,7 @@ public:
      */
     void RecordSeenPing(const CMasternodePing& mnp);
     bool ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
-
+    void ManageLocalMasternode();
     std::string ToString() const;
 };
 

@@ -35,6 +35,7 @@ private:
     const CChain& activeChain_;
     const BlockMap& blockIndicesByHash_;
     CAddrMan& addressManager_;
+    CActiveMasternode& localActiveMasternode_;
 
     bool Add(const CMasternode& mn);
     void Remove(const CTxIn& vin);
@@ -76,7 +77,8 @@ public:
         CMasternodeSync& masternodeSynchronization,
         const CChain& activeChain,
         const BlockMap& blockIndicesByHash,
-        CAddrMan& addressManager);
+        CAddrMan& addressManager,
+        CActiveMasternode& localActiveMasternode);
     CMasternodeMan(const CMasternodeMan& other) = delete;
     ~CMasternodeMan();
 

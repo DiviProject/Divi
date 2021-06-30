@@ -89,7 +89,6 @@ public:
     void RecordMasternodeWinnerUpdate(const uint256& hash);
     void ContinueToNextSyncStage();
     std::string GetSyncStatus();
-    void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     void Reset();
     uint32_t masternodeCount() const;

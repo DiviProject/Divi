@@ -339,7 +339,6 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
         mnodeman.ProcessMessage(activeMasternode,pfrom, strCommand, vRecv);
         masternodePayments.ProcessMessageMasternodePayments(pfrom, strCommand, vRecv);
     }
-    masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
 }
 
 bool VoteForMasternodePayee(const CBlockIndex* pindex)

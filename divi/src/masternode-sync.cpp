@@ -117,8 +117,9 @@ void CMasternodeSync::SyncMasternodeListWithPeer(CNode* peer)
 }
 void CMasternodeSync::ProcessDSegUpdate(CNode* pfrom,const std::string& strCommand, CDataStream& vRecv)
 {
-    LOCK(networkMessageManager_.cs_process_message);
-    if (strCommand == "dseg") { //Get Masternode list or specific entry
+    if (strCommand == "dseg")
+    { //Get Masternode list or specific entry
+        LOCK(networkMessageManager_.cs_process_message);
 
         CTxIn vin;
         vRecv >> vin;

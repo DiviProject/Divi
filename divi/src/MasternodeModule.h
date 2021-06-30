@@ -38,9 +38,9 @@ private:
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
     std::unique_ptr<MasternodePaymentData> masternodePaymentData_;
     std::unique_ptr<CMasternodeConfig> masternodeConfig_;
+    std::unique_ptr<CActiveMasternode> activeMasternode_;
     std::unique_ptr<CMasternodeSync> masternodeSync_;
     std::unique_ptr<CMasternodeMan> mnodeman_;
-    std::unique_ptr<CActiveMasternode> activeMasternode_;
     std::unique_ptr<CMasternodePayments> masternodePayments_;
 public:
     MasternodeModule(

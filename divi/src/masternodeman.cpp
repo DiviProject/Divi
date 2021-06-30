@@ -148,26 +148,6 @@ void CMasternodeMan::Check(CMasternode& mn, bool forceCheck)
     mn.activeState = CMasternode::state::MASTERNODE_ENABLED; // OK
 }
 
-bool CMasternodeMan::TimeSinceLastPingIsWithin(const CMasternode& mn, const int timeWindow, int64_t now) const
-{
-    if (now == -1)
-        now = GetAdjustedTime();
-
-    if (mn.lastPing == CMasternodePing())
-        return false;
-
-    return now - mn.lastPing.sigTime < timeWindow;
-}
-
-bool CMasternodeMan::IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t now) const
-{
-    return TimeSinceLastPingIsWithin(mn,MASTERNODE_PING_SECONDS, now);
-}
-bool CMasternodeMan::IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now) const
-{
-    return TimeSinceLastPingIsWithin(mn, MASTERNODE_MIN_MNP_SECONDS - 60, now);
-}
-
 bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const
 {
     if (mnb.sigTime > masternode.sigTime) {

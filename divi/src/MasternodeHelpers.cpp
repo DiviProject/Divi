@@ -159,3 +159,23 @@ CMasternodePing createCurrentPing(const CTxIn& newVin)
     ping.signature = std::vector<unsigned char>();
     return ping;
 }
+
+bool TimeSinceLastPingIsWithin(const CMasternode& mn, const int timeWindow, int64_t now)
+{
+    if (now == -1)
+        now = GetAdjustedTime();
+
+    if (mn.lastPing == CMasternodePing())
+        return false;
+
+    return now - mn.lastPing.sigTime < timeWindow;
+}
+
+bool IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t now)
+{
+    return TimeSinceLastPingIsWithin(mn,MASTERNODE_PING_SECONDS, now);
+}
+bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now)
+{
+    return TimeSinceLastPingIsWithin(mn, MASTERNODE_MIN_MNP_SECONDS - 60, now);
+}

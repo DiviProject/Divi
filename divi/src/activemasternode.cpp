@@ -49,7 +49,7 @@ bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
     return true;
 }
 
-bool CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager, CMasternode* pmn)
+bool CActiveMasternode::ManageStatus(CMasternode* pmn)
 {
     if (status != ACTIVE_MASTERNODE_STARTED) {
         // Set defaults
@@ -90,7 +90,7 @@ bool CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager, CMastern
 
     //send to all peers
     std::string errorMessage ="";
-    if (!SendMasternodePing(masternodeManager,pmn,errorMessage)) {
+    if (!SendMasternodePing(pmn,errorMessage)) {
         LogPrintf("CActiveMasternode::ManageStatus() - Error on Ping: %s\n", errorMessage);
         return false;
     }
@@ -115,7 +115,7 @@ std::string CActiveMasternode::GetStatus()
     }
 }
 
-bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, CMasternode* pmn, std::string& errorMessage)
+bool CActiveMasternode::SendMasternodePing(CMasternode* pmn, std::string& errorMessage)
 {
     if (status != ACTIVE_MASTERNODE_STARTED) {
         errorMessage = "Masternode is not in a running status";
@@ -140,8 +140,6 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, CM
         }
 
         pmn->lastPing = mnp;
-        mnp.Relay();
-
         return true;
     } else {
         // Seems like we are trying to send a ping while the Masternode is not registered in the network

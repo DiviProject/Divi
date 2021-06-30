@@ -52,7 +52,7 @@ public:
     /// Manage status of main Masternode
     bool SetMasternodeKey(const std::string& privKeyString);
     bool SetMasternodeAddress(const std::string& masternodeAddress);
-    bool ManageStatus(CMasternode* pmn);
+    bool TryUpdatingPing(CMasternode* pmn);
     std::string GetStatus();
     void FlagBlockchainSyncRequired();
 

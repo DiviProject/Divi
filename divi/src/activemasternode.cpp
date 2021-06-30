@@ -55,20 +55,6 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
 
     if (!fMasterNode_) return;
 
-    LogPrint("masternode","CActiveMasternode::ManageStatus() - Begin\n");
-    if (status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS)
-        status = ACTIVE_MASTERNODE_INITIAL;
-
-    if (status == ACTIVE_MASTERNODE_INITIAL) {
-        CMasternode* pmn;
-        pmn = masternodeManager.Find(pubKeyMasternode);
-        if (pmn != NULL) {
-            masternodeManager.Check(*pmn);
-            if (pmn->IsEnabled() && pmn->protocolVersion == PROTOCOL_VERSION)
-                EnableHotColdMasterNode(pmn->vin, pmn->addr);
-        }
-    }
-
     if (status != ACTIVE_MASTERNODE_STARTED) {
         // Set defaults
         status = ACTIVE_MASTERNODE_NOT_CAPABLE;

@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
     removed.clear();
 }
 
-BOOST_AUTO_TEST_CASE(MempoolIndexByBareTxid)
+BOOST_AUTO_TEST_CASE(MempoolDirectLookup)
 {
     CTransaction tx;
     std::list<CTransaction> removed;
@@ -172,12 +172,60 @@ BOOST_AUTO_TEST_CASE(MempoolIndexByBareTxid)
 
     BOOST_CHECK(testPool.lookupBareTxid(txParent.GetBareTxid(), tx));
     BOOST_CHECK(tx.GetHash() == txParent.GetHash());
+    BOOST_CHECK(testPool.lookup(txParent.GetHash(), tx));
+    BOOST_CHECK(tx.GetHash() == txParent.GetHash());
+
+    BOOST_CHECK(!testPool.lookup(txParent.GetBareTxid(), tx));
     BOOST_CHECK(!testPool.lookupBareTxid(txParent.GetHash(), tx));
 
     testPool.remove(txParent, removed, true);
+    BOOST_CHECK(!testPool.lookup(txParent.GetHash(), tx));
+    BOOST_CHECK(!testPool.lookup(txChild[0].GetHash(), tx));
+    BOOST_CHECK(!testPool.lookup(txGrandChild[0].GetHash(), tx));
     BOOST_CHECK(!testPool.lookupBareTxid(txParent.GetBareTxid(), tx));
     BOOST_CHECK(!testPool.lookupBareTxid(txChild[0].GetBareTxid(), tx));
     BOOST_CHECK(!testPool.lookupBareTxid(txGrandChild[0].GetBareTxid(), tx));
+}
+
+BOOST_AUTO_TEST_CASE(MempoolOutpointLookup)
+{
+    CTransaction tx;
+    CCoins c;
+
+    AddAll();
+    CCoinsViewMemPool viewPool(&coins, testPool);
+
+    BOOST_CHECK(testPool.lookupOutpoint(txParent.GetHash(), tx));
+    BOOST_CHECK(!testPool.lookupOutpoint(txParent.GetBareTxid(), tx));
+    BOOST_CHECK(testPool.lookupOutpoint(txChild[0].GetHash(), tx));
+    BOOST_CHECK(!testPool.lookupOutpoint(txChild[0].GetBareTxid(), tx));
+
+    BOOST_CHECK(viewPool.HaveCoins(txParent.GetHash()));
+    BOOST_CHECK(viewPool.GetCoins(txParent.GetHash(), c));
+    BOOST_CHECK(!viewPool.HaveCoins(txParent.GetBareTxid()));
+    BOOST_CHECK(!viewPool.GetCoins(txParent.GetBareTxid(), c));
+
+    BOOST_CHECK(viewPool.HaveCoins(txChild[0].GetHash()));
+    BOOST_CHECK(viewPool.GetCoins(txChild[0].GetHash(), c));
+    BOOST_CHECK(!viewPool.HaveCoins(txChild[0].GetBareTxid()));
+    BOOST_CHECK(!viewPool.GetCoins(txChild[0].GetBareTxid(), c));
+}
+
+BOOST_AUTO_TEST_CASE(MempoolExists)
+{
+    CTransaction tx;
+    std::list<CTransaction> removed;
+
+    AddAll();
+
+    BOOST_CHECK(testPool.exists(txParent.GetHash()));
+    BOOST_CHECK(!testPool.exists(txParent.GetBareTxid()));
+    BOOST_CHECK(!testPool.existsBareTxid(txParent.GetHash()));
+    BOOST_CHECK(testPool.existsBareTxid(txParent.GetBareTxid()));
+
+    testPool.remove(txParent, removed, true);
+    BOOST_CHECK(!testPool.exists(txParent.GetHash()));
+    BOOST_CHECK(!testPool.existsBareTxid(txParent.GetBareTxid()));
 }
 
 BOOST_AUTO_TEST_CASE(MempoolSpentIndex)

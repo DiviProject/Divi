@@ -97,7 +97,19 @@ CMasternodeMan::CMasternodeMan(
 
 void CMasternodeMan::ManageLocalMasternode()
 {
-    localActiveMasternode_.ManageStatus(this);
+    LogPrint("masternode","%s - Begin\n",__func__);
+    if (localActiveMasternode_.status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS)
+        localActiveMasternode_.status = ACTIVE_MASTERNODE_INITIAL;
+
+    if (localActiveMasternode_.status == ACTIVE_MASTERNODE_INITIAL) {
+        CMasternode* pmn = Find(localActiveMasternode_.pubKeyMasternode);
+        if (pmn != NULL) {
+            Check(*pmn);
+            if (pmn->IsEnabled() && pmn->protocolVersion == PROTOCOL_VERSION)
+                localActiveMasternode_.EnableHotColdMasterNode(pmn->vin, pmn->addr);
+        }
+    }
+    localActiveMasternode_.ManageStatus(*this);
 }
 
 bool CMasternodeMan::Add(const CMasternode& mn)

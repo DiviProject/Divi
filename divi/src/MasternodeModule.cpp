@@ -330,13 +330,12 @@ bool MasternodeWinnerIsKnown(const uint256& inventoryHash)
 void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream& vRecv)
 {
     static CMasternodeMan& mnodeman = mnModule.getMasternodeManager();
-    static CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
     static CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
     static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     if(!fLiteMode && IsBlockchainSynced())
     {
         masternodeSync.ProcessDSegUpdate(pfrom,strCommand,vRecv);
-        mnodeman.ProcessMessage(activeMasternode,pfrom, strCommand, vRecv);
+        mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
         masternodePayments.ProcessMessageMasternodePayments(pfrom, strCommand, vRecv);
     }
 }

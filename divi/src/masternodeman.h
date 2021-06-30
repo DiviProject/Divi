@@ -60,7 +60,7 @@ private:
      *  command.  Otherwise, we apply any potential DoS banscore.
      *
      *  Returns true if all was valid, and false if not.  */
-    bool ProcessBroadcast(CActiveMasternode& localMasternode, CNode* pfrom, CMasternodeBroadcast& mnb);
+    bool ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb);
 
     /** Processes a masternode ping.  It is verified first, and if valid,
      *  used to update our state and inserted into mapSeenMasternodePing.
@@ -98,7 +98,7 @@ public:
      *  This method assumes that the ping has already been checked and is valid.
      */
     void RecordSeenPing(const CMasternodePing& mnp);
-    bool ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
+    bool ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     void ManageLocalMasternode();
     std::string ToString() const;
 };

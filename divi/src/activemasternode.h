@@ -21,14 +21,13 @@ class CMasternodeBroadcast;
 class CMasternodePing;
 class CMasternodeConfig;
 class CMasternodePaymentWinner;
-class CMasternodeMan;
 class CMasternode;
 
 // Responsible for activating the Masternode and pinging the network
 class CActiveMasternode
 {
 private:
-    bool SendMasternodePing(CMasternodeMan& masternodeManager, CMasternode* pmn,std::string& errorMessage);
+    bool SendMasternodePing(CMasternode* pmn,std::string& errorMessage);
     bool IsThisMasternodeCollateral(const CTxIn& newVin) const;
 private:
     // critical section to protect the inner data structures
@@ -53,7 +52,7 @@ public:
     /// Manage status of main Masternode
     bool SetMasternodeKey(const std::string& privKeyString);
     bool SetMasternodeAddress(const std::string& masternodeAddress);
-    bool ManageStatus(CMasternodeMan& masternodeManager, CMasternode* pmn);
+    bool ManageStatus(CMasternode* pmn);
     std::string GetStatus();
     void FlagBlockchainSyncRequired();
 

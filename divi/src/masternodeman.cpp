@@ -83,13 +83,15 @@ CMasternodeMan::CMasternodeMan(
     CMasternodeSync& masternodeSynchronization,
     const CChain& activeChain,
     const BlockMap& blockIndicesByHash,
-    CAddrMan& addressManager
+    CAddrMan& addressManager,
+    CActiveMasternode& localActiveMasternode
     ):  networkMessageManager_(networkMessageManager)
     , masternodeSynchronization_(masternodeSynchronization)
     , cs(networkMessageManager_.cs)
     , activeChain_(activeChain)
     , blockIndicesByHash_(blockIndicesByHash)
     , addressManager_(addressManager)
+    , localActiveMasternode_(localActiveMasternode)
 {
 }
 

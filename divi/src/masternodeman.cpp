@@ -109,7 +109,11 @@ void CMasternodeMan::ManageLocalMasternode()
                 localActiveMasternode_.EnableHotColdMasterNode(pmn->vin, pmn->addr);
         }
     }
-    localActiveMasternode_.ManageStatus(*this);
+    CMasternode* pmn = Find(localActiveMasternode_.vin);
+    if(localActiveMasternode_.ManageStatus(*this,pmn))
+    {
+        RecordSeenPing(pmn->lastPing);
+    }
 }
 
 bool CMasternodeMan::Add(const CMasternode& mn)

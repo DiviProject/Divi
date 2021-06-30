@@ -49,7 +49,7 @@ bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
     return true;
 }
 
-bool CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
+bool CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager, CMasternode* pmn)
 {
     if (status != ACTIVE_MASTERNODE_STARTED) {
         // Set defaults
@@ -90,7 +90,7 @@ bool CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
 
     //send to all peers
     std::string errorMessage ="";
-    if (!SendMasternodePing(masternodeManager,errorMessage)) {
+    if (!SendMasternodePing(masternodeManager,pmn,errorMessage)) {
         LogPrintf("CActiveMasternode::ManageStatus() - Error on Ping: %s\n", errorMessage);
         return false;
     }
@@ -115,7 +115,7 @@ std::string CActiveMasternode::GetStatus()
     }
 }
 
-bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, std::string& errorMessage)
+bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, CMasternode* pmn, std::string& errorMessage)
 {
     if (status != ACTIVE_MASTERNODE_STARTED) {
         errorMessage = "Masternode is not in a running status";
@@ -132,7 +132,6 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, st
     }
 
     // Update lastPing for our masternode in Masternode list
-    CMasternode* pmn = masternodeManager.Find(vin);
     if (pmn != NULL) {
         if (IsTooEarlyToSendPingUpdate(*pmn,mnp.sigTime))
         {
@@ -141,8 +140,6 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, st
         }
 
         pmn->lastPing = mnp;
-        masternodeManager.RecordSeenPing(mnp);
-
         mnp.Relay();
 
         return true;

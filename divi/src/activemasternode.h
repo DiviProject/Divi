@@ -27,7 +27,7 @@ class CMasternode;
 class CActiveMasternode
 {
 private:
-    bool SendMasternodePing(CMasternode* pmn,std::string& errorMessage);
+    bool UpdateLocalMasternodePing(CMasternode* pmn,std::string& errorMessage);
     bool IsThisMasternodeCollateral(const CTxIn& newVin) const;
 private:
     // critical section to protect the inner data structures

@@ -90,7 +90,7 @@ bool CActiveMasternode::ManageStatus(CMasternode* pmn)
 
     //send to all peers
     std::string errorMessage ="";
-    if (!SendMasternodePing(pmn,errorMessage)) {
+    if (!UpdateLocalMasternodePing(pmn,errorMessage)) {
         LogPrintf("CActiveMasternode::ManageStatus() - Error on Ping: %s\n", errorMessage);
         return false;
     }
@@ -115,14 +115,14 @@ std::string CActiveMasternode::GetStatus()
     }
 }
 
-bool CActiveMasternode::SendMasternodePing(CMasternode* pmn, std::string& errorMessage)
+bool CActiveMasternode::UpdateLocalMasternodePing(CMasternode* pmn, std::string& errorMessage)
 {
     if (status != ACTIVE_MASTERNODE_STARTED) {
         errorMessage = "Masternode is not in a running status";
         return false;
     }
 
-    LogPrintf("CActiveMasternode::SendMasternodePing() - Relay Masternode Ping vin = %s\n", vin);
+    LogPrintf("CActiveMasternode::UpdateLocalMasternodePing() - Relay Masternode Ping vin = %s\n", vin);
 
     CMasternodePing mnp = createCurrentPing(vin);
     if(!CObfuScationSigner::SignAndVerify<CMasternodePing>(mnp,masternodeKey_,pubKeyMasternode,errorMessage))

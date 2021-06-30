@@ -95,6 +95,11 @@ CMasternodeMan::CMasternodeMan(
 {
 }
 
+void CMasternodeMan::ManageLocalMasternode()
+{
+    localActiveMasternode_.ManageStatus(this);
+}
+
 bool CMasternodeMan::Add(const CMasternode& mn)
 {
     LOCK(cs);

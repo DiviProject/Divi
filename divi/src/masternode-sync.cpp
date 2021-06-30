@@ -137,6 +137,37 @@ void CMasternodeSync::ProcessDSegUpdate(CNode* pfrom,const std::string& strComma
             }
         }
     }
+    else if (strCommand == "ssc")
+    { //Sync status count
+        int syncCode;
+        int itemsSynced;
+        vRecv >> syncCode >> itemsSynced;
+
+
+        if (currentMasternodeSyncStatus >= MasternodeSyncCode::MASTERNODE_SYNC_FINISHED) return;
+
+        //this means we will receive no further communication
+        switch (syncCode) {
+        case (MasternodeSyncCode::MASTERNODE_SYNC_LIST):
+            if (syncCode != currentMasternodeSyncStatus) return;
+            if(itemsSynced == 0) {
+                timestampOfLastMasternodeListUpdate = clock_.getTime();
+            }
+            nominalNumberOfMasternodeBroadcastsReceived += itemsSynced;
+            fulfilledMasternodeListSyncRequests++;
+            break;
+        case (MasternodeSyncCode::MASTERNODE_SYNC_MNW):
+            if (syncCode != currentMasternodeSyncStatus) return;
+            if(itemsSynced == 0) {
+                timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
+            }
+            nominalNumberOfMasternodeWinnersReceived += itemsSynced;
+            fulfilledMasternodeWinnerSyncRequests++;
+            break;
+        }
+
+        LogPrint("masternode", "%s - ssc - got inventory count %d %d\n",__func__, syncCode, itemsSynced);
+    }
 }
 
 void CMasternodeSync::RecordMasternodeListUpdate(const uint256& hash)
@@ -207,39 +238,6 @@ std::string CMasternodeSync::GetSyncStatus()
     return "";
 }
 
-void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
-{
-    if (strCommand == "ssc") { //Sync status count
-        int syncCode;
-        int itemsSynced;
-        vRecv >> syncCode >> itemsSynced;
-
-
-        if (currentMasternodeSyncStatus >= MasternodeSyncCode::MASTERNODE_SYNC_FINISHED) return;
-
-        //this means we will receive no further communication
-        switch (syncCode) {
-        case (MasternodeSyncCode::MASTERNODE_SYNC_LIST):
-            if (syncCode != currentMasternodeSyncStatus) return;
-            if(itemsSynced == 0) {
-                timestampOfLastMasternodeListUpdate = clock_.getTime();
-            }
-            nominalNumberOfMasternodeBroadcastsReceived += itemsSynced;
-            fulfilledMasternodeListSyncRequests++;
-            break;
-        case (MasternodeSyncCode::MASTERNODE_SYNC_MNW):
-            if (syncCode != currentMasternodeSyncStatus) return;
-            if(itemsSynced == 0) {
-                timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
-            }
-            nominalNumberOfMasternodeWinnersReceived += itemsSynced;
-            fulfilledMasternodeWinnerSyncRequests++;
-            break;
-        }
-
-        LogPrint("masternode", "CMasternodeSync:ProcessMessage - ssc - got inventory count %d %d\n", syncCode, itemsSynced);
-    }
-}
 bool CMasternodeSync::ShouldWaitForSync(const int64_t now)
 {
     /* If the last processing time is in the future, it may mean that this is

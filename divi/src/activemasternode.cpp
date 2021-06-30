@@ -49,7 +49,7 @@ bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
     return true;
 }
 
-void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
+bool CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
 {
     if (status != ACTIVE_MASTERNODE_STARTED) {
         // Set defaults
@@ -63,7 +63,7 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
         {
             notCapableReason = "Can't detect external address. Please use the masternodeaddr configuration option.";
             LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
-            return;
+            return false;
         }
 
         const CAddress masternodeIPAddress = (CAddress)service;
@@ -71,7 +71,7 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
         {
             notCapableReason = "Hot node, waiting for remote activation.";
             LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
-            return;
+            return false;
         }
 
         LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service);
@@ -79,20 +79,22 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
         {
             notCapableReason = "Could not connect to " + service.ToString();
             LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
-            return;
+            return false;
         }
 
         // Choose coins to use
         notCapableReason = "Could not find suitable coins!";
         LogPrintf("CActiveMasternode::ManageStatus() - %s\n", notCapableReason);
-        return;
+        return false;
     }
 
     //send to all peers
     std::string errorMessage ="";
     if (!SendMasternodePing(masternodeManager,errorMessage)) {
         LogPrintf("CActiveMasternode::ManageStatus() - Error on Ping: %s\n", errorMessage);
+        return false;
     }
+    return true;
 }
 
 std::string CActiveMasternode::GetStatus()

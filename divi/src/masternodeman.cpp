@@ -530,14 +530,14 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
 
 bool CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
-    LOCK(networkMessageManager_.cs_process_message);
-
     if (strCommand == "mnb") { //Masternode Broadcast
+        LOCK(networkMessageManager_.cs_process_message);
         CMasternodeBroadcast mnb;
         vRecv >> mnb;
         return ProcessBroadcast(localMasternode,pfrom, mnb);
     }
     else if (strCommand == "mnp") { //Masternode Ping
+        LOCK(networkMessageManager_.cs_process_message);
         CMasternodePing mnp;
         vRecv >> mnp;
 

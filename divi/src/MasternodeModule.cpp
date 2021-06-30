@@ -475,7 +475,7 @@ void ThreadMasternodeBackgroundSync()
         // start right after sync is considered to be done
         if (now >= nTimeManageStatus + MASTERNODE_PING_SECONDS) {
             nTimeManageStatus = now;
-            mnodeman.ManageLocalMasternode();
+            if(mnModule.localNodeIsAMasternode()) mnodeman.ManageLocalMasternode();
         }
 
         if (now >= nTimeConnections + 60) {

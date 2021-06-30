@@ -51,10 +51,6 @@ bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
 
 void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
 {
-    std::string errorMessage ="";
-
-    if (!fMasterNode_) return;
-
     if (status != ACTIVE_MASTERNODE_STARTED) {
         // Set defaults
         status = ACTIVE_MASTERNODE_NOT_CAPABLE;
@@ -93,6 +89,7 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
     }
 
     //send to all peers
+    std::string errorMessage ="";
     if (!SendMasternodePing(masternodeManager,errorMessage)) {
         LogPrintf("CActiveMasternode::ManageStatus() - Error on Ping: %s\n", errorMessage);
     }

@@ -31,4 +31,7 @@ const CBlockIndex* ComputeCollateralBlockIndex(const CMasternode& masternode);
 const CBlockIndex* ComputeMasternodeConfirmationBlockIndex(const CMasternode& masternode);
 int ComputeMasternodeInputAge(const CMasternode& masternode);
 CMasternodePing createCurrentPing(const CTxIn& newVin);
+bool TimeSinceLastPingIsWithin(const CMasternode& mn, const int timeWindow, int64_t now = -1);
+bool IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t now);
+bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now);
 #endif // MASTERNODE_HELPERS_H

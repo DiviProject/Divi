@@ -285,6 +285,7 @@ static void CountNetworks(int& ipv4, int& ipv6, int& onion)
     int protocolVersion = ActiveProtocol();
 
     mnModule.getMasternodeManager().Check();
+    LOCK(networkMessageManager.cs);
     for(CMasternode& mn: networkMessageManager.masternodes)
     {
         std::string strHost;

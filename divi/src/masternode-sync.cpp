@@ -357,8 +357,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
             }
             case SyncStatus::REQUEST_SYNC:
             {
-                constexpr int blockDepthUpToWhichToRequestMNWinners = 200;
-                pnode->PushMessage("mnget", blockDepthUpToWhichToRequestMNWinners); //sync payees
+                pnode->PushMessage("mnget", CMasternodeSync::blockDepthUpToWhichToRequestMNWinners); //sync payees
                 totalSuccessivePeerSyncRequests++;
                 return false;
             }

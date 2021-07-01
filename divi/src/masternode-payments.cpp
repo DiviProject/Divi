@@ -238,22 +238,15 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
 
         if (pfrom->nVersion < ActiveProtocol()) return;
 
-        int nHeight;
-        {
-            TRY_LOCK(cs_main, locked);
-            if (!locked || activeChain_.Tip() == NULL) return;
-            nHeight = activeChain_.Tip()->nHeight;
-        }
-
         if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
-            LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), nHeight);
+            LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), chainTipHeight);
             masternodeSynchronization_.RecordMasternodeWinnerUpdate(winner.GetHash());
             return;
         }
 
-        int nFirstBlock = nHeight - (masternodeManager_.CountEnabled() * 1.25);
-        if (winner.GetHeight() < nFirstBlock || winner.GetHeight() > nHeight + 20) {
-            LogPrint("mnpayments", "mnw - winner out of range - FirstBlock %d Height %d bestHeight %d\n", nFirstBlock, winner.GetHeight(), nHeight);
+        int nFirstBlock = chainTipHeight - (masternodeManager_.CountEnabled() * 1.25);
+        if (winner.GetHeight() < nFirstBlock || winner.GetHeight() > chainTipHeight + 20) {
+            LogPrint("mnpayments", "mnw - winner out of range - FirstBlock %d Height %d bestHeight %d\n", nFirstBlock, winner.GetHeight(), chainTipHeight);
             return;
         }
 

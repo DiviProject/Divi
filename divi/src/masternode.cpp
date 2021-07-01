@@ -40,7 +40,6 @@ static size_t GetHashRoundsForTierMasternodes(MasternodeTier tier)
 
 CMasternode::CMasternode()
 {
-    LOCK(cs);
     vin = CTxIn();
     addr = CService();
     pubKeyCollateralAddress = CPubKey();
@@ -61,7 +60,6 @@ CMasternode::CMasternode()
 
 CMasternode::CMasternode(const CMasternode& other)
 {
-    LOCK(cs);
     vin = other.vin;
     addr = other.addr;
     pubKeyCollateralAddress = other.pubKeyCollateralAddress;
@@ -82,7 +80,6 @@ CMasternode::CMasternode(const CMasternode& other)
 
 CMasternode::CMasternode(const CMasternodeBroadcast& mnb)
 {
-    LOCK(cs);
     vin = mnb.vin;
     addr = mnb.addr;
     pubKeyCollateralAddress = mnb.pubKeyCollateralAddress;

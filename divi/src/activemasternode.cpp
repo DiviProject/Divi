@@ -164,7 +164,7 @@ bool CActiveMasternode::IsThisMasternodeCollateral(const CTxIn& newVin) const
     }
     return false;
 }
-bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newService)
+bool CActiveMasternode::EnablePinging(CTxIn& newVin, CService& newService)
 {
     if (!fMasterNode_)
     {
@@ -173,7 +173,7 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
 
     if(status == ACTIVE_MASTERNODE_STARTED)
     {
-        LogPrintf("CActiveMasternode::EnableHotColdMasterNode() - Cannot modify masternode that is already started.\n");
+        LogPrintf("CActiveMasternode::EnablePinging() - Cannot modify masternode that is already started.\n");
         return false;
     }
 
@@ -189,7 +189,7 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
     vin = newVin;
     service = newService;
 
-    LogPrintf("CActiveMasternode::EnableHotColdMasterNode() - Enabled! You may shut down the cold daemon.\n");
+    LogPrintf("CActiveMasternode::EnablePinging() - Enabled! You may shut down the cold daemon.\n");
 
     return true;
 }

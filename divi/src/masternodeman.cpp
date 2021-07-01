@@ -106,7 +106,7 @@ void CMasternodeMan::ManageLocalMasternode()
         if (pmn != NULL) {
             Check(*pmn);
             if (pmn->IsEnabled() && pmn->protocolVersion == PROTOCOL_VERSION)
-                localActiveMasternode_.EnableHotColdMasterNode(pmn->vin, pmn->addr);
+                localActiveMasternode_.EnablePinging(pmn->vin, pmn->addr);
         }
     }
     CMasternode* pmn = Find(localActiveMasternode_.vin);
@@ -490,7 +490,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
 
     // if it matches our Masternode privkey, then we've been remotely activated
     if (mnb.pubKeyMasternode == localActiveMasternode_.pubKeyMasternode && mnb.protocolVersion == PROTOCOL_VERSION) {
-        localActiveMasternode_.EnableHotColdMasterNode(mnb.vin, mnb.addr);
+        localActiveMasternode_.EnablePinging(mnb.vin, mnb.addr);
     }
 
     const bool isLocal = mnb.addr.IsRFC1918() || mnb.addr.IsLocal();

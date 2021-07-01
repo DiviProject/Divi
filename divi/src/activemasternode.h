@@ -57,7 +57,7 @@ public:
     void FlagBlockchainSyncRequired();
 
     /// Enable cold wallet mode (run a Masternode with no funds)
-    bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);
+    bool EnablePinging(CTxIn& vin, CService& addr);
     bool SignMasternodeWinner(CMasternodePaymentWinner& winner) const;
     bool IsOurBroadcast(const CMasternodeBroadcast& mnb, bool checkConfig = false) const;
     bool UpdatePing(CMasternodePing& mnp) const;

@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(willNotAttemptToResetAlreadyStartedMasternodeIfConfiguratio
     activeMasternode_->status = ACTIVE_MASTERNODE_STARTED;
     CTxIn txIn;
     CService service;
-    BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(txIn, service));
+    BOOST_CHECK(! activeMasternode_->EnablePinging(txIn, service));
 }
 
 BOOST_AUTO_TEST_CASE(willNotAttemptToResetAlreadyStartedMasternodeIfConfigurationIsKnown)
@@ -57,14 +57,14 @@ BOOST_AUTO_TEST_CASE(willNotAttemptToResetAlreadyStartedMasternodeIfConfiguratio
     CTxIn txIn;
     CService service;
     AddDummyConfiguration(txIn, service);
-    BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(txIn, service));
+    BOOST_CHECK(! activeMasternode_->EnablePinging(txIn, service));
 }
 
 BOOST_AUTO_TEST_CASE(willNotEnableMasternodeOnEmptyConfigurations)
 {
     CTxIn wrongTransaction;
     CService service;
-    BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(wrongTransaction, service));
+    BOOST_CHECK(! activeMasternode_->EnablePinging(wrongTransaction, service));
     BOOST_CHECK(activeMasternode_->status != ACTIVE_MASTERNODE_STARTED);
 }
 
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(willEnableMasternodeOnMatchingUTXO)
     CService service;
 
     AddDummyConfiguration(validTxIn, service);
-    BOOST_CHECK(activeMasternode_->EnableHotColdMasterNode(validTxIn, service));
+    BOOST_CHECK(activeMasternode_->EnablePinging(validTxIn, service));
     BOOST_CHECK(activeMasternode_->status == ACTIVE_MASTERNODE_STARTED);
 }
 
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(willNotEnableMasternodeOnMismatchedUTXO)
     CService service;
 
     AddDummyConfiguration(validTxIn, service);
-    BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(wrongTxIn, service));
+    BOOST_CHECK(! activeMasternode_->EnablePinging(wrongTxIn, service));
     BOOST_CHECK(activeMasternode_->status != ACTIVE_MASTERNODE_STARTED);
 }
 
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(willResetStatusToSyncInProgressWhenChainSyncIsRequired)
     CService service;
 
     AddDummyConfiguration(validTxIn, service);
-    BOOST_CHECK(activeMasternode_->EnableHotColdMasterNode(validTxIn, service));
+    BOOST_CHECK(activeMasternode_->EnablePinging(validTxIn, service));
     BOOST_CHECK(activeMasternode_->status == ACTIVE_MASTERNODE_STARTED);
 
     activeMasternode_->FlagBlockchainSyncRequired();

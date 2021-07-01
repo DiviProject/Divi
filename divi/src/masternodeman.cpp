@@ -101,14 +101,12 @@ void CMasternodeMan::ManageLocalMasternode()
     if (localActiveMasternode_.status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS)
         localActiveMasternode_.status = ACTIVE_MASTERNODE_INITIAL;
 
+    CMasternode* localMN = Find(localActiveMasternode_.pubKeyMasternode);
+    if (localMN != NULL && localActiveMasternode_.status == ACTIVE_MASTERNODE_INITIAL)
     {
-        CMasternode* localMN = Find(localActiveMasternode_.pubKeyMasternode);
-        if (localMN != NULL && localActiveMasternode_.status == ACTIVE_MASTERNODE_INITIAL)
-        {
-            Check(*localMN);
-            if (localMN->IsEnabled() && localMN->protocolVersion == PROTOCOL_VERSION)
-                localActiveMasternode_.EnablePinging(localMN->vin, localMN->addr);
-        }
+        Check(*localMN);
+        if (localMN->IsEnabled() && localMN->protocolVersion == PROTOCOL_VERSION)
+            localActiveMasternode_.EnablePinging(localMN->vin, localMN->addr);
     }
 
     if(localActiveMasternode_.VerifyStartedStatus())

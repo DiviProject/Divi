@@ -101,9 +101,9 @@ void CMasternodeMan::ManageLocalMasternode()
     if (localActiveMasternode_.status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS)
         localActiveMasternode_.status = ACTIVE_MASTERNODE_INITIAL;
 
-    if (localActiveMasternode_.status == ACTIVE_MASTERNODE_INITIAL) {
+    {
         CMasternode* pmn = Find(localActiveMasternode_.pubKeyMasternode);
-        if (pmn != NULL) {
+        if (pmn != NULL && localActiveMasternode_.status == ACTIVE_MASTERNODE_INITIAL) {
             Check(*pmn);
             if (pmn->IsEnabled() && pmn->protocolVersion == PROTOCOL_VERSION)
                 localActiveMasternode_.EnablePinging(pmn->vin, pmn->addr);

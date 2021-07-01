@@ -244,7 +244,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
             return;
         }
 
-        int nFirstBlock = chainTipHeight - (masternodeManager_.CountEnabled() * 1.25);
+        int nFirstBlock = chainTipHeight - CMasternodeSync::blockDepthUpToWhichToRequestMNWinners;
         if (winner.GetHeight() < nFirstBlock || winner.GetHeight() > chainTipHeight + 20) {
             LogPrint("mnpayments", "mnw - winner out of range - FirstBlock %d Height %d bestHeight %d\n", nFirstBlock, winner.GetHeight(), chainTipHeight);
             return;
@@ -539,9 +539,7 @@ void CMasternodePayments::updateChainTipHeight(const CBlockIndex* chainTip)
 void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
 {
     LOCK(cs_mapMasternodePayeeVotes);
-
-    constexpr int maximumBlockDepthToSearchForWinners = 200;
-    nCountNeeded = std::min(nCountNeeded,maximumBlockDepthToSearchForWinners);
+    nCountNeeded = std::min(nCountNeeded,CMasternodeSync::blockDepthUpToWhichToRequestMNWinners);
 
     int nInvCount = 0;
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();

@@ -56,6 +56,7 @@ private:
 
 
 public:
+    static constexpr int blockDepthUpToWhichToRequestMNWinners = 200;
     std::map<uint256, int> mapSeenSyncMNB;
     std::map<uint256, int> mapSeenSyncMNW;
 

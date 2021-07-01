@@ -34,10 +34,6 @@ class CDataStream;
 //
 class CMasternode
 {
-private:
-    // critical section to protect the inner data structures
-    mutable CCriticalSection cs;
-
 protected:
 
     /** Cached block hash of where the collateral output of this
@@ -108,8 +104,6 @@ public:
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
-        LOCK(cs);
-
         READWRITE(vin);
         READWRITE(addr);
         READWRITE(pubKeyCollateralAddress);

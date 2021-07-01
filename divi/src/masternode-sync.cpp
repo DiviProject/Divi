@@ -335,10 +335,6 @@ bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
     }
     return true;
 }
-uint32_t CMasternodeSync::masternodeCount() const
-{
-    return networkMessageManager_.masternodeCount();
-}
 
 bool CMasternodeSync::IsMasternodeListSynced() const
 {
@@ -361,8 +357,8 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
             }
             case SyncStatus::REQUEST_SYNC:
             {
-                int nMnCount = masternodeCount();
-                pnode->PushMessage("mnget", nMnCount); //sync payees
+                constexpr int blockDepthUpToWhichToRequestMNWinners = 200;
+                pnode->PushMessage("mnget", blockDepthUpToWhichToRequestMNWinners); //sync payees
                 totalSuccessivePeerSyncRequests++;
                 return false;
             }

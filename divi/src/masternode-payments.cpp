@@ -523,14 +523,12 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
         nHeight = activeChain_.Tip()->nHeight;
     }
 
-    //keep up to five cycles for historical sake
-    int nLimit = std::max(int(masternodeSynchronization_.masternodeCount() * 1.25), 1000);
-
+    constexpr int blockDepthToKeepWinnersAroundFor = 1000;
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
     while (it != mapMasternodePayeeVotes.end()) {
         CMasternodePaymentWinner winner = (*it).second;
 
-        if (nHeight - winner.GetHeight() > nLimit) {
+        if (nHeight - winner.GetHeight() > blockDepthToKeepWinnersAroundFor) {
             LogPrint("mnpayments", "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.GetHeight());
             masternodeSynchronization_.mapSeenSyncMNW.erase((*it).first);
             mapMasternodePayeeVotes.erase(it++);
@@ -549,8 +547,8 @@ void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
 {
     LOCK(cs_mapMasternodePayeeVotes);
 
-    int nCount = (masternodeManager_.CountEnabled() * 1.25);
-    if (nCountNeeded > nCount) nCountNeeded = nCount;
+    constexpr int maximumBlockDepthToSearchForWinners = 200;
+    nCountNeeded = std::min(nCountNeeded,maximumBlockDepthToSearchForWinners);
 
     int nInvCount = 0;
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();

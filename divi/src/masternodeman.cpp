@@ -113,6 +113,7 @@ void CMasternodeMan::ManageLocalMasternode()
     if(localActiveMasternode_.VerifyStartedStatus())
     {
         CMasternode* pmn = Find(localActiveMasternode_.vin);
+        assert(pmn == nullptr || pmn != nullptr);
         if(localActiveMasternode_.TryUpdatingPing(pmn))
         {
             RecordSeenPing(pmn->lastPing);

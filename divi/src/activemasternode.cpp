@@ -49,20 +49,20 @@ bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
     return true;
 }
 
-bool CActiveMasternode::TryUpdatingPing(CMasternode* pmn)
+bool CActiveMasternode::VerifyStartedStatus()
 {
     if (status != ACTIVE_MASTERNODE_STARTED) {
         // Set defaults
         status = ACTIVE_MASTERNODE_NOT_CAPABLE;
         notCapableReason = "";
 
-        LogPrintf("CActiveMasternode::TryUpdatingPing() - failed to activate masternode. Check the local wallet\n");
+        LogPrintf("%s - failed to activate masternode. Check the local wallet\n",__func__);
 
 
         if (!addressHasBeenSet_ && !GetLocal(service))
         {
             notCapableReason = "Can't detect external address. Please use the masternodeaddr configuration option.";
-            LogPrintf("CActiveMasternode::TryUpdatingPing() - not capable: %s\n", notCapableReason);
+            LogPrintf("%s - not capable: %s\n",__func__, notCapableReason);
             return false;
         }
 
@@ -70,28 +70,32 @@ bool CActiveMasternode::TryUpdatingPing(CMasternode* pmn)
         if(IsLocal(masternodeIPAddress))
         {
             notCapableReason = "Hot node, waiting for remote activation.";
-            LogPrintf("CActiveMasternode::TryUpdatingPing() - not capable: %s\n", notCapableReason);
+            LogPrintf("%s - not capable: %s\n",__func__, notCapableReason);
             return false;
         }
 
-        LogPrintf("CActiveMasternode::TryUpdatingPing() - Checking inbound connection to '%s'\n", service);
+        LogPrintf("%s - Checking inbound connection to '%s'\n",__func__, service);
         if (!CheckNodeIsAcceptingConnections(masternodeIPAddress))
         {
             notCapableReason = "Could not connect to " + service.ToString();
-            LogPrintf("CActiveMasternode::TryUpdatingPing() - not capable: %s\n", notCapableReason);
+            LogPrintf("%s - not capable: %s\n",__func__, notCapableReason);
             return false;
         }
 
         // Choose coins to use
         notCapableReason = "Could not find suitable coins!";
-        LogPrintf("CActiveMasternode::TryUpdatingPing() - %s\n", notCapableReason);
+        LogPrintf("%s - %s\n",__func__, notCapableReason);
         return false;
     }
+    return true;
+}
 
+bool CActiveMasternode::TryUpdatingPing(CMasternode* pmn)
+{
     //send to all peers
     std::string errorMessage ="";
     if (!UpdateLocalMasternodePing(pmn,errorMessage)) {
-        LogPrintf("CActiveMasternode::TryUpdatingPing() - Error on Ping: %s\n", errorMessage);
+        LogPrintf("%s - Error on Ping: %s\n",__func__, errorMessage);
         return false;
     }
     return true;
@@ -227,5 +231,5 @@ void CActiveMasternode::FlagBlockchainSyncRequired()
 {
     if(!fMasterNode_) return;
     status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
-    LogPrintf("CActiveMasternode::TryUpdatingPing() - %s\n", GetStatus());
+    LogPrintf("%s - %s\n",__func__, GetStatus());
 }

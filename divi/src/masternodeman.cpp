@@ -109,11 +109,15 @@ void CMasternodeMan::ManageLocalMasternode()
                 localActiveMasternode_.EnablePinging(pmn->vin, pmn->addr);
         }
     }
-    CMasternode* pmn = Find(localActiveMasternode_.vin);
-    if(localActiveMasternode_.TryUpdatingPing(pmn))
+
+    if(localActiveMasternode_.VerifyStartedStatus())
     {
-        RecordSeenPing(pmn->lastPing);
-        pmn->lastPing.Relay();
+        CMasternode* pmn = Find(localActiveMasternode_.vin);
+        if(localActiveMasternode_.TryUpdatingPing(pmn))
+        {
+            RecordSeenPing(pmn->lastPing);
+            pmn->lastPing.Relay();
+        }
     }
 }
 

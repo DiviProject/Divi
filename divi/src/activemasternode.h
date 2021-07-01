@@ -55,6 +55,7 @@ public:
     bool TryUpdatingPing(CMasternode* pmn);
     std::string GetStatus();
     void FlagBlockchainSyncRequired();
+    bool VerifyStartedStatus();
 
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnablePinging(CTxIn& vin, CService& addr);

@@ -181,8 +181,12 @@ ActiveMasternodeStatus GetActiveMasternodeStatus()
         result.activeMasternodeFound = true;
         return result;
     }
-    assert(!result.activeMasternodeFound);
-    return result;
+    else
+    {
+        result.statusMessage = activeMasternode.GetStatus();
+        result.activeMasternodeFound = false;
+        return result;
+    }
 }
 
 std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)

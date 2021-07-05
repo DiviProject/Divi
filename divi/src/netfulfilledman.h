@@ -8,6 +8,7 @@
 #include "netbase.h"
 #include "serialize.h"
 #include "sync.h"
+class I_Clock;
 
 // Fulfilled requests are used to prevent nodes from asking for the same data on sync
 // and from being banned for doing so too often.
@@ -20,11 +21,13 @@ private:
     //keep track of what node has/was asked for and when
     fulfilledreqmap_t mapFulfilledRequests;
     CCriticalSection cs_mapFulfilledRequests;
+    const I_Clock& clock_;
 
     void RemoveFulfilledRequest(const CService& addr, const std::string& strRequest);
 
 public:
-    CNetFulfilledRequestManager() {}
+    CNetFulfilledRequestManager();
+    CNetFulfilledRequestManager(const I_Clock& clock);
 
     ADD_SERIALIZE_METHODS;
 

@@ -53,12 +53,11 @@ private:
     const I_Clock& clock_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
-
+    std::map<uint256, int>& mapSeenSyncMNB;
+    std::map<uint256, int>& mapSeenSyncMNW;
 
 public:
     static constexpr int blockDepthUpToWhichToRequestMNWinners = 200;
-    std::map<uint256, int>& mapSeenSyncMNB;
-    std::map<uint256, int>& mapSeenSyncMNW;
 
     int64_t timestampOfLastMasternodeListUpdate;
     int64_t timestampOfLastMasternodeWinnerUpdate;

@@ -98,13 +98,11 @@ CMasternodeMan::CMasternodeMan(
 void CMasternodeMan::ManageLocalMasternode()
 {
     LogPrint("masternode","%s - Begin\n",__func__);
-    if (localActiveMasternode_.status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS)
-        localActiveMasternode_.status = ACTIVE_MASTERNODE_INITIAL;
 
     {
         LOCK(cs);
         CMasternode* localMN = Find(localActiveMasternode_.pubKeyMasternode);
-        if (localMN != NULL && localActiveMasternode_.status == ACTIVE_MASTERNODE_INITIAL)
+        if (localMN != NULL && localActiveMasternode_.IsPendingActivation())
         {
             Check(*localMN);
             if (localMN->IsEnabled() && localMN->protocolVersion == PROTOCOL_VERSION)

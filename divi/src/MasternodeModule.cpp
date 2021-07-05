@@ -461,11 +461,6 @@ void ThreadMasternodeBackgroundSync()
         }
         if(!IsBlockchainSynced())
         {
-            if(now >=  timestampOfLastReportedWaitOnBlockchainSync + MASTERNODE_PING_SECONDS)
-            {
-                timestampOfLastReportedWaitOnBlockchainSync = now;
-                activeMasternode.FlagBlockchainSyncRequired();
-            }
             continue;
         }
         masternodeSync.Process(regtest);

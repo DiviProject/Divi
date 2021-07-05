@@ -495,7 +495,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     RecordSeenPing(mnb.lastPing);
 
     // if it matches our Masternode privkey, then we've been remotely activated
-    if (mnb.pubKeyMasternode == localActiveMasternode_.pubKeyMasternode && mnb.protocolVersion == PROTOCOL_VERSION) {
+    if (isOurBroadcast && mnb.protocolVersion == PROTOCOL_VERSION) {
         localActiveMasternode_.EnablePinging(mnb.vin, mnb.addr);
     }
 

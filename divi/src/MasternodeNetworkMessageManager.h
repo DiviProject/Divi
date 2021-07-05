@@ -35,6 +35,8 @@ private:
     void clearExpiredMasternodeBroadcasts(const COutPoint& collateral, CMasternodeSync& masternodeSynchronization);
     void clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral);
 public:
+    std::map<uint256, int> mapSeenSyncMNB;
+
     mutable CCriticalSection cs;
     // critical section to protect the inner data structures specifically on messaging
     mutable CCriticalSection cs_process_message;

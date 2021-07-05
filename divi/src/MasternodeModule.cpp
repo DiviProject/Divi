@@ -433,11 +433,9 @@ void ThreadMasternodeBackgroundSync()
     RenameThread("divi-obfuscation");
     static const bool regtest = Params().NetworkID() == CBaseChainParams::REGTEST;
 
-    int64_t timestampOfLastReportedWaitOnBlockchainSync = 0;
     int64_t nTimeManageStatus = 0;
     int64_t nTimeConnections = 0;
 
-    CActiveMasternode& activeMasternode = mnModule.getActiveMasternode();
     CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     CMasternodeMan& mnodeman = mnModule.getMasternodeManager();
     CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();

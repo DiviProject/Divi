@@ -523,7 +523,7 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
 
         if (nHeight - winner.GetHeight() > blockDepthToKeepWinnersAroundFor) {
             LogPrint("mnpayments", "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.GetHeight());
-            masternodeSynchronization_.mapSeenSyncMNW.erase((*it).first);
+            networkMessageManager_.mapSeenSyncMNW.erase((*it).first);
             mapMasternodePayeeVotes.erase(it++);
             mapMasternodeBlocks.erase(winner.GetScoreHash());
         } else {

@@ -31,8 +31,8 @@ private:
     void clearTimedOutMasternodeListRequestsToPeers();
     void clearTimedOutMasternodeEntryRequests();
     void clearTimedOutMasternodePings();
-    void clearTimedOutMasternodeBroadcasts(CMasternodeSync& masternodeSynchronization);
-    void clearExpiredMasternodeBroadcasts(const COutPoint& collateral, CMasternodeSync& masternodeSynchronization);
+    void clearTimedOutMasternodeBroadcasts();
+    void clearExpiredMasternodeBroadcasts(const COutPoint& collateral);
     void clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral);
 public:
     std::map<uint256, int> mapSeenSyncMNB;
@@ -47,7 +47,7 @@ public:
 
     uint32_t masternodeCount() const;
     const std::vector<CMasternode>& GetFullMasternodeVector() const;
-    void clearTimedOutAndExpiredRequests(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval);
+    void clearTimedOutAndExpiredRequests(bool forceExpiredRemoval);
     bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);
     bool recordDsegUpdateAttempt(const CAddress& peerAddress);
     bool recordMasternodeEntryRequestAttempt(const COutPoint& masternodeCollateral);

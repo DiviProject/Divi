@@ -413,5 +413,5 @@ void CMasternodeSync::AskForMN(CNode* pnode, const CTxIn& vin) const
 
 void CMasternodeSync::ClearTimedOutAndExpiredRequests(bool forceExpiredRemoval)
 {
-    networkMessageManager_.clearTimedOutAndExpiredRequests(*this,forceExpiredRemoval);
+    networkMessageManager_.clearTimedOutAndExpiredRequests(forceExpiredRemoval);
 }

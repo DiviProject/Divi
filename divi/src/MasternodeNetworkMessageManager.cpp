@@ -33,7 +33,7 @@ const std::vector<CMasternode>& MasternodeNetworkMessageManager::GetFullMasterno
     return masternodes;
 }
 
-void MasternodeNetworkMessageManager::clearTimedOutAndExpiredRequests(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
+void MasternodeNetworkMessageManager::clearTimedOutAndExpiredRequests(bool forceExpiredRemoval)
 {
    LOCK(cs);
 
@@ -48,7 +48,7 @@ void MasternodeNetworkMessageManager::clearTimedOutAndExpiredRequests(CMasternod
         {
             LogPrint("masternode", "CMasternodeMan: Removing inactive Masternode %s - %i now\n", (*it).vin.prevout.hash, masternodeCount() - 1);
 
-            clearExpiredMasternodeBroadcasts(it->vin.prevout,masternodeSynchronization);
+            clearExpiredMasternodeBroadcasts(it->vin.prevout);
             clearExpiredMasternodeEntryRequests(it->vin.prevout);
             it = masternodes.erase(it);
         } else {
@@ -59,7 +59,7 @@ void MasternodeNetworkMessageManager::clearTimedOutAndExpiredRequests(CMasternod
     clearTimedOutMasternodeListRequestsFromPeers();
     clearTimedOutMasternodeListRequestsToPeers();
     clearTimedOutMasternodeEntryRequests();
-    clearTimedOutMasternodeBroadcasts(masternodeSynchronization);
+    clearTimedOutMasternodeBroadcasts();
     clearTimedOutMasternodePings();
 }
 
@@ -112,7 +112,7 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodePings()
     }
 }
 
-void MasternodeNetworkMessageManager::clearTimedOutMasternodeBroadcasts(CMasternodeSync& masternodeSynchronization)
+void MasternodeNetworkMessageManager::clearTimedOutMasternodeBroadcasts()
 {
     std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
     while (it3 != mapSeenMasternodeBroadcast.end()) {
@@ -124,7 +124,7 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodeBroadcasts(CMastern
         }
     }
 }
-void MasternodeNetworkMessageManager::clearExpiredMasternodeBroadcasts(const COutPoint& collateral, CMasternodeSync& masternodeSynchronization)
+void MasternodeNetworkMessageManager::clearExpiredMasternodeBroadcasts(const COutPoint& collateral)
 {
     std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
     while (it3 != mapSeenMasternodeBroadcast.end()) {

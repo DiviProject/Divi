@@ -145,6 +145,8 @@ extern json_spirit::Value listmasternodeconf(const json_spirit::Array& params, b
 extern json_spirit::Value getmasternodestatus(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getmasternodewinners(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getmasternodescores(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value importmnbroadcast(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listmnbroadcasts(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value getinfo(const json_spirit::Array& params, bool fHelp); // in rpcmisc.cpp
 extern json_spirit::Value mnsync(const json_spirit::Array& params, bool fHelp);
@@ -476,6 +478,8 @@ static const CRPCCommand vRPCCommands[] =
         {"divi", "getmasternodestatus", &getmasternodestatus, true, true, false},
         {"divi", "getmasternodewinners", &getmasternodewinners, true, true, false},
         {"divi", "getmasternodescores", &getmasternodescores, true, true, false},
+        {"divi", "importmnbroadcast", &importmnbroadcast, true, false, false},
+        {"divi", "listmnbroadcasts", &listmnbroadcasts, true, false, false},
         //{"divi", "mnbudget", &mnbudget, true, true, false},
         //{"divi", "preparebudget", &preparebudget, true, true, false},
         //{"divi", "submitbudget", &submitbudget, true, true, false},

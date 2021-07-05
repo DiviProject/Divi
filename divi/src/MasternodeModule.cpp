@@ -28,6 +28,7 @@
 #include <netfulfilledman.h>
 #include <spork.h>
 #include <keystore.h>
+#include <StoredMasternodeBroadcasts.h>
 
 #include <blockmap.h>
 #include <ThreadManagementHelpers.h>
@@ -82,6 +83,8 @@ MasternodeModule::MasternodeModule(
 
 MasternodeModule::~MasternodeModule()
 {
+    /* The order of destruction matters, so we explicitly reset
+       the unique_ptr's manually here.  */
     masternodePayments_.reset();
     mnodeman_.reset();
     masternodeSync_.reset();
@@ -124,6 +127,19 @@ CMasternodeSync& MasternodeModule::getMasternodeSynchronization() const
 {
     return *masternodeSync_;
 }
+StoredMasternodeBroadcasts& MasternodeModule::getStoredBroadcasts() const
+{
+    /* We use lazy initialisation of the stored broadcasts instance, since it
+       relies on GetDataDir() and thus needs the parameters to be already
+       parsed when constructed.  */
+    if (storedBroadcasts_ == nullptr)
+    {
+        const_cast<MasternodeModule*>(this)->storedBroadcasts_.reset(
+            new StoredMasternodeBroadcasts("mnbroadcasts.dat"));
+    }
+    return *storedBroadcasts_;
+}
+
  bool MasternodeModule::localNodeIsAMasternode() const
  {
      return fMasterNode_;

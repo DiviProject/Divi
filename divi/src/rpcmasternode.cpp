@@ -24,6 +24,7 @@
 #include <MasternodeHelpers.h>
 #include <version.h>
 #include <RpcMasternodeFeatures.h>
+#include <StoredMasternodeBroadcasts.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
@@ -636,4 +637,59 @@ Value getmasternodewinners (const Array& params, bool fHelp)
 Value getmasternodescores(const Array& params, bool fHelp)
 {
 	throw std::runtime_error("getmasternodescores is deprecated!  masternode payments always rely upon votes not current scores");
+}
+
+Value importmnbroadcast(const Array& params, bool fHelp)
+{
+     if (fHelp || params.size() != 1)
+        throw std::runtime_error(
+                "importmnbroadcast \"broadcast_hex\"\n"
+                "\nImport a pre-signed masternode broadcast into the wallet.\n"
+                "\nArguments:\n"
+                "1. broadcast_hex    (hex, required) hex representation of broadcast data\n"
+                "\nResult:\n"
+                "true|false          (boolean) true on success\n");
+
+    std::vector<unsigned char> hex = ParseHex(params[0].get_str());
+    CDataStream ss(hex,SER_NETWORK,PROTOCOL_VERSION);
+
+    CMasternodeBroadcast mnb;
+    ss >> mnb;
+
+    return GetMasternodeModule().getStoredBroadcasts().AddBroadcast(mnb);
+}
+
+Value listmnbroadcasts(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 0)
+        throw std::runtime_error(
+            "listmnbroadcasts\n"
+            "\nLists pre-signed masternode broadcasts stored in the wallet\n"
+
+            "\nResult:\n"
+            "[\n"
+            "  {\n"
+            "    \"txhash\": \"hash\",    (string) Collateral transaction hash\n"
+            "    \"outidx\": n,         (numeric) Collateral transaction output index\n"
+            "    \"broadcast\": \"hex\"   (string) Stored broadcast data as hex string\n"
+            "  }, ...\n"
+            "]\n");
+
+    Array res;
+
+    for (const auto& entry : GetMasternodeModule().getStoredBroadcasts().GetMap())
+      {
+        const auto& mnb = entry.second;
+
+        CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
+        ss << mnb;
+
+        Object cur;
+        cur.emplace_back("txhash", mnb.vin.prevout.hash.GetHex());
+        cur.emplace_back("outidx", static_cast<int>(mnb.vin.prevout.n));
+        cur.emplace_back("broadcast", HexStr(ss.str()));
+        res.emplace_back(cur);
+      }
+
+    return res;
 }

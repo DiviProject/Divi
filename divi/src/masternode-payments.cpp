@@ -33,7 +33,6 @@
 #include <NodeStateRegistry.h>
 #include <Node.h>
 
-extern CCriticalSection cs_main;
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED = 6;
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL = 10;
 constexpr int MN_WINNER_MINIMUM_AGE = 8000;    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
@@ -147,7 +146,6 @@ CMasternodePayments::CMasternodePayments(
     ): rankingCache(new RankingCache)
     , nSyncedFromPeer(0)
     , nLastBlockHeight(0)
-    , chainTipHeight(0)
     , networkFulfilledRequestManager_(networkFulfilledRequestManager)
     , paymentData_(paymentData)
     , networkMessageManager_(networkMessageManager)
@@ -238,6 +236,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
 
         if (pfrom->nVersion < ActiveProtocol()) return;
 
+        int chainTipHeight = activeChain_.Height();
         if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
             LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), chainTipHeight);
             masternodeSynchronization_.RecordMasternodeWinnerUpdate(winner.GetHash());
@@ -364,12 +363,7 @@ bool CMasternodePayments::IsScheduled(const CScript mnpayee, int nNotBlockHeight
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    CBlockIndex* tip = nullptr;
-    {
-        TRY_LOCK(cs_main, locked);
-        if (!locked) return false;
-        tip = activeChain_.Tip();
-    }
+    CBlockIndex* tip = activeChain_.Tip();
     if (tip == nullptr)
         return false;
 
@@ -509,12 +503,7 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
 {
     LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
 
-    int nHeight;
-    {
-        TRY_LOCK(cs_main, locked);
-        if (!locked || activeChain_.Tip() == NULL) return;
-        nHeight = activeChain_.Tip()->nHeight;
-    }
+    int nHeight = activeChain_.Height();
 
     constexpr int blockDepthToKeepWinnersAroundFor = 1000;
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
@@ -532,16 +521,13 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
     }
 }
 
-void CMasternodePayments::updateChainTipHeight(const CBlockIndex* chainTip)
-{
-    chainTipHeight = chainTip->nHeight;
-}
 void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
 {
     LOCK(cs_mapMasternodePayeeVotes);
     nCountNeeded = std::min(nCountNeeded,CMasternodeSync::blockDepthUpToWhichToRequestMNWinners);
 
     int nInvCount = 0;
+    int chainTipHeight = activeChain_.Height();
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
     while (it != mapMasternodePayeeVotes.end()) {
         CMasternodePaymentWinner winner = (*it).second;

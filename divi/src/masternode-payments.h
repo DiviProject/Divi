@@ -44,7 +44,6 @@ private:
 
     int nSyncedFromPeer;
     int nLastBlockHeight;
-    int chainTipHeight;
     CNetFulfilledRequestManager& networkFulfilledRequestManager_;
     MasternodePaymentData& paymentData_;
     MasternodeNetworkMessageManager& networkMessageManager_;
@@ -66,7 +65,6 @@ private:
 public:
     static const int MNPAYMENTS_SIGNATURES_REQUIRED;
     static const int MNPAYMENTS_SIGNATURES_TOTAL;
-    void updateChainTipHeight(const CBlockIndex* pindex);
 
     CMasternodePayments(
         CNetFulfilledRequestManager& networkFulfilledRequestManager,

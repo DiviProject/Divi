@@ -38,6 +38,7 @@ CMasternodeSync::CMasternodeSync(
     , clock_(clock)
     , networkMessageManager_(networkMessageManager)
     , masternodePaymentData_(masternodePaymentData)
+    , mapSeenSyncMNB(networkMessageManager_.mapSeenSyncMNB)
     , timestampOfLastMasternodeListUpdate(0)
     , timestampOfLastMasternodeWinnerUpdate(0)
     , timestampOfLastFailedSync(0)

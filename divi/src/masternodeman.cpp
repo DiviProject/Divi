@@ -102,24 +102,24 @@ void CMasternodeMan::ManageLocalMasternode()
         localActiveMasternode_.status = ACTIVE_MASTERNODE_INITIAL;
 
     {
-    LOCK(cs);
-    CMasternode* localMN = Find(localActiveMasternode_.pubKeyMasternode);
-    if (localMN != NULL && localActiveMasternode_.status == ACTIVE_MASTERNODE_INITIAL)
-    {
-        Check(*localMN);
-        if (localMN->IsEnabled() && localMN->protocolVersion == PROTOCOL_VERSION)
-            localActiveMasternode_.EnablePinging(localMN->vin, localMN->addr);
-    }
-
-    if(localActiveMasternode_.VerifyStartedStatus())
-    {
-        assert(localMN == nullptr || localMN != nullptr);
-        if(localActiveMasternode_.TryUpdatingPing(localMN))
+        LOCK(cs);
+        CMasternode* localMN = Find(localActiveMasternode_.pubKeyMasternode);
+        if (localMN != NULL && localActiveMasternode_.status == ACTIVE_MASTERNODE_INITIAL)
         {
-            RecordSeenPing(localMN->lastPing);
-            localMN->lastPing.Relay();
+            Check(*localMN);
+            if (localMN->IsEnabled() && localMN->protocolVersion == PROTOCOL_VERSION)
+                localActiveMasternode_.EnablePinging(localMN->vin, localMN->addr);
         }
-    }
+
+        if(localActiveMasternode_.VerifyStartedStatus())
+        {
+            assert(localMN == nullptr || localMN != nullptr);
+            if(localActiveMasternode_.TryUpdatingPing(localMN))
+            {
+                RecordSeenPing(localMN->lastPing);
+                localMN->lastPing.Relay();
+            }
+        }
     }
 }
 

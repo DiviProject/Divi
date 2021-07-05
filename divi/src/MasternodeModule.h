@@ -27,6 +27,7 @@ class I_PeerSyncQueryService;
 class I_Clock;
 class CNetFulfilledRequestManager;
 class CAddrMan;
+class StoredMasternodeBroadcasts;
 
 class MasternodeModule
 {
@@ -42,6 +43,7 @@ private:
     std::unique_ptr<CMasternodeSync> masternodeSync_;
     std::unique_ptr<CMasternodeMan> mnodeman_;
     std::unique_ptr<CMasternodePayments> masternodePayments_;
+    std::unique_ptr<StoredMasternodeBroadcasts> storedBroadcasts_;
 public:
     MasternodeModule(
         const I_Clock& clock,
@@ -59,6 +61,7 @@ public:
     CActiveMasternode& getActiveMasternode() const;
     CMasternodePayments& getMasternodePayments() const;
     CMasternodeSync& getMasternodeSynchronization() const;
+    StoredMasternodeBroadcasts& getStoredBroadcasts() const;
     bool localNodeIsAMasternode() const;
     void designateLocalNodeAsMasternode();
 };

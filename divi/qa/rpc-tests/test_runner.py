@@ -94,6 +94,7 @@ BASE_SCRIPTS = [
     'MnAreSafeToRestart.py',
     'mncollateral.py',
     'mnoperation.py',
+    'mnstoredbroadcast.py',
     'mnvaults.py',
     'multisig.py',
     'NoBlocksForLongTime.py',

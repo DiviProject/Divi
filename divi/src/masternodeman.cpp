@@ -101,6 +101,8 @@ void CMasternodeMan::ManageLocalMasternode()
     if (localActiveMasternode_.status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS)
         localActiveMasternode_.status = ACTIVE_MASTERNODE_INITIAL;
 
+    {
+    LOCK(cs);
     CMasternode* localMN = Find(localActiveMasternode_.pubKeyMasternode);
     if (localMN != NULL && localActiveMasternode_.status == ACTIVE_MASTERNODE_INITIAL)
     {
@@ -117,6 +119,7 @@ void CMasternodeMan::ManageLocalMasternode()
             RecordSeenPing(localMN->lastPing);
             localMN->lastPing.Relay();
         }
+    }
     }
 }
 

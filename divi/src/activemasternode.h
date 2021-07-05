@@ -56,6 +56,7 @@ public:
     std::string GetStatus();
     void FlagBlockchainSyncRequired();
     bool VerifyStartedStatus();
+    bool IsPendingActivation() const;
 
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnablePinging(CTxIn& vin, CService& addr);

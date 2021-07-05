@@ -101,6 +101,13 @@ bool CActiveMasternode::TryUpdatingPing(CMasternode* pmn)
     return true;
 }
 
+bool CActiveMasternode::IsPendingActivation() const
+{
+    return status == ACTIVE_MASTERNODE_INITIAL ||
+        status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS ||
+        status == ACTIVE_MASTERNODE_NOT_CAPABLE;
+}
+
 std::string CActiveMasternode::GetStatus()
 {
     switch (status) {

@@ -4,7 +4,7 @@
 
 #include "chainparams.h"
 #include "netfulfilledman.h"
-#include "utiltime.h"
+#include <I_Clock.h>
 
 namespace
 {
@@ -23,11 +23,31 @@ CService SquashAddress(const CService& addr)
 
 } // anonymous namespace
 
+class FixedTimeClock final: public I_Clock
+{
+public:
+    virtual int64_t getTime() const
+    {
+        return 0;
+    }
+};
+static FixedTimeClock dummyClock;
+
+CNetFulfilledRequestManager::CNetFulfilledRequestManager(): clock_(dummyClock)
+{
+}
+
+CNetFulfilledRequestManager::CNetFulfilledRequestManager(
+    const I_Clock& clock
+    ):clock_(clock)
+{
+}
+
 void CNetFulfilledRequestManager::AddFulfilledRequest(const CService& addr, const std::string& strRequest)
 {
     LOCK(cs_mapFulfilledRequests);
     const auto addrSquashed = SquashAddress(addr);
-    mapFulfilledRequests[addrSquashed][strRequest] = GetTime() + Params().FulfilledRequestExpireTime();
+    mapFulfilledRequests[addrSquashed][strRequest] = clock_.getTime() + Params().FulfilledRequestExpireTime();
 }
 
 bool CNetFulfilledRequestManager::HasFulfilledRequest(const CService& addr, const std::string& strRequest)
@@ -38,7 +58,7 @@ bool CNetFulfilledRequestManager::HasFulfilledRequest(const CService& addr, cons
 
     return  it != mapFulfilledRequests.end() &&
             it->second.find(strRequest) != it->second.end() &&
-            it->second[strRequest] > GetTime();
+            it->second[strRequest] > clock_.getTime();
 }
 
 void CNetFulfilledRequestManager::RemoveFulfilledRequest(const CService& addr, const std::string& strRequest)
@@ -56,7 +76,7 @@ void CNetFulfilledRequestManager::CheckAndRemove()
 {
     LOCK(cs_mapFulfilledRequests);
 
-    int64_t now = GetTime();
+    int64_t now = clock_.getTime();
     fulfilledreqmap_t::iterator it = mapFulfilledRequests.begin();
 
     while(it != mapFulfilledRequests.end()) {

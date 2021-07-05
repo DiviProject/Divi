@@ -69,7 +69,7 @@ MasternodeModule::MasternodeModule(
     ): fMasterNode_(false)
     , activeChain_(activeChain)
     , blockIndexByHash_(blockIndexByHash)
-    , networkFulfilledRequestManager_(new CNetFulfilledRequestManager)
+    , networkFulfilledRequestManager_(new CNetFulfilledRequestManager(clock))
     , networkMessageManager_( new MasternodeNetworkMessageManager)
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)

@@ -434,15 +434,13 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
         updatePing = true;
     }
 
+    const auto mnResult = RelayMasternodeBroadcast(params[0].get_str(), signature, updatePing);
+
     Object result;
-    if(RelayMasternodeBroadcast(params[0].get_str(), signature, updatePing))
-    {
-        result.push_back(Pair("status", "success"));
-    }
-    else
-    {
-        result.push_back(Pair("status","failed"));
-    }
+    result.emplace_back("status", mnResult.status ? "success" : "failed");
+    if(!mnResult.status)
+        result.emplace_back("error", mnResult.errorMessage);
+
     return result;
 }
 

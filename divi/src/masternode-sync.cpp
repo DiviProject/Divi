@@ -156,7 +156,7 @@ void CMasternodeSync::ProcessDSegUpdate(CNode* pfrom,const std::string& strComma
         if(syncCode != MasternodeSyncCode::MASTERNODE_SYNC_LIST && syncCode != MasternodeSyncCode::MASTERNODE_SYNC_MNW) return;
         if (syncCode != currentMasternodeSyncStatus) return;
 
-        const std::string requestName = syncCodeNameByCodeValue[syncCode]+std::string("-complete");
+        const std::string requestName = syncCodeNameByCodeValue[syncCode];
         if(networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr,requestName)) return;
         if(!networkFulfilledRequestManager_.HasPendingRequest(pfrom->addr,requestName))
         {
@@ -300,8 +300,6 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
 
     if (networkFulfilledRequestManager_.HasFulfilledRequest(pnode->addr, assetType)) return SyncStatus::SUCCESS;
     if (networkFulfilledRequestManager_.HasPendingRequest(pnode->addr, assetType)) return SyncStatus::WAITING_FOR_SYNC;
-    networkFulfilledRequestManager_.AddFulfilledRequest(pnode->addr, assetType);
-    networkFulfilledRequestManager_.AddPendingRequest(pnode->addr,assetType+std::string("-complete"));
 
     // timeout
     if (lastUpdate == 0 &&
@@ -316,6 +314,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
     }
 
     if (totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD * 3) return SyncStatus::FAIL;
+    networkFulfilledRequestManager_.AddPendingRequest(pnode->addr, assetType);
     return SyncStatus::REQUEST_SYNC;
 }
 bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)

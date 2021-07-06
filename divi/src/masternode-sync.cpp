@@ -27,6 +27,12 @@
 static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
 
+static std::map<int,std::string> syncCodeNameByCodeValue =
+    {
+        {MasternodeSyncCode::MASTERNODE_SYNC_LIST,std::string("mnsync")},
+        {MasternodeSyncCode::MASTERNODE_SYNC_MNW,std::string("mnwsync")}
+    };
+
 CMasternodeSync::CMasternodeSync(
     CNetFulfilledRequestManager& networkFulfilledRequestManager,
     const I_PeerSyncQueryService& peerSyncService,

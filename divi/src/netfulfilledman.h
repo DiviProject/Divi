@@ -23,9 +23,8 @@ private:
     CCriticalSection cs_mapFulfilledRequests;
     const I_Clock& clock_;
 
-    void RemoveFulfilledRequest(const CService& addr, const std::string& strRequest);
-
 public:
+    void RemoveFulfilledRequest(const CService& addr, const std::string& strRequest);
     CNetFulfilledRequestManager();
     CNetFulfilledRequestManager(const I_Clock& clock);
 

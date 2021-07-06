@@ -158,6 +158,11 @@ void CMasternodeSync::ProcessDSegUpdate(CNode* pfrom,const std::string& strComma
 
         const std::string requestName = syncCodeNameByCodeValue[syncCode]+std::string("-complete");
         if(networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr,requestName)) return;
+        if(!networkFulfilledRequestManager_.HasPendingRequest(pfrom->addr,requestName))
+        {
+            pfrom->GetNodeState()->ApplyMisbehavingPenalty(34);
+        }
+
         //this means we will receive no further communication
         switch (syncCode) {
         case (MasternodeSyncCode::MASTERNODE_SYNC_LIST):
@@ -172,7 +177,7 @@ void CMasternodeSync::ProcessDSegUpdate(CNode* pfrom,const std::string& strComma
             break;
         }
 
-        networkFulfilledRequestManager_.AddFulfilledRequest(pfrom->addr,requestName);
+        networkFulfilledRequestManager_.FulfillPendingRequest(pfrom->addr,requestName);
 
         LogPrint("masternode", "%s - ssc - got inventory count %d %d\n",__func__, syncCode, itemsSynced);
     }
@@ -294,8 +299,9 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
     }
 
     if (networkFulfilledRequestManager_.HasFulfilledRequest(pnode->addr, assetType)) return SyncStatus::SUCCESS;
+    if (networkFulfilledRequestManager_.HasPendingRequest(pnode->addr, assetType)) return SyncStatus::WAITING_FOR_SYNC;
     networkFulfilledRequestManager_.AddFulfilledRequest(pnode->addr, assetType);
-    networkFulfilledRequestManager_.RemoveFulfilledRequest(pnode->addr,assetType+std::string("-complete"));
+    networkFulfilledRequestManager_.AddPendingRequest(pnode->addr,assetType+std::string("-complete"));
 
     // timeout
     if (lastUpdate == 0 &&
@@ -323,7 +329,7 @@ bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
             {
                 return false;
             }
-            case SyncStatus::SUCCESS: case SyncStatus::SYNC_STAGE_COMPLETE:
+            case SyncStatus::SUCCESS: case SyncStatus::SYNC_STAGE_COMPLETE: case SyncStatus::WAITING_FOR_SYNC:
             {
                 return true;
             }
@@ -360,7 +366,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
             {
                 return false;
             }
-            case SyncStatus::SUCCESS: case SyncStatus::SYNC_STAGE_COMPLETE:
+            case SyncStatus::SUCCESS: case SyncStatus::SYNC_STAGE_COMPLETE: case SyncStatus::WAITING_FOR_SYNC:
             {
                 return true;
             }

@@ -31,6 +31,7 @@ enum SyncStatus
     FAIL,
     SYNC_STAGE_COMPLETE,
     SUCCESS,
+    WAITING_FOR_SYNC,
     REQUEST_SYNC,
 };
 

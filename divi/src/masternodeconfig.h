@@ -12,7 +12,9 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
+class COutPoint;
 class Settings;
+
 class CMasternodeConfig
 {
 public:
@@ -52,8 +54,6 @@ public:
             return outputIndex;
         }
 
-        bool castOutputIndex(int& n);
-
         void setOutputIndex(const std::string& outputIndex)
         {
             this->outputIndex = outputIndex;
@@ -88,6 +88,10 @@ public:
         {
             this->ip = ip;
         }
+
+        /** Tries to parse the entry's input reference into an outpoint.
+         *  Returns true on success.  */
+        bool parseInputReference(COutPoint& outp) const;
     };
 
     CMasternodeConfig();

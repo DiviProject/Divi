@@ -20,7 +20,8 @@ private:
 
     //keep track of what node has/was asked for and when
     fulfilledreqmap_t mapFulfilledRequests;
-    CCriticalSection cs_mapFulfilledRequests;
+    fulfilledreqmap_t pendingRequests;
+    mutable CCriticalSection cs_mapFulfilledRequests;
     const I_Clock& clock_;
 
 public:
@@ -38,6 +39,9 @@ public:
 
     void AddFulfilledRequest(const CService& addr, const std::string& strRequest);
     bool HasFulfilledRequest(const CService& addr, const std::string& strRequest);
+    void AddPendingRequest(const CService& addr, const std::string& strRequest);
+    void FulfillPendingRequest(const CService& addr, const std::string& strRequest);
+    bool HasPendingRequest(const CService& addr, const std::string& strRequest) const;
 
     void CheckAndRemove();
     void Clear();

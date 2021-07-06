@@ -10,8 +10,26 @@
 #include <Settings.h>
 #include <DataDirectory.h>
 #include <Logging.h>
+#include <primitives/transaction.h>
 
 // clang-format on
+
+bool CMasternodeConfig::CMasternodeEntry::parseInputReference(COutPoint& outp) const
+{
+    outp.hash = uint256S(getTxHash());
+
+    try {
+        outp.n = std::stoi(getOutputIndex().c_str());
+    } catch (const std::exception& e) {
+        LogPrintf("%s: %s on getOutputIndex\n", __func__, e.what());
+        return false;
+    }
+
+    return true;
+}
+
+namespace
+{
 
 boost::filesystem::path GetMasternodeConfigFile(const Settings& settings)
 {
@@ -19,6 +37,8 @@ boost::filesystem::path GetMasternodeConfigFile(const Settings& settings)
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir() / pathConfigFile;
     return pathConfigFile;
 }
+
+} // anonymous namespace
 
 void CMasternodeConfig::add(const std::string& alias, const std::string& ip, const std::string& privKey,
                             const std::string& txHash, const std::string& outputIndex)
@@ -73,19 +93,6 @@ bool CMasternodeConfig::read(const Settings& settings, std::string& strErr)
     streamConfig.close();
     return true;
 }
-
-bool CMasternodeConfig::CMasternodeEntry::castOutputIndex(int &n)
-{
-    try {
-        n = std::stoi(outputIndex);
-    } catch (const std::exception e) {
-        LogPrintf("%s: %s on getOutputIndex\n", __func__, e.what());
-        return false;
-    }
-
-    return true;
-}
-
 
 CMasternodeConfig::CMasternodeConfig(
     ): entries()

@@ -41,21 +41,6 @@ static bool GetVinAndKeysFromOutput(const CKeyStore& walletKeyStore, CScript pub
     return true;
 }
 
-static bool ParseInputReference(std::string strTxHash, std::string strOutputIndex, CTxIn& txinRet)
-{
-    uint256 txHash = uint256S(strTxHash);
-
-    int nOutputIndex;
-    try {
-        nOutputIndex = std::stoi(strOutputIndex.c_str());
-    } catch (const std::exception& e) {
-        LogPrintf("%s: %s on strOutputIndex\n", __func__, e.what());
-        return false;
-    }
-    txinRet = CTxIn(txHash,nOutputIndex);
-    return true;
-}
-
 namespace
 {
 
@@ -130,22 +115,19 @@ bool createArgumentsFromConfig(
     std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
     MasternodeTier& nMasternodeTier)
 {
-    std::string strService = configEntry.getIp();
-    std::string strKeyMasternode = configEntry.getPrivKey();
-    std::string strTxHash = configEntry.getTxHash();
-    std::string strOutputIndex = configEntry.getOutputIndex();
+    const std::string strService = configEntry.getIp();
+    const std::string strKeyMasternode = configEntry.getPrivKey();
     CTransaction fundingTx;
     uint256 blockHash;
 
     if (fImporting || fReindex) return false;
 
-    if(!ParseInputReference(strTxHash,strOutputIndex,txin))
-    {
+    if(!configEntry.parseInputReference(txin.prevout))
         return false;
-    }
+
     if(!GetTransaction(txin.prevout.hash,fundingTx,blockHash,true))
     {
-        strErrorRet = strprintf("Could not find txin %s:%s for masternode", strTxHash, strOutputIndex);
+        strErrorRet = strprintf("Could not find txin %s for masternode", txin.prevout.ToString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }

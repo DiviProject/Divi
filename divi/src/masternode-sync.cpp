@@ -153,26 +153,26 @@ void CMasternodeSync::ProcessDSegUpdate(CNode* pfrom,const std::string& strComma
 
 
         if (currentMasternodeSyncStatus >= MasternodeSyncCode::MASTERNODE_SYNC_FINISHED) return;
+        if(syncCode != MasternodeSyncCode::MASTERNODE_SYNC_LIST && syncCode != MasternodeSyncCode::MASTERNODE_SYNC_MNW) return;
+        if (syncCode != currentMasternodeSyncStatus) return;
 
+        const std::string requestName = syncCodeNameByCodeValue[syncCode]+std::string("-complete");
+        if(networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr,requestName)) return;
         //this means we will receive no further communication
         switch (syncCode) {
         case (MasternodeSyncCode::MASTERNODE_SYNC_LIST):
-            if (syncCode != currentMasternodeSyncStatus) return;
-            if(itemsSynced == 0) {
-                timestampOfLastMasternodeListUpdate = clock_.getTime();
-            }
+            timestampOfLastMasternodeListUpdate = clock_.getTime();
             nominalNumberOfMasternodeBroadcastsReceived += itemsSynced;
             fulfilledMasternodeListSyncRequests++;
             break;
         case (MasternodeSyncCode::MASTERNODE_SYNC_MNW):
-            if (syncCode != currentMasternodeSyncStatus) return;
-            if(itemsSynced == 0) {
-                timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
-            }
+            timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
             nominalNumberOfMasternodeWinnersReceived += itemsSynced;
             fulfilledMasternodeWinnerSyncRequests++;
             break;
         }
+
+        networkFulfilledRequestManager_.AddFulfilledRequest(pfrom->addr,requestName);
 
         LogPrint("masternode", "%s - ssc - got inventory count %d %d\n",__func__, syncCode, itemsSynced);
     }
@@ -295,6 +295,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
 
     if (networkFulfilledRequestManager_.HasFulfilledRequest(pnode->addr, assetType)) return SyncStatus::SUCCESS;
     networkFulfilledRequestManager_.AddFulfilledRequest(pnode->addr, assetType);
+    networkFulfilledRequestManager_.RemoveFulfilledRequest(pnode->addr,assetType+std::string("-complete"));
 
     // timeout
     if (lastUpdate == 0 &&

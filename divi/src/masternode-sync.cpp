@@ -317,7 +317,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
     networkFulfilledRequestManager_.AddPendingRequest(pnode->addr, assetType);
     return SyncStatus::REQUEST_SYNC;
 }
-bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
+bool CMasternodeSync::SyncMasternodeList(CNode* pnode, const int64_t now)
 {
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_LIST)
     {
@@ -408,7 +408,7 @@ void CMasternodeSync::Process(bool networkIsRegtest)
     for(CNode* pnode: vSporkSyncedNodes)
     {
         if (pnode->nVersion >=  ActiveProtocol() &&
-            (!MasternodeListIsSynced(pnode,now) || !SyncMasternodeWinners(pnode,now)))
+            (!SyncMasternodeList(pnode,now) || !SyncMasternodeWinners(pnode,now)))
         {
             return;
         }

@@ -160,10 +160,7 @@ void CMasternodeSync::ProcessDSegUpdate(CNode* pfrom,const std::string& strComma
 
         const std::string requestName = syncCodeNameByCodeValue[syncCode];
         if(networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr,requestName)) return;
-        if(!networkFulfilledRequestManager_.HasPendingRequest(pfrom->addr,requestName))
-        {
-            pfrom->GetNodeState()->ApplyMisbehavingPenalty(34);
-        }
+        if(!networkFulfilledRequestManager_.HasPendingRequest(pfrom->addr,requestName)) return;
 
         //this means we will receive no further communication
         switch (syncCode) {

@@ -343,9 +343,6 @@ bool CMasternodeSync::SyncMasternodeList(CNode* pnode, const int64_t now)
                 break;
             }
         }
-
-
-        return false;
     }
     return true;
 }

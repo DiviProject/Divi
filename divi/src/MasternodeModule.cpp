@@ -431,7 +431,6 @@ void ThreadMasternodeBackgroundSync()
     if (fLiteMode) return;
 
     RenameThread("divi-obfuscation");
-    static const bool regtest = Params().NetworkID() == CBaseChainParams::REGTEST;
 
     int64_t nTimeManageStatus = 0;
     int64_t nTimeConnections = 0;
@@ -461,7 +460,7 @@ void ThreadMasternodeBackgroundSync()
         {
             continue;
         }
-        masternodeSync.Process(regtest);
+        masternodeSync.Process();
 
         // check if we should activate or ping every few minutes,
         // start right after sync is considered to be done

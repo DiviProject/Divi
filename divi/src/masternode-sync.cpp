@@ -354,7 +354,7 @@ bool CMasternodeSync::IsMasternodeListSynced() const
 {
     return currentMasternodeSyncStatus > MasternodeSyncCode::MASTERNODE_SYNC_LIST;
 }
-bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t now)
+bool CMasternodeSync::SyncMasternodeWinners(CNode* pnode, const int64_t now)
 {
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_MNW)
     {
@@ -408,7 +408,7 @@ void CMasternodeSync::Process(bool networkIsRegtest)
     for(CNode* pnode: vSporkSyncedNodes)
     {
         if (pnode->nVersion >=  ActiveProtocol() &&
-            (!MasternodeListIsSynced(pnode,now) || !MasternodeWinnersListIsSync(pnode,now)))
+            (!MasternodeListIsSynced(pnode,now) || !SyncMasternodeWinners(pnode,now)))
         {
             return;
         }

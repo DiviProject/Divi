@@ -236,7 +236,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
 
         if (pfrom->nVersion < ActiveProtocol()) return;
 
-        int chainTipHeight = activeChain_.Height();
+        const int chainTipHeight = activeChain_.Height();
         if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
             LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), chainTipHeight);
             masternodeSynchronization_.RecordMasternodeWinnerUpdate(winner.GetHash());
@@ -503,7 +503,7 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
 {
     LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
 
-    int nHeight = activeChain_.Height();
+    const int nHeight = activeChain_.Height();
 
     constexpr int blockDepthToKeepWinnersAroundFor = 1000;
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
@@ -527,7 +527,7 @@ void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
     nCountNeeded = std::min(nCountNeeded,CMasternodeSync::blockDepthUpToWhichToRequestMNWinners);
 
     int nInvCount = 0;
-    int chainTipHeight = activeChain_.Height();
+    const int chainTipHeight = activeChain_.Height();
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
     while (it != mapMasternodePayeeVotes.end()) {
         CMasternodePaymentWinner winner = (*it).second;

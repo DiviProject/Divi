@@ -99,7 +99,7 @@ public:
     SyncStatus SyncAssets(const CService& addr, const int64_t now,const int64_t lastUpdate, std::string assetType);
     bool SyncMasternodeList(CNode* pnode, const int64_t now);
     bool SyncMasternodeWinners(CNode* pnode, const int64_t now);
-    void Process(bool networkIsRegtest);
+    void Process();
     bool IsSynced() const;
     bool IsMasternodeListSynced() const;
     void AskForMN(CNode* pnode, const CTxIn& vin) const;

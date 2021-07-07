@@ -377,7 +377,7 @@ bool CMasternodeSync::SyncMasternodeWinners(CNode* pnode, const int64_t now)
     }
     return true;
 }
-void CMasternodeSync::Process(bool networkIsRegtest)
+void CMasternodeSync::Process()
 {
     const int64_t now = clock_.getTime();
     LogPrint("masternode", "Masternode sync process at %lld\n", now);

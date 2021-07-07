@@ -23,6 +23,7 @@ class I_Clock;
 class CNetFulfilledRequestManager;
 class CNode;
 class CMasternode;
+class CService;
 //
 // CMasternodeSync : Sync masternode assets in stages
 //
@@ -95,7 +96,7 @@ public:
     void Reset();
     void DsegUpdate(CNode* pnode);
     bool ShouldWaitForSync(const int64_t now);
-    SyncStatus SyncAssets(CNode* pnode, const int64_t now,const int64_t lastUpdate, std::string assetType);
+    SyncStatus SyncAssets(const CService& addr, const int64_t now,const int64_t lastUpdate, std::string assetType);
     bool SyncMasternodeList(CNode* pnode, const int64_t now);
     bool SyncMasternodeWinners(CNode* pnode, const int64_t now);
     void Process(bool networkIsRegtest);

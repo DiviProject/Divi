@@ -62,6 +62,8 @@ void CMasternodeSync::Reset()
 {
     mapSeenSyncMNB.clear();
     mapSeenSyncMNW.clear();
+    timestampOfLastMasternodeListUpdate = 0;
+    timestampOfLastMasternodeWinnerUpdate = 0;
     countOfFailedSyncAttempts = 0;
     nominalNumberOfMasternodeBroadcastsReceived = 0;
     nominalNumberOfMasternodeWinnersReceived = 0;
@@ -297,13 +299,8 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
         ContinueToNextSyncStage();
         return SyncStatus::SYNC_STAGE_COMPLETE;
     }
-
-    if (networkFulfilledRequestManager_.HasFulfilledRequest(pnode->addr, assetType)) return SyncStatus::SUCCESS;
-    if (networkFulfilledRequestManager_.HasPendingRequest(pnode->addr, assetType)) return SyncStatus::WAITING_FOR_SYNC;
-
     // timeout
-    if (lastUpdate == 0 &&
-            (totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD * 3 || now - lastSyncStageStartTimestamp > MASTERNODE_SYNC_TIMEOUT * 5))
+    if (lastUpdate == 0 && now - lastSyncStageStartTimestamp > MASTERNODE_SYNC_TIMEOUT * 5)
     {
         LogPrintf("%s - ERROR - Sync has failed, will retry later (%s)\n",__func__,assetType);
         currentMasternodeSyncStatus = MasternodeSyncCode::MASTERNODE_SYNC_FAILED;
@@ -312,6 +309,9 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
         countOfFailedSyncAttempts++;
         return SyncStatus::FAIL;
     }
+
+    if (networkFulfilledRequestManager_.HasFulfilledRequest(pnode->addr, assetType)) return SyncStatus::SUCCESS;
+    if (networkFulfilledRequestManager_.HasPendingRequest(pnode->addr, assetType)) return SyncStatus::WAITING_FOR_SYNC;
 
     if (totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD * 3) return SyncStatus::AT_PEER_SYNC_LIMIT;
     networkFulfilledRequestManager_.AddPendingRequest(pnode->addr, assetType);

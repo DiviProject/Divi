@@ -291,7 +291,7 @@ bool CMasternodeSync::ShouldWaitForSync(const int64_t now)
     return false;
 }
 
-SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const int64_t lastUpdate, std::string assetType)
+SyncStatus CMasternodeSync::SyncAssets(const CService& addr, const int64_t now, const int64_t lastUpdate, std::string assetType)
 {
     LogPrint("masternode", "%s - %s %lld (GetTime() - MASTERNODE_SYNC_TIMEOUT) %lld\n",__func__,assetType, lastUpdate, now - MASTERNODE_SYNC_TIMEOUT);
     if (lastUpdate > 0 && lastUpdate < now - MASTERNODE_SYNC_TIMEOUT * 2 && totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD)
@@ -310,18 +310,18 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
         return SyncStatus::FAIL;
     }
 
-    if (networkFulfilledRequestManager_.HasFulfilledRequest(pnode->addr, assetType)) return SyncStatus::SUCCESS;
-    if (networkFulfilledRequestManager_.HasPendingRequest(pnode->addr, assetType)) return SyncStatus::WAITING_FOR_SYNC;
+    if (networkFulfilledRequestManager_.HasFulfilledRequest(addr, assetType)) return SyncStatus::SUCCESS;
+    if (networkFulfilledRequestManager_.HasPendingRequest(addr, assetType)) return SyncStatus::WAITING_FOR_SYNC;
 
     if (totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD * 3) return SyncStatus::AT_PEER_SYNC_LIMIT;
-    networkFulfilledRequestManager_.AddPendingRequest(pnode->addr, assetType);
+    networkFulfilledRequestManager_.AddPendingRequest(addr, assetType);
     return SyncStatus::REQUEST_SYNC;
 }
 bool CMasternodeSync::SyncMasternodeList(CNode* pnode, const int64_t now)
 {
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_LIST)
     {
-        const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeListUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_LIST]);
+        const SyncStatus status = SyncAssets(pnode->addr,now,timestampOfLastMasternodeListUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_LIST]);
         switch(status)
         {
             case SyncStatus::FAIL: case SyncStatus::AT_PEER_SYNC_LIMIT:
@@ -355,7 +355,7 @@ bool CMasternodeSync::SyncMasternodeWinners(CNode* pnode, const int64_t now)
 {
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_MNW)
     {
-        const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeWinnerUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_MNW]);
+        const SyncStatus status = SyncAssets(pnode->addr,now,timestampOfLastMasternodeWinnerUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_MNW]);
         switch(status)
         {
             case SyncStatus::FAIL: case SyncStatus::AT_PEER_SYNC_LIMIT:

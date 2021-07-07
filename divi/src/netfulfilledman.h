@@ -35,6 +35,7 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         LOCK(cs_mapFulfilledRequests);
         READWRITE(mapFulfilledRequests);
+        READWRITE(pendingRequests);
     }
 
     void AddFulfilledRequest(const CService& addr, const std::string& strRequest);

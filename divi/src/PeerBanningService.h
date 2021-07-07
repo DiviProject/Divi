@@ -34,5 +34,6 @@ public:
     static bool IsBanned(int64_t currentTime, CNetAddr ip);
     static bool Ban(int64_t currentTime, const CNetAddr& ip);
     static bool Ban(const CNetAddr& addr, int64_t banTime);
+    static bool LifetimeBan(const CNetAddr& addr);
 };
 #endif// PEER_BANNING_SERVICE_H

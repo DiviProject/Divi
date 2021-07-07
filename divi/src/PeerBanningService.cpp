@@ -1,6 +1,9 @@
 #include <PeerBanningService.h>
 
 // Static stuff
+constexpr int64_t lifetimeBan = int64_t( (~uint64_t(0)) >> 8 );
+static_assert(lifetimeBan > 0,"Ban times should not be negative!");
+
 std::map<CNetAddr, int64_t> PeerBanningService::setBanned;
 CCriticalSection PeerBanningService::cs_setBanned;
 int64_t PeerBanningService::defaultBanDuration = 0;
@@ -59,4 +62,9 @@ bool PeerBanningService::Ban(const CNetAddr& addr, int64_t banTime)
             setBanned[addr] = banTime;
     }
     return true;
+}
+
+bool PeerBanningService::LifetimeBan(const CNetAddr& addr)
+{
+    return PeerBanningService::Ban(addr,lifetimeBan);
 }

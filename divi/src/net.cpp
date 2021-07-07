@@ -368,8 +368,6 @@ const I_PeerBlockNotifyService& GetPeerBlockNotifyService()
 {
     return peerBlockNotify;
 }
-constexpr int64_t lifetimeBan = int64_t( (~uint64_t(0)) >> 8 );
-static_assert(lifetimeBan > 0,"Ban times should not be negative!");
 std::vector<std::string> BanOutdatedPeers()
 {
     auto getSubVersion = [](std::string rawSubversion)
@@ -401,7 +399,7 @@ std::vector<std::string> BanOutdatedPeers()
         std::string subVersion = getSubVersion(pnode->cleanSubVer);
         if(versionToIndexConverter(subVersion) < referenceVersionIndex)
         {
-            PeerBanningService::Ban(pnode->addr,lifetimeBan);
+            PeerBanningService::LifetimeBan(pnode->addr);
             bannedNodeAddresses.push_back(pnode->addr.ToString() );
             pnode->FlagForDisconnection();
         }
@@ -415,7 +413,7 @@ bool BanSpecificPeer(const CNetAddr& address)
     {
         if(strcmp(address.ToString().c_str(), pnode->addr.ToString().c_str() ) == 0)
         {
-            PeerBanningService::Ban(pnode->addr,lifetimeBan);
+            PeerBanningService::LifetimeBan(pnode->addr);
             pnode->FlagForDisconnection();
             return true;
         }

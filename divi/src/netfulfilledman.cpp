@@ -65,7 +65,7 @@ void CNetFulfilledRequestManager::AddPendingRequest(const CService& addr, const 
 {
     LOCK(cs_mapFulfilledRequests);
     const auto addrSquashed = SquashAddress(addr);
-    pendingRequests[addrSquashed][strRequest] = clock_.getTime();
+    pendingRequests[addrSquashed][strRequest] = clock_.getTime() + Params().FulfilledRequestExpireTime();
 }
 void CNetFulfilledRequestManager::FulfillPendingRequest(const CService& addr, const std::string& strRequest)
 {
@@ -84,7 +84,23 @@ bool CNetFulfilledRequestManager::HasPendingRequest(const CService& addr, const 
     const auto addrSquashed = SquashAddress(addr);
     fulfilledreqmap_t::const_iterator it = pendingRequests.find(addrSquashed);
 
-    return  it != pendingRequests.end() && it->second.find(strRequest) != it->second.end();
+    if(it == pendingRequests.end())
+    {
+        return false;
+    }
+    fulfilledreqmapentry_t::const_iterator itToRequest = it->second.find(strRequest);
+    if (itToRequest == it->second.end())
+    {
+        return false;
+    }
+    if(clock_.getTime() <= itToRequest->second)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void CNetFulfilledRequestManager::RemoveFulfilledRequest(const CService& addr, const std::string& strRequest)

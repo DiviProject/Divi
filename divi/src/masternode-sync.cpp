@@ -313,7 +313,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
         return SyncStatus::FAIL;
     }
 
-    if (totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD * 3) return SyncStatus::FAIL;
+    if (totalSuccessivePeerSyncRequests >= MASTERNODE_SYNC_THRESHOLD * 3) return SyncStatus::AT_PEER_SYNC_LIMIT;
     networkFulfilledRequestManager_.AddPendingRequest(pnode->addr, assetType);
     return SyncStatus::REQUEST_SYNC;
 }
@@ -324,7 +324,7 @@ bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
         const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeListUpdate,"mnsync");
         switch(status)
         {
-            case SyncStatus::FAIL:
+            case SyncStatus::FAIL: case SyncStatus::AT_PEER_SYNC_LIMIT:
             {
                 return false;
             }
@@ -361,7 +361,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
         const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeWinnerUpdate,"mnwsync");
         switch(status)
         {
-            case SyncStatus::FAIL:
+            case SyncStatus::FAIL: case SyncStatus::AT_PEER_SYNC_LIMIT:
             {
                 return false;
             }

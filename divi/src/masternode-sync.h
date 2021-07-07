@@ -32,6 +32,7 @@ enum SyncStatus
     SYNC_STAGE_COMPLETE,
     SUCCESS,
     WAITING_FOR_SYNC,
+    AT_PEER_SYNC_LIMIT,
     REQUEST_SYNC,
 };
 

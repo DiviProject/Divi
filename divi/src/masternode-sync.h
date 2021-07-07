@@ -96,7 +96,7 @@ public:
     void DsegUpdate(CNode* pnode);
     bool ShouldWaitForSync(const int64_t now);
     SyncStatus SyncAssets(CNode* pnode, const int64_t now,const int64_t lastUpdate, std::string assetType);
-    bool MasternodeListIsSynced(CNode* pnode, const int64_t now);
+    bool SyncMasternodeList(CNode* pnode, const int64_t now);
     bool SyncMasternodeWinners(CNode* pnode, const int64_t now);
     void Process(bool networkIsRegtest);
     bool IsSynced() const;

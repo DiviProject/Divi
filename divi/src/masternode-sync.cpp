@@ -321,7 +321,7 @@ bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
 {
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_LIST)
     {
-        const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeListUpdate,"mnsync");
+        const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeListUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_LIST]);
         switch(status)
         {
             case SyncStatus::FAIL: case SyncStatus::AT_PEER_SYNC_LIMIT:
@@ -358,7 +358,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
 {
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_MNW)
     {
-        const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeWinnerUpdate,"mnwsync");
+        const SyncStatus status = SyncAssets(pnode,now,timestampOfLastMasternodeWinnerUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_MNW]);
         switch(status)
         {
             case SyncStatus::FAIL: case SyncStatus::AT_PEER_SYNC_LIMIT:

@@ -32,24 +32,18 @@ CZMQNotificationInterface::~CZMQNotificationInterface()
 CZMQNotificationInterface* CZMQNotificationInterface::CreateWithArguments(const Settings &settings)
 {
     CZMQNotificationInterface* notificationInterface = NULL;
-    std::map<std::string, CZMQNotifierFactory> factories;
     std::list<CZMQAbstractNotifier*> notifiers;
 
-    factories["pubhashblock"] = CZMQAbstractNotifier::Create<CZMQPublishHashBlockNotifier>;
-    factories["pubhashtx"] = CZMQAbstractNotifier::Create<CZMQPublishHashTransactionNotifier>;
-    factories["pubhashtxlock"] = CZMQAbstractNotifier::Create<CZMQPublishHashTransactionLockNotifier>;
-    factories["pubrawblock"] = CZMQAbstractNotifier::Create<CZMQPublishRawBlockNotifier>;
-    factories["pubrawtx"] = CZMQAbstractNotifier::Create<CZMQPublishRawTransactionNotifier>;
-    factories["pubrawtxlock"] = CZMQAbstractNotifier::Create<CZMQPublishRawTransactionLockNotifier>;
-
-    for (std::map<std::string, CZMQNotifierFactory>::const_iterator i=factories.begin(); i!=factories.end(); ++i)
+    const std::vector<std::string>& notifierTypes = GetZMQNotifierTypes();
+    for (const std::string& notifierType: notifierTypes)
     {
-        if (settings.ParameterIsSet("-zmq" + i->first))
+        const std::string notifierSettings = "-zmqpub" + notifierType;
+        if (settings.ParameterIsSet(notifierSettings))
         {
-            CZMQNotifierFactory factory = i->second;
-            std::string address = settings.GetParameter("-zmq" + i->first);
-            CZMQAbstractNotifier *notifier = factory();
-            notifier->SetType(i->first);
+            std::string address = settings.GetParameter(notifierSettings);
+            CZMQAbstractNotifier *notifier = CreateNotifier(notifierType);
+            assert(notifier);
+            notifier->SetType(notifierType);
             notifier->SetAddress(address);
             notifiers.push_back(notifier);
         }

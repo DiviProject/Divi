@@ -40,7 +40,6 @@
 #include <FeeRate.h>
 #include <FeeAndPriorityCalculator.h>
 
-extern NotificationInterfaceRegistry registry;//TODO: rid this
 using namespace json_spirit;
 using namespace std;
 using namespace boost;

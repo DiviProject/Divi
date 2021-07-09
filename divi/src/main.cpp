@@ -208,11 +208,6 @@ void UnregisterAllValidationInterfaces()
     registry.UnregisterAllValidationInterfaces();
 }
 
-void SyncWithWallets(const CTransaction& tx, const CBlock* pblock)
-{
-    registry.SyncWithWallets(tx, pblock);
-}
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Registration of network node signals.
@@ -671,7 +666,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         pool.addUnchecked(hash, entry, view);
     }
 
-    SyncWithWallets(tx, NULL);
+    g_signals.SyncTransaction(tx, NULL);
 
     return true;
 }
@@ -1253,7 +1248,7 @@ bool static DisconnectTip(CValidationState& state)
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
     for(const CTransaction& tx: blockTransactions) {
-        SyncWithWallets(tx, NULL);
+        g_signals.SyncTransaction(tx, NULL);
     }
     return true;
 }
@@ -1328,11 +1323,11 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     // Tell wallet about transactions that went from mempool
     // to conflicted:
     for(const CTransaction& tx: txConflicted) {
-        SyncWithWallets(tx, NULL);
+        g_signals.SyncTransaction(tx, NULL);
     }
     // ... and about transactions that got confirmed:
     for(const CTransaction& tx: pblock->vtx) {
-        SyncWithWallets(tx, pblock);
+        g_signals.SyncTransaction(tx, pblock);
     }
 
     int64_t nTime6 = GetTimeMicros();

@@ -56,8 +56,6 @@ public:
     void UnregisterValidationInterface(NotificationInterface* pwalletIn);
     /** Unregister all wallets from core */
     void UnregisterAllValidationInterfaces();
-    /** Push an updated transaction to all registered wallets */
-    void SyncWithWallets(const CTransaction& tx, const CBlock* pblock);
 
     MainNotificationSignals& getSignals() const;
 };

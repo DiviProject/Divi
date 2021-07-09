@@ -331,9 +331,6 @@ CCriticalSection cs_mapRelay;
 static deque<string> vOneShots;
 CCriticalSection cs_vOneShots;
 
-set<CNetAddr> setservAddNodeAddresses;
-CCriticalSection cs_setservAddNodeAddresses;
-
 std::vector<std::string> vAddedNodes;
 CCriticalSection cs_vAddedNodes;
 
@@ -1272,11 +1269,6 @@ void ThreadOpenAddedConnections()
             std::vector<CService> vservNode(0);
             if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0)) {
                 lservAddressesToAdd.push_back(vservNode);
-                {
-                    LOCK(cs_setservAddNodeAddresses);
-                    BOOST_FOREACH (CService& serv, vservNode)
-                        setservAddNodeAddresses.insert(serv);
-                }
             }
         }
         // Attempt to connect to each IP for each addnode entry until at least one is successful per addnode entry

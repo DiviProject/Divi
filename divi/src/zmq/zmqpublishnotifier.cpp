@@ -11,6 +11,8 @@
 #include <streams.h>
 #include <version.h>
 #include <sync.h>
+#include "primitives/block.h"
+#include "primitives/transaction.h"
 
 extern CCriticalSection cs_main;
 static std::multimap<std::string, CZMQAbstractPublishNotifier*> mapPublishNotifiers;

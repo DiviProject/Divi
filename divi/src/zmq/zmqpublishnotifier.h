@@ -64,4 +64,6 @@ public:
     bool NotifyTransactionLock(const CTransaction &transaction) override;
 };
 
+const std::vector<std::string>& GetZMQNotifierTypes();
+CZMQAbstractNotifier* CreateNotifier(const std::string& notifierType);
 #endif // BITCOIN_ZMQ_ZMQPUBLISHNOTIFIER_H

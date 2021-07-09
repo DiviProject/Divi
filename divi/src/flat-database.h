@@ -160,6 +160,8 @@ public:
 
 };
 
+/** Flat data file that stores a single chunk and is thus able to dump
+ *  and load one instance of some class T.  */
 template<typename T>
 class CFlatDB : private FlatDataFile
 {
@@ -170,17 +172,11 @@ private:
 
     ReadResult Read(T& objToLoad, const bool fDryRun = false) const
     {
-        //LOCK(objToLoad.cs);
-
         const int64_t nStart = GetTimeMillis();
-        // open input file, and associate with CAutoFile
-        FILE *file = fopen(Path().string().c_str(), "rb");
-        CAutoFile filein(file, SER_DISK, CLIENT_VERSION);
-        if (filein.IsNull())
-        {
-            error("%s: Failed to open file %s", __func__, Path().string());
+
+        auto reader = FlatDataFile::Read();
+        if (reader == nullptr)
             return FileError;
-        }
 
         // use file size to size memory buffer
         const int fileSize = boost::filesystem::file_size(Path());
@@ -188,62 +184,20 @@ private:
         // Don't try to resize to a negative number if file is small
         if (dataSize < 0)
             dataSize = 0;
-        std::vector<unsigned char> vchData;
-        vchData.resize(dataSize);
-        uint256 hashIn;
 
-        // read data and checksum from file
-        try {
-            filein.read((char *)&vchData[0], dataSize);
-            filein >> hashIn;
-        } catch (const std::exception& e) {
-            error("%s: Deserialize or I/O error - %s", __func__, e.what());
-            return HashReadError;
-        }
-        filein.fclose();
+        ReadResult res = reader->NextChunk(dataSize);
+        if (res != Ok)
+            return res;
 
-        CDataStream ssObj(vchData, SER_DISK, CLIENT_VERSION);
-
-        // verify stored checksum matches input data
-        const uint256 hashTmp = Hash(ssObj.begin(), ssObj.end());
-        if (hashIn != hashTmp)
+        if (reader->GetMagic() != strMagicMessage)
         {
-            error("%s: Checksum mismatch, data corrupted", __func__);
-            return IncorrectHash;
+            error("%s: Invalid magic message", __func__);
+            return IncorrectMagicMessage;
         }
 
-
-        unsigned char pchMsgTmp[4];
-        std::string strMagicMessageTmp;
-        try {
-            // de-serialize file header (file specific magic message) and ..
-            ssObj >> strMagicMessageTmp;
-
-            // ... verify the message matches predefined one
-            if (strMagicMessage != strMagicMessageTmp)
-            {
-                error("%s: Invalid magic message", __func__);
-                return IncorrectMagicMessage;
-            }
-
-
-            // de-serialize file header (network specific magic number) and ..
-            ssObj >> FLATDATA(pchMsgTmp);
-
-            // ... verify the network matches ours
-            if (memcmp(pchMsgTmp, Params().MessageStart(), sizeof(pchMsgTmp)))
-            {
-                error("%s: Invalid network magic number", __func__);
-                return IncorrectMagicNumber;
-            }
-
-            // de-serialize data into T object
-            ssObj >> objToLoad;
-        } catch (const std::exception& e) {
-            objToLoad.Clear();
-            error("%s: Deserialize or I/O error - %s", __func__, e.what());
-            return IncorrectFormat;
-        }
+        res = reader->ParseChunk(objToLoad);
+        if (res != Ok)
+            return res;
 
         LogPrintf("Loaded info from %s  %dms\n", Filename(), GetTimeMillis() - nStart);
         LogPrintf("     %s\n", objToLoad.ToString());

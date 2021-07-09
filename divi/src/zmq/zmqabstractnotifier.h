@@ -19,12 +19,6 @@ public:
     CZMQAbstractNotifier() : psocket(0) { }
     virtual ~CZMQAbstractNotifier();
 
-    template <typename T>
-    static CZMQAbstractNotifier* Create()
-    {
-        return new T();
-    }
-
     std::string GetType() const { return type; }
     void SetType(const std::string &t) { type = t; }
     std::string GetAddress() const { return address; }

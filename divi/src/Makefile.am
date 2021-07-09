@@ -337,6 +337,7 @@ BITCOIN_CORE_H = \
   zmq/zmqconfig.h \
   zmq/zmqnotificationinterface.h \
   zmq/zmqpublishnotifier.h \
+  zmq/ZMQNotifierFactory.h \
   compat/sanity.h
 
 JSON_H = \
@@ -461,7 +462,8 @@ libbitcoin_zmq_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_zmq_a_SOURCES = \
   zmq/zmqabstractnotifier.cpp \
   zmq/zmqnotificationinterface.cpp \
-  zmq/zmqpublishnotifier.cpp
+  zmq/zmqpublishnotifier.cpp \
+  zmq/ZMQNotifierFactory.cpp
 endif
 
 # wallet: shared between divid and divi-qt, but only linked

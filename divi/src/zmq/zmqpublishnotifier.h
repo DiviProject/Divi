@@ -8,7 +8,12 @@
 #include <zmq/zmqabstractnotifier.h>
 
 class CBlockIndex;
-
+constexpr char ZMQ_MSG_HASHBLOCK[]  = "hashblock";
+constexpr char ZMQ_MSG_HASHTX[]     = "hashtx";
+constexpr char ZMQ_MSG_HASHTXLOCK[] = "hashtxlock";
+constexpr char ZMQ_MSG_RAWBLOCK[]   = "rawblock";
+constexpr char ZMQ_MSG_RAWTX[]      = "rawtx";
+constexpr char ZMQ_MSG_RAWTXLOCK[] = "rawtxlock";
 class CZMQAbstractPublishNotifier : public CZMQAbstractNotifier
 {
 private:
@@ -64,6 +69,4 @@ public:
     bool NotifyTransactionLock(const CTransaction &transaction) override;
 };
 
-const std::vector<std::string>& GetZMQNotifierTypes();
-CZMQAbstractNotifier* CreateNotifier(const std::string& notifierType);
 #endif // BITCOIN_ZMQ_ZMQPUBLISHNOTIFIER_H

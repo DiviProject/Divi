@@ -26,10 +26,6 @@ void NotificationInterfaceRegistry::UnregisterAllValidationInterfaces() {
     registeredInterfaces.clear();
 }
 
-void NotificationInterfaceRegistry::SyncWithWallets(const CTransaction &tx, const CBlock *pblock = NULL) {
-    g_signals.SyncTransaction(tx, pblock);
-}
-
 MainNotificationSignals& NotificationInterfaceRegistry::getSignals() const
 {
     return g_signals;

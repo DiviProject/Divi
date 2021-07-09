@@ -15,12 +15,12 @@
 extern CCriticalSection cs_main;
 static std::multimap<std::string, CZMQAbstractPublishNotifier*> mapPublishNotifiers;
 
-static const char *MSG_HASHBLOCK  = "hashblock";
-static const char *MSG_HASHTX     = "hashtx";
-static const char *MSG_HASHTXLOCK = "hashtxlock";
-static const char *MSG_RAWBLOCK   = "rawblock";
-static const char *MSG_RAWTX      = "rawtx";
-static const char *MSG_RAWTXLOCK = "rawtxlock";
+static const char *ZMQ_MSG_HASHBLOCK  = "hashblock";
+static const char *ZMQ_MSG_HASHTX     = "hashtx";
+static const char *ZMQ_MSG_HASHTXLOCK = "hashtxlock";
+static const char *ZMQ_MSG_RAWBLOCK   = "rawblock";
+static const char *ZMQ_MSG_RAWTX      = "rawtx";
+static const char *ZMQ_MSG_RAWTXLOCK = "rawtxlock";
 
 // Internal function to send multipart message
 static int zmq_send_multipart(void *sock, const void* data, size_t size, ...)
@@ -155,7 +155,7 @@ bool CZMQPublishHashBlockNotifier::NotifyBlock(const CBlockIndex *pindex)
     char data[32];
     for (unsigned int i = 0; i < 32; i++)
         data[31 - i] = hash.begin()[i];
-    return SendMessage(MSG_HASHBLOCK, data, 32);
+    return SendMessage(ZMQ_MSG_HASHBLOCK, data, 32);
 }
 
 bool CZMQPublishHashTransactionNotifier::NotifyTransaction(const CTransaction &transaction)
@@ -165,7 +165,7 @@ bool CZMQPublishHashTransactionNotifier::NotifyTransaction(const CTransaction &t
     char data[32];
     for (unsigned int i = 0; i < 32; i++)
         data[31 - i] = hash.begin()[i];
-    return SendMessage(MSG_HASHTX, data, 32);
+    return SendMessage(ZMQ_MSG_HASHTX, data, 32);
 }
 
 bool CZMQPublishHashTransactionLockNotifier::NotifyTransactionLock(const CTransaction &transaction)
@@ -175,7 +175,7 @@ bool CZMQPublishHashTransactionLockNotifier::NotifyTransactionLock(const CTransa
     char data[32];
     for (unsigned int i = 0; i < 32; i++)
         data[31 - i] = hash.begin()[i];
-    return SendMessage(MSG_HASHTXLOCK, data, 32);
+    return SendMessage(ZMQ_MSG_HASHTXLOCK, data, 32);
 }
 
 bool CZMQPublishRawBlockNotifier::NotifyBlock(const CBlockIndex *pindex)
@@ -197,7 +197,7 @@ bool CZMQPublishRawBlockNotifier::NotifyBlock(const CBlockIndex *pindex)
         ss << block;
     }
 
-    return SendMessage(MSG_RAWBLOCK, &(*ss.begin()), ss.size());
+    return SendMessage(ZMQ_MSG_RAWBLOCK, &(*ss.begin()), ss.size());
 }
 
 bool CZMQPublishRawTransactionNotifier::NotifyTransaction(const CTransaction &transaction)
@@ -206,7 +206,7 @@ bool CZMQPublishRawTransactionNotifier::NotifyTransaction(const CTransaction &tr
     LogPrint("zmq", "zmq: Publish rawtx %s\n", hash);
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss << transaction;
-    return SendMessage(MSG_RAWTX, &(*ss.begin()), ss.size());
+    return SendMessage(ZMQ_MSG_RAWTX, &(*ss.begin()), ss.size());
 }
 
 bool CZMQPublishRawTransactionLockNotifier::NotifyTransactionLock(const CTransaction &transaction)
@@ -215,5 +215,5 @@ bool CZMQPublishRawTransactionLockNotifier::NotifyTransactionLock(const CTransac
     LogPrint("zmq", "zmq: Publish rawtxlock %s\n", hash);
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss << transaction;
-    return SendMessage(MSG_RAWTXLOCK, &(*ss.begin()), ss.size());
+    return SendMessage(ZMQ_MSG_RAWTXLOCK, &(*ss.begin()), ss.size());
 }

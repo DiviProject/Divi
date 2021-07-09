@@ -7,6 +7,8 @@
 #include <zmq/zmqpublishnotifier.h>
 #include <Settings.h>
 #include <Logging.h>
+#include "primitives/block.h"
+#include "primitives/transaction.h"
 
 void zmqError(const char *str)
 {

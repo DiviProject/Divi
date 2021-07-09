@@ -8,6 +8,7 @@
 #include "zmqconfig.h"
 
 class CBlockIndex;
+class CTransaction;
 class CZMQAbstractNotifier;
 
 typedef CZMQAbstractNotifier* (*CZMQNotifierFactory)();

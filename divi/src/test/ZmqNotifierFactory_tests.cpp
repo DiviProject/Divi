@@ -1,4 +1,5 @@
 #include <zmq/zmqpublishnotifier.h>
+#include <zmq/ZMQNotifierFactory.h>
 #include <test/test_only.h>
 
 

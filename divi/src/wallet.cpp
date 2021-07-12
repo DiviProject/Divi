@@ -1190,7 +1190,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         wtx.RecomputeCachedQuantities();
 
         // Notify UI of new or updated transaction
-        NotifyTransactionChanged(this, hash, transactionHashIsNewToWallet ? CT_NEW : CT_UPDATED);
+        NotifyTransactionChanged(hash, transactionHashIsNewToWallet ? CT_NEW : CT_UPDATED);
 
         // notify an external script when a wallet transaction comes in or is updated
         std::string strCmd = settings.GetArg("-walletnotify", "");
@@ -1299,7 +1299,7 @@ bool CWallet::UpdatedTransaction(const uint256& hashTx)
         // Only notify UI if this transaction is in this wallet
         const CWalletTx* txPtr = GetWalletTx(hashTx);
         if (txPtr != nullptr) {
-            NotifyTransactionChanged(this, hashTx, CT_UPDATED);
+            NotifyTransactionChanged(hashTx, CT_UPDATED);
             return true;
         }
     }
@@ -2289,7 +2289,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
                         assert(coinPtr);
                     }
                     coinPtr->RecomputeCachedQuantities();
-                    NotifyTransactionChanged(this, coinPtr->GetHash(), CT_UPDATED);
+                    NotifyTransactionChanged(coinPtr->GetHash(), CT_UPDATED);
                     updated_hashes.insert(txin.prevout.hash);
                 }
             }
@@ -2391,7 +2391,7 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const string& strNam
         if (!strPurpose.empty()) /* update purpose only if requested */
             mapAddressBook[address].purpose = strPurpose;
     }
-    NotifyAddressBookChanged(this, address, strName, ::IsMine(*this, address) != ISMINE_NO,
+    NotifyAddressBookChanged(address, strName, ::IsMine(*this, address) != ISMINE_NO,
                              strPurpose, (fUpdated ? CT_UPDATED : CT_NEW));
     if (!fFileBacked)
         return false;

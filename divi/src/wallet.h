@@ -169,7 +169,7 @@ private:
     bool UpdatedTransaction(const uint256& hashTx) override;
 
 public:
-    void SetBestChain();
+    void UpdateBestBlockLocation();
 
     bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);
 

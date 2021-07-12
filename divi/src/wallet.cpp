@@ -1282,7 +1282,7 @@ void CWallet::ResendWalletTransactions()
     }
 }
 
-void CWallet::SetBestChain()
+void CWallet::UpdateBestBlockLocation()
 {
     SetBestChain(chainActive_.GetLocator());
 }

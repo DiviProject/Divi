@@ -162,13 +162,14 @@ public:
 private:
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
-    void SetBestChain(const CBlockLocator& loc) override;
-public:
     // Notification interface methods
-    void SyncTransaction(const CTransaction& tx, const CBlock* pblock);
-    void ResendWalletTransactions();
+    void SyncTransaction(const CTransaction& tx, const CBlock* pblock) override;
+    void ResendWalletTransactions() override;
+    void SetBestChain(const CBlockLocator& loc) override;
+    bool UpdatedTransaction(const uint256& hashTx) override;
+
+public:
     void SetBestChain();
-    bool UpdatedTransaction(const uint256& hashTx);
 
     bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);
 

@@ -863,12 +863,6 @@ bool CWallet::ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase,
     return false;
 }
 
-void CWallet::SetBestChain(const CBlockLocator& loc)
-{
-    CWalletDB walletdb(settings,strWalletFile);
-    walletdb.WriteBestBlock(loc);
-}
-
 bool CWallet::SetMinVersion(enum WalletFeature nVersion, CWalletDB* pwalletdbIn, bool fExplicit)
 {
     LOCK(cs_wallet); // nWalletVersion
@@ -1248,6 +1242,66 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock)
     }
 }
 
+void CWallet::ResendWalletTransactions()
+{
+    // Do this infrequently and randomly to avoid giving away
+    // that these are our transactions.
+    if (GetTime() < nNextResend)
+        return;
+    bool fFirst = (nNextResend == 0);
+    nNextResend = GetTime() + GetRand(30 * 60);
+    if (fFirst)
+        return;
+
+    // Only do it if there's been a new block since last time
+    if (nTimeBestReceived < nLastResend)
+        return;
+    nLastResend = GetTime();
+
+    // Rebroadcast any of our txes that aren't in a block yet
+    LogPrintf("ResendWalletTransactions()\n");
+    {
+        // Sort them in chronological order
+        multimap<unsigned int, CWalletTx*> mapSorted;
+
+        {
+        LOCK(cs_wallet);
+        for (auto& item : transactionRecord_->mapWallet) {
+            CWalletTx& wtx = item.second;
+            // Don't rebroadcast until it's had plenty of time that
+            // it should have gotten in already by now.
+            if (nTimeBestReceived - (int64_t)wtx.nTimeReceived > 5 * 60)
+                mapSorted.insert(std::make_pair(wtx.nTimeReceived, &wtx));
+        }
+        }
+
+        for (auto& item : mapSorted) {
+            CWalletTx& wtx = *item.second;
+            wtx.RelayWalletTransaction();
+        }
+    }
+}
+
+void CWallet::SetBestChain(const CBlockLocator& loc)
+{
+    CWalletDB walletdb(settings,strWalletFile);
+    walletdb.WriteBestBlock(loc);
+}
+
+bool CWallet::UpdatedTransaction(const uint256& hashTx)
+{
+    {
+        LOCK(cs_wallet);
+        // Only notify UI if this transaction is in this wallet
+        const CWalletTx* txPtr = GetWalletTx(hashTx);
+        if (txPtr != nullptr) {
+            NotifyTransactionChanged(this, hashTx, CT_UPDATED);
+            return true;
+        }
+    }
+    return false;
+}
+
 isminetype CWallet::IsMine(const CTxIn& txin) const
 {
     {
@@ -1430,46 +1484,6 @@ CAmount CWallet::GetChange(const CWalletTx& walletTransaction) const
     walletTransaction.nChangeCached = ComputeChange(walletTransaction);
     walletTransaction.fChangeCached = true;
     return walletTransaction.nChangeCached;
-}
-
-void CWallet::ResendWalletTransactions()
-{
-    // Do this infrequently and randomly to avoid giving away
-    // that these are our transactions.
-    if (GetTime() < nNextResend)
-        return;
-    bool fFirst = (nNextResend == 0);
-    nNextResend = GetTime() + GetRand(30 * 60);
-    if (fFirst)
-        return;
-
-    // Only do it if there's been a new block since last time
-    if (nTimeBestReceived < nLastResend)
-        return;
-    nLastResend = GetTime();
-
-    // Rebroadcast any of our txes that aren't in a block yet
-    LogPrintf("ResendWalletTransactions()\n");
-    {
-        // Sort them in chronological order
-        multimap<unsigned int, CWalletTx*> mapSorted;
-
-        {
-        LOCK(cs_wallet);
-        for (auto& item : transactionRecord_->mapWallet) {
-            CWalletTx& wtx = item.second;
-            // Don't rebroadcast until it's had plenty of time that
-            // it should have gotten in already by now.
-            if (nTimeBestReceived - (int64_t)wtx.nTimeReceived > 5 * 60)
-                mapSorted.insert(std::make_pair(wtx.nTimeReceived, &wtx));
-        }
-        }
-
-        for (auto& item : mapSorted) {
-            CWalletTx& wtx = *item.second;
-            wtx.RelayWalletTransaction();
-        }
-    }
 }
 
 /** @} */ // end of mapWallet
@@ -2758,20 +2772,6 @@ void CWallet::GetAllReserveKeys(set<CKeyID>& setAddress) const
             throw std::runtime_error(std::string(__func__) + ": unknown key in key pool");
         }
     }
-}
-
-bool CWallet::UpdatedTransaction(const uint256& hashTx)
-{
-    {
-        LOCK(cs_wallet);
-        // Only notify UI if this transaction is in this wallet
-        const CWalletTx* txPtr = GetWalletTx(hashTx);
-        if (txPtr != nullptr) {
-            NotifyTransactionChanged(this, hashTx, CT_UPDATED);
-            return true;
-        }
-    }
-    return false;
 }
 
 unsigned int CWallet::GetKeyPoolSize() const

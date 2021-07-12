@@ -398,10 +398,6 @@ CAmount CWallet::ComputeChange(const CTransaction& tx) const
     return nChange;
 }
 
-void CWallet::Inventory(const uint256& hash)
-{
-    // Do nothing since wallet doesn't use tracked inventory
-}
 int CWallet::GetVersion()
 {
     LOCK(cs_wallet);

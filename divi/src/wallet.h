@@ -110,25 +110,10 @@ class I_WalletGuiNotifications
 {
 public:
     virtual ~I_WalletGuiNotifications(){}
-    /**
-     * Address book entry changed.
-     * @note called with lock cs_wallet held.
-     */
-    boost::signals2::signal<void(CWallet* wallet, const CTxDestination& address, const std::string& label, bool isMine, const std::string& purpose, ChangeType status)> NotifyAddressBookChanged;
-
-    /**
-     * Wallet transaction added, removed or updated.
-     * @note called with lock cs_wallet held.
-     */
-    boost::signals2::signal<void(CWallet* wallet, const uint256& hashTx, ChangeType status)> NotifyTransactionChanged;
-
-    /** Show progress e.g. for rescan */
+    boost::signals2::signal<void(const CTxDestination& address, const std::string& label, bool isMine, const std::string& purpose, ChangeType status)> NotifyAddressBookChanged;
+    boost::signals2::signal<void(const uint256& hashTx, ChangeType status)> NotifyTransactionChanged;
     boost::signals2::signal<void(const std::string& title, int nProgress)> ShowProgress;
-
-    /** Watch-only address added */
     boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
-
-    /** MultiSig address added */
     boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
 };
 

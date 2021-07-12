@@ -864,10 +864,23 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
     return true;
 }
 
+void ExternalNotificationScript(const uint256& transactionHash,int status)
+{
+    // notify an external script when a wallet transaction comes in or is updated
+    std::string strCmd = settings.GetArg("-walletnotify", "");
+
+    if (!strCmd.empty() && (status & CT_ADDED)>0)
+    {
+        boost::replace_all(strCmd, "%s", transactionHash.GetHex());
+        boost::thread t(runCommand, strCmd); // thread runs free
+    }
+}
+
 bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
 {
     bool fFirstRun = true;
     pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex);
+    pwalletMain->NotifyTransactionChanged.connect(&ExternalNotificationScript);
     DBErrors nLoadWalletRet = pwalletMain->LoadWallet(fFirstRun);
     if (nLoadWalletRet != DB_LOAD_OK) {
         if (nLoadWalletRet == DB_CORRUPT)

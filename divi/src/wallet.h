@@ -105,7 +105,34 @@ using CoinVector = std::vector<COutPoint>;
 using AddressBook = std::map<CTxDestination, CAddressBookData>;
 using Inputs = std::vector<CTxIn>;
 using Outputs = std::vector<CTxOut>;
-class CWallet : public CCryptoKeyStore, public NotificationInterface, public I_KeypoolReserver
+
+class I_WalletGuiNotifications
+{
+public:
+    virtual ~I_WalletGuiNotifications(){}
+    /**
+     * Address book entry changed.
+     * @note called with lock cs_wallet held.
+     */
+    boost::signals2::signal<void(CWallet* wallet, const CTxDestination& address, const std::string& label, bool isMine, const std::string& purpose, ChangeType status)> NotifyAddressBookChanged;
+
+    /**
+     * Wallet transaction added, removed or updated.
+     * @note called with lock cs_wallet held.
+     */
+    boost::signals2::signal<void(CWallet* wallet, const uint256& hashTx, ChangeType status)> NotifyTransactionChanged;
+
+    /** Show progress e.g. for rescan */
+    boost::signals2::signal<void(const std::string& title, int nProgress)> ShowProgress;
+
+    /** Watch-only address added */
+    boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
+
+    /** MultiSig address added */
+    boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
+};
+
+class CWallet : public CCryptoKeyStore, public NotificationInterface, public I_KeypoolReserver, public I_WalletGuiNotifications
 {
 public:
     /*
@@ -414,27 +441,6 @@ public:
 
     //! Get wallet transactions that conflict with given transaction (spend same outputs)
     std::set<uint256> GetConflicts(const uint256& txid) const;
-
-    /**
-     * Address book entry changed.
-     * @note called with lock cs_wallet held.
-     */
-    boost::signals2::signal<void(CWallet* wallet, const CTxDestination& address, const std::string& label, bool isMine, const std::string& purpose, ChangeType status)> NotifyAddressBookChanged;
-
-    /**
-     * Wallet transaction added, removed or updated.
-     * @note called with lock cs_wallet held.
-     */
-    boost::signals2::signal<void(CWallet* wallet, const uint256& hashTx, ChangeType status)> NotifyTransactionChanged;
-
-    /** Show progress e.g. for rescan */
-    boost::signals2::signal<void(const std::string& title, int nProgress)> ShowProgress;
-
-    /** Watch-only address added */
-    boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
-
-    /** MultiSig address added */
-    boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
 };
 
 /** Private key that includes an expiration date in case it never gets used. */

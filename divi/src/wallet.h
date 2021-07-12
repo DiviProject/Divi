@@ -395,7 +395,6 @@ public:
 
     bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
     bool UpdatedTransaction(const uint256& hashTx);
-    void Inventory(const uint256& hash);
     unsigned int GetKeyPoolSize() const;
     bool SetDefaultKey(const CPubKey& vchPubKey);
 

@@ -163,6 +163,12 @@ private:
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
 public:
+    // Notification interface methods
+    void SyncTransaction(const CTransaction& tx, const CBlock* pblock);
+    void ResendWalletTransactions();
+    void SetBestChain(const CBlockLocator& loc);
+    bool UpdatedTransaction(const uint256& hashTx);
+
     bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);
 
     bool MintableCoins();
@@ -297,11 +303,10 @@ public:
     void RecomputeCachedQuantities();
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
     bool AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet = false);
-    void SyncTransaction(const CTransaction& tx, const CBlock* pblock);
+
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate);
     int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false);
     void ReacceptWalletTransactions();
-    void ResendWalletTransactions();
     CAmount GetBalance() const;
     CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;
     CAmount GetSpendableBalance() const;
@@ -388,13 +393,11 @@ public:
     CAmount ComputeCredit(const CWalletTx& tx, const isminefilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
     CAmount GetCredit(const CWalletTx& walletTransaction, const isminefilter& filter) const;
     CAmount ComputeChange(const CTransaction& tx) const;
-    void SetBestChain(const CBlockLocator& loc);
 
     DBErrors LoadWallet(bool& fFirstRunRet);
     DBErrors ZapWalletTx(std::vector<CWalletTx>& vWtx);
 
     bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
-    bool UpdatedTransaction(const uint256& hashTx);
     unsigned int GetKeyPoolSize() const;
     bool SetDefaultKey(const CPubKey& vchPubKey);
 

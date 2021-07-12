@@ -924,7 +924,7 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
             }
         }
 
-        pwalletMain->SetBestChain();
+        pwalletMain->UpdateBestBlockLocation();
 
     }
     else if (settings.ParameterIsSet("-usehd")) {
@@ -968,7 +968,7 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile,const std::vector<
         nStart = GetTimeMillis();
         pwalletMain->ScanForWalletTransactions(pindexRescan, true);
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
-        pwalletMain->SetBestChain();
+        pwalletMain->UpdateBestBlockLocation();
         pwalletMain->IncrementDBUpdateCount();
 
         // Restore wallet transaction metadata after -zapwallettxes=1

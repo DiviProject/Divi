@@ -60,3 +60,25 @@ FlatDataFile::ReadResult FlatDataFile::Reader::NextChunk(const size_t dataSize)
 
     return Ok;
 }
+
+std::unique_ptr<AppendOnlyFile::Reader> AppendOnlyFile::Read() const
+{
+    std::unique_ptr<FlatDataFile::Reader> flatFileReader = FlatDataFile::Read();
+    if (flatFileReader == nullptr)
+        return nullptr;
+    return std::unique_ptr<Reader>(new Reader(std::move(flatFileReader)));
+}
+
+bool AppendOnlyFile::Reader::Next()
+{
+    uint64_t dataSize;
+    try {
+        reader->GetFile() >> dataSize;
+    } catch (const std::exception& e) {
+        if (std::feof(reader->GetFile().Get()))
+            return false;
+        return error("%s: Error reading data file - %s", __func__, e.what());
+    }
+
+    return reader->NextChunk(dataSize) == Ok;
+}

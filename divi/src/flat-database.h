@@ -69,6 +69,7 @@ public:
         ssObj << FLATDATA(Params().MessageStart()); // network specific magic number
         ssObj << objToSave;
         const uint256 hash = Hash(ssObj.begin(), ssObj.end());
+        const uint64_t dataSize = ssObj.size();
         ssObj << hash;
 
         // open output file, and associate with CAutoFile
@@ -77,8 +78,12 @@ public:
         if (fileout.IsNull())
             return error("%s: Failed to open file %s", __func__, Path().string());
 
-        // Write and commit header, data
+        // Write and commit header, data.  If we are in append mode, we also
+        // write the data size (in truncate mode the data size is implicit
+        // from the file size).
         try {
+            if (append)
+              fileout << dataSize;
             fileout << ssObj;
         } catch (const std::exception& e) {
             return error("%s: Serialize or I/O error - %s", __func__, e.what());
@@ -271,5 +276,69 @@ public:
 
 };
 
+/** A data file that allows writing multiple instances of potentially different
+ *  objects to an append-only file, and reading them in again.  */
+class AppendOnlyFile : private FlatDataFile
+{
+
+public:
+
+    class Reader;
+
+    explicit AppendOnlyFile(const std::string& strFilename)
+      : FlatDataFile(strFilename)
+    {}
+
+    /** Writes a record to the end of the file.  */
+    template <typename T>
+        bool Append(const std::string& magic, const T& objToSave) const
+    {
+        return Write(magic, objToSave, true);
+    }
+
+    /** Returns a reader instance for the underlying file.  */
+    std::unique_ptr<Reader> Read() const;
+
+};
+
+/** Reader / iterator for the individual chunks in an append-only file.
+ *  In contrast to FlatDataFile::Reader, this reader automatically retrieves
+ *  the size of each chunk before reading the raw chunk, and also has a
+ *  simplified interface with respect to error reporting.  */
+class AppendOnlyFile::Reader
+{
+
+private:
+
+    /** The underlying flat-file reader.  */
+    std::unique_ptr<FlatDataFile::Reader> reader;
+
+    explicit Reader(std::unique_ptr<FlatDataFile::Reader> r)
+      : reader(std::move(r))
+    {}
+
+    friend class AppendOnlyFile;
+
+public:
+
+    /** Tries to retrieve the next record.  Returns true on success and false
+     *  on failure (likely due to EOF).  */
+    bool Next();
+
+    /** Returns the magic of the current chunk.  */
+    const std::string& GetMagic() const
+    {
+        return reader->GetMagic();
+    }
+
+    /** Parses the current chunk into an object of type T.  Returns true
+     *  if all went well and false if some error occured.  */
+    template <typename T>
+        bool Parse(T& objToLoad)
+    {
+        return reader->ParseChunk(objToLoad) == Ok;
+    }
+
+};
 
 #endif

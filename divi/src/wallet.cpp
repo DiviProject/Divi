@@ -1282,6 +1282,10 @@ void CWallet::ResendWalletTransactions()
     }
 }
 
+void CWallet::SetBestChain()
+{
+    SetBestChain(chainActive_.GetLocator());
+}
 void CWallet::SetBestChain(const CBlockLocator& loc)
 {
     CWalletDB walletdb(settings,strWalletFile);

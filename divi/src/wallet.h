@@ -178,7 +178,6 @@ private:
     void SyncTransaction(const CTransaction& tx, const CBlock* pblock) override;
     void ResendWalletTransactions() override;
     void SetBestChain(const CBlockLocator& loc) override;
-    bool UpdatedTransaction(const uint256& hashTx) override;
 
 public:
     void UpdateBestBlockLocation();

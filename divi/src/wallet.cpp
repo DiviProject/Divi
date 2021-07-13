@@ -1190,7 +1190,9 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         wtx.RecomputeCachedQuantities();
 
         // Notify UI of new or updated transaction
-        NotifyTransactionChanged(hash, CT_ADDED | (transactionHashIsNewToWallet ? CT_NEW : CT_UPDATED) );
+        NotifyTransactionChanged(hash,
+            TransactionNotificationType::ADDED |
+            (transactionHashIsNewToWallet ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED) );
     }
     return true;
 }
@@ -2266,7 +2268,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
                         assert(coinPtr);
                     }
                     coinPtr->RecomputeCachedQuantities();
-                    NotifyTransactionChanged(coinPtr->GetHash(), CT_UPDATED);
+                    NotifyTransactionChanged(coinPtr->GetHash(), TransactionNotificationType::SPEND_FROM);
                     updated_hashes.insert(txin.prevout.hash);
                 }
             }

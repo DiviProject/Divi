@@ -106,6 +106,13 @@ using AddressBook = std::map<CTxDestination, CAddressBookData>;
 using Inputs = std::vector<CTxIn>;
 using Outputs = std::vector<CTxOut>;
 
+enum TransactionNotificationType
+{
+    NEW = 1 << 0,
+    UPDATED = 1 << 1,
+    ADDED = 1 << 2,
+    SPEND_FROM = 1 << 3,
+};
 class I_WalletGuiNotifications
 {
 public:

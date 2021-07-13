@@ -110,7 +110,6 @@ enum TransactionNotificationType
 {
     NEW = 1 << 0,
     UPDATED = 1 << 1,
-    ADDED = 1 << 2,
     SPEND_FROM = 1 << 3,
 };
 class I_WalletGuiNotifications

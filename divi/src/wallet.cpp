@@ -1190,9 +1190,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         wtx.RecomputeCachedQuantities();
 
         // Notify UI of new or updated transaction
-        NotifyTransactionChanged(hash,
-            TransactionNotificationType::ADDED |
-            (transactionHashIsNewToWallet ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED) );
+        NotifyTransactionChanged(hash, transactionHashIsNewToWallet ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
     }
     return true;
 }

@@ -1190,7 +1190,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         wtx.RecomputeCachedQuantities();
 
         // Notify UI of new or updated transaction
-        NotifyTransactionChanged(hash, transactionHashIsNewToWallet ? CT_NEW : CT_UPDATED);
+        NotifyTransactionChanged(hash, CT_ADDED | (transactionHashIsNewToWallet ? CT_NEW : CT_UPDATED) );
 
         // notify an external script when a wallet transaction comes in or is updated
         std::string strCmd = settings.GetArg("-walletnotify", "");

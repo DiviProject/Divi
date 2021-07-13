@@ -1283,20 +1283,6 @@ void CWallet::SetBestChain(const CBlockLocator& loc)
     walletdb.WriteBestBlock(loc);
 }
 
-bool CWallet::UpdatedTransaction(const uint256& hashTx)
-{
-    {
-        LOCK(cs_wallet);
-        // Only notify UI if this transaction is in this wallet
-        const CWalletTx* txPtr = GetWalletTx(hashTx);
-        if (txPtr != nullptr) {
-            NotifyTransactionChanged(hashTx, CT_UPDATED);
-            return true;
-        }
-    }
-    return false;
-}
-
 isminetype CWallet::IsMine(const CTxIn& txin) const
 {
     {

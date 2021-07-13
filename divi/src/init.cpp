@@ -868,8 +868,9 @@ void ExternalNotificationScript(const uint256& transactionHash,int status)
 {
     // notify an external script when a wallet transaction comes in or is updated
     std::string strCmd = settings.GetArg("-walletnotify", "");
+    constexpr int hasBeenAddedToWallet = TransactionNotificationType::NEW | TransactionNotificationType::UPDATED;
 
-    if (!strCmd.empty() && (status & TransactionNotificationType::ADDED)>0)
+    if (!strCmd.empty() && (status & hasBeenAddedToWallet)>0)
     {
         boost::replace_all(strCmd, "%s", transactionHash.GetHex());
         boost::thread t(runCommand, strCmd); // thread runs free

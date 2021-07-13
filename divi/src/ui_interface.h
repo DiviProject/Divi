@@ -18,9 +18,10 @@ class uint256;
 
 /** General change type (added, updated, removed). */
 enum ChangeType {
-    CT_NEW,
-    CT_UPDATED,
-    CT_DELETED
+    CT_DELETED = 0,
+    CT_NEW = 1 << 0,
+    CT_UPDATED = 1 << 1,
+    CT_ADDED = 1 << 2,
 };
 
 /** Signals for UI communication. */

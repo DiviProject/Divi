@@ -1176,15 +1176,21 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         }
 
         //// debug print
-        LogPrintf("AddToWallet %s  %s%s\n",
+        LogPrintf("AddToWallet %s  %s%s%s\n",
             wtxIn.ToStringShort(),
             (transactionHashIsNewToWallet ? "new" : ""),
-            (walletTransactionHasBeenUpdated ? "update" : ""));
+            (walletTransactionHasBeenUpdated ? "update" : ""),
+            "unknown-tx-update");
 
         // Write to disk
         if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated)
-            if (!WriteTxToDisk(this,wtx))
+        {
+            if(!WriteTxToDisk(this,wtx))
+            {
+                LogPrintf("%s - Unable to write tx (%s) to disk\n",__func__,wtxIn.ToStringShort());
                 return false;
+            }
+        }
 
         // Break debit/credit balance caches:
         wtx.RecomputeCachedQuantities();

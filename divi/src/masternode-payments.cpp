@@ -216,22 +216,7 @@ int CMasternodePayments::GetMinMasternodePaymentsProto() const
 
 void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
-    if (strCommand == "mnget") { //Masternode Payments Request Sync
-
-        int nCountNeeded;
-        vRecv >> nCountNeeded;
-
-        if (networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr, "mnget"))
-        {
-            LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
-            Misbehaving(pfrom->GetNodeState(), 20);
-            return;
-        }
-
-        networkFulfilledRequestManager_.AddFulfilledRequest(pfrom->addr, "mnget");
-        Sync(pfrom, nCountNeeded);
-        LogPrint("mnpayments", "mnget - Sent Masternode winners to peer %i\n", pfrom->GetId());
-    } else if (strCommand == "mnw") { //Masternode Payments Declare Winner
+    if (strCommand == "mnw") { //Masternode Payments Declare Winner
         //this is required in litemodef
         CMasternodePaymentWinner winner;
         vRecv >> winner;

@@ -536,7 +536,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
     return false;
 }
 
-bool CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
+bool CMasternodeMan::ProcessMNBroadcastsAndPings(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "mnb") { //Masternode Broadcast
         LOCK(networkMessageManager_.cs_process_message);

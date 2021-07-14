@@ -126,7 +126,7 @@ void CMasternodeSync::SyncMasternodeListWithPeer(CNode* peer)
     peer->PushMessage("ssc", static_cast<int>(MasternodeSyncCode::MASTERNODE_SYNC_LIST), nInvCount);
     LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, peer->GetId());
 }
-void CMasternodeSync::ProcessDSegUpdate(CNode* pfrom,const std::string& strCommand, CDataStream& vRecv)
+void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "dseg")
     { //Get Masternode list or specific entry

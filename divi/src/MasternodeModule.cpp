@@ -350,7 +350,7 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
     static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
     if(!fLiteMode && IsBlockchainSynced())
     {
-        masternodeSync.ProcessDSegUpdate(pfrom,strCommand,vRecv);
+        masternodeSync.ProcessSyncUpdate(pfrom,strCommand,vRecv);
         mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
         masternodePayments.ProcessMessageMasternodePayments(pfrom, strCommand, vRecv);
     }

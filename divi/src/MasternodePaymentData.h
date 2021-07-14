@@ -4,6 +4,7 @@
 #include <uint256.h>
 #include <string>
 #include <MasternodePayeeData.h>
+#include <sync.h>
 
 class MasternodePaymentData
 {
@@ -12,6 +13,8 @@ public:
     std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
     /** Map from score hashes of blocks to the corresponding winners.  */
     std::map<uint256, CMasternodeBlockPayees> mapMasternodeBlocks;
+    mutable CCriticalSection cs_mapMasternodeBlocks;
+    mutable CCriticalSection cs_mapMasternodePayeeVotes;
 
     MasternodePaymentData();
     ~MasternodePaymentData();

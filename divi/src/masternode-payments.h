@@ -56,8 +56,8 @@ private:
     /** Map from score hashes of blocks to the corresponding winners.  */
     std::map<uint256, CMasternodeBlockPayees>& mapMasternodeBlocks;
 
-    mutable CCriticalSection cs_mapMasternodeBlocks;
-    mutable CCriticalSection cs_mapMasternodePayeeVotes;
+    CCriticalSection& cs_mapMasternodeBlocks;
+    CCriticalSection& cs_mapMasternodePayeeVotes;
 
     bool GetBlockPayee(const uint256& seedHash, CScript& payee) const;
     bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;

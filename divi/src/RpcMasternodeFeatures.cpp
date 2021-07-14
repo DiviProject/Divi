@@ -103,7 +103,7 @@ MasternodeStartResult RelayParsedMasternodeBroadcast(CMasternodeBroadcast mnb, c
 
     CDataStream reserializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);
     reserializedBroadcast << mnb;
-    if (!mnodeman.ProcessMessage(nullptr, "mnb", reserializedBroadcast))
+    if (!mnodeman.ProcessMNBroadcastsAndPings(nullptr, "mnb", reserializedBroadcast))
     {
         LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin);
         result.status = false;

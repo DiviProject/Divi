@@ -351,8 +351,8 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
     if(!fLiteMode && IsBlockchainSynced())
     {
         masternodeSync.ProcessSyncUpdate(pfrom,strCommand,vRecv);
-        mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
-        masternodePayments.ProcessMessageMasternodePayments(pfrom, strCommand, vRecv);
+        mnodeman.ProcessMNBroadcastsAndPings(pfrom, strCommand, vRecv);
+        masternodePayments.ProcessMasternodeWinners(pfrom, strCommand, vRecv);
     }
 }
 

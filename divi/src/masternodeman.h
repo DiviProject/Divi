@@ -98,7 +98,7 @@ public:
      *  This method assumes that the ping has already been checked and is valid.
      */
     void RecordSeenPing(const CMasternodePing& mnp);
-    bool ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
+    bool ProcessMNBroadcastsAndPings(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     void ManageLocalMasternode();
     std::string ToString() const;
 };

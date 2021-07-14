@@ -214,7 +214,7 @@ int CMasternodePayments::GetMinMasternodePaymentsProto() const
     return ActiveProtocol();                          // Allow only updated peers
 }
 
-void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
+void CMasternodePayments::ProcessMasternodeWinners(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "mnw") { //Masternode Payments Declare Winner
         //this is required in litemodef

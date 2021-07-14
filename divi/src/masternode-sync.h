@@ -109,6 +109,7 @@ public:
     bool NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer);
     void SyncMasternodeListWithPeer(CNode* peer);
     void ProcessSyncUpdate(CNode* pfrom,const std::string& strCommand, CDataStream& vRecv);
+    void SyncMasternodeWinnersWithPeer(CNode* node, int nCountNeeded);
 };
 
 #endif

@@ -87,7 +87,7 @@ public:
     bool CanVote(const COutPoint& outMasternode, const uint256& seedHash);
 
     int GetMinMasternodePaymentsProto() const;
-    void ProcessMessageMasternodePayments(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
+    void ProcessMasternodeWinners(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     std::string GetRequiredPaymentsString(const uint256& seedHash) const;
     void FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const;
     std::string ToString() const;

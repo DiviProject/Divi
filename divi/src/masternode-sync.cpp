@@ -75,6 +75,35 @@ void CMasternodeSync::Reset()
     lastSyncStageStartTimestamp = clock_.getTime();
 }
 
+void CMasternodeSync::SyncMasternodeWinnersWithPeer(CNode* node, int nCountNeeded)
+{
+    LOCK(masternodePaymentData_.cs_mapMasternodePayeeVotes);
+    nCountNeeded = std::min(nCountNeeded,CMasternodeSync::blockDepthUpToWhichToRequestMNWinners);
+
+    int nInvCount = 0;
+    std::multimap<int, CMasternodePaymentWinner,std::greater<int>> winnersSortedByHeight;
+
+    for(auto it = masternodePaymentData_.mapMasternodePayeeVotes.begin();
+        it != masternodePaymentData_.mapMasternodePayeeVotes.end();
+        ++it)
+    {
+        const CMasternodePaymentWinner& winner = (*it).second;
+        winnersSortedByHeight.insert({winner.GetHeight(), winner});
+    }
+
+    const int startingHeight = (*winnersSortedByHeight.begin()).first;
+    for(auto it = winnersSortedByHeight.begin();
+        it != winnersSortedByHeight.end() &&
+        (*it).first >= startingHeight-nCountNeeded;
+        ++it)
+    {
+        const CMasternodePaymentWinner& winner = (*it).second;
+        node->PushInventory(CInv(MSG_MASTERNODE_WINNER, winner.GetHash()));
+        nInvCount++;
+    }
+    node->PushMessage("ssc", static_cast<int>(MasternodeSyncCode::MASTERNODE_SYNC_MNW), nInvCount);
+}
+
 void CMasternodeSync::DsegUpdate(CNode* pnode)
 {
     LOCK(networkMessageManager_.cs);
@@ -128,7 +157,24 @@ void CMasternodeSync::SyncMasternodeListWithPeer(CNode* peer)
 }
 void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strCommand, CDataStream& vRecv)
 {
-    if (strCommand == "dseg")
+    if (strCommand == "mnget")
+    { //Masternode Payments Request Sync
+
+        int nCountNeeded;
+        vRecv >> nCountNeeded;
+
+        if (networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr, "mnget"))
+        {
+            LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
+            pfrom->GetNodeState()->ApplyMisbehavingPenalty(20);
+            return;
+        }
+
+        networkFulfilledRequestManager_.AddFulfilledRequest(pfrom->addr, "mnget");
+        SyncMasternodeWinnersWithPeer(pfrom, nCountNeeded);
+        LogPrint("mnpayments", "mnget - Sent Masternode winners to peer %i\n", pfrom->GetId());
+    }
+    else if (strCommand == "dseg")
     { //Get Masternode list or specific entry
         LOCK(networkMessageManager_.cs_process_message);
 

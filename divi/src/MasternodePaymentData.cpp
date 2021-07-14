@@ -4,6 +4,8 @@
 MasternodePaymentData::MasternodePaymentData(
     ): mapMasternodePayeeVotes()
     , mapMasternodeBlocks()
+    , cs_mapMasternodeBlocks()
+    , cs_mapMasternodePayeeVotes()
 {
 }
 

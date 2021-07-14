@@ -154,6 +154,8 @@ CMasternodePayments::CMasternodePayments(
     , activeChain_(activeChain)
     , mapMasternodePayeeVotes(paymentData_.mapMasternodePayeeVotes)
     , mapMasternodeBlocks(paymentData_.mapMasternodeBlocks)
+    , cs_mapMasternodeBlocks(paymentData_.cs_mapMasternodeBlocks)
+    , cs_mapMasternodePayeeVotes(paymentData_.cs_mapMasternodePayeeVotes)
 {
 }
 CMasternodePayments::~CMasternodePayments()

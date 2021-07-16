@@ -363,7 +363,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
     static CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
     if (fLiteMode || !masternodeSync.IsMasternodeListSynced() || !mnModule.localNodeIsAMasternode()) return false;
     constexpr int numberOfBlocksIntoTheFutureToVoteOn = 10;
-    static int64_t lastProcessBlockHeight = 0;
+    static int64_t lastBlockVotedOn = 0;
     const int64_t nBlockHeight = pindex->nHeight + numberOfBlocksIntoTheFutureToVoteOn;
 
     //reference node - hybrid mode
@@ -386,7 +386,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
         return false;
     }
 
-    if (nBlockHeight <= lastProcessBlockHeight) return false;
+    if (nBlockHeight <= lastBlockVotedOn) return false;
 
     CMasternodePaymentWinner newWinner(activeMasternode.vin, nBlockHeight, seedHash);
 
@@ -411,7 +411,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
 
         if (masternodePayments.AddWinningMasternode(newWinner)) {
             newWinner.Relay();
-            lastProcessBlockHeight = nBlockHeight;
+            lastBlockVotedOn = nBlockHeight;
             return true;
         }
     }

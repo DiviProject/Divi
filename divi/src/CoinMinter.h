@@ -84,7 +84,6 @@ public:
     virtual bool mintingHasBeenRequested() const;
 
     bool createNewBlock(
-        unsigned int nExtraNonce,
         bool fProofOfStake) const override;
 };
 

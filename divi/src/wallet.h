@@ -26,6 +26,7 @@
 #include <reservekey.h>
 #include <OutputEntry.h>
 #include <Output.h>
+#include <I_StakingCoinSelector.h>
 
 class I_SignatureSizeEstimator;
 class I_CoinSelectionAlgorithm;
@@ -123,7 +124,7 @@ public:
     boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
 };
 
-class CWallet : public CCryptoKeyStore, public NotificationInterface, public I_KeypoolReserver, public I_WalletGuiNotifications
+class CWallet : public CCryptoKeyStore, public NotificationInterface, public I_KeypoolReserver, public I_WalletGuiNotifications, public I_StakingWallet
 {
 public:
     /*
@@ -190,8 +191,9 @@ public:
 
     bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);
 
-    bool HasAgedCoins();
-    bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const;
+    bool HasAgedCoins() override;
+    bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;
+    bool CanStakeCoins() const override;
 
     bool IsSpent(const CWalletTx& wtx, unsigned int n) const;
 

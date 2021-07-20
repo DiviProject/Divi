@@ -9,8 +9,6 @@
 #include <uint256.h>
 #include <primitives/transaction.h>
 
-class I_BlockSubsidyProvider;
-
 class CMasternodePayee
 {
 public:
@@ -41,8 +39,6 @@ private:
     std::set<COutPoint> voters;
 
 public:
-    static const int MNPAYMENTS_SIGNATURES_REQUIRED;
-
     CMasternodeBlockPayees();
     explicit CMasternodeBlockPayees(int nBlockHeightIn);
 
@@ -56,9 +52,6 @@ public:
     bool HasPayeeWithVotes(const CScript& payee, int nVotesReq) const;
     std::vector<CMasternodePayee> GetPaymentVotes() const;
     int GetHeight() const;
-
-    bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew) const;
-    std::string GetRequiredPaymentsString() const;
 
     ADD_SERIALIZE_METHODS;
 

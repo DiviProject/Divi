@@ -141,7 +141,7 @@ void BlockIncentivesPopulator::FillLotteryPayment(CMutableTransaction &tx, const
     }
 }
 
-void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip, bool fProofOfStake) const
+void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip) const
 {
     if (heightValidator_.IsValidTreasuryBlockHeight(chainTip->nHeight + 1)) {
         FillTreasuryPayment(txNew, chainTip->nHeight + 1);

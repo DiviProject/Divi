@@ -150,7 +150,7 @@ void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const 
         FillLotteryPayment(txNew, payments, chainTip);
     }
     else {
-        masternodePayments_.FillBlockPayee(chainTip,txNew, payments, fProofOfStake);
+        masternodePayments_.FillBlockPayee(chainTip,txNew, payments);
     }
 }
 

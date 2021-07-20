@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <boost/thread/recursive_mutex.hpp>
-class CWallet;
+class I_StakingWallet;
 class CChain;
 class CChainParams;
 class CNode;
@@ -51,7 +51,7 @@ public:
         CCoinsViewCache* baseCoinsViewCache,
         CTxMemPool& mempool,
         const I_PeerBlockNotifyService& peers,
-        CWallet& wallet,
+        I_StakingWallet& wallet,
         BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
         BlockMap& blockIndexByHash,
         const CSporkManager& sporkManager);

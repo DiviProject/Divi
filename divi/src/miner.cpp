@@ -22,6 +22,7 @@
 #include <chain.h>
 #include <map>
 #include <FeeAndPriorityCalculator.h>
+#include <wallet.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>

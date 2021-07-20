@@ -208,12 +208,6 @@ void CMasternodePayments::FillBlockPayee(const CBlockIndex* pindexPrev, CMutable
     }
 }
 
-int CMasternodePayments::GetMinMasternodePaymentsProto() const
-{
-    //    if (IsSporkActive(SPORK_10_MASTERNODE_PAY_UPDATED_NODES))
-    return ActiveProtocol();                          // Allow only updated peers
-}
-
 void CMasternodePayments::ProcessMasternodeWinners(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "mnw") { //Masternode Payments Declare Winner
@@ -497,25 +491,6 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
             ++it;
         }
     }
-}
-
-void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
-{
-    LOCK(cs_mapMasternodePayeeVotes);
-    nCountNeeded = std::min(nCountNeeded,CMasternodeSync::blockDepthUpToWhichToRequestMNWinners);
-
-    int nInvCount = 0;
-    const int chainTipHeight = activeChain_.Height();
-    std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
-    while (it != mapMasternodePayeeVotes.end()) {
-        CMasternodePaymentWinner winner = (*it).second;
-        if (winner.GetHeight() >= chainTipHeight - nCountNeeded && winner.GetHeight() <= chainTipHeight + 20) {
-            node->PushInventory(CInv(MSG_MASTERNODE_WINNER, winner.GetHash()));
-            nInvCount++;
-        }
-        ++it;
-    }
-    node->PushMessage("ssc", static_cast<int>(MasternodeSyncCode::MASTERNODE_SYNC_MNW), nInvCount);
 }
 
 std::string CMasternodePayments::ToString() const

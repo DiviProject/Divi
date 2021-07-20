@@ -77,7 +77,6 @@ public:
 
     bool AddWinningMasternode(const CMasternodePaymentWinner &winner);
 
-    void Sync(CNode* node, int nCountNeeded);
     void CheckAndRemove();
     void PruneOldMasternodeWinnerData();
 
@@ -89,7 +88,6 @@ public:
 
     bool CanVote(const COutPoint& outMasternode, const uint256& seedHash);
 
-    int GetMinMasternodePaymentsProto() const;
     void ProcessMasternodeWinners(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     void FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const;
     std::string ToString() const;

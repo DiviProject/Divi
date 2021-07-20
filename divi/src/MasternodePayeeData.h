@@ -41,6 +41,8 @@ private:
     std::set<COutPoint> voters;
 
 public:
+    static const int MNPAYMENTS_SIGNATURES_REQUIRED;
+
     CMasternodeBlockPayees();
     explicit CMasternodeBlockPayees(int nBlockHeightIn);
 

@@ -43,6 +43,10 @@ public:
     mutable CCriticalSection cs_process_message;
 
     MasternodeNetworkMessageManager();
+    void Clear();
+    void CheckAndRemove(){}
+    std::string ToString() const;
+
     std::vector<CMasternode> masternodes;
 
     uint32_t masternodeCount() const;
@@ -51,10 +55,6 @@ public:
     bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);
     bool recordDsegUpdateAttempt(const CAddress& peerAddress);
     bool recordMasternodeEntryRequestAttempt(const COutPoint& masternodeCollateral);
-    void Clear();
-    void CheckAndRemove(){}
-    std::string ToString() const;
-
     bool broadcastIsKnown(const uint256& broadcastHash) const;
     bool pingIsKnown(const uint256& pingHash) const;
     void recordPing(const CMasternodePing& mnp);

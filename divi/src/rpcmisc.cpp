@@ -1166,7 +1166,7 @@ Value getstakingstatus(const Array& params, bool fHelp)
     obj.push_back(Pair("haveconnections", GetPeerCount()>0 ));
     if (pwalletMain) {
         obj.push_back(Pair("walletunlocked", !pwalletMain->IsLocked()));
-        obj.push_back(Pair("mintablecoins", pwalletMain->MintableCoins()));
+        obj.push_back(Pair("mintablecoins", pwalletMain->HasAgedCoins()));
         obj.push_back(Pair("enoughcoins", pwalletMain->GetStakingBalance() > 0  ));
     }
 

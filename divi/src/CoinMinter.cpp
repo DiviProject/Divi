@@ -54,7 +54,7 @@ bool CoinMinter::hasMintableCoinForProofOfStake()
     if(timeWaited > fiveMinutes_)
     {
         lastTimeCheckedMintable_ = GetTime();
-        haveMintableCoins_ = pwallet_->MintableCoins();
+        haveMintableCoins_ = pwallet_->HasAgedCoins();
     }
     else
     {

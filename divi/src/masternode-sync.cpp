@@ -242,7 +242,7 @@ void CMasternodeSync::RecordMasternodeListUpdate(const uint256& hash)
 
 void CMasternodeSync::RecordMasternodeWinnerUpdate(const uint256& hash)
 {
-    if (masternodePaymentData_.masternodeWinnerVoteIsKnown(hash)) {
+    if (masternodePaymentData_.winnerIsKnown(hash)) {
         if (networkMessageManager_.mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
             timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
             networkMessageManager_.mapSeenSyncMNW[hash]++;

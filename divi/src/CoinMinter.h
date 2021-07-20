@@ -59,12 +59,8 @@ class CoinMinter: public I_CoinMinter
         CBlockTemplate& pblocktemplate,
         const bool& fProofOfStake) const;
 
-    bool createProofOfStakeBlock(
-        unsigned int nExtraNonce,
-        CReserveKey& reserveKey) const;
-    bool createProofOfWorkBlock(
-        unsigned int nExtraNonce,
-        CReserveKey& reserveKey) const;
+    bool createProofOfStakeBlock(CReserveKey& reserveKey) const;
+    bool createProofOfWorkBlock(CReserveKey& reserveKey) const;
 
 public:
     CoinMinter(

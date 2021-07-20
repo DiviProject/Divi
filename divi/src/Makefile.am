@@ -228,6 +228,7 @@ BITCOIN_CORE_H = \
   masternode.h \
   MasternodePing.h \
   MasternodePaymentData.h \
+  MasternodePaymentWinner.h \
   MasternodePayeeData.h \
   masternode-payments.h \
   LotteryCoinstakes.h \
@@ -491,6 +492,7 @@ libbitcoin_wallet_a_SOURCES = \
   masternode.cpp \
   MasternodePing.cpp \
   MasternodePaymentData.cpp \
+  MasternodePaymentWinner.cpp \
   MasternodePayeeData.cpp \
   masternode-payments.cpp \
   LotteryWinnersCalculator.cpp \

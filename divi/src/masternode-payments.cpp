@@ -33,7 +33,6 @@
 #include <NodeStateRegistry.h>
 #include <Node.h>
 
-const int CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED = 6;
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL = 10;
 constexpr int MN_WINNER_MINIMUM_AGE = 8000;    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
@@ -390,74 +389,6 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
     payees->CountVote(winnerIn.vinMasternode.prevout, winnerIn.payee);
 
     return true;
-}
-
-bool CMasternodeBlockPayees::IsTransactionValid(const I_BlockSubsidyProvider& subsidies, const CTransaction& txNew) const
-{
-    LOCK(cs_vecPayments);
-    int nMaxSignatures = 0;
-    std::string strPayeesPossible = "";
-    auto rewards = subsidies.GetBlockSubsidity(nBlockHeight);
-
-    CAmount requiredMasternodePayment = rewards.nMasternodeReward;
-
-    //require at least 6 signatures
-    for(const auto& payee : vecPayments)
-        if (payee.nVotes >= nMaxSignatures && payee.nVotes >= CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED)
-            nMaxSignatures = payee.nVotes;
-
-    // if we don't have at least 6 signatures on a payee, approve whichever is the longest chain
-    if (nMaxSignatures < CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED) return true;
-
-    for (const auto& payee : vecPayments) {
-        bool found = false;
-        for (const auto& out : txNew.vout) {
-            if (payee.scriptPubKey == out.scriptPubKey) {
-                if(out.nValue >= requiredMasternodePayment)
-                    found = true;
-                else
-                    LogPrint("masternode","Masternode payment is out of drift range. Paid=%s Min=%s\n", FormatMoney(out.nValue), FormatMoney(requiredMasternodePayment));
-            }
-        }
-
-        if (payee.nVotes >= CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED) {
-            if (found) return true;
-
-            CTxDestination address1;
-            ExtractDestination(payee.scriptPubKey, address1);
-            CBitcoinAddress address2(address1);
-
-            if (strPayeesPossible == "") {
-                strPayeesPossible += address2.ToString();
-            } else {
-                strPayeesPossible += "," + address2.ToString();
-            }
-        }
-    }
-
-    LogPrint("masternode","CMasternodePayments::IsTransactionValid - Missing required payment of %s to %s\n", FormatMoney(requiredMasternodePayment), strPayeesPossible);
-    return false;
-}
-
-std::string CMasternodeBlockPayees::GetRequiredPaymentsString() const
-{
-    LOCK(cs_vecPayments);
-
-    std::string ret = "Unknown";
-
-    for (const auto& payee : vecPayments) {
-        CTxDestination address1;
-        ExtractDestination(payee.scriptPubKey, address1);
-        CBitcoinAddress address2(address1);
-
-        if (ret != "Unknown") {
-            ret += ", " + address2.ToString() + ":" + boost::lexical_cast<std::string>(payee.nVotes);
-        } else {
-            ret = address2.ToString() + ":" + boost::lexical_cast<std::string>(payee.nVotes);
-        }
-    }
-
-    return ret;
 }
 
 std::string CMasternodePayments::GetRequiredPaymentsString(const uint256& seedHash) const

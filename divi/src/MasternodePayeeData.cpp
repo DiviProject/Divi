@@ -6,6 +6,9 @@
 #include <masternode.h>
 #include <net.h>
 #include <MasternodeHelpers.h>
+#include <script/standard.h>
+#include <utilmoneystr.h>
+#include <I_BlockSubsidyProvider.h>
 
 CMasternodePayee::CMasternodePayee()
 {
@@ -24,6 +27,8 @@ CMasternodeBlockPayees::CMasternodeBlockPayees()
     nBlockHeight = 0;
     vecPayments.clear();
 }
+
+const int CMasternodeBlockPayees::MNPAYMENTS_SIGNATURES_REQUIRED = 6;
 
 CMasternodeBlockPayees::CMasternodeBlockPayees(const CMasternodeBlockPayees& o)
     : nBlockHeight(o.nBlockHeight), vecPayments(o.vecPayments), voters(o.voters)
@@ -90,6 +95,68 @@ bool CMasternodeBlockPayees::HasPayeeWithVotes(const CScript& payee, int nVotesR
     return false;
 }
 
+
+bool CMasternodeBlockPayees::IsTransactionValid(const I_BlockSubsidyProvider& subsidies, const CTransaction& txNew) const
+{
+    LOCK(cs_vecPayments);
+    int nMaxSignatures = 0;
+    std::string strPayeesPossible = "";
+    auto rewards = subsidies.GetBlockSubsidity(nBlockHeight);
+
+    CAmount requiredMasternodePayment = rewards.nMasternodeReward;
+
+    //require at least 6 signatures
+    for(const auto& payee : vecPayments)
+        if (payee.nVotes >= nMaxSignatures && payee.nVotes >= CMasternodeBlockPayees::MNPAYMENTS_SIGNATURES_REQUIRED)
+            nMaxSignatures = payee.nVotes;
+
+    // if we don't have at least 6 signatures on a payee, approve whichever is the longest chain
+    if (nMaxSignatures < CMasternodeBlockPayees::MNPAYMENTS_SIGNATURES_REQUIRED) return true;
+
+    for (const auto& payee : vecPayments) {
+        bool found = false;
+        for (const auto& out : txNew.vout) {
+            if (payee.scriptPubKey == out.scriptPubKey) {
+                if(out.nValue >= requiredMasternodePayment)
+                    found = true;
+                else
+                    LogPrint("masternode","Masternode payment is out of drift range. Paid=%s Min=%s\n", FormatMoney(out.nValue), FormatMoney(requiredMasternodePayment));
+            }
+        }
+
+        if (payee.nVotes >= CMasternodeBlockPayees::MNPAYMENTS_SIGNATURES_REQUIRED) {
+            if (found) return true;
+
+            std::string addressString = ExtractDestination(payee.scriptPubKey);
+            if (strPayeesPossible == "") {
+                strPayeesPossible += addressString;
+            } else {
+                strPayeesPossible += "," + addressString;
+            }
+        }
+    }
+
+    LogPrint("masternode","CMasternodePayments::IsTransactionValid - Missing required payment of %s to %s\n", FormatMoney(requiredMasternodePayment), strPayeesPossible);
+    return false;
+}
+
+std::string CMasternodeBlockPayees::GetRequiredPaymentsString() const
+{
+    LOCK(cs_vecPayments);
+
+    std::string ret = "Unknown";
+
+    for (const auto& payee : vecPayments) {
+        std::string addressString = ExtractDestination(payee.scriptPubKey);
+        if (ret != "Unknown") {
+            ret += ", " + addressString + ":" + boost::lexical_cast<std::string>(payee.nVotes);
+        } else {
+            ret = addressString + ":" + boost::lexical_cast<std::string>(payee.nVotes);
+        }
+    }
+
+    return ret;
+}
 
 CMasternodePaymentWinner::CMasternodePaymentWinner()
     : vinMasternode()

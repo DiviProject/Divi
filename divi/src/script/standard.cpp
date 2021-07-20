@@ -11,6 +11,7 @@
 #include "utilstrencodings.h"
 #include <script/StakingVaultScript.h>
 #include <defaultValues.h>
+#include <base58address.h>
 
 #include <boost/foreach.hpp>
 
@@ -336,6 +337,12 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::
     }
 
     return true;
+}
+std::string ExtractDestination(const CScript& scriptPubKey)
+{
+    CTxDestination addressRet;
+    ExtractDestination(scriptPubKey,addressRet);
+    return CBitcoinAddress(addressRet).ToString();
 }
 
 namespace

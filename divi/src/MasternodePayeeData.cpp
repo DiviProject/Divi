@@ -95,6 +95,16 @@ bool CMasternodeBlockPayees::HasPayeeWithVotes(const CScript& payee, int nVotesR
     return false;
 }
 
+std::vector<CMasternodePayee> CMasternodeBlockPayees::GetPaymentVotes() const
+{
+    LOCK(cs_vecPayments);
+    std::vector<CMasternodePayee> paymentVotes = vecPayments;
+    return paymentVotes;
+}
+int CMasternodeBlockPayees::GetHeight() const
+{
+    return nBlockHeight;
+}
 
 bool CMasternodeBlockPayees::IsTransactionValid(const I_BlockSubsidyProvider& subsidies, const CTransaction& txNew) const
 {

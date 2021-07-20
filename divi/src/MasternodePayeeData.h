@@ -54,6 +54,8 @@ public:
     bool CanVote(const COutPoint& voter) const;
     bool GetPayee(CScript& payee) const;
     bool HasPayeeWithVotes(const CScript& payee, int nVotesReq) const;
+    std::vector<CMasternodePayee> GetPaymentVotes() const;
+    int GetHeight() const;
 
     bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew) const;
     std::string GetRequiredPaymentsString() const;

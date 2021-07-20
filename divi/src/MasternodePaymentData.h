@@ -19,7 +19,9 @@ public:
     MasternodePaymentData();
     ~MasternodePaymentData();
 
-    bool masternodeWinnerVoteIsKnown(const uint256& hash) const;
+    bool winnerIsKnown(const uint256& winnerHash) const;
+    bool recordWinner(const CMasternodePaymentWinner& mnw);
+    const CMasternodePaymentWinner& getKnownWinner(const uint256& winnerHash) const;
 
     void CheckAndRemove(){}
     void Clear(){}

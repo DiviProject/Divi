@@ -13,12 +13,20 @@ MasternodePaymentData::~MasternodePaymentData()
 {
 }
 
-bool MasternodePaymentData::masternodeWinnerVoteIsKnown(const uint256& hash) const
+bool MasternodePaymentData::winnerIsKnown(const uint256& hash) const
 {
     const auto mit = mapMasternodePayeeVotes.find(hash);
     if (mit == mapMasternodePayeeVotes.end())
         return false;
     return true;
+}
+bool MasternodePaymentData::recordWinner(const CMasternodePaymentWinner& mnw)
+{
+    return mapMasternodePayeeVotes.emplace(mnw.GetHash(),mnw).second;
+}
+const CMasternodePaymentWinner& MasternodePaymentData::getKnownWinner(const uint256& winnerHash) const
+{
+    return mapMasternodePayeeVotes.find(winnerHash)->second;
 }
 
 std::string MasternodePaymentData::ToString() const

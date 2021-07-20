@@ -2,18 +2,7 @@
 #define RESERVE_KEY_H
 #include <stdint.h>
 #include <pubkey.h>
-class CKeyPool;
-/** A key allocated from the key pool. */
-
-
-// Assuming wallet now inherits from I_KeypoolReserver ...
-class I_KeypoolReserver
-{
-public:
-    virtual void ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool, bool fInternal) = 0;
-    virtual void ReturnKey(int64_t nIndex, bool fInternal) = 0;
-    virtual void KeepKey(int64_t nIndex) = 0;
-};
+#include <I_KeypoolReserver.h>
 
 class CReserveKey
 {

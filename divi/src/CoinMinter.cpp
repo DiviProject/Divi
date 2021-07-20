@@ -130,14 +130,14 @@ void CoinMinter::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) 
         block->nBits = GetNextWorkRequired(pindexPrev, block,chainParameters_);
 }
 
-bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
+bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey, const bool isProofOfStake) const
 {
     LogPrintf("%s\n", *block);
     LogPrintf("generated %s\n", FormatMoney(block->vtx[0].vout[0].nValue));
 
     bool shouldKeepKey = false;
     bool successfulBlock = ProcessNewBlockFoundByMe(block,shouldKeepKey);
-    if(shouldKeepKey) reservekey.KeepKey();
+    if(shouldKeepKey && !isProofOfStake) reservekey.KeepKey();
     if(successfulBlock) peerNotifier_.notifyPeers(block->GetHash());
     return successfulBlock;
 }
@@ -218,7 +218,7 @@ bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
 
     LogPrintf("%s: proof-of-stake block was signed %s \n", __func__, block->GetHash());
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-    blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey);
+    blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey,fProofOfStake);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
     return blockSuccessfullyCreated;
@@ -259,7 +259,7 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
             {
                 // Found a solution
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey);
+                blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey,fProofOfStake);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);
                 LogPrintf("%s:\n",__func__);
                 LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash, hashTarget);

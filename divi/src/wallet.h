@@ -124,7 +124,7 @@ public:
     boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
 };
 
-class CWallet : public CCryptoKeyStore, public NotificationInterface, public I_KeypoolReserver, public I_WalletGuiNotifications, public I_StakingWallet
+class CWallet : public CCryptoKeyStore, public NotificationInterface, public virtual I_KeypoolReserver, public I_WalletGuiNotifications, public I_StakingWallet
 {
 public:
     /*

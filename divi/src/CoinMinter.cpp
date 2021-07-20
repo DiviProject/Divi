@@ -191,13 +191,12 @@ void CoinMinter::SetBlockHeaders(CBlockTemplate& pblocktemplate, const bool& pro
     block.nAccumulatorCheckpoint = static_cast<uint256>(0);
 }
 
-bool CoinMinter::createProofOfStakeBlock(
-    unsigned int nExtraNonce,
-    CReserveKey& reserveKey) const
+bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
 {
     constexpr const bool fProofOfStake = true;
     bool blockSuccessfullyCreated = false;
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
+    unsigned nExtraNonce = 0u;
 
     if (!pblocktemplate.get())
         return false;
@@ -225,13 +224,12 @@ bool CoinMinter::createProofOfStakeBlock(
     return blockSuccessfullyCreated;
 }
 
-bool CoinMinter::createProofOfWorkBlock(
-    unsigned int nExtraNonce,
-    CReserveKey& reserveKey) const
+bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
 {
     constexpr const bool fProofOfStake = false;
     bool blockSuccessfullyCreated = false;
     unsigned int nTransactionsUpdatedLast = mempool_.GetTransactionsUpdated();
+    unsigned int nExtraNonce = 0u;
 
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
 
@@ -304,10 +302,9 @@ bool CoinMinter::createProofOfWorkBlock(
 bool CoinMinter::createNewBlock(
     bool fProofOfStake) const
 {
-    unsigned nExtraNonce = 0u;
     CReserveKey reserveKey(*pwallet_);
     if(fProofOfStake)
-        return createProofOfStakeBlock(nExtraNonce, reserveKey);
+        return createProofOfStakeBlock(reserveKey);
 
-    return createProofOfWorkBlock(nExtraNonce, reserveKey);
+    return createProofOfWorkBlock(reserveKey);
 }

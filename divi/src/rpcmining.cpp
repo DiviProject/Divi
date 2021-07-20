@@ -123,8 +123,7 @@ Value setgenerate(const Array& params, bool fHelp)
         {
             const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
 
-            unsigned int nExtraNonce = 0;
-            const bool newBlockAdded = minter.createNewBlock(nExtraNonce, fProofOfStake);
+            const bool newBlockAdded = minter.createNewBlock(fProofOfStake);
             nHeight +=  newBlockAdded;
 
             if (!newBlockAdded)
@@ -226,8 +225,7 @@ Value generateblock(const Array& params, bool fHelp)
 
     const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
 
-    unsigned int nExtraNonce = 0;
-    const bool newBlockAdded = minter.createNewBlock(nExtraNonce, fProofOfStake);
+    const bool newBlockAdded = minter.createNewBlock(fProofOfStake);
 
     // Don't keep cs_main locked
     LOCK(cs_main);

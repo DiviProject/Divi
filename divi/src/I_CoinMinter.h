@@ -12,7 +12,6 @@ public:
     virtual bool mintingHasBeenRequested() const = 0;
 
     virtual bool createNewBlock(
-        unsigned int nExtraNonce,
         bool fProofOfStake) const = 0;
 };
 

@@ -1,6 +1,6 @@
 #include <CoinMinter.h>
 
-#include <wallet.h>
+#include <I_StakingCoinSelector.h>
 #include <utiltime.h>
 #include <chain.h>
 #include <chainparams.h>
@@ -17,6 +17,7 @@
 #include <Logging.h>
 #include <MasternodeHelpers.h>
 #include <ThreadManagementHelpers.h>
+#include <reservekey.h>
 
 constexpr int hashingDelay = 45;
 extern bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey);
@@ -24,7 +25,7 @@ extern bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey);
 CoinMinter::CoinMinter(
     const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockFactory& blockFactory,
-    CWallet* pwallet,
+    I_StakingWallet& wallet,
     const CChain& chain,
     const CChainParams& chainParameters,
     const I_PeerBlockNotifyService& peerNotifier,
@@ -35,7 +36,7 @@ CoinMinter::CoinMinter(
     , blockFactory_( blockFactory )
     , peerNotifier_( peerNotifier)
     , mintingIsRequested_(false)
-    , pwallet_(pwallet)
+    , wallet_(wallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
     , mempool_(transactionMemoryPool)
@@ -54,7 +55,7 @@ bool CoinMinter::hasMintableCoinForProofOfStake()
     if(timeWaited > fiveMinutes_)
     {
         lastTimeCheckedMintable_ = GetTime();
-        haveMintableCoins_ = pwallet_->HasAgedCoins();
+        haveMintableCoins_ = wallet_.HasAgedCoins();
     }
     else
     {
@@ -78,8 +79,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
     bool stakingRequirementsAreMet =
         chainTipIsSyncedEnough &&
         peerNotifier_.havePeersToNotify() &&
-        !pwallet_->IsLocked() &&
-        !(pwallet_->GetStakingBalance() <= 0) &&
+        wallet_.CanStakeCoins() &&
         masternodeSync_.IsSynced();
     return stakingRequirementsAreMet;
 }
@@ -211,7 +211,7 @@ bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
     //Stake miner main
     LogPrintf("%s: proof-of-stake block found %s \n",__func__, block->GetHash());
 
-    if (!SignBlock(*pwallet_, *block)) {
+    if (!SignBlock(wallet_, *block)) {
         LogPrintf("%s: Signing new block failed \n",__func__);
         return false;
     }
@@ -302,7 +302,7 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
 bool CoinMinter::createNewBlock(
     bool fProofOfStake) const
 {
-    CReserveKey reserveKey(*pwallet_);
+    CReserveKey reserveKey(wallet_);
     if(fProofOfStake)
         return createProofOfStakeBlock(reserveKey);
 

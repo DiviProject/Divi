@@ -62,6 +62,9 @@ private:
     bool GetBlockPayee(const uint256& seedHash, CScript& payee) const;
     bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;
     bool CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CMasternode& masternode) const;
+
+    std::string GetRequiredPaymentsString(const CMasternodeBlockPayees& payees) const;
+    bool IsTransactionValid(const CMasternodeBlockPayees& payees, const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew) const;
 public:
     static const int MNPAYMENTS_SIGNATURES_REQUIRED;
     static const int MNPAYMENTS_SIGNATURES_TOTAL;
@@ -80,9 +83,7 @@ public:
     void CheckAndRemove();
     void PruneOldMasternodeWinnerData();
 
-    std::string GetRequiredPaymentsString(const CMasternodeBlockPayees& payees) const;
     std::string GetRequiredPaymentsString(const uint256& seedHash) const;
-    bool IsTransactionValid(const CMasternodeBlockPayees& payees, const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew) const;
     bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& seedHash) const;
     bool IsScheduled(const CScript mnpayee, int nNotBlockHeight) const;
 

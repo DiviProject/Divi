@@ -24,8 +24,7 @@ void ThreadStakeMinter(CWallet* pwallet);
 
 void MintCoins(
     bool fProofOfStake,
-    I_CoinMinter& minter,
-    unsigned int nExtraNonce);
+    I_CoinMinter& minter);
 void MinterThread(bool fProofOfStake, I_CoinMinter& minter);
 bool HasRecentlyAttemptedToGenerateProofOfStake();
 

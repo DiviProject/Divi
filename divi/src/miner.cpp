@@ -50,8 +50,7 @@ LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight()
 //
 void MintCoins(
     bool fProofOfStake,
-    I_CoinMinter& minter,
-    unsigned int nExtraNonce)
+    I_CoinMinter& minter)
 {
     while (minter.mintingHasBeenRequested())
     {
@@ -61,7 +60,7 @@ void MintCoins(
         }
         else
         {
-            minter.createNewBlock(nExtraNonce,fProofOfStake);
+            minter.createNewBlock(fProofOfStake);
         }
     }
 
@@ -73,12 +72,11 @@ void MinterThread(bool fProofOfStake, I_CoinMinter& minter)
     RenameThread("divi-miner");
 
     // Each thread has its own key and counter
-    unsigned int nExtraNonce = 0;
 
     while(true) {
 
         try {
-            MintCoins(fProofOfStake,minter,nExtraNonce);
+            MintCoins(fProofOfStake,minter);
         }
         catch (const boost::thread_interrupted&)
         {

@@ -1817,6 +1817,10 @@ bool CWallet::HasAgedCoins()
 
     return false;
 }
+bool CWallet::CanStakeCoins() const
+{
+    return !IsLocked() && !(GetStakingBalance() <= 0);
+}
 
 static void FilterToKeepConfirmedAndSpendableOutputs(
     const CWallet& wallet,

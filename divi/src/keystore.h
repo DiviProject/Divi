@@ -60,7 +60,7 @@ typedef std::set<CScript> WatchOnlySet;
 typedef std::set<CScript> MultiSigScriptSet;
 
 /** Basic key store, that keeps keys in an address->secret map */
-class CBasicKeyStore : public CKeyStore
+class CBasicKeyStore : public virtual CKeyStore
 {
 protected:
     KeyMap mapKeys;

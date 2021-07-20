@@ -45,8 +45,6 @@ CMasternodeSync::CMasternodeSync(
     , clock_(clock)
     , networkMessageManager_(networkMessageManager)
     , masternodePaymentData_(masternodePaymentData)
-    , mapSeenSyncMNB(networkMessageManager_.mapSeenSyncMNB)
-    , mapSeenSyncMNW(networkMessageManager_.mapSeenSyncMNW)
     , timestampOfLastMasternodeListUpdate(0)
     , timestampOfLastMasternodeWinnerUpdate(0)
     , timestampOfLastFailedSync(0)
@@ -61,8 +59,8 @@ bool CMasternodeSync::IsSynced() const
 
 void CMasternodeSync::Reset()
 {
-    mapSeenSyncMNB.clear();
-    mapSeenSyncMNW.clear();
+    networkMessageManager_.mapSeenSyncMNB.clear();
+    networkMessageManager_.mapSeenSyncMNW.clear();
     timestampOfLastMasternodeListUpdate = 0;
     timestampOfLastMasternodeWinnerUpdate = 0;
     countOfFailedSyncAttempts = 0;
@@ -232,26 +230,26 @@ void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strComma
 void CMasternodeSync::RecordMasternodeListUpdate(const uint256& hash)
 {
     if (networkMessageManager_.broadcastIsKnown(hash)) {
-        if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
+        if (networkMessageManager_.mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
             timestampOfLastMasternodeListUpdate = clock_.getTime();
-            mapSeenSyncMNB[hash]++;
+            networkMessageManager_.mapSeenSyncMNB[hash]++;
         }
     } else {
         timestampOfLastMasternodeListUpdate = clock_.getTime();
-        mapSeenSyncMNB.insert(std::make_pair(hash, 1));
+        networkMessageManager_.mapSeenSyncMNB.insert(std::make_pair(hash, 1));
     }
 }
 
 void CMasternodeSync::RecordMasternodeWinnerUpdate(const uint256& hash)
 {
     if (masternodePaymentData_.masternodeWinnerVoteIsKnown(hash)) {
-        if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
+        if (networkMessageManager_.mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
             timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
-            mapSeenSyncMNW[hash]++;
+            networkMessageManager_.mapSeenSyncMNW[hash]++;
         }
     } else {
         timestampOfLastMasternodeWinnerUpdate = clock_.getTime();
-        mapSeenSyncMNW.insert(std::make_pair(hash, 1));
+        networkMessageManager_.mapSeenSyncMNW.insert(std::make_pair(hash, 1));
     }
 }
 

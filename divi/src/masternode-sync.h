@@ -56,8 +56,6 @@ private:
     const I_Clock& clock_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
-    std::map<uint256, int>& mapSeenSyncMNB;
-    std::map<uint256, int>& mapSeenSyncMNW;
 
 public:
     static const int blockDepthUpToWhichToRequestMNWinners;

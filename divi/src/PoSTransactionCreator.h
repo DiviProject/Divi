@@ -26,6 +26,7 @@ class BlockMap;
 class StakedCoins;
 struct StakableCoin;
 class Settings;
+class I_StakingWallet;
 
 class PoSTransactionCreator: public I_PoSTransactionCreator
 {
@@ -38,7 +39,7 @@ private:
     const I_BlockIncentivesPopulator& incentives_;
     const I_ProofOfStakeGenerator& proofGenerator_;
     std::unique_ptr<StakedCoins> stakedCoins_;
-    CWallet& wallet_;
+    I_StakingWallet& wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
     int64_t hashproofTimestampMinimumValue_;
 
@@ -86,7 +87,7 @@ public:
         const I_BlockSubsidyProvider& blockSubsidies,
         const I_BlockIncentivesPopulator& incentives,
         const I_ProofOfStakeGenerator& proofGenerator,
-        CWallet& wallet,
+        I_StakingWallet& wallet,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     ~PoSTransactionCreator();
     virtual bool CreateProofOfStake(

@@ -10,6 +10,8 @@
 #include <BlockIncentivesPopulator.h>
 #include <ProofOfStakeModule.h>
 #include <MasternodeModule.h>
+#include <I_StakingCoinSelector.h>
+#include <wallet.h>
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,

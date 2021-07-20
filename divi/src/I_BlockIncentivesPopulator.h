@@ -14,7 +14,7 @@ public:
     I_BlockIncentivesPopulator() = default;
     virtual ~I_BlockIncentivesPopulator() = default;
 
-    virtual void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip, bool fProofOfStake) const = 0;
+    virtual void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip) const = 0;
     virtual bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const = 0;
     virtual bool HasValidPayees(const CTransaction &txNew, const CBlockIndex* pindex) const = 0;
 };

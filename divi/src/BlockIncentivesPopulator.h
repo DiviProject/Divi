@@ -42,7 +42,7 @@ public:
         const I_BlockSubsidyProvider& blockSubsidies,
         const CSporkManager& sporkManager);
 
-    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip, bool fProofOfStake) const override;
+    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip) const override;
     bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const override;
     bool HasValidPayees(const CTransaction &txNew, const CBlockIndex* pindex) const override;
 };

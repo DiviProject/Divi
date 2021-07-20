@@ -9,7 +9,7 @@
 class MockBlockIncentivesPopulator : public I_BlockIncentivesPopulator
 {
 public:
-    MOCK_CONST_METHOD4(FillBlockPayee, void(CMutableTransaction&, const CBlockRewards&, const CBlockIndex*, bool fProofOfStake));
+    MOCK_CONST_METHOD3(FillBlockPayee, void(CMutableTransaction&, const CBlockRewards&, const CBlockIndex*));
     MOCK_CONST_METHOD3(IsBlockValueValid, bool(const CBlockRewards&, CAmount, int));
     MOCK_CONST_METHOD2(HasValidPayees, bool(const CTransaction&, const CBlockIndex*));
 };

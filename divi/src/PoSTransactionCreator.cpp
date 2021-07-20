@@ -276,7 +276,7 @@ void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
     CMutableTransaction& txCoinStake)
 {
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
-    incentives_.FillBlockPayee(txCoinStake,blockSubdidy,chainTip,true);
+    incentives_.FillBlockPayee(txCoinStake,blockSubdidy,chainTip);
 }
 
 bool PoSTransactionCreator::CreateProofOfStake(

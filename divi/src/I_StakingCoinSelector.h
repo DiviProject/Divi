@@ -3,6 +3,7 @@
 #include <StakableCoin.h>
 #include <set>
 #include <keystore.h>
+#include <I_KeypoolReserver.h>
 
 class I_StakingCoinSelector
 {
@@ -12,7 +13,7 @@ public:
     virtual bool HasAgedCoins() = 0;
     virtual bool CanStakeCoins() const = 0;
 };
-class I_StakingWallet: public virtual CKeyStore, public I_StakingCoinSelector
+class I_StakingWallet: public virtual CKeyStore, public I_StakingCoinSelector, public virtual I_KeypoolReserver
 {
 public:
     virtual ~I_StakingWallet(){}

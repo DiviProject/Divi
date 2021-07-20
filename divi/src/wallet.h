@@ -190,7 +190,7 @@ public:
 
     bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);
 
-    bool MintableCoins();
+    bool HasAgedCoins();
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const;
 
     bool IsSpent(const CWalletTx& wtx, unsigned int n) const;

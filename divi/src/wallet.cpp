@@ -1800,7 +1800,7 @@ bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const
     return true;
 }
 
-bool CWallet::MintableCoins()
+bool CWallet::HasAgedCoins()
 {
     if (GetStakingBalance() <= 0)
         return false;

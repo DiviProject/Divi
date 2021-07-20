@@ -329,6 +329,7 @@ BITCOIN_CORE_H = \
   StakableCoin.h \
   keypool.h \
   reservekey.h \
+  I_KeypoolReserver.h \
   WalletBackupCreator.h \
   WalletBackupFeatureContainer.h \
   WalletIntegrityVerifier.h \

@@ -89,7 +89,7 @@ public:
     bool CanVote(const COutPoint& outMasternode, const uint256& seedHash);
 
     void ProcessMasternodeWinners(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
-    void FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const;
+    void FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards) const;
     std::string ToString() const;
 
     unsigned FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const;

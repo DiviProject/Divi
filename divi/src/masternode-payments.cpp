@@ -175,7 +175,7 @@ bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256&
 }
 
 
-void CMasternodePayments::FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const
+void CMasternodePayments::FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards) const
 {
     bool hasPayment = true;
     CScript payee;

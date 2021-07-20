@@ -81,7 +81,7 @@ protected:
         .WillRepeatedly(Return(CBlockRewards(10 * COIN, COIN, 0, 0, 0, 0)));
 
     /* We don't care about the block payments.  */
-    EXPECT_CALL(blockIncentivesPopulator, FillBlockPayee(_, _, _, _)).Times(AtLeast(0));
+    EXPECT_CALL(blockIncentivesPopulator, FillBlockPayee(_, _, _)).Times(AtLeast(0));
     EXPECT_CALL(blockIncentivesPopulator, IsBlockValueValid(_, _, _))
         .WillRepeatedly(Return(true));
     EXPECT_CALL(blockIncentivesPopulator, HasValidPayees(_, _))

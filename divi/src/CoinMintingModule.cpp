@@ -92,7 +92,7 @@ CoinMintingModule::CoinMintingModule(
     , coinMinter_( new CoinMinter(
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockFactory_,
-        &wallet,
+        wallet,
         activeChain,
         chainParameters,
         peerNotifier,

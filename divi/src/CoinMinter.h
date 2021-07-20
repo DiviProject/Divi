@@ -9,7 +9,7 @@
 
 #include <boost/thread/recursive_mutex.hpp>
 
-class CWallet;
+class I_StakingWallet;
 class CChain;
 class CChainParams;
 class I_PeerBlockNotifyService;
@@ -33,7 +33,7 @@ class CoinMinter: public I_CoinMinter
     const I_PeerBlockNotifyService& peerNotifier_;
 
     bool mintingIsRequested_;
-    CWallet* pwallet_;
+    I_StakingWallet& wallet_;
     const CChain& chain_;
     const CChainParams& chainParameters_;
     CTxMemPool& mempool_;
@@ -66,7 +66,7 @@ public:
     CoinMinter(
         const I_BlockSubsidyProvider& blockSubsidies,
         I_BlockFactory& blockFactory,
-        CWallet* pwallet,
+        I_StakingWallet& wallet,
         const CChain& chain,
         const CChainParams& chainParameters,
         const I_PeerBlockNotifyService& peers,

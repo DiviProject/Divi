@@ -1187,7 +1187,6 @@ Value sendmany(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     // Send
-    CReserveKey keyChange(*pwalletMain);
     std::pair<std::string,bool> fCreated = pwalletMain->SendMoney(vecSend, wtx);
     if (!fCreated.second)
         throw JSONRPCError(RPC_WALLET_ERROR, fCreated.first);

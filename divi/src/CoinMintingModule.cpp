@@ -10,8 +10,6 @@
 #include <BlockIncentivesPopulator.h>
 #include <ProofOfStakeModule.h>
 #include <MasternodeModule.h>
-#include <I_StakingCoinSelector.h>
-#include <wallet.h>
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
@@ -52,7 +50,7 @@ CoinMintingModule::CoinMintingModule(
     CCoinsViewCache* baseCoinsViewCache,
     CTxMemPool& mempool,
     const I_PeerBlockNotifyService& peerNotifier,
-    CWallet& wallet,
+    I_StakingWallet& wallet,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
     BlockMap& blockIndexByHash,
     const CSporkManager& sporkManager

@@ -457,15 +457,6 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
     if(nHeight >0) paymentData_.pruneOutdatedMasternodeWinners(nHeight);
 }
 
-std::string CMasternodePayments::ToString() const
-{
-    std::ostringstream info;
-
-    info << "Votes: " << (int)mapMasternodePayeeVotes.size() << ", Blocks: " << (int)mapMasternodeBlocks.size();
-
-    return info.str();
-}
-
 unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const
 {
     const CBlockIndex* chainTip = activeChain_.Tip();

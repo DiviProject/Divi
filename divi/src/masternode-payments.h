@@ -120,18 +120,6 @@ public:
         return &mit->second;
     }
 
-    /** Retrieves the payees for the given block.  Returns null if there is
-     *  no matching entry.  */
-    const CMasternodeBlockPayees* GetPayeesForScoreHash(const uint256& hash) const {
-        return const_cast<CMasternodePayments*>(this)->GetPayeesForScoreHash(hash);
-    }
-    CMasternodeBlockPayees* GetPayeesForScoreHash(const uint256& hash) {
-        const auto mit = mapMasternodeBlocks.find(hash);
-        if (mit == mapMasternodeBlocks.end())
-            return nullptr;
-        return &mit->second;
-    }
-
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>

@@ -167,7 +167,7 @@ bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256&
 {
     LOCK(cs_mapMasternodePayeeVotes);
 
-    const auto* payees = GetPayeesForScoreHash(seedHash);
+    const auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
     if (payees == nullptr)
         return true;
 
@@ -270,7 +270,7 @@ void CMasternodePayments::ProcessMasternodeWinners(CNode* pfrom, const std::stri
 
 bool CMasternodePayments::GetBlockPayee(const uint256& seedHash, CScript& payee) const
 {
-    auto* payees = GetPayeesForScoreHash(seedHash);
+    auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
     if (payees != nullptr)
         return payees->GetPayee(payee);
 
@@ -352,7 +352,7 @@ bool CMasternodePayments::IsScheduled(const CScript mnpayee, int nNotBlockHeight
         if (tip->nHeight + h == nNotBlockHeight) continue;
         uint256 seedHash;
         if (!GetBlockHashForScoring(seedHash, tip, h)) continue;
-        auto* payees = GetPayeesForScoreHash(seedHash);
+        auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
         CScript payee;
         if (payees != nullptr && payees->GetPayee(payee) && payee == mnpayee)
             return true;
@@ -386,7 +386,7 @@ std::string CMasternodePayments::GetRequiredPaymentsString(const uint256& seedHa
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    auto* payees = GetPayeesForScoreHash(seedHash);
+    auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
     if (payees != nullptr)
         return GetRequiredPaymentsString(*payees);
 
@@ -440,7 +440,7 @@ bool CMasternodePayments::IsTransactionValid(const I_BlockSubsidyProvider& subsi
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    auto* payees = GetPayeesForScoreHash(seedHash);
+    auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
     if (payees != nullptr)
         return IsTransactionValid(*payees,subsidies,txNew);
 
@@ -483,7 +483,7 @@ unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& master
         if (!GetBlockHashForScoring(seedHash, chainTip, 0))
             continue;
 
-        auto* masternodePayees = GetPayeesForScoreHash(seedHash);
+        auto* masternodePayees = paymentData_.getPayeesForScoreHash(seedHash);
         if (masternodePayees != nullptr) {
             /*
                 Search for this payee, with at least 2 votes. This will aid in consensus allowing the network

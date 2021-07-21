@@ -412,10 +412,6 @@ bool CMasternodePayments::IsTransactionValid(const I_BlockSubsidyProvider& subsi
     return true;
 }
 
-void CMasternodePayments::CheckAndRemove()
-{
-}
-
 void CMasternodePayments::PruneOldMasternodeWinnerData()
 {
     const int nHeight = activeChain_.Height();

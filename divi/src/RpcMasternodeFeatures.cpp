@@ -14,11 +14,16 @@
 #include <MasternodeBroadcastFactory.h>
 #include <MasternodeNetworkMessageManager.h>
 #include <masternode-payments.h>
+#include <MasternodePaymentData.h>
 #include <sync.h>
 #include <StoredMasternodeBroadcasts.h>
 #include <timedata.h>
 #include <utilstrencodings.h>
 #include <MasternodeHelpers.h>
+#include <chain.h>
+#include <script/standard.h>
+
+extern CChain chainActive;
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 template <typename T>
@@ -214,11 +219,48 @@ ActiveMasternodeStatus GetActiveMasternodeStatus()
     }
 }
 
+unsigned FindLastPayeePaymentTime(const MasternodePaymentData& paymentData, const CMasternode& masternode, const unsigned maxBlockDepth)
+{
+    const CBlockIndex* chainTip = chainActive.Tip();
+    if (chainTip == NULL) return 0u;
+
+    CScript mnPayee = GetScriptForDestination(masternode.pubKeyCollateralAddress.GetID());
+    unsigned n = 0;
+    for (unsigned int i = 1; chainTip && chainTip->nHeight > 0; i++) {
+        if (n >= maxBlockDepth) {
+            return 0u;
+        }
+        n++;
+
+        uint256 scoringBlockHash;
+        if (!GetBlockHashForScoring(scoringBlockHash, chainTip, 0))
+            continue;
+
+        auto* masternodePayees = paymentData.getPayeesForScoreHash(scoringBlockHash);
+        if (masternodePayees != nullptr) {
+            /*
+                Search for this payee, with at least 2 votes. This will aid in consensus allowing the network
+                to converge on the same payees quickly, then keep the same schedule.
+            */
+            if (masternodePayees->HasPayeeWithVotes(mnPayee, 2)) {
+                return chainTip->nTime + masternode.DeterministicTimeOffset();
+            }
+        }
+
+        if (chainTip->pprev == NULL) {
+            assert(chainTip);
+            break;
+        }
+        chainTip = chainTip->pprev;
+    }
+    return 0u;
+}
+
 std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)
 {
     const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
-    auto& masternodePayments = mnModule.getMasternodePayments();
+    const MasternodePaymentData& paymentData = mnModule.getMasternodePaymentData();
 
     std::vector<MasternodeListEntry> masternodeList;
     std::vector<CMasternode> masternodeVector = networkMessageManager.GetFullMasternodeVector();
@@ -256,7 +298,7 @@ std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)
         entry.protocolVersion = masternode.protocolVersion;
         entry.lastSeenTime = (int64_t)masternode.lastPing.sigTime;
         entry.activeTime = (int64_t)(masternode.lastPing.sigTime - masternode.sigTime);
-        entry.lastPaidTime = (int64_t)masternodePayments.FindLastPayeePaymentTime(masternode,numberOfBlocksToSearchBackForLastPayment);
+        entry.lastPaidTime = (int64_t) FindLastPayeePaymentTime(paymentData,masternode,numberOfBlocksToSearchBackForLastPayment);
         entry.masternodeTier = CMasternode::TierToString(static_cast<MasternodeTier>(masternode.nTier));
     }
     return masternodeList;

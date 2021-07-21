@@ -218,7 +218,7 @@ void CMasternodePayments::ProcessMasternodeWinners(CNode* pfrom, const std::stri
         if (pfrom->nVersion < ActiveProtocol()) return;
 
         const int chainTipHeight = activeChain_.Height();
-        if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
+        if (paymentData_.getPaymentWinnerForHash(winner.GetHash()) != nullptr) {
             LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), chainTipHeight);
             masternodeSynchronization_.RecordMasternodeWinnerUpdate(winner.GetHash());
             return;

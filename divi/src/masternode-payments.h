@@ -107,18 +107,6 @@ public:
     unsigned GetMasternodeRank(const CTxIn& vin, const uint256& seedHash,
                                int minProtocol, unsigned nCheckNum) const;
     void ResetRankingCache();
-
-    /** Retrieves the payment winner for the given hash.  Returns null
-     *  if there is no entry for that hash.  */
-    const CMasternodePaymentWinner* GetPaymentWinnerForHash(const uint256& hash) const {
-        return const_cast<CMasternodePayments*>(this)->GetPaymentWinnerForHash(hash);
-    }
-    CMasternodePaymentWinner* GetPaymentWinnerForHash(const uint256& hash) {
-        const auto mit = mapMasternodePayeeVotes.find(hash);
-        if (mit == mapMasternodePayeeVotes.end())
-            return nullptr;
-        return &mit->second;
-    }
 };
 
 

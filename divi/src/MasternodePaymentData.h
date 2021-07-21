@@ -25,6 +25,8 @@ public:
     void pruneOutdatedMasternodeWinners(const int currentChainHeight);
     const CMasternodeBlockPayees* getPayeesForScoreHash(const uint256& hash) const;
     CMasternodeBlockPayees* getPayeesForScoreHash(const uint256& hash);
+    const CMasternodePaymentWinner* getPaymentWinnerForHash(const uint256& hash) const;
+    CMasternodePaymentWinner* getPaymentWinnerForHash(const uint256& hash);
 
     void CheckAndRemove(){}
     void Clear(){}

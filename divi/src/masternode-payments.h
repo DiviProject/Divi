@@ -75,7 +75,6 @@ public:
 
     bool AddWinningMasternode(const CMasternodePaymentWinner &winner);
 
-    void CheckAndRemove();
     void PruneOldMasternodeWinnerData();
 
     bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& scoringBlockHash) const;

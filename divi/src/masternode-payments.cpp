@@ -422,43 +422,6 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
     if(nHeight >0) paymentData_.pruneOutdatedMasternodeWinners(nHeight);
 }
 
-unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const
-{
-    const CBlockIndex* chainTip = activeChain_.Tip();
-    if (chainTip == NULL) return 0u;
-
-    CScript mnPayee = GetScriptForDestination(masternode.pubKeyCollateralAddress.GetID());
-    unsigned n = 0;
-    for (unsigned int i = 1; chainTip && chainTip->nHeight > 0; i++) {
-        if (n >= maxBlockDepth) {
-            return 0u;
-        }
-        n++;
-
-        uint256 scoringBlockHash;
-        if (!GetBlockHashForScoring(scoringBlockHash, chainTip, 0))
-            continue;
-
-        auto* masternodePayees = paymentData_.getPayeesForScoreHash(scoringBlockHash);
-        if (masternodePayees != nullptr) {
-            /*
-                Search for this payee, with at least 2 votes. This will aid in consensus allowing the network
-                to converge on the same payees quickly, then keep the same schedule.
-            */
-            if (masternodePayees->HasPayeeWithVotes(mnPayee, 2)) {
-                return chainTip->nTime + masternode.DeterministicTimeOffset();
-            }
-        }
-
-        if (chainTip->pprev == NULL) {
-            assert(chainTip);
-            break;
-        }
-        chainTip = chainTip->pprev;
-    }
-    return 0u;
-}
-
 CScript CMasternodePayments::GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset) const
 {
     std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(pindex, offset);

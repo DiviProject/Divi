@@ -86,7 +86,6 @@ public:
     void ProcessMasternodeWinners(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     void FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards) const;
 
-    unsigned FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const;
     CScript GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset) const;
     std::vector<CMasternode*> GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset) const;
     std::vector<CMasternode*> GetMasternodePaymentQueue(const uint256& scoringBlockHash, const int nBlockHeight) const;

@@ -62,6 +62,19 @@ void MasternodePaymentData::pruneOutdatedMasternodeWinners(const int currentChai
         }
     }
 }
+/** Retrieves the payees for the given block.  Returns null if there is
+ *  no matching entry.  */
+const CMasternodeBlockPayees* MasternodePaymentData::getPayeesForScoreHash(const uint256& hash) const
+{
+    return const_cast<MasternodePaymentData*>(this)->getPayeesForScoreHash(hash);
+}
+CMasternodeBlockPayees* MasternodePaymentData::getPayeesForScoreHash(const uint256& hash)
+{
+    const auto mit = mapMasternodeBlocks.find(hash);
+    if (mit == mapMasternodeBlocks.end())
+        return nullptr;
+    return &mit->second;
+}
 
 std::string MasternodePaymentData::ToString() const
 {

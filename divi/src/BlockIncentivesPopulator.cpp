@@ -212,13 +212,13 @@ bool BlockIncentivesPopulator::HasValidMasternodePayee(const CTransaction &txNew
     }
 
     //check for masternode payee
-    uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, pindex, 0)) {
+    uint256 scoringBlockHash;
+    if (!GetBlockHashForScoring(scoringBlockHash, pindex, 0)) {
         LogPrint("masternode", "%s : failed to get scoring hash for height %d\n",
                  __func__, pindex->nHeight);
         return false;
     }
-    if (masternodePayments_.IsTransactionValid(blockSubsidies_,txNew, seedHash) || settings.GetBoolArg("-override_mnpayee",false))
+    if (masternodePayments_.IsTransactionValid(blockSubsidies_,txNew, scoringBlockHash) || settings.GetBoolArg("-override_mnpayee",false))
         return true;
     LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew);
 

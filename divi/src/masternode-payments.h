@@ -55,7 +55,7 @@ private:
     std::map<uint256, CMasternodeBlockPayees>& mapMasternodeBlocks;
     CCriticalSection& cs_mapMasternodeBlocks;
 
-    bool GetBlockPayee(const uint256& seedHash, CScript& payee) const;
+    bool GetBlockPayee(const uint256& scoringBlockHash, CScript& payee) const;
     bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;
     bool CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CMasternode& masternode) const;
 
@@ -79,11 +79,11 @@ public:
     void CheckAndRemove();
     void PruneOldMasternodeWinnerData();
 
-    std::string GetRequiredPaymentsString(const uint256& seedHash) const;
-    bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& seedHash) const;
+    std::string GetRequiredPaymentsString(const uint256& scoringBlockHash) const;
+    bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& scoringBlockHash) const;
     bool IsScheduled(const CScript mnpayee, int nNotBlockHeight) const;
 
-    bool CanVote(const COutPoint& outMasternode, const uint256& seedHash);
+    bool CanVote(const COutPoint& outMasternode, const uint256& scoringBlockHash);
 
     void ProcessMasternodeWinners(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     void FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards) const;
@@ -91,7 +91,7 @@ public:
     unsigned FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const;
     CScript GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset) const;
     std::vector<CMasternode*> GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset) const;
-    std::vector<CMasternode*> GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight) const;
+    std::vector<CMasternode*> GetMasternodePaymentQueue(const uint256& scoringBlockHash, const int nBlockHeight) const;
 
     /** Returns the given masternode's rank among all active and with the
      *  given minimum protocol version.  Returns (unsigned)-1 if the node is not
@@ -99,7 +99,7 @@ public:
      *
      *  If the given node is not in the top-"nCheckNum" masternodes by rank, then
      *  nCheckNum + 1 is returned (instead of the exact rank).  */
-    unsigned GetMasternodeRank(const CTxIn& vin, const uint256& seedHash,
+    unsigned GetMasternodeRank(const CTxIn& vin, const uint256& scoringBlockHash,
                                int minProtocol, unsigned nCheckNum) const;
     void ResetRankingCache();
 };

@@ -161,13 +161,13 @@ static uint256 CalculateScoreHelper(CHashWriter hashWritter, int round)
 // the proof of work for that block. The further away they are the better, the furthest will win the election
 // and get paid this block
 //
-uint256 CMasternode::CalculateScore(const uint256& seedHash) const
+uint256 CMasternode::CalculateScore(const uint256& scoringBlockHash) const
 {
     const uint256 aux = vin.prevout.hash + vin.prevout.n;
     const size_t nHashRounds = GetHashRoundsForTierMasternodes(static_cast<MasternodeTier>(nTier));
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-    ss << seedHash;
+    ss << scoringBlockHash;
     ss << aux;
 
     uint256 r;

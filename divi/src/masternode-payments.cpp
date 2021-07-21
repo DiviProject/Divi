@@ -152,10 +152,8 @@ CMasternodePayments::CMasternodePayments(
     , masternodeManager_(masternodeManager)
     , masternodeSynchronization_(masternodeSynchronization)
     , activeChain_(activeChain)
-    , mapMasternodePayeeVotes(paymentData_.mapMasternodePayeeVotes)
     , mapMasternodeBlocks(paymentData_.mapMasternodeBlocks)
     , cs_mapMasternodeBlocks(paymentData_.cs_mapMasternodeBlocks)
-    , cs_mapMasternodePayeeVotes(paymentData_.cs_mapMasternodePayeeVotes)
 {
 }
 CMasternodePayments::~CMasternodePayments()
@@ -165,13 +163,7 @@ CMasternodePayments::~CMasternodePayments()
 
 bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256& seedHash)
 {
-    LOCK(cs_mapMasternodePayeeVotes);
-
-    const auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
-    if (payees == nullptr)
-        return true;
-
-    return payees->CanVote(outMasternode);
+    return paymentData_.canVote(outMasternode,seedHash);
 }
 
 

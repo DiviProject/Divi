@@ -59,7 +59,7 @@ struct RankingCacheEntry
   using value_type = std::array<uint256, MAX_RANKING_CHECK_NUM>;
 
   /** The scoring hash this is for, i.e. the key.  */
-  uint256 seedHash;
+  uint256 scoringBlockHash;
 
   /** The list of best masternodes by rank (represented through
    *  their vin prevout hashes).  */
@@ -75,12 +75,12 @@ struct RankingCacheEntry
 
 bool operator==(const RankingCacheEntry& a, const RankingCacheEntry& b)
 {
-  return a.seedHash == b.seedHash;
+  return a.scoringBlockHash == b.scoringBlockHash;
 }
 
 bool operator<(const RankingCacheEntry& a, const RankingCacheEntry& b)
 {
-  return a.seedHash < b.seedHash;
+  return a.scoringBlockHash < b.scoringBlockHash;
 }
 
 } // anonymous namespace
@@ -106,12 +106,12 @@ public:
   RankingCache(const RankingCache&) = delete;
   void operator=(const RankingCache&) = delete;
 
-  /** Looks up an entry by seed hash and returns it, or a null
+  /** Looks up an entry by scoring hash and returns it, or a null
    *  pointer if there is no matching entry.  */
   const RankingCacheEntry::value_type* Find(const uint256& hash) const
   {
     RankingCacheEntry entry;
-    entry.seedHash = hash;
+    entry.scoringBlockHash = hash;
 
     auto mit = entries.find(entry);
     if (mit == entries.end())
@@ -124,7 +124,7 @@ public:
   void Insert(const uint256& hash, const RankingCacheEntry::value_type& bestVins)
   {
     RankingCacheEntry entry;
-    entry.seedHash = hash;
+    entry.scoringBlockHash = hash;
     entry.bestVins = bestVins;
 
     auto ins = entries.insert(std::move(entry));
@@ -161,9 +161,9 @@ CMasternodePayments::~CMasternodePayments()
     rankingCache.reset();
 }
 
-bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256& seedHash)
+bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256& scoringBlockHash)
 {
-    return paymentData_.canVote(outMasternode,seedHash);
+    return paymentData_.canVote(outMasternode,scoringBlockHash);
 }
 
 
@@ -173,12 +173,12 @@ void CMasternodePayments::FillBlockPayee(const CBlockIndex* pindexPrev, CMutable
     CScript payee;
 
     //spork
-    uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, pindexPrev, 1)) {
+    uint256 scoringBlockHash;
+    if (!GetBlockHashForScoring(scoringBlockHash, pindexPrev, 1)) {
         LogPrint("masternode", "FillBlockPayee - failed to get score hash\n");
         return;
     }
-    if (!GetBlockPayee(seedHash, payee)) {
+    if (!GetBlockPayee(scoringBlockHash, payee)) {
         // No masternode detected, fall back to our own queue.
         payee = GetNextMasternodePayeeInQueueForPayment(pindexPrev, 1);
         if(payee.empty())
@@ -260,9 +260,9 @@ void CMasternodePayments::ProcessMasternodeWinners(CNode* pfrom, const std::stri
     }
 }
 
-bool CMasternodePayments::GetBlockPayee(const uint256& seedHash, CScript& payee) const
+bool CMasternodePayments::GetBlockPayee(const uint256& scoringBlockHash, CScript& payee) const
 {
-    auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
+    auto* payees = paymentData_.getPayeesForScoreHash(scoringBlockHash);
     if (payees != nullptr)
         return payees->GetPayee(payee);
 
@@ -302,9 +302,9 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePayment
         return false;
     }
 
-    const uint256& seedHash = winner.getSeedHash();
-    assert(!seedHash.IsNull());
-    const unsigned voterRank = GetMasternodeRank(winner.vinMasternode, seedHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
+    const uint256& scoringBlockHash = winner.getScoringBlockHash();
+    assert(!scoringBlockHash.IsNull());
+    const unsigned voterRank = GetMasternodeRank(winner.vinMasternode, scoringBlockHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
 
     if (voterRank > MNPAYMENTS_SIGNATURES_TOTAL) {
         //It's common to have masternodes mistakenly think they are in the top 10
@@ -320,7 +320,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePayment
     if(!masternodeSynchronization_.IsSynced()){ return true;}
 
     /* Make sure that the payee is in our own payment queue near the top.  */
-    const std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(seedHash, winner.GetHeight());
+    const std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(scoringBlockHash, winner.GetHeight());
     for (int i = 0; i < std::min<int>(2 * MNPAYMENTS_SIGNATURES_TOTAL, mnQueue.size()); ++i) {
         const auto& mn = *mnQueue[i];
         const CScript mnPayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
@@ -342,9 +342,9 @@ bool CMasternodePayments::IsScheduled(const CScript mnpayee, int nNotBlockHeight
 
     for (int64_t h = 0; h <= 8; ++h) {
         if (tip->nHeight + h == nNotBlockHeight) continue;
-        uint256 seedHash;
-        if (!GetBlockHashForScoring(seedHash, tip, h)) continue;
-        auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
+        uint256 scoringBlockHash;
+        if (!GetBlockHashForScoring(scoringBlockHash, tip, h)) continue;
+        auto* payees = paymentData_.getPayeesForScoreHash(scoringBlockHash);
         CScript payee;
         if (payees != nullptr && payees->GetPayee(payee) && payee == mnpayee)
             return true;
@@ -374,11 +374,11 @@ std::string CMasternodePayments::GetRequiredPaymentsString(const CMasternodeBloc
     return ret;
 }
 
-std::string CMasternodePayments::GetRequiredPaymentsString(const uint256& seedHash) const
+std::string CMasternodePayments::GetRequiredPaymentsString(const uint256& scoringBlockHash) const
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
+    auto* payees = paymentData_.getPayeesForScoreHash(scoringBlockHash);
     if (payees != nullptr)
         return GetRequiredPaymentsString(*payees);
 
@@ -428,11 +428,11 @@ bool CMasternodePayments::IsTransactionValid(const CMasternodeBlockPayees& payee
     return false;
 }
 
-bool CMasternodePayments::IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& seedHash) const
+bool CMasternodePayments::IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& scoringBlockHash) const
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    auto* payees = paymentData_.getPayeesForScoreHash(seedHash);
+    auto* payees = paymentData_.getPayeesForScoreHash(scoringBlockHash);
     if (payees != nullptr)
         return IsTransactionValid(*payees,subsidies,txNew);
 
@@ -462,11 +462,11 @@ unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& master
         }
         n++;
 
-        uint256 seedHash;
-        if (!GetBlockHashForScoring(seedHash, chainTip, 0))
+        uint256 scoringBlockHash;
+        if (!GetBlockHashForScoring(scoringBlockHash, chainTip, 0))
             continue;
 
-        auto* masternodePayees = paymentData_.getPayeesForScoreHash(seedHash);
+        auto* masternodePayees = paymentData_.getPayeesForScoreHash(scoringBlockHash);
         if (masternodePayees != nullptr) {
             /*
                 Search for this payee, with at least 2 votes. This will aid in consensus allowing the network
@@ -494,19 +494,19 @@ CScript CMasternodePayments::GetNextMasternodePayeeInQueueForPayment(const CBloc
 }
 std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset) const
 {
-    uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, pindex, offset))
+    uint256 scoringBlockHash;
+    if (!GetBlockHashForScoring(scoringBlockHash, pindex, offset))
         return {};
 
     const int64_t nBlockHeight = pindex->nHeight + offset;
 
-    return GetMasternodePaymentQueue(seedHash, nBlockHeight);
+    return GetMasternodePaymentQueue(scoringBlockHash, nBlockHeight);
 }
 
 void ComputeMasternodesAndScores(
     const CMasternodePayments& masternodePayments,
     std::vector<CMasternode>& masternodes,
-    const uint256& seedHash,
+    const uint256& scoringBlockHash,
     const int nMnCount,
     const int nBlockHeight,
     const bool fFilterSigTime,
@@ -539,11 +539,11 @@ void ComputeMasternodesAndScores(
         if (ComputeMasternodeInputAge(mn) < nMnCount) continue;
 
         masternodeQueue.push_back(&mn);
-        masternodeScores[&mn] = mn.CalculateScore(seedHash);
+        masternodeScores[&mn] = mn.CalculateScore(scoringBlockHash);
     }
 }
 
-std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight) const
+std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& scoringBlockHash, const int nBlockHeight) const
 {
     LOCK(networkMessageManager_.cs);
     std::vector< CMasternode* > masternodeQueue;
@@ -555,7 +555,7 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
     ComputeMasternodesAndScores(
         *this,
         networkMessageManager_.masternodes,
-        seedHash,
+        scoringBlockHash,
         nMnCount,
         nBlockHeight,
         true,
@@ -568,7 +568,7 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
         ComputeMasternodesAndScores(
             *this,
             filteredMasternodes,
-            seedHash,
+            scoringBlockHash,
             nMnCount,
             nBlockHeight,
             false,
@@ -599,7 +599,7 @@ namespace
  *  masternode age for winners, the minimum protocol version and being active
  *  at all.  If so, returns true and sets its score.  */
 bool CheckAndGetScore(CMasternode& mn,
-                      const uint256& seedHash, const int minProtocol,
+                      const uint256& scoringBlockHash, const int minProtocol,
                       int64_t& score)
 {
     if (mn.protocolVersion < minProtocol) {
@@ -616,7 +616,7 @@ bool CheckAndGetScore(CMasternode& mn,
     if (!mn.IsEnabled ())
         return false;
 
-    const uint256 n = mn.CalculateScore(seedHash);
+    const uint256 n = mn.CalculateScore(scoringBlockHash);
     score = n.GetCompact(false);
 
     return true;
@@ -624,14 +624,14 @@ bool CheckAndGetScore(CMasternode& mn,
 
 } // anonymous namespace
 
-unsigned CMasternodePayments::GetMasternodeRank(const CTxIn& vin, const uint256& seedHash, int minProtocol, const unsigned nCheckNum) const
+unsigned CMasternodePayments::GetMasternodeRank(const CTxIn& vin, const uint256& scoringBlockHash, int minProtocol, const unsigned nCheckNum) const
 {
     assert(nCheckNum <= MAX_RANKING_CHECK_NUM);
 
     const RankingCacheEntry::value_type* cacheEntry;
     RankingCacheEntry::value_type newEntry;
 
-    cacheEntry = rankingCache->Find(seedHash);
+    cacheEntry = rankingCache->Find(scoringBlockHash);
     if (cacheEntry == nullptr) {
         std::vector<std::pair<int64_t, uint256>> rankedNodes;
         {
@@ -639,7 +639,7 @@ unsigned CMasternodePayments::GetMasternodeRank(const CTxIn& vin, const uint256&
             masternodeManager_.Check();
             for (auto& mn : networkMessageManager_.masternodes) {
                 int64_t score;
-                if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
+                if (!CheckAndGetScore(mn, scoringBlockHash, minProtocol, score))
                     continue;
 
                 rankedNodes.emplace_back(score, mn.vin.prevout.hash);
@@ -658,7 +658,7 @@ unsigned CMasternodePayments::GetMasternodeRank(const CTxIn& vin, const uint256&
             else
                 newEntry[i].SetNull();
 
-        rankingCache->Insert(seedHash, newEntry);
+        rankingCache->Insert(scoringBlockHash, newEntry);
         cacheEntry = &newEntry;
     }
 

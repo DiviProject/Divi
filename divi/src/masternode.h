@@ -83,9 +83,9 @@ public:
     }
 
     /** Calculates the score of the current masternode, based on the given
-     *  seed hash.  It should be the result of GetBlockHashForScoring of
+     *  scoring hash.  It should be the result of GetBlockHashForScoring of
      *  the target block height.  */
-    uint256 CalculateScore(const uint256& seedHash) const;
+    uint256 CalculateScore(const uint256& scoringBlockHash) const;
 
     bool IsEnabled() const;
 

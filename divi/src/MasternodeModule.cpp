@@ -368,13 +368,13 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
 
     //reference node - hybrid mode
 
-    uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, pindex, numberOfBlocksIntoTheFutureToVoteOn)) {
-        LogPrint("mnpayments", "CMasternodePayments::ProcessBlock - failed to compute seed hash\n");
+    uint256 scoringBlockHash;
+    if (!GetBlockHashForScoring(scoringBlockHash, pindex, numberOfBlocksIntoTheFutureToVoteOn)) {
+        LogPrint("mnpayments", "CMasternodePayments::ProcessBlock - failed to compute scoring hash\n");
         return false;
     }
 
-    const unsigned n = masternodePayments.GetMasternodeRank(activeMasternode.vin, seedHash, ActiveProtocol(), CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL);
+    const unsigned n = masternodePayments.GetMasternodeRank(activeMasternode.vin, scoringBlockHash, ActiveProtocol(), CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL);
 
     if (n == static_cast<unsigned>(-1)) {
         LogPrint("mnpayments", "CMasternodePayments::ProcessBlock - Unknown Masternode\n");
@@ -388,7 +388,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
 
     if (currentBlockToVoteFor <= lastBlockVotedOn) return false;
 
-    CMasternodePaymentWinner newWinner(activeMasternode.vin, currentBlockToVoteFor, seedHash);
+    CMasternodePaymentWinner newWinner(activeMasternode.vin, currentBlockToVoteFor, scoringBlockHash);
 
     LogPrint("masternode","CMasternodePayments::ProcessBlock() Start nHeight %d - vin %s. \n", currentBlockToVoteFor, activeMasternode.vin.prevout.hash);
 
@@ -405,7 +405,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
     }
 
     LogPrint("masternode","CMasternodePayments::ProcessBlock() - Signing Winner\n");
-    if(masternodePayments.CanVote(newWinner.vinMasternode.prevout,seedHash) && activeMasternode.SignMasternodeWinner(newWinner))
+    if(masternodePayments.CanVote(newWinner.vinMasternode.prevout,scoringBlockHash) && activeMasternode.SignMasternodeWinner(newWinner))
     {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() - AddWinningMasternode\n");
 

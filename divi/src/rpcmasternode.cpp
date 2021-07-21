@@ -595,9 +595,9 @@ Value getmasternodewinners (const Array& params, bool fHelp)
         Object obj;
         obj.push_back(Pair("nHeight", i));
 
-        uint256 seedHash;
-        if (!GetBlockHashForScoring(seedHash, pindex, i - nHeight)) continue;
-        std::string strPayment = mnpayments.GetRequiredPaymentsString(seedHash);
+        uint256 scoringBlockHash;
+        if (!GetBlockHashForScoring(scoringBlockHash, pindex, i - nHeight)) continue;
+        std::string strPayment = mnpayments.GetRequiredPaymentsString(scoringBlockHash);
         if (strFilter != "" && strPayment.find(strFilter) == std::string::npos) continue;
 
         if (strPayment.find(',') != std::string::npos) {

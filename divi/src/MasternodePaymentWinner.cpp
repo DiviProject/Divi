@@ -9,16 +9,16 @@
 
 CMasternodePaymentWinner::CMasternodePaymentWinner()
     : vinMasternode()
-    , seedHash()
+    , scoringBlockHash()
     , nBlockHeight(0)
     , payee()
     , signature()
 {
-    seedHash.SetNull();
+    scoringBlockHash.SetNull();
 }
 CMasternodePaymentWinner::CMasternodePaymentWinner(const CTxIn& vinIn, const int height, const uint256& hash)
     : vinMasternode(vinIn)
-    , seedHash(hash)
+    , scoringBlockHash(hash)
     , nBlockHeight(height)
 {
 
@@ -27,11 +27,11 @@ CMasternodePaymentWinner::CMasternodePaymentWinner(const CTxIn& vinIn, const int
 
 bool CMasternodePaymentWinner::ComputeScoreHash()
 {
-    if (GetBlockHashForScoring(seedHash, nBlockHeight))
+    if (GetBlockHashForScoring(scoringBlockHash, nBlockHeight))
         return true;
 
     LogPrint("masternode", "Failed to get scoring hash for winner of height %d\n", nBlockHeight);
-    seedHash.SetNull();
+    scoringBlockHash.SetNull();
     return false;
 }
 
@@ -53,8 +53,8 @@ void CMasternodePaymentWinner::AddPayee(const CScript& payeeIn)
 const uint256&
 CMasternodePaymentWinner::GetScoreHash() const
 {
-    assert(!seedHash.IsNull());
-    return seedHash;
+    assert(!scoringBlockHash.IsNull());
+    return scoringBlockHash;
 }
 
 std::string CMasternodePaymentWinner::ToString() const

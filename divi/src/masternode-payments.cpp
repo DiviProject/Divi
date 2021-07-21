@@ -367,11 +367,8 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
     {
         LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
 
-        if (GetPaymentWinnerForHash(winnerIn.GetHash()) != nullptr)
-            return false;
-
-        auto ins = mapMasternodePayeeVotes.emplace(winnerIn.GetHash(), winnerIn);
-        assert(ins.second);
+        if(paymentData_.winnerIsKnown(winnerIn.GetHash())) return false;
+        assert(paymentData_.recordWinner(winnerIn));
 
         payees = GetPayeesForScoreHash(winnerIn.GetScoreHash());
         if (payees == nullptr) {
@@ -484,7 +481,6 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
 
         if (nHeight - winner.GetHeight() > blockDepthToKeepWinnersAroundFor) {
             LogPrint("mnpayments", "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.GetHeight());
-            networkMessageManager_.mapSeenSyncMNW.erase((*it).first);
             mapMasternodePayeeVotes.erase(it++);
             mapMasternodeBlocks.erase(winner.GetScoreHash());
         } else {

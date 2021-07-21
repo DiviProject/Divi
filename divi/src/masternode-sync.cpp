@@ -229,6 +229,7 @@ void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strComma
 
 void CMasternodeSync::RecordMasternodeListUpdate(const uint256& hash)
 {
+    if(currentMasternodeSyncStatus != MasternodeSyncCode::MASTERNODE_SYNC_LIST) return;
     if (networkMessageManager_.broadcastIsKnown(hash)) {
         if (networkMessageManager_.mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
             timestampOfLastMasternodeListUpdate = clock_.getTime();
@@ -242,6 +243,7 @@ void CMasternodeSync::RecordMasternodeListUpdate(const uint256& hash)
 
 void CMasternodeSync::RecordMasternodeWinnerUpdate(const uint256& hash)
 {
+    if(currentMasternodeSyncStatus != MasternodeSyncCode::MASTERNODE_SYNC_MNW) return;
     if (masternodePaymentData_.winnerIsKnown(hash)) {
         if (networkMessageManager_.mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
             timestampOfLastMasternodeWinnerUpdate = clock_.getTime();

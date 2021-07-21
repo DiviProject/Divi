@@ -98,3 +98,13 @@ CMasternodePaymentWinner* MasternodePaymentData::getPaymentWinnerForHash(const u
         return nullptr;
     return &mit->second;
 }
+bool MasternodePaymentData::canVote(const COutPoint& outMasternode, const uint256& scoringBlockHash)
+{
+    LOCK(cs_mapMasternodePayeeVotes);
+
+    const auto* payees = getPayeesForScoreHash(scoringBlockHash);
+    if (payees == nullptr)
+        return true;
+
+    return payees->CanVote(outMasternode);
+}

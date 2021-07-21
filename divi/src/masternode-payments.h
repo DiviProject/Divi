@@ -95,8 +95,11 @@ public:
      *
      *  If the given node is not in the top-"nCheckNum" masternodes by rank, then
      *  nCheckNum + 1 is returned (instead of the exact rank).  */
-    unsigned GetMasternodeRank(const CTxIn& vin, const uint256& scoringBlockHash,
-                               int minProtocol, unsigned nCheckNum) const;
+    unsigned GetMasternodeRank(
+        const CTxIn& vin,
+        const uint256& scoringBlockHash,
+        int minProtocol,
+        unsigned nCheckNum) const;
     void ResetRankingCache();
 };
 

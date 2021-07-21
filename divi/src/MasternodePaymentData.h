@@ -27,6 +27,7 @@ public:
     CMasternodeBlockPayees* getPayeesForScoreHash(const uint256& hash);
     const CMasternodePaymentWinner* getPaymentWinnerForHash(const uint256& hash) const;
     CMasternodePaymentWinner* getPaymentWinnerForHash(const uint256& hash);
+    bool canVote(const COutPoint& outMasternode, const uint256& scoringBlockHash);
 
     void CheckAndRemove(){}
     void Clear(){}

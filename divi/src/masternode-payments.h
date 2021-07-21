@@ -51,13 +51,9 @@ private:
     CMasternodeSync& masternodeSynchronization_;
     const CChain& activeChain_;
 
-    /** Map from the inventory hashes of mnw's to the corresponding data.  */
-    std::map<uint256, CMasternodePaymentWinner>& mapMasternodePayeeVotes;
     /** Map from score hashes of blocks to the corresponding winners.  */
     std::map<uint256, CMasternodeBlockPayees>& mapMasternodeBlocks;
-
     CCriticalSection& cs_mapMasternodeBlocks;
-    CCriticalSection& cs_mapMasternodePayeeVotes;
 
     bool GetBlockPayee(const uint256& seedHash, CScript& payee) const;
     bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;

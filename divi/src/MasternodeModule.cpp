@@ -302,8 +302,8 @@ bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
 
 bool ShareMasternodeWinnerWithPeer(CNode* peer,const uint256& inventoryHash)
 {
-    static const CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
-    const auto* winner = masternodePayments.GetPaymentWinnerForHash(inventoryHash);
+    static const MasternodePaymentData& paymentData = mnModule.getMasternodePaymentData();
+    const auto* winner = paymentData.getPaymentWinnerForHash(inventoryHash);
     if (winner != nullptr) {
         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
         ss.reserve(1000);
@@ -333,9 +333,9 @@ bool MasternodeIsKnown(const uint256& inventoryHash)
 
 bool MasternodeWinnerIsKnown(const uint256& inventoryHash)
 {
-    static const CMasternodePayments& masternodePayments = mnModule.getMasternodePayments();
+    static const MasternodePaymentData& paymentData = mnModule.getMasternodePaymentData();
     static CMasternodeSync& masternodeSync = mnModule.getMasternodeSynchronization();
-    if (masternodePayments.GetPaymentWinnerForHash(inventoryHash) != nullptr)
+    if (paymentData.getPaymentWinnerForHash(inventoryHash) != nullptr)
     {
         masternodeSync.RecordMasternodeWinnerUpdate(inventoryHash);
         return true;

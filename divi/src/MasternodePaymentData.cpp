@@ -84,3 +84,17 @@ std::string MasternodePaymentData::ToString() const
 
     return info.str();
 }
+
+/** Retrieves the payment winner for the given hash.  Returns null
+ *  if there is no entry for that hash.  */
+const CMasternodePaymentWinner* MasternodePaymentData::getPaymentWinnerForHash(const uint256& hash) const
+{
+    return const_cast<MasternodePaymentData*>(this)->getPaymentWinnerForHash(hash);
+}
+CMasternodePaymentWinner* MasternodePaymentData::getPaymentWinnerForHash(const uint256& hash)
+{
+    const auto mit = mapMasternodePayeeVotes.find(hash);
+    if (mit == mapMasternodePayeeVotes.end())
+        return nullptr;
+    return &mit->second;
+}

@@ -15,6 +15,7 @@ MasternodePaymentData::~MasternodePaymentData()
 
 bool MasternodePaymentData::winnerIsKnown(const uint256& hash) const
 {
+    LOCK(cs_mapMasternodePayeeVotes);
     const auto mit = mapMasternodePayeeVotes.find(hash);
     if (mit == mapMasternodePayeeVotes.end())
         return false;
@@ -22,10 +23,12 @@ bool MasternodePaymentData::winnerIsKnown(const uint256& hash) const
 }
 bool MasternodePaymentData::recordWinner(const CMasternodePaymentWinner& mnw)
 {
+    LOCK(cs_mapMasternodePayeeVotes);
     return mapMasternodePayeeVotes.emplace(mnw.GetHash(),mnw).second;
 }
 const CMasternodePaymentWinner& MasternodePaymentData::getKnownWinner(const uint256& winnerHash) const
 {
+    LOCK(cs_mapMasternodePayeeVotes);
     return mapMasternodePayeeVotes.find(winnerHash)->second;
 }
 

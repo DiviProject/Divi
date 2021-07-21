@@ -23,8 +23,23 @@ bool MasternodePaymentData::winnerIsKnown(const uint256& hash) const
 }
 bool MasternodePaymentData::recordWinner(const CMasternodePaymentWinner& mnw)
 {
-    LOCK(cs_mapMasternodePayeeVotes);
-    return mapMasternodePayeeVotes.emplace(mnw.GetHash(),mnw).second;
+    CMasternodeBlockPayees* payees;
+    {
+        LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
+
+        if(winnerIsKnown(mnw.GetHash())) return false;
+        assert(mapMasternodePayeeVotes.emplace(mnw.GetHash(),mnw).second);
+
+        payees = getPayeesForScoreHash(mnw.GetScoreHash());
+        if (payees == nullptr) {
+            CMasternodeBlockPayees blockPayees(mnw.GetHeight());
+            auto mit = mapMasternodeBlocks.emplace(mnw.GetScoreHash(), std::move(blockPayees)).first;
+            payees = &mit->second;
+        }
+    }
+
+    payees->CountVote(mnw.vinMasternode.prevout, mnw.payee);
+    return true;
 }
 const CMasternodePaymentWinner& MasternodePaymentData::getKnownWinner(const uint256& winnerHash) const
 {

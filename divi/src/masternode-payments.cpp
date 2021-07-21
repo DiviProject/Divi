@@ -363,24 +363,7 @@ bool CMasternodePayments::IsScheduled(const CScript mnpayee, int nNotBlockHeight
 
 bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& winnerIn)
 {
-    CMasternodeBlockPayees* payees;
-    {
-        LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
-
-        if(paymentData_.winnerIsKnown(winnerIn.GetHash())) return false;
-        assert(paymentData_.recordWinner(winnerIn));
-
-        payees = GetPayeesForScoreHash(winnerIn.GetScoreHash());
-        if (payees == nullptr) {
-            CMasternodeBlockPayees blockPayees(winnerIn.GetHeight());
-            auto mit = mapMasternodeBlocks.emplace(winnerIn.GetScoreHash(), std::move(blockPayees)).first;
-            payees = &mit->second;
-        }
-    }
-
-    payees->CountVote(winnerIn.vinMasternode.prevout, winnerIn.payee);
-
-    return true;
+    return paymentData_.recordWinner(winnerIn);
 }
 
 std::string CMasternodePayments::GetRequiredPaymentsString(const CMasternodeBlockPayees& payees) const

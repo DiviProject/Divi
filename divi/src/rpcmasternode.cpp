@@ -21,6 +21,7 @@
 #include <masternode-sync.h>
 #include <MasternodeModule.h>
 #include <MasternodeBroadcastFactory.h>
+#include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
 #include <version.h>
 #include <RpcMasternodeFeatures.h>
@@ -530,6 +531,32 @@ Value getmasternodestatus (const Array& params, bool fHelp)
     return mnObj;
 }
 
+std::string ParsePayeesIntoPaymentsString(const CMasternodeBlockPayees& payees)
+{
+    std::string ret = "Unknown";
+    std::vector<CMasternodePayee> vecPayments = payees.GetPaymentVotes();
+    for (const auto& payee : vecPayments) {
+        std::string addressString = ExtractDestination(payee.scriptPubKey);
+        if (ret != "Unknown") {
+            ret += ", " + addressString + ":" + boost::lexical_cast<std::string>(payee.nVotes);
+        } else {
+            ret = addressString + ":" + boost::lexical_cast<std::string>(payee.nVotes);
+        }
+    }
+
+    return ret;
+}
+std::string ParsePayeesIntoPaymentsString(const MasternodePaymentData& paymentData, const uint256& scoringBlockHash)
+{
+    LOCK(paymentData.cs_mapMasternodeBlocks);
+
+    auto* payees = paymentData.getPayeesForScoreHash(scoringBlockHash);
+    if (payees != nullptr)
+        return ParsePayeesIntoPaymentsString(*payees);
+
+    return "Unknown";
+}
+
 Value getmasternodewinners (const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 3)
@@ -590,14 +617,14 @@ Value getmasternodewinners (const Array& params, bool fHelp)
         strFilter = params[1].get_str();
 
     Array ret;
-    const CMasternodePayments& mnpayments = GetMasternodeModule().getMasternodePayments();
+    const MasternodePaymentData& paymentData = GetMasternodeModule().getMasternodePaymentData();
     for (int i = nHeight - nLast; i < nHeight + 20; i++) {
         Object obj;
         obj.push_back(Pair("nHeight", i));
 
         uint256 scoringBlockHash;
         if (!GetBlockHashForScoring(scoringBlockHash, pindex, i - nHeight)) continue;
-        std::string strPayment = mnpayments.GetRequiredPaymentsString(scoringBlockHash);
+        std::string strPayment = ParsePayeesIntoPaymentsString(paymentData,scoringBlockHash);
         if (strFilter != "" && strPayment.find(strFilter) == std::string::npos) continue;
 
         if (strPayment.find(',') != std::string::npos) {

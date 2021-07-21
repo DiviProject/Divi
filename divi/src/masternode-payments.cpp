@@ -358,33 +358,6 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
     return paymentData_.recordWinner(winnerIn);
 }
 
-std::string CMasternodePayments::GetRequiredPaymentsString(const CMasternodeBlockPayees& payees) const
-{
-    std::string ret = "Unknown";
-    std::vector<CMasternodePayee> vecPayments = payees.GetPaymentVotes();
-    for (const auto& payee : vecPayments) {
-        std::string addressString = ExtractDestination(payee.scriptPubKey);
-        if (ret != "Unknown") {
-            ret += ", " + addressString + ":" + boost::lexical_cast<std::string>(payee.nVotes);
-        } else {
-            ret = addressString + ":" + boost::lexical_cast<std::string>(payee.nVotes);
-        }
-    }
-
-    return ret;
-}
-
-std::string CMasternodePayments::GetRequiredPaymentsString(const uint256& scoringBlockHash) const
-{
-    LOCK(cs_mapMasternodeBlocks);
-
-    auto* payees = paymentData_.getPayeesForScoreHash(scoringBlockHash);
-    if (payees != nullptr)
-        return GetRequiredPaymentsString(*payees);
-
-    return "Unknown";
-}
-
 bool CMasternodePayments::IsTransactionValid(const CMasternodeBlockPayees& payees, const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew) const
 {
     int nMaxSignatures = 0;

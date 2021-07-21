@@ -22,6 +22,7 @@ public:
     bool winnerIsKnown(const uint256& winnerHash) const;
     bool recordWinner(const CMasternodePaymentWinner& mnw);
     const CMasternodePaymentWinner& getKnownWinner(const uint256& winnerHash) const;
+    void pruneOutdatedMasternodeWinners(const int currentChainHeight);
 
     void CheckAndRemove(){}
     void Clear(){}

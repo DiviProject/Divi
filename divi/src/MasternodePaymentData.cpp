@@ -31,6 +31,22 @@ const CMasternodePaymentWinner& MasternodePaymentData::getKnownWinner(const uint
     LOCK(cs_mapMasternodePayeeVotes);
     return mapMasternodePayeeVotes.find(winnerHash)->second;
 }
+void MasternodePaymentData::pruneOutdatedMasternodeWinners(const int currentChainHeight)
+{
+    LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
+    constexpr int blockDepthToKeepWinnersAroundFor = 1000;
+    std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
+    while (it != mapMasternodePayeeVotes.end()) {
+        CMasternodePaymentWinner winner = (*it).second;
+
+        if (currentChainHeight - winner.GetHeight() > blockDepthToKeepWinnersAroundFor) {
+            mapMasternodePayeeVotes.erase(it++);
+            mapMasternodeBlocks.erase(winner.GetScoreHash());
+        } else {
+            ++it;
+        }
+    }
+}
 
 std::string MasternodePaymentData::ToString() const
 {

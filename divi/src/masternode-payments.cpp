@@ -470,23 +470,8 @@ void CMasternodePayments::CheckAndRemove()
 
 void CMasternodePayments::PruneOldMasternodeWinnerData()
 {
-    LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
-
     const int nHeight = activeChain_.Height();
-
-    constexpr int blockDepthToKeepWinnersAroundFor = 1000;
-    std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
-    while (it != mapMasternodePayeeVotes.end()) {
-        CMasternodePaymentWinner winner = (*it).second;
-
-        if (nHeight - winner.GetHeight() > blockDepthToKeepWinnersAroundFor) {
-            LogPrint("mnpayments", "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.GetHeight());
-            mapMasternodePayeeVotes.erase(it++);
-            mapMasternodeBlocks.erase(winner.GetScoreHash());
-        } else {
-            ++it;
-        }
-    }
+    if(nHeight >0) paymentData_.pruneOutdatedMasternodeWinners(nHeight);
 }
 
 std::string CMasternodePayments::ToString() const

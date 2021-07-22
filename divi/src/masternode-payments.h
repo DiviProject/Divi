@@ -58,8 +58,8 @@ private:
     bool GetBlockPayee(const uint256& scoringBlockHash, CScript& payee) const;
     bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;
     bool CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CMasternode& masternode) const;
-
     bool IsTransactionValid(const CMasternodeBlockPayees& payees, const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew) const;
+    bool CheckMasternodeWinnerCandidate(CNode* pfrom, CMasternodePaymentWinner& winner) const;
 public:
     static const int MNPAYMENTS_SIGNATURES_REQUIRED;
     static const int MNPAYMENTS_SIGNATURES_TOTAL;
@@ -80,7 +80,7 @@ public:
     bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& scoringBlockHash) const;
     bool IsScheduled(const CScript mnpayee, int nNotBlockHeight) const;
 
-    bool CanVote(const COutPoint& outMasternode, const uint256& scoringBlockHash);
+    bool CanVote(const COutPoint& outMasternode, const uint256& scoringBlockHash) const;
 
     void ProcessMasternodeWinners(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     void FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards) const;

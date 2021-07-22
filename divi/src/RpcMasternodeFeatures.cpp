@@ -23,8 +23,6 @@
 #include <chain.h>
 #include <script/standard.h>
 
-extern CChain chainActive;
-
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 template <typename T>
 static T readFromHex(std::string hexString)
@@ -219,11 +217,9 @@ ActiveMasternodeStatus GetActiveMasternodeStatus()
     }
 }
 
-unsigned FindLastPayeePaymentTime(const MasternodePaymentData& paymentData, const CMasternode& masternode, const unsigned maxBlockDepth)
+unsigned FindLastPayeePaymentTime(CBlockIndex* chainTip, const MasternodePaymentData& paymentData, const CMasternode& masternode, const unsigned maxBlockDepth)
 {
-    const CBlockIndex* chainTip = chainActive.Tip();
-    if (chainTip == NULL) return 0u;
-
+    assert(chainTip);
     CScript mnPayee = GetScriptForDestination(masternode.pubKeyCollateralAddress.GetID());
     unsigned n = 0;
     for (unsigned int i = 1; chainTip && chainTip->nHeight > 0; i++) {
@@ -256,7 +252,7 @@ unsigned FindLastPayeePaymentTime(const MasternodePaymentData& paymentData, cons
     return 0u;
 }
 
-std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)
+std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter, CBlockIndex* chainTip)
 {
     const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
@@ -298,7 +294,7 @@ std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)
         entry.protocolVersion = masternode.protocolVersion;
         entry.lastSeenTime = (int64_t)masternode.lastPing.sigTime;
         entry.activeTime = (int64_t)(masternode.lastPing.sigTime - masternode.sigTime);
-        entry.lastPaidTime = (int64_t) FindLastPayeePaymentTime(paymentData,masternode,numberOfBlocksToSearchBackForLastPayment);
+        entry.lastPaidTime = (int64_t) FindLastPayeePaymentTime(chainTip,paymentData,masternode,numberOfBlocksToSearchBackForLastPayment);
         entry.masternodeTier = CMasternode::TierToString(static_cast<MasternodeTier>(masternode.nTier));
     }
     return masternodeList;

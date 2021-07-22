@@ -347,13 +347,14 @@ Value listmasternodes(const Array& params, bool fHelp)
             HelpExampleCli("masternodelist", "") + HelpExampleRpc("masternodelist", ""));
 
     Array ret;
+    CBlockIndex* pindex;
     {
         LOCK(cs_main);
-        CBlockIndex* pindex = chainActive.Tip();
+        pindex = chainActive.Tip();
         if(!pindex) return 0;
     }
 
-    std::vector<MasternodeListEntry> masternodeList = GetMasternodeList(strFilter);
+    std::vector<MasternodeListEntry> masternodeList = GetMasternodeList(strFilter,pindex);
     ret.reserve(masternodeList.size());
     for(auto& masternodeEntry : masternodeList)
     {

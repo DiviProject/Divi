@@ -58,6 +58,6 @@ struct MasternodeCountData
 MasternodeStartResult RelayMasternodeBroadcast(const std::string& hexData, const std::string& signature, bool updatePing);
 MasternodeStartResult StartMasternode(const CKeyStore& keyStore, const StoredMasternodeBroadcasts& stored, std::string alias, bool deferRelay);
 ActiveMasternodeStatus GetActiveMasternodeStatus();
-std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter);
+std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter, CBlockIndex* chainTip);
 MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip);
 #endif// RPC_MASTERNODE_FEATURES_H

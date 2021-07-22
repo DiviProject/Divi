@@ -161,7 +161,7 @@ CMasternodePayments::~CMasternodePayments()
     rankingCache.reset();
 }
 
-bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256& scoringBlockHash)
+bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256& scoringBlockHash) const
 {
     return paymentData_.canVote(outMasternode,scoringBlockHash);
 }
@@ -200,6 +200,53 @@ void CMasternodePayments::FillBlockPayee(const CBlockIndex* pindexPrev, CMutable
     }
 }
 
+bool CMasternodePayments::CheckMasternodeWinnerCandidate(CNode* pfrom, CMasternodePaymentWinner& winner) const
+{
+    const int chainTipHeight = activeChain_.Height();
+    if (paymentData_.getPaymentWinnerForHash(winner.GetHash()) != nullptr) {
+        LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), chainTipHeight);
+        masternodeSynchronization_.RecordMasternodeWinnerUpdate(winner.GetHash());
+        return false;
+    }
+
+    int nFirstBlock = chainTipHeight - CMasternodeSync::blockDepthUpToWhichToRequestMNWinners;
+    if (winner.GetHeight() < nFirstBlock || winner.GetHeight() > chainTipHeight + 20) {
+        LogPrint("mnpayments", "mnw - winner out of range - FirstBlock %d Height %d bestHeight %d\n", nFirstBlock, winner.GetHeight(), chainTipHeight);
+        return false;
+    }
+
+    if (!winner.ComputeScoreHash()) {
+        LogPrint("mnpayments", "mnw - could not compute score hash for height %d\n", winner.GetHeight());
+        return false;
+    }
+
+    CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
+    if (!pmn)
+    {
+        std::string strError = strprintf("Unknown Masternode %s", winner.vinMasternode.prevout.hash.ToString());
+        LogPrint("masternode","%s - %s\n",__func__, strError);
+        masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
+        return false;
+    }
+    if (!CheckMasternodeWinnerValidity(winner,*pmn))
+    {
+        return false;
+    }
+
+    if (!CanVote(winner.vinMasternode.prevout, winner.GetScoreHash())) {
+        //  LogPrint("masternode","mnw - masternode already voted - %s\n", winner.vinMasternode.prevout.ToStringShort());
+        return false;
+    }
+
+    if (!CheckMasternodeWinnerSignature(winner)) {
+        LogPrintf("%s : - invalid signature\n", __func__);
+        if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetNodeState(), 20);
+        // it could just be a non-synced masternode
+        masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
+        return false;
+    }
+    return true;
+}
 void CMasternodePayments::ProcessMasternodeWinners(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "mnw") { //Masternode Payments Declare Winner
@@ -207,49 +254,8 @@ void CMasternodePayments::ProcessMasternodeWinners(CNode* pfrom, const std::stri
         CMasternodePaymentWinner winner;
         vRecv >> winner;
 
-        if (pfrom->nVersion < ActiveProtocol()) return;
-
-        const int chainTipHeight = activeChain_.Height();
-        if (paymentData_.getPaymentWinnerForHash(winner.GetHash()) != nullptr) {
-            LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), chainTipHeight);
-            masternodeSynchronization_.RecordMasternodeWinnerUpdate(winner.GetHash());
-            return;
-        }
-
-        int nFirstBlock = chainTipHeight - CMasternodeSync::blockDepthUpToWhichToRequestMNWinners;
-        if (winner.GetHeight() < nFirstBlock || winner.GetHeight() > chainTipHeight + 20) {
-            LogPrint("mnpayments", "mnw - winner out of range - FirstBlock %d Height %d bestHeight %d\n", nFirstBlock, winner.GetHeight(), chainTipHeight);
-            return;
-        }
-
-        if (!winner.ComputeScoreHash()) {
-            LogPrint("mnpayments", "mnw - could not compute score hash for height %d\n", winner.GetHeight());
-            return;
-        }
-
-        CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
-        if (!pmn)
+        if(pfrom->nVersion < ActiveProtocol() || !CheckMasternodeWinnerCandidate(pfrom,winner))
         {
-            std::string strError = strprintf("Unknown Masternode %s", winner.vinMasternode.prevout.hash.ToString());
-            LogPrint("masternode","%s - %s\n",__func__, strError);
-            masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
-            return;
-        }
-        if (!CheckMasternodeWinnerValidity(winner,*pmn))
-        {
-            return;
-        }
-
-        if (!CanVote(winner.vinMasternode.prevout, winner.GetScoreHash())) {
-            //  LogPrint("masternode","mnw - masternode already voted - %s\n", winner.vinMasternode.prevout.ToStringShort());
-            return;
-        }
-
-        if (!CheckMasternodeWinnerSignature(winner)) {
-            LogPrintf("%s : - invalid signature\n", __func__);
-            if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetNodeState(), 20);
-            // it could just be a non-synced masternode
-            masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
             return;
         }
 

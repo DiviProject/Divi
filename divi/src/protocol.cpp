@@ -148,9 +148,6 @@ bool CInv::IsKnownType() const
     return (type >= 1 && type <= maxInventoryId );
 }
 
-bool CInv::IsMasterNodeType() const{
-    return (type >= 6);
-}
 
 const char* CInv::GetCommand() const
 {

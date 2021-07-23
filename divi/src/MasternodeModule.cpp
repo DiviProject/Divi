@@ -305,10 +305,7 @@ bool ShareMasternodeWinnerWithPeer(CNode* peer,const uint256& inventoryHash)
     static const MasternodePaymentData& paymentData = mnModule.getMasternodePaymentData();
     const auto* winner = paymentData.getPaymentWinnerForHash(inventoryHash);
     if (winner != nullptr) {
-        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-        ss.reserve(1000);
-        ss << *winner;
-        peer->PushMessage("mnw", ss);
+        peer->PushMessage("mnw", *winner);
         return true;
     }
     return false;

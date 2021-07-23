@@ -262,7 +262,7 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
     for (unsigned i = 1; i < tx.vin.size (); ++i) {
         CTransaction txPrev2;
         uint256 hashBlock2;
-        if (!GetTransaction(tx.vin[i].prevout.hash, txPrev2, hashBlock2))
+        if (!GetTransaction(tx.vin[i].prevout.hash, txPrev2, hashBlock2, true))
             return error("CheckProofOfStake() : INFO: read txPrev failed for input %u", i);
         if (txPrev2.vout[tx.vin[i].prevout.n].scriptPubKey != kernelScript)
             return error("CheckProofOfStake() : Stake input %u pays to different script", i);

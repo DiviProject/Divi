@@ -55,6 +55,11 @@ enum
     // Enable NOP10: OP_REQUIRE_COINSTAKE
     //
     // Require transaction be a coinstake to be spendable
-    SCRIPT_REQUIRE_COINSTAKE  = (1U << 8)
+    SCRIPT_REQUIRE_COINSTAKE  = (1U << 8),
+
+    // Enables verification according to BIP65:  NOP2 gets replaced by
+    // OP_CHECKLOCKTIMEVERIFY, which compares a value in the script to
+    // the transaction's nLockTime field.
+    SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY = (1U << 9),
 };
 #endif //SCRIPT_AND_SIG_FLAGS_H

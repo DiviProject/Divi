@@ -44,6 +44,9 @@ typedef enum ScriptError_t
     SCRIPT_ERR_SIG_NULLDUMMY,
     SCRIPT_ERR_PUBKEYTYPE,
 
+    /* BIP65 */
+    SCRIPT_ERR_CLTV,
+
     /* softfork safeness */
     SCRIPT_ERR_DISCOURAGE_UPGRADABLE_NOPS,
 

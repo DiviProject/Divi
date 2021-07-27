@@ -828,6 +828,57 @@ public:
     }
 };
 
+struct LockTimeCheckOp: public StackOperator
+{
+private:
+    const BaseSignatureChecker& checker_;
+public:
+    LockTimeCheckOp(
+        StackType& stack,
+        StackType& altstack,
+        const unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager,
+        const BaseSignatureChecker& checker
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+        , checker_(checker)
+    {}
+
+    bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        if (stack_.empty())
+            return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+        // Note that elsewhere numeric opcodes are limited to
+        // operands in the range -2**31+1 to 2**31-1, however it is
+        // legal for opcodes to produce results exceeding that
+        // range. This limitation is implemented by CScriptNum's
+        // default 4-byte limit.
+        //
+        // If we kept to that limit we'd have a year 2038 problem,
+        // even though the nLockTime field in transactions
+        // themselves is uint32 which only becomes meaningless
+        // after the year 2106.
+        //
+        // Thus as a special case we tell CScriptNum to accept up
+        // to 5-byte bignums, which are good until 2**32-1, the
+        // same limit as the nLockTime field itself.
+        const CScriptNum nLockTime(stackTop(), fRequireMinimal_, 5);
+
+        // In the rare event that the argument may be < 0 due to
+        // some arithmetic being done first, you can always use
+        // 0 MAX CHECKLOCKTIMEVERIFY.
+        if (nLockTime < 0)
+            return Helpers::set_error(serror, SCRIPT_ERR_CLTV);
+
+        // Verify the lock time on the stack against the
+        // actual transaction.
+        if (!checker_.CheckLockTime(nLockTime))
+            return Helpers::set_error(serror, SCRIPT_ERR_CLTV);
+
+        return true;
+    }
+};
+
 
 namespace
 {
@@ -868,6 +919,10 @@ const std::set<opcodetype> checkSigOpcodes =
         if(flags & SCRIPT_REQUIRE_COINSTAKE && opcode == OP_REQUIRE_COINSTAKE)
         {
             return CoinstakeCheckOp(stack,altstack,flags,conditionalManager,checker)(opcode,serror);
+        }
+        if(flags & SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY && opcode == OP_CHECKLOCKTIMEVERIFY)
+        {
+            return LockTimeCheckOp(stack, altstack, flags, conditionalManager, checker)(opcode, serror);
         }
         if(opcode == OP_META)
         {

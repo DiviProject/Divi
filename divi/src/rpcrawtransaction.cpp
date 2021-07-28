@@ -23,6 +23,7 @@
 #include "wallet.h"
 #include <WalletTx.h>
 #include <txmempool.h>
+#include <TransactionSearchIndexes.h>
 #include <sync.h>
 
 #include <stdint.h>
@@ -44,6 +45,8 @@ extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;
+extern CBlockTreeDB* pblocktree;
+extern bool fSpentIndex;
 
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex)
 {
@@ -94,7 +97,7 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
             // Add address and value info if spentindex enabled
             CSpentIndexValue spentInfo;
             const CSpentIndexKey spentKey(txin.prevout.hash, txin.prevout.n);
-            if (GetSpentIndex(spentKey, spentInfo)) {
+            if (TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,spentKey, spentInfo)) {
                 in.push_back(Pair("value", ValueFromAmount(spentInfo.satoshis)));
                 in.push_back(Pair("valueSat", spentInfo.satoshis));
                 if (spentInfo.addressType == 1) {
@@ -125,9 +128,9 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
         // so we simply try looking up by both txid and bare txid as at
         // most one of them can match anyway.
         CSpentIndexValue spentInfo;
-        bool found = GetSpentIndex(CSpentIndexKey(txid, i), spentInfo);
+        bool found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,CSpentIndexKey(txid, i), spentInfo);
         if (!found)
-          found = GetSpentIndex(CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
+          found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
         if (found) {
             out.push_back(Pair("spentTxId", spentInfo.txid.GetHex()));
             out.push_back(Pair("spentIndex", (int)spentInfo.inputIndex));

@@ -65,10 +65,9 @@ extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern CWallet* pwalletMain;
+extern bool fSpentIndex;
 
 std::string GetWarnings(std::string strFor);
-
-bool GetSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
 Value ban(const Array& params, bool fHelp)
 {
@@ -1005,7 +1004,7 @@ Value getspentinfo(const Array& params, bool fHelp)
     const CSpentIndexKey key(txid, outputIndex);
     CSpentIndexValue value;
 
-    if (!GetSpentIndex(key, value)) {
+    if (!TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,key, value)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unable to get spent info");
     }
 

@@ -168,12 +168,6 @@ struct CAddressIndexKey;
 struct CAddressUnspentKey;
 struct CAddressUnspentValue;
 
-bool GetAddressUnspent(bool addresIndexEnabled,
-                      CBlockTreeDB* pblocktree,
-                      uint160 addressHash,
-                      int type,
-                      std::vector<std::pair<CAddressUnspentKey,
-                      CAddressUnspentValue> > &unspentOutputs);
 bool GetSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
 #endif // BITCOIN_MAIN_H

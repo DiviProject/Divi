@@ -164,8 +164,4 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 /** The currently-connected chain of blocks. */
 extern CChain chainActive;
 
-struct CAddressIndexKey;
-struct CAddressUnspentKey;
-struct CAddressUnspentValue;
-
 #endif // BITCOIN_MAIN_H

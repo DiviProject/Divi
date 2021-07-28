@@ -40,7 +40,6 @@ constexpr char DB_NAMEDFLAG = 'F';
 
 } // anonymous namespace
 
-CBlockIndex* InsertBlockIndex(uint256 hash);
 
 void static BatchWriteCoins(CLevelDBBatch& batch, const uint256& hash, const CCoins& coins)
 {
@@ -241,7 +240,7 @@ bool CBlockTreeDB::ReadFlag(const std::string& name, bool& fValue)
     return true;
 }
 
-bool CBlockTreeDB::LoadBlockIndexGuts()
+bool CBlockTreeDB::LoadBlockIndexGuts(BlockMap& blockIndicesByHash)
 {
     boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
 
@@ -265,9 +264,9 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 ssValue >> diskindex;
 
                 // Construct block index object
-                CBlockIndex* pindexNew = InsertBlockIndex(diskindex.GetBlockHash());
-                pindexNew->pprev = InsertBlockIndex(diskindex.hashPrev);
-                pindexNew->pnext = InsertBlockIndex(diskindex.hashNext);
+                CBlockIndex* pindexNew = blockIndicesByHash.CreateUniqueBlockIndex(diskindex.GetBlockHash());
+                pindexNew->pprev = blockIndicesByHash.CreateUniqueBlockIndex(diskindex.hashPrev);
+                pindexNew->pnext = blockIndicesByHash.CreateUniqueBlockIndex(diskindex.hashNext);
                 pindexNew->nHeight = diskindex.nHeight;
                 pindexNew->nFile = diskindex.nFile;
                 pindexNew->nDataPos = diskindex.nDataPos;

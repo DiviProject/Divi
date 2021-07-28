@@ -1070,7 +1070,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
  * The caches and indexes are flushed if either they're too large, forceWrite is set, or
  * fast is not set and it's been a while since the last write.
  */
-bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
+bool static FlushStateToDisk(CBlockTreeDB& blockTreeDB, CValidationState& state, FlushStateMode mode)
 {
     LOCK(cs_main);
     static int64_t nLastWrite = 0;
@@ -1090,22 +1090,22 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
             // Then update all block file information (which may refer to block and undo files).
             bool fileschanged = false;
             for (std::set<int>::iterator it = setDirtyFileInfo.begin(); it != setDirtyFileInfo.end();) {
-                if (!pblocktree->WriteBlockFileInfo(*it, vinfoBlockFile[*it])) {
+                if (!blockTreeDB.WriteBlockFileInfo(*it, vinfoBlockFile[*it])) {
                     return state.Abort("Failed to write to block index");
                 }
                 fileschanged = true;
                 setDirtyFileInfo.erase(it++);
             }
-            if (fileschanged && !pblocktree->WriteLastBlockFile(nLastBlockFile)) {
+            if (fileschanged && !blockTreeDB.WriteLastBlockFile(nLastBlockFile)) {
                 return state.Abort("Failed to write to block index");
             }
             for (std::set<CBlockIndex*>::iterator it = setDirtyBlockIndex.begin(); it != setDirtyBlockIndex.end();) {
-                if (!pblocktree->WriteBlockIndex(CDiskBlockIndex(*it))) {
+                if (!blockTreeDB.WriteBlockIndex(CDiskBlockIndex(*it))) {
                     return state.Abort("Failed to write to block index");
                 }
                 setDirtyBlockIndex.erase(it++);
             }
-            pblocktree->Sync();
+            blockTreeDB.Sync();
             // Finally flush the chainstate (which may refer to block index entries).
             if (!pcoinsTip->Flush())
                 return state.Abort("Failed to write to coin database");
@@ -1121,10 +1121,10 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
     return true;
 }
 
-void FlushStateToDisk()
+void FlushStateToDisk(FlushStateMode mode)
 {
     CValidationState state;
-    FlushStateToDisk(state, FLUSH_STATE_ALWAYS);
+    FlushStateToDisk(*pblocktree,state, mode);
 }
 
 /** Update chainActive and related internal data structures. */
@@ -1184,7 +1184,7 @@ bool static DisconnectTip(CValidationState& state)
     std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
 
     // Write the chain state to disk, if necessary.
-    if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS))
+    if (!FlushStateToDisk(*pblocktree,state, FLUSH_STATE_ALWAYS))
         return false;
     // Resurrect mempool transactions from the disconnected block.
     for(const CTransaction& tx: blockTransactions) {
@@ -1261,7 +1261,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
     if (pindexNew->pprev && (pindexNew->GetBlockPos().nFile != pindexNew->pprev->GetBlockPos().nFile))
         flushMode = FLUSH_STATE_ALWAYS;
-    if (!FlushStateToDisk(state, flushMode))
+    if (!FlushStateToDisk(*pblocktree,state, flushMode))
         return false;
     int64_t nTime5 = GetTimeMicros();
     nTimeChainState += nTime5 - nTime4;
@@ -1496,7 +1496,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
     CheckBlockIndex();
 
     // Write changes periodically to disk, after relay.
-    if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
+    if (!FlushStateToDisk(*pblocktree,state, FLUSH_STATE_PERIODIC)) {
         return false;
     }
 
@@ -2394,7 +2394,7 @@ bool InitBlockIndex()
             if (!ActivateBestChain(state, &block))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
-            return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);
+            return FlushStateToDisk(*pblocktree,state, FLUSH_STATE_ALWAYS);
         } catch (std::runtime_error& e) {
             return error("LoadBlockIndex() : failed to initialize block database: %s", e.what());
         }

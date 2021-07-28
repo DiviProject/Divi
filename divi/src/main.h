@@ -13,7 +13,6 @@
 #endif
 
 #include "amount.h"
-#include "blockmap.h"
 #include "chain.h"
 #include "uint256.h"
 #include "spentindex.h"

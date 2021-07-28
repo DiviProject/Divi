@@ -10,6 +10,7 @@
 #include <ActiveChainManager.h>
 #include "addrman.h"
 #include "alert.h"
+#include <blockmap.h>
 #include "BlockFileOpener.h"
 #include "BlockDiskAccessor.h"
 #include <BlockRejects.h>

@@ -410,10 +410,8 @@ struct CImportingNow {
     }
 };
 
-void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
+void ReconstructBlockIndexIfRequested()
 {
-    RenameThread("divi-loadblk");
-
     // -reindex
     if (fReindex) {
         CImportingNow imp;
@@ -435,6 +433,11 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
         // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
         InitBlockIndex();
     }
+}
+
+void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
+{
+    RenameThread("divi-loadblk");
 
     // hardcoded $DATADIR/bootstrap.dat
     boost::filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
@@ -791,7 +794,9 @@ std::pair<size_t,size_t> CalculateDBCacheSizes()
 bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
 {
     const bool skipLoadingDueToError = true;
+    if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
+        uiInterface.InitMessage(translate("Preparing databases..."));
         UnloadBlockIndex();
         std::pair<std::size_t, std::size_t> dbCacheSizes = CalculateDBCacheSizes();
         CleanAndReallocateShallowDatabases(dbCacheSizes);
@@ -803,7 +808,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         uiInterface.InitMessage(translate("Loading sporks..."));
         GetSporkManager().LoadSporksFromDB();
 
-        uiInterface.InitMessage(translate("Loading block index..."));
+        if(!fReindex) uiInterface.InitMessage(translate("Loading block index..."));
         std::string strBlockIndexError = "";
         if (!LoadBlockIndex(strBlockIndexError)) {
             strLoadError = translate("Error loading block database");
@@ -813,10 +818,12 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
 
         // If the loaded chain has a wrong genesis, bail out immediately
         // (we're likely using a testnet datadir, or the other way around).
+        uiInterface.InitMessage(translate("Checking genesis block..."));
         if (!mapBlockIndex.empty() && mapBlockIndex.count(Params().HashGenesisBlock()) == 0)
             return InitError(translate("Incorrect or no genesis block found. Wrong datadir for network?"));
 
         // Initialize the block index (no-op if non-empty database was already loaded)
+        if(!fReindex) uiInterface.InitMessage(translate("Initializing block index databases..."));
         if (!InitBlockIndex()) {
             strLoadError = translate("Error initializing block database");
             return skipLoadingDueToError;
@@ -1285,12 +1292,14 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (!ActivateBestChain(state))
         strErrors << "Failed to connect best block";
 
-    std::vector<boost::filesystem::path> vImportFiles;
+    ReconstructBlockIndexIfRequested();
     if (settings.ParameterIsSet("-loadblock")) {
+        std::vector<boost::filesystem::path> vImportFiles;
         BOOST_FOREACH (std::string strFile, settings.GetMultiParameter("-loadblock"))
             vImportFiles.push_back(strFile);
+        threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
     }
-    threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
+
     if (chainActive.Tip() == NULL) {
         LogPrintf("Waiting for genesis block to be imported...\n");
         while (!fRequestShutdown && chainActive.Tip() == NULL)

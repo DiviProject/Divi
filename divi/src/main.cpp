@@ -113,6 +113,8 @@ bool fSpentIndex = false;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
+CCoinsViewCache* pcoinsTip = NULL;
+CBlockTreeDB* pblocktree = NULL;
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
@@ -238,9 +240,6 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
     }
     return chain.Genesis();
 }
-
-CCoinsViewCache* pcoinsTip = NULL;
-CBlockTreeDB* pblocktree = NULL;
 
 bool IsStandardTx(const CTransaction& tx, string& reason)
 {

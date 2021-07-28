@@ -672,11 +672,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     return true;
 }
 
-bool GetSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value)
-{
-    return TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,key,value);
-}
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // CBlock and CBlockIndex

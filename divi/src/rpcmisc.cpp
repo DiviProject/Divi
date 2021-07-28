@@ -35,6 +35,7 @@
 #include <FeeAndPriorityCalculator.h>
 #include <PeerBanningService.h>
 #include <IndexDatabaseUpdateCollector.h>
+#include <TransactionSearchIndexes.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -64,14 +65,6 @@ extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern CWallet* pwalletMain;
-
-bool GetAddressIndex(bool addresIndexEnabled,
-                     CBlockTreeDB* pblocktree,
-                     uint160 addressHash,
-                     int type,
-                     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
-                     int start = 0,
-                     int end = 0);
 
 std::string GetWarnings(std::string strFor);
 
@@ -684,11 +677,11 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -786,11 +779,11 @@ Value getaddressdeltas(const Array& params, bool fHelp)
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -879,7 +872,7 @@ Value getaddressbalance(const Array& params, bool fHelp)
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
+        if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }

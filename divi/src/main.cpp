@@ -2137,28 +2137,9 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
     return true;
 }
 
-CBlockIndex* InsertBlockIndex(uint256 hash)
-{
-    if (hash == 0)
-        return NULL;
-
-    // Return existing
-    BlockMap::iterator mi = mapBlockIndex.find(hash);
-    if (mi != mapBlockIndex.end())
-        return (*mi).second;
-
-    // Create new
-    CBlockIndex* pindexNew = new CBlockIndex();
-    if (!pindexNew)
-        throw runtime_error("LoadBlockIndex() : new CBlockIndex failed");
-    mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
-    pindexNew->phashBlock = &((*mi).first);
-    return pindexNew;
-}
-
 bool static LoadBlockIndexDB(string& strError)
 {
-    if (!pblocktree->LoadBlockIndexGuts())
+    if (!pblocktree->LoadBlockIndexGuts(mapBlockIndex))
         return false;
 
     boost::this_thread::interruption_point();

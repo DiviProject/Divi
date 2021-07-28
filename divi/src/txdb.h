@@ -79,7 +79,7 @@ public:
                                  std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &vect);
     bool WriteFlag(const std::string& name, bool fValue);
     bool ReadFlag(const std::string& name, bool& fValue);
-    bool LoadBlockIndexGuts();
+    bool LoadBlockIndexGuts(BlockMap& blockIndicesByHash);
 };
 
 #endif // BITCOIN_TXDB_H

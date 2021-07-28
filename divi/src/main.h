@@ -93,8 +93,6 @@ bool DisconnectBlocksAndReprocess(int blocks);
 // ***TODO***
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
 
-/** Create a new block index entry for a given block hash */
-CBlockIndex* InsertBlockIndex(uint256 hash);
 /** Abort with a message */
 bool AbortNode(const std::string& msg, const std::string& userMessage);
 /** Flush all state, indexes and buffers to disk. */

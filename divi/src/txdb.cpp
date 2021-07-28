@@ -40,8 +40,6 @@ constexpr char DB_NAMEDFLAG = 'F';
 
 } // anonymous namespace
 
-extern BlockMap mapBlockIndex;
-
 CBlockIndex* InsertBlockIndex(uint256 hash);
 
 void static BatchWriteCoins(CLevelDBBatch& batch, const uint256& hash, const CCoins& coins)
@@ -57,7 +55,13 @@ void static BatchWriteHashBestChain(CLevelDBBatch& batch, const uint256& hash)
     batch.Write(DB_BESTBLOCKHASH, hash);
 }
 
-CCoinsViewDB::CCoinsViewDB(size_t nCacheSize, bool fMemory, bool fWipe) : db(GetDataDir() / "chainstate", nCacheSize, fMemory, fWipe)
+CCoinsViewDB::CCoinsViewDB(
+    const BlockMap& blockIndicesByHash,
+    size_t nCacheSize,
+    bool fMemory,
+    bool fWipe
+    ): db(GetDataDir() / "chainstate", nCacheSize, fMemory, fWipe)
+    , blockIndicesByHash_(blockIndicesByHash)
 {
 }
 
@@ -190,7 +194,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
             return error("%s : Deserialize or I/O error - %s", __func__, e.what());
         }
     }
-    stats.nHeight = mapBlockIndex.find(GetBestBlock())->second->nHeight;
+    stats.nHeight = blockIndicesByHash_.find(GetBestBlock())->second->nHeight;
     stats.hashSerialized = ss.GetHash();
     stats.nTotalAmount = nTotalAmount;
     return true;

@@ -239,7 +239,7 @@ void CleanAndReallocateShallowDatabases(const std::pair<std::size_t,std::size_t>
     DeallocateShallowDatabases();
     GetSporkManager().AllocateDatabase();
     pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
-    pcoinsdbview = new CCoinsViewDB(blockTreeAndCoinDBCacheSizes.second, false, fReindex);
+    pcoinsdbview = new CCoinsViewDB(mapBlockIndex,blockTreeAndCoinDBCacheSizes.second, false, fReindex);
     pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
     pcoinsTip = new CCoinsViewCache(pcoinscatcher);
 }

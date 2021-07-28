@@ -70,13 +70,6 @@ std::string GetWarnings(std::string strFor);
 
 bool GetSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
-bool GetAddressUnspent(bool addresIndexEnabled,
-                      CBlockTreeDB* pblocktree,
-                      uint160 addressHash,
-                      int type,
-                      std::vector<std::pair<CAddressUnspentKey,
-                      CAddressUnspentValue> > &unspentOutputs);
-
 Value ban(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
@@ -1072,7 +1065,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue>> unspentOutputs;
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!GetAddressUnspent(fAddressIndex,pblocktree,(*it).first, (*it).second, unspentOutputs)) {
+        if (!TransactionSearchIndexes::GetAddressUnspent(fAddressIndex,pblocktree,(*it).first, (*it).second, unspentOutputs)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }

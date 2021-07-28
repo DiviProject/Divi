@@ -1,6 +1,6 @@
 #include <blockmap.h>
 
-CBlockIndex* BlockMap::CreateUniqueBlockIndex(uint256 blockHash)
+CBlockIndex* BlockMap::GetUniqueBlockIndexForHash(uint256 blockHash)
 {
     if (blockHash == 0)
         return NULL;

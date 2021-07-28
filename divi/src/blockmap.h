@@ -10,6 +10,6 @@ struct BlockHasher {
 class BlockMap: public boost::unordered_map<uint256, CBlockIndex*, BlockHasher>
 {
 public:
-    CBlockIndex* CreateUniqueBlockIndex(uint256 blockHash);
+    CBlockIndex* GetUniqueBlockIndexForHash(uint256 blockHash);
 };
 #endif // BLOCK_MAP_H

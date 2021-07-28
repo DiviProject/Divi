@@ -264,9 +264,9 @@ bool CBlockTreeDB::LoadBlockIndexGuts(BlockMap& blockIndicesByHash)
                 ssValue >> diskindex;
 
                 // Construct block index object
-                CBlockIndex* pindexNew = blockIndicesByHash.CreateUniqueBlockIndex(diskindex.GetBlockHash());
-                pindexNew->pprev = blockIndicesByHash.CreateUniqueBlockIndex(diskindex.hashPrev);
-                pindexNew->pnext = blockIndicesByHash.CreateUniqueBlockIndex(diskindex.hashNext);
+                CBlockIndex* pindexNew = blockIndicesByHash.GetUniqueBlockIndexForHash(diskindex.GetBlockHash());
+                pindexNew->pprev = blockIndicesByHash.GetUniqueBlockIndexForHash(diskindex.hashPrev);
+                pindexNew->pnext = blockIndicesByHash.GetUniqueBlockIndexForHash(diskindex.hashNext);
                 pindexNew->nHeight = diskindex.nHeight;
                 pindexNew->nFile = diskindex.nFile;
                 pindexNew->nDataPos = diskindex.nDataPos;

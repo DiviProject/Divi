@@ -672,17 +672,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     return true;
 }
 
-bool GetAddressIndex(bool addresIndexEnabled,
-                     CBlockTreeDB* pblocktree,
-                     uint160 addressHash,
-                     int type,
-                     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
-                     int start,
-                     int end)
-{
-    return TransactionSearchIndexes::GetAddressIndex(addresIndexEnabled,pblocktree,addressHash,type,addressIndex,start,end);
-}
-
 bool GetAddressUnspent(bool addresIndexEnabled,
                       CBlockTreeDB* pblocktree,
                       uint160 addressHash,

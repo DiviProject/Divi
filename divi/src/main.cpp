@@ -73,6 +73,7 @@
 #include <utilstrencodings.h>
 #include <NodeStateRegistry.h>
 #include <Node.h>
+#include <TransactionSearchIndexes.h>
 
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;
@@ -679,43 +680,21 @@ bool GetAddressIndex(bool addresIndexEnabled,
                      int start,
                      int end)
 {
-    if (!addresIndexEnabled)
-        return error("address index not enabled");
-
-    if (!pblocktree->ReadAddressIndex(addressHash, type, addressIndex, start, end))
-        return error("unable to get txids for address");
-
-    return true;
+    return TransactionSearchIndexes::GetAddressIndex(addresIndexEnabled,pblocktree,addressHash,type,addressIndex,start,end);
 }
 
 bool GetAddressUnspent(bool addresIndexEnabled,
                       CBlockTreeDB* pblocktree,
                       uint160 addressHash,
                       int type,
-                      std::vector<std::pair<CAddressUnspentKey,
-                      CAddressUnspentValue> > &unspentOutputs)
+                      std::vector<std::pair<CAddressUnspentKey,CAddressUnspentValue> > &unspentOutputs)
 {
-    if (!addresIndexEnabled)
-        return error("address index not enabled");
-
-    if (!pblocktree->ReadAddressUnspentIndex(addressHash, type, unspentOutputs))
-        return error("unable to get txids for address");
-
-    return true;
+    return TransactionSearchIndexes::GetAddressUnspent(addresIndexEnabled,pblocktree,addressHash,type,unspentOutputs);
 }
 
 bool GetSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value)
 {
-    if (!fSpentIndex)
-        return false;
-
-    if (mempool.getSpentIndex(key, value))
-        return true;
-
-    if (!pblocktree->ReadSpentIndex(key, value))
-        return false;
-
-    return true;
+    return TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,key,value);
 }
 
 //////////////////////////////////////////////////////////////////////////////

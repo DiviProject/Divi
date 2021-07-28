@@ -29,15 +29,16 @@ struct CDiskTxPos;
 struct CCoinsStats;
 struct CSpentIndexValue;
 struct TxIndexEntry;
+struct BlockMap;
 
 /** CCoinsView backed by the LevelDB coin database (chainstate/) */
 class CCoinsViewDB : public CCoinsView
 {
 protected:
     CLevelDBWrapper db;
-
+    const BlockMap& blockIndicesByHash_;
 public:
-    CCoinsViewDB(size_t nCacheSize, bool fMemory = false, bool fWipe = false);
+    CCoinsViewDB(const BlockMap& blockIndicesByHash, size_t nCacheSize, bool fMemory = false, bool fWipe = false);
 
     bool GetCoins(const uint256& txid, CCoins& coins) const override;
     bool HaveCoins(const uint256& txid) const override;

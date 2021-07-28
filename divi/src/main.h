@@ -168,6 +168,4 @@ struct CAddressIndexKey;
 struct CAddressUnspentKey;
 struct CAddressUnspentValue;
 
-bool GetSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
-
 #endif // BITCOIN_MAIN_H

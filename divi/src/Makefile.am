@@ -366,6 +366,7 @@ libbitcoin_server_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT
 libbitcoin_server_a_SOURCES = \
   addrman.cpp \
   alert.cpp \
+  blockmap.cpp \
   BlockRewards.cpp \
   BIP9Deployment.cpp \
   BIP9ActivationManager.cpp \
@@ -629,6 +630,7 @@ libbitcoin_common_a_SOURCES = \
   Secp256k1Context.cpp \
   spork.cpp \
   sporkdb.cpp \
+  blockmap.cpp \
   $(BITCOIN_CORE_H)
 
 # util: shared between all executables.

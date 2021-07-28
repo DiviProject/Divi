@@ -12,6 +12,7 @@
 #include "init.h"
 
 #include "amount.h"
+#include <blockmap.h>
 #include "BlockFileOpener.h"
 #include <chainparams.h>
 #include "checkpoints.h"

@@ -39,6 +39,7 @@
 #include <coins.h>
 #include <FeeRate.h>
 #include <FeeAndPriorityCalculator.h>
+#include <blockmap.h>
 
 using namespace json_spirit;
 using namespace std;

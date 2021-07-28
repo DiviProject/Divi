@@ -24,6 +24,7 @@
 #include <boost/foreach.hpp>
 #include <utilstrencodings.h>
 #include <txmempool.h>
+#include <blockmap.h>
 
 using namespace json_spirit;
 using namespace std;

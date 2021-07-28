@@ -168,14 +168,6 @@ struct CAddressIndexKey;
 struct CAddressUnspentKey;
 struct CAddressUnspentValue;
 
-bool GetAddressIndex(bool addresIndexEnabled,
-                     CBlockTreeDB* pblocktree,
-                     uint160 addressHash,
-                     int type,
-                     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
-                     int start = 0,
-                     int end = 0);
-
 bool GetAddressUnspent(bool addresIndexEnabled,
                       CBlockTreeDB* pblocktree,
                       uint160 addressHash,

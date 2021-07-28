@@ -209,6 +209,7 @@ BITCOIN_CORE_H = \
   BlockRejects.h\
   QueuedBlock.h \
   main.h \
+  TransactionSearchIndexes.h \
   OrphanTransactions.h \
   TransactionOpCounting.h \
   TransactionInputChecker.h \
@@ -398,6 +399,7 @@ libbitcoin_server_a_SOURCES = \
   BlocksInFlightRegistry.cpp \
   NodeStateRegistry.cpp \
   main.cpp \
+  TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \
   WalletLoggingHelper.cpp \
   walletdustcombiner.cpp \

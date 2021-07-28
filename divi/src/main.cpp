@@ -186,6 +186,31 @@ std::set<CBlockIndex*> setDirtyBlockIndex;
 std::set<int> setDirtyFileInfo;
 } // anon namespace
 
+static bool UpdateDBIndicesForNewBlock(
+    const IndexDatabaseUpdates& indexDatabaseUpdates,
+    CBlockTreeDB& blockTreeDatabase,
+    CValidationState& state)
+{
+    if (fTxIndex)
+        if (!blockTreeDatabase.WriteTxIndex(indexDatabaseUpdates.txLocationData))
+            return state.Abort("Failed to write transaction index");
+
+    if (fAddressIndex) {
+        if (!blockTreeDatabase.WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
+            return state.Abort("Failed to write address index");
+        }
+
+        if (!blockTreeDatabase.UpdateAddressUnspentIndex(indexDatabaseUpdates.addressUnspentIndex)) {
+            return state.Abort("Failed to write address unspent index");
+        }
+    }
+
+    if (fSpentIndex)
+        if (!blockTreeDatabase.UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
+            return state.Abort("Failed to write transaction index");
+
+    return true;
+}
 //////////////////////////////////////////////////////////////////////////////
 //
 // dispatching functions
@@ -966,31 +991,6 @@ bool CheckMintTotalsAndBlockPayees(
     return true;
 }
 
-bool UpdateDBIndicesForNewBlock(
-    const IndexDatabaseUpdates& indexDatabaseUpdates,
-    CValidationState& state)
-{
-    if (fTxIndex)
-        if (!pblocktree->WriteTxIndex(indexDatabaseUpdates.txLocationData))
-            return state.Abort("Failed to write transaction index");
-
-    if (fAddressIndex) {
-        if (!pblocktree->WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
-            return state.Abort("Failed to write address index");
-        }
-
-        if (!pblocktree->UpdateAddressUnspentIndex(indexDatabaseUpdates.addressUnspentIndex)) {
-            return state.Abort("Failed to write address unspent index");
-        }
-    }
-
-    if (fSpentIndex)
-        if (!pblocktree->UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
-            return state.Abort("Failed to write transaction index");
-
-    return true;
-}
-
 } // anonymous namespace
 
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
@@ -1049,7 +1049,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return true;
 
     if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
-       !UpdateDBIndicesForNewBlock(indexDatabaseUpdates,state))
+       !UpdateDBIndicesForNewBlock(indexDatabaseUpdates,*pblocktree,state))
     {
         return false;
     }

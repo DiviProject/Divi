@@ -1280,6 +1280,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
 
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
+    uiInterface.InitMessage(translate("Connecting best block..."));
     CValidationState state;
     if (!ActivateBestChain(state))
         strErrors << "Failed to connect best block";
@@ -1302,6 +1303,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
+    uiInterface.InitMessage(translate("Checking for active masternode..."));
     if(!InitializeMasternodeIfRequested(settings,fTxIndex,errorMessage))
     {
         return InitError(errorMessage);
@@ -1329,6 +1331,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (settings.GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION))
         StartTorControl(threadGroup);
 
+    uiInterface.InitMessage(translate("Initializing P2P connections..."));
     StartNode(threadGroup,pwalletMain);
 
 #ifdef ENABLE_WALLET

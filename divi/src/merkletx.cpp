@@ -43,9 +43,6 @@ bool CMerkleTx::IsInMainChain() const
 
 int CMerkleTx::SetMerkleBranch(const CBlock& block)
 {
-    // Update the tx's hashBlock
-    hashBlock = block.GetHash();
-
     // Locate the transaction
     for (nIndex = 0; nIndex < (int)block.vtx.size(); nIndex++)
         if (block.vtx[nIndex] == *(CTransaction*)this)
@@ -57,6 +54,8 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
         return 0;
     }
 
+    // Update the tx's hashBlock
+    hashBlock = block.GetHash();
     // Fill in merkle branch
     vMerkleBranch = block.GetMerkleBranch(nIndex);
 

@@ -169,6 +169,8 @@ private:
     bool allowSpendingZeroConfirmationOutputs;
     std::unique_ptr<I_SignatureSizeEstimator> signatureSizeEstimator_;
     std::unique_ptr<I_CoinSelectionAlgorithm> defaultCoinSelectionAlgorithm_;
+
+    bool SubmitTransactionToMemoryPool(const CWalletTx& wtx ,bool fLimitFree) const;
 public:
     int64_t defaultKeyPoolTopUp;
     void toggleSpendingZeroConfirmationOutputs();

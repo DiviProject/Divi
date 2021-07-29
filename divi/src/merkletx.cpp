@@ -69,10 +69,10 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
     if (!pindex || !activeChain_.Contains(pindex))
         return 0;
 
-    VerifyMerkleRootMatchesBlockIndex(pindex);
+    VerifyMerkleBranchMatchesBlockIndex(pindex);
     return activeChain_.Height() - pindex->nHeight + 1;
 }
-bool CMerkleTx::VerifyMerkleRootMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const
+bool CMerkleTx::VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const
 {
     // Make sure the merkle branch connects to this block
     if(!fMerkleVerified)
@@ -107,7 +107,7 @@ std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth(boo
         }
         depth = activeChain_.Height() - pindex->nHeight + 1;
     }
-    if(!VerifyMerkleRootMatchesBlockIndex(pindex))
+    if(!VerifyMerkleBranchMatchesBlockIndex(pindex))
     {
         return std::make_pair(nullptr,(checkMempool && !mempool.exists(GetHash()))?-1:0);
     }

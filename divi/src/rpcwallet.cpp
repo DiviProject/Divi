@@ -1468,7 +1468,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
         if (ExtractDestination(wtx.vout[1].scriptPubKey, address)) {
 
             if (!pwalletMain->IsMine(address)) {
-                std::pair<const CBlockIndex*,int> blockIndexAndDepth = wtx.FindConfirmedBlockIndexAndDepth(true);
+                std::pair<const CBlockIndex*,int> blockIndexAndDepth = wtx.FindConfirmedBlockIndexAndDepth();
                 if(blockIndexAndDepth.second > 0 && blockIndexAndDepth.first)
                 {
                     bool isLotteryPayment = heightValidator.IsValidLotteryBlockHeight(blockIndexAndDepth.first->nHeight);

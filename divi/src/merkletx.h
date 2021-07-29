@@ -25,8 +25,6 @@ public:
     // memory only
     mutable bool fMerkleVerified;
     CMerkleTx(const CTransaction& txIn,const CChain& activeChain, const BlockMap& blockIndices);
-    CMerkleTx();
-    CMerkleTx(const CTransaction& txIn);
 
     void Init();
 

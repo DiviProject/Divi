@@ -100,7 +100,7 @@ Value allocatefunds(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    CWalletTx wtx;
+    CWalletTx wtx = pwalletMain->initializeEmptyWalletTransaction();
     SendMoney(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), wtx);
 
     Object obj;

@@ -81,8 +81,15 @@ public:
         }
 
         READWRITE(*(CMerkleTx*)this);
-        std::vector<CMerkleTx> vUnused; //! Used to be vtxPrev
-        READWRITE(vUnused);
+        if (!ser_action.ForRead())
+        {
+            uint64_t unused = 0;
+            WriteCompactSize(s,unused);
+        }
+        else
+        {
+            ReadCompactSize(s);
+        }
         READWRITE(mapValue);
         READWRITE(vOrderForm);
         READWRITE(fTimeReceivedIsTxTime);

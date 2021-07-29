@@ -12,10 +12,6 @@
 
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern bool fLargeWorkForkFound;
-extern bool fLargeWorkInvalidChainFound;
-
-bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
 
 
 CMerkleTx::CMerkleTx(
@@ -122,14 +118,4 @@ int CMerkleTx::GetBlocksToMaturity() const
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
     return std::max(0, (Params().COINBASE_MATURITY() + 1) - GetNumberOfBlockConfirmations());
-}
-
-
-bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree)
-{
-    CValidationState state;
-    bool fAccepted = ::AcceptToMemoryPool(mempool, state, *this, fLimitFree);
-    if (!fAccepted)
-        LogPrintf("%s : %s\n", __func__, state.GetRejectReason());
-    return fAccepted;
 }

@@ -52,6 +52,5 @@ public:
     int GetNumberOfBlockConfirmations() const;
     bool IsInMainChain() const;
     int GetBlocksToMaturity() const;
-    bool AcceptToMemoryPool(bool fLimitFree);
 };
 #endif// MERKLE_TX_H

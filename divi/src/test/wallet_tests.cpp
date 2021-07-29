@@ -70,7 +70,7 @@ void WalletTestFixture::add_coin(const CAmount nValue, int nAge, bool fIsFromMe,
         // so stop vin being empty, and cache a non-zero Debit to fake out DebitsFunds()
         tx.vin.resize(1);
     }
-    CWalletTx* wtx = new CWalletTx(tx);
+    CWalletTx* wtx = new CWalletTx(tx,*fakeChain.activeChain,*fakeChain.blockIndexByHash);
     if (fIsFromMe)
     {
         wtx->fDebitCached = true;

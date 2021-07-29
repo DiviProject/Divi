@@ -14,8 +14,6 @@ extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
-extern BlockMap mapBlockIndex;
-extern CChain chainActive;
 
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
 
@@ -27,16 +25,6 @@ CMerkleTx::CMerkleTx(
     ): CTransaction(txIn)
     , activeChain_(activeChain)
     , blockIndices_(blockIndices)
-{
-    Init();
-}
-
-CMerkleTx::CMerkleTx(): activeChain_(chainActive), blockIndices_(mapBlockIndex)
-{
-    Init();
-}
-
-CMerkleTx::CMerkleTx(const CTransaction& txIn) : CTransaction(txIn), activeChain_(chainActive), blockIndices_(mapBlockIndex)
 {
     Init();
 }

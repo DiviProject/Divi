@@ -23,17 +23,15 @@ void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue)
     mapValue["n"] = i64tostr(nOrderPos);
 }
 
-CWalletTx::CWalletTx()
-{
-    Init();
-}
-
 CWalletTx::CWalletTx(const CMerkleTx& txIn) : CMerkleTx(txIn)
 {
     Init();
 }
-
-CWalletTx::CWalletTx(const CTransaction& txIn) : CMerkleTx(txIn)
+CWalletTx::CWalletTx(
+    const CTransaction& txIn,
+    const CChain& activeChain,
+    const BlockMap& blockIndicesByHash
+    ): CMerkleTx(txIn,activeChain,blockIndicesByHash)
 {
     Init();
 }

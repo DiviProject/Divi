@@ -89,7 +89,7 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
         vecSend.push_back(std::make_pair(scriptPubKey, nTotalRewardsValue-expectedFee));
 
         // Create the transaction and commit it to the network
-        CWalletTx wtx;
+        CWalletTx wtx = wallet_.initializeEmptyWalletTransaction();
         std::pair<std::string,bool> txCreationResult;
         {
             CoinControlSelectionAlgorithm coinSelectionAlgorithm(coinControl);

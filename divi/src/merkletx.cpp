@@ -34,13 +34,11 @@ void CMerkleTx::Init()
 
 int CMerkleTx::GetNumberOfBlockConfirmations() const
 {
-    const CBlockIndex* pindexRet;
-    return GetNumberOfBlockConfirmations(pindexRet);
+    return FindConfirmedBlockIndexAndDepth(true).second;
 }
 bool CMerkleTx::IsInMainChain() const
 {
-    const CBlockIndex* pindexRet;
-    return GetNumberOfBlockConfirmationsINTERNAL(pindexRet) > 0;
+    return FindConfirmedBlockIndexAndDepth(false).second > 0;
 }
 
 int CMerkleTx::SetMerkleBranch(const CBlock& block)
@@ -71,7 +69,20 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
     if (!pindex || !activeChain_.Contains(pindex))
         return 0;
 
+    VerifyMerkleRootMatchesBlockIndex(pindex);
     return activeChain_.Height() - pindex->nHeight + 1;
+}
+bool CMerkleTx::VerifyMerkleRootMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const
+{
+    // Make sure the merkle branch connects to this block
+    if(!fMerkleVerified)
+    {
+        if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, nIndex) != blockIndexOfFirstConfirmation->hashMerkleRoot)
+            return false;
+        fMerkleVerified = true;
+        return true;
+    }
+    return true;
 }
 
 std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth(bool checkMempool) const
@@ -96,46 +107,11 @@ std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth(boo
         }
         depth = activeChain_.Height() - pindex->nHeight + 1;
     }
-    return std::make_pair(pindex,depth);
-}
-
-int CMerkleTx::GetNumberOfBlockConfirmationsINTERNAL(const CBlockIndex*& pindexRet) const
-{
-    if (hashBlock == 0 || nIndex == -1)
-        return 0;
-
-    // Find the block it claims to be in
-    unsigned bestHeight;
-    CBlockIndex* pindex;
+    if(!VerifyMerkleRootMatchesBlockIndex(pindex))
     {
-        LOCK(cs_main);
-        BlockMap::const_iterator mi = blockIndices_.find(hashBlock);
-        if (mi == blockIndices_.end())
-            return 0;
-        pindex = (*mi).second;
-        if (!pindex || !activeChain_.Contains(pindex))
-            return 0;
-        bestHeight = activeChain_.Height();
+        return std::make_pair(nullptr,(checkMempool && !mempool.exists(GetHash()))?-1:0);
     }
-
-    // Make sure the merkle branch connects to this block
-    if (!fMerkleVerified) {
-        if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, nIndex) != pindex->hashMerkleRoot)
-            return 0;
-        fMerkleVerified = true;
-    }
-
-    pindexRet = pindex;
-    return bestHeight - pindex->nHeight + 1;
-}
-
-int CMerkleTx::GetNumberOfBlockConfirmations(const CBlockIndex*& pindexRet) const
-{
-    int nResult = GetNumberOfBlockConfirmationsINTERNAL(pindexRet);
-    if (nResult == 0 && !mempool.exists(GetHash()))
-        return -1; // Not in chain, not in mempool
-
-    return nResult;
+    return std::make_pair(pindex,depth);
 }
 
 int CMerkleTx::GetBlocksToMaturity() const

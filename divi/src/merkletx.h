@@ -15,14 +15,7 @@ protected:
     const CChain& activeChain_;
     const BlockMap& blockIndices_;
 private:
-    int GetNumberOfBlockConfirmationsINTERNAL(const CBlockIndex*& pindexRet) const;
-    /**
-     * Return depth of transaction in blockchain:
-     * -1  : not in blockchain, and not in memory pool (conflicted transaction)
-     *  0  : in memory pool, waiting to be included in a block
-     * >=1 : this many blocks deep in the main chain
-     */
-    int GetNumberOfBlockConfirmations(const CBlockIndex*& pindexRet) const;
+    bool VerifyMerkleRootMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const;
 public:
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;
@@ -48,6 +41,12 @@ public:
 
     int SetMerkleBranch(const CBlock& block);
 
+    /**
+     * Return first confirmation block index and depth of transaction in blockchain:
+     * -1  : not in blockchain, and not in memory pool (conflicted transaction)
+     *  0  : in memory pool, waiting to be included in a block
+     * >=1 : this many blocks deep in the main chain
+     */
     std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(bool checkMempool = false) const;
     int GetNumberOfBlockConfirmations() const;
     bool IsInMainChain() const;

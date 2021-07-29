@@ -47,7 +47,7 @@ public:
      *  0  : in memory pool, waiting to be included in a block
      * >=1 : this many blocks deep in the main chain
      */
-    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(bool checkMempool = false) const;
+    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth() const;
     int GetNumberOfBlockConfirmations() const;
     bool IsInMainChain() const;
     int GetBlocksToMaturity() const;

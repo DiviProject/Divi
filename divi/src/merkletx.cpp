@@ -34,11 +34,13 @@ void CMerkleTx::Init()
 
 int CMerkleTx::GetNumberOfBlockConfirmations() const
 {
-    return FindConfirmedBlockIndexAndDepth(true).second;
+    const int depth = FindConfirmedBlockIndexAndDepth().second;
+    if(depth==0 && !mempool.exists(GetHash())) return -1;
+    return depth;
 }
 bool CMerkleTx::IsInMainChain() const
 {
-    return FindConfirmedBlockIndexAndDepth(false).second > 0;
+    return FindConfirmedBlockIndexAndDepth().second > 0;
 }
 
 int CMerkleTx::SetMerkleBranch(const CBlock& block)
@@ -84,10 +86,11 @@ bool CMerkleTx::VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockInde
     return true;
 }
 
-std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth(bool checkMempool) const
+std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth() const
 {
+    static const std::pair<const CBlockIndex*,int> defaultValue = std::make_pair(nullptr,0);
     if (hashBlock == 0 || nIndex == -1)
-        return std::make_pair(nullptr,(checkMempool && !mempool.exists(GetHash()))?-1:0);
+        return defaultValue;
 
     // Find the block it claims to be in
     int depth;
@@ -97,18 +100,18 @@ std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth(boo
         BlockMap::const_iterator mi = blockIndices_.find(hashBlock);
         if (mi == blockIndices_.end())
         {
-            return std::make_pair(nullptr,(checkMempool && !mempool.exists(GetHash()))?-1:0);
+            return defaultValue;
         }
         pindex = (*mi).second;
         if (!pindex || !activeChain_.Contains(pindex))
         {
-            return std::make_pair(nullptr,(checkMempool && !mempool.exists(GetHash()))?-1:0);
+            return defaultValue;
         }
         depth = activeChain_.Height() - pindex->nHeight + 1;
     }
     if(!VerifyMerkleBranchMatchesBlockIndex(pindex))
     {
-        return std::make_pair(nullptr,(checkMempool && !mempool.exists(GetHash()))?-1:0);
+        return defaultValue;
     }
     return std::make_pair(pindex,depth);
 }

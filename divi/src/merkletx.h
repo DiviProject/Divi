@@ -15,7 +15,7 @@ protected:
     const CChain& activeChain_;
     const BlockMap& blockIndices_;
 private:
-    bool VerifyMerkleRootMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const;
+    bool VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const;
 public:
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;

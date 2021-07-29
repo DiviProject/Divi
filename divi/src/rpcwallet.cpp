@@ -1468,10 +1468,10 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
         if (ExtractDestination(wtx.vout[1].scriptPubKey, address)) {
 
             if (!pwalletMain->IsMine(address)) {
-                const CBlockIndex *index = nullptr;
-                if(wtx.GetNumberOfBlockConfirmations(index) > 0 && index)
+                std::pair<const CBlockIndex*,int> blockIndexAndDepth = wtx.FindConfirmedBlockIndexAndDepth(true);
+                if(blockIndexAndDepth.second > 0 && blockIndexAndDepth.first)
                 {
-                    bool isLotteryPayment = heightValidator.IsValidLotteryBlockHeight(index->nHeight);
+                    bool isLotteryPayment = heightValidator.IsValidLotteryBlockHeight(blockIndexAndDepth.first->nHeight);
                     //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
                     for (unsigned int i = 1; i < wtx.vout.size(); i++) {
                         CTxDestination outAddress;

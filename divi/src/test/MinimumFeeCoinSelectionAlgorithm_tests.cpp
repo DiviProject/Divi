@@ -7,6 +7,8 @@
 #include <vector>
 #include <set>
 #include <WalletTx.h>
+#include <blockmap.h>
+#include <chain.h>
 #include <test/MockSignatureSizeEstimator.h>
 
 using ::testing::NiceMock;
@@ -25,6 +27,8 @@ private:
     }
 
     CBasicKeyStore keystore_;
+    BlockMap fakeBlockIndex;
+    CChain fakeActiveChain;
     std::vector<CWalletTx> walletTransactions_;
 public:
     std::vector<CKeyID> keyIds;
@@ -36,6 +40,8 @@ public:
 
     MinimumFeeCoinSelectionAlgorithmTestFixture(
         ): keystore_()
+        , fakeBlockIndex()
+        , fakeActiveChain()
         , walletTransactions_()
         , keyIds()
         , mockSignatureSizeEstimator()
@@ -52,7 +58,7 @@ public:
         mutableTx.vin.emplace_back();
         mutableTx.vin[0].scriptSig = scriptGenerator(25);
         mutableTx.vout.emplace_back(utxoAmount,customScript);
-        walletTransactions_.emplace_back(CTransaction(mutableTx));
+        walletTransactions_.emplace_back(CTransaction(mutableTx),fakeActiveChain,fakeBlockIndex);
     }
     void addSingleUtxo(const CAmount utxoAmount, bool smallScriptSigSize)
     {

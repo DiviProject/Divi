@@ -100,7 +100,7 @@ UnspentOutputs VaultManager::getUTXOs() const
 
 const CWalletTx& VaultManager::GetTransaction(const uint256& hash) const
 {
-    static CWalletTx dummyValue;
+    static CWalletTx dummyValue(CTransaction(),activeChain_,blockIndicesByHash_);
 
     LOCK(cs_vaultManager_);
     const CWalletTx* tx = walletTxRecord_->GetWalletTx(hash);

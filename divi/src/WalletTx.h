@@ -57,9 +57,8 @@ public:
     mutable CAmount nAvailableWatchCreditCached;
     mutable CAmount nChangeCached;
 
-    CWalletTx();
     CWalletTx(const CMerkleTx& txIn);
-    CWalletTx(const CTransaction& txIn);
+    CWalletTx(const CTransaction& txIn, const CChain& activeChain, const BlockMap& blockIndicesByHash);
     void Init();
 
     ADD_SERIALIZE_METHODS;

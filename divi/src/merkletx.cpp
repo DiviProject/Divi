@@ -74,6 +74,31 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
     return activeChain_.Height() - pindex->nHeight + 1;
 }
 
+std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth(bool checkMempool) const
+{
+    if (hashBlock == 0 || nIndex == -1)
+        return std::make_pair(nullptr,(checkMempool && !mempool.exists(GetHash()))?-1:0);
+
+    // Find the block it claims to be in
+    int depth;
+    CBlockIndex* pindex;
+    {
+        LOCK(cs_main);
+        BlockMap::const_iterator mi = blockIndices_.find(hashBlock);
+        if (mi == blockIndices_.end())
+        {
+            return std::make_pair(nullptr,(checkMempool && !mempool.exists(GetHash()))?-1:0);
+        }
+        pindex = (*mi).second;
+        if (!pindex || !activeChain_.Contains(pindex))
+        {
+            return std::make_pair(nullptr,(checkMempool && !mempool.exists(GetHash()))?-1:0);
+        }
+        depth = activeChain_.Height() - pindex->nHeight + 1;
+    }
+    return std::make_pair(pindex,depth);
+}
+
 int CMerkleTx::GetNumberOfBlockConfirmationsINTERNAL(const CBlockIndex*& pindexRet) const
 {
     if (hashBlock == 0 || nIndex == -1)

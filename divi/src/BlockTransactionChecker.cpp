@@ -45,6 +45,7 @@ BlockTransactionChecker::BlockTransactionChecker(
     const int blocksToSkipChecksFor
     ): blockundo_(block.vtx.size() - 1)
     , block_(block)
+    , activation_(block)
     , state_(state)
     , pindex_(pindex)
     , view_(view)
@@ -58,6 +59,11 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
     const CAmount nMoneySupplyPrev = pindex_->pprev ? pindex_->pprev->nMoneySupply : 0;
     pindex_->nMoneySupply = nMoneySupplyPrev;
     pindex_->nMint = 0;
+
+    unsigned flags = MANDATORY_SCRIPT_VERIFY_FLAGS;
+    if (activation_.IsActive(Fork::CheckLockTimeVerify))
+        flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
+
     for (unsigned int i = 0; i < block_.vtx.size(); i++) {
         const CTransaction& tx = block_.vtx[i];
         const TransactionLocationReference txLocationRef(tx, pindex_->nHeight, i);
@@ -66,7 +72,7 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
         {
             return false;
         }
-        if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx,fJustCheck,pindex_))
+        if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx, flags, fJustCheck, pindex_))
         {
             return false;
         }

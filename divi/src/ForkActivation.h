@@ -22,6 +22,7 @@ enum Fork
   TestByTimestamp,
   HardenedStakeModifier,
   UniformLotteryWinners,
+  CheckLockTimeVerify,
 };
 
 /**

@@ -1165,10 +1165,10 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
                 wtx.hashBlock = wtxIn.hashBlock;
                 walletTransactionHasBeenUpdated = true;
             }
-            if (wtxIn.nIndex != -1 && (wtxIn.vMerkleBranch != wtx.vMerkleBranch || wtxIn.nIndex != wtx.nIndex))
+            if (wtxIn.merkleBranchIndex != -1 && (wtxIn.vMerkleBranch != wtx.vMerkleBranch || wtxIn.merkleBranchIndex != wtx.merkleBranchIndex))
             {
                 wtx.vMerkleBranch = wtxIn.vMerkleBranch;
-                wtx.nIndex = wtxIn.nIndex;
+                wtx.merkleBranchIndex = wtxIn.merkleBranchIndex;
                 walletTransactionHasBeenUpdated = true;
             }
             if (wtxIn.createdByMe && wtxIn.createdByMe != wtx.createdByMe)

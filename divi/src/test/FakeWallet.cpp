@@ -136,7 +136,7 @@ void FakeWallet::FakeAddToChain(const CWalletTx& tx)
 {
   auto* txPtr = const_cast<CWalletTx*>(&tx);
   txPtr->hashBlock = fakeChain.activeChain->Tip()->GetBlockHash();
-  txPtr->nIndex = 0;
+  txPtr->merkleBranchIndex = 0;
   txPtr->fMerkleVerified = true;
   WriteTxToDisk(this,*txPtr);
 }

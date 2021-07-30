@@ -24,6 +24,7 @@
 #include <TransactionDiskAccessor.h>
 #include <WalletTx.h>
 #include <stdint.h>
+#include <OutputEntry.h>
 
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"

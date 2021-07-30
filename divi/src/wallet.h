@@ -140,8 +140,8 @@ public:
 private:
     std::unique_ptr<WalletTransactionRecord> transactionRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
-    const CChain& chainActive_;
-    const BlockMap& mapBlockIndex_;
+    const CChain& activeChain_;
+    const BlockMap& blockIndexByHash_;
     int64_t orderedTransactionIndex;
 public:
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet

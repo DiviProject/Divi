@@ -34,7 +34,7 @@ private:
     const Settings& settings_;
     const CChainParams& chainParameters_;
     const CChain& activeChain_;
-    const BlockMap& mapBlockIndex_;
+    const BlockMap& blockIndexByHash_;
     const I_BlockSubsidyProvider& blockSubsidies_;
     const I_BlockIncentivesPopulator& incentives_;
     const I_ProofOfStakeGenerator& proofGenerator_;

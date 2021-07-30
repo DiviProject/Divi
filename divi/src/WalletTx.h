@@ -1,20 +1,16 @@
 #ifndef WALLET_TX_H
 #define WALLET_TX_H
 
-#include <destination.h>
-#include <amount.h>
 #include <merkletx.h>
-#include <list>
+#include <utilstrencodings.h>
+#include <tinyformat.h>
+#include <amount.h>
 #include <vector>
 #include <utility>
-#include <wallet_ismine.h>
 #include <serialize.h>
 #include <string>
 #include <map>
 #include <stdint.h>
-#include <list>
-#include <tinyformat.h>
-#include <utilstrencodings.h>
 
 typedef std::map<std::string, std::string> mapValue_t;
 void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue);

@@ -39,7 +39,7 @@ public:
         READWRITE(merkleBranchIndex);
     }
 
-    int SetMerkleBranch(const CBlock& block);
+    void SetMerkleBranch(const CBlock& block);
 
     /**
      * Return first confirmation block index and depth of transaction in blockchain:

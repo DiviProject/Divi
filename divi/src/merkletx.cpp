@@ -43,7 +43,7 @@ bool CMerkleTx::IsInMainChain() const
     return FindConfirmedBlockIndexAndDepth().second > 0;
 }
 
-int CMerkleTx::SetMerkleBranch(const CBlock& block)
+void CMerkleTx::SetMerkleBranch(const CBlock& block)
 {
     // Locate the transaction
     for (merkleBranchIndex = 0; merkleBranchIndex < (int)block.vtx.size(); merkleBranchIndex++)
@@ -53,25 +53,13 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
         vMerkleBranch.clear();
         merkleBranchIndex = -1;
         LogPrintf("ERROR: SetMerkleBranch() : couldn't find tx in block\n");
-        return 0;
+        return;
     }
 
     // Update the tx's hashBlock
     hashBlock = block.GetHash();
     // Fill in merkle branch
     vMerkleBranch = block.GetMerkleBranch(merkleBranchIndex);
-
-    // Is the tx in a block that's in the main chain
-    LOCK(cs_main);
-    BlockMap::const_iterator mi = blockIndices_.find(hashBlock);
-    if (mi == blockIndices_.end())
-        return 0;
-    const CBlockIndex* pindex = (*mi).second;
-    if (!pindex || !activeChain_.Contains(pindex))
-        return 0;
-
-    VerifyMerkleBranchMatchesBlockIndex(pindex);
-    return activeChain_.Height() - pindex->nHeight + 1;
 }
 bool CMerkleTx::VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const
 {

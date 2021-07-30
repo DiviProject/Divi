@@ -28,7 +28,7 @@ CMerkleTx::CMerkleTx(
 void CMerkleTx::Init()
 {
     hashBlock = 0;
-    nIndex = -1;
+    merkleBranchIndex = -1;
     fMerkleVerified = false;
 }
 
@@ -46,12 +46,12 @@ bool CMerkleTx::IsInMainChain() const
 int CMerkleTx::SetMerkleBranch(const CBlock& block)
 {
     // Locate the transaction
-    for (nIndex = 0; nIndex < (int)block.vtx.size(); nIndex++)
-        if (block.vtx[nIndex] == *(CTransaction*)this)
+    for (merkleBranchIndex = 0; merkleBranchIndex < (int)block.vtx.size(); merkleBranchIndex++)
+        if (block.vtx[merkleBranchIndex] == *(CTransaction*)this)
             break;
-    if (nIndex == (int)block.vtx.size()) {
+    if (merkleBranchIndex == (int)block.vtx.size()) {
         vMerkleBranch.clear();
-        nIndex = -1;
+        merkleBranchIndex = -1;
         LogPrintf("ERROR: SetMerkleBranch() : couldn't find tx in block\n");
         return 0;
     }
@@ -59,7 +59,7 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
     // Update the tx's hashBlock
     hashBlock = block.GetHash();
     // Fill in merkle branch
-    vMerkleBranch = block.GetMerkleBranch(nIndex);
+    vMerkleBranch = block.GetMerkleBranch(merkleBranchIndex);
 
     // Is the tx in a block that's in the main chain
     LOCK(cs_main);
@@ -78,7 +78,7 @@ bool CMerkleTx::VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockInde
     // Make sure the merkle branch connects to this block
     if(!fMerkleVerified)
     {
-        if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, nIndex) != blockIndexOfFirstConfirmation->hashMerkleRoot)
+        if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, merkleBranchIndex) != blockIndexOfFirstConfirmation->hashMerkleRoot)
             return false;
         fMerkleVerified = true;
         return true;
@@ -89,7 +89,7 @@ bool CMerkleTx::VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockInde
 std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth() const
 {
     static const std::pair<const CBlockIndex*,int> defaultValue = std::make_pair(nullptr,0);
-    if (hashBlock == 0 || nIndex == -1)
+    if (hashBlock == 0 || merkleBranchIndex == -1)
         return defaultValue;
 
     // Find the block it claims to be in

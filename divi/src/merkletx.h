@@ -19,7 +19,7 @@ private:
 public:
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;
-    int nIndex;
+    int merkleBranchIndex;
 
     // memory only
     mutable bool fMerkleVerified;
@@ -36,7 +36,7 @@ public:
         nVersion = this->nVersion;
         READWRITE(hashBlock);
         READWRITE(vMerkleBranch);
-        READWRITE(nIndex);
+        READWRITE(merkleBranchIndex);
     }
 
     int SetMerkleBranch(const CBlock& block);

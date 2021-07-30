@@ -1,10 +1,6 @@
 #include <WalletTx.h>
 
 #include <Logging.h>
-#include <script/standard.h>
-
-void RelayTransaction(const CTransaction& tx);
-void RelayTransactionLockReq(const CTransaction& tx, bool relayToAll = false);
 
 void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue)
 {
@@ -89,15 +85,4 @@ int64_t CWalletTx::GetComputedTxTime() const
 {
     int64_t nTime = GetTxTime();
     return nTime;
-}
-
-void CWalletTx::RelayWalletTransaction()
-{
-    if (!IsCoinBase()) {
-        if (GetNumberOfBlockConfirmations() == 0)
-        {
-            LogPrintf("Relaying wtx %s\n", ToStringShort());
-            RelayTransaction((CTransaction) * this);
-        }
-    }
 }

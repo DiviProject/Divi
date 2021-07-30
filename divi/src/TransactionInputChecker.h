@@ -32,6 +32,7 @@ public:
     void ScheduleBackgroundThreadScriptChecking();
     bool CheckInputsAndUpdateCoinSupplyRecords(
         const CTransaction& tx,
+        unsigned flags,
         const bool fJustCheck,
         CBlockIndex* pindex);
     bool TotalSigOpsAreBelowMaximum(const CTransaction& tx);

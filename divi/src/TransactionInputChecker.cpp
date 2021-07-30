@@ -40,13 +40,14 @@ void TransactionInputChecker::ScheduleBackgroundThreadScriptChecking()
 }
 bool TransactionInputChecker::CheckInputsAndUpdateCoinSupplyRecords(
     const CTransaction& tx,
+    const unsigned flags,
     const bool fJustCheck,
     CBlockIndex* pindex)
 {
     assert(vChecks.empty());
     CAmount txFees =0;
     CAmount txInputAmount=0;
-    if (!CheckInputs(tx, state_, view_, blockIndexMap_, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
+    if (!CheckInputs(tx, state_, view_, blockIndexMap_, txFees, txInputAmount, fScriptChecks, flags, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
     {
         vChecks.clear();
         return false;

@@ -41,6 +41,7 @@ static const unsigned int POS_SCRIPT_VERIFY_FLAGS = MANDATORY_SCRIPT_VERIFY_FLAG
  * blocks and we must accept those blocks.
  */
 static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS = POS_SCRIPT_VERIFY_FLAGS |
+                                                         SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY |
                                                          SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS;
 
 /** For convenience, standard but not mandatory verify flags. */

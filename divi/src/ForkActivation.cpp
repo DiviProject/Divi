@@ -25,6 +25,8 @@ const std::unordered_map<Fork, int64_t,std::hash<int>> ACTIVATION_TIMES = {
   {Fork::TestByTimestamp, 1000000000},
   {Fork::HardenedStakeModifier, unixTimestampForDec31stMidnight},
   {Fork::UniformLotteryWinners, unixTimestampForDec31stMidnight},
+  /* FIXME: Schedule for a real time.  */
+  {Fork::CheckLockTimeVerify, 2000000000},
 };
 
 } // anonymous namespace

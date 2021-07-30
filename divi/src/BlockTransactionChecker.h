@@ -5,7 +5,8 @@
 #include <vector>
 #include <uint256.h>
 #include <BlockUndo.h>
-#include  <TransactionInputChecker.h>
+#include <ForkActivation.h>
+#include <TransactionInputChecker.h>
 #include <IndexDatabaseUpdates.h>
 
 class BlockMap;
@@ -36,6 +37,7 @@ class BlockTransactionChecker
 private:
     CBlockUndo blockundo_;
     const CBlock& block_;
+    const ActivationState activation_;
     CValidationState& state_;
     CBlockIndex* pindex_;
     CCoinsViewCache& view_;

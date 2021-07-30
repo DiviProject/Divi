@@ -58,7 +58,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     ): settings_(settings)
     , chainParameters_(chainParameters)
     , activeChain_(activeChain)
-    , mapBlockIndex_(mapBlockIndex)
+    , blockIndexByHash_(mapBlockIndex)
     , blockSubsidies_( blockSubsidies )
     , incentives_(incentives)
     , proofGenerator_(proofGenerator )
@@ -179,8 +179,8 @@ bool PoSTransactionCreator::FindHashproof(
     const StakableCoin& stakeData,
     CMutableTransaction& txNew)
 {
-    BlockMap::const_iterator it = mapBlockIndex_.find(stakeData.blockHashOfFirstConfirmation);
-    if (it == mapBlockIndex_.end())
+    BlockMap::const_iterator it = blockIndexByHash_.find(stakeData.blockHashOfFirstConfirmation);
+    if (it == blockIndexByHash_.end())
     {
         LogPrint("staking","%s failed to find block index for %s\n",__func__,stakeData.blockHashOfFirstConfirmation);
         return false;

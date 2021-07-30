@@ -1241,7 +1241,16 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock)
             wtx->RecomputeCachedQuantities();
     }
 }
-
+void CWallet::RelayWalletTransaction(const CWalletTx& walletTransaction)
+{
+    if (!walletTransaction.IsCoinBase()) {
+        if (walletTransaction.GetNumberOfBlockConfirmations() == 0)
+        {
+            LogPrintf("Relaying wtx %s\n", walletTransaction.ToStringShort());
+            RelayTransaction(static_cast<CTransaction>(walletTransaction));
+        }
+    }
+}
 void CWallet::ResendWalletTransactions()
 {
     // Do this infrequently and randomly to avoid giving away
@@ -1277,7 +1286,7 @@ void CWallet::ResendWalletTransactions()
 
         for (auto& item : mapSorted) {
             CWalletTx& wtx = *item.second;
-            wtx.RelayWalletTransaction();
+            RelayWalletTransaction(wtx);
         }
     }
 }
@@ -2303,7 +2312,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
             LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
             return false;
         }
-        wtxNew.RelayWalletTransaction();
+        RelayWalletTransaction(wtxNew);
     }
     return true;
 }

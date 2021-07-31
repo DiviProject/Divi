@@ -100,6 +100,11 @@ std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth() c
     return std::make_pair(pindex,depth);
 }
 
+int CMerkleTx::GetBlockHeightOfFirstConfirmation() const
+{
+    const CBlockIndex* firstConfirmationBlockIndex = FindConfirmedBlockIndexAndDepth().first;
+    return firstConfirmationBlockIndex? firstConfirmationBlockIndex->nHeight:0;
+}
 int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))

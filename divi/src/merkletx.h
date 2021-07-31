@@ -16,6 +16,7 @@ protected:
     const BlockMap& blockIndices_;
 private:
     bool VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const;
+    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth() const;
 public:
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;
@@ -47,7 +48,7 @@ public:
      *  0  : in memory pool, waiting to be included in a block
      * >=1 : this many blocks deep in the main chain
      */
-    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth() const;
+    int GetBlockHeightOfFirstConfirmation() const;
     int GetNumberOfBlockConfirmations() const;
     int GetBlocksToMaturity() const;
 };

@@ -49,7 +49,6 @@ public:
      */
     std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth() const;
     int GetNumberOfBlockConfirmations() const;
-    bool IsInMainChain() const;
     int GetBlocksToMaturity() const;
 };
 #endif// MERKLE_TX_H

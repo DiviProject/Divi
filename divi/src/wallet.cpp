@@ -1432,7 +1432,7 @@ CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUse
 {
     if ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) &&
         walletTransaction.GetBlocksToMaturity() > 0 &&
-        walletTransaction.IsInMainChain())
+        walletTransaction.GetNumberOfBlockConfirmations() > 0)
     {
         if (fUseCache && walletTransaction.fImmatureCreditCached)
             return walletTransaction.nImmatureCreditCached;
@@ -1461,7 +1461,10 @@ CAmount CWallet::GetAvailableCredit(const CWalletTx& walletTransaction, bool fUs
 
 CAmount CWallet::GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache) const
 {
-    if (walletTransaction.IsCoinBase() && walletTransaction.GetBlocksToMaturity() > 0 && walletTransaction.IsInMainChain()) {
+    if (walletTransaction.IsCoinBase() &&
+        walletTransaction.GetBlocksToMaturity() > 0 &&
+        walletTransaction.GetNumberOfBlockConfirmations() > 0)
+    {
         if (fUseCache && walletTransaction.fImmatureWatchCreditCached)
             return walletTransaction.nImmatureWatchCreditCached;
         walletTransaction.nImmatureWatchCreditCached = ComputeCredit(walletTransaction, ISMINE_WATCH_ONLY);

@@ -38,10 +38,6 @@ int CMerkleTx::GetNumberOfBlockConfirmations() const
     if(depth==0 && !mempool.exists(GetHash())) return -1;
     return depth;
 }
-bool CMerkleTx::IsInMainChain() const
-{
-    return FindConfirmedBlockIndexAndDepth().second > 0;
-}
 
 void CMerkleTx::SetMerkleBranch(const CBlock& block)
 {

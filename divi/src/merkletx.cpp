@@ -100,10 +100,6 @@ std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth() c
         }
         depth = activeChain_.Height() - pindex->nHeight + 1;
     }
-    if(!VerifyMerkleProof(pindex->hashMerkleRoot))
-    {
-        return defaultValue;
-    }
     return std::make_pair(pindex,depth);
 }
 

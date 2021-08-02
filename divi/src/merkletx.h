@@ -26,8 +26,6 @@ public:
     mutable bool fMerkleVerified;
     CMerkleTx(const CTransaction& txIn,const CChain& activeChain, const BlockMap& blockIndices);
 
-    void Init();
-
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
@@ -41,6 +39,8 @@ public:
     }
 
     void SetMerkleBranch(const CBlock& block);
+    bool MerkleBranchIsSet() const;
+    void ClearMerkleBranch();
 
     /**
      * Return first confirmation block index and depth of transaction in blockchain:

@@ -22,14 +22,7 @@ CMerkleTx::CMerkleTx(
     , activeChain_(activeChain)
     , blockIndices_(blockIndices)
 {
-    Init();
-}
-
-void CMerkleTx::Init()
-{
-    hashBlock = 0;
-    merkleBranchIndex = -1;
-    fMerkleVerified = false;
+    ClearMerkleBranch();
 }
 
 int CMerkleTx::GetNumberOfBlockConfirmations() const
@@ -57,6 +50,16 @@ void CMerkleTx::SetMerkleBranch(const CBlock& block)
     // Fill in merkle branch
     vMerkleBranch = block.GetMerkleBranch(merkleBranchIndex);
 }
+bool CMerkleTx::MerkleBranchIsSet() const
+{
+    return !(hashBlock == 0 || merkleBranchIndex == -1);
+}
+void CMerkleTx::ClearMerkleBranch()
+{
+    hashBlock = 0;
+    merkleBranchIndex = -1;
+    fMerkleVerified = false;
+}
 bool CMerkleTx::VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const
 {
     // Make sure the merkle branch connects to this block
@@ -73,7 +76,7 @@ bool CMerkleTx::VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockInde
 std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth() const
 {
     static const std::pair<const CBlockIndex*,int> defaultValue = std::make_pair(nullptr,0);
-    if (hashBlock == 0 || merkleBranchIndex == -1)
+    if(!MerkleBranchIsSet())
         return defaultValue;
 
     // Find the block it claims to be in

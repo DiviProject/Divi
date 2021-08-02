@@ -49,6 +49,10 @@ void CMerkleTx::SetMerkleBranch(const CBlock& block)
     hashBlock = block.GetHash();
     // Fill in merkle branch
     vMerkleBranch = block.GetMerkleBranch(merkleBranchIndex);
+    if(!VerifyMerkleProof(block.hashMerkleRoot))
+    {
+        ClearMerkleBranch();
+    }
 }
 bool CMerkleTx::MerkleBranchIsSet() const
 {
@@ -59,6 +63,18 @@ void CMerkleTx::ClearMerkleBranch()
     hashBlock = 0;
     merkleBranchIndex = -1;
     fMerkleVerified = false;
+}
+bool CMerkleTx::VerifyMerkleProof(const uint256 merkleRoot) const
+{
+    // Make sure the merkle branch connects to this block
+    if(!fMerkleVerified)
+    {
+        if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, merkleBranchIndex) != merkleRoot)
+            return false;
+        fMerkleVerified = true;
+        return true;
+    }
+    return true;
 }
 bool CMerkleTx::VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const
 {

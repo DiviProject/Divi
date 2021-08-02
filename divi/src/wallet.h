@@ -52,6 +52,7 @@ class CTxMemPool;
 class CWalletDB;
 class COutPoint;
 class CTxIn;
+class I_MerkleTxConfirmationNumberCalculator;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
@@ -143,7 +144,7 @@ private:
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
 protected:
-    std::unique_ptr<MerkleTxConfirmationNumberCalculator> confirmationNumberCalculator_;
+    std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationNumberCalculator_;
 private:
     int64_t orderedTransactionIndex;
 public:

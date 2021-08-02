@@ -244,6 +244,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   merkletx.h \
+  I_MerkleTxConfirmationNumberCalculator.h \
   miner.h \
   I_CoinMinter.h \
   BlockMemoryPoolTransactionCollector.h \

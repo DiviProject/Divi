@@ -18,12 +18,12 @@ class uint256;
 class I_VaultManagerDatabase;
 class WalletTransactionRecord;
 class SpentOutputTracker;
-class MerkleTxConfirmationNumberCalculator;
+class I_MerkleTxConfirmationNumberCalculator;
 
 class VaultManager
 {
 private:
-    const MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
+    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
     mutable CCriticalSection cs_vaultManager_;
     uint64_t transactionOrderingIndex_;
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;
@@ -31,9 +31,9 @@ private:
     ManagedScripts managedScriptsLimits_;
 public:
     VaultManager(
-        const MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
+        const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
     VaultManager(
-        const MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
+        const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
         I_VaultManagerDatabase& vaultManagerDB);
     ~VaultManager();
     void SyncTransaction(const CTransaction& tx, const CBlock *pblock);

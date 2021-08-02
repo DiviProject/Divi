@@ -5,9 +5,10 @@
 #include <WalletTransactionRecord.h>
 #include <SpentOutputTracker.h>
 #include <I_VaultManagerDatabase.h>
+#include <I_MerkleTxConfirmationNumberCalculator.h>
 
 VaultManager::VaultManager(
-    const MerkleTxConfirmationNumberCalculator& confirmationsCalculator
+    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
     ): confirmationsCalculator_(confirmationsCalculator)
     , cs_vaultManager_()
     , transactionOrderingIndex_(0)
@@ -19,7 +20,7 @@ VaultManager::VaultManager(
 
 
 VaultManager::VaultManager(
-    const MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
+    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
     I_VaultManagerDatabase& vaultManagerDB
     ): VaultManager(confirmationsCalculator)
 {

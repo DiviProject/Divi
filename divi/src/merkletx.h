@@ -4,6 +4,7 @@
 #include <primitives/transaction.h>
 #include <uint256.h>
 #include <boost/thread/recursive_mutex.hpp>
+#include <I_MerkleTxConfirmationNumberCalculator.h>
 
 class CBlockIndex;
 class CBlock;
@@ -16,7 +17,7 @@ class CMerkleTx;
 template <typename MutexObj>
 class AnnotatedMixin;
 
-class MerkleTxConfirmationNumberCalculator
+class MerkleTxConfirmationNumberCalculator final: public I_MerkleTxConfirmationNumberCalculator
 {
 private:
     const CChain& activeChain_;
@@ -38,7 +39,7 @@ public:
 class CMerkleTx : public CTransaction
 {
 protected:
-    const MerkleTxConfirmationNumberCalculator& confirmationCalculator_;
+    const I_MerkleTxConfirmationNumberCalculator& confirmationCalculator_;
 private:
     bool VerifyMerkleProof(const uint256 merkleRoot) const;
 public:
@@ -50,7 +51,7 @@ public:
     mutable bool fMerkleVerified;
     CMerkleTx(
         const CTransaction& txIn,
-        const MerkleTxConfirmationNumberCalculator& confirmationCalculator);
+        const I_MerkleTxConfirmationNumberCalculator& confirmationCalculator);
 
     ADD_SERIALIZE_METHODS;
 

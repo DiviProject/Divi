@@ -12,7 +12,7 @@
 
 CMerkleTx::CMerkleTx(
     const CTransaction& txIn,
-    const MerkleTxConfirmationNumberCalculator& confirmationCalculator
+    const I_MerkleTxConfirmationNumberCalculator& confirmationCalculator
     ): CTransaction(txIn)
     , confirmationCalculator_(confirmationCalculator)
 {

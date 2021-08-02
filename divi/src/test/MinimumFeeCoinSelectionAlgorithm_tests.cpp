@@ -9,6 +9,8 @@
 #include <WalletTx.h>
 #include <blockmap.h>
 #include <chain.h>
+#include <txmempool.h>
+#include <FeeRate.h>
 #include <test/MockSignatureSizeEstimator.h>
 
 using ::testing::NiceMock;
@@ -30,6 +32,11 @@ private:
     BlockMap fakeBlockIndex;
     CChain fakeActiveChain;
     std::vector<CWalletTx> walletTransactions_;
+
+    std::unique_ptr<CFeeRate> feeRate;
+    std::unique_ptr<CTxMemPool> mempool;
+    CCriticalSection fakeMainLock;
+    std::unique_ptr<MerkleTxConfirmationNumberCalculator> confirmationsCalculator;
 public:
     std::vector<CKeyID> keyIds;
     NiceMock<MockSignatureSizeEstimator> mockSignatureSizeEstimator;
@@ -43,6 +50,16 @@ public:
         , fakeBlockIndex()
         , fakeActiveChain()
         , walletTransactions_()
+        , feeRate(new CFeeRate())
+        , mempool(new CTxMemPool(*feeRate,false,false))
+        , fakeMainLock()
+        , confirmationsCalculator(
+            new MerkleTxConfirmationNumberCalculator(
+                fakeActiveChain,
+                fakeBlockIndex,
+                *mempool,
+                fakeMainLock
+            ))
         , keyIds()
         , mockSignatureSizeEstimator()
         , algorithm(keystore_,mockSignatureSizeEstimator)
@@ -58,7 +75,7 @@ public:
         mutableTx.vin.emplace_back();
         mutableTx.vin[0].scriptSig = scriptGenerator(25);
         mutableTx.vout.emplace_back(utxoAmount,customScript);
-        walletTransactions_.emplace_back(CTransaction(mutableTx),fakeActiveChain,fakeBlockIndex);
+        walletTransactions_.emplace_back(CTransaction(mutableTx),*confirmationsCalculator);
     }
     void addSingleUtxo(const CAmount utxoAmount, bool smallScriptSigSize)
     {

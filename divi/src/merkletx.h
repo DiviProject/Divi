@@ -3,20 +3,44 @@
 /** A transaction with a merkle branch linking it to the block chain. */
 #include <primitives/transaction.h>
 #include <uint256.h>
+#include <boost/thread/recursive_mutex.hpp>
 
 class CBlockIndex;
 class CBlock;
 class CChain;
 class BlockMap;
 
+class CTxMemPool;
+class CMerkleTx;
+
+template <typename MutexObj>
+class AnnotatedMixin;
+
+class MerkleTxConfirmationNumberCalculator
+{
+private:
+    const CChain& activeChain_;
+    const BlockMap& blockIndices_;
+    CTxMemPool& mempool_;
+    AnnotatedMixin<boost::recursive_mutex>& mainCS_;
+public:
+    MerkleTxConfirmationNumberCalculator(
+        const CChain& activeChain,
+        const BlockMap& blockIndices,
+        CTxMemPool& mempool,
+        AnnotatedMixin<boost::recursive_mutex>& mainCS);
+    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const;
+    int GetBlockHeightOfFirstConfirmation(const CMerkleTx& merkleTx) const;
+    int GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const;
+};
+
+
 class CMerkleTx : public CTransaction
 {
 protected:
-    const CChain& activeChain_;
-    const BlockMap& blockIndices_;
+    const MerkleTxConfirmationNumberCalculator& confirmationCalculator_;
 private:
     bool VerifyMerkleProof(const uint256 merkleRoot) const;
-    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth() const;
 public:
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;
@@ -24,7 +48,9 @@ public:
 
     // memory only
     mutable bool fMerkleVerified;
-    CMerkleTx(const CTransaction& txIn,const CChain& activeChain, const BlockMap& blockIndices);
+    CMerkleTx(
+        const CTransaction& txIn,
+        const MerkleTxConfirmationNumberCalculator& confirmationCalculator);
 
     ADD_SERIALIZE_METHODS;
 

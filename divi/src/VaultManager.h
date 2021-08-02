@@ -18,13 +18,12 @@ class uint256;
 class I_VaultManagerDatabase;
 class WalletTransactionRecord;
 class SpentOutputTracker;
-class CChain;
-class BlockMap;
+class MerkleTxConfirmationNumberCalculator;
+
 class VaultManager
 {
 private:
-    const CChain& activeChain_;
-    const BlockMap& blockIndicesByHash_;
+    const MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
     mutable CCriticalSection cs_vaultManager_;
     uint64_t transactionOrderingIndex_;
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;
@@ -32,11 +31,9 @@ private:
     ManagedScripts managedScriptsLimits_;
 public:
     VaultManager(
-        const CChain& activeChain,
-        const BlockMap& blockIndicesByHash);
+        const MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
     VaultManager(
-        const CChain& activeChain,
-        const BlockMap& blockIndicesByHash,
+        const MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
         I_VaultManagerDatabase& vaultManagerDB);
     ~VaultManager();
     void SyncTransaction(const CTransaction& tx, const CBlock *pblock);

@@ -142,6 +142,9 @@ private:
     std::unique_ptr<SpentOutputTracker> outputTracker_;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
+protected:
+    std::unique_ptr<MerkleTxConfirmationNumberCalculator> confirmationNumberCalculator_;
+private:
     int64_t orderedTransactionIndex;
 public:
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet

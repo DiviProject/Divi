@@ -53,7 +53,7 @@ public:
     mutable CAmount nChangeCached;
 
     CWalletTx(const CMerkleTx& txIn);
-    CWalletTx(const CTransaction& txIn, const CChain& activeChain, const BlockMap& blockIndicesByHash);
+    CWalletTx(const CTransaction& txIn, const MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
     void Init();
 
     ADD_SERIALIZE_METHODS;

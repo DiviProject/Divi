@@ -11,8 +11,7 @@
 #include <WalletTx.h>
 #include <streams.h>
 #include <clientversion.h>
-#include <FeeRate.h>
-#include <txmempool.h>
+#include <test/FakeMerkleTxConfirmationNumberCalculator.h>
 #include <gmock/gmock.h>
 
 using ::testing::_;
@@ -24,10 +23,7 @@ private:
 public:
     std::unique_ptr<MockVaultManagerDatabase> mockPtr;
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashesResource;
-    std::unique_ptr<CFeeRate> feeRate;
-    std::unique_ptr<CTxMemPool> mempool;
-    CCriticalSection fakeMainLock;
-    std::unique_ptr<MerkleTxConfirmationNumberCalculator> confirmationsCalculator;
+    std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator;
     RandomCScriptGenerator scriptGenerator;
     std::unique_ptr<VaultManager> manager;
 
@@ -35,15 +31,10 @@ public:
         ): managedScripts()
         , mockPtr(new MockVaultManagerDatabase)
         , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(1,0,CBlock::CURRENT_VERSION))
-        , feeRate(new CFeeRate())
-        , mempool(new CTxMemPool(*feeRate,false,false))
-        , fakeMainLock()
         , confirmationsCalculator(
-            new MerkleTxConfirmationNumberCalculator(
+            new FakeMerkleTxConfirmationNumberCalculator(
                 *(fakeBlockIndexWithHashesResource->activeChain),
-                *(fakeBlockIndexWithHashesResource->blockIndexByHash),
-                *mempool,
-                fakeMainLock
+                *(fakeBlockIndexWithHashesResource->blockIndexByHash)
             ))
         , scriptGenerator()
         , manager( new VaultManager( *confirmationsCalculator ))

@@ -9,9 +9,8 @@
 #include <WalletTx.h>
 #include <blockmap.h>
 #include <chain.h>
-#include <txmempool.h>
-#include <FeeRate.h>
 #include <test/MockSignatureSizeEstimator.h>
+#include <test/FakeMerkleTxConfirmationNumberCalculator.h>
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -33,10 +32,7 @@ private:
     CChain fakeActiveChain;
     std::vector<CWalletTx> walletTransactions_;
 
-    std::unique_ptr<CFeeRate> feeRate;
-    std::unique_ptr<CTxMemPool> mempool;
-    CCriticalSection fakeMainLock;
-    std::unique_ptr<MerkleTxConfirmationNumberCalculator> confirmationsCalculator;
+    std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator;
 public:
     std::vector<CKeyID> keyIds;
     NiceMock<MockSignatureSizeEstimator> mockSignatureSizeEstimator;
@@ -50,15 +46,10 @@ public:
         , fakeBlockIndex()
         , fakeActiveChain()
         , walletTransactions_()
-        , feeRate(new CFeeRate())
-        , mempool(new CTxMemPool(*feeRate,false,false))
-        , fakeMainLock()
         , confirmationsCalculator(
-            new MerkleTxConfirmationNumberCalculator(
+            new FakeMerkleTxConfirmationNumberCalculator(
                 fakeActiveChain,
-                fakeBlockIndex,
-                *mempool,
-                fakeMainLock
+                fakeBlockIndex
             ))
         , keyIds()
         , mockSignatureSizeEstimator()

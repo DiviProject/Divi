@@ -245,6 +245,7 @@ BITCOIN_CORE_H = \
   merkleblock.h \
   merkletx.h \
   I_MerkleTxConfirmationNumberCalculator.h \
+  MerkleTxConfirmationNumberCalculator.h \
   miner.h \
   I_CoinMinter.h \
   BlockMemoryPoolTransactionCollector.h \
@@ -412,6 +413,7 @@ libbitcoin_server_a_SOURCES = \
   TransactionDiskAccessor.cpp \
   merkleblock.cpp \
   merkletx.cpp \
+  MerkleTxConfirmationNumberCalculator.cpp \
   CoinMinter.cpp \
   CoinMintingModule.cpp \
   PoSTransactionCreator.cpp \
@@ -522,6 +524,7 @@ libbitcoin_wallet_a_SOURCES = \
   CoinControlSelectionAlgorithm.cpp \
   StochasticSubsetSelectionAlgorithm.cpp \
   MinimumFeeCoinSelectionAlgorithm.cpp \
+  MerkleTxConfirmationNumberCalculator.cpp \
   wallet.cpp \
   Output.cpp \
   WalletTx.cpp \

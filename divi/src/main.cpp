@@ -1219,6 +1219,7 @@ static int64_t nTimePostConnect = 0;
  */
 bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* pblock, bool fAlreadyChecked)
 {
+    AssertLockHeld(cs_main);
     assert(pindexNew->pprev == chainActive.Tip());
     mempool.check(pcoinsTip, mapBlockIndex);
     CCoinsViewCache view(pcoinsTip);

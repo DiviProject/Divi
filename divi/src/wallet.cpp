@@ -176,6 +176,7 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , outputTracker_( new SpentOutputTracker(*transactionRecord_) )
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
+    , confirmationNumberCalculator_(new MerkleTxConfirmationNumberCalculator(activeChain_,blockIndexByHash_,mempool,cs_main))
     , orderedTransactionIndex()
     , nWalletVersion(0)
     , fBackupMints(false)
@@ -205,6 +206,7 @@ CWallet::~CWallet()
     signatureSizeEstimator_.reset();
     delete pwalletdbEncryption;
     pwalletdbEncryption = NULL;
+    confirmationNumberCalculator_.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
 }
@@ -1118,7 +1120,7 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
 
 CWalletTx CWallet::initializeEmptyWalletTransaction() const
 {
-    return CMerkleTx(CTransaction(),activeChain_,blockIndexByHash_);
+    return CMerkleTx(CTransaction(),*confirmationNumberCalculator_);
 }
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
@@ -1223,7 +1225,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
         bool fExisted = GetWalletTx(tx.GetHash()) != nullptr;
         if (fExisted && !fUpdate) return false;
         if (fExisted || IsMine(tx) || DebitsFunds(tx)) {
-            CWalletTx wtx(tx,activeChain_,blockIndexByHash_);
+            CWalletTx wtx(tx,*confirmationNumberCalculator_);
             // Get merkle branch if transaction was found in a block
             if (pblock)
                 wtx.SetMerkleBranch(*pblock);

@@ -10,17 +10,11 @@
 #include <Logging.h>
 #include <utiltime.h>
 
-extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
-
-
 CMerkleTx::CMerkleTx(
     const CTransaction& txIn,
-    const CChain& activeChain,
-    const BlockMap& blockIndices
+    const MerkleTxConfirmationNumberCalculator& confirmationCalculator
     ): CTransaction(txIn)
-    , activeChain_(activeChain)
-    , blockIndices_(blockIndices)
+    , confirmationCalculator_(confirmationCalculator)
 {
     ClearMerkleBranch();
 }
@@ -69,19 +63,46 @@ bool CMerkleTx::VerifyMerkleProof(const uint256 merkleRoot) const
     }
     return true;
 }
+int CMerkleTx::GetBlockHeightOfFirstConfirmation() const
+{
+    return confirmationCalculator_.GetBlockHeightOfFirstConfirmation(*this);
+}
+int CMerkleTx::GetNumberOfBlockConfirmations() const
+{
+    return confirmationCalculator_.GetNumberOfBlockConfirmations(*this);
+}
+int CMerkleTx::GetBlocksToMaturity() const
+{
+    if (!(IsCoinBase() || IsCoinStake()))
+        return 0;
+    return std::max(0, (Params().COINBASE_MATURITY() + 1) - confirmationCalculator_.GetNumberOfBlockConfirmations(*this));
+}
 
-std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth() const
+
+MerkleTxConfirmationNumberCalculator::MerkleTxConfirmationNumberCalculator(
+    const CChain& activeChain,
+    const BlockMap& blockIndices,
+    CTxMemPool& mempool,
+    AnnotatedMixin<boost::recursive_mutex>& mainCS
+    ): activeChain_(activeChain)
+    , blockIndices_(blockIndices)
+    , mempool_(mempool)
+    , mainCS_(mainCS)
+{
+}
+
+std::pair<const CBlockIndex*,int> MerkleTxConfirmationNumberCalculator::FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const
 {
     static const std::pair<const CBlockIndex*,int> defaultValue = std::make_pair(nullptr,0);
-    if(!MerkleBranchIsSet())
+    if(!merkleTx.MerkleBranchIsSet())
         return defaultValue;
 
     // Find the block it claims to be in
     int depth;
     CBlockIndex* pindex;
     {
-        LOCK(cs_main);
-        BlockMap::const_iterator mi = blockIndices_.find(hashBlock);
+        LOCK(mainCS_);
+        BlockMap::const_iterator mi = blockIndices_.find(merkleTx.hashBlock);
         if (mi == blockIndices_.end())
         {
             return defaultValue;
@@ -96,20 +117,14 @@ std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth() c
     return std::make_pair(pindex,depth);
 }
 
-int CMerkleTx::GetBlockHeightOfFirstConfirmation() const
+int MerkleTxConfirmationNumberCalculator::GetBlockHeightOfFirstConfirmation(const CMerkleTx& merkleTx) const
 {
-    const CBlockIndex* firstConfirmationBlockIndex = FindConfirmedBlockIndexAndDepth().first;
+    const CBlockIndex* firstConfirmationBlockIndex = FindConfirmedBlockIndexAndDepth(merkleTx).first;
     return firstConfirmationBlockIndex? firstConfirmationBlockIndex->nHeight:0;
 }
-int CMerkleTx::GetNumberOfBlockConfirmations() const
+int MerkleTxConfirmationNumberCalculator::GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const
 {
-    const int depth = FindConfirmedBlockIndexAndDepth().second;
-    if(depth==0 && !mempool.exists(GetHash())) return -1;
+    const int depth = FindConfirmedBlockIndexAndDepth(merkleTx).second;
+    if(depth==0 && !mempool_.exists(merkleTx.GetHash())) return -1;
     return depth;
-}
-int CMerkleTx::GetBlocksToMaturity() const
-{
-    if (!(IsCoinBase() || IsCoinStake()))
-        return 0;
-    return std::max(0, (Params().COINBASE_MATURITY() + 1) - GetNumberOfBlockConfirmations());
 }

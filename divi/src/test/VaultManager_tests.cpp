@@ -11,6 +11,8 @@
 #include <WalletTx.h>
 #include <streams.h>
 #include <clientversion.h>
+#include <FeeRate.h>
+#include <txmempool.h>
 #include <gmock/gmock.h>
 
 using ::testing::_;
@@ -22,6 +24,10 @@ private:
 public:
     std::unique_ptr<MockVaultManagerDatabase> mockPtr;
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashesResource;
+    std::unique_ptr<CFeeRate> feeRate;
+    std::unique_ptr<CTxMemPool> mempool;
+    CCriticalSection fakeMainLock;
+    std::unique_ptr<MerkleTxConfirmationNumberCalculator> confirmationsCalculator;
     RandomCScriptGenerator scriptGenerator;
     std::unique_ptr<VaultManager> manager;
 
@@ -29,10 +35,18 @@ public:
         ): managedScripts()
         , mockPtr(new MockVaultManagerDatabase)
         , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(1,0,CBlock::CURRENT_VERSION))
+        , feeRate(new CFeeRate())
+        , mempool(new CTxMemPool(*feeRate,false,false))
+        , fakeMainLock()
+        , confirmationsCalculator(
+            new MerkleTxConfirmationNumberCalculator(
+                *(fakeBlockIndexWithHashesResource->activeChain),
+                *(fakeBlockIndexWithHashesResource->blockIndexByHash),
+                *mempool,
+                fakeMainLock
+            ))
         , scriptGenerator()
-        , manager( new VaultManager(
-            *(fakeBlockIndexWithHashesResource->activeChain),
-            *(fakeBlockIndexWithHashesResource->blockIndexByHash) ))
+        , manager( new VaultManager( *confirmationsCalculator ))
     {
     }
     ~VaultManagerTestFixture()
@@ -255,9 +269,6 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
     serializedManagedScripts << manager->GetManagedScriptLimits();
 
 
-    auto& activeChain = *(fakeBlockIndexWithHashesResource->activeChain);
-    auto& blockIndexByHash = *(fakeBlockIndexWithHashesResource->blockIndexByHash);
-
     ON_CALL(*mockPtr, ReadManagedScripts(_)).WillByDefault(Invoke(
         [&serializedManagedScripts](ManagedScripts& managedScripts)
         {
@@ -277,7 +288,7 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
             return true;
         }
     ));
-    manager.reset(new VaultManager( activeChain, blockIndexByHash, *mockPtr ));
+    manager.reset(new VaultManager( *confirmationsCalculator, *mockPtr ));
 
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
     BOOST_CHECK(expectedTx==manager->GetTransaction(tx.GetHash()));
@@ -308,10 +319,6 @@ BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
         expectedTransactions.emplace_back(expectedTx);
     }
 
-
-    auto& activeChain = *(fakeBlockIndexWithHashesResource->activeChain);
-    auto& blockIndexByHash = *(fakeBlockIndexWithHashesResource->blockIndexByHash);
-
     ON_CALL(*mockPtr, ReadTx(_,_)).WillByDefault(Invoke(
         [&streamOfTransactions](const uint64_t txIndex,CWalletTx& returnTx)
         {
@@ -323,7 +330,7 @@ BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
             return false;
         }
     ));
-    manager.reset(new VaultManager( activeChain, blockIndexByHash, *mockPtr ));
+    manager.reset(new VaultManager( *confirmationsCalculator, *mockPtr ));
 
     for(unsigned txCount =0 ; txCount < 10u; ++txCount)
     {

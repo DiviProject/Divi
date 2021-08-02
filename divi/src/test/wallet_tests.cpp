@@ -18,7 +18,7 @@
 #include <random.h>
 
 #include <test/FakeBlockIndexChain.h>
-
+#include <txmempool.h>
 // how many times to run all the tests to have a chance to catch errors that only show up with particular random shuffles
 #define RUN_TESTS 100
 
@@ -45,12 +45,19 @@ class WalletTestFixture
 protected:
 
   FakeBlockIndexWithHashes fakeChain;
+  CFeeRate testFeeRate;
+  CTxMemPool testMempool;
+  CCriticalSection testCriticalSection;
+  MerkleTxConfirmationNumberCalculator confirmationsCalculator;
   CWallet wallet;
   std::vector<COutput> vCoins;
 
   WalletTestFixture()
-    : fakeChain(1, 1600000000, 1),
-      wallet(*fakeChain.activeChain, *fakeChain.blockIndexByHash)
+    : fakeChain(1, 1600000000, 1)
+    , testFeeRate()
+    , testMempool(testFeeRate,true,true)
+    , confirmationsCalculator(*fakeChain.activeChain, *fakeChain.blockIndexByHash,testMempool,testCriticalSection)
+    , wallet(*fakeChain.activeChain, *fakeChain.blockIndexByHash)
   {}
 
   void add_coin(const CAmount nValue, int nAge = 6*24, bool fIsFromMe = false, int nInput = 0);
@@ -70,7 +77,7 @@ void WalletTestFixture::add_coin(const CAmount nValue, int nAge, bool fIsFromMe,
         // so stop vin being empty, and cache a non-zero Debit to fake out DebitsFunds()
         tx.vin.resize(1);
     }
-    CWalletTx* wtx = new CWalletTx(tx,*fakeChain.activeChain,*fakeChain.blockIndexByHash);
+    CWalletTx* wtx = new CWalletTx(tx,confirmationsCalculator);
     if (fIsFromMe)
     {
         wtx->fDebitCached = true;

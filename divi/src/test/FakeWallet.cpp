@@ -124,8 +124,7 @@ const CWalletTx& FakeWallet::AddDefaultTx(const CScript& scriptToPayTo, unsigned
                                           const CAmount amount)
 {
   const CMutableTransaction tx = createDefaultTransaction(scriptToPayTo, outputIndex, amount);
-  const CMerkleTx merkleTx(tx, *fakeChain.activeChain, *fakeChain.blockIndexByHash);
-  const CWalletTx wtx(merkleTx);
+  const CWalletTx wtx(tx,*confirmationNumberCalculator_);
   AddToWallet(wtx);
   const CWalletTx* txPtr = GetWalletTx(wtx.GetHash());
   assert(txPtr);

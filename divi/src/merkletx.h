@@ -16,6 +16,7 @@ protected:
     const BlockMap& blockIndices_;
 private:
     bool VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const;
+    bool VerifyMerkleProof(const uint256 merkleRoot) const;
     std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth() const;
 public:
     uint256 hashBlock;

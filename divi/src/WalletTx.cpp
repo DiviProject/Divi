@@ -25,7 +25,7 @@ CWalletTx::CWalletTx(const CMerkleTx& txIn) : CMerkleTx(txIn)
 }
 CWalletTx::CWalletTx(
     const CTransaction& txIn,
-    const MerkleTxConfirmationNumberCalculator& confirmationsCalculator
+    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
     ): CMerkleTx(txIn,confirmationsCalculator)
 {
     Init();

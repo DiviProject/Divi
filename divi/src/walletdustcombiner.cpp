@@ -39,9 +39,11 @@ static CAmount FeeEstimates(
 
 WalletDustCombiner::WalletDustCombiner(
     CWallet& wallet,
-    const CFeeRate& relayFeeRate
+    const CFeeRate& relayFeeRate,
+    const int coinbaseMaturity
     ): wallet_(wallet)
     , relayFeeRate_(relayFeeRate)
+    , coinbaseMaturity_(coinbaseMaturity)
 {
 }
 
@@ -63,7 +65,7 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
         for(const COutput& out: it->second)
         {
             //no coins should get this far if they dont have proper maturity, this is double checking
-            if (out.tx->IsCoinStake() && out.tx->GetNumberOfBlockConfirmations() < Params().COINBASE_MATURITY() + 1)
+            if (out.tx->IsCoinStake() && out.nDepth < coinbaseMaturity_)
                 continue;
 
             if (out.Value() > combineThreshold * COIN)
@@ -110,7 +112,10 @@ void combineWalletDust(const Settings& settings)
         // If turned on Auto Combine will scan wallet for dust to combine
         if (settings.ParameterIsSet("-combinethreshold"))
         {
-            static WalletDustCombiner dustCombiner(*pwalletMain,FeeAndPriorityCalculator::instance().getFeeRateQuote());
+            static WalletDustCombiner dustCombiner(
+                *pwalletMain,
+                FeeAndPriorityCalculator::instance().getFeeRateQuote(),
+                Params().COINBASE_MATURITY() + 1);
             dustCombiner.CombineDust(
                 settings.GetArg("-combinethreshold",std::numeric_limits<int64_t>::max() ) );
         }

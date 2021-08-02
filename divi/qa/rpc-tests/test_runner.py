@@ -74,6 +74,7 @@ BASE_SCRIPTS = [
     # Longest test should go first, to favor running tests in parallel
     'AddressAndSpentIndicesAreOperational.py',
     'BlocksOnlyHaveSingleCoinstake.py',
+    'CheckLockTimeVerify.py',
     'StakingVaultFunding.py',
     'StakingVaultStaking.py',
     'StakingVaultDeactivation.py',

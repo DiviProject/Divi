@@ -25,9 +25,8 @@ CWalletTx::CWalletTx(const CMerkleTx& txIn) : CMerkleTx(txIn)
 }
 CWalletTx::CWalletTx(
     const CTransaction& txIn,
-    const CChain& activeChain,
-    const BlockMap& blockIndicesByHash
-    ): CMerkleTx(txIn,activeChain,blockIndicesByHash)
+    const MerkleTxConfirmationNumberCalculator& confirmationsCalculator
+    ): CMerkleTx(txIn,confirmationsCalculator)
 {
     Init();
 }

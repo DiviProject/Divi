@@ -1176,6 +1176,13 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
                 wtx.createdByMe = wtxIn.createdByMe;
                 walletTransactionHasBeenUpdated = true;
             }
+
+            // Reset merkle branch - block reorg
+            if(!wtxIn.createdByMe && !wtxIn.MerkleBranchIsSet() && wtx.MerkleBranchIsSet())
+            {
+                wtx.ClearMerkleBranch();
+                walletTransactionHasBeenUpdated = true;
+            }
         }
 
         //// debug print

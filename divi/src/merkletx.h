@@ -36,6 +36,10 @@ public:
         READWRITE(hashBlock);
         READWRITE(vMerkleBranch);
         READWRITE(merkleBranchIndex);
+        if(ser_action.ForRead() && MerkleBranchIsSet())
+        {
+            fMerkleVerified = true;
+        }
     }
 
     void SetMerkleBranch(const CBlock& block);

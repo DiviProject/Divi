@@ -48,6 +48,7 @@ BITCOIN_TESTS =\
   test/compress_tests.cpp \
   test/crypto_tests.cpp \
   test/DoS_tests.cpp \
+  test/FakeMerkleTxConfirmationNumberCalculator.cpp \
   test/FakeBlockIndexChain.cpp \
   test/FakeWallet.cpp \
   test/ForkActivation_tests.cpp \

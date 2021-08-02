@@ -9,8 +9,12 @@ class WalletDustCombiner
 private:
     CWallet& wallet_;
     const CFeeRate& relayFeeRate_;
+    const int coinbaseMaturity_;
 public:
-    WalletDustCombiner(CWallet& wallet,const CFeeRate& relayFeeRate);
+    WalletDustCombiner(
+        CWallet& wallet,
+        const CFeeRate& relayFeeRate,
+        const int coinbaseMaturity);
     void CombineDust(CAmount combineThreshold);
 };
 void combineWalletDust(const Settings& settings);

@@ -25,13 +25,6 @@ CMerkleTx::CMerkleTx(
     ClearMerkleBranch();
 }
 
-int CMerkleTx::GetNumberOfBlockConfirmations() const
-{
-    const int depth = FindConfirmedBlockIndexAndDepth().second;
-    if(depth==0 && !mempool.exists(GetHash())) return -1;
-    return depth;
-}
-
 void CMerkleTx::SetMerkleBranch(const CBlock& block)
 {
     // Locate the transaction
@@ -107,6 +100,12 @@ int CMerkleTx::GetBlockHeightOfFirstConfirmation() const
 {
     const CBlockIndex* firstConfirmationBlockIndex = FindConfirmedBlockIndexAndDepth().first;
     return firstConfirmationBlockIndex? firstConfirmationBlockIndex->nHeight:0;
+}
+int CMerkleTx::GetNumberOfBlockConfirmations() const
+{
+    const int depth = FindConfirmedBlockIndexAndDepth().second;
+    if(depth==0 && !mempool.exists(GetHash())) return -1;
+    return depth;
 }
 int CMerkleTx::GetBlocksToMaturity() const
 {

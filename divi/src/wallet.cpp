@@ -41,6 +41,7 @@
 #include <CoinControlSelectionAlgorithm.h>
 #include <MinimumFeeCoinSelectionAlgorithm.h>
 #include <SignatureSizeEstimator.h>
+#include <MerkleTxConfirmationNumberCalculator.h>
 #include <random.h>
 
 #include "Settings.h"

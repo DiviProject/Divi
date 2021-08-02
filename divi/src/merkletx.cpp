@@ -76,18 +76,6 @@ bool CMerkleTx::VerifyMerkleProof(const uint256 merkleRoot) const
     }
     return true;
 }
-bool CMerkleTx::VerifyMerkleBranchMatchesBlockIndex(const CBlockIndex* blockIndexOfFirstConfirmation) const
-{
-    // Make sure the merkle branch connects to this block
-    if(!fMerkleVerified)
-    {
-        if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, merkleBranchIndex) != blockIndexOfFirstConfirmation->hashMerkleRoot)
-            return false;
-        fMerkleVerified = true;
-        return true;
-    }
-    return true;
-}
 
 std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth() const
 {
@@ -112,7 +100,7 @@ std::pair<const CBlockIndex*,int> CMerkleTx::FindConfirmedBlockIndexAndDepth() c
         }
         depth = activeChain_.Height() - pindex->nHeight + 1;
     }
-    if(!VerifyMerkleBranchMatchesBlockIndex(pindex))
+    if(!VerifyMerkleProof(pindex->hashMerkleRoot))
     {
         return defaultValue;
     }

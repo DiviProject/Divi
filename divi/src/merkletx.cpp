@@ -63,10 +63,6 @@ bool CMerkleTx::VerifyMerkleProof(const uint256 merkleRoot) const
     }
     return true;
 }
-int CMerkleTx::GetBlockHeightOfFirstConfirmation() const
-{
-    return confirmationCalculator_.GetBlockHeightOfFirstConfirmation(*this);
-}
 int CMerkleTx::GetNumberOfBlockConfirmations() const
 {
     return confirmationCalculator_.GetNumberOfBlockConfirmations(*this);

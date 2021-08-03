@@ -43,11 +43,6 @@ std::pair<const CBlockIndex*,int> MerkleTxConfirmationNumberCalculator::FindConf
     return std::make_pair(pindex,depth);
 }
 
-int MerkleTxConfirmationNumberCalculator::GetBlockHeightOfFirstConfirmation(const CMerkleTx& merkleTx) const
-{
-    const CBlockIndex* firstConfirmationBlockIndex = FindConfirmedBlockIndexAndDepth(merkleTx).first;
-    return firstConfirmationBlockIndex? firstConfirmationBlockIndex->nHeight:0;
-}
 int MerkleTxConfirmationNumberCalculator::GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const
 {
     const int depth = FindConfirmedBlockIndexAndDepth(merkleTx).second;

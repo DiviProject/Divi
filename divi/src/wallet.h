@@ -139,12 +139,11 @@ public:
     bool fFileBacked;
     std::string strWalletFile;
 private:
-    std::unique_ptr<WalletTransactionRecord> transactionRecord_;
-    std::unique_ptr<SpentOutputTracker> outputTracker_;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
-protected:
     std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationNumberCalculator_;
+    std::unique_ptr<WalletTransactionRecord> transactionRecord_;
+    std::unique_ptr<SpentOutputTracker> outputTracker_;
 private:
     int64_t orderedTransactionIndex;
 public:

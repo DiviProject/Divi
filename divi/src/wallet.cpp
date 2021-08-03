@@ -173,11 +173,11 @@ bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite
 
 CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     ): cs_wallet()
-    , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
-    , outputTracker_( new SpentOutputTracker(*transactionRecord_) )
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
     , confirmationNumberCalculator_(new MerkleTxConfirmationNumberCalculator(activeChain_,blockIndexByHash_,mempool,cs_main))
+    , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
+    , outputTracker_( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) )
     , orderedTransactionIndex()
     , nWalletVersion(0)
     , fBackupMints(false)
@@ -207,9 +207,9 @@ CWallet::~CWallet()
     signatureSizeEstimator_.reset();
     delete pwalletdbEncryption;
     pwalletdbEncryption = NULL;
-    confirmationNumberCalculator_.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
+    confirmationNumberCalculator_.reset();
 }
 
 void CWallet::SetNull()

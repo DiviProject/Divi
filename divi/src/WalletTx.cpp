@@ -22,9 +22,11 @@ void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue)
 
 CWalletTx::CWalletTx(
     const CTransaction& txIn,
+    const int requiredCoinbaseMaturity,
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
     ): CMerkleTx(txIn)
     , confirmationsCalculator_(confirmationsCalculator)
+    , requiredCoinbaseMaturity_(requiredCoinbaseMaturity)
 {
     Init();
 }

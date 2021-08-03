@@ -11,6 +11,7 @@
 #include <WalletTx.h>
 #include <streams.h>
 #include <clientversion.h>
+#include <chainparams.h>
 #include <test/FakeMerkleTxConfirmationNumberCalculator.h>
 #include <gmock/gmock.h>
 
@@ -37,7 +38,7 @@ public:
                 *(fakeBlockIndexWithHashesResource->blockIndexByHash)
             ))
         , scriptGenerator()
-        , manager( new VaultManager( *confirmationsCalculator ))
+        , manager( new VaultManager(Params(), *confirmationsCalculator ))
     {
     }
     ~VaultManagerTestFixture()
@@ -279,7 +280,7 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
             return true;
         }
     ));
-    manager.reset(new VaultManager( *confirmationsCalculator, *mockPtr ));
+    manager.reset(new VaultManager(Params(), *confirmationsCalculator, *mockPtr ));
 
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
     BOOST_CHECK(expectedTx==manager->GetTransaction(tx.GetHash()));
@@ -321,7 +322,7 @@ BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
             return false;
         }
     ));
-    manager.reset(new VaultManager( *confirmationsCalculator, *mockPtr ));
+    manager.reset(new VaultManager(Params(), *confirmationsCalculator, *mockPtr ));
 
     for(unsigned txCount =0 ; txCount < 10u; ++txCount)
     {

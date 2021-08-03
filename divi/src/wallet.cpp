@@ -1121,7 +1121,7 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
 
 CWalletTx CWallet::initializeWalletTransaction(const CTransaction& tx) const
 {
-    return CWalletTx(tx,*confirmationNumberCalculator_);
+    return CWalletTx(tx,Params().COINBASE_MATURITY(),*confirmationNumberCalculator_);
 }
 
 void CWallet::UpdateFromOnDiskTransaction(const CWalletTx& wtxIn)

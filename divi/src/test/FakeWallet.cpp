@@ -6,6 +6,7 @@
 
 #include <blockmap.h>
 #include "chain.h"
+#include <chainparams.h>
 #include "merkletx.h"
 #include "primitives/transaction.h"
 #include "random.h"
@@ -123,8 +124,8 @@ void FakeWallet::AddConfirmations(const unsigned numConf, const int64_t minAge)
 const CWalletTx& FakeWallet::AddDefaultTx(const CScript& scriptToPayTo, unsigned& outputIndex,
                                           const CAmount amount)
 {
-  const CMutableTransaction tx = createDefaultTransaction(scriptToPayTo, outputIndex, amount);
-  const CWalletTx wtx(tx,*confirmationNumberCalculator_);
+  const CTransaction tx = createDefaultTransaction(scriptToPayTo, outputIndex, amount);
+  CWalletTx wtx = initializeWalletTransaction(tx);
   AddToWallet(wtx);
   const CWalletTx* txPtr = GetWalletTx(wtx.GetHash());
   assert(txPtr);

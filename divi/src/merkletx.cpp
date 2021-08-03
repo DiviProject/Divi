@@ -1,13 +1,12 @@
 #include <merkletx.h>
 
-#include <chainparams.h>
 #include <Logging.h>
+#include <primitives/block.h>
 #include <utiltime.h>
 
 CMerkleTx::CMerkleTx(
     const CTransaction& txIn
     ): CTransaction(txIn)
-    , requiredCoinbaseMaturity_(Params().COINBASE_MATURITY())
 {
     ClearMerkleBranch();
 }

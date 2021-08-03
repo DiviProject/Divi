@@ -11,8 +11,6 @@ class CMerkleTx : public CTransaction
 {
 private:
     bool VerifyMerkleProof(const uint256 merkleRoot) const;
-protected:
-    const int requiredCoinbaseMaturity_;
 public:
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;

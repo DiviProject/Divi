@@ -9,6 +9,7 @@
 #include <WalletTx.h>
 #include <blockmap.h>
 #include <chain.h>
+#include <chainparams.h>
 #include <test/MockSignatureSizeEstimator.h>
 #include <test/FakeMerkleTxConfirmationNumberCalculator.h>
 
@@ -66,7 +67,7 @@ public:
         mutableTx.vin.emplace_back();
         mutableTx.vin[0].scriptSig = scriptGenerator(25);
         mutableTx.vout.emplace_back(utxoAmount,customScript);
-        walletTransactions_.emplace_back(CTransaction(mutableTx),*confirmationsCalculator);
+        walletTransactions_.emplace_back(CTransaction(mutableTx),Params().COINBASE_MATURITY(),*confirmationsCalculator);
     }
     void addSingleUtxo(const CAmount utxoAmount, bool smallScriptSigSize)
     {

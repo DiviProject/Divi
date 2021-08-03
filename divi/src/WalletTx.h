@@ -25,6 +25,7 @@ class CWalletTx final: public CMerkleTx
 {
 private:
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
+    const int requiredCoinbaseMaturity_;
 public:
     std::map<std::string, std::string> mapValue;
     std::vector<std::pair<std::string, std::string> > vOrderForm;
@@ -55,7 +56,10 @@ public:
     mutable CAmount nAvailableWatchCreditCached;
     mutable CAmount nChangeCached;
 
-    CWalletTx(const CTransaction& txIn, const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
+    CWalletTx(
+        const CTransaction& txIn,
+        const int requiredCoinbaseMaturity,
+        const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
     void Init();
 
     ADD_SERIALIZE_METHODS;

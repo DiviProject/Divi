@@ -6,10 +6,13 @@
 #include <SpentOutputTracker.h>
 #include <I_VaultManagerDatabase.h>
 #include <I_MerkleTxConfirmationNumberCalculator.h>
+#include <chainparams.h>
 
 VaultManager::VaultManager(
+    const CChainParams& chainParameters,
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
     ): confirmationsCalculator_(confirmationsCalculator)
+    , requiredCoinbaseMaturity_(chainParameters.COINBASE_MATURITY())
     , cs_vaultManager_()
     , transactionOrderingIndex_(0)
     , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_))
@@ -20,16 +23,17 @@ VaultManager::VaultManager(
 
 
 VaultManager::VaultManager(
+    const CChainParams& chainParameters,
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
     I_VaultManagerDatabase& vaultManagerDB
-    ): VaultManager(confirmationsCalculator)
+    ): VaultManager(chainParameters,confirmationsCalculator)
 {
     LOCK(cs_vaultManager_);
     vaultManagerDB.ReadManagedScripts(managedScriptsLimits_);
     bool continueLoadingTransactions = true;
     while(continueLoadingTransactions)
     {
-        CWalletTx txToAdd(CMutableTransaction(), confirmationsCalculator_);
+        CWalletTx txToAdd(CMutableTransaction(),requiredCoinbaseMaturity_, confirmationsCalculator_);
         if(vaultManagerDB.ReadTx(transactionOrderingIndex_,txToAdd))
         {
             outputTracker_->UpdateSpends(txToAdd,transactionOrderingIndex_,true);
@@ -56,7 +60,7 @@ void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)
         auto it = managedScriptsLimits_.find(output.scriptPubKey);
         if(it != managedScriptsLimits_.end())
         {
-            CWalletTx walletTx(tx,confirmationsCalculator_);
+            CWalletTx walletTx(tx,requiredCoinbaseMaturity_,confirmationsCalculator_);
             if(pblock) walletTx.SetMerkleBranch(*pblock);
             outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
             ++transactionOrderingIndex_;
@@ -98,7 +102,7 @@ UnspentOutputs VaultManager::getUTXOs() const
 
 const CWalletTx& VaultManager::GetTransaction(const uint256& hash) const
 {
-    static CWalletTx dummyValue(CTransaction(),confirmationsCalculator_);
+    static CWalletTx dummyValue(CTransaction(),requiredCoinbaseMaturity_,confirmationsCalculator_);
 
     LOCK(cs_vaultManager_);
     const CWalletTx* tx = walletTxRecord_->GetWalletTx(hash);

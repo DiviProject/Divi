@@ -85,10 +85,6 @@ int64_t CWalletTx::GetComputedTxTime() const
     int64_t nTime = GetTxTime();
     return nTime;
 }
-int CWalletTx::GetNumberOfBlockConfirmations() const
-{
-    return confirmationsCalculator_.GetNumberOfBlockConfirmations(*this);
-}
 int CWalletTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))

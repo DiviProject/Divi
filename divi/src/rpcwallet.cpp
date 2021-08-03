@@ -1437,10 +1437,10 @@ static void MaybePushAddress(Object& entry, const CTxDestination& dest)
         entry.push_back(Pair("address", addr.ToString()));
 }
 
-static std::string GetAccountAddress(const CTxDestination &dest)
+static std::string GetAccountAddressName(const CWallet& wallet, const CTxDestination &dest)
 {
-    map<CTxDestination, CAddressBookData>::iterator mi = pwalletMain->mapAddressBook.find(dest);
-    if (mi != pwalletMain->mapAddressBook.end() && !(*mi).second.name.empty())
+    map<CTxDestination, CAddressBookData>::const_iterator mi = wallet.mapAddressBook.find(dest);
+    if (mi != wallet.mapAddressBook.end() && !(*mi).second.name.empty())
     {
         return (*mi).second.name;
     }
@@ -1468,7 +1468,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
         CTxDestination address;
         if (ExtractDestination(wtx.vout[1].scriptPubKey, address)) {
 
-            if (!pwalletMain->IsMine(address)) {
+            if (!wallet.IsMine(address)) {
                 const int blockHeight = wtx.GetBlockHeightOfFirstConfirmation();
                 if(blockHeight > 0)
                 {
@@ -1477,16 +1477,16 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
                     for (unsigned int i = 1; i < wtx.vout.size(); i++) {
                         CTxDestination outAddress;
                         if (ExtractDestination(wtx.vout[i].scriptPubKey, outAddress)) {
-                            if (pwalletMain->IsMine(outAddress)) {
+                            if (wallet.IsMine(outAddress)) {
 
-                                auto strAccountForAddress = GetAccountAddress(outAddress);
+                                auto strAccountForAddress = GetAccountAddressName(wallet, outAddress);
 
                                 if(!fAllAccounts && strAccount != strAccountForAddress)
                                     continue;
 
 
                                 Object entry;
-                                isminetype mine = pwalletMain->IsMine(wtx.vout[i]);
+                                isminetype mine = wallet.IsMine(wtx.vout[i]);
                                 entry.push_back(Pair("involvesWatchonly", mine & ISMINE_WATCH_ONLY));
                                 entry.push_back(Pair("address", CBitcoinAddress(outAddress).ToString()));
                                 entry.push_back(Pair("amount", ValueFromAmount(wtx.vout[i].nValue)));
@@ -1509,7 +1509,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
 
                 Object entry;
                 //stake reward
-                isminetype mine = pwalletMain->IsMine(wtx.vout[1]);
+                isminetype mine = wallet.IsMine(wtx.vout[1]);
                 entry.push_back(Pair("involvesWatchonly", mine & ISMINE_WATCH_ONLY));
                 entry.push_back(Pair("address", CBitcoinAddress(address).ToString()));
                 entry.push_back(Pair("amount", ValueFromAmount(nNet)));
@@ -1529,22 +1529,22 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
         bool fAllFromMe = true;
         bool fAllForMe = true;
         for (const CTxIn& txin : wtx.vin) {
-            isminetype mine = pwalletMain->IsMine(txin);
+            isminetype mine = wallet.IsMine(txin);
             fAllFromMe &= static_cast<bool>(mine & ISMINE_SPENDABLE);
         }
 
         bool fMatchesReceiveAccount = false;
         std::vector<std::pair<CBitcoinAddress, std::string>> sendAddresses;
         for (const CTxOut& txout : wtx.vout) {
-            isminetype mine = pwalletMain->IsMine(txout);
+            isminetype mine = wallet.IsMine(txout);
             fAllForMe &= static_cast<bool>(mine & ISMINE_SPENDABLE);
 
             CTxDestination dest;
             ExtractDestination(txout.scriptPubKey, dest);
 
             std::string account;
-            if (pwalletMain->mapAddressBook.count(dest)) {
-                account = pwalletMain->mapAddressBook[dest].name;
+            if (wallet.mapAddressBook.count(dest)) {
+                account = wallet.mapAddressBook.find(dest)->second.name;
             }
             sendAddresses.emplace_back(CBitcoinAddress(dest), account);
             fMatchesReceiveAccount |= fAllAccounts || (account == strAccount);
@@ -1580,7 +1580,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
             if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
                 BOOST_FOREACH (const COutputEntry& s, listSent) {
                     Object entry;
-                    if (involvesWatchonly || (pwalletMain->IsMine(s.destination) & ISMINE_WATCH_ONLY))
+                    if (involvesWatchonly || (wallet.IsMine(s.destination) & ISMINE_WATCH_ONLY))
                         entry.push_back(Pair("involvesWatchonly", true));
                     entry.push_back(Pair("account", strSentAccount));
                     MaybePushAddress(entry, s.destination);
@@ -1599,11 +1599,11 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
             if (listReceived.size() > 0 && wtx.GetNumberOfBlockConfirmations() >= nMinDepth) {
                 BOOST_FOREACH (const COutputEntry& r, listReceived) {
                     string account;
-                    if (pwalletMain->mapAddressBook.count(r.destination))
-                        account = pwalletMain->mapAddressBook[r.destination].name;
+                    if (wallet.mapAddressBook.count(r.destination))
+                        account = wallet.mapAddressBook.find(r.destination)->second.name;
                     if (fAllAccounts || (account == strAccount)) {
                         Object entry;
-                        if (involvesWatchonly || (pwalletMain->IsMine(r.destination) & ISMINE_WATCH_ONLY))
+                        if (involvesWatchonly || (wallet.IsMine(r.destination) & ISMINE_WATCH_ONLY))
                             entry.push_back(Pair("involvesWatchonly", true));
                         entry.push_back(Pair("account", account));
                         MaybePushAddress(entry, r.destination);

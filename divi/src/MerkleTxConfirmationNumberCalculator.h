@@ -26,7 +26,6 @@ public:
         CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
     std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const;
-    int GetBlockHeightOfFirstConfirmation(const CMerkleTx& merkleTx) const;
     int GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const;
 };
 

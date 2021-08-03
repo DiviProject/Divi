@@ -192,6 +192,7 @@ private:
     void SetBestChain(const CBlockLocator& loc) override;
 
 public:
+    const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     void UpdateBestBlockLocation();
 
     bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);

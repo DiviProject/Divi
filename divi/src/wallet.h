@@ -219,7 +219,7 @@ public:
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;
     std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
-    CWalletTx initializeEmptyWalletTransaction() const;
+    CWalletTx initializeWalletTransaction(const CTransaction& tx = CTransaction()) const;
     void RelayWalletTransaction(const CWalletTx& walletTransaction);
 
     //! check whether we are allowed to upgrade (or already support) to the named feature

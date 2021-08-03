@@ -1448,7 +1448,7 @@ static std::string GetAccountAddressName(const CWallet& wallet, const CTxDestina
     return std::string();
 }
 
-void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter& filter)
+void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter& filter)
 {
     static SuperblockSubsidyContainer superblockSubsidies(Params());
     static const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
@@ -1729,7 +1729,7 @@ Value listtransactions(const Array& params, bool fHelp)
     for (CWallet::TxItems::reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
         CWalletTx* const pwtx = (*it).second.first;
         if (pwtx != 0)
-            ListTransactions(*pwalletMain, *pwtx, strAccount, 0, true, ret, filter);
+            ParseTransactionDetails(*pwalletMain, *pwtx, strAccount, 0, true, ret, filter);
         CAccountingEntry* const pacentry = (*it).second.second;
         if (pacentry != 0)
             AcentryToJSON(*pacentry, strAccount, ret);
@@ -1897,7 +1897,7 @@ Value listsinceblock(const Array& params, bool fHelp)
         CWalletTx tx = *(*it);
 
         if (depth == -1 || tx.GetNumberOfBlockConfirmations() < depth)
-            ListTransactions(*pwalletMain, tx, "*", 0, true, transactions, filter);
+            ParseTransactionDetails(*pwalletMain, tx, "*", 0, true, transactions, filter);
     }
 
     CBlockIndex* pblockLast = chainActive[chainActive.Height() + 1 - target_confirms];
@@ -1972,7 +1972,7 @@ Value gettransaction(const Array& params, bool fHelp)
     WalletTxToJSON(wtx, entry);
 
     Array details;
-    ListTransactions(*pwalletMain, wtx, "*", 0, false, details, filter);
+    ParseTransactionDetails(*pwalletMain, wtx, "*", 0, false, details, filter);
     entry.push_back(Pair("details", details));
 
     string strHex = EncodeHexTx(static_cast<CTransaction>(wtx));

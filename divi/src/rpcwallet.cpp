@@ -42,6 +42,7 @@ using namespace json_spirit;
 
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
+extern CCriticalSection cs_main;
 extern BlockMap mapBlockIndex;
 extern CChain chainActive;
 extern CWallet* pwalletMain;
@@ -1448,6 +1449,12 @@ static std::string GetAccountAddressName(const CWallet& wallet, const CTxDestina
     return std::string();
 }
 
+static int ComputeBlockHeightOfFirstConfirmation(const uint256 blockHash)
+{
+    LOCK(cs_main);
+    BlockMap::const_iterator it = mapBlockIndex.find(blockHash);
+    return (it==mapBlockIndex.end() || it->second==nullptr)? 0 : it->second->nHeight;
+}
 void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter& filter)
 {
     static SuperblockSubsidyContainer superblockSubsidies(Params());
@@ -1469,7 +1476,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         if (ExtractDestination(wtx.vout[1].scriptPubKey, address)) {
 
             if (!wallet.IsMine(address)) {
-                const int blockHeight = wtx.GetBlockHeightOfFirstConfirmation();
+                const int blockHeight = ComputeBlockHeightOfFirstConfirmation(wtx.hashBlock);
                 if(blockHeight > 0)
                 {
                     bool isLotteryPayment = heightValidator.IsValidLotteryBlockHeight(blockHeight);

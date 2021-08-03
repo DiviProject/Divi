@@ -1119,9 +1119,9 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
     return std::max(latestEntry, std::min(blocktime, latestNow));
 }
 
-CWalletTx CWallet::initializeEmptyWalletTransaction() const
+CWalletTx CWallet::initializeWalletTransaction(const CTransaction& tx) const
 {
-    return CWalletTx(CTransaction(),*confirmationNumberCalculator_);
+    return CWalletTx(tx,*confirmationNumberCalculator_);
 }
 
 void CWallet::UpdateFromOnDiskTransaction(const CWalletTx& wtxIn)
@@ -1224,7 +1224,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
         bool fExisted = GetWalletTx(tx.GetHash()) != nullptr;
         if (fExisted && !fUpdate) return false;
         if (fExisted || IsMine(tx) || DebitsFunds(tx)) {
-            CWalletTx wtx(tx,*confirmationNumberCalculator_);
+            CWalletTx wtx = initializeWalletTransaction(tx);
             // Get merkle branch if transaction was found in a block
             if (pblock)
                 wtx.SetMerkleBranch(*pblock);

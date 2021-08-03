@@ -338,7 +338,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
         } else if (strType == "tx") {
             uint256 hash;
             ssKey >> hash;
-            CWalletTx wtx = pwallet->initializeEmptyWalletTransaction();
+            CWalletTx wtx = pwallet->initializeWalletTransaction();
             ssValue >> wtx;
             CValidationState state;
             // false because there is no reason to go through the zerocoin checks for our own wallet
@@ -724,7 +724,7 @@ DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash
                 uint256 hash;
                 ssKey >> hash;
 
-                CWalletTx wtx = pwallet->initializeEmptyWalletTransaction();
+                CWalletTx wtx = pwallet->initializeWalletTransaction();
                 ssValue >> wtx;
 
                 vTxHash.push_back(hash);

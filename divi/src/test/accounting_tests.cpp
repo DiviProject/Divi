@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(acc_orderupgrade)
 {
     CWalletDB walletdb(settings, pwalletMain->strWalletFile);
     std::vector<CWalletTx*> vpwtx;
-    CWalletTx wtx = pwalletMain->initializeEmptyWalletTransaction();
+    CWalletTx wtx = pwalletMain->initializeWalletTransaction();
     CAccountingEntry ae;
     std::map<int64_t, CAccountingEntry> results;
 

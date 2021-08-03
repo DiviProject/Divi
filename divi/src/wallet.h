@@ -188,7 +188,7 @@ private:
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
     // Notification interface methods
-    void SyncTransaction(const CTransaction& tx, const CBlock* pblock) override;
+    void SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType) override;
     void ResendWalletTransactions() override;
     void SetBestChain(const CBlockLocator& loc) override;
 
@@ -331,9 +331,9 @@ public:
     void RecomputeCachedQuantities();
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
     void UpdateFromOnDiskTransaction(const CWalletTx& wtxIn);
-    bool AddToWallet(const CWalletTx& wtxIn);
+    bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
 
-    bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate);
+    bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate,bool blockDisconnection);
     int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false);
     void ReacceptWalletTransactions();
     CAmount GetBalance() const;

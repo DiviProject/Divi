@@ -718,7 +718,7 @@ bool CWallet::AddVault(
     AddCScript(vaultScript);
     CBlock block;
     ReadBlockFromDisk(block, blockIndexToBlockContainingTx);
-    SyncTransaction(tx, &block);
+    SyncTransaction(tx, &block,TransactionSyncType::RESCAN);
     auto wtx = GetWalletTx(tx.GetHash());
     return wtx != nullptr;
 }
@@ -1129,7 +1129,7 @@ void CWallet::UpdateFromOnDiskTransaction(const CWalletTx& wtxIn)
     outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, true).first->RecomputeCachedQuantities();
 }
 
-bool CWallet::AddToWallet(const CWalletTx& wtxIn)
+bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
 {
     uint256 hash = wtxIn.GetHash();
     LOCK(cs_wallet);
@@ -1140,6 +1140,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn)
     bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
 
     bool walletTransactionHasBeenUpdated = false;
+    bool reorgTransactionDetected = false;
     if (transactionHashIsNewToWallet)
     {
         wtx.nOrderPos = IncOrderPosNext();
@@ -1179,22 +1180,22 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn)
         }
 
         // Reset merkle branch - block reorg
-        if(!wtxIn.createdByMe && !wtxIn.MerkleBranchIsSet() && wtx.MerkleBranchIsSet())
+        if(blockDisconnection && !wtxIn.createdByMe && !wtxIn.MerkleBranchIsSet() && wtx.MerkleBranchIsSet())
         {
             wtx.ClearMerkleBranch();
-            walletTransactionHasBeenUpdated = true;
+            reorgTransactionDetected = true;
         }
     }
 
     //// debug print
-    LogPrintf("AddToWallet %s  %s%s%s\n",
-        wtxIn.ToStringShort(),
-        (transactionHashIsNewToWallet ? "new" : ""),
-        (walletTransactionHasBeenUpdated ? "update" : ""),
-        "unknown-tx-update");
+    const std::string updateDescription =
+        transactionHashIsNewToWallet ? "new":
+        walletTransactionHasBeenUpdated? "update" :
+        reorgTransactionDetected? "reorg": "";
+    LogPrintf("AddToWallet %s %s\n", wtxIn.ToStringShort(), updateDescription);
 
     // Write to disk
-    if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated)
+    if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated || reorgTransactionDetected)
     {
         if(!WriteTxToDisk(this,wtx))
         {
@@ -1207,7 +1208,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn)
     wtx.RecomputeCachedQuantities();
 
     // Notify UI of new or updated transaction
-    NotifyTransactionChanged(hash, transactionHashIsNewToWallet ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
+    NotifyTransactionChanged(hash, (transactionHashIsNewToWallet && !reorgTransactionDetected) ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
     return true;
 }
 
@@ -1216,7 +1217,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn)
  * pblock is optional, but should be provided if the transaction is known to be in a block.
  * If fUpdate is true, existing transactions will be updated.
  */
-bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate)
+bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, bool blockDisconnection)
 {
     {
         AssertLockHeld(cs_wallet);
@@ -1227,16 +1228,16 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
             // Get merkle branch if transaction was found in a block
             if (pblock)
                 wtx.SetMerkleBranch(*pblock);
-            return AddToWallet(wtx);
+            return AddToWallet(wtx,blockDisconnection);
         }
     }
     return false;
 }
 
-void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock)
+void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType)
 {
     LOCK2(cs_main, cs_wallet);
-    if (!AddToWalletIfInvolvingMe(tx, pblock, true))
+    if (!AddToWalletIfInvolvingMe(tx, pblock, true,syncType == TransactionSyncType::BLOCK_DISCONNECT))
         return; // Not one of ours
 
     // If a transaction changes 'conflicted' state, that changes the balance
@@ -1394,7 +1395,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
             CBlock block;
             ReadBlockFromDisk(block, pindex);
             BOOST_FOREACH (CTransaction& tx, block.vtx) {
-                if (AddToWalletIfInvolvingMe(tx, &block, fUpdate))
+                if (AddToWalletIfInvolvingMe(tx, &block, fUpdate,false))
                     ret++;
             }
             pindex = activeChain_.Next(pindex);

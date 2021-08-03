@@ -1,20 +1,13 @@
 #include <merkletx.h>
-#include <sync.h>
-#include <primitives/block.h>
+
 #include <chainparams.h>
-#include <chain.h>
-#include <txmempool.h>
-#include <ValidationState.h>
-#include <spork.h>
-#include <blockmap.h>
 #include <Logging.h>
 #include <utiltime.h>
 
 CMerkleTx::CMerkleTx(
-    const CTransaction& txIn,
-    const I_MerkleTxConfirmationNumberCalculator& confirmationCalculator
+    const CTransaction& txIn
     ): CTransaction(txIn)
-    , confirmationCalculator_(confirmationCalculator)
+    , requiredCoinbaseMaturity_(Params().COINBASE_MATURITY())
 {
     ClearMerkleBranch();
 }
@@ -62,14 +55,4 @@ bool CMerkleTx::VerifyMerkleProof(const uint256 merkleRoot) const
         return true;
     }
     return true;
-}
-int CMerkleTx::GetNumberOfBlockConfirmations() const
-{
-    return confirmationCalculator_.GetNumberOfBlockConfirmations(*this);
-}
-int CMerkleTx::GetBlocksToMaturity() const
-{
-    if (!(IsCoinBase() || IsCoinStake()))
-        return 0;
-    return std::max(0, (Params().COINBASE_MATURITY() + 1) - confirmationCalculator_.GetNumberOfBlockConfirmations(*this));
 }

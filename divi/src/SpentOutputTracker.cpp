@@ -57,7 +57,7 @@ bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
     for (TxSpends::const_iterator it = range.first; it != range.second; ++it) {
         const uint256& wtxid = it->second;
         const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(wtxid);
-        if (transactionPtr && transactionPtr->GetNumberOfBlockConfirmations() >= 0)
+        if (transactionPtr && confirmationsCalculator_.GetNumberOfBlockConfirmations(*transactionPtr) >= 0)
             return true; // Spent
     }
     return false;

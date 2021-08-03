@@ -1255,7 +1255,7 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock,const
 void CWallet::RelayWalletTransaction(const CWalletTx& walletTransaction)
 {
     if (!walletTransaction.IsCoinBase()) {
-        if (walletTransaction.GetNumberOfBlockConfirmations() == 0)
+        if (confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) == 0)
         {
             LogPrintf("Relaying wtx %s\n", walletTransaction.ToStringShort());
             RelayTransaction(static_cast<CTransaction>(walletTransaction));
@@ -1429,7 +1429,7 @@ void CWallet::ReacceptWalletTransactions()
         CWalletTx& wtx = item.second;
         assert(wtx.GetHash() == wtxid);
 
-        int nDepth = wtx.GetNumberOfBlockConfirmations();
+        int nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(wtx);
 
         if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0) {
             // Try to add to memory pool
@@ -1443,7 +1443,7 @@ CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUse
 {
     if ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) &&
         walletTransaction.GetBlocksToMaturity() > 0 &&
-        walletTransaction.GetNumberOfBlockConfirmations() > 0)
+        confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) > 0)
     {
         if (fUseCache && walletTransaction.fImmatureCreditCached)
             return walletTransaction.nImmatureCreditCached;
@@ -1474,7 +1474,7 @@ CAmount CWallet::GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, 
 {
     if (walletTransaction.IsCoinBase() &&
         walletTransaction.GetBlocksToMaturity() > 0 &&
-        walletTransaction.GetNumberOfBlockConfirmations() > 0)
+        confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) > 0)
     {
         if (fUseCache && walletTransaction.fImmatureWatchCreditCached)
             return walletTransaction.nImmatureWatchCreditCached;
@@ -1569,7 +1569,7 @@ CAmount CWallet::GetUnconfirmedBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
+            if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin) == 0))
                 nTotal += GetAvailableCredit(*pcoin);
         }
     }
@@ -1611,7 +1611,7 @@ CAmount CWallet::GetUnconfirmedWatchOnlyBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
+            if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin) == 0))
                 nTotal += GetAvailableWatchOnlyCredit(*pcoin);
         }
     }
@@ -1645,7 +1645,7 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
     if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
         return false;
 
-    nDepth = pcoin->GetNumberOfBlockConfirmations();
+    nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin);
 
     // We should not consider coins which aren't at least in our mempool
     // It's possible for these to be conflicted via ancestors which we may never be able to detect
@@ -2649,7 +2649,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
             if (pcoin->IsCoinBase() && pcoin->GetBlocksToMaturity() > 0)
                 continue;
 
-            int nDepth = pcoin->GetNumberOfBlockConfirmations();
+            int nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin);
             if (nDepth < ( DebitsFunds(*pcoin,ISMINE_ALL) ? 0 : 1))
                 continue;
 
@@ -2811,7 +2811,7 @@ bool CWallet::IsTrusted(const CWalletTx& walletTransaction) const
     // Quick answer in most cases
     if (!IsFinalTx(walletTransaction, activeChain_))
         return false;
-    int nDepth = walletTransaction.GetNumberOfBlockConfirmations();
+    int nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction);
     if (nDepth >= 1)
         return true;
     if (nDepth < 0)

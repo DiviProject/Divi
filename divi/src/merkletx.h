@@ -3,17 +3,16 @@
 /** A transaction with a merkle branch linking it to the block chain. */
 #include <primitives/transaction.h>
 #include <uint256.h>
-#include <I_MerkleTxConfirmationNumberCalculator.h>
 
 class CBlock;
 class BlockMap;
 
 class CMerkleTx : public CTransaction
 {
-protected:
-    const I_MerkleTxConfirmationNumberCalculator& confirmationCalculator_;
 private:
     bool VerifyMerkleProof(const uint256 merkleRoot) const;
+protected:
+    const int requiredCoinbaseMaturity_;
 public:
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;
@@ -21,9 +20,7 @@ public:
 
     // memory only
     mutable bool fMerkleVerified;
-    CMerkleTx(
-        const CTransaction& txIn,
-        const I_MerkleTxConfirmationNumberCalculator& confirmationCalculator);
+    CMerkleTx(const CTransaction& txIn);
 
     ADD_SERIALIZE_METHODS;
 
@@ -44,14 +41,5 @@ public:
     void SetMerkleBranch(const CBlock& block);
     bool MerkleBranchIsSet() const;
     void ClearMerkleBranch();
-
-    /**
-     * Return first confirmation block index and depth of transaction in blockchain:
-     * -1  : not in blockchain, and not in memory pool (conflicted transaction)
-     *  0  : in memory pool, waiting to be included in a block
-     * >=1 : this many blocks deep in the main chain
-     */
-    int GetNumberOfBlockConfirmations() const;
-    int GetBlocksToMaturity() const;
 };
 #endif// MERKLE_TX_H

@@ -29,7 +29,7 @@ VaultManager::VaultManager(
     bool continueLoadingTransactions = true;
     while(continueLoadingTransactions)
     {
-        CWalletTx txToAdd(CMerkleTx{CMutableTransaction(), confirmationsCalculator_});
+        CWalletTx txToAdd(CMutableTransaction(), confirmationsCalculator_);
         if(vaultManagerDB.ReadTx(transactionOrderingIndex_,txToAdd))
         {
             outputTracker_->UpdateSpends(txToAdd,transactionOrderingIndex_,true);
@@ -56,9 +56,9 @@ void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)
         auto it = managedScriptsLimits_.find(output.scriptPubKey);
         if(it != managedScriptsLimits_.end())
         {
-            CMerkleTx merkleTx(tx,confirmationsCalculator_);
-            if(pblock) merkleTx.SetMerkleBranch(*pblock);
-            outputTracker_->UpdateSpends(merkleTx,transactionOrderingIndex_,false);
+            CWalletTx walletTx(tx,confirmationsCalculator_);
+            if(pblock) walletTx.SetMerkleBranch(*pblock);
+            outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
             ++transactionOrderingIndex_;
             break;
         }

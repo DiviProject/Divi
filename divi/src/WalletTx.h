@@ -11,6 +11,7 @@
 #include <string>
 #include <map>
 #include <stdint.h>
+class I_MerkleTxConfirmationNumberCalculator;
 
 typedef std::map<std::string, std::string> mapValue_t;
 void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue);
@@ -20,8 +21,10 @@ void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue);
  * A transaction with a bunch of additional info that only the owner cares about.
  * It includes any unrecorded transactions needed to link it back to the block chain.
  */
-class CWalletTx : public CMerkleTx
+class CWalletTx final: public CMerkleTx
 {
+private:
+    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
 public:
     std::map<std::string, std::string> mapValue;
     std::vector<std::pair<std::string, std::string> > vOrderForm;
@@ -52,7 +55,6 @@ public:
     mutable CAmount nAvailableWatchCreditCached;
     mutable CAmount nChangeCached;
 
-    CWalletTx(const CMerkleTx& txIn);
     CWalletTx(const CTransaction& txIn, const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
     void Init();
 
@@ -111,5 +113,13 @@ public:
 
     int64_t GetTxTime() const;
     int64_t GetComputedTxTime() const;
+    /**
+     * Return first confirmation block index and depth of transaction in blockchain:
+     * -1  : not in blockchain, and not in memory pool (conflicted transaction)
+     *  0  : in memory pool, waiting to be included in a block
+     * >=1 : this many blocks deep in the main chain
+     */
+    int GetNumberOfBlockConfirmations() const;
+    int GetBlocksToMaturity() const;
 };
 #endif// WALLET_TX_H

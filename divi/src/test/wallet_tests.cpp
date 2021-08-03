@@ -5,6 +5,7 @@
 #include "wallet.h"
 #include <script/standard.h>
 #include <WalletTx.h>
+#include <chainparams.h>
 
 #include <set>
 #include <stdint.h>
@@ -72,7 +73,7 @@ void WalletTestFixture::add_coin(const CAmount nValue, int nAge, bool fIsFromMe,
         // so stop vin being empty, and cache a non-zero Debit to fake out DebitsFunds()
         tx.vin.resize(1);
     }
-    CWalletTx* wtx = new CWalletTx(tx,confirmationsCalculator);
+    CWalletTx* wtx = new CWalletTx(tx,Params().COINBASE_MATURITY(),confirmationsCalculator);
     if (fIsFromMe)
     {
         wtx->fDebitCached = true;

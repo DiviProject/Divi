@@ -117,13 +117,6 @@ public:
 
     int64_t GetTxTime() const;
     int64_t GetComputedTxTime() const;
-    /**
-     * Return first confirmation block index and depth of transaction in blockchain:
-     * -1  : not in blockchain, and not in memory pool (conflicted transaction)
-     *  0  : in memory pool, waiting to be included in a block
-     * >=1 : this many blocks deep in the main chain
-     */
-    int GetNumberOfBlockConfirmations() const;
     int GetBlocksToMaturity() const;
 };
 #endif// WALLET_TX_H

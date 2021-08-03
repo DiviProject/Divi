@@ -232,7 +232,10 @@ void CWallet::toggleSpendingZeroConfirmationOutputs()
 {
     allowSpendingZeroConfirmationOutputs = !allowSpendingZeroConfirmationOutputs;
 }
-
+const I_MerkleTxConfirmationNumberCalculator& CWallet::getConfirmationCalculator() const
+{
+    return *confirmationNumberCalculator_;
+}
 void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions)
 {
     LOCK(cs_wallet);

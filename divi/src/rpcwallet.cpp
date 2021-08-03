@@ -59,9 +59,10 @@ void EnsureWalletIsUnlocked()
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 }
 
-void WalletTxToJSON(const CWalletTx& wtx, Object& entry)
+void WalletTxToJSON(const CWallet& wallet, const CWalletTx& wtx, Object& entry)
 {
-    int confirms = wtx.GetNumberOfBlockConfirmations();
+
+    int confirms = wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx);
     int confirmsTotal = confirms;
     entry.push_back(Pair("confirmations", confirmsTotal));
     entry.push_back(Pair("bcconfirmations", confirms));
@@ -1502,7 +1503,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                                 entry.push_back(Pair("account", strAccountForAddress));
 
                                 if (fLong)
-                                    WalletTxToJSON(wtx, entry);
+                                    WalletTxToJSON(wallet,wtx, entry);
 
                                 ret.push_back(entry);
                             }
@@ -1525,7 +1526,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                 entry.push_back(Pair("account", wtx.strFromAccount));
 
                 if (fLong)
-                    WalletTxToJSON(wtx, entry);
+                    WalletTxToJSON(wallet, wtx, entry);
 
                 ret.push_back(entry);
             }
@@ -1576,7 +1577,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             entry.push_back(Pair("addresses", addresses));
 
             if (fLong)
-                WalletTxToJSON(wtx, entry);
+                WalletTxToJSON(wallet,wtx, entry);
             ret.push_back(entry);
         }
         else
@@ -1597,7 +1598,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                     entry.push_back(Pair("vout", s.vout));
                     entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
                     if (fLong)
-                        WalletTxToJSON(wtx, entry);
+                        WalletTxToJSON(wallet, wtx, entry);
                     ret.push_back(entry);
                 }
             }
@@ -1627,7 +1628,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                         entry.push_back(Pair("amount", ValueFromAmount(r.amount)));
                         entry.push_back(Pair("vout", r.vout));
                         if (fLong)
-                            WalletTxToJSON(wtx, entry);
+                            WalletTxToJSON(wallet, wtx, entry);
                         ret.push_back(entry);
                     }
                 }
@@ -1976,7 +1977,7 @@ Value gettransaction(const Array& params, bool fHelp)
     entry.push_back(Pair("amount", ValueFromAmount(nNet)));
     if (nDebit > 0) entry.push_back(Pair("fee", ValueFromAmount(nFee)));
 
-    WalletTxToJSON(wtx, entry);
+    WalletTxToJSON(*pwalletMain,wtx, entry);
 
     Array details;
     ParseTransactionDetails(*pwalletMain, wtx, "*", 0, false, details, filter);

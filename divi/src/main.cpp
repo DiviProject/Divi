@@ -692,7 +692,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         pool.addUnchecked(hash, entry, view);
     }
 
-    g_signals.SyncTransaction(tx, NULL);
+    g_signals.SyncTransaction(tx, NULL,TransactionSyncType::MEMPOOL_TX_ADD);
 
     return true;
 }
@@ -1202,7 +1202,7 @@ bool static DisconnectTip(CValidationState& state)
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
     for(const CTransaction& tx: blockTransactions) {
-        g_signals.SyncTransaction(tx, NULL);
+        g_signals.SyncTransaction(tx, NULL,TransactionSyncType::BLOCK_DISCONNECT);
     }
     return true;
 }
@@ -1278,11 +1278,11 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     // Tell wallet about transactions that went from mempool
     // to conflicted:
     for(const CTransaction& tx: txConflicted) {
-        g_signals.SyncTransaction(tx, NULL);
+        g_signals.SyncTransaction(tx, NULL,TransactionSyncType::CONFLICTED_TX);
     }
     // ... and about transactions that got confirmed:
     for(const CTransaction& tx: pblock->vtx) {
-        g_signals.SyncTransaction(tx, pblock);
+        g_signals.SyncTransaction(tx, pblock, TransactionSyncType::NEW_BLOCK);
     }
 
     int64_t nTime6 = GetTimeMicros();

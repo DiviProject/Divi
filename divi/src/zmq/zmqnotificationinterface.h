@@ -25,7 +25,7 @@ protected:
     void Shutdown();
 
     // NotificationInterface
-    void SyncTransaction(const CTransaction &tx, const CBlock *pblock) override;
+    void SyncTransaction(const CTransaction &tx, const CBlock *pblock, const TransactionSyncType syncType) override;
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
     void NotifyTransactionLock(const CTransaction &tx) override;
 

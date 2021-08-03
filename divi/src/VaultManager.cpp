@@ -16,7 +16,7 @@ VaultManager::VaultManager(
     , cs_vaultManager_()
     , transactionOrderingIndex_(0)
     , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_))
-    , outputTracker_(new SpentOutputTracker(*walletTxRecord_))
+    , outputTracker_(new SpentOutputTracker(*walletTxRecord_,confirmationsCalculator_))
     , managedScriptsLimits_()
 {
 }

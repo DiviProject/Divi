@@ -3,11 +3,14 @@
 #include <primitives/transaction.h>
 #include <WalletTx.h>
 #include <WalletTransactionRecord.h>
+#include <I_MerkleTxConfirmationNumberCalculator.h>
 #include <timedata.h>
 
 SpentOutputTracker::SpentOutputTracker(
-    WalletTransactionRecord& transactionRecord
+    WalletTransactionRecord& transactionRecord,
+    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
     ): transactionRecord_(transactionRecord)
+    , confirmationsCalculator_(confirmationsCalculator)
     , mapTxSpends()
 {
 }

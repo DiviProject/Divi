@@ -1,6 +1,7 @@
 #include <WalletTx.h>
 
 #include <Logging.h>
+#include <I_MerkleTxConfirmationNumberCalculator.h>
 
 void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue)
 {
@@ -19,14 +20,11 @@ void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue)
     mapValue["n"] = i64tostr(nOrderPos);
 }
 
-CWalletTx::CWalletTx(const CMerkleTx& txIn) : CMerkleTx(txIn)
-{
-    Init();
-}
 CWalletTx::CWalletTx(
     const CTransaction& txIn,
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
-    ): CMerkleTx(txIn,confirmationsCalculator)
+    ): CMerkleTx(txIn)
+    , confirmationsCalculator_(confirmationsCalculator)
 {
     Init();
 }
@@ -84,4 +82,14 @@ int64_t CWalletTx::GetComputedTxTime() const
 {
     int64_t nTime = GetTxTime();
     return nTime;
+}
+int CWalletTx::GetNumberOfBlockConfirmations() const
+{
+    return confirmationsCalculator_.GetNumberOfBlockConfirmations(*this);
+}
+int CWalletTx::GetBlocksToMaturity() const
+{
+    if (!(IsCoinBase() || IsCoinStake()))
+        return 0;
+    return std::max(0, (requiredCoinbaseMaturity_ + 1) - confirmationsCalculator_.GetNumberOfBlockConfirmations(*this));
 }

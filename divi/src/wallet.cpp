@@ -1121,7 +1121,7 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
 
 CWalletTx CWallet::initializeEmptyWalletTransaction() const
 {
-    return CMerkleTx(CTransaction(),*confirmationNumberCalculator_);
+    return CWalletTx(CTransaction(),*confirmationNumberCalculator_);
 }
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)

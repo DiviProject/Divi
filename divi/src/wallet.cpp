@@ -1124,93 +1124,90 @@ CWalletTx CWallet::initializeEmptyWalletTransaction() const
     return CWalletTx(CTransaction(),*confirmationNumberCalculator_);
 }
 
-bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
+void CWallet::UpdateFromOnDiskTransaction(const CWalletTx& wtxIn)
+{
+    outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, true).first->RecomputeCachedQuantities();
+}
+
+bool CWallet::AddToWallet(const CWalletTx& wtxIn)
 {
     uint256 hash = wtxIn.GetHash();
+    LOCK(cs_wallet);
+    // Inserts only if not already there, returns tx inserted or tx found
+    std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,orderedTransactionIndex,false);
+    CWalletTx& wtx = *walletTxAndRecordStatus.first;
+    wtx.RecomputeCachedQuantities();
+    bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
 
-    if (fFromLoadWallet)
+    bool walletTransactionHasBeenUpdated = false;
+    if (transactionHashIsNewToWallet)
     {
-        outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, fFromLoadWallet).first->RecomputeCachedQuantities();
+        wtx.nOrderPos = IncOrderPosNext();
+
+        wtx.nTimeSmart = wtx.nTimeReceived;
+        if (wtxIn.hashBlock != 0)
+        {
+            if (blockIndexByHash_.count(wtxIn.hashBlock))
+            {
+                wtx.nTimeSmart = SmartWalletTxTimestampEstimation(wtx);
+            }
+            else
+            {
+                LogPrintf("AddToWallet() : found %s in block %s not in index\n",
+                            wtxIn.ToStringShort(), wtxIn.hashBlock);
+            }
+        }
     }
     else
     {
-        LOCK(cs_wallet);
-        // Inserts only if not already there, returns tx inserted or tx found
-        std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,orderedTransactionIndex,fFromLoadWallet);
-        CWalletTx& wtx = *walletTxAndRecordStatus.first;
-        wtx.RecomputeCachedQuantities();
-        bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
-
-        bool walletTransactionHasBeenUpdated = false;
-        if (transactionHashIsNewToWallet)
+        // Merge
+        if (wtxIn.hashBlock != 0 && wtxIn.hashBlock != wtx.hashBlock)
         {
-            wtx.nOrderPos = IncOrderPosNext();
-
-            wtx.nTimeSmart = wtx.nTimeReceived;
-            if (wtxIn.hashBlock != 0)
-            {
-                if (blockIndexByHash_.count(wtxIn.hashBlock))
-                {
-                    wtx.nTimeSmart = SmartWalletTxTimestampEstimation(wtx);
-                }
-                else
-                {
-                    LogPrintf("AddToWallet() : found %s in block %s not in index\n",
-                              wtxIn.ToStringShort(), wtxIn.hashBlock);
-                }
-            }
+            wtx.hashBlock = wtxIn.hashBlock;
+            walletTransactionHasBeenUpdated = true;
         }
-        else
+        if (wtxIn.merkleBranchIndex != -1 && (wtxIn.vMerkleBranch != wtx.vMerkleBranch || wtxIn.merkleBranchIndex != wtx.merkleBranchIndex))
         {
-            // Merge
-            if (wtxIn.hashBlock != 0 && wtxIn.hashBlock != wtx.hashBlock)
-            {
-                wtx.hashBlock = wtxIn.hashBlock;
-                walletTransactionHasBeenUpdated = true;
-            }
-            if (wtxIn.merkleBranchIndex != -1 && (wtxIn.vMerkleBranch != wtx.vMerkleBranch || wtxIn.merkleBranchIndex != wtx.merkleBranchIndex))
-            {
-                wtx.vMerkleBranch = wtxIn.vMerkleBranch;
-                wtx.merkleBranchIndex = wtxIn.merkleBranchIndex;
-                walletTransactionHasBeenUpdated = true;
-            }
-            if (wtxIn.createdByMe && wtxIn.createdByMe != wtx.createdByMe)
-            {
-                wtx.createdByMe = wtxIn.createdByMe;
-                walletTransactionHasBeenUpdated = true;
-            }
-
-            // Reset merkle branch - block reorg
-            if(!wtxIn.createdByMe && !wtxIn.MerkleBranchIsSet() && wtx.MerkleBranchIsSet())
-            {
-                wtx.ClearMerkleBranch();
-                walletTransactionHasBeenUpdated = true;
-            }
+            wtx.vMerkleBranch = wtxIn.vMerkleBranch;
+            wtx.merkleBranchIndex = wtxIn.merkleBranchIndex;
+            walletTransactionHasBeenUpdated = true;
+        }
+        if (wtxIn.createdByMe && wtxIn.createdByMe != wtx.createdByMe)
+        {
+            wtx.createdByMe = wtxIn.createdByMe;
+            walletTransactionHasBeenUpdated = true;
         }
 
-        //// debug print
-        LogPrintf("AddToWallet %s  %s%s%s\n",
-            wtxIn.ToStringShort(),
-            (transactionHashIsNewToWallet ? "new" : ""),
-            (walletTransactionHasBeenUpdated ? "update" : ""),
-            "unknown-tx-update");
-
-        // Write to disk
-        if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated)
+        // Reset merkle branch - block reorg
+        if(!wtxIn.createdByMe && !wtxIn.MerkleBranchIsSet() && wtx.MerkleBranchIsSet())
         {
-            if(!WriteTxToDisk(this,wtx))
-            {
-                LogPrintf("%s - Unable to write tx (%s) to disk\n",__func__,wtxIn.ToStringShort());
-                return false;
-            }
+            wtx.ClearMerkleBranch();
+            walletTransactionHasBeenUpdated = true;
         }
-
-        // Break debit/credit balance caches:
-        wtx.RecomputeCachedQuantities();
-
-        // Notify UI of new or updated transaction
-        NotifyTransactionChanged(hash, transactionHashIsNewToWallet ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
     }
+
+    //// debug print
+    LogPrintf("AddToWallet %s  %s%s%s\n",
+        wtxIn.ToStringShort(),
+        (transactionHashIsNewToWallet ? "new" : ""),
+        (walletTransactionHasBeenUpdated ? "update" : ""),
+        "unknown-tx-update");
+
+    // Write to disk
+    if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated)
+    {
+        if(!WriteTxToDisk(this,wtx))
+        {
+            LogPrintf("%s - Unable to write tx (%s) to disk\n",__func__,wtxIn.ToStringShort());
+            return false;
+        }
+    }
+
+    // Break debit/credit balance caches:
+    wtx.RecomputeCachedQuantities();
+
+    // Notify UI of new or updated transaction
+    NotifyTransactionChanged(hash, transactionHashIsNewToWallet ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
     return true;
 }
 

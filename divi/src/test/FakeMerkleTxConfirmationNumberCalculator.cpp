@@ -24,11 +24,6 @@ std::pair<const CBlockIndex*,int> FakeMerkleTxConfirmationNumberCalculator::Find
         return std::make_pair(it->second,activeChain_.Height() - it->second->nHeight+1);
     }
 }
-int FakeMerkleTxConfirmationNumberCalculator::GetBlockHeightOfFirstConfirmation(const CMerkleTx& merkleTx) const
-{
-    auto blockIndex = FindConfirmedBlockIndexAndDepth(merkleTx).first;
-    return blockIndex? blockIndex->nHeight:0;
-}
 int FakeMerkleTxConfirmationNumberCalculator::GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const
 {
     return FindConfirmedBlockIndexAndDepth(merkleTx).second;

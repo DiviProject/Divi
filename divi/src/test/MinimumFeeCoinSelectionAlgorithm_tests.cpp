@@ -12,6 +12,7 @@
 #include <chainparams.h>
 #include <test/MockSignatureSizeEstimator.h>
 #include <test/FakeMerkleTxConfirmationNumberCalculator.h>
+#include <FeeRate.h>
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -37,6 +38,7 @@ private:
 public:
     std::vector<CKeyID> keyIds;
     NiceMock<MockSignatureSizeEstimator> mockSignatureSizeEstimator;
+    CFeeRate feeRates;
     MinimumFeeCoinSelectionAlgorithm algorithm;
     RandomCScriptGenerator scriptGenerator;
     CScript smallScriptSigReqScript;
@@ -54,7 +56,8 @@ public:
             ))
         , keyIds()
         , mockSignatureSizeEstimator()
-        , algorithm(keystore_,mockSignatureSizeEstimator)
+        , feeRates(10000)
+        , algorithm(keystore_,mockSignatureSizeEstimator,feeRates)
         , scriptGenerator()
         , smallScriptSigReqScript(scriptGenerator(25))
         , largeScriptSigReqScript(scriptGenerator(25))

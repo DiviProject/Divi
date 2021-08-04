@@ -31,8 +31,6 @@
 #include <utilstrencodings.h>
 
 extern bool fLiteMode;
-extern CAmount nTransactionValueMultiplier;
-extern unsigned int nTransactionSizeMultiplier;
 extern CCriticalSection cs_main;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
@@ -43,6 +41,8 @@ extern bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 extern bool DisconnectBlocksAndReprocess(int blocks);
 extern bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
 
+CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
+unsigned int nTransactionSizeMultiplier = 300;
 std::map<uint256, CSporkMessage> mapSporks;
 CSporkManager sporkManager;
 

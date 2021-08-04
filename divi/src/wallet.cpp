@@ -158,7 +158,6 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) )
     , orderedTransactionIndex()
     , nWalletVersion(0)
-    , fBackupMints(false)
     , nMasterKeyMaxID(0)
     , timeOfLastChainTipUpdate(0)
     , nNextResend(0)
@@ -203,7 +202,6 @@ void CWallet::SetNull()
     nLastResend = 0;
     nTimeFirstKey = 0;
     walletStakingOnly = false;
-    fBackupMints = false;
 
 }
 

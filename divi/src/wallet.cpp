@@ -1389,10 +1389,11 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
     return ret;
 }
 
-bool CWallet::SubmitTransactionToMemoryPool(const CWalletTx& wtx ,bool fLimitFree) const
+bool CWallet::SubmitTransactionToMemoryPool(const CWalletTx& wtx) const
 {
+    constexpr const bool limitFreeTxProcessing = false;
     CValidationState state;
-    bool fAccepted = ::AcceptToMemoryPool(mempool, state, wtx, fLimitFree);
+    bool fAccepted = ::AcceptToMemoryPool(mempool, state, wtx, limitFreeTxProcessing);
     if (!fAccepted)
         LogPrintf("%s : %s\n", __func__, state.GetRejectReason());
     return fAccepted;
@@ -1411,7 +1412,7 @@ void CWallet::ReacceptWalletTransactions()
         if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0) {
             // Try to add to memory pool
             LOCK(mempool.cs);
-            SubmitTransactionToMemoryPool(wtx,false);
+            SubmitTransactionToMemoryPool(wtx);
         }
     }
 }
@@ -2298,7 +2299,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
         }
 
         // Broadcast
-        if (!SubmitTransactionToMemoryPool(wtxNew,false)) {
+        if (!SubmitTransactionToMemoryPool(wtxNew)) {
             // This must not fail. The transaction has already been signed and recorded.
             LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
             return false;

@@ -87,7 +87,5 @@ int64_t CWalletTx::GetComputedTxTime() const
 }
 int CWalletTx::GetBlocksToMaturity() const
 {
-    if (!(IsCoinBase() || IsCoinStake()))
-        return 0;
-    return std::max(0, (requiredCoinbaseMaturity_ + 1) - confirmationsCalculator_.GetNumberOfBlockConfirmations(*this));
+    return confirmationsCalculator_.GetBlocksToMaturity(*this);
 }

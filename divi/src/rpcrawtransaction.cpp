@@ -9,6 +9,7 @@
 
 #include <blockmap.h>
 #include "core_io.h"
+#include <FeeAndPriorityCalculator.h>
 #include "init.h"
 #include "keystore.h"
 #include "main.h"
@@ -40,7 +41,6 @@ using namespace boost::assign;
 using namespace json_spirit;
 using namespace std;
 
-extern CAmount maxTxFee;
 extern CCoinsViewCache* pcoinsTip;
 extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
@@ -899,7 +899,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     if (existingCoins == nullptr)
         existingCoins = view.AccessCoins(tx.GetBareTxid());
     const bool fHaveChain = existingCoins && existingCoins->nHeight < 1000000000;
-
+    static const CFeeRate& feeRate = FeeAndPriorityCalculator::instance().getFeeRateQuote();
     if (!fHaveMempool && !fHaveChain) {
         // push to local node and sync with wallets
         std::pair<CAmount,bool> feeTotalsAndStatus = ComputeFeeTotalsAndIfInputsAreKnown(tx);
@@ -907,7 +907,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
         {
             throw JSONRPCError(RPC_TRANSACTION_REJECTED, "Unknown inputs being spent");
         }
-        if(!fOverrideFees && feeTotalsAndStatus.first > maxTxFee)
+        if(!fOverrideFees && feeTotalsAndStatus.first > feeRate.GetMaxTxFee())
         {
             throw JSONRPCError(RPC_TRANSACTION_REJECTED, "Fees being paid are in excess of maximum fee, but fee override is not provided");
         }

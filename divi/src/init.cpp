@@ -80,7 +80,6 @@ constexpr int nWalletBackups = 20;
 /**
  * Wallet Settings
  */
-extern CAmount maxTxFee;
 #endif
 extern CCriticalSection cs_main;
 extern Settings& settings;
@@ -588,6 +587,7 @@ bool SetTransactionRequirements()
     }
 #ifdef ENABLE_WALLET
     if (settings.ParameterIsSet("-maxtxfee")) {
+        CAmount maxTxFee;
         if (!ParseMoney(settings.GetParameter("-maxtxfee"), maxTxFee))
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), settings.GetParameter("-maxtxfee")));
         if (maxTxFee > nHighTransactionMaxFeeWarning)
@@ -598,6 +598,7 @@ bool SetTransactionRequirements()
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)"),
                 settings.GetParameter("-maxtxfee"), currentFeeRate.ToString()));
         }
+        feeAndPriorityCalculator.SetMaxFee(maxTxFee);
     }
 #endif
     return true;

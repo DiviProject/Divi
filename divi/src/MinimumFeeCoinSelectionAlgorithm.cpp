@@ -10,7 +10,6 @@
 #include <I_SignatureSizeEstimator.h>
 #include <defaultValues.h>
 
-extern CAmount maxTxFee;
 
 MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(
     const CKeyStore& keyStore,
@@ -90,7 +89,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         if(cummulativeByteSize >= MAX_STANDARD_TX_SIZE) return {};
         if(amountCovered >= totalAmountNeeded)
         {
-            fees += std::min(minRelayTxFee_.GetFee(cummulativeByteSize),maxTxFee);
+            fees += std::min(minRelayTxFee_.GetFee(cummulativeByteSize),minRelayTxFee_.GetMaxTxFee());
             return inputsSelected;
         }
     }

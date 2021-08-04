@@ -35,7 +35,6 @@ extern CCriticalSection cs_main;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
 extern std::map<uint256, int64_t> mapRejectedBlocks;
-extern CAmount maxTxFee;
 
 extern bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 extern bool DisconnectBlocksAndReprocess(int blocks);
@@ -333,7 +332,7 @@ void CSporkManager::ExecuteMultiValueSpork(int nSporkID)
         TxFeeSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, chainTip->nHeight, chainTip->nTime);
 
         FeeAndPriorityCalculator::instance().setFeeRate(activeSpork.nMinFeePerKb);
-        maxTxFee = activeSpork.nMaxFee;
+        FeeAndPriorityCalculator::instance().SetMaxFee(activeSpork.nMaxFee);
 #ifdef ENABLE_WALLET
         nTransactionSizeMultiplier = activeSpork.nTxSizeMultiplier;
         nTransactionValueMultiplier = activeSpork.nTxValueMultiplier;

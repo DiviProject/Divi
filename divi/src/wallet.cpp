@@ -167,7 +167,7 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , walletStakingOnly(false)
     , allowSpendingZeroConfirmationOutputs(false)
     , signatureSizeEstimator_(new SignatureSizeEstimator())
-    , defaultCoinSelectionAlgorithm_(new MinimumFeeCoinSelectionAlgorithm(*this,*signatureSizeEstimator_,priorityFeeCalculator.getFeeRateQuote()))
+    , defaultCoinSelectionAlgorithm_(new MinimumFeeCoinSelectionAlgorithm(*this,*signatureSizeEstimator_,priorityFeeCalculator.getMinimumRelayFeeRate()))
     , defaultKeyPoolTopUp(0)
 {
     SetNull();
@@ -2045,7 +2045,7 @@ CTxOut CreateChangeOutput(CReserveKey& reservekey)
 
 static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes)
 {
-    const CFeeRate& feeRate = priorityFeeCalculator.getFeeRateQuote();
+    const CFeeRate& feeRate = priorityFeeCalculator.getMinimumRelayFeeRate();
     return std::min(feeRate.GetFee(nTxBytes),feeRate.GetMaxTxFee());
 }
 

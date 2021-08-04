@@ -899,7 +899,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     if (existingCoins == nullptr)
         existingCoins = view.AccessCoins(tx.GetBareTxid());
     const bool fHaveChain = existingCoins && existingCoins->nHeight < 1000000000;
-    static const CFeeRate& feeRate = FeeAndPriorityCalculator::instance().getFeeRateQuote();
+    static const CFeeRate& feeRate = FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate();
     if (!fHaveMempool && !fHaveChain) {
         // push to local node and sync with wallets
         std::pair<CAmount,bool> feeTotalsAndStatus = ComputeFeeTotalsAndIfInputsAreKnown(tx);

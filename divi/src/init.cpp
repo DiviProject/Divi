@@ -593,7 +593,7 @@ bool SetTransactionRequirements()
         if (maxTxFee > nHighTransactionMaxFeeWarning)
             InitWarning(translate("Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction."));
 
-        const CFeeRate& currentFeeRate = feeAndPriorityCalculator.getFeeRateQuote();
+        const CFeeRate& currentFeeRate = feeAndPriorityCalculator.getMinimumRelayFeeRate();
         if (CFeeRate(maxTxFee, 1000) < currentFeeRate) {
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)"),
                 settings.GetParameter("-maxtxfee"), currentFeeRate.ToString()));

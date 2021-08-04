@@ -13,7 +13,7 @@ void FeeAndPriorityCalculator::setFeeRate(CAmount ratePerKB)
     minimumRelayTransactionFee = CFeeRate(ratePerKB);
 }
 
-const CFeeRate& FeeAndPriorityCalculator::getFeeRateQuote() const
+const CFeeRate& FeeAndPriorityCalculator::getMinimumRelayFeeRate() const
 {
     return minimumRelayTransactionFee;
 }

@@ -103,7 +103,7 @@ private:
     unsigned int nTransactionsUpdated;
     CMinerPolicyEstimator* minerPolicyEstimator;
 
-    CFeeRate minRelayFee; //! Passed to constructor to avoid dependency on main
+    const CFeeRate& minRelayFee; //! Passed to constructor to avoid dependency on main
     uint64_t totalTxSize; //! sum of all mempool tx' byte sizes
 
     /* The mempool reads these flags, which are passed by reference in the

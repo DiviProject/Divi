@@ -92,7 +92,6 @@ extern bool fTxIndex;
 extern bool fVerifyingBlocks;
 extern bool fLiteMode;
 extern BlockMap mapBlockIndex;
-extern CTxMemPool mempool;
 extern Settings& settings;
 extern CBlockTreeDB* pblocktree;
 extern CCoinsViewCache* pcoinsTip;
@@ -107,7 +106,11 @@ static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWa
 
 constexpr char FEE_ESTIMATES_FILENAME[] = "fee_estimates.dat";
 CClientUIInterface uiInterface;
-extern bool fAddressIndex;
+
+bool fAddressIndex = false;
+bool fSpentIndex = false;
+const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
+CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate(), fAddressIndex, fSpentIndex);
 
 bool static InitError(const std::string& str)
 {

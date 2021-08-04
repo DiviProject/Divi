@@ -1239,7 +1239,7 @@ void CWallet::RelayWalletTransaction(const CWalletTx& walletTransaction)
         }
     }
 }
-void CWallet::ResendWalletTransactions()
+void CWallet::RebroadcastWalletTransactions()
 {
     // Do this infrequently and randomly to avoid giving away
     // that these are our transactions.
@@ -1256,7 +1256,7 @@ void CWallet::ResendWalletTransactions()
     nLastResend = GetTime();
 
     // Rebroadcast any of our txes that aren't in a block yet
-    LogPrintf("ResendWalletTransactions()\n");
+    LogPrintf("RebroadcastWalletTransactions()\n");
     {
         // Sort them in chronological order
         multimap<unsigned int, CWalletTx*> mapSorted;

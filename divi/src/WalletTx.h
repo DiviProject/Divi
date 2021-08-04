@@ -23,9 +23,6 @@ void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue);
  */
 class CWalletTx final: public CMerkleTx
 {
-private:
-    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
-    const int requiredCoinbaseMaturity_;
 public:
     std::map<std::string, std::string> mapValue;
     std::vector<std::pair<std::string, std::string> > vOrderForm;
@@ -56,10 +53,8 @@ public:
     mutable CAmount nAvailableWatchCreditCached;
     mutable CAmount nChangeCached;
 
-    CWalletTx(
-        const CTransaction& txIn,
-        const int requiredCoinbaseMaturity,
-        const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
+    CWalletTx();
+    CWalletTx(const CTransaction& txIn);
     void Init();
 
     ADD_SERIALIZE_METHODS;
@@ -117,6 +112,5 @@ public:
 
     int64_t GetTxTime() const;
     int64_t GetComputedTxTime() const;
-    int GetBlocksToMaturity() const;
 };
 #endif// WALLET_TX_H

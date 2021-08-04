@@ -36,7 +36,7 @@ private:
 public:
     std::vector<CKeyID> keyIds;
     NiceMock<MockSignatureSizeEstimator> mockSignatureSizeEstimator;
-    CFeeRate feeRates;
+    CFeeRate feeRate;
     MinimumFeeCoinSelectionAlgorithm algorithm;
     RandomCScriptGenerator scriptGenerator;
     CScript smallScriptSigReqScript;
@@ -49,8 +49,8 @@ public:
         , walletTransactions_()
         , keyIds()
         , mockSignatureSizeEstimator()
-        , feeRates(10000)
-        , algorithm(keystore_,mockSignatureSizeEstimator,feeRates)
+        , feeRate(10000)
+        , algorithm(keystore_,mockSignatureSizeEstimator,feeRate)
         , scriptGenerator()
         , smallScriptSigReqScript(scriptGenerator(25))
         , largeScriptSigReqScript(scriptGenerator(25))
@@ -237,6 +237,35 @@ BOOST_AUTO_TEST_CASE(willIncreaseSpendingToCoverInitialFeeEstimateProvided)
     CAmount feesPaidEstimate = 1*COIN;
     std::set<COutput> selectedUTXOs = algorithm.SelectCoins(novelTx,utxos,feesPaidEstimate);
     BOOST_CHECK_MESSAGE(feesPaidEstimate > 1*COIN,"Initial fee estimate not covered");
+}
+
+BOOST_AUTO_TEST_CASE(willNotPayMoreInFeesThanMaximumSet)
+{
+    std::vector<CScript> scripts = { scriptGenerator(25),scriptGenerator(25),scriptGenerator(25)};
+    std::vector<CAmount> amounts = {4*COIN,2*COIN+1500,2*COIN+1000};
+    std::vector<unsigned> sigSizes = {100u,150u,100u};
+
+    CAmount totalBalance = 0;
+    for(unsigned utxoIndex = 0; utxoIndex < 3; ++utxoIndex)
+    {
+        ON_CALL(mockSignatureSizeEstimator,MaxBytesNeededForSigning(_,scripts[utxoIndex])).WillByDefault(Return(sigSizes[utxoIndex]));
+        addSingleUtxo(amounts[utxoIndex],scripts[0]);
+        totalBalance += amounts[utxoIndex];
+    }
+
+    std::vector<COutput> utxos = getSpendableOutputs();
+    CAmount toSpend = 5*COIN;
+    CMutableTransaction novelTx;
+    novelTx.vout.emplace_back(toSpend,RandomCScriptGenerator()(25u));
+
+    CAmount feesPaidEstimate = 0*COIN;
+    std::set<COutput> selectedUTXOsWithoutFeeRestrictions = algorithm.SelectCoins(novelTx,utxos,feesPaidEstimate);
+    BOOST_CHECK_MESSAGE(!selectedUTXOsWithoutFeeRestrictions.empty(),"Unable to select utxos!");
+
+    feeRate.SetMaxFee(feesPaidEstimate-1);
+    CAmount newFeesPaidEstimate = 0*COIN;
+    std::set<COutput> selectedUTXOsWithFeeRestrictions = algorithm.SelectCoins(novelTx,utxos,newFeesPaidEstimate);
+    BOOST_CHECK_MESSAGE(selectedUTXOsWithFeeRestrictions.empty(),"Paid in excess of maximum fees!");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

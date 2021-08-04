@@ -67,7 +67,7 @@ public:
         mutableTx.vin.emplace_back();
         mutableTx.vin[0].scriptSig = scriptGenerator(25);
         mutableTx.vout.emplace_back(utxoAmount,customScript);
-        walletTransactions_.emplace_back(CTransaction(mutableTx),Params().COINBASE_MATURITY(),*confirmationsCalculator);
+        walletTransactions_.emplace_back(CTransaction(mutableTx));
     }
     void addSingleUtxo(const CAmount utxoAmount, bool smallScriptSigSize)
     {

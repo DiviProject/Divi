@@ -20,13 +20,14 @@ void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue)
     mapValue["n"] = i64tostr(nOrderPos);
 }
 
+CWalletTx::CWalletTx(): CMerkleTx()
+{
+    Init();
+}
+
 CWalletTx::CWalletTx(
-    const CTransaction& txIn,
-    const int requiredCoinbaseMaturity,
-    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
+    const CTransaction& txIn
     ): CMerkleTx(txIn)
-    , confirmationsCalculator_(confirmationsCalculator)
-    , requiredCoinbaseMaturity_(requiredCoinbaseMaturity)
 {
     Init();
 }
@@ -84,8 +85,4 @@ int64_t CWalletTx::GetComputedTxTime() const
 {
     int64_t nTime = GetTxTime();
     return nTime;
-}
-int CWalletTx::GetBlocksToMaturity() const
-{
-    return confirmationsCalculator_.GetBlocksToMaturity(*this);
 }

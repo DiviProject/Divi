@@ -216,7 +216,7 @@ public:
     bool ReadFeeEstimates(CAutoFile& filein);
 };
 
-/** 
+/**
  * CCoinsView that brings transactions from a memorypool into view.
  * It does not check for spendings by memory pool transactions.
  */
@@ -231,4 +231,5 @@ public:
     bool HaveCoins(const uint256& txid) const override;
 };
 
+bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx);
 #endif // BITCOIN_TXMEMPOOL_H

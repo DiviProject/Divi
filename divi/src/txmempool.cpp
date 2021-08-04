@@ -904,3 +904,13 @@ bool CCoinsViewMemPool::HaveCoins(const uint256& txid) const
 
     return base->HaveCoins(txid);
 }
+
+bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx)
+{
+    constexpr const bool limitFreeTxProcessing = false;
+    CValidationState state;
+    bool fAccepted = ::AcceptToMemoryPool(mempool, state, tx, limitFreeTxProcessing);
+    if (!fAccepted)
+        LogPrintf("%s : %s\n", __func__, state.GetRejectReason());
+    return fAccepted;
+}

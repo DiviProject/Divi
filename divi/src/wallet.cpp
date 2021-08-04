@@ -52,9 +52,6 @@ const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 
-// Extern memory pool method
-bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
-
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight, int64_t nBlockTime)
 {
     AssertLockHeld(cs_main);
@@ -1391,12 +1388,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
 
 bool CWallet::SubmitTransactionToMemoryPool(const CWalletTx& wtx) const
 {
-    constexpr const bool limitFreeTxProcessing = false;
-    CValidationState state;
-    bool fAccepted = ::AcceptToMemoryPool(mempool, state, wtx, limitFreeTxProcessing);
-    if (!fAccepted)
-        LogPrintf("%s : %s\n", __func__, state.GetRejectReason());
-    return fAccepted;
+    return ::SubmitTransactionToMempool(mempool,wtx);
 }
 
 void CWallet::ReacceptWalletTransactions()

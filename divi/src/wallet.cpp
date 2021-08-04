@@ -53,7 +53,6 @@ using namespace std;
 
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern int64_t nTimeBestReceived;
 extern CAmount maxTxFee;
 
 // Extern memory pool method
@@ -164,6 +163,7 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , nWalletVersion(0)
     , fBackupMints(false)
     , nMasterKeyMaxID(0)
+    , timeOfLastChainTipUpdate(0)
     , nNextResend(0)
     , nLastResend(0)
     , pwalletdbEncryption(NULL)
@@ -1251,7 +1251,7 @@ void CWallet::RebroadcastWalletTransactions()
         return;
 
     // Only do it if there's been a new block since last time
-    if (nTimeBestReceived < nLastResend)
+    if (timeOfLastChainTipUpdate < nLastResend)
         return;
     nLastResend = GetTime();
 
@@ -1263,11 +1263,12 @@ void CWallet::RebroadcastWalletTransactions()
 
         {
         LOCK(cs_wallet);
-        for (auto& item : transactionRecord_->mapWallet) {
+        for (auto& item : transactionRecord_->mapWallet)
+        {
             CWalletTx& wtx = item.second;
             // Don't rebroadcast until it's had plenty of time that
             // it should have gotten in already by now.
-            if (nTimeBestReceived - (int64_t)wtx.nTimeReceived > 5 * 60)
+            if (timeOfLastChainTipUpdate - (int64_t)wtx.nTimeReceived > 5 * 60)
                 mapSorted.insert(std::make_pair(wtx.nTimeReceived, &wtx));
         }
         }
@@ -1287,6 +1288,10 @@ void CWallet::SetBestChain(const CBlockLocator& loc)
 {
     CWalletDB walletdb(settings,strWalletFile);
     walletdb.WriteBestBlock(loc);
+}
+void CWallet::UpdatedBlockTip(const CBlockIndex *pindex)
+{
+    timeOfLastChainTipUpdate = GetTime();
 }
 
 isminetype CWallet::IsMine(const CTxIn& txin) const

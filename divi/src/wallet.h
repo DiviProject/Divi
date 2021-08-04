@@ -163,6 +163,7 @@ public:
     int64_t nTimeFirstKey;
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
 private:
+    int64_t timeOfLastChainTipUpdate;
     int64_t nNextResend;
     int64_t nLastResend;
     CWalletDB* pwalletdbEncryption;
@@ -190,6 +191,7 @@ private:
     void SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType) override;
     void RebroadcastWalletTransactions() override;
     void SetBestChain(const CBlockLocator& loc) override;
+    void UpdatedBlockTip(const CBlockIndex *pindex) override;
 
 public:
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;

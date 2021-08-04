@@ -119,7 +119,6 @@ bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeig
 
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
-CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
 CTxMemPool mempool(feeAndPriorityCalculator.getFeeRateQuote(), fAddressIndex, fSpentIndex);
 

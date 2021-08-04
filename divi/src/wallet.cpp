@@ -51,7 +51,6 @@ const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator
 
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern CAmount maxTxFee;
 
 // Extern memory pool method
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
@@ -2047,7 +2046,7 @@ CTxOut CreateChangeOutput(CReserveKey& reservekey)
 static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes)
 {
     const CFeeRate& feeRate = priorityFeeCalculator.getFeeRateQuote();
-    return std::min(feeRate.GetFee(nTxBytes),maxTxFee);
+    return std::min(feeRate.GetFee(nTxBytes),feeRate.GetMaxTxFee());
 }
 
 //! Largest (in bytes) free transaction we're willing to create

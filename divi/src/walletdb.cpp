@@ -364,7 +364,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             if (wtx.nOrderPos == -1)
                 wss.fAnyUnordered = true;
 
-            pwallet->UpdateFromOnDiskTransaction(wtx);
+            pwallet->LoadWalletTransaction(wtx);
         } else if (strType == "acentry") {
             string strAccount;
             ssKey >> strAccount;

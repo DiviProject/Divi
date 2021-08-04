@@ -1096,7 +1096,7 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
     return std::max(latestEntry, std::min(blocktime, latestNow));
 }
 
-void CWallet::UpdateFromOnDiskTransaction(const CWalletTx& wtxIn)
+void CWallet::LoadWalletTransaction(const CWalletTx& wtxIn)
 {
     outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, true).first->RecomputeCachedQuantities();
 }

@@ -21,7 +21,7 @@ public:
     }
 
     void setFeeRate(CAmount ratePerKB);
-    const CFeeRate& getFeeRateQuote() const;
+    const CFeeRate& getMinimumRelayFeeRate() const;
 
     void SetMaxFee(CAmount maximumFee);
     CAmount MinimumValueForNonDust() const;

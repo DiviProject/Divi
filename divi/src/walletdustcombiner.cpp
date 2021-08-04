@@ -114,7 +114,7 @@ void combineWalletDust(const Settings& settings)
         {
             static WalletDustCombiner dustCombiner(
                 *pwalletMain,
-                FeeAndPriorityCalculator::instance().getFeeRateQuote(),
+                FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
                 Params().COINBASE_MATURITY() + 1);
             dustCombiner.CombineDust(
                 settings.GetArg("-combinethreshold",std::numeric_limits<int64_t>::max() ) );

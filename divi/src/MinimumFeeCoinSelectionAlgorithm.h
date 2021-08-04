@@ -3,15 +3,18 @@
 #include <I_CoinSelectionAlgorithm.h>
 class CKeyStore;
 class I_SignatureSizeEstimator;
+class CFeeRate;
 class MinimumFeeCoinSelectionAlgorithm: public I_CoinSelectionAlgorithm
 {
 private:
     const CKeyStore& keyStore_;
     const I_SignatureSizeEstimator& estimator_;
+    const CFeeRate& minRelayTxFee_;
 public:
     MinimumFeeCoinSelectionAlgorithm(
         const CKeyStore& keyStore,
-        const I_SignatureSizeEstimator& estimator);
+        const I_SignatureSizeEstimator& estimator,
+        const CFeeRate& minRelayTxFee);
     virtual std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
         const std::vector<COutput>& vCoins,

@@ -10,14 +10,15 @@
 #include <I_SignatureSizeEstimator.h>
 #include <defaultValues.h>
 
-const CFeeRate& minRelayTxFee = FeeAndPriorityCalculator::instance().getFeeRateQuote();
 extern CAmount maxTxFee;
 
 MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(
     const CKeyStore& keyStore,
-    const I_SignatureSizeEstimator& estimator
+    const I_SignatureSizeEstimator& estimator,
+    const CFeeRate& minRelayTxFee
     ): keyStore_(keyStore)
     , estimator_(estimator)
+    , minRelayTxFee_(minRelayTxFee)
 {
 }
 struct InputToSpendAndSigSize
@@ -69,10 +70,10 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     std::sort(
         inputsToSpendAndSignatureSizeEstimates.begin(),
         inputsToSpendAndSignatureSizeEstimates.end(),
-        [totalAmountNeeded](const InputToSpendAndSigSize& inputA, const InputToSpendAndSigSize& inputB)
+        [totalAmountNeeded,this](const InputToSpendAndSigSize& inputA, const InputToSpendAndSigSize& inputB)
         {
-            const CAmount gapA = inputA.outputRef->Value() - minRelayTxFee.GetFee(inputA.sigSize);
-            const CAmount gapB = inputB.outputRef->Value() - minRelayTxFee.GetFee(inputB.sigSize);
+            const CAmount gapA = inputA.outputRef->Value() - minRelayTxFee_.GetFee(inputA.sigSize);
+            const CAmount gapB = inputB.outputRef->Value() - minRelayTxFee_.GetFee(inputB.sigSize);
             if(gapA >= totalAmountNeeded && gapB >= totalAmountNeeded)
             {
                 return inputA.sigSize < inputB.sigSize;
@@ -89,7 +90,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         if(cummulativeByteSize >= MAX_STANDARD_TX_SIZE) return {};
         if(amountCovered >= totalAmountNeeded)
         {
-            fees += std::min(minRelayTxFee.GetFee(cummulativeByteSize),maxTxFee);
+            fees += std::min(minRelayTxFee_.GetFee(cummulativeByteSize),maxTxFee);
             return inputsSelected;
         }
     }

@@ -168,7 +168,7 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , walletStakingOnly(false)
     , allowSpendingZeroConfirmationOutputs(false)
     , signatureSizeEstimator_(new SignatureSizeEstimator())
-    , defaultCoinSelectionAlgorithm_(new MinimumFeeCoinSelectionAlgorithm(*this,*signatureSizeEstimator_))
+    , defaultCoinSelectionAlgorithm_(new MinimumFeeCoinSelectionAlgorithm(*this,*signatureSizeEstimator_,priorityFeeCalculator.getFeeRateQuote()))
     , defaultKeyPoolTopUp(0)
 {
     SetNull();

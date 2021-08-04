@@ -588,12 +588,11 @@ bool SetTransactionRequirements()
     }
 #ifdef ENABLE_WALLET
     if (settings.ParameterIsSet("-maxtxfee")) {
-        CAmount nMaxFee = 0;
-        if (!ParseMoney(settings.GetParameter("-maxtxfee"), nMaxFee))
+        if (!ParseMoney(settings.GetParameter("-maxtxfee"), maxTxFee))
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), settings.GetParameter("-maxtxfee")));
-        if (nMaxFee > nHighTransactionMaxFeeWarning)
+        if (maxTxFee > nHighTransactionMaxFeeWarning)
             InitWarning(translate("Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction."));
-        maxTxFee = nMaxFee;
+
         const CFeeRate& currentFeeRate = feeAndPriorityCalculator.getFeeRateQuote();
         if (CFeeRate(maxTxFee, 1000) < currentFeeRate) {
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)"),

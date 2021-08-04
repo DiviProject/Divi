@@ -175,7 +175,7 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     ): cs_wallet()
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
-    , confirmationNumberCalculator_(new MerkleTxConfirmationNumberCalculator(activeChain_,blockIndexByHash_,mempool,cs_main))
+    , confirmationNumberCalculator_(new MerkleTxConfirmationNumberCalculator(activeChain_,blockIndexByHash_,Params().COINBASE_MATURITY(),mempool,cs_main))
     , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) )
     , orderedTransactionIndex()

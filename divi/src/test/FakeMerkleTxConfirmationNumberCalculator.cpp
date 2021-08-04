@@ -3,12 +3,14 @@
 #include <chain.h>
 #include <blockmap.h>
 #include <merkletx.h>
+#include <chainparams.h>
 
 FakeMerkleTxConfirmationNumberCalculator::FakeMerkleTxConfirmationNumberCalculator(
     const CChain& activeChain,
     const BlockMap& blockIndices
     ): activeChain_(activeChain)
     , blockIndices_(blockIndices)
+    , coinbaseMaturity_(Params(CBaseChainParams::UNITTEST).COINBASE_MATURITY())
 {
 }
 
@@ -27,4 +29,10 @@ std::pair<const CBlockIndex*,int> FakeMerkleTxConfirmationNumberCalculator::Find
 int FakeMerkleTxConfirmationNumberCalculator::GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const
 {
     return FindConfirmedBlockIndexAndDepth(merkleTx).second;
+}
+int FakeMerkleTxConfirmationNumberCalculator::GetBlocksToMaturity(const CMerkleTx& merkleTx) const
+{
+    if (!(merkleTx.IsCoinBase() || merkleTx.IsCoinStake()))
+        return 0;
+    return std::max(0, (coinbaseMaturity_ + 1) - GetNumberOfBlockConfirmations(merkleTx));
 }

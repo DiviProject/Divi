@@ -46,33 +46,15 @@
 
 #include "Settings.h"
 extern Settings& settings;
-void runCommand(std::string strCommand);
 
 const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator::instance();
 
 using namespace std;
 
-/**
- * Settings
- */
-CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
-unsigned int nTransactionSizeMultiplier = 300;
-static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
-int64_t nStartupTime = GetAdjustedTime();
-
-/** @defgroup mapWallet
- *
- * @{
- */
-
-extern bool fImporting ;
-extern bool fReindex ;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern int64_t nTimeBestReceived;
 extern CAmount maxTxFee;
-extern bool fLargeWorkForkFound;
-extern bool fLargeWorkInvalidChainFound;
 
 // Extern memory pool method
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
@@ -2458,6 +2440,7 @@ bool CWallet::NewKeyPool()
 
 bool CWallet::TopUpKeyPool(unsigned int kpSize)
 {
+    constexpr unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
     {
         LOCK(cs_wallet);
 

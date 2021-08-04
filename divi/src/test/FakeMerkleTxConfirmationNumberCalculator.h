@@ -14,11 +14,13 @@ class FakeMerkleTxConfirmationNumberCalculator final: public I_MerkleTxConfirmat
 private:
     const CChain& activeChain_;
     const BlockMap& blockIndices_;
+    const int coinbaseMaturity_;
 public:
     FakeMerkleTxConfirmationNumberCalculator(
         const CChain& activeChain,
         const BlockMap& blockIndices);
     std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const;
     int GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const;
+    int GetBlocksToMaturity(const CMerkleTx& merkleTx) const;
 };
 #endif// FAKE_MERKLE_TX_CONFIRMATION_CALCULATOR_H

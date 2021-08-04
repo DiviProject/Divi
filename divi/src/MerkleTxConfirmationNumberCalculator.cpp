@@ -8,10 +8,12 @@
 MerkleTxConfirmationNumberCalculator::MerkleTxConfirmationNumberCalculator(
     const CChain& activeChain,
     const BlockMap& blockIndices,
+    const int coinbaseConfirmationsForMaturity,
     CTxMemPool& mempool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): activeChain_(activeChain)
     , blockIndices_(blockIndices)
+    , coinbaseConfirmationsForMaturity_(coinbaseConfirmationsForMaturity)
     , mempool_(mempool)
     , mainCS_(mainCS)
 {
@@ -48,4 +50,10 @@ int MerkleTxConfirmationNumberCalculator::GetNumberOfBlockConfirmations(const CM
     const int depth = FindConfirmedBlockIndexAndDepth(merkleTx).second;
     if(depth==0 && !mempool_.exists(merkleTx.GetHash())) return -1;
     return depth;
+}
+int MerkleTxConfirmationNumberCalculator::GetBlocksToMaturity(const CMerkleTx& merkleTx) const
+{
+    if (!(merkleTx.IsCoinBase() || merkleTx.IsCoinStake()))
+        return 0;
+    return std::max(0, (coinbaseConfirmationsForMaturity_ + 1) - GetNumberOfBlockConfirmations(merkleTx));
 }

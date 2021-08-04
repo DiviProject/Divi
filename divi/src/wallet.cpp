@@ -2047,7 +2047,8 @@ static bool CanBeSentAsFreeTransaction(
     const bool fSendFreeTransactions,
     const CTransaction& wtxNew,
     const unsigned nBytes,
-    const std::set<COutput>& setCoins)
+    const std::set<COutput>& setCoins,
+    const CTxMemPool& mempool)
 {
     static const unsigned nTxConfirmTarget = settings.GetArg("-txconfirmtarget", 1);
     double dPriority = 0;
@@ -2084,6 +2085,7 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
     const CTransaction& wtxNew,
     const std::set<COutput> outputsBeingSpent,
     const CAmount totalValueToSend,
+    const CTxMemPool& mempool,
     CAmount& nFeeRet)
 {
     static const bool fSendFreeTransactions = settings.GetBoolArg("-sendfreetransactions", false);
@@ -2093,7 +2095,9 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
     }
 
     const CAmount nFeeNeeded = GetMinimumFee(totalValueToSend, nBytes);
-    const bool feeIsSufficient = (fSendFreeTransactions && CanBeSentAsFreeTransaction(fSendFreeTransactions,wtxNew,nBytes,outputsBeingSpent)) || nFeeRet >= nFeeNeeded;
+    const bool feeIsSufficient =
+        (fSendFreeTransactions && CanBeSentAsFreeTransaction(fSendFreeTransactions,wtxNew,nBytes,outputsBeingSpent,mempool)) ||
+        nFeeRet >= nFeeNeeded;
     if (!feeIsSufficient)
     {
         nFeeRet = nFeeNeeded;
@@ -2167,6 +2171,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     const CKeyStore& walletKeyStore,
     const I_CoinSelectionAlgorithm* coinSelector,
     const std::vector<COutput>& vCoins,
+    const CTxMemPool& mempool,
     CMutableTransaction& txNew,
     CReserveKey& reservekey,
     CWalletTx& wtxNew)
@@ -2195,7 +2200,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
         return {translate("Signing transaction failed"),false};
     }
 
-    const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,totalValueToSend,nFeeRet);
+    const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,totalValueToSend,mempool,nFeeRet);
     if(status == FeeSufficiencyStatus::TX_TOO_LARGE)
     {
         return {translate("Transaction too large"),false};
@@ -2243,7 +2248,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     {
         return {translate("Transaction output(s) amount too small"),false};
     }
-    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,txNew,reservekey,wtxNew);
+    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,mempool,txNew,reservekey,wtxNew);
 }
 
 /**

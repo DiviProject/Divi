@@ -369,7 +369,7 @@ CAmount CWallet::ComputeCredit(const CWalletTx& tx, const isminefilter& filter, 
 CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const isminefilter& filter) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (walletTransaction.IsCoinBase() && walletTransaction.GetBlocksToMaturity() > 0)
+    if (walletTransaction.IsCoinBase() && confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0)
         return 0;
 
     CAmount credit = 0;
@@ -1124,7 +1124,7 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
 
 CWalletTx CWallet::initializeWalletTransaction(const CTransaction& tx) const
 {
-    return CWalletTx(tx,Params().COINBASE_MATURITY(),*confirmationNumberCalculator_);
+    return CWalletTx(tx);
 }
 
 void CWallet::UpdateFromOnDiskTransaction(const CWalletTx& wtxIn)
@@ -1442,7 +1442,7 @@ void CWallet::ReacceptWalletTransactions()
 CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache) const
 {
     if ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) &&
-        walletTransaction.GetBlocksToMaturity() > 0 &&
+        confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0 &&
         confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) > 0)
     {
         if (fUseCache && walletTransaction.fImmatureCreditCached)
@@ -1458,7 +1458,7 @@ CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUse
 CAmount CWallet::GetAvailableCredit(const CWalletTx& walletTransaction, bool fUseCache) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (walletTransaction.GetBlocksToMaturity() > 0)
+    if (confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0)
         return 0;
 
     if (fUseCache && walletTransaction.fAvailableCreditCached)
@@ -1473,7 +1473,7 @@ CAmount CWallet::GetAvailableCredit(const CWalletTx& walletTransaction, bool fUs
 CAmount CWallet::GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache) const
 {
     if (walletTransaction.IsCoinBase() &&
-        walletTransaction.GetBlocksToMaturity() > 0 &&
+        confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0 &&
         confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) > 0)
     {
         if (fUseCache && walletTransaction.fImmatureWatchCreditCached)
@@ -1488,7 +1488,7 @@ CAmount CWallet::GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, 
 CAmount CWallet::GetAvailableWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (walletTransaction.IsCoinBase() && walletTransaction.GetBlocksToMaturity() > 0)
+    if (walletTransaction.IsCoinBase() && confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0)
         return 0;
 
     if (fUseCache && walletTransaction.fAvailableWatchCreditCached)
@@ -1642,7 +1642,7 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
     if (fOnlyConfirmed && !IsTrusted(*pcoin))
         return false;
 
-    if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
+    if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && confirmationNumberCalculator_->GetBlocksToMaturity(*pcoin) > 0)
         return false;
 
     nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin);
@@ -2646,7 +2646,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
             if (!IsFinalTx(*pcoin, activeChain_) || !IsTrusted(*pcoin))
                 continue;
 
-            if (pcoin->IsCoinBase() && pcoin->GetBlocksToMaturity() > 0)
+            if (pcoin->IsCoinBase() && confirmationNumberCalculator_->GetBlocksToMaturity(*pcoin) > 0)
                 continue;
 
             int nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin);

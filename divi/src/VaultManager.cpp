@@ -33,7 +33,7 @@ VaultManager::VaultManager(
     bool continueLoadingTransactions = true;
     while(continueLoadingTransactions)
     {
-        CWalletTx txToAdd(CMutableTransaction(),requiredCoinbaseMaturity_, confirmationsCalculator_);
+        CWalletTx txToAdd;
         if(vaultManagerDB.ReadTx(transactionOrderingIndex_,txToAdd))
         {
             outputTracker_->UpdateSpends(txToAdd,transactionOrderingIndex_,true);
@@ -60,7 +60,7 @@ void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)
         auto it = managedScriptsLimits_.find(output.scriptPubKey);
         if(it != managedScriptsLimits_.end())
         {
-            CWalletTx walletTx(tx,requiredCoinbaseMaturity_,confirmationsCalculator_);
+            CWalletTx walletTx(tx);
             if(pblock) walletTx.SetMerkleBranch(*pblock);
             outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
             ++transactionOrderingIndex_;
@@ -85,7 +85,7 @@ UnspentOutputs VaultManager::getUTXOs() const
         uint256 hash = hashAndTransaction.first;
         const CWalletTx& tx = hashAndTransaction.second;
         if(confirmationsCalculator_.GetNumberOfBlockConfirmations(tx)<1) continue;
-        if((tx.IsCoinBase() || tx.IsCoinStake()) && tx.GetBlocksToMaturity() > 0) continue;
+        if((tx.IsCoinBase() || tx.IsCoinStake()) && confirmationsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
             const CTxOut& output = tx.vout[outputIndex];
@@ -102,7 +102,7 @@ UnspentOutputs VaultManager::getUTXOs() const
 
 const CWalletTx& VaultManager::GetTransaction(const uint256& hash) const
 {
-    static CWalletTx dummyValue(CTransaction(),requiredCoinbaseMaturity_,confirmationsCalculator_);
+    static CWalletTx dummyValue;
 
     LOCK(cs_vaultManager_);
     const CWalletTx* tx = walletTxRecord_->GetWalletTx(hash);

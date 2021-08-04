@@ -931,16 +931,17 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
 
     // Tally wallet transactions
     std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = pwalletMain->getConfirmationCalculator();
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
-        if (!IsFinalTx(wtx, chainActive) || wtx.GetBlocksToMaturity() > 0 || pwalletMain->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx) < 0)
+        if (!IsFinalTx(wtx, chainActive) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
             continue;
 
         CAmount nReceived, nSent, nFee;
         pwalletMain->GetAccountAmounts(wtx,strAccount, nReceived, nSent, nFee, filter);
 
-        if (nReceived != 0 && pwalletMain->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
+        if (nReceived != 0 && confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
             nBalance += nReceived;
         nBalance -= nSent + nFee;
     }
@@ -998,10 +999,11 @@ Value getbalance(const Array& params, bool fHelp)
         // getbalance and "getbalance * 1 true" should return the same number
         CAmount nBalance = 0;
         std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+        const I_MerkleTxConfirmationNumberCalculator& confsCalculator = pwalletMain->getConfirmationCalculator();
         for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
         {
             const CWalletTx& wtx = *(*it);
-            if (!IsFinalTx(wtx, chainActive) || wtx.GetBlocksToMaturity() > 0 || pwalletMain->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx) < 0)
+            if (!IsFinalTx(wtx, chainActive) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
                 continue;
 
             CAmount allFee;
@@ -1009,7 +1011,7 @@ Value getbalance(const Array& params, bool fHelp)
             list<COutputEntry> listReceived;
             list<COutputEntry> listSent;
             pwalletMain->GetAmounts(wtx,listReceived, listSent, allFee, strSentAccount, filter);
-            if (pwalletMain->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
+            if (confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
                 BOOST_FOREACH (const COutputEntry& r, listReceived)
                         nBalance += r.amount;
             }
@@ -1468,6 +1470,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
     list<COutputEntry> listSent;
     bool fAllAccounts = (strAccount == string("*"));
 
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
     if (wtx.IsCoinStake()) {
         wtx.GetComputedTxTime();
         CAmount nCredit = wallet.GetCredit(wtx,ISMINE_ALL);
@@ -1605,7 +1608,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             }
 
             // Received
-            if (listReceived.size() > 0 && wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
+            if (listReceived.size() > 0 && confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
                 BOOST_FOREACH (const COutputEntry& r, listReceived) {
                     string account;
                     if (wallet.mapAddressBook.count(r.destination))
@@ -1617,9 +1620,9 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                         entry.push_back(Pair("account", account));
                         MaybePushAddress(entry, r.destination);
                         if (wtx.IsCoinBase()) {
-                            if (wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx) < 1)
+                            if (confsCalculator.GetNumberOfBlockConfirmations(wtx) < 1)
                                 entry.push_back(Pair("category", "orphan"));
-                            else if (wtx.GetBlocksToMaturity() > 0)
+                            else if (confsCalculator.GetBlocksToMaturity(wtx) > 0)
                                 entry.push_back(Pair("category", "immature"));
                             else
                                 entry.push_back(Pair("category", "generate"));
@@ -1800,6 +1803,7 @@ Value listaccounts(const Array& params, bool fHelp)
     }
 
     std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = pwalletMain->getConfirmationCalculator();
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
@@ -1807,8 +1811,8 @@ Value listaccounts(const Array& params, bool fHelp)
         string strSentAccount;
         list<COutputEntry> listReceived;
         list<COutputEntry> listSent;
-        int nDepth = pwalletMain->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx);
-        if (wtx.GetBlocksToMaturity() > 0 || nDepth < 0)
+        int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
+        if (confsCalculator.GetBlocksToMaturity(wtx) > 0 || nDepth < 0)
             continue;
         pwalletMain->GetAmounts(wtx,listReceived, listSent, nFee, strSentAccount, includeWatchonly);
         mapAccountBalances[strSentAccount] -= nFee;

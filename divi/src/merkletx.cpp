@@ -4,6 +4,11 @@
 #include <primitives/block.h>
 #include <utiltime.h>
 
+
+CMerkleTx::CMerkleTx(): CTransaction()
+{
+    ClearMerkleBranch();
+}
 CMerkleTx::CMerkleTx(
     const CTransaction& txIn
     ): CTransaction(txIn)

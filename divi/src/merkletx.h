@@ -18,6 +18,7 @@ public:
 
     // memory only
     mutable bool fMerkleVerified;
+    CMerkleTx();
     CMerkleTx(const CTransaction& txIn);
 
     ADD_SERIALIZE_METHODS;

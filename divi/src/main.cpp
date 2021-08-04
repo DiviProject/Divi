@@ -102,7 +102,6 @@ BlockMap mapBlockIndex;
 std::map<uint256, uint256> mapProofOfStake;
 CChain chainActive;
 CBlockIndex* pindexBestHeader = NULL;
-int64_t nTimeBestReceived = 0;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
 int nScriptCheckThreads = 0;
@@ -1134,7 +1133,6 @@ void static UpdateTip(CBlockIndex* pindexNew)
     chainActive.SetTip(pindexNew);
 
     // New best block
-    nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);
 
     LogPrintf("UpdateTip: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s progress=%f  cache=%u\n",

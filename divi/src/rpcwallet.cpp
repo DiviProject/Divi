@@ -506,7 +506,7 @@ Value fundvault(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid owner DIVI address");
 
     // Wallet comments
-    CWalletTx wtx = pwalletMain->initializeWalletTransaction();
+    CWalletTx wtx;
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
         wtx.mapValue["comment"] = params[2].get_str();
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
@@ -548,7 +548,7 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
     CAmount nAmount = AmountFromValue(params[1]);
 
     // Wallet comments
-    CWalletTx wtx = pwalletMain->initializeWalletTransaction();
+    CWalletTx wtx;
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
         wtx.mapValue["comment"] = params[2].get_str();
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
@@ -703,7 +703,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
     CAmount nAmount = AmountFromValue(params[1]);
 
     // Wallet comments
-    CWalletTx wtx = pwalletMain->initializeWalletTransaction();
+    CWalletTx wtx;
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
         wtx.mapValue["comment"] = params[2].get_str();
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
@@ -1109,7 +1109,7 @@ Value sendfrom(const Array& params, bool fHelp)
     if (params.size() > 3)
         nMinDepth = params[3].get_int();
 
-    CWalletTx wtx = pwalletMain->initializeWalletTransaction();
+    CWalletTx wtx;
     wtx.strFromAccount = strAccount;
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
         wtx.mapValue["comment"] = params[4].get_str();
@@ -1160,7 +1160,7 @@ Value sendmany(const Array& params, bool fHelp)
     if (params.size() > 2)
         nMinDepth = params[2].get_int();
 
-    CWalletTx wtx = pwalletMain->initializeWalletTransaction();
+    CWalletTx wtx;
     wtx.strFromAccount = strAccount;
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
         wtx.mapValue["comment"] = params[3].get_str();

@@ -125,7 +125,7 @@ const CWalletTx& FakeWallet::AddDefaultTx(const CScript& scriptToPayTo, unsigned
                                           const CAmount amount)
 {
   const CTransaction tx = createDefaultTransaction(scriptToPayTo, outputIndex, amount);
-  CWalletTx wtx = initializeWalletTransaction(tx);
+  CWalletTx wtx(tx);
   AddToWallet(wtx);
   const CWalletTx* txPtr = GetWalletTx(wtx.GetHash());
   assert(txPtr);

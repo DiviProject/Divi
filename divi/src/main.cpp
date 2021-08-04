@@ -120,7 +120,7 @@ bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeig
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
-CTxMemPool mempool(feeAndPriorityCalculator.getFeeRateQuote(), fAddressIndex, fSpentIndex);
+CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate(), fAddressIndex, fSpentIndex);
 
 static void CheckBlockIndex();
 
@@ -528,7 +528,7 @@ bool CheckFeesPaidAreAcceptable(
     CValidationState& state)
 {
     const uint256 hash = tx.GetHash();
-    CAmount minimumRelayFee = feeAndPriorityCalculator.getFeeRateQuote().GetFee(nSize);
+    CAmount minimumRelayFee = feeAndPriorityCalculator.getMinimumRelayFeeRate().GetFee(nSize);
     bool txShouldHavePriority = TxShouldBePrioritized(hash, nSize);
     if (fLimitFree && !txShouldHavePriority && nFees < minimumRelayFee)
         return state.DoS(0, error("%s : not enough fees %s, %d < %d",__func__,

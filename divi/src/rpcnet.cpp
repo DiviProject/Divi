@@ -388,7 +388,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("timeoffset", GetTimeOffset()));
     obj.push_back(Pair("connections", (int)GetPeerCount()));
     obj.push_back(Pair("networks", GetNetworksInfo()));
-    obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getFeeRateQuote().GetFeePerK() )));
+    obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate().GetFeePerK() )));
     Array localAddresses;
     std::vector<LocalHostData> localHostData = GetLocalHostData();
     for (const LocalHostData& item: localHostData)

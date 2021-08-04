@@ -163,7 +163,7 @@ Value getinfo(const Array& params, bool fHelp)
     if (pwalletMain && pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
 #endif
-    obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getFeeRateQuote().GetFeePerK())));
+    obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate().GetFeePerK())));
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));

@@ -18,6 +18,11 @@ const CFeeRate& FeeAndPriorityCalculator::getFeeRateQuote() const
     return minimumRelayTransactionFee;
 }
 
+void FeeAndPriorityCalculator::SetMaxFee(CAmount maximumFee)
+{
+    minimumRelayTransactionFee.SetMaxFee(maximumFee);
+}
+
 CAmount FeeAndPriorityCalculator::MinimumValueForNonDust() const
 {
     return 3*minimumRelayTransactionFee.GetFee(182u);

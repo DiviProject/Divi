@@ -22,6 +22,8 @@ public:
 
     void setFeeRate(CAmount ratePerKB);
     const CFeeRate& getFeeRateQuote() const;
+
+    void SetMaxFee(CAmount maximumFee);
     CAmount MinimumValueForNonDust() const;
     CAmount MinimumValueForNonDust(const CTxOut& txout) const;
     bool IsDust(const CTxOut& txout) const;

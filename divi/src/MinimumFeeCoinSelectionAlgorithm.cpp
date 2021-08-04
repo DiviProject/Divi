@@ -89,8 +89,15 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         if(cummulativeByteSize >= MAX_STANDARD_TX_SIZE) return {};
         if(amountCovered >= totalAmountNeeded)
         {
-            fees += std::min(minRelayTxFee_.GetFee(cummulativeByteSize),minRelayTxFee_.GetMaxTxFee());
-            return inputsSelected;
+            fees += minRelayTxFee_.GetFee(cummulativeByteSize);
+            if(minRelayTxFee_.GetMaxTxFee() < fees)
+            {
+                return {};
+            }
+            else
+            {
+                return inputsSelected;
+            }
         }
     }
     return {};

@@ -527,8 +527,9 @@ bool CheckFeesPaidAreAcceptable(
     const CCoinsViewCache& view,
     CValidationState& state)
 {
+    static const CFeeRate& minimumRelayFeeRate = FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate();
     const uint256 hash = tx.GetHash();
-    CAmount minimumRelayFee = feeAndPriorityCalculator.getMinimumRelayFeeRate().GetFee(nSize);
+    CAmount minimumRelayFee = minimumRelayFeeRate.GetFee(nSize);
     bool txShouldHavePriority = TxShouldBePrioritized(hash, nSize);
     if (fLimitFree && !txShouldHavePriority && nFees < minimumRelayFee)
         return state.DoS(0, error("%s : not enough fees %s, %d < %d",__func__,

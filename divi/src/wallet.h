@@ -330,7 +330,7 @@ public:
 
     void RecomputeCachedQuantities();
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
-    void UpdateFromOnDiskTransaction(const CWalletTx& wtxIn);
+    void LoadWalletTransaction(const CWalletTx& wtxIn);
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
 
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate,bool blockDisconnection);

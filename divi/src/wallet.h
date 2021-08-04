@@ -149,7 +149,6 @@ private:
 public:
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
-    bool fBackupMints;
 
     std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
 

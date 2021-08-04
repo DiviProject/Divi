@@ -11,7 +11,6 @@
 #include <string>
 #include <map>
 #include <stdint.h>
-class I_MerkleTxConfirmationNumberCalculator;
 
 typedef std::map<std::string, std::string> mapValue_t;
 void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue);

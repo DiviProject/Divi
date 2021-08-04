@@ -11,7 +11,6 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <test/MockSignatureSizeEstimator.h>
-#include <test/FakeMerkleTxConfirmationNumberCalculator.h>
 #include <FeeRate.h>
 
 using ::testing::NiceMock;
@@ -34,7 +33,6 @@ private:
     CChain fakeActiveChain;
     std::vector<CWalletTx> walletTransactions_;
 
-    std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator;
 public:
     std::vector<CKeyID> keyIds;
     NiceMock<MockSignatureSizeEstimator> mockSignatureSizeEstimator;
@@ -49,11 +47,6 @@ public:
         , fakeBlockIndex()
         , fakeActiveChain()
         , walletTransactions_()
-        , confirmationsCalculator(
-            new FakeMerkleTxConfirmationNumberCalculator(
-                fakeActiveChain,
-                fakeBlockIndex
-            ))
         , keyIds()
         , mockSignatureSizeEstimator()
         , feeRates(10000)

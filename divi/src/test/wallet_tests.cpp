@@ -19,7 +19,6 @@
 #include <random.h>
 
 #include <test/FakeBlockIndexChain.h>
-#include <test/FakeMerkleTxConfirmationNumberCalculator.h>
 // how many times to run all the tests to have a chance to catch errors that only show up with particular random shuffles
 #define RUN_TESTS 100
 
@@ -46,13 +45,11 @@ class WalletTestFixture
 protected:
 
   FakeBlockIndexWithHashes fakeChain;
-  FakeMerkleTxConfirmationNumberCalculator confirmationsCalculator;
   CWallet wallet;
   std::vector<COutput> vCoins;
 
   WalletTestFixture()
     : fakeChain(1, 1600000000, 1)
-    , confirmationsCalculator(*fakeChain.activeChain, *fakeChain.blockIndexByHash)
     , wallet(*fakeChain.activeChain, *fakeChain.blockIndexByHash)
   {}
 

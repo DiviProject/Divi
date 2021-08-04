@@ -1,7 +1,6 @@
 #include <WalletTx.h>
 
 #include <Logging.h>
-#include <I_MerkleTxConfirmationNumberCalculator.h>
 
 void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue)
 {

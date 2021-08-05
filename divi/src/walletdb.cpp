@@ -22,6 +22,8 @@
 #include <ValidationState.h>
 #include <WalletTx.h>
 #include <Settings.h>
+#include <chain.h>
+#include <blockmap.h>
 
 using namespace boost;
 using namespace std;
@@ -859,8 +861,6 @@ bool BackupWallet(const CWallet& wallet, const string& strDest)
 // Try to (very carefully!) recover wallet.dat if there is a problem.
 //
 bool CWalletDB::Recover(
-    const CChain& activeChain,
-    const BlockMap& blockIndicesByHash,
     CDBEnv& dbenv,
     std::string filename,
     bool fOnlyKeys)
@@ -904,7 +904,9 @@ bool CWalletDB::Recover(
         LogPrintf("Cannot create database file %s\n", filename);
         return false;
     }
-    CWallet dummyWallet(activeChain, blockIndicesByHash);
+    static const CChain dummyChain;
+    static const BlockMap dummyIndices;
+    CWallet dummyWallet(dummyChain, dummyIndices);
     CWalletScanState wss;
 
     DbTxn* ptxn = dbenv.TxnBegin();
@@ -935,12 +937,10 @@ bool CWalletDB::Recover(
 }
 
 bool CWalletDB::Recover(
-    const CChain& activeChain,
-    const BlockMap& blockIndicesByHash,
     CDBEnv& dbenv,
     std::string filename)
 {
-    return CWalletDB::Recover(activeChain, blockIndicesByHash,dbenv, filename, false);
+    return CWalletDB::Recover(dbenv, filename, false);
 }
 
 bool CWalletDB::WriteHDChain(const CHDChain& chain)

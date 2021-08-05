@@ -140,14 +140,10 @@ public:
     DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, WalletTxVector& vWtx);
     DBErrors ZapWalletTx(CWallet* pwallet, WalletTxVector& vWtx);
     static bool Recover(
-        const CChain& activeChain,
-        const BlockMap& blockIndicesByHash,
         CDBEnv& dbenv,
         std::string filename,
         bool fOnlyKeys);
     static bool Recover(
-        const CChain& activeChain,
-        const BlockMap& blockIndicesByHash,
         CDBEnv& dbenv,
         std::string filename);
 

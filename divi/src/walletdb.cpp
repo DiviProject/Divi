@@ -22,8 +22,6 @@
 #include <ValidationState.h>
 #include <WalletTx.h>
 #include <Settings.h>
-#include <chain.h>
-#include <blockmap.h>
 
 using namespace boost;
 using namespace std;
@@ -332,11 +330,27 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
         if (strType == "name") {
             string strAddress;
             ssKey >> strAddress;
-            ssValue >> pwallet->mapAddressBook[CBitcoinAddress(strAddress).Get()].name;
+            if(pwallet)
+            {
+                ssValue >> pwallet->mapAddressBook[CBitcoinAddress(strAddress).Get()].name;
+            }
+            else
+            {
+                std::string name;
+                ssValue >> name;
+            }
         } else if (strType == "purpose") {
             string strAddress;
             ssKey >> strAddress;
-            ssValue >> pwallet->mapAddressBook[CBitcoinAddress(strAddress).Get()].purpose;
+            if(pwallet)
+            {
+                ssValue >> pwallet->mapAddressBook[CBitcoinAddress(strAddress).Get()].purpose;
+            }
+            else
+            {
+                std::string purpose;
+                ssValue >> purpose;
+            }
         } else if (strType == "tx") {
             uint256 hash;
             ssKey >> hash;
@@ -366,7 +380,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             if (wtx.nOrderPos == -1)
                 wss.fAnyUnordered = true;
 
-            pwallet->LoadWalletTransaction(wtx);
+            if(pwallet) pwallet->LoadWalletTransaction(wtx);
         } else if (strType == "acentry") {
             string strAccount;
             ssKey >> strAccount;
@@ -387,22 +401,25 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             char fYes;
             ssValue >> fYes;
             if (fYes == '1')
-                pwallet->LoadWatchOnly(script);
-
+            {
+                if(pwallet) pwallet->LoadWatchOnly(script);
+            }
             // Watch-only addresses have no birthday information for now,
             // so set the wallet birthday to the beginning of time.
-            pwallet->nTimeFirstKey = 1;
+            if(pwallet) pwallet->nTimeFirstKey = 1;
         } else if (strType == "multisig") {
             CScript script;
             ssKey >> script;
             char fYes;
             ssValue >> fYes;
             if (fYes == '1')
-                pwallet->LoadMultiSig(script);
+            {
+                if(pwallet) pwallet->LoadMultiSig(script);
+            }
 
             // MultiSig addresses have no birthday information for now,
             // so set the wallet birthday to the beginning of time.
-            pwallet->nTimeFirstKey = 1;
+            if(pwallet) pwallet->nTimeFirstKey = 1;
         } else if (strType == "key" || strType == "wkey") {
             CPubKey vchPubKey;
             ssKey >> vchPubKey;
@@ -454,7 +471,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                 strErr = "Error reading wallet database: CPrivKey corrupt";
                 return false;
             }
-            if (!pwallet->LoadKey(key, vchPubKey)) {
+            if (pwallet && !pwallet->LoadKey(key, vchPubKey)) {
                 strErr = "Error reading wallet database: LoadKey failed";
                 return false;
             }
@@ -463,13 +480,16 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             ssKey >> nID;
             CMasterKey kMasterKey;
             ssValue >> kMasterKey;
-            if (pwallet->mapMasterKeys.count(nID) != 0) {
-                strErr = strprintf("Error reading wallet database: duplicate CMasterKey id %u", nID);
-                return false;
+            if(pwallet)
+            {
+                if (pwallet->mapMasterKeys.count(nID) != 0) {
+                    strErr = strprintf("Error reading wallet database: duplicate CMasterKey id %u", nID);
+                    return false;
+                }
+                pwallet->mapMasterKeys[nID] = kMasterKey;
+                if (pwallet->nMasterKeyMaxID < nID)
+                    pwallet->nMasterKeyMaxID = nID;
             }
-            pwallet->mapMasterKeys[nID] = kMasterKey;
-            if (pwallet->nMasterKeyMaxID < nID)
-                pwallet->nMasterKeyMaxID = nID;
         } else if (strType == "ckey") {
             std::vector<unsigned char> vchPubKey;
             ssKey >> vchPubKey;
@@ -477,7 +497,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             ssValue >> vchPrivKey;
             wss.nCKeys++;
 
-            if (!pwallet->LoadCryptedKey(vchPubKey, vchPrivKey)) {
+            if (pwallet && !pwallet->LoadCryptedKey(vchPubKey, vchPrivKey)) {
                 strErr = "Error reading wallet database: LoadCryptedKey failed";
                 return false;
             }
@@ -489,20 +509,31 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             ssValue >> keyMeta;
             wss.nKeyMeta++;
 
-            pwallet->LoadKeyMetadata(vchPubKey, keyMeta);
+            if(pwallet)
+            {
+                pwallet->LoadKeyMetadata(vchPubKey, keyMeta);
 
-            // find earliest key creation time, as wallet birthday
-            if (!pwallet->nTimeFirstKey ||
-                (keyMeta.nCreateTime < pwallet->nTimeFirstKey))
-                pwallet->nTimeFirstKey = keyMeta.nCreateTime;
+                // find earliest key creation time, as wallet birthday
+                if (!pwallet->nTimeFirstKey ||
+                    (keyMeta.nCreateTime < pwallet->nTimeFirstKey))
+                    pwallet->nTimeFirstKey = keyMeta.nCreateTime;
+            }
         } else if (strType == "defaultkey") {
-            ssValue >> pwallet->vchDefaultKey;
+            if(pwallet)
+            {
+                ssValue >> pwallet->vchDefaultKey;
+            }
+            else
+            {
+                CPubKey pubkey;
+                ssValue >> pubkey;
+            }
         } else if (strType == "pool") {
             int64_t nIndex;
             ssKey >> nIndex;
             CKeyPool keypool;
             ssValue >> keypool;
-            pwallet->LoadKeyPool(nIndex, keypool);
+            if(pwallet) pwallet->LoadKeyPool(nIndex, keypool);
         } else if (strType == "version") {
             ssValue >> wss.nFileVersion;
             if (wss.nFileVersion == 10300)
@@ -512,20 +543,20 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             ssKey >> hash;
             CScript script;
             ssValue >> script;
-            if (!pwallet->LoadCScript(script)) {
+            if (pwallet && !pwallet->LoadCScript(script)) {
                 strErr = "Error reading wallet database: LoadCScript failed";
                 return false;
             }
         } else if (strType == "orderposnext") {
             int64_t txIndex;
             ssValue >> txIndex;
-            pwallet->UpdateNextTransactionIndexAvailable(txIndex);
+            if(pwallet) pwallet->UpdateNextTransactionIndexAvailable(txIndex);
         } else if (strType == "destdata") {
             std::string strAddress, strKey, strValue;
             ssKey >> strAddress;
             ssKey >> strKey;
             ssValue >> strValue;
-            if (!pwallet->LoadDestData(CBitcoinAddress(strAddress).Get(), strKey, strValue)) {
+            if (pwallet && !pwallet->LoadDestData(CBitcoinAddress(strAddress).Get(), strKey, strValue)) {
                 strErr = "Error reading wallet database: LoadDestData failed";
                 return false;
             }
@@ -534,7 +565,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
         {
             CHDChain chain;
             ssValue >> chain;
-            if (!pwallet->SetHDChain(chain, true))
+            if (pwallet && !pwallet->SetHDChain(chain, true))
             {
                 strErr = "Error reading wallet database: SetHDChain failed";
                 return false;
@@ -544,7 +575,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
         {
             CHDChain chain;
             ssValue >> chain;
-            if (!pwallet->SetCryptedHDChain(chain, true))
+            if (pwallet && !pwallet->SetCryptedHDChain(chain, true))
             {
                 strErr = "Error reading wallet database: SetHDCryptedChain failed";
                 return false;
@@ -563,7 +594,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                 strErr = "Error reading wallet database: CHDPubKey corrupt";
                 return false;
             }
-            if (!pwallet->LoadHDPubKey(hdPubKey))
+            if (pwallet && !pwallet->LoadHDPubKey(hdPubKey))
             {
                 strErr = "Error reading wallet database: LoadHDPubKey failed";
                 return false;
@@ -904,9 +935,6 @@ bool CWalletDB::Recover(
         LogPrintf("Cannot create database file %s\n", filename);
         return false;
     }
-    static const CChain dummyChain;
-    static const BlockMap dummyIndices;
-    CWallet dummyWallet(dummyChain, dummyIndices);
     CWalletScanState wss;
 
     DbTxn* ptxn = dbenv.TxnBegin();
@@ -915,8 +943,7 @@ bool CWalletDB::Recover(
             CDataStream ssKey(row.first, SER_DISK, CLIENT_VERSION);
             CDataStream ssValue(row.second, SER_DISK, CLIENT_VERSION);
             string strType, strErr;
-            bool fReadOK = ReadKeyValue(&dummyWallet, ssKey, ssValue,
-                wss, strType, strErr);
+            bool fReadOK = ReadKeyValue(nullptr, ssKey, ssValue, wss, strType, strErr);
             if (!IsKeyType(strType))
                 continue;
             if (!fReadOK) {

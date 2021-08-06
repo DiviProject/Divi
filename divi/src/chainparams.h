@@ -63,7 +63,7 @@ public:
     int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
     int MaxReorganizationDepth() const { return nMaxReorganizationDepth; }
 
-    /** Used if GenerateDivi is called with a negative number of threads */
+    /** Used if SetPoWThreadPool is called with a negative number of threads */
     int DefaultMinerThreads() const { return nMinerThreads; }
     const CBlock& GenesisBlock() const { return genesis; }
     bool RequireRPCPassword() const { return fRequireRPCPassword; }

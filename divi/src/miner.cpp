@@ -174,7 +174,7 @@ void static ThreadPoWMinter(CWallet* pwallet)
     LogPrintf("ThreadPoWMinter exiting\n");
 }
 
-void GenerateDivi(CWallet* pwallet, int nThreads)
+void SetPoWThreadPool(CWallet* pwallet, int nThreads)
 {
     static boost::thread_group* minerThreads = NULL;
 

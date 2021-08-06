@@ -119,6 +119,7 @@ Value setgenerate(const Array& params, bool fHelp)
             mapBlockIndex,
             GetSporkManager());
         I_CoinMinter& minter = mintingModule.coinMinter();
+        minter.setMintingRequestStatus(true);
 
         while (nHeight < nHeightEnd)
         {
@@ -137,9 +138,7 @@ Value setgenerate(const Array& params, bool fHelp)
     }
     else // Not -regtest: start generate thread, return immediately
     {
-        settings.SetParameter("-gen", (fGenerate ? "1" : "0"));
-        settings.SetParameter("-genproclimit", itostr(nGenProcLimit));
-        GenerateDivi(fGenerate, pwalletMain, nGenProcLimit);
+        GenerateDivi(pwalletMain, nGenProcLimit);
     }
 
     return Value::null;
@@ -196,6 +195,7 @@ Value generateblock(const Array& params, bool fHelp)
         mapBlockIndex,
         GetSporkManager());
     I_CoinMinter& minter = mintingModule.coinMinter();
+    minter.setMintingRequestStatus(true);
     ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
     assert(blockFactory);
 

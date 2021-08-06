@@ -55,6 +55,7 @@ enum txnouttype
     TX_PUBKEYHASH,
     TX_SCRIPTHASH,
     TX_VAULT,
+    TX_HTLC,
     TX_MULTISIG,
     TX_NULL_DATA,
 };

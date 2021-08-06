@@ -27,6 +27,7 @@ const char* GetTxnOutputType(txnouttype t)
     case TX_PUBKEYHASH: return "pubkeyhash";
     case TX_SCRIPTHASH: return "scripthash";
     case TX_VAULT: return "vault";
+    case TX_HTLC: return "htlc";
     case TX_MULTISIG: return "multisig";
     case TX_NULL_DATA: return "nulldata";
     }
@@ -53,6 +54,17 @@ bool ExtractScriptPubKeyFormat(const CScript& scriptPubKey, txnouttype& typeRet,
 
         // Sender provides 2 pubkey hashes, 1-owner & 1-manager, receivers provides exactly 1 of the two signatures
         mTemplates.insert(std::make_pair(TX_VAULT, GetStakingVaultScriptTemplate() ));
+
+        // Sender provides two keys, a timelock and a hash value.  One of the
+        // keys can spend the output after the timelock, the other if they know
+        // a preimage to the hash value.
+        mTemplates.emplace(TX_HTLC, CScript () << OP_ANYHASH << OP_ANYDATA << OP_EQUAL
+                                               << OP_IF
+                                               << OP_PUBKEYHASH
+                                               << OP_ELSE
+                                               << OP_ANYDATA << OP_CHECKLOCKTIMEVERIFY << OP_DROP << OP_PUBKEYHASH
+                                               << OP_ENDIF
+                                               << OP_OVER << OP_HASH160 << OP_EQUALVERIFY << OP_CHECKSIG);
     }
 
     // Shortcut for pay-to-script-hash, which are more constrained than the other types:
@@ -148,6 +160,38 @@ bool ExtractScriptPubKeyFormat(const CScript& scriptPubKey, txnouttype& typeRet,
                 else
                     break;
             }
+            else if (opcode2 == OP_ANYHASH)
+            {
+                bool valid;
+                switch (opcode1)
+                {
+                case OP_RIPEMD160:
+                case OP_SHA1:
+                case OP_SHA256:
+                case OP_HASH160:
+                case OP_HASH256:
+                    valid = true;
+                    vSolutionsRet.push_back(valtype(1, opcode1));
+                    break;
+
+                default:
+                    valid = false;
+                    break;
+                }
+                if (!valid)
+                    break;
+            }
+            else if (opcode2 == OP_ANYDATA)
+            {
+                if (opcode1 == OP_0 ||
+                    (opcode1 >= OP_1 && opcode1 <= OP_16))
+                {
+                    char n = (char)CScript::DecodeOP_N(opcode1);
+                    vSolutionsRet.push_back(valtype(1, n));
+                }
+                else
+                    vSolutionsRet.push_back(vch1);
+            }
             else if (opcode1 != opcode2 || vch1 != vch2)
             {
                 // Others must match exactly
@@ -180,6 +224,8 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
         return 1; // doesn't include args needed by the script
     case TX_VAULT:
             return 3; // signature, pubkey, bool_flag
+    case TX_HTLC:
+            return 3; // signature, pubkey, preimage
     }
     return -1;
 }

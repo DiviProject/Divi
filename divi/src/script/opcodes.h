@@ -139,6 +139,8 @@ enum opcodetype
     OP_NOP10 = OP_REQUIRE_COINSTAKE,
 
     // template matching params
+    OP_ANYDATA = 0xf8,
+    OP_ANYHASH = 0xf9,
     OP_SMALLINTEGER = 0xfa,
     OP_PUBKEYS = 0xfb,
     OP_PUBKEYHASH = 0xfd,

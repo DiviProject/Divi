@@ -197,7 +197,7 @@ void FlushWalletAndStopMinting()
 {
 #ifdef ENABLE_WALLET
     FlushWallet();
-    GenerateDivi(NULL, 0);
+    SetPoWThreadPool(NULL, 0);
 #endif
 }
 
@@ -1351,7 +1351,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     // Generate coins in the background
     if (pwalletMain && settings.GetBoolArg("-gen", false))
-        GenerateDivi(pwalletMain, settings.GetArg("-genproclimit", 1));
+        SetPoWThreadPool(pwalletMain, settings.GetArg("-genproclimit", 1));
 #endif
 
     // ********************************************************* Step 12: finished

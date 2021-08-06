@@ -19,7 +19,7 @@ class I_CoinMinter;
 struct CBlockTemplate;
 
 /** Run the miner threads */
-void GenerateDivi(CWallet* pwallet, int nThreads);
+void SetPoWThreadPool(CWallet* pwallet, int nThreads);
 void ThreadStakeMinter(CWallet* pwallet);
 
 void MintCoins(

@@ -63,10 +63,23 @@ bool CoinMinter::hasMintableCoinForProofOfStake()
     }
     return haveMintableCoins_;
 }
+
+enum NextBlockType
+{
+    UNDEFINED_TIP,
+    PROOF_OF_STAKE,
+    PROOF_OF_WORK,
+};
+
+static NextBlockType ComputeNextBlockType(const CBlockIndex* chainTip,const int lastPOWBlock)
+{
+    return (!chainTip)? UNDEFINED_TIP:
+            (chainTip->nHeight < lastPOWBlock)? PROOF_OF_WORK: PROOF_OF_STAKE;
+}
+
 bool CoinMinter::nextBlockIsProofOfStake() const
 {
-    CBlockIndex* chainTip = chain_.Tip();
-    return ( (chainTip? chainTip->nHeight : 0) >= chainParameters_.LAST_POW_BLOCK() );
+    return ComputeNextBlockType(chain_.Tip(), chainParameters_.LAST_POW_BLOCK()) == PROOF_OF_STAKE;
 }
 
 bool CoinMinter::satisfiesMintingRequirements() const
@@ -299,12 +312,16 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
     return blockSuccessfullyCreated;
 }
 
-bool CoinMinter::createNewBlock(
-    bool fProofOfStake) const
+bool CoinMinter::createNewBlock() const
 {
     CReserveKey reserveKey(wallet_);
-    if(fProofOfStake)
-        return createProofOfStakeBlock(reserveKey);
+    auto status = ComputeNextBlockType(chain_.Tip(), chainParameters_.LAST_POW_BLOCK());
+    if(status != UNDEFINED_TIP)
+    {
+        if(status != PROOF_OF_WORK)
+            return createProofOfStakeBlock(reserveKey);
 
-    return createProofOfWorkBlock(reserveKey);
+        return createProofOfWorkBlock(reserveKey);
+    }
+    return false;
 }

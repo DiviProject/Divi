@@ -122,9 +122,7 @@ Value setgenerate(const Array& params, bool fHelp)
 
         while (nHeight < nHeightEnd)
         {
-            const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
-
-            const bool newBlockAdded = minter.createNewBlock(fProofOfStake);
+            const bool newBlockAdded = minter.createNewBlock();
             nHeight +=  newBlockAdded;
 
             if (!newBlockAdded)
@@ -224,9 +222,7 @@ Value generateblock(const Array& params, bool fHelp)
     if (ignoreMempool.type() != null_type)
         blockFactory->setIgnoreMempool(ignoreMempool.get_bool());
 
-    const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
-
-    const bool newBlockAdded = minter.createNewBlock(fProofOfStake);
+    const bool newBlockAdded = minter.createNewBlock();
 
     // Don't keep cs_main locked
     LOCK(cs_main);

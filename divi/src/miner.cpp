@@ -61,7 +61,7 @@ void MintCoins(
         }
         else
         {
-            minter.createNewBlock(fProofOfStake);
+            minter.createNewBlock();
         }
     }
 

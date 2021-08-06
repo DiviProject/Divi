@@ -11,8 +11,7 @@ public:
     virtual void setMintingRequestStatus(bool newStatus) = 0;
     virtual bool mintingHasBeenRequested() const = 0;
 
-    virtual bool createNewBlock(
-        bool fProofOfStake) const = 0;
+    virtual bool createNewBlock() const = 0;
 };
 
 #endif // I_COIN_MINTER_H

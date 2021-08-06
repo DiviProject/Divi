@@ -904,6 +904,14 @@ bool CCoinsViewMemPool::HaveCoins(const uint256& txid) const
 
     return base->HaveCoins(txid);
 }
+bool CCoinsViewMemPool::GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const
+{
+    LOCK(mempool.cs);
+    if (!GetCoins(txid, coins))
+        return false;
+    mempool.pruneSpent(txid, coins);
+    return true;
+}
 
 bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx)
 {

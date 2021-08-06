@@ -229,6 +229,7 @@ public:
     CCoinsViewMemPool(CCoinsView* baseIn, CTxMemPool& mempoolIn);
     bool GetCoins(const uint256& txid, CCoins& coins) const override;
     bool HaveCoins(const uint256& txid) const override;
+    bool GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const;
 };
 
 bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx);

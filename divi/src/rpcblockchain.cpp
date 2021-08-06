@@ -455,11 +455,7 @@ Value gettxout(const Array& params, bool fHelp)
 
     CCoins coins;
     if (fMempool) {
-        LOCK(mempool.cs);
-        CCoinsViewMemPool view(pcoinsTip, mempool);
-        if (!view.GetCoins(hash, coins))
-            return Value::null;
-        mempool.pruneSpent(hash, coins); // TODO: this should be done by the CCoinsViewMemPool
+        CCoinsViewMemPool(pcoinsTip, mempool).GetCoinsAndPruneSpent(hash,coins);
     } else {
         if (!pcoinsTip->GetCoins(hash, coins))
             return Value::null;

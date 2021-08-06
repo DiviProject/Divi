@@ -79,8 +79,7 @@ public:
     virtual void setMintingRequestStatus(bool newStatus);
     virtual bool mintingHasBeenRequested() const;
 
-    bool createNewBlock(
-        bool fProofOfStake) const override;
+    bool createNewBlock() const override;
 };
 
 #endif // COIN_MINTER_H

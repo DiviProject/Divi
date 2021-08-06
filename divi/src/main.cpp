@@ -2322,6 +2322,10 @@ bool static LoadBlockIndexDB(string& strError)
 
 void UnloadBlockIndex()
 {
+    for(auto& blockHashAndBlockIndex: mapBlockIndex)
+    {
+        delete blockHashAndBlockIndex.second;
+    }
     mapBlockIndex.clear();
     setBlockIndexCandidates.clear();
     chainActive.SetTip(NULL);

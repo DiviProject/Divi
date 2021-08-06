@@ -350,6 +350,7 @@ bool ShutdownRequested()
 void Shutdown()
 {
     startAndShutdownSignals.shutdown();
+    UnloadBlockIndex();
 }
 
 void UnitTestShutdown()

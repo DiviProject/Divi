@@ -153,6 +153,31 @@ static bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, c
             scriptSigRet << ToByteVector(vch);
         }
         return true;
+    case TX_HTLC:
+        {
+            const CKeyID keys[] = {
+                CKeyID(uint160(vSolutions[2])),
+                CKeyID(uint160(vSolutions[4])),
+            };
+            for (const auto& k : keys)
+            {
+                if (!Sign1(k, keystore, hash, nHashType, scriptSigRet))
+                    continue;
+
+                CPubKey vch;
+                keystore.GetPubKey(k, vch);
+                scriptSigRet << vch;
+
+                /* For the preimage secret, we always just push a zero
+                   to the scriptSig.  This is fine for the time-locked
+                   spender, but will need to be modified by the spender
+                   using the real preimage.  */
+                scriptSigRet << OP_0;
+
+                return true;
+            }
+            return false;
+        }
     case TX_VAULT:
         // If we can sign as owner, do that.  Otherwise try signing as the
         // staker (which may or may not be valid in the end).

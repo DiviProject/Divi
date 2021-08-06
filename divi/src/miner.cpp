@@ -127,8 +127,8 @@ void ThreadStakeMinter(CWallet* pwallet)
             mapBlockIndex,
             sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
-        bool isProofOfStake = true;
-        minter.setMintingRequestStatus(isProofOfStake);
+        minter.setMintingRequestStatus(true);
+        constexpr bool isProofOfStake = true;
         MinterThread(isProofOfStake,minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
@@ -139,7 +139,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     LogPrintf("ThreadStakeMinter exiting,\n");
 }
 
-void static ThreadPoWMinter(CWallet* pwallet,bool fGenerate)
+void static ThreadPoWMinter(CWallet* pwallet)
 {
     static const CSporkManager& sporkManager = GetSporkManager();
     static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
@@ -161,8 +161,8 @@ void static ThreadPoWMinter(CWallet* pwallet,bool fGenerate)
             mapBlockIndex,
             sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
-        bool isProofOfStake = false;
-        minter.setMintingRequestStatus(fGenerate);
+        minter.setMintingRequestStatus(true);
+        constexpr bool isProofOfStake = false;
         MinterThread(isProofOfStake, minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
@@ -174,7 +174,7 @@ void static ThreadPoWMinter(CWallet* pwallet,bool fGenerate)
     LogPrintf("ThreadPoWMinter exiting\n");
 }
 
-void GenerateDivi(bool fGenerate, CWallet* pwallet, int nThreads)
+void GenerateDivi(CWallet* pwallet, int nThreads)
 {
     static boost::thread_group* minerThreads = NULL;
 
@@ -192,12 +192,12 @@ void GenerateDivi(bool fGenerate, CWallet* pwallet, int nThreads)
         minerThreads = NULL;
     }
 
-    if (nThreads == 0 || !fGenerate)
+    if (nThreads == 0 || pwallet == nullptr)
         return;
 
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
-        minerThreads->create_thread(boost::bind(&ThreadPoWMinter, pwallet,fGenerate));
+        minerThreads->create_thread(boost::bind(&ThreadPoWMinter, pwallet));
 }
 
 #endif // ENABLE_WALLET

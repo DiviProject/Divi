@@ -266,7 +266,7 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
         unsigned int nHashesDone = 0;
         blockSuccessfullyCreated = false;
         uint256 hash;
-        while (true) {
+        while (mintingIsRequested_) {
             hash = block->GetHash();
             if (hash <= hashTarget)
             {
@@ -291,6 +291,7 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
 
         // Check for stop or if block needs to be rebuilt
         boost::this_thread::interruption_point();
+        if(!mintingIsRequested_) break;
         // Regtest mode doesn't require peers
         if (peerNotifier_.havePeersToNotify() && chainParameters_.MiningRequiresPeers())
             break;
@@ -314,6 +315,7 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
 
 bool CoinMinter::createNewBlock() const
 {
+    if(!mintingIsRequested_) return false;
     CReserveKey reserveKey(wallet_);
     auto status = ComputeNextBlockType(chain_.Tip(), chainParameters_.LAST_POW_BLOCK());
     if(status != UNDEFINED_TIP)

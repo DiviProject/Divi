@@ -1350,8 +1350,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
 #ifdef ENABLE_WALLET
     // Generate coins in the background
-    if (pwalletMain && settings.GetBoolArg("-gen", false))
-        SetPoWThreadPool(pwalletMain, settings.GetArg("-genproclimit", 1));
+    if (pwalletMain && settings.GetBoolArg("-mining", false))
+        SetPoWThreadPool(pwalletMain, settings.GetArg("-mining_threads", 1));
 #endif
 
     // ********************************************************* Step 12: finished

@@ -138,7 +138,8 @@ Value setgenerate(const Array& params, bool fHelp)
     }
     else // Not -regtest: start generate thread, return immediately
     {
-        GenerateDivi(pwalletMain, nGenProcLimit);
+        const int numberOfThreadsToSpawn = nGenProcLimit;
+        SetPoWThreadPool(pwalletMain, numberOfThreadsToSpawn);
     }
 
     return Value::null;

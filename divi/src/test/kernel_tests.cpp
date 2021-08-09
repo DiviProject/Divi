@@ -24,8 +24,6 @@ class CheckCoinstakeForVaultsTestFixture
 {
 
 private:
-
-  CCoinsViewBacked coinsDummy;
   CCoinsViewCache coins;
 
   const CBlockRewards rewards;
@@ -40,7 +38,7 @@ protected:
   std::vector<COutPoint> nonVaultCoins;
 
   CheckCoinstakeForVaultsTestFixture()
-    : coins(&coinsDummy), rewards(CENT, 0, 0, 0, 0, 0)
+    : coins(nullptr), rewards(CENT, 0, 0, 0, 0, 0)
   {
     const std::vector<unsigned char> key1(20, 'x');
     const std::vector<unsigned char> key2(20, 'y');

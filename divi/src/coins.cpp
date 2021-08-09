@@ -177,7 +177,7 @@ CCoinsMap::const_iterator CCoinsViewCache::FetchCoins(const uint256& txid) const
     if (it != cacheCoins.end())
         return it;
     CCoins tmp;
-    if (!base->GetCoins(txid, tmp))
+    if (!CCoinsViewBacked::GetCoins(txid, tmp))
         return cacheCoins.end();
     CCoinsMap::iterator ret = cacheCoins.insert(std::make_pair(txid, CCoinsCacheEntry())).first;
     tmp.swap(ret->second.coins);
@@ -204,7 +204,7 @@ CCoinsModifier CCoinsViewCache::ModifyCoins(const uint256& txid)
     assert(!hasModifier);
     std::pair<CCoinsMap::iterator, bool> ret = cacheCoins.insert(std::make_pair(txid, CCoinsCacheEntry()));
     if (ret.second) {
-        if (!base->GetCoins(txid, ret.first->second.coins)) {
+        if (!CCoinsViewBacked::GetCoins(txid, ret.first->second.coins)) {
             // The parent view does not have this entry; mark it as fresh.
             ret.first->second.coins.Clear();
             ret.first->second.flags = CCoinsCacheEntry::FRESH;
@@ -241,7 +241,7 @@ bool CCoinsViewCache::HaveCoins(const uint256& txid) const
 uint256 CCoinsViewCache::GetBestBlock() const
 {
     if (hashBlock == uint256(0))
-        hashBlock = base->GetBestBlock();
+        hashBlock = CCoinsViewBacked::GetBestBlock();
     return hashBlock;
 }
 
@@ -289,7 +289,7 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlockIn
 
 bool CCoinsViewCache::Flush()
 {
-    bool fOk = base->BatchWrite(cacheCoins, hashBlock);
+    bool fOk = CCoinsViewBacked::BatchWrite(cacheCoins, hashBlock);
     cacheCoins.clear();
     return fOk;
 }

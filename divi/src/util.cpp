@@ -115,8 +115,6 @@ bool fSucessfullyLoaded = false;
 
 Settings& settings = Settings::instance();
 
-bool fDaemon = false;
-
 #ifndef WIN32
 boost::filesystem::path GetPidFile(const Settings& settings)
 {

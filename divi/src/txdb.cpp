@@ -103,48 +103,6 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)
     return db.WriteBatch(batch);
 }
 
-CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe)
-{
-}
-
-bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex)
-{
-    return Write(std::make_pair(DB_BLOCKINDEX, blockindex.GetBlockHash()), blockindex);
-}
-
-bool CBlockTreeDB::WriteBlockFileInfo(int nFile, const CBlockFileInfo& info)
-{
-    return Write(std::make_pair(DB_BLOCKFILEINFO, nFile), info);
-}
-
-bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo& info)
-{
-    return Read(std::make_pair(DB_BLOCKFILEINFO, nFile), info);
-}
-
-bool CBlockTreeDB::WriteLastBlockFile(int nFile)
-{
-    return Write(DB_LASTBLOCKFILE, nFile);
-}
-bool CBlockTreeDB::ReadLastBlockFile(int& nFile)
-{
-    return Read(DB_LASTBLOCKFILE, nFile);
-}
-
-bool CBlockTreeDB::WriteReindexing(bool fReindexing)
-{
-    if (fReindexing)
-        return Write(DB_REINDEXINGFLAG, '1');
-    else
-        return Erase(DB_REINDEXINGFLAG);
-}
-
-bool CBlockTreeDB::ReadReindexing(bool& fReindexing)
-{
-    fReindexing = Exists(DB_REINDEXINGFLAG);
-    return true;
-}
-
 bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
 {
     /* It seems that there are no "const iterators" for LevelDB.  Since we
@@ -196,6 +154,48 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
     stats.nHeight = blockIndicesByHash_.find(GetBestBlock())->second->nHeight;
     stats.hashSerialized = ss.GetHash();
     stats.nTotalAmount = nTotalAmount;
+    return true;
+}
+
+CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe)
+{
+}
+
+bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex)
+{
+    return Write(std::make_pair(DB_BLOCKINDEX, blockindex.GetBlockHash()), blockindex);
+}
+
+bool CBlockTreeDB::WriteBlockFileInfo(int nFile, const CBlockFileInfo& info)
+{
+    return Write(std::make_pair(DB_BLOCKFILEINFO, nFile), info);
+}
+
+bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo& info)
+{
+    return Read(std::make_pair(DB_BLOCKFILEINFO, nFile), info);
+}
+
+bool CBlockTreeDB::WriteLastBlockFile(int nFile)
+{
+    return Write(DB_LASTBLOCKFILE, nFile);
+}
+bool CBlockTreeDB::ReadLastBlockFile(int& nFile)
+{
+    return Read(DB_LASTBLOCKFILE, nFile);
+}
+
+bool CBlockTreeDB::WriteReindexing(bool fReindexing)
+{
+    if (fReindexing)
+        return Write(DB_REINDEXINGFLAG, '1');
+    else
+        return Erase(DB_REINDEXINGFLAG);
+}
+
+bool CBlockTreeDB::ReadReindexing(bool& fReindexing)
+{
+    fReindexing = Exists(DB_REINDEXINGFLAG);
     return true;
 }
 

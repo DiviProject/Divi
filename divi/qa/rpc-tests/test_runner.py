@@ -73,6 +73,7 @@ BASE_SCRIPTS = [
     # Scripts that are run by default.
     # Longest test should go first, to favor running tests in parallel
     'AddressAndSpentIndicesAreOperational.py',
+    'AtomicTrading.py',
     'BlocksOnlyHaveSingleCoinstake.py',
     'CheckLockTimeVerify.py',
     'StakingVaultFunding.py',

@@ -306,7 +306,7 @@ public:
 /** CCoinsView backed by another CCoinsView */
 class CCoinsViewBacked : public CCoinsView
 {
-protected:
+private:
     CCoinsView* base;
 
 public:

@@ -36,7 +36,6 @@
  * Use the buttons <code>Namespaces</code>, <code>Classes</code> or <code>Files</code> at the top of the page to start navigating the code.
  */
 
-static bool fDaemon;
 extern Settings& settings;
 
 void DetectShutdownThread(boost::thread_group* threadGroup)
@@ -115,8 +114,8 @@ bool AppInit(int argc, char* argv[])
             exit(1);
         }
 #ifndef WIN32
-        fDaemon = settings.GetBoolArg("-daemon", false);
-        if (fDaemon) {
+        if (settings.GetBoolArg("-daemon", false))
+        {
             fprintf(stdout, "DIVI server starting\n");
 
             // Daemonize

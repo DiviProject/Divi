@@ -597,8 +597,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
 
     {
-        CCoinsViewBacked dummy;
-        CCoinsViewCache view(&dummy);
+        CCoinsViewCache view;
 
         CAmount nValueIn = 0;
         {
@@ -632,7 +631,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             nValueIn = view.GetValueIn(tx);
 
             // we have all inputs cached now, so switch back to dummy, so we don't need to keep lock on mempool
-            view.SetBackend(dummy);
+            view.DettachBackend();
         }
 
         // Check for non-standard pay-to-script-hash in inputs

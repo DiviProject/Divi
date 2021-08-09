@@ -702,8 +702,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
     bool fComplete = true;
 
     // Fetch previous transactions (inputs):
-    CCoinsViewBacked viewDummy;
-    CCoinsViewCache view(&viewDummy);
+    CCoinsViewCache view;
     {
         LOCK(mempool.cs);
         CCoinsViewCache& viewChain = *pcoinsTip;
@@ -716,7 +715,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
             view.AccessCoins(prevHash); // this is certainly allowed to fail
         }
 
-        view.SetBackend(viewDummy); // switch back to avoid locking mempool for too long
+        view.DettachBackend(); // switch back to avoid locking mempool for too long
     }
 
     bool fGivenKeys = false;
@@ -840,8 +839,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
 static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransaction& tx)
 {
     LOCK(mempool.cs);
-    CCoinsViewBacked dummy;
-    CCoinsViewCache view(&dummy);
+    CCoinsViewCache view;
     CCoinsViewMemPool viewMemPool(pcoinsTip, mempool);
     view.SetBackend(viewMemPool);
 

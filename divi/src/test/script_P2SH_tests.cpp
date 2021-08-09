@@ -277,10 +277,7 @@ BOOST_AUTO_TEST_CASE(AreInputsStandard)
 {
     LOCK(cs_main);
 
-
-
-    CCoinsViewBacked coinsDummy;
-    CCoinsViewCache coins(&coinsDummy);
+    CCoinsViewCache coins;
     CBasicKeyStore keystore;
     CKey key[6];
     vector<CPubKey> keys;

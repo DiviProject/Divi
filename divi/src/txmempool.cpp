@@ -893,7 +893,7 @@ bool CCoinsViewMemPool::GetCoins(const uint256& txid, CCoins& coins) const
         coins = CCoins(tx, MEMPOOL_HEIGHT);
         return true;
     }
-    return (base->GetCoins(txid, coins) && !coins.IsPruned());
+    return (CCoinsViewBacked::GetCoins(txid, coins) && !coins.IsPruned());
 }
 
 bool CCoinsViewMemPool::HaveCoins(const uint256& txid) const
@@ -902,7 +902,7 @@ bool CCoinsViewMemPool::HaveCoins(const uint256& txid) const
     if (mempool.lookupOutpoint(txid, dummy))
         return true;
 
-    return base->HaveCoins(txid);
+    return CCoinsViewBacked::HaveCoins(txid);
 }
 bool CCoinsViewMemPool::GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const
 {

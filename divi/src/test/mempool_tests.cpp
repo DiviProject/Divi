@@ -11,11 +11,6 @@
 
 class MempoolTestFixture
 {
-
-private:
-
-  CCoinsViewBacked coinsDummy;
-
 protected:
 
   /* The test mempool will use these flags instead of the global ones.  */
@@ -48,7 +43,7 @@ public:
   MempoolTestFixture()
     : fakeChain(1, 1500000000, 1),
       testPool(CFeeRate(0), addressIndex, spentIndex),
-      coinsMemPool(&coinsDummy, testPool), coins(&coinsMemPool)
+      coinsMemPool(nullptr, testPool), coins(&coinsMemPool)
   {
     CMutableTransaction mtx;
     mtx.vout.emplace_back(2 * COIN, CScript () << OP_TRUE);

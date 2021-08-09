@@ -343,8 +343,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
     // starts as a clone of the raw tx:
     CMutableTransaction mergedTx(txVariants[0]);
     bool fComplete = true;
-    CCoinsViewBacked viewDummy;
-    CCoinsViewCache view(&viewDummy);
+    CCoinsViewCache view;
 
     if (!registers.count("privatekeys"))
         throw runtime_error("privatekeys register variable must be set.");

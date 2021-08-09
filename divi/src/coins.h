@@ -282,21 +282,21 @@ class CCoinsView
 {
 public:
     //! Retrieve the CCoins (unspent transaction outputs) for a given txid
-    virtual bool GetCoins(const uint256& txid, CCoins& coins) const;
+    virtual bool GetCoins(const uint256& txid, CCoins& coins) const = 0;
 
     //! Just check whether we have data for a given txid.
     //! This may (but cannot always) return true for fully spent transactions
-    virtual bool HaveCoins(const uint256& txid) const;
+    virtual bool HaveCoins(const uint256& txid) const = 0;
 
     //! Retrieve the block hash whose state this CCoinsView currently represents
-    virtual uint256 GetBestBlock() const;
+    virtual uint256 GetBestBlock() const = 0;
 
     //! Do a bulk modification (multiple CCoins changes + BestBlock change).
     //! The passed mapCoins can be modified.
-    virtual bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock);
+    virtual bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) = 0;
 
     //! Calculate statistics about the unspent transaction output set
-    virtual bool GetStats(CCoinsStats& stats) const;
+    virtual bool GetStats(CCoinsStats& stats) const = 0;
 
     //! As we use CCoinsViews polymorphically, have a virtual destructor
     virtual ~CCoinsView() {}

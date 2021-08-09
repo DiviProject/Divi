@@ -310,6 +310,7 @@ protected:
     CCoinsView* base;
 
 public:
+    CCoinsViewBacked();
     CCoinsViewBacked(CCoinsView* viewIn);
     bool GetCoins(const uint256& txid, CCoins& coins) const override;
     bool HaveCoins(const uint256& txid) const override;

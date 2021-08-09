@@ -702,7 +702,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
     bool fComplete = true;
 
     // Fetch previous transactions (inputs):
-    CCoinsView viewDummy;
+    CCoinsViewBacked viewDummy;
     CCoinsViewCache view(&viewDummy);
     {
         LOCK(mempool.cs);
@@ -840,7 +840,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
 static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransaction& tx)
 {
     LOCK(mempool.cs);
-    CCoinsView dummy;
+    CCoinsViewBacked dummy;
     CCoinsViewCache view(&dummy);
     CCoinsViewMemPool viewMemPool(pcoinsTip, mempool);
     view.SetBackend(viewMemPool);

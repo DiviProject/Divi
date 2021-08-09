@@ -597,7 +597,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
 
     {
-        CCoinsView dummy;
+        CCoinsViewBacked dummy;
         CCoinsViewCache view(&dummy);
 
         CAmount nValueIn = 0;

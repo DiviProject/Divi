@@ -25,7 +25,7 @@ class CheckCoinstakeForVaultsTestFixture
 
 private:
 
-  CCoinsView coinsDummy;
+  CCoinsViewBacked coinsDummy;
   CCoinsViewCache coins;
 
   const CBlockRewards rewards;

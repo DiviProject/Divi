@@ -159,11 +159,13 @@ bool CCoinsViewBacked::GetCoins(const uint256& txid, CCoins& coins) const { retu
 bool CCoinsViewBacked::HaveCoins(const uint256& txid) const { return base? base->HaveCoins(txid):false; }
 uint256 CCoinsViewBacked::GetBestBlock() const { return base? base->GetBestBlock():uint256(0); }
 void CCoinsViewBacked::SetBackend(CCoinsView& viewIn) { base = &viewIn; }
+void CCoinsViewBacked::DettachBackend() { base = nullptr; }
 bool CCoinsViewBacked::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) { return base? base->BatchWrite(mapCoins, hashBlock):false; }
 bool CCoinsViewBacked::GetStats(CCoinsStats& stats) const { return base? base->GetStats(stats):false; }
 
 CCoinsKeyHasher::CCoinsKeyHasher() : salt(GetRandHash()) {}
 
+CCoinsViewCache::CCoinsViewCache() : CCoinsViewBacked(nullptr), hasModifier(false), hashBlock(0) {}
 CCoinsViewCache::CCoinsViewCache(CCoinsView* baseIn) : CCoinsViewBacked(baseIn), hasModifier(false), hashBlock(0) {}
 
 CCoinsViewCache::~CCoinsViewCache()

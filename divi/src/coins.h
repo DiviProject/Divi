@@ -316,6 +316,7 @@ public:
     bool HaveCoins(const uint256& txid) const override;
     uint256 GetBestBlock() const override;
     void SetBackend(CCoinsView& viewIn);
+    void DettachBackend();
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override;
     bool GetStats(CCoinsStats& stats) const override;
 };
@@ -369,6 +370,7 @@ protected:
     mutable CCoinsMap cacheCoins;
 
 public:
+    CCoinsViewCache();
     CCoinsViewCache(CCoinsView* baseIn);
     ~CCoinsViewCache();
 

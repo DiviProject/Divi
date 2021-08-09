@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(AreInputsStandard)
 
 
 
-    CCoinsView coinsDummy;
+    CCoinsViewBacked coinsDummy;
     CCoinsViewCache coins(&coinsDummy);
     CBasicKeyStore keystore;
     CKey key[6];

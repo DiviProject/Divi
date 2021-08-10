@@ -130,7 +130,7 @@ template <typename... Args>
 template <typename... Args>
   bool error(const char* format, const Args&... args)
 {
-    LogPrintStr(tfm::format("ERROR: %s", LogFormat(format, args...)));
+    LogPrintStr(tfm::format("ERROR: %s\n", LogFormat(format, args...)));
     return false;
 }
 

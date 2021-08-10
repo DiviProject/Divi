@@ -75,6 +75,7 @@ BASE_SCRIPTS = [
     'AddressAndSpentIndicesAreOperational.py',
     'AtomicTrading.py',
     'BlocksOnlyHaveSingleCoinstake.py',
+    'BadBlockTests.py',
     'CheckLockTimeVerify.py',
     'CoinDBStats.py',
     'StakingVaultFunding.py',

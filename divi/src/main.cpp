@@ -427,7 +427,7 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
     return true;
 }
 
-bool CheckTransaction(const CTransaction& tx, CValidationState& state)
+bool CheckTransaction(const CTransaction& tx, CValidationState& state,std::set<COutPoint>& usedInputsSet)
 {
     // Basic checks that don't depend on any context
     if (tx.vin.empty())
@@ -461,13 +461,12 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
     }
 
     // Check for duplicate inputs
-    std::set<COutPoint> vInOutPoints;
     for (const CTxIn& txin : tx.vin) {
-        if (vInOutPoints.count(txin.prevout))
+        if (usedInputsSet.count(txin.prevout))
             return state.DoS(100, error("%s : duplicate inputs",__func__),
                              REJECT_INVALID, "bad-txns-inputs-duplicate");
 
-        vInOutPoints.insert(txin.prevout);
+        usedInputsSet.insert(txin.prevout);
     }
 
     if (tx.IsCoinBase()) {
@@ -477,6 +476,11 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
     }
 
     return true;
+}
+bool CheckTransaction(const CTransaction& tx, CValidationState& state)
+{
+    std::set<COutPoint> vInOutPoints;
+    return CheckTransaction(tx,state,vInOutPoints);
 }
 
 bool TxShouldBePrioritized(const uint256& txHash, unsigned int nBytes)
@@ -1797,10 +1801,10 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleR
     }
 
     // Check transactions
+    std::set<COutPoint> inputsUsedByBlockTransactions;
     for (const CTransaction& tx : block.vtx) {
-        if (!CheckTransaction(tx, state))
+        if (!CheckTransaction(tx, state,inputsUsedByBlockTransactions))
             return error("%s : CheckTransaction failed",__func__);
-
     }
 
 

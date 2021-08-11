@@ -24,7 +24,6 @@
 #include "FeeRate.h"
 #include "init.h"
 #include "kernel.h"
-#include "libzerocoin/bignum.h"
 #include "masternode-payments.h"
 #include "masternodeman.h"
 #include "merkleblock.h"
@@ -50,7 +49,6 @@
 #include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
 #include <BlockIndexLotteryUpdater.h>
-#include "libzerocoin/Denominations.h"
 #include <sstream>
 #include "Settings.h"
 #include <boost/algorithm/string/replace.hpp>
@@ -81,7 +79,6 @@ static const uint64_t nMinDiskSpace = 52428800;
 
 using namespace boost;
 using namespace std;
-using namespace libzerocoin;
 
 extern Settings& settings;
 

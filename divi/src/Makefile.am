@@ -29,7 +29,6 @@ LIBBITCOIN_CLI=libbitcoin_cli.a
 LIBBITCOIN_UTIL=libbitcoin_util.a
 LIBBITCOIN_CRYPTO=crypto/libbitcoin_crypto.a
 LIBBITCOIN_UNIVALUE=univalue/libbitcoin_univalue.a
-LIBBITCOIN_ZEROCOIN=libzerocoin/libbitcoin_zerocoin.a
 LIBBITCOINQT=qt/libbitcoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
 LIBGMOCK=GMock/libgmock.a
@@ -583,12 +582,6 @@ univalue_libbitcoin_univalue_a_SOURCES = \
   univalue/univalue_write.cpp \
   univalue/univalue_escapes.h \
   univalue/univalue.h
-
-# libzerocoin library
-libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
-  libzerocoin/bignum.h \
-  libzerocoin/Denominations.h \
-  libzerocoin/Denominations.cpp
 
 # common: shared between divid, and divi-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)

@@ -21,7 +21,6 @@
 #include "spork.h"
 #include "timedata.h"
 #include "utilmoneystr.h"
-#include "libzerocoin/Denominations.h"
 #include <assert.h>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>

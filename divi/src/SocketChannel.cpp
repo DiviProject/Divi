@@ -7,11 +7,19 @@ SocketChannel::SocketChannel(SOCKET socket): socket_(socket)
 }
 int SocketChannel::sendData(const void* buffer, size_t len) const
 {
+#ifdef WIN32
+    return send(socket_, (const char*)buffer, len, MSG_NOSIGNAL | MSG_DONTWAIT);
+#else
     return send(socket_, buffer, len, MSG_NOSIGNAL | MSG_DONTWAIT);
+#endif
 }
 int SocketChannel::receiveData(void* buffer, size_t len) const
 {
+#ifdef WIN32
+    return recv(socket_, (char*)buffer, len, MSG_DONTWAIT);
+#else
     return recv(socket_, buffer, len, MSG_DONTWAIT);
+#endif
 }
 void SocketChannel::close()
 {

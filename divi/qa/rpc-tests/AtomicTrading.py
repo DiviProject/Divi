@@ -126,6 +126,8 @@ class AtomicTradingTest (BitcoinTestFramework):
             self.generateOutput (self.nodes[0], htlcAddress, 1)
             for _ in range (2)
         ]
+
+        connect_nodes_bi(self.nodes,0,1)
         self.nodes[0].setgenerate (True, 1)
         sync_blocks (self.nodes)
 

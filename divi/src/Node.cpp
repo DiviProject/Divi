@@ -275,7 +275,7 @@ void QueuedMessageConnection::ReceiveData(boost::condition_variable& messageHand
     AssertLockHeld(cs_vRecvMsg);
     // typical socket buffer is 8K-64K
     char pchBuf[0x10000];
-    int nBytes = channel_.receiveData(pchBuf, sizeof(pchBuf));
+    int nBytes = channel_.receiveData(&pchBuf[0], sizeof(pchBuf));
     if (nBytes > 0) {
         if (!ConvertDataBufferToNetworkMessage(pchBuf, nBytes,messageHandlerCondition))
             CloseCommsAndDisconnect();

@@ -178,10 +178,6 @@ public:
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     uint32_t nSequenceId;
 
-    //! zerocoin specific fields
-    std::map<libzerocoin::CoinDenomination, int64_t> mapZerocoinSupply;
-    std::vector<libzerocoin::CoinDenomination> vMintDenominationsInBlock;
-
     LotteryCoinstakeData vLotteryWinnersCoinstakes;
 
     void SetNull()
@@ -213,11 +209,6 @@ public:
         nBits = 0;
         nNonce = 0;
         nAccumulatorCheckpoint = 0;
-        // Start supply of each denomination with 0s
-        for (auto& denom : libzerocoin::zerocoinDenomList) {
-            mapZerocoinSupply.insert(std::make_pair(denom, 0));
-        }
-        vMintDenominationsInBlock.clear();
         vLotteryWinnersCoinstakes.clear();
     }
 
@@ -459,8 +450,6 @@ public:
         READWRITE(nNonce);
         if(this->nVersion > 3) {
             READWRITE(nAccumulatorCheckpoint);
-            READWRITE(mapZerocoinSupply);
-            READWRITE(vMintDenominationsInBlock);
         }
 
     }

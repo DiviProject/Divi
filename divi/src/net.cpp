@@ -210,7 +210,7 @@ public:
     {
         LOCK(cs_vNodes);
         vNodes_.push_back(pnode->node());
-        socketChannelsByNodeId_.insert(std::make_pair(pnode->node()->GetId(),pnode));
+        socketChannelsByNodeId_[pnode->node()->GetId()].reset(pnode);
     }
     CCriticalSection& nodesLock()
     {

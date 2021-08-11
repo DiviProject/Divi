@@ -281,8 +281,6 @@ bool CBlockTreeDB::LoadBlockIndexGuts(BlockMap& blockIndicesByHash)
 
                 //zerocoin
                 pindexNew->nAccumulatorCheckpoint = diskindex.nAccumulatorCheckpoint;
-                pindexNew->mapZerocoinSupply = diskindex.mapZerocoinSupply;
-                pindexNew->vMintDenominationsInBlock = diskindex.vMintDenominationsInBlock;
 
                 //Proof Of Stake
                 pindexNew->nMint = diskindex.nMint;

@@ -26,6 +26,7 @@
 
 static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
+const int CMasternodeSync::blockDepthUpToWhichToRequestMNWinners = 200;
 
 static std::map<int,std::string> syncCodeNameByCodeValue =
     {

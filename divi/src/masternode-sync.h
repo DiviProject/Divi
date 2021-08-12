@@ -60,7 +60,7 @@ private:
     std::map<uint256, int>& mapSeenSyncMNW;
 
 public:
-    static constexpr int blockDepthUpToWhichToRequestMNWinners = 200;
+    static const int blockDepthUpToWhichToRequestMNWinners;
 
     int64_t timestampOfLastMasternodeListUpdate;
     int64_t timestampOfLastMasternodeWinnerUpdate;

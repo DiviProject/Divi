@@ -39,18 +39,18 @@ private:
     std::string strFilename;
     std::string strMagicMessage;
 
-    bool Write(const T& objToSave)
+    bool Write(const T& objToSave) const
     {
         // LOCK(objToSave.cs);
 
-        int64_t nStart = GetTimeMillis();
+        const int64_t nStart = GetTimeMillis();
 
         // serialize, checksum data up to that point, then append checksum
         CDataStream ssObj(SER_DISK, CLIENT_VERSION);
         ssObj << strMagicMessage; // specific magic message for this type of object
         ssObj << FLATDATA(Params().MessageStart()); // network specific magic number
         ssObj << objToSave;
-        uint256 hash = Hash(ssObj.begin(), ssObj.end());
+        const uint256 hash = Hash(ssObj.begin(), ssObj.end());
         ssObj << hash;
 
         // open output file, and associate with CAutoFile
@@ -62,8 +62,7 @@ private:
         // Write and commit header, data
         try {
             fileout << ssObj;
-        }
-        catch (std::exception &e) {
+        } catch (const std::exception& e) {
             return error("%s: Serialize or I/O error - %s", __func__, e.what());
         }
         fileout.fclose();
@@ -74,11 +73,11 @@ private:
         return true;
     }
 
-    ReadResult Read(T& objToLoad, bool fDryRun = false)
+    ReadResult Read(T& objToLoad, const bool fDryRun = false) const
     {
         //LOCK(objToLoad.cs);
 
-        int64_t nStart = GetTimeMillis();
+        const int64_t nStart = GetTimeMillis();
         // open input file, and associate with CAutoFile
         FILE *file = fopen(pathDB.string().c_str(), "rb");
         CAutoFile filein(file, SER_DISK, CLIENT_VERSION);
@@ -89,7 +88,7 @@ private:
         }
 
         // use file size to size memory buffer
-        int fileSize = boost::filesystem::file_size(pathDB);
+        const int fileSize = boost::filesystem::file_size(pathDB);
         int dataSize = fileSize - sizeof(uint256);
         // Don't try to resize to a negative number if file is small
         if (dataSize < 0)
@@ -102,8 +101,7 @@ private:
         try {
             filein.read((char *)&vchData[0], dataSize);
             filein >> hashIn;
-        }
-        catch (std::exception &e) {
+        } catch (const std::exception& e) {
             error("%s: Deserialize or I/O error - %s", __func__, e.what());
             return HashReadError;
         }
@@ -112,7 +110,7 @@ private:
         CDataStream ssObj(vchData, SER_DISK, CLIENT_VERSION);
 
         // verify stored checksum matches input data
-        uint256 hashTmp = Hash(ssObj.begin(), ssObj.end());
+        const uint256 hashTmp = Hash(ssObj.begin(), ssObj.end());
         if (hashIn != hashTmp)
         {
             error("%s: Checksum mismatch, data corrupted", __func__);
@@ -146,8 +144,7 @@ private:
 
             // de-serialize data into T object
             ssObj >> objToLoad;
-        }
-        catch (std::exception &e) {
+        } catch (const std::exception& e) {
             objToLoad.Clear();
             error("%s: Deserialize or I/O error - %s", __func__, e.what());
             return IncorrectFormat;
@@ -166,14 +163,14 @@ private:
 
 
 public:
-    CFlatDB(std::string strFilenameIn, std::string strMagicMessageIn)
+    explicit CFlatDB(const std::string& strFilenameIn, const std::string& strMagicMessageIn)
     {
         pathDB = GetDataDir() / strFilenameIn;
         strFilename = strFilenameIn;
         strMagicMessage = strMagicMessageIn;
     }
 
-    bool Load(T& objToLoad)
+    bool Load(T& objToLoad) const
     {
         LogPrintf("Reading info from %s...\n", strFilename);
         ReadResult readResult = Read(objToLoad);
@@ -195,9 +192,9 @@ public:
         return true;
     }
 
-    bool Dump(T& objToSave)
+    bool Dump(T& objToSave) const
     {
-        int64_t nStart = GetTimeMillis();
+        const int64_t nStart = GetTimeMillis();
 
         LogPrintf("Verifying %s format...\n", strFilename);
         T tmpObjToLoad;

@@ -7,6 +7,8 @@ class CMasternode;
 class CMasternodePing;
 class CTxIn;
 class COutPoint;
+class CChain;
+class CMasternodeBroadcast;
 
 bool MasternodeResyncIsRequested();
 void FulfilledMasternodeResyncRequest();
@@ -35,4 +37,5 @@ bool TimeSinceLastPingIsWithin(const CMasternode& mn, const int timeWindow, int6
 bool IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t now);
 bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now);
 bool ReindexingOrImportingIsActive();
+CMasternodePing createDelayedMasternodePing(const CMasternodeBroadcast& mnb,const CChain& activeChain);
 #endif // MASTERNODE_HELPERS_H

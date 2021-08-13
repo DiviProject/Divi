@@ -179,3 +179,7 @@ bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now)
 {
     return TimeSinceLastPingIsWithin(mn, MASTERNODE_MIN_MNP_SECONDS - 60, now);
 }
+bool ReindexingOrImportingIsActive()
+{
+    return (fImporting || fReindex);
+}

@@ -34,4 +34,5 @@ CMasternodePing createCurrentPing(const CTxIn& newVin);
 bool TimeSinceLastPingIsWithin(const CMasternode& mn, const int timeWindow, int64_t now = -1);
 bool IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t now);
 bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now);
+bool ReindexingOrImportingIsActive();
 #endif // MASTERNODE_HELPERS_H

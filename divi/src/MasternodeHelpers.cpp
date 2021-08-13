@@ -184,12 +184,12 @@ bool ReindexingOrImportingIsActive()
 {
     return (fImporting || fReindex);
 }
-CMasternodePing createDelayedMasternodePing(const CMasternodeBroadcast& mnb)
+CMasternodePing createDelayedMasternodePing(const CMasternode& mn)
 {
     CMasternodePing ping;
     const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
-    ping.vin = mnb.vin;
-    const int depthOfTx = ComputeMasternodeInputAge(mnb);
+    ping.vin = mn.vin;
+    const int depthOfTx = ComputeMasternodeInputAge(mn);
     const int offset = std::min( std::max(0, depthOfTx), 12 );
     const auto* block = chainActive[chainActive.Height() - offset];
     ping.blockHash = block->GetBlockHash();

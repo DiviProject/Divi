@@ -23,7 +23,12 @@
 template<typename T>
 class CFlatDB
 {
+
 private:
+
+    const std::string strFilename;
+    const boost::filesystem::path pathDB;
+    const std::string strMagicMessage;
 
     enum ReadResult {
         Ok,
@@ -34,10 +39,6 @@ private:
         IncorrectMagicNumber,
         IncorrectFormat
     };
-
-    boost::filesystem::path pathDB;
-    std::string strFilename;
-    std::string strMagicMessage;
 
     bool Write(const T& objToSave) const
     {
@@ -54,10 +55,10 @@ private:
         ssObj << hash;
 
         // open output file, and associate with CAutoFile
-        FILE *file = fopen(pathDB.string().c_str(), "wb");
+        FILE *file = fopen(Path().string().c_str(), "wb");
         CAutoFile fileout(file, SER_DISK, CLIENT_VERSION);
         if (fileout.IsNull())
-            return error("%s: Failed to open file %s", __func__, pathDB.string());
+            return error("%s: Failed to open file %s", __func__, Path().string());
 
         // Write and commit header, data
         try {
@@ -67,7 +68,7 @@ private:
         }
         fileout.fclose();
 
-        LogPrintf("Written info to %s  %dms\n", strFilename, GetTimeMillis() - nStart);
+        LogPrintf("Written info to %s  %dms\n", Filename(), GetTimeMillis() - nStart);
         LogPrintf("     %s\n", objToSave.ToString());
 
         return true;
@@ -79,16 +80,16 @@ private:
 
         const int64_t nStart = GetTimeMillis();
         // open input file, and associate with CAutoFile
-        FILE *file = fopen(pathDB.string().c_str(), "rb");
+        FILE *file = fopen(Path().string().c_str(), "rb");
         CAutoFile filein(file, SER_DISK, CLIENT_VERSION);
         if (filein.IsNull())
         {
-            error("%s: Failed to open file %s", __func__, pathDB.string());
+            error("%s: Failed to open file %s", __func__, Path().string());
             return FileError;
         }
 
         // use file size to size memory buffer
-        const int fileSize = boost::filesystem::file_size(pathDB);
+        const int fileSize = boost::filesystem::file_size(Path());
         int dataSize = fileSize - sizeof(uint256);
         // Don't try to resize to a negative number if file is small
         if (dataSize < 0)
@@ -150,7 +151,7 @@ private:
             return IncorrectFormat;
         }
 
-        LogPrintf("Loaded info from %s  %dms\n", strFilename, GetTimeMillis() - nStart);
+        LogPrintf("Loaded info from %s  %dms\n", Filename(), GetTimeMillis() - nStart);
         LogPrintf("     %s\n", objToLoad.ToString());
         if(!fDryRun) {
             LogPrintf("%s: Cleaning....\n", __func__);
@@ -161,24 +162,32 @@ private:
         return Ok;
     }
 
-
 public:
+
     explicit CFlatDB(const std::string& strFilenameIn, const std::string& strMagicMessageIn)
+      : strFilename(strFilenameIn), pathDB(GetDataDir() / strFilenameIn),
+        strMagicMessage(strMagicMessageIn)
+    {}
+
+    const std::string& Filename() const
     {
-        pathDB = GetDataDir() / strFilenameIn;
-        strFilename = strFilenameIn;
-        strMagicMessage = strMagicMessageIn;
+        return strFilename;
+    }
+
+    const boost::filesystem::path& Path() const
+    {
+        return pathDB;
     }
 
     bool Load(T& objToLoad) const
     {
-        LogPrintf("Reading info from %s...\n", strFilename);
+        LogPrintf("Reading info from %s...\n", Filename());
         ReadResult readResult = Read(objToLoad);
         if (readResult == FileError)
-            LogPrintf("Missing file %s, will try to recreate\n", strFilename);
+            LogPrintf("Missing file %s, will try to recreate\n", Filename());
         else if (readResult != Ok)
         {
-            LogPrintf("Error reading %s: ", strFilename);
+            LogPrintf("Error reading %s: ", Filename());
             if(readResult == IncorrectFormat)
             {
                 LogPrintf("%s: Magic is ok but data has invalid format, will try to recreate\n", __func__);
@@ -196,16 +205,16 @@ public:
     {
         const int64_t nStart = GetTimeMillis();
 
-        LogPrintf("Verifying %s format...\n", strFilename);
+        LogPrintf("Verifying %s format...\n", Filename());
         T tmpObjToLoad;
         ReadResult readResult = Read(tmpObjToLoad, true);
 
         // there was an error and it was not an error on file opening => do not proceed
         if (readResult == FileError)
-            LogPrintf("Missing file %s, will try to recreate\n", strFilename);
+            LogPrintf("Missing file %s, will try to recreate\n", Filename());
         else if (readResult != Ok)
         {
-            LogPrintf("Error reading %s: ", strFilename);
+            LogPrintf("Error reading %s: ", Filename());
             if(readResult == IncorrectFormat)
                 LogPrintf("%s: Magic is ok but data has invalid format, will try to recreate\n", __func__);
             else
@@ -215,9 +224,9 @@ public:
             }
         }
 
-        LogPrintf("Writing info to %s...\n", strFilename);
+        LogPrintf("Writing info to %s...\n", Filename());
         Write(objToSave);
-        LogPrintf("%s dump finished  %dms\n", strFilename, GetTimeMillis() - nStart);
+        LogPrintf("%s dump finished  %dms\n", Filename(), GetTimeMillis() - nStart);
 
         return true;
     }

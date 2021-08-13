@@ -13,8 +13,6 @@
 #include <script/standard.h>
 #include <keystore.h>
 
-extern CChain chainActive;
-
 static bool GetVinAndKeysFromOutput(const CKeyStore& walletKeyStore, CScript pubScript, CPubKey& pubKeyRet, CKey& keyRet)
 {
     // wait for reindex and/or import to finish
@@ -305,7 +303,7 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
 
     mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
     const CMasternodePing mnp = (deferRelay
-                                    ? createDelayedMasternodePing(mnbRet,chainActive)
+                                    ? createDelayedMasternodePing(mnbRet)
                                     : createCurrentPing(txin));
     mnbRet.lastPing = mnp;
 

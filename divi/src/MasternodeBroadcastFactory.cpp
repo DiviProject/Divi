@@ -289,26 +289,6 @@ bool CMasternodeBroadcastFactory::provideSignatures(
     return true;
 }
 
-namespace
-{
-
-CMasternodePing createDelayedMasternodePing(const CMasternodeBroadcast& mnb,const CChain& activeChain)
-{
-    CMasternodePing ping;
-    const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
-    ping.vin = mnb.vin;
-    const int depthOfTx = ComputeMasternodeInputAge(mnb);
-    const int offset = std::min( std::max(0, depthOfTx), 12 );
-    const auto* block = activeChain[activeChain.Height() - offset];
-    ping.blockHash = block->GetBlockHash();
-    ping.sigTime = std::max(block->GetBlockTime() + offsetTimeBy45BlocksInSeconds, GetAdjustedTime());
-    ping.signature = std::vector<unsigned char>();
-    LogPrint("masternode","mnp - relay block-time & sigtime: %d vs. %d\n", block->GetBlockTime(), ping.sigTime);
-
-    return ping;
-}
-
-} // anonymous namespace
 
 void CMasternodeBroadcastFactory::createWithoutSignatures(
     const CTxIn& txin,

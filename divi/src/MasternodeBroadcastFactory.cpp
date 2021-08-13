@@ -14,13 +14,11 @@
 #include <keystore.h>
 
 extern CChain chainActive;
-extern bool fReindex;
-extern bool fImporting;
 
 static bool GetVinAndKeysFromOutput(const CKeyStore& walletKeyStore, CScript pubScript, CPubKey& pubKeyRet, CKey& keyRet)
 {
     // wait for reindex and/or import to finish
-    if (fImporting || fReindex) return false;
+    if (ReindexingOrImportingIsActive()) return false;
 
     CTxDestination address1;
     ExtractDestination(pubScript, address1);
@@ -78,7 +76,7 @@ bool setMasternodeCollateralKeys(
         masternodeCollateralKeyPair = std::pair<CKey,CPubKey>();
         return true;
     }
-    if (fImporting || fReindex) return false;
+    if (ReindexingOrImportingIsActive()) return false;
     if (!GetVinAndKeysFromOutput(keyStore,scriptPubKey, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first))
     {
         strError = strprintf("Could not allocate txin %s:%s for masternode", outpoint.hash.ToString(), std::to_string(outpoint.n));
@@ -120,7 +118,7 @@ bool createArgumentsFromConfig(
     CTransaction fundingTx;
     uint256 blockHash;
 
-    if (fImporting || fReindex) return false;
+    if (ReindexingOrImportingIsActive()) return false;
 
     if(!configEntry.parseInputReference(txin.prevout))
         return false;
@@ -362,7 +360,7 @@ bool CMasternodeBroadcastFactory::Create(
     bool deferRelay)
 {
     // wait for reindex and/or import to finish
-    if (fImporting || fReindex) return false;
+    if (ReindexingOrImportingIsActive()) return false;
 
     createWithoutSignatures(
         txin,service,pubKeyCollateralAddressNew,pubKeyMasternodeNew,nMasternodeTier,deferRelay,mnbRet);

@@ -342,15 +342,10 @@ public:
     CAmount GetStakingBalance() const;
 
     CAmount GetChange(const CWalletTx& walletTransaction) const;
-    CAmount GetAvailableWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache = true) const;
-    CAmount GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache = true) const;
     CAmount GetAvailableCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
     CAmount GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
     CAmount GetUnconfirmedBalance() const;
     CAmount GetImmatureBalance() const;
-    CAmount GetWatchOnlyBalance() const;
-    CAmount GetUnconfirmedWatchOnlyBalance() const;
-    CAmount GetImmatureWatchOnlyBalance() const;
     std::pair<std::string,bool> CreateTransaction(
         const std::vector<std::pair<CScript, CAmount> >& vecSend,
         CWalletTx& wtxNew,

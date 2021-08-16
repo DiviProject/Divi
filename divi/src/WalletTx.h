@@ -39,8 +39,6 @@ public:
     mutable bool fAvailableCreditCached;
     mutable bool fWatchDebitCached;
     mutable bool fWatchCreditCached;
-    mutable bool fImmatureWatchCreditCached;
-    mutable bool fAvailableWatchCreditCached;
     mutable bool fChangeCached;
     mutable CAmount nDebitCached;
     mutable CAmount nCreditCached;
@@ -48,8 +46,6 @@ public:
     mutable CAmount nAvailableCreditCached;
     mutable CAmount nWatchDebitCached;
     mutable CAmount nWatchCreditCached;
-    mutable CAmount nImmatureWatchCreditCached;
-    mutable CAmount nAvailableWatchCreditCached;
     mutable CAmount nChangeCached;
 
     CWalletTx();

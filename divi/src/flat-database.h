@@ -15,20 +15,17 @@
 
 #include <boost/filesystem.hpp>
 
-/** 
-*   Generic Dumping and Loading
-*   ---------------------------
-*/
-
-template<typename T>
-class CFlatDB
+/** Base class for file-based data storage.  It supports generic
+ *  reading and writing from/to files in checksumed chunks of data.  */
+class FlatDataFile
 {
 
 private:
 
     const std::string strFilename;
     const boost::filesystem::path pathDB;
-    const std::string strMagicMessage;
+
+public:
 
     enum ReadResult {
         Ok,
@@ -40,7 +37,25 @@ private:
         IncorrectFormat
     };
 
-    bool Write(const T& objToSave) const
+    explicit FlatDataFile(const std::string& strFilenameIn)
+      : strFilename(strFilenameIn), pathDB(GetDataDir() / strFilenameIn)
+    {}
+
+    const std::string& Filename() const
+    {
+        return strFilename;
+    }
+
+    const boost::filesystem::path& Path() const
+    {
+        return pathDB;
+    }
+
+    /** Writes a single chunk of data to the file, using
+     *  the given magic bytes and optionally appending rather
+     *  than truncating the file.  */
+    template <typename T>
+        bool Write(const std::string& magic, const T& objToSave, bool append) const
     {
         // LOCK(objToSave.cs);
 
@@ -48,14 +63,14 @@ private:
 
         // serialize, checksum data up to that point, then append checksum
         CDataStream ssObj(SER_DISK, CLIENT_VERSION);
-        ssObj << strMagicMessage; // specific magic message for this type of object
+        ssObj << magic; // specific magic message for this type of object
         ssObj << FLATDATA(Params().MessageStart()); // network specific magic number
         ssObj << objToSave;
         const uint256 hash = Hash(ssObj.begin(), ssObj.end());
         ssObj << hash;
 
         // open output file, and associate with CAutoFile
-        FILE *file = fopen(Path().string().c_str(), "wb");
+        FILE *file = fopen(Path().string().c_str(), append ? "ab" : "wb");
         CAutoFile fileout(file, SER_DISK, CLIENT_VERSION);
         if (fileout.IsNull())
             return error("%s: Failed to open file %s", __func__, Path().string());
@@ -73,6 +88,16 @@ private:
 
         return true;
     }
+
+};
+
+template<typename T>
+class CFlatDB : private FlatDataFile
+{
+
+private:
+
+    const std::string strMagicMessage;
 
     ReadResult Read(T& objToLoad, const bool fDryRun = false) const
     {
@@ -165,19 +190,9 @@ private:
 public:
 
     explicit CFlatDB(const std::string& strFilenameIn, const std::string& strMagicMessageIn)
-      : strFilename(strFilenameIn), pathDB(GetDataDir() / strFilenameIn),
+      : FlatDataFile(strFilenameIn),
         strMagicMessage(strMagicMessageIn)
     {}
-
-    const std::string& Filename() const
-    {
-        return strFilename;
-    }
-
-    const boost::filesystem::path& Path() const
-    {
-        return pathDB;
-    }
 
     bool Load(T& objToLoad) const
     {
@@ -225,7 +240,7 @@ public:
         }
 
         LogPrintf("Writing info to %s...\n", Filename());
-        Write(objToSave);
+        Write(strMagicMessage, objToSave, false);
         LogPrintf("%s dump finished  %dms\n", Filename(), GetTimeMillis() - nStart);
 
         return true;

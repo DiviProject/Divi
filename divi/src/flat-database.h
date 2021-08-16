@@ -27,6 +27,8 @@ private:
 
 public:
 
+    class Reader;
+
     enum ReadResult {
         Ok,
         FileError,
@@ -87,6 +89,73 @@ public:
         LogPrintf("     %s\n", objToSave.ToString());
 
         return true;
+    }
+
+    /** Returns a reader instance for the underlying file.  */
+    std::unique_ptr<Reader> Read() const;
+
+};
+
+/** Helper class that corresponds to an opened data file and allows to
+ *  read it chunk-by-chunk.  This is a bit like an iterator.  */
+class FlatDataFile::Reader
+{
+
+private:
+
+    /** The underlying opened file.  */
+    CAutoFile file;
+
+    /** The magic string of the current chunk.  */
+    std::string magic;
+
+    /** If there is a current chunk of unparsed data, this holds
+     *  the stream to read.  */
+    std::unique_ptr<CDataStream> chunk;
+
+    explicit Reader(const boost::filesystem::path& pathDB)
+      : file(fopen(pathDB.string().c_str(), "rb"), SER_DISK, CLIENT_VERSION)
+    {}
+
+    friend class FlatDataFile;
+
+public:
+
+    CAutoFile& GetFile()
+    {
+        return file;
+    }
+
+    /** Tries to read the next chunk of raw data from the file.  This parses
+     *  the magic, verifies the network version and checks the hash, but does
+     *  not yet attempt to parse the data into a particular instance.
+     *
+     *  The caller must pass in the expected size of the next chunk, which they
+     *  must obtain somehow themselves.  */
+    ReadResult NextChunk(size_t dataSize);
+
+    /** Returns the magic of the current chunk.  */
+    const std::string& GetMagic() const
+    {
+        assert(chunk != nullptr);
+        return magic;
+    }
+
+    /** Parses the current chunk into an object of type T.  */
+    template <typename T>
+        ReadResult ParseChunk(T& objToLoad)
+    {
+        assert(chunk != nullptr);
+        try {
+            // de-serialize data into T object
+            *chunk >> objToLoad;
+            chunk.reset();
+        } catch (const std::exception& e) {
+            objToLoad.Clear();
+            error("%s: Deserialize or I/O error - %s", __func__, e.what());
+            return IncorrectFormat;
+        }
+        return Ok;
     }
 
 };

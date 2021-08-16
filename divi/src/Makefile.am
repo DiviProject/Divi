@@ -598,6 +598,7 @@ libbitcoin_common_a_SOURCES = \
   core_io.cpp \
   eccryptoverify.cpp \
   ecwrapper.cpp \
+  flat-database.cpp \
   hash.cpp \
   hdchain.cpp \
   key.cpp \

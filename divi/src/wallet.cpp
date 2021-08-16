@@ -1439,35 +1439,6 @@ CAmount CWallet::GetAvailableCredit(const CWalletTx& walletTransaction, bool fUs
     return nCredit;
 }
 
-CAmount CWallet::GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache) const
-{
-    if (walletTransaction.IsCoinBase() &&
-        confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0 &&
-        confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) > 0)
-    {
-        if (fUseCache && walletTransaction.fImmatureWatchCreditCached)
-            return walletTransaction.nImmatureWatchCreditCached;
-        walletTransaction.nImmatureWatchCreditCached = ComputeCredit(walletTransaction, ISMINE_WATCH_ONLY);
-        walletTransaction.fImmatureWatchCreditCached = true;
-        return walletTransaction.nImmatureWatchCreditCached;
-    }
-
-    return 0;
-}
-CAmount CWallet::GetAvailableWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache) const
-{
-    // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (walletTransaction.IsCoinBase() && confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0)
-        return 0;
-
-    if (fUseCache && walletTransaction.fAvailableWatchCreditCached)
-        return walletTransaction.nAvailableWatchCreditCached;
-
-    CAmount nCredit = ComputeCredit(walletTransaction, ISMINE_WATCH_ONLY,REQUIRE_UNSPENT);
-    walletTransaction.nAvailableWatchCreditCached = nCredit;
-    walletTransaction.fAvailableWatchCreditCached = true;
-    return nCredit;
-}
 CAmount CWallet::GetChange(const CWalletTx& walletTransaction) const
 {
     if (walletTransaction.fChangeCached)
@@ -1553,48 +1524,6 @@ CAmount CWallet::GetImmatureBalance() const
         for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             nTotal += GetImmatureCredit(*pcoin);
-        }
-    }
-    return nTotal;
-}
-
-CAmount CWallet::GetWatchOnlyBalance() const
-{
-    CAmount nTotal = 0;
-    {
-        LOCK2(cs_main, cs_wallet);
-        for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
-            const CWalletTx* pcoin = &(*it).second;
-            if (IsTrusted(*pcoin))
-                nTotal += GetAvailableWatchOnlyCredit(*pcoin);
-        }
-    }
-
-    return nTotal;
-}
-
-CAmount CWallet::GetUnconfirmedWatchOnlyBalance() const
-{
-    CAmount nTotal = 0;
-    {
-        LOCK2(cs_main, cs_wallet);
-        for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
-            const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin) == 0))
-                nTotal += GetAvailableWatchOnlyCredit(*pcoin);
-        }
-    }
-    return nTotal;
-}
-
-CAmount CWallet::GetImmatureWatchOnlyBalance() const
-{
-    CAmount nTotal = 0;
-    {
-        LOCK2(cs_main, cs_wallet);
-        for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
-            const CWalletTx* pcoin = &(*it).second;
-            nTotal += GetImmatureWatchOnlyCredit(*pcoin);
         }
     }
     return nTotal;

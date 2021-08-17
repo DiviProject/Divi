@@ -193,6 +193,7 @@ private:
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
 
     isminetype IsMine(const CScript& scriptPubKey) const;
+    bool IsMine(const CTransaction& tx) const;
 public:
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     void UpdateBestBlockLocation();
@@ -390,7 +391,6 @@ public:
     isminetype IsMine(const CTxDestination& dest) const;
     isminetype IsMine(const CTxIn& txin) const;
     isminetype IsMine(const CTxOut& txout) const;
-    bool IsMine(const CTransaction& tx) const;
 
     CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;

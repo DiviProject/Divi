@@ -333,7 +333,6 @@ public:
      */
     TxItems OrderedTxItems(std::list<CAccountingEntry>& acentries, std::string strAccount = "");
 
-    void RecomputeCachedQuantities();
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
     void LoadWalletTransaction(const CWalletTx& wtxIn);
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);

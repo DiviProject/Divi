@@ -670,10 +670,10 @@ bool CWallet::AddCryptedKey(const CPubKey& vchPubKey,
     return false;
 }
 
-bool CWallet::LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& meta)
+bool CWallet::LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& meta, const bool updateFirstKeyTimestamp)
 {
     AssertLockHeld(cs_wallet); // mapKeyMetadata
-    if (meta.nCreateTime && (!nTimeFirstKey || meta.nCreateTime < nTimeFirstKey))
+    if (meta.nCreateTime && (!nTimeFirstKey || meta.nCreateTime < nTimeFirstKey) && updateFirstKeyTimestamp)
         nTimeFirstKey = meta.nCreateTime;
 
     mapKeyMetadata[pubkey.GetID()] = meta;

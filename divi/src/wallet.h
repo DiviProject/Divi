@@ -279,7 +279,7 @@ public:
     //! Adds a key to the store, without saving it to disk (used by LoadWallet)
     bool LoadKey(const CKey& key, const CPubKey& pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
     //! Load metadata (used by LoadWallet)
-    bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata);
+    bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp = true);
 
     bool LoadMinVersion(int nVersion);
     void UpdateTimeFirstKey(int64_t nCreateTime);

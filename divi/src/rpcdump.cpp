@@ -129,8 +129,7 @@ Value importprivkey(const Array& params, bool fHelp)
         if (pwalletMain->HaveKey(vchAddress))
             return Value::null;
 
-        pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = 1;
-
+        pwalletMain->LoadKeyMetadata(pubkey,CKeyMetadata(1),false);
         if (!pwalletMain->AddKeyPubKey(key, pubkey))
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
 
@@ -281,7 +280,7 @@ Value importwallet(const Array& params, bool fHelp)
             fGood = false;
             continue;
         }
-        pwalletMain->mapKeyMetadata[keyid].nCreateTime = nTime;
+        pwalletMain->LoadKeyMetadata(pubkey,CKeyMetadata(nTime),false);
         if (fLabel)
             pwalletMain->SetAddressBook(keyid, strLabel, "receive");
         nTimeBegin = std::min(nTimeBegin, nTime);
@@ -568,8 +567,7 @@ Value bip38decrypt(const Array& params, bool fHelp)
         if (pwalletMain->HaveKey(vchAddress))
             throw JSONRPCError(RPC_WALLET_ERROR, "Key already held by wallet");
 
-        pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = 1;
-
+        pwalletMain->LoadKeyMetadata(pubkey,CKeyMetadata(1),false);
         if (!pwalletMain->AddKeyPubKey(key, pubkey))
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
 

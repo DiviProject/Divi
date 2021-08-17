@@ -389,33 +389,33 @@ public:
     isminetype IsMine(const CScript& scriptPubKey) const;
     isminetype IsMine(const CTxDestination& dest) const;
     isminetype IsMine(const CTxIn& txin) const;
-    CAmount GetDebit(const CTxIn& txin, const isminefilter& filter) const;
+    CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
     isminetype IsMine(const CTxOut& txout) const;
-    CAmount ComputeCredit(const CTxOut& txout, const isminefilter& filter) const;
+    CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;
     bool IsChange(const CTxOut& txout) const;
     CAmount ComputeChange(const CTxOut& txout) const;
     bool IsMine(const CTransaction& tx) const;
     bool DebitsFunds(const CTransaction& tx) const;
-    bool DebitsFunds(const CWalletTx& tx,const isminefilter& filter) const;
+    bool DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const;
     void GetAmounts(
         const CWalletTx& wtx,
         std::list<COutputEntry>& listReceived,
         std::list<COutputEntry>& listSent,
         CAmount& nFee,
         std::string& strSentAccount,
-        const isminefilter& filter) const;
+        const UtxoOwnershipFilter& filter) const;
     void GetAccountAmounts(
         const CWalletTx& wtx,
         const std::string& strAccount,
         CAmount& nReceived,
         CAmount& nSent,
         CAmount& nFee,
-        const isminefilter& filter) const;
+        const UtxoOwnershipFilter& filter) const;
 
-    CAmount ComputeDebit(const CTransaction& tx, const isminefilter& filter) const;
-    CAmount GetDebit(const CWalletTx& tx, const isminefilter& filter) const;
-    CAmount ComputeCredit(const CWalletTx& tx, const isminefilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
-    CAmount GetCredit(const CWalletTx& walletTransaction, const isminefilter& filter) const;
+    CAmount ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const;
+    CAmount GetDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;
+    CAmount ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
+    CAmount GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeChange(const CTransaction& tx) const;
 
     DBErrors LoadWallet(bool& fFirstRunRet);

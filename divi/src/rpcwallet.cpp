@@ -925,7 +925,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
 }
 
 
-CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMinDepth, const isminefilter& filter)
+CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
 {
     CAmount nBalance = 0;
 
@@ -952,7 +952,7 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
     return nBalance;
 }
 
-CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const isminefilter& filter)
+CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
 {
     CWalletDB walletdb(settings,pwalletMain->strWalletFile);
     return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
@@ -988,7 +988,7 @@ Value getbalance(const Array& params, bool fHelp)
     int nMinDepth = 1;
     if (params.size() > 1)
         nMinDepth = params[1].get_int();
-    isminefilter filter = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
     if (params.size() > 2)
         if (params[2].get_bool())
             filter = filter | ISMINE_WATCH_ONLY;
@@ -1272,7 +1272,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
     if (params.size() > 1)
         fIncludeEmpty = params[1].get_bool();
 
-    isminefilter filter = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
     if (params.size() > 2)
         if (params[2].get_bool())
             filter = filter | ISMINE_WATCH_ONLY;
@@ -1297,7 +1297,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
             if (!ExtractDestination(txout.scriptPubKey, address))
                 continue;
 
-            isminefilter mine = pwalletMain->IsMine(address);
+            UtxoOwnershipFilter mine = pwalletMain->IsMine(address);
             if (!(mine & filter))
                 continue;
 
@@ -1460,7 +1460,7 @@ static int ComputeBlockHeightOfFirstConfirmation(const uint256 blockHash)
     BlockMap::const_iterator it = mapBlockIndex.find(blockHash);
     return (it==mapBlockIndex.end() || it->second==nullptr)? 0 : it->second->nHeight;
 }
-void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter& filter)
+void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const UtxoOwnershipFilter& filter)
 {
     static SuperblockSubsidyContainer superblockSubsidies(Params());
     static const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
@@ -1723,7 +1723,7 @@ Value listtransactions(const Array& params, bool fHelp)
     int nFrom = 0;
     if (params.size() > 2)
         nFrom = params[2].get_int();
-    isminefilter filter = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
     if (params.size() > 3)
         if (params[3].get_bool())
             filter = filter | ISMINE_WATCH_ONLY;
@@ -1792,7 +1792,7 @@ Value listaccounts(const Array& params, bool fHelp)
     int nMinDepth = 1;
     if (params.size() > 0)
         nMinDepth = params[0].get_int();
-    isminefilter includeWatchonly = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter includeWatchonly = ISMINE_SPENDABLE;
     if (params.size() > 1)
         if (params[1].get_bool())
             includeWatchonly = includeWatchonly | ISMINE_WATCH_ONLY;
@@ -1879,7 +1879,7 @@ Value listsinceblock(const Array& params, bool fHelp)
 
     CBlockIndex* pindex = NULL;
     int target_confirms = 1;
-    isminefilter filter = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
 
     if (params.size() > 0) {
         uint256 blockId = 0;
@@ -1964,7 +1964,7 @@ Value gettransaction(const Array& params, bool fHelp)
     uint256 hash;
     hash.SetHex(params[0].get_str());
 
-    isminefilter filter = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
     if (params.size() > 1)
         if (params[1].get_bool())
             filter = filter | ISMINE_WATCH_ONLY;

@@ -1589,7 +1589,7 @@ bool CWallet::IsAvailableForSpending(
     if (pcoin->vout[i].nValue <= 0 && !fIncludeZeroValue)
         return false;
 
-    fIsSpendable = (mine & ISMINE_SPENDABLE) != ISMINE_NO || (mine & ISMINE_MULTISIG) != ISMINE_NO;
+    fIsSpendable = (mine & ISMINE_SPENDABLE) != ISMINE_NO;
     return true;
 }
 void CWallet::AvailableCoins(

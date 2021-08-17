@@ -1238,6 +1238,7 @@ Value addmultisigaddress(const Array& params, bool fHelp)
     CScript inner = _createmultisig_redeemScript(params);
     CScriptID innerID(inner);
     pwalletMain->AddCScript(inner);
+    if(::IsMine(*pwalletMain,inner)!=ISMINE_SPENDABLE) pwalletMain->AddWatchOnly(inner);
 
     pwalletMain->SetAddressBook(innerID, strAccount, "send");
     return CBitcoinAddress(innerID).ToString();

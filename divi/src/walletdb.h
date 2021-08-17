@@ -49,12 +49,18 @@ public:
     int nVersion;
     int64_t nCreateTime; // 0 means unknown
 
+    bool unknownKeyID;
+    bool isHDPubKey;
+    std::string hdkeypath;
+    std::string hdchainid;
+
     CKeyMetadata()
     {
         SetNull();
     }
     CKeyMetadata(int64_t nCreateTime_)
     {
+        SetNull();
         nVersion = CKeyMetadata::CURRENT_VERSION;
         nCreateTime = nCreateTime_;
     }
@@ -73,6 +79,10 @@ public:
     {
         nVersion = CKeyMetadata::CURRENT_VERSION;
         nCreateTime = 0;
+        unknownKeyID = true;
+        isHDPubKey = false;
+        hdkeypath = "";
+        hdchainid = "";
     }
 };
 

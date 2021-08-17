@@ -376,19 +376,15 @@ Value validateaddress(const Array& params, bool fHelp)
 
         CKeyID keyID;
         if (pwalletMain) {
-            const auto& meta = pwalletMain->mapKeyMetadata;
-            auto it = address.GetKeyID(keyID) ? meta.find(keyID) : meta.end();
-            if (it == meta.end()) {
-                it = meta.find(CKeyID(CScriptID(scriptPubKey)));
+            CKeyMetadata result = pwalletMain->getKeyMetadata(dest);
+            if(!result.unknownKeyID)
+            {
+                ret.push_back(Pair("timestamp", result.nCreateTime));
             }
-            if (it != meta.end()) {
-                ret.push_back(Pair("timestamp", it->second.nCreateTime));
-            }
-
-            CHDChain hdChainCurrent;
-            if (!keyID.IsNull() && pwalletMain->mapHdPubKeys.count(keyID) && pwalletMain->GetHDChain(hdChainCurrent)) {
-                ret.push_back(Pair("hdkeypath", pwalletMain->mapHdPubKeys[keyID].GetKeyPath()));
-                ret.push_back(Pair("hdchainid", hdChainCurrent.GetID().GetHex()));
+            if(result.isHDPubKey)
+            {
+                ret.push_back(Pair("hdkeypath", result.hdkeypath ));
+                ret.push_back(Pair("hdchainid", result.hdchainid ));
             }
         }
 #endif

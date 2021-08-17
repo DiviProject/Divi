@@ -123,7 +123,6 @@ Value importprivkey(const Array& params, bool fHelp)
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
     {
-        pwalletMain->RecomputeCachedQuantities();
         pwalletMain->SetAddressBook(vchAddress, strLabel, "receive");
 
         // Don't throw error in case a key is already there
@@ -198,8 +197,6 @@ Value importaddress(const Array& params, bool fHelp)
         // Don't throw error in case an address is already there
         if (pwalletMain->HaveWatchOnly(script))
             return Value::null;
-
-        pwalletMain->RecomputeCachedQuantities();
 
         if (!pwalletMain->AddWatchOnly(script))
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding address to wallet");
@@ -301,7 +298,6 @@ Value importwallet(const Array& params, bool fHelp)
 
     LogPrintf("Rescanning last %i blocks\n", chainActive.Height() - pindex->nHeight + 1);
     pwalletMain->ScanForWalletTransactions(pindex);
-    pwalletMain->RecomputeCachedQuantities();
 
     if (!fGood)
         throw JSONRPCError(RPC_WALLET_ERROR, "Error adding some keys to wallet");
@@ -566,7 +562,6 @@ Value bip38decrypt(const Array& params, bool fHelp)
     result.push_back(Pair("Address", CBitcoinAddress(pubkey.GetID()).ToString()));
     CKeyID vchAddress = pubkey.GetID();
     {
-        pwalletMain->RecomputeCachedQuantities();
         pwalletMain->SetAddressBook(vchAddress, "", "receive");
 
         // Don't throw error in case a key is already there

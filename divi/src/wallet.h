@@ -150,9 +150,9 @@ private:
     int64_t orderedTransactionIndex;
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
+    std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
 
 public:
-    std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 
     typedef std::map<unsigned int, CMasterKey> MasterKeyMap;

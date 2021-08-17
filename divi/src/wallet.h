@@ -389,12 +389,13 @@ public:
     isminetype IsMine(const CScript& scriptPubKey) const;
     isminetype IsMine(const CTxDestination& dest) const;
     isminetype IsMine(const CTxIn& txin) const;
-    CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
     isminetype IsMine(const CTxOut& txout) const;
+    bool IsMine(const CTransaction& tx) const;
+
+    CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;
     bool IsChange(const CTxOut& txout) const;
     CAmount ComputeChange(const CTxOut& txout) const;
-    bool IsMine(const CTransaction& tx) const;
     bool DebitsFunds(const CTransaction& tx) const;
     bool DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const;
     void GetAmounts(

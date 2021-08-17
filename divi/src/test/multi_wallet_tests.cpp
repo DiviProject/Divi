@@ -38,14 +38,14 @@ public:
     std::string deallocateWalletAndGetName(const unsigned walletID)
     {
         if(walletCache_.empty() || walletID >= walletCache_.size() || !walletCache_[walletID].get()) return "";
-        const std::string walletName = walletCache_[walletID]->strWalletFile;
+        const std::string walletName = walletCache_[walletID]->dbFilename();
         walletCache_[walletID].reset();
         return walletName;
     }
     void deallocateAndReloadWallet(const unsigned walletID)
     {
         if(walletCache_.empty() || walletID >= walletCache_.size() || !walletCache_[walletID].get()) return;
-        const std::string walletName = walletCache_[walletID]->strWalletFile;
+        const std::string walletName = walletCache_[walletID]->dbFilename();
         walletCache_[walletID].reset();
         walletCache_[walletID].reset(new FakeWallet(fakeChain_,walletName));
     }

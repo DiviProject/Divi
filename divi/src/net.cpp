@@ -1322,11 +1322,11 @@ bool OpenNetworkConnection(const CAddress& addrConnect, const char* pszDest, boo
 
 void ThreadBackupWallet(const CWallet* wallet)
 {
-    const std::string& walletFileName = wallet->strWalletFile;
+    const std::string& walletFileName = wallet->dbFilename();
     static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(settings.GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
     while (true)
     {
-        if(!wallet->fFileBacked) return;
+        if(!wallet->isBackedByFile()) return;
 
         {
             LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
@@ -1530,7 +1530,7 @@ void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain)
     if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "stakemint", &ThreadStakeMinter, pwalletMain));
 
-    if(pwalletMain && pwalletMain->fFileBacked)
+    if(pwalletMain && pwalletMain->isBackedByFile())
     {
         int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
         threadGroup.create_thread(

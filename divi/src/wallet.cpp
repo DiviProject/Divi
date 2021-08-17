@@ -142,7 +142,7 @@ bool FilterAvailableTypeByOwnershipType(const CKeyStore& keystore, const CScript
 
 bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite)
 {
-    return CWalletDB(settings, walletPtr->strWalletFile).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
+    return CWalletDB(settings, walletPtr->dbFilename()).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
 }
 
 CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
@@ -199,6 +199,15 @@ void CWallet::SetNull()
     nTimeFirstKey = 0;
     walletStakingOnly = false;
 
+}
+
+bool CWallet::isBackedByFile() const
+{
+    return fFileBacked;
+}
+const std::string CWallet::dbFilename() const
+{
+    return strWalletFile;
 }
 
 void CWallet::toggleSpendingZeroConfirmationOutputs()

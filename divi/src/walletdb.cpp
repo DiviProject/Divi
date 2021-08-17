@@ -850,22 +850,22 @@ void ThreadFlushWalletDB(const string& strFile)
 
 bool BackupWallet(const CWallet& wallet, const string& strDest)
 {
-    if (!wallet.fFileBacked)
+    if (!wallet.isBackedByFile())
         return false;
     while (true) {
         {
             LOCK(CDB::bitdb.cs_db);
-            if (!CDB::bitdb.mapFileUseCount.count(wallet.strWalletFile) || CDB::bitdb.mapFileUseCount[wallet.strWalletFile] == 0) {
+            if (!CDB::bitdb.mapFileUseCount.count(wallet.dbFilename()) || CDB::bitdb.mapFileUseCount[wallet.dbFilename()] == 0) {
                 // Flush log data to the dat file
-                CDB::bitdb.CloseDb(wallet.strWalletFile);
-                CDB::bitdb.CheckpointLSN(wallet.strWalletFile);
-                CDB::bitdb.mapFileUseCount.erase(wallet.strWalletFile);
+                CDB::bitdb.CloseDb(wallet.dbFilename());
+                CDB::bitdb.CheckpointLSN(wallet.dbFilename());
+                CDB::bitdb.mapFileUseCount.erase(wallet.dbFilename());
 
                 // Copy wallet.dat
-                filesystem::path pathSrc = GetDataDir() / wallet.strWalletFile;
+                filesystem::path pathSrc = GetDataDir() / wallet.dbFilename();
                 filesystem::path pathDest(strDest);
                 if (filesystem::is_directory(pathDest))
-                    pathDest /= wallet.strWalletFile;
+                    pathDest /= wallet.dbFilename();
 
                 try {
 #if BOOST_VERSION >= 158000

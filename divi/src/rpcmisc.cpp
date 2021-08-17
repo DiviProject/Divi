@@ -251,7 +251,7 @@ public:
         Object obj;
         CPubKey vchPubKey;
         obj.push_back(Pair("isscript", false));
-        if (mine == ISMINE_SPENDABLE) {
+        if (mine == isminetype::ISMINE_SPENDABLE) {
             pwalletMain->GetPubKey(keyID, vchPubKey);
             obj.push_back(Pair("pubkey", HexStr(vchPubKey)));
             obj.push_back(Pair("iscompressed", vchPubKey.IsCompressed()));
@@ -263,7 +263,7 @@ public:
     {
         Object obj;
         obj.push_back(Pair("isscript", true));
-        if (mine != ISMINE_NO) {
+        if (mine != isminetype::ISMINE_NO) {
             CScript subscript;
             pwalletMain->GetCScript(scriptID, subscript);
             std::vector<CTxDestination> addresses;
@@ -363,10 +363,10 @@ Value validateaddress(const Array& params, bool fHelp)
         ret.push_back(Pair("scriptPubKey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
 
 #ifdef ENABLE_WALLET
-        isminetype mine = pwalletMain ? pwalletMain->IsMine(scriptPubKey) : ISMINE_NO;
-        ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
-        if (mine != ISMINE_NO) {
-            ret.push_back(Pair("iswatchonly", (mine & ISMINE_WATCH_ONLY) ? true : false));
+        isminetype mine = pwalletMain ? pwalletMain->IsMine(scriptPubKey) : isminetype::ISMINE_NO;
+        ret.push_back(Pair("ismine", (mine == isminetype::ISMINE_SPENDABLE) ? true : false));
+        if (mine != isminetype::ISMINE_NO) {
+            ret.push_back(Pair("iswatchonly", (mine == isminetype::ISMINE_WATCH_ONLY) ? true : false));
             Object detail = boost::apply_visitor(DescribeAddressVisitor(mine), dest);
             ret.insert(ret.end(), detail.begin(), detail.end());
         }

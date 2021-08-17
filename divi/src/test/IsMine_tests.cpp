@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(willNotOwnAnyScriptsWhenKeyStoreIsEmpty)
     CBasicKeyStore keyStore;
     for(const CScript& candidateScript: fixedScripts.allScriptTypes)
     {
-        BOOST_CHECK_MESSAGE(IsMine(keyStore, candidateScript)==ISMINE_NO, "Asserted ownership over unknown funds");
+        BOOST_CHECK_MESSAGE(IsMine(keyStore, candidateScript)==isminetype::ISMINE_NO, "Asserted ownership over unknown funds");
     }
 }
 BOOST_AUTO_TEST_CASE(willFailToOwnNonStandardScriptOrDataPushScriptsUnlessWatching)
@@ -148,14 +148,14 @@ BOOST_AUTO_TEST_CASE(willFailToOwnNonStandardScriptOrDataPushScriptsUnlessWatchi
     {
         keyStore.AddKey(key);
     }
-    BOOST_CHECK_MESSAGE(IsMine(keyStore, fixedScripts.nulldata)==ISMINE_NO, "Asserted ownership over data push script");
-    BOOST_CHECK_MESSAGE(IsMine(keyStore, fixedScripts.nonstandard)==ISMINE_NO, "Asserted ownership over nonstandard script");
+    BOOST_CHECK_MESSAGE(IsMine(keyStore, fixedScripts.nulldata)==isminetype::ISMINE_NO, "Asserted ownership over data push script");
+    BOOST_CHECK_MESSAGE(IsMine(keyStore, fixedScripts.nonstandard)==isminetype::ISMINE_NO, "Asserted ownership over nonstandard script");
     {
         keyStore.AddWatchOnly(fixedScripts.nulldata);
-        BOOST_CHECK_MESSAGE(IsMine(keyStore, fixedScripts.nulldata)==ISMINE_WATCH_ONLY, "Could not find watched data script!");
+        BOOST_CHECK_MESSAGE(IsMine(keyStore, fixedScripts.nulldata)==isminetype::ISMINE_WATCH_ONLY, "Could not find watched data script!");
 
         keyStore.AddWatchOnly(fixedScripts.nonstandard);
-        BOOST_CHECK_MESSAGE(IsMine(keyStore, fixedScripts.nonstandard)==ISMINE_WATCH_ONLY, "Could not find watched nonstandard script!");
+        BOOST_CHECK_MESSAGE(IsMine(keyStore, fixedScripts.nonstandard)==isminetype::ISMINE_WATCH_ONLY, "Could not find watched nonstandard script!");
     }
 }
 
@@ -174,8 +174,9 @@ BOOST_AUTO_TEST_CASE(willDetectScriptsAreOwnedWhenTheNeededKeysAreAvailable)
             fixedScripts.allScriptTypes[testCaseIndex] != fixedScripts.vaultAsManager)
         {
             auto result = IsMine(keyStore, fixedScripts.allScriptTypes[testCaseIndex]);
-            BOOST_CHECK_MESSAGE(result!=ISMINE_NO,
-                "Did not find script to be owned even with all keys held: "+std::to_string(testCaseIndex)+ " With output: "+ std::to_string(result));
+            BOOST_CHECK_MESSAGE(result!=isminetype::ISMINE_NO,
+                "Did not find script to be owned even with all keys held: "+std::to_string(testCaseIndex)+
+                " With output: "+ std::to_string(static_cast<uint8_t>(result)) );
         }
     }
 }
@@ -228,7 +229,7 @@ BOOST_AUTO_TEST_CASE(willFailToOwnAManagedVaultForWhichResponsibilityHasNotBeenA
     keyStore.AddKey(keychain.keys_[1]);
 
     VaultType vaultOwnershipType;
-    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript,vaultOwnershipType) == ISMINE_NO, "Detected managed vault for which responsability wasnt accepted");
+    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript,vaultOwnershipType) == isminetype::ISMINE_NO, "Detected managed vault for which responsability wasnt accepted");
 }
 BOOST_AUTO_TEST_CASE(willOwnAManagedVaultForWhichResponsibilityHasBeenAccepted)
 {
@@ -239,7 +240,7 @@ BOOST_AUTO_TEST_CASE(willOwnAManagedVaultForWhichResponsibilityHasBeenAccepted)
     keyStore.AddCScript(vaultScript);
 
     VaultType vaultOwnershipType;
-    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript,vaultOwnershipType) == ISMINE_SPENDABLE, "Did not detect managed vault");
+    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript,vaultOwnershipType) == isminetype::ISMINE_SPENDABLE, "Did not detect managed vault");
 }
 
 BOOST_AUTO_TEST_CASE(willDetectThatP2PKScriptsAreNotVaults)

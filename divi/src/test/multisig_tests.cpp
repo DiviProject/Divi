@@ -239,8 +239,8 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         BOOST_CHECK(addr == keyaddr[0]);
 
 #ifdef ENABLE_WALLET
-    BOOST_CHECK(IsMine(keystore, s));
-    BOOST_CHECK(!IsMine(emptykeystore, s));
+    BOOST_CHECK(IsMine(keystore, s) != isminetype::ISMINE_NO);
+    BOOST_CHECK(IsMine(emptykeystore, s) == isminetype::ISMINE_NO);
 #endif
     }
 
@@ -256,8 +256,8 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         BOOST_CHECK(addr == keyaddr[0]);
 
 #ifdef ENABLE_WALLET
-    BOOST_CHECK(IsMine(keystore, s));
-    BOOST_CHECK(!IsMine(emptykeystore, s));
+    BOOST_CHECK(IsMine(keystore, s) != isminetype::ISMINE_NO);
+    BOOST_CHECK(IsMine(emptykeystore, s) == isminetype::ISMINE_NO);
 #endif
     }
 
@@ -272,9 +272,9 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         BOOST_CHECK(!ExtractDestination(s, addr));
 
 #ifdef ENABLE_WALLET
-    BOOST_CHECK(IsMine(keystore, s));
-    BOOST_CHECK(!IsMine(emptykeystore, s));
-    BOOST_CHECK(!IsMine(partialkeystore, s));
+    BOOST_CHECK(IsMine(keystore, s) != isminetype::ISMINE_NO);
+    BOOST_CHECK(IsMine(emptykeystore, s) == isminetype::ISMINE_NO);
+    BOOST_CHECK(IsMine(partialkeystore, s) == isminetype::ISMINE_NO);
 #endif
     }
 
@@ -293,9 +293,9 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         BOOST_CHECK(nRequired == 1);
 
 #ifdef ENABLE_WALLET
-    BOOST_CHECK(IsMine(keystore, s));
-    BOOST_CHECK(!IsMine(emptykeystore, s));
-    BOOST_CHECK(!IsMine(partialkeystore, s));
+    BOOST_CHECK(IsMine(keystore, s) != isminetype::ISMINE_NO);
+    BOOST_CHECK(IsMine(emptykeystore, s) == isminetype::ISMINE_NO);
+    BOOST_CHECK(IsMine(partialkeystore, s) == isminetype::ISMINE_NO);
 #endif
     }
 
@@ -310,6 +310,7 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
 
 
 }
+
 
 BOOST_AUTO_TEST_CASE(multisig_Sign)
 {

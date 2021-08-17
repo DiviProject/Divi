@@ -482,13 +482,10 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             ssValue >> kMasterKey;
             if(pwallet)
             {
-                if (pwallet->mapMasterKeys.count(nID) != 0) {
+                if(!pwallet->LoadMasterKey(nID,kMasterKey))
+                {
                     strErr = strprintf("Error reading wallet database: duplicate CMasterKey id %u", nID);
-                    return false;
                 }
-                pwallet->mapMasterKeys[nID] = kMasterKey;
-                if (pwallet->nMasterKeyMaxID < nID)
-                    pwallet->nMasterKeyMaxID = nID;
             }
         } else if (strType == "ckey") {
             std::vector<unsigned char> vchPubKey;

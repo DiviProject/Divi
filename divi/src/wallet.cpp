@@ -235,6 +235,18 @@ CKeyMetadata CWallet::getKeyMetadata(const CBitcoinAddress& address) const
     return metadata;
 }
 
+bool CWallet::LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey)
+{
+    if (mapMasterKeys.count(masterKeyIndex) != 0) {
+        return false;
+    }
+    mapMasterKeys[masterKeyIndex] = masterKey;
+    if (nMasterKeyMaxID < masterKeyIndex)
+        nMasterKeyMaxID = masterKeyIndex;
+
+    return true;
+}
+
 void CWallet::toggleSpendingZeroConfirmationOutputs()
 {
     allowSpendingZeroConfirmationOutputs = !allowSpendingZeroConfirmationOutputs;

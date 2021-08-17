@@ -242,6 +242,15 @@ isminetype CWallet::IsMine(const CTxOut& txout) const
 {
     return IsMine(txout.scriptPubKey);
 }
+bool CWallet::AllInputsAreMine(const CWalletTx& walletTransaction) const
+{
+    bool allInputsAreMine = true;
+    for (const CTxIn& txin : walletTransaction.vin) {
+        isminetype mine = IsMine(txin);
+        allInputsAreMine &= static_cast<bool>(mine == isminetype::ISMINE_SPENDABLE);
+    }
+    return allInputsAreMine;
+}
 
 CAmount CWallet::ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const
 {

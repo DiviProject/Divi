@@ -153,6 +153,7 @@ private:
 
 public:
     std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
+    CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 
     typedef std::map<unsigned int, CMasterKey> MasterKeyMap;
     MasterKeyMap mapMasterKeys;

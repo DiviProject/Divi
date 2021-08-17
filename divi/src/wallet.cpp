@@ -210,6 +210,31 @@ const std::string CWallet::dbFilename() const
     return strWalletFile;
 }
 
+CKeyMetadata CWallet::getKeyMetadata(const CBitcoinAddress& address) const
+{
+    CKeyID keyID;
+    auto it = address.GetKeyID(keyID) ? mapKeyMetadata.find(keyID) : mapKeyMetadata.end();
+    CKeyMetadata metadata;
+    if (it == mapKeyMetadata.end())
+    {
+        CScript scriptPubKey = GetScriptForDestination(address.Get());
+        it = mapKeyMetadata.find(CKeyID(CScriptID(scriptPubKey)));
+    }
+    if (it != mapKeyMetadata.end())
+    {
+        metadata = it->second;
+    }
+
+    CHDChain hdChainCurrent;
+    if (!keyID.IsNull() && mapHdPubKeys.count(keyID) && GetHDChain(hdChainCurrent))
+    {
+        metadata.isHDPubKey = true;
+        metadata.hdkeypath = mapHdPubKeys.find(keyID)->second.GetKeyPath();
+        metadata.hdchainid = hdChainCurrent.GetID().GetHex();
+    }
+    return metadata;
+}
+
 void CWallet::toggleSpendingZeroConfirmationOutputs()
 {
     allowSpendingZeroConfirmationOutputs = !allowSpendingZeroConfirmationOutputs;

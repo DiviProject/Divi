@@ -135,7 +135,7 @@ Value getnewaddress(const Array& params, bool fHelp)
 
 CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
 {
-    CWalletDB walletdb(settings,pwalletMain->strWalletFile);
+    CWalletDB walletdb(settings,pwalletMain->dbFilename());
 
     CAccount account;
     walletdb.ReadAccount(strAccount, account);
@@ -954,7 +954,7 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
 
 CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
 {
-    CWalletDB walletdb(settings,pwalletMain->strWalletFile);
+    CWalletDB walletdb(settings,pwalletMain->dbFilename());
     return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
 }
 
@@ -1830,7 +1830,7 @@ Value listaccounts(const Array& params, bool fHelp)
     }
 
     list<CAccountingEntry> acentries;
-    CWalletDB(settings,pwalletMain->strWalletFile).ListAccountCreditDebit("*", acentries);
+    CWalletDB(settings,pwalletMain->dbFilename()).ListAccountCreditDebit("*", acentries);
     BOOST_FOREACH (const CAccountingEntry& entry, acentries)
             mapAccountBalances[entry.strAccount] += entry.nCreditDebit;
 

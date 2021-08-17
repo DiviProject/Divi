@@ -79,7 +79,7 @@ CWalletTx* writeWalletEntry(CWallet* wallet,CWalletTx& wtx, int64_t timestamp, i
 
 BOOST_AUTO_TEST_CASE(acc_orderupgrade)
 {
-    CWalletDB walletdb(settings, pwalletMain->strWalletFile);
+    CWalletDB walletdb(settings, pwalletMain->dbFilename());
     std::vector<CWalletTx*> vpwtx;
     CWalletTx wtx;
     CAccountingEntry ae;

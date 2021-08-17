@@ -136,9 +136,11 @@ public:
      *      strWalletFile (immutable after instantiation)
      */
     mutable CCriticalSection cs_wallet;
+    bool isBackedByFile() const;
+    const std::string dbFilename() const;
+private:
     bool fFileBacked;
     std::string strWalletFile;
-private:
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
     std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationNumberCalculator_;

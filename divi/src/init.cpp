@@ -957,12 +957,12 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
         bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
         if (pwalletMain->IsHDEnabled() && !useHD) {
             InitError(strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"),
-                                pwalletMain->strWalletFile));
+                                pwalletMain->dbFilename()));
             return false;
         }
         if (!pwalletMain->IsHDEnabled() && useHD) {
             InitError(strprintf(translate("Error loading %s: You can't enable HD on a already existing non-HD wallet"),
-                                pwalletMain->strWalletFile));
+                                pwalletMain->dbFilename()));
             return false;
         }
     }
@@ -1367,7 +1367,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         // Run a thread to flush wallet periodically
         if (settings.GetBoolArg("-flushwallet", true))
         {
-            threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
+            threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, pwalletMain->dbFilename() ));
         }
     }
 #endif

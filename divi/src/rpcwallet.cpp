@@ -1474,8 +1474,8 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
     if (wtx.IsCoinStake()) {
         wtx.GetComputedTxTime();
-        CAmount nCredit = wallet.GetCredit(wtx,ISMINE_ALL);
-        CAmount nDebit = wallet.GetDebit(wtx,ISMINE_ALL);
+        CAmount nCredit = wallet.GetCredit(wtx,ISMINE_SPENDABLE);
+        CAmount nDebit = wallet.GetDebit(wtx,ISMINE_SPENDABLE);
         CAmount nNet = nCredit - nDebit;
 
         CTxDestination address;
@@ -1567,8 +1567,8 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         {
             Object entry;
             entry.push_back(Pair("category", "move"));
-            auto nFee = wallet.GetDebit(wtx,ISMINE_ALL) - wallet.GetCredit(wtx,ISMINE_SPENDABLE);
-            entry.push_back(Pair("amount", ValueFromAmount( wallet.GetDebit(wtx,ISMINE_ALL) - wallet.GetChange(wtx) - nFee)));
+            auto nFee = wallet.GetDebit(wtx,ISMINE_SPENDABLE) - wallet.GetCredit(wtx,ISMINE_SPENDABLE);
+            entry.push_back(Pair("amount", ValueFromAmount( wallet.GetDebit(wtx,ISMINE_SPENDABLE) - wallet.GetChange(wtx) - nFee)));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
 
             Array addresses;

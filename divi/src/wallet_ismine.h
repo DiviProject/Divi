@@ -21,7 +21,27 @@ enum isminetype {
     ISMINE_SPENDABLE  = 4,
 };
 /** used for bitflags of isminetype */
-typedef uint8_t UtxoOwnershipFilter;
+class UtxoOwnershipFilter
+{
+private:
+    uint8_t bitmaskForOwnership_;
+public:
+    UtxoOwnershipFilter(): bitmaskForOwnership_(0u){}
+    UtxoOwnershipFilter(isminetype type): bitmaskForOwnership_(static_cast<uint8_t>(type)){}
+    void addOwnershipType(const isminetype& type)
+    {
+        const uint8_t bitfieldDescriptionOfType = static_cast<uint8_t>(type);
+        if((bitfieldDescriptionOfType & bitmaskForOwnership_) == 0u)
+        {
+            bitmaskForOwnership_ |= bitfieldDescriptionOfType;
+        }
+    }
+    bool hasRequested(const isminetype& type) const
+    {
+        const uint8_t bitfieldDescriptionOfType = static_cast<uint8_t>(type);
+        return (bitmaskForOwnership_ & bitfieldDescriptionOfType) > 0;
+    }
+};
 
 enum VaultType {
     NON_VAULT = 0,

@@ -248,7 +248,7 @@ CAmount CWallet::ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& f
     const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     if (!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
         throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
-    return ((IsMine(txout) & filter) ? txout.nValue : 0);
+    return ( filter.hasRequested(IsMine(txout)) ? txout.nValue : 0);
 }
 CAmount CWallet::ComputeChange(const CTxOut& txout) const
 {
@@ -291,7 +291,7 @@ CAmount CWallet::GetDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter
         return 0;
 
     CAmount debit = 0;
-    if (filter & ISMINE_SPENDABLE) {
+    if (filter.hasRequested(ISMINE_SPENDABLE)) {
         if (tx.fDebitCached)
             debit += tx.nDebitCached;
         else {
@@ -300,7 +300,7 @@ CAmount CWallet::GetDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter
             debit += tx.nDebitCached;
         }
     }
-    if (filter & ISMINE_WATCH_ONLY) {
+    if (filter.hasRequested(ISMINE_WATCH_ONLY)) {
         if (tx.fWatchDebitCached)
             debit += tx.nWatchDebitCached;
         else {
@@ -346,7 +346,7 @@ CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const UtxoOwnersh
         return 0;
 
     CAmount credit = 0;
-    if (filter & ISMINE_SPENDABLE) {
+    if (filter.hasRequested(ISMINE_SPENDABLE)) {
         // GetBalance can assume transactions in mapWallet won't change
         if (walletTransaction.fCreditCached)
             credit += walletTransaction.nCreditCached;
@@ -356,7 +356,7 @@ CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const UtxoOwnersh
             credit += walletTransaction.nCreditCached;
         }
     }
-    if (filter & ISMINE_WATCH_ONLY) {
+    if (filter.hasRequested(ISMINE_WATCH_ONLY)) {
         if (walletTransaction.fWatchCreditCached)
             credit += walletTransaction.nWatchCreditCached;
         else {
@@ -1307,7 +1307,7 @@ CAmount CWallet::GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) 
         if (txPtr != nullptr) {
             const CWalletTx& prev = *txPtr;
             if (txin.prevout.n < prev.vout.size())
-                if (IsMine(prev.vout[txin.prevout.n]) & filter)
+                if (filter.hasRequested(IsMine(prev.vout[txin.prevout.n])))
                     return prev.vout[txin.prevout.n].nValue;
         }
     }
@@ -3104,7 +3104,7 @@ void CWallet::GetAmounts(
     // Sent/received.
     for (unsigned int i = 0; i < wtx.vout.size(); ++i) {
         const CTxOut& txout = wtx.vout[i];
-        isminetype fIsMine = IsMine(txout);
+        const bool skippedByFilter = !(filter.hasRequested(IsMine(txout)));
         // Only need to handle txouts if AT LEAST one of these is true:
         //   1) they debit from us (sent)
         //   2) the output is to us (received)
@@ -3112,7 +3112,7 @@ void CWallet::GetAmounts(
             // Don't report 'change' txouts
             if (IsChange(txout))
                 continue;
-        } else if (!(fIsMine & filter) )
+        } else if (skippedByFilter)
             continue;
 
         // In either case, we need to get the destination address
@@ -3131,7 +3131,7 @@ void CWallet::GetAmounts(
             listSent.push_back(output);
 
         // If we are receiving the output, add it as a "received" entry
-        if (fIsMine & filter)
+        if (!skippedByFilter)
             listReceived.push_back(output);
     }
 }

@@ -267,7 +267,7 @@ bool CWallet::IsMine(const CTransaction& tx) const
 
 bool CWallet::DebitsFunds(const CTransaction& tx) const
 {
-    return (ComputeDebit(tx, ISMINE_ALL) > 0);
+    return (ComputeDebit(tx, ISMINE_SPENDABLE) > 0);
 }
 bool CWallet::DebitsFunds(const CWalletTx& tx,const isminefilter& filter) const
 {
@@ -1763,7 +1763,7 @@ static void FilterToKeepConfirmedAndSpendableOutputs(
 {
     auto outputSuitabilityCheck = [&wallet,nConfMine,nConfTheirs](const COutput& output)
     {
-        return !output.fSpendable || output.nDepth < (wallet.DebitsFunds(*output.tx,ISMINE_ALL)? nConfMine : nConfTheirs);
+        return !output.fSpendable || output.nDepth < (wallet.DebitsFunds(*output.tx,ISMINE_SPENDABLE)? nConfMine : nConfTheirs);
     };
     vCoins.erase(std::remove_if(vCoins.begin(),vCoins.end(),outputSuitabilityCheck),vCoins.end());
 }
@@ -2554,7 +2554,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
                 continue;
 
             int nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin);
-            if (nDepth < ( DebitsFunds(*pcoin,ISMINE_ALL) ? 0 : 1))
+            if (nDepth < ( DebitsFunds(*pcoin,ISMINE_SPENDABLE) ? 0 : 1))
                 continue;
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++) {
@@ -2720,7 +2720,7 @@ bool CWallet::IsTrusted(const CWalletTx& walletTransaction) const
         return true;
     if (nDepth < 0)
         return false;
-    if (!allowSpendingZeroConfirmationOutputs || !DebitsFunds(walletTransaction, ISMINE_ALL)) // using wtx's cached debit
+    if (!allowSpendingZeroConfirmationOutputs || !DebitsFunds(walletTransaction, ISMINE_SPENDABLE)) // using wtx's cached debit
         return false;
 
     // Trusted if all inputs are from us and are in the mempool:

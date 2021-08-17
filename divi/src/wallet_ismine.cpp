@@ -44,19 +44,19 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultT
 {
     vaultType = NON_VAULT;
     if(keystore.HaveWatchOnly(scriptPubKey))
-        return ISMINE_WATCH_ONLY;
+        return isminetype::ISMINE_WATCH_ONLY;
     if(keystore.HaveMultiSig(scriptPubKey))
-        return ISMINE_MULTISIG;
+        return isminetype::ISMINE_MULTISIG;
 
     std::vector<valtype> vSolutions;
     txnouttype whichType;
     if(!ExtractScriptPubKeyFormat(scriptPubKey, whichType, vSolutions)) {
         if(keystore.HaveWatchOnly(scriptPubKey))
-            return ISMINE_WATCH_ONLY;
+            return isminetype::ISMINE_WATCH_ONLY;
         if(keystore.HaveMultiSig(scriptPubKey))
-            return ISMINE_MULTISIG;
+            return isminetype::ISMINE_MULTISIG;
 
-        return ISMINE_NO;
+        return isminetype::ISMINE_NO;
     }
 
     CKeyID keyID;
@@ -67,19 +67,19 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultT
     case TX_PUBKEY:
         keyID = CPubKey(vSolutions[0]).GetID();
         if(keystore.HaveKey(keyID))
-            return ISMINE_SPENDABLE;
+            return isminetype::ISMINE_SPENDABLE;
         break;
     case TX_PUBKEYHASH:
         keyID = CKeyID(uint160(vSolutions[0]));
         if(keystore.HaveKey(keyID))
-            return ISMINE_SPENDABLE;
+            return isminetype::ISMINE_SPENDABLE;
         break;
     case TX_SCRIPTHASH: {
         CScriptID scriptID = CScriptID(uint160(vSolutions[0]));
         CScript subscript;
         if(keystore.GetCScript(scriptID, subscript)) {
             isminetype ret = IsMine(keystore, subscript,vaultType);
-            if(ret != ISMINE_NO)
+            if(ret != isminetype::ISMINE_NO)
                 return ret;
         }
         break;
@@ -89,14 +89,14 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultT
         if(keystore.HaveKey(keyID))
         {
             vaultType = OWNED_VAULT;
-            return ISMINE_SPENDABLE;
+            return isminetype::ISMINE_SPENDABLE;
         }
         keyID = CKeyID(uint160(vSolutions[1]));
         if(keystore.HaveKey(keyID))
         {
             vaultType = MANAGED_VAULT;
             CScriptID scriptID = CScriptID(scriptPubKey);
-            return keystore.HaveCScript(scriptID) ? ISMINE_SPENDABLE : ISMINE_NO;
+            return keystore.HaveCScript(scriptID) ? isminetype::ISMINE_SPENDABLE : isminetype::ISMINE_NO;
         }
         break;
     }
@@ -108,15 +108,15 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultT
         // in shared-wallet situations.
         std::vector<valtype> keys(vSolutions.begin() + 1, vSolutions.begin() + vSolutions.size() - 1);
         if(HaveKeys(keys, keystore) == keys.size())
-            return ISMINE_SPENDABLE;
+            return isminetype::ISMINE_SPENDABLE;
         break;
     }
     }
 
     if(keystore.HaveWatchOnly(scriptPubKey))
-        return ISMINE_WATCH_ONLY;
+        return isminetype::ISMINE_WATCH_ONLY;
     if(keystore.HaveMultiSig(scriptPubKey))
-        return ISMINE_MULTISIG;
+        return isminetype::ISMINE_MULTISIG;
 
-    return ISMINE_NO;
+    return isminetype::ISMINE_NO;
 }

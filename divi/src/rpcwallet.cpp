@@ -243,7 +243,7 @@ Value setaccount(const Array& params, bool fHelp)
         strAccount = AccountFromValue(params[1]);
 
     // Only add the account if the address is yours.
-    if (pwalletMain->IsMine(address.Get()) ) {
+    if (pwalletMain->IsMine(address.Get()) != isminetype::ISMINE_NO ) {
         // Detect when changing the account of an address that is the 'unused current key' of another account:
         if (pwalletMain->mapAddressBook.count(address.Get())) {
             string strOldAccount = pwalletMain->mapAddressBook[address.Get()].name;
@@ -850,7 +850,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
     CScript scriptPubKey = GetScriptForDestination(address.Get());
-    if (!pwalletMain->IsMine(scriptPubKey))
+    if (pwalletMain->IsMine(scriptPubKey) == isminetype::ISMINE_NO)
         return (double)0.0;
 
     // Minimum confirmations
@@ -915,7 +915,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout) {
             CTxDestination address;
-            if (ExtractDestination(txout.scriptPubKey, address) && pwalletMain->IsMine(address) && setAddress.count(address))
+            if (ExtractDestination(txout.scriptPubKey, address) && pwalletMain->IsMine(address) != isminetype::ISMINE_NO && setAddress.count(address))
                 if (pwalletMain->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
                     nAmount += txout.nValue;
         }
@@ -990,10 +990,10 @@ Value getbalance(const Array& params, bool fHelp)
         nMinDepth = params[1].get_int();
 
     UtxoOwnershipFilter filter;
-    filter.addOwnershipType(ISMINE_SPENDABLE);
+    filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
     if (params.size() > 2)
         if (params[2].get_bool())
-            filter.addOwnershipType(ISMINE_WATCH_ONLY);
+            filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
     if (params[0].get_str() == "*") {
         // Calculate total balance a different way from GetBalance()
@@ -1121,7 +1121,7 @@ Value sendfrom(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     // Check funds
-    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
+    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, isminetype::ISMINE_SPENDABLE);
     if (nAmount > nBalance)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
@@ -1190,7 +1190,7 @@ Value sendmany(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     // Check funds
-    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
+    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, isminetype::ISMINE_SPENDABLE);
     if (totalAmount > nBalance)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
@@ -1240,7 +1240,7 @@ Value addmultisigaddress(const Array& params, bool fHelp)
     CScript inner = _createmultisig_redeemScript(params);
     CScriptID innerID(inner);
     pwalletMain->AddCScript(inner);
-    if(::IsMine(*pwalletMain,inner)!=ISMINE_SPENDABLE) pwalletMain->AddWatchOnly(inner);
+    if(::IsMine(*pwalletMain,inner)!= isminetype::ISMINE_SPENDABLE) pwalletMain->AddWatchOnly(inner);
 
     pwalletMain->SetAddressBook(innerID, strAccount, "send");
     return CBitcoinAddress(innerID).ToString();
@@ -1275,10 +1275,10 @@ Value ListReceived(const Array& params, bool fByAccounts)
         fIncludeEmpty = params[1].get_bool();
 
     UtxoOwnershipFilter filter;
-    filter.addOwnershipType(ISMINE_SPENDABLE);
+    filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
     if (params.size() > 2)
         if (params[2].get_bool())
-            filter.addOwnershipType(ISMINE_WATCH_ONLY);
+            filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
     // Tally
     map<CBitcoinAddress, tallyitem> mapTally;
@@ -1309,7 +1309,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
             item.nConf = min(item.nConf, nDepth);
             item.nBCConf = min(item.nBCConf, nBCDepth);
             item.txids.push_back(wtx.GetHash());
-            if (mine & ISMINE_WATCH_ONLY)
+            if (mine == isminetype::ISMINE_WATCH_ONLY)
                 item.fIsWatchonly = true;
         }
     }
@@ -1477,14 +1477,14 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
     if (wtx.IsCoinStake()) {
         wtx.GetComputedTxTime();
-        CAmount nCredit = wallet.GetCredit(wtx,ISMINE_SPENDABLE);
-        CAmount nDebit = wallet.GetDebit(wtx,ISMINE_SPENDABLE);
+        CAmount nCredit = wallet.GetCredit(wtx,isminetype::ISMINE_SPENDABLE);
+        CAmount nDebit = wallet.GetDebit(wtx,isminetype::ISMINE_SPENDABLE);
         CAmount nNet = nCredit - nDebit;
 
         CTxDestination address;
         if (ExtractDestination(wtx.vout[1].scriptPubKey, address)) {
 
-            if (!wallet.IsMine(address)) {
+            if (wallet.IsMine(address) == isminetype::ISMINE_NO) {
                 const int blockHeight = ComputeBlockHeightOfFirstConfirmation(wtx.hashBlock);
                 if(blockHeight > 0)
                 {
@@ -1493,7 +1493,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                     for (unsigned int i = 1; i < wtx.vout.size(); i++) {
                         CTxDestination outAddress;
                         if (ExtractDestination(wtx.vout[i].scriptPubKey, outAddress)) {
-                            if (wallet.IsMine(outAddress)) {
+                            if (wallet.IsMine(outAddress) != isminetype::ISMINE_NO) {
 
                                 auto strAccountForAddress = GetAccountAddressName(wallet, outAddress);
 
@@ -1503,7 +1503,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
 
                                 Object entry;
                                 isminetype mine = wallet.IsMine(wtx.vout[i]);
-                                entry.push_back(Pair("involvesWatchonly", mine & ISMINE_WATCH_ONLY));
+                                entry.push_back(Pair("involvesWatchonly", mine == isminetype::ISMINE_WATCH_ONLY));
                                 entry.push_back(Pair("address", CBitcoinAddress(outAddress).ToString()));
                                 entry.push_back(Pair("amount", ValueFromAmount(wtx.vout[i].nValue)));
                                 entry.push_back(Pair("vout", static_cast<int>(i)));
@@ -1526,7 +1526,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                 Object entry;
                 //stake reward
                 isminetype mine = wallet.IsMine(wtx.vout[1]);
-                entry.push_back(Pair("involvesWatchonly", mine & ISMINE_WATCH_ONLY));
+                entry.push_back(Pair("involvesWatchonly", mine == isminetype::ISMINE_WATCH_ONLY));
                 entry.push_back(Pair("address", CBitcoinAddress(address).ToString()));
                 entry.push_back(Pair("amount", ValueFromAmount(nNet)));
                 entry.push_back(Pair("vout", 1));
@@ -1546,14 +1546,14 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         bool fAllForMe = true;
         for (const CTxIn& txin : wtx.vin) {
             isminetype mine = wallet.IsMine(txin);
-            fAllFromMe &= static_cast<bool>(mine & ISMINE_SPENDABLE);
+            fAllFromMe &= static_cast<bool>(mine == isminetype::ISMINE_SPENDABLE);
         }
 
         bool fMatchesReceiveAccount = false;
         std::vector<std::pair<CBitcoinAddress, std::string>> sendAddresses;
         for (const CTxOut& txout : wtx.vout) {
             isminetype mine = wallet.IsMine(txout);
-            fAllForMe &= static_cast<bool>(mine & ISMINE_SPENDABLE);
+            fAllForMe &= static_cast<bool>(mine == isminetype::ISMINE_SPENDABLE);
 
             CTxDestination dest;
             ExtractDestination(txout.scriptPubKey, dest);
@@ -1570,8 +1570,8 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         {
             Object entry;
             entry.push_back(Pair("category", "move"));
-            auto nFee = wallet.GetDebit(wtx,ISMINE_SPENDABLE) - wallet.GetCredit(wtx,ISMINE_SPENDABLE);
-            entry.push_back(Pair("amount", ValueFromAmount( wallet.GetDebit(wtx,ISMINE_SPENDABLE) - wallet.GetChange(wtx) - nFee)));
+            auto nFee = wallet.GetDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.GetCredit(wtx,isminetype::ISMINE_SPENDABLE);
+            entry.push_back(Pair("amount", ValueFromAmount( wallet.GetDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.GetChange(wtx) - nFee)));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
 
             Array addresses;
@@ -1596,7 +1596,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
                 BOOST_FOREACH (const COutputEntry& s, listSent) {
                     Object entry;
-                    if (involvesWatchonly || (wallet.IsMine(s.destination) & ISMINE_WATCH_ONLY))
+                    if (involvesWatchonly || (wallet.IsMine(s.destination) == isminetype::ISMINE_WATCH_ONLY))
                         entry.push_back(Pair("involvesWatchonly", true));
                     entry.push_back(Pair("account", strSentAccount));
                     MaybePushAddress(entry, s.destination);
@@ -1619,7 +1619,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                         account = wallet.mapAddressBook.find(r.destination)->second.name;
                     if (fAllAccounts || (account == strAccount)) {
                         Object entry;
-                        if (involvesWatchonly || (wallet.IsMine(r.destination) & ISMINE_WATCH_ONLY))
+                        if (involvesWatchonly || (wallet.IsMine(r.destination) == isminetype::ISMINE_WATCH_ONLY))
                             entry.push_back(Pair("involvesWatchonly", true));
                         entry.push_back(Pair("account", account));
                         MaybePushAddress(entry, r.destination);
@@ -1727,10 +1727,10 @@ Value listtransactions(const Array& params, bool fHelp)
     if (params.size() > 2)
         nFrom = params[2].get_int();
     UtxoOwnershipFilter filter;
-    filter.addOwnershipType(ISMINE_SPENDABLE);
+    filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
     if (params.size() > 3)
         if (params[3].get_bool())
-            filter.addOwnershipType(ISMINE_WATCH_ONLY);
+            filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
     if (nCount < 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Negative count");
@@ -1798,10 +1798,10 @@ Value listaccounts(const Array& params, bool fHelp)
         nMinDepth = params[0].get_int();
 
     UtxoOwnershipFilter filter;
-    filter.addOwnershipType(ISMINE_SPENDABLE);
+    filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
     if (params.size() > 1)
         if (params[1].get_bool())
-            filter.addOwnershipType(ISMINE_WATCH_ONLY);
+            filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
     map<string, CAmount> mapAccountBalances;
     BOOST_FOREACH (const PAIRTYPE(CTxDestination, CAddressBookData) & entry, pwalletMain->mapAddressBook) {
@@ -1886,7 +1886,7 @@ Value listsinceblock(const Array& params, bool fHelp)
     CBlockIndex* pindex = NULL;
     int target_confirms = 1;
     UtxoOwnershipFilter filter;
-    filter.addOwnershipType(ISMINE_SPENDABLE);
+    filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
 
     if (params.size() > 0) {
         uint256 blockId = 0;
@@ -1906,7 +1906,7 @@ Value listsinceblock(const Array& params, bool fHelp)
 
     if (params.size() > 2)
         if (params[2].get_bool())
-            filter.addOwnershipType(ISMINE_WATCH_ONLY);
+            filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
     int depth = pindex ? (1 + chainActive.Height() - pindex->nHeight) : -1;
 
@@ -1972,10 +1972,10 @@ Value gettransaction(const Array& params, bool fHelp)
     hash.SetHex(params[0].get_str());
 
     UtxoOwnershipFilter filter;
-    filter.addOwnershipType(ISMINE_SPENDABLE);
+    filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
     if (params.size() > 1)
         if (params[1].get_bool())
-            filter.addOwnershipType(ISMINE_WATCH_ONLY);
+            filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
     Object entry;
     const CWalletTx* txPtr = pwalletMain->GetWalletTx(hash);

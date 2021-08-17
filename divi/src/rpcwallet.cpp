@@ -849,8 +849,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
     CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
-    CScript scriptPubKey = GetScriptForDestination(address.Get());
-    if (pwalletMain->IsMine(scriptPubKey) == isminetype::ISMINE_NO)
+    if (pwalletMain->IsMine(address.Get()) == isminetype::ISMINE_NO)
         return (double)0.0;
 
     // Minimum confirmations
@@ -860,6 +859,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
 
     // Tally
     CAmount nAmount = 0;
+    CScript scriptPubKey = GetScriptForDestination(address.Get());
     std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {

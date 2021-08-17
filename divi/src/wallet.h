@@ -192,6 +192,7 @@ private:
     void SetBestChain(const CBlockLocator& loc) override;
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
 
+    isminetype IsMine(const CScript& scriptPubKey) const;
 public:
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     void UpdateBestBlockLocation();
@@ -386,7 +387,6 @@ public:
 
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 
-    isminetype IsMine(const CScript& scriptPubKey) const;
     isminetype IsMine(const CTxDestination& dest) const;
     isminetype IsMine(const CTxIn& txin) const;
     isminetype IsMine(const CTxOut& txout) const;

@@ -12,7 +12,7 @@ class CKeyStore;
 class CScript;
 
 /** IsMine() return codes */
-enum isminetype {
+enum class isminetype {
     ISMINE_NO = 0,
     //! Indicates that we dont know how to create a scriptSig that would solve this if we were given the appropriate private keys
     ISMINE_WATCH_ONLY = 1,

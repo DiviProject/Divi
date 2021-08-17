@@ -1061,15 +1061,6 @@ CWallet::TxItems CWallet::OrderedTxItems(std::list<CAccountingEntry>& acentries,
     return txOrdered;
 }
 
-void CWallet::RecomputeCachedQuantities()
-{
-    LOCK(cs_wallet);
-    BOOST_FOREACH (PAIRTYPE(const uint256, CWalletTx) & item, transactionRecord_->mapWallet)
-    {
-        item.second.RecomputeCachedQuantities();
-    }
-}
-
 int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
 {
     int64_t latestNow = wtx.nTimeReceived;

@@ -156,13 +156,14 @@ private:
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
 
+    LockedCoinsSet setLockedCoins;
+
 public:
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
     bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
 
     AddressBook mapAddressBook;
     CPubKey vchDefaultKey;
-    LockedCoinsSet setLockedCoins;
     int64_t nTimeFirstKey;
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
 private:

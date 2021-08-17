@@ -988,10 +988,12 @@ Value getbalance(const Array& params, bool fHelp)
     int nMinDepth = 1;
     if (params.size() > 1)
         nMinDepth = params[1].get_int();
-    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
+
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(ISMINE_SPENDABLE);
     if (params.size() > 2)
         if (params[2].get_bool())
-            filter = filter | ISMINE_WATCH_ONLY;
+            filter.addOwnershipType(ISMINE_WATCH_ONLY);
 
     if (params[0].get_str() == "*") {
         // Calculate total balance a different way from GetBalance()
@@ -1272,10 +1274,11 @@ Value ListReceived(const Array& params, bool fByAccounts)
     if (params.size() > 1)
         fIncludeEmpty = params[1].get_bool();
 
-    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(ISMINE_SPENDABLE);
     if (params.size() > 2)
         if (params[2].get_bool())
-            filter = filter | ISMINE_WATCH_ONLY;
+            filter.addOwnershipType(ISMINE_WATCH_ONLY);
 
     // Tally
     map<CBitcoinAddress, tallyitem> mapTally;
@@ -1297,8 +1300,8 @@ Value ListReceived(const Array& params, bool fByAccounts)
             if (!ExtractDestination(txout.scriptPubKey, address))
                 continue;
 
-            UtxoOwnershipFilter mine = pwalletMain->IsMine(address);
-            if (!(mine & filter))
+            isminetype mine = pwalletMain->IsMine(address);
+            if (!filter.hasRequested(mine))
                 continue;
 
             tallyitem& item = mapTally[address];
@@ -1723,10 +1726,11 @@ Value listtransactions(const Array& params, bool fHelp)
     int nFrom = 0;
     if (params.size() > 2)
         nFrom = params[2].get_int();
-    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(ISMINE_SPENDABLE);
     if (params.size() > 3)
         if (params[3].get_bool())
-            filter = filter | ISMINE_WATCH_ONLY;
+            filter.addOwnershipType(ISMINE_WATCH_ONLY);
 
     if (nCount < 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Negative count");
@@ -1792,14 +1796,16 @@ Value listaccounts(const Array& params, bool fHelp)
     int nMinDepth = 1;
     if (params.size() > 0)
         nMinDepth = params[0].get_int();
-    UtxoOwnershipFilter includeWatchonly = ISMINE_SPENDABLE;
+
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(ISMINE_SPENDABLE);
     if (params.size() > 1)
         if (params[1].get_bool())
-            includeWatchonly = includeWatchonly | ISMINE_WATCH_ONLY;
+            filter.addOwnershipType(ISMINE_WATCH_ONLY);
 
     map<string, CAmount> mapAccountBalances;
     BOOST_FOREACH (const PAIRTYPE(CTxDestination, CAddressBookData) & entry, pwalletMain->mapAddressBook) {
-        if (pwalletMain->IsMine(entry.first) & includeWatchonly) // This address belongs to me
+        if (filter.hasRequested(pwalletMain->IsMine(entry.first))) // This address belongs to me
             mapAccountBalances[entry.second.name] = 0;
     }
 
@@ -1815,7 +1821,7 @@ Value listaccounts(const Array& params, bool fHelp)
         int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
         if (confsCalculator.GetBlocksToMaturity(wtx) > 0 || nDepth < 0)
             continue;
-        pwalletMain->GetAmounts(wtx,listReceived, listSent, nFee, strSentAccount, includeWatchonly);
+        pwalletMain->GetAmounts(wtx,listReceived, listSent, nFee, strSentAccount, filter);
         mapAccountBalances[strSentAccount] -= nFee;
         BOOST_FOREACH (const COutputEntry& s, listSent)
                 mapAccountBalances[strSentAccount] -= s.amount;
@@ -1879,7 +1885,8 @@ Value listsinceblock(const Array& params, bool fHelp)
 
     CBlockIndex* pindex = NULL;
     int target_confirms = 1;
-    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(ISMINE_SPENDABLE);
 
     if (params.size() > 0) {
         uint256 blockId = 0;
@@ -1899,7 +1906,7 @@ Value listsinceblock(const Array& params, bool fHelp)
 
     if (params.size() > 2)
         if (params[2].get_bool())
-            filter = filter | ISMINE_WATCH_ONLY;
+            filter.addOwnershipType(ISMINE_WATCH_ONLY);
 
     int depth = pindex ? (1 + chainActive.Height() - pindex->nHeight) : -1;
 
@@ -1964,10 +1971,11 @@ Value gettransaction(const Array& params, bool fHelp)
     uint256 hash;
     hash.SetHex(params[0].get_str());
 
-    UtxoOwnershipFilter filter = ISMINE_SPENDABLE;
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(ISMINE_SPENDABLE);
     if (params.size() > 1)
         if (params[1].get_bool())
-            filter = filter | ISMINE_WATCH_ONLY;
+            filter.addOwnershipType(ISMINE_WATCH_ONLY);
 
     Object entry;
     const CWalletTx* txPtr = pwalletMain->GetWalletTx(hash);

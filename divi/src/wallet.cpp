@@ -243,7 +243,7 @@ isminetype CWallet::IsMine(const CTxOut& txout) const
     return IsMine(txout.scriptPubKey);
 }
 
-CAmount CWallet::ComputeCredit(const CTxOut& txout, const isminefilter& filter) const
+CAmount CWallet::ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const
 {
     const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     if (!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
@@ -269,12 +269,12 @@ bool CWallet::DebitsFunds(const CTransaction& tx) const
 {
     return (ComputeDebit(tx, ISMINE_SPENDABLE) > 0);
 }
-bool CWallet::DebitsFunds(const CWalletTx& tx,const isminefilter& filter) const
+bool CWallet::DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const
 {
     return GetDebit(tx,filter) > 0;
 }
 
-CAmount CWallet::ComputeDebit(const CTransaction& tx, const isminefilter& filter) const
+CAmount CWallet::ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const
 {
     const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     CAmount nDebit = 0;
@@ -285,7 +285,7 @@ CAmount CWallet::ComputeDebit(const CTransaction& tx, const isminefilter& filter
     }
     return nDebit;
 }
-CAmount CWallet::GetDebit(const CWalletTx& tx, const isminefilter& filter) const
+CAmount CWallet::GetDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const
 {
     if (tx.vin.empty())
         return 0;
@@ -312,7 +312,7 @@ CAmount CWallet::GetDebit(const CWalletTx& tx, const isminefilter& filter) const
     return debit;
 }
 
-CAmount CWallet::ComputeCredit(const CWalletTx& tx, const isminefilter& filter, int creditFilterFlags) const
+CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags) const
 {
     const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     CAmount nCredit = 0;
@@ -339,7 +339,7 @@ CAmount CWallet::ComputeCredit(const CWalletTx& tx, const isminefilter& filter, 
     return nCredit;
 }
 
-CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const isminefilter& filter) const
+CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it
     if (walletTransaction.IsCoinBase() && confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0)
@@ -1299,7 +1299,7 @@ isminetype CWallet::IsMine(const CTxIn& txin) const
     return ISMINE_NO;
 }
 
-CAmount CWallet::GetDebit(const CTxIn& txin, const isminefilter& filter) const
+CAmount CWallet::GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const
 {
     {
         LOCK(cs_wallet);
@@ -3086,7 +3086,7 @@ void CWallet::GetAmounts(
     std::list<COutputEntry>& listSent,
     CAmount& nFee,
     std::string& strSentAccount,
-    const isminefilter& filter) const
+    const UtxoOwnershipFilter& filter) const
 {
     nFee = 0;
     listReceived.clear();
@@ -3142,7 +3142,7 @@ void CWallet::GetAccountAmounts(
     CAmount& nReceived,
     CAmount& nSent,
     CAmount& nFee,
-    const isminefilter& filter) const
+    const UtxoOwnershipFilter& filter) const
 {
     nReceived = nSent = nFee = 0;
 

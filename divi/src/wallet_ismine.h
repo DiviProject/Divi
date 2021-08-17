@@ -21,7 +21,7 @@ enum isminetype {
     ISMINE_SPENDABLE  = 4,
 };
 /** used for bitflags of isminetype */
-typedef uint8_t isminefilter;
+typedef uint8_t UtxoOwnershipFilter;
 
 enum VaultType {
     NON_VAULT = 0,

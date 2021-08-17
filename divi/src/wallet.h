@@ -152,12 +152,13 @@ private:
     int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
     std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
 
-public:
-    CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
-
     typedef std::map<unsigned int, CMasterKey> MasterKeyMap;
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
+
+public:
+    CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
+    bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
 
     AddressBook mapAddressBook;
     CPubKey vchDefaultKey;

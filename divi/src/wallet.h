@@ -166,6 +166,7 @@ public:
     bool VerifyHDKeys() const;
     const AddressBook& GetAddressBook() const;
     CAddressBookData& ModifyAddressBookData(const CTxDestination& address);
+    bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
 
     CPubKey vchDefaultKey;
     int64_t nTimeFirstKey;
@@ -431,7 +432,6 @@ public:
     DBErrors LoadWallet(bool& fFirstRunRet);
     DBErrors ZapWalletTx(std::vector<CWalletTx>& vWtx);
 
-    bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
     unsigned int GetKeyPoolSize() const;
     bool SetDefaultKey(const CPubKey& vchPubKey);
 

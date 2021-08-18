@@ -145,6 +145,26 @@ bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite
     return CWalletDB(settings, walletPtr->dbFilename()).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
 }
 
+const AddressBook& AddressBookManager::GetAddressBook() const
+{
+    return mapAddressBook;
+}
+CAddressBookData& AddressBookManager::ModifyAddressBookData(const CTxDestination& address)
+{
+    return mapAddressBook[address];
+}
+bool AddressBookManager::SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose)
+{
+    bool fUpdated = false;
+    std::map<CTxDestination, CAddressBookData>::iterator mi = mapAddressBook.find(address);
+    fUpdated = mi != mapAddressBook.end();
+    mapAddressBook[address].name = strName;
+    if (!strPurpose.empty()) /* update purpose only if requested */
+        mapAddressBook[address].purpose = strPurpose;
+
+    return fUpdated;
+}
+
 CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     ): cs_wallet()
     , fFileBacked(false)
@@ -175,7 +195,6 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , nMasterKeyMaxID(0)
     , setLockedCoins()
     , mapHdPubKeys()
-    , mapAddressBook()
     , vchDefaultKey()
     , nTimeFirstKey(0)
     , timeOfLastChainTipUpdate(0)
@@ -283,14 +302,6 @@ bool CWallet::VerifyHDKeys() const
     return true;
 }
 
-const AddressBook& CWallet::GetAddressBook() const
-{
-    return mapAddressBook;
-}
-CAddressBookData& CWallet::ModifyAddressBookData(const CTxDestination& address)
-{
-    return mapAddressBook[address];
-}
 
 const CPubKey& CWallet::GetDefaultKey() const
 {
@@ -2420,17 +2431,12 @@ DBErrors CWallet::ZapWalletTx(std::vector<CWalletTx>& vWtx)
     return DB_LOAD_OK;
 }
 
-
 bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose)
 {
     bool fUpdated = false;
     {
-        LOCK(cs_wallet); // mapAddressBook
-        std::map<CTxDestination, CAddressBookData>::iterator mi = mapAddressBook.find(address);
-        fUpdated = mi != mapAddressBook.end();
-        mapAddressBook[address].name = strName;
-        if (!strPurpose.empty()) /* update purpose only if requested */
-            mapAddressBook[address].purpose = strPurpose;
+        LOCK(cs_wallet);
+        fUpdated = AddressBookManager::SetAddressBook(address,strName,strPurpose);
     }
     NotifyAddressBookChanged(address, strName, ::IsMine(*this, address) != isminetype::ISMINE_NO,
                              strPurpose, (fUpdated ? CT_UPDATED : CT_NEW));
@@ -2781,7 +2787,7 @@ std::set<CTxDestination> CWallet::GetAccountAddresses(std::string strAccount) co
 {
     LOCK(cs_wallet);
     std::set<CTxDestination> result;
-    BOOST_FOREACH (const PAIRTYPE(CTxDestination, CAddressBookData) & item, mapAddressBook) {
+    BOOST_FOREACH (const PAIRTYPE(CTxDestination, CAddressBookData) & item, GetAddressBook()) {
         const CTxDestination& address = item.first;
         const std::string& strName = item.second.name;
         if (strName == strAccount)
@@ -2983,7 +2989,7 @@ bool CWallet::AddDestData(const CTxDestination& dest, const std::string& key, co
     if (boost::get<CNoDestination>(&dest))
         return false;
 
-    mapAddressBook[dest].destdata.insert(std::make_pair(key, value));
+    ModifyAddressBookData(dest).destdata.insert(std::make_pair(key, value));
     if (!fFileBacked)
         return true;
     return CWalletDB(settings,strWalletFile).WriteDestData(CBitcoinAddress(dest).ToString(), key, value);
@@ -2991,7 +2997,7 @@ bool CWallet::AddDestData(const CTxDestination& dest, const std::string& key, co
 
 bool CWallet::EraseDestData(const CTxDestination& dest, const std::string& key)
 {
-    if (!mapAddressBook[dest].destdata.erase(key))
+    if (!ModifyAddressBookData(dest).destdata.erase(key))
         return false;
     if (!fFileBacked)
         return true;
@@ -3000,14 +3006,15 @@ bool CWallet::EraseDestData(const CTxDestination& dest, const std::string& key)
 
 bool CWallet::LoadDestData(const CTxDestination& dest, const std::string& key, const std::string& value)
 {
-    mapAddressBook[dest].destdata.insert(std::make_pair(key, value));
+    ModifyAddressBookData(dest).destdata.insert(std::make_pair(key, value));
     return true;
 }
 
 bool CWallet::GetDestData(const CTxDestination& dest, const std::string& key, std::string* value) const
 {
-    std::map<CTxDestination, CAddressBookData>::const_iterator i = mapAddressBook.find(dest);
-    if (i != mapAddressBook.end()) {
+    const AddressBook& addressBook = GetAddressBook();
+    std::map<CTxDestination, CAddressBookData>::const_iterator i = addressBook.find(dest);
+    if (i != addressBook.end()) {
         CAddressBookData::StringMap::const_iterator j = i->second.destdata.find(key);
         if (j != i->second.destdata.end()) {
             if (value)
@@ -3269,10 +3276,11 @@ void CWallet::GetAccountAmounts(
     }
     {
         LOCK(cs_wallet);
+        const AddressBook& addressBook = GetAddressBook();
         for (const COutputEntry& r : listReceived) {
-            if (mapAddressBook.count(r.destination)) {
-                std::map<CTxDestination, CAddressBookData>::const_iterator mi = mapAddressBook.find(r.destination);
-                if (mi != mapAddressBook.end() && (*mi).second.name == strAccount)
+            if (addressBook.count(r.destination)) {
+                std::map<CTxDestination, CAddressBookData>::const_iterator mi = addressBook.find(r.destination);
+                if (mi != addressBook.end() && (*mi).second.name == strAccount)
                     nReceived += r.amount;
             } else if (strAccount.empty()) {
                 nReceived += r.amount;

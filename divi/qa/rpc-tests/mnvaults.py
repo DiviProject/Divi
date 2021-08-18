@@ -31,17 +31,14 @@ class MnVaultsTest (BitcoinTestFramework):
     self.cfg = None
 
   def setup_chain (self):
+    print ("Initializing test directory " + self.options.tmpdir)
     for i in range (7):
       initialize_datadir (self.options.tmpdir, i)
 
   def setup_network (self, config_line=None, extra_args=[]):
-    # The masternode starts off, the others are online initially.
     self.nodes = [
-      start_node (0, self.options.tmpdir, extra_args=self.base_args),
-      None,
-    ] + [
       start_node (i, self.options.tmpdir, extra_args=self.base_args)
-      for i in [2, 3, 4, 5, 6]
+      for i in range (7)
     ]
 
     # We want to work with mock times that are beyond the genesis
@@ -60,7 +57,7 @@ class MnVaultsTest (BitcoinTestFramework):
     connect_nodes (self.nodes[4], 5)
     connect_nodes (self.nodes[4], 6)
     connect_nodes (self.nodes[5], 6)
-    for i in [0, 2]:
+    for i in [0, 1, 2]:
       connect_nodes (self.nodes[i], 3)
       connect_nodes (self.nodes[i], 4)
       connect_nodes (self.nodes[i], 5)
@@ -73,7 +70,7 @@ class MnVaultsTest (BitcoinTestFramework):
     and masternode config for it."""
 
     args = self.base_args
-    if n == 1:
+    if n == 1 and self.cfg:
       args.append ("-masternode")
       args.append ("-masternodeprivkey=%s" % self.cfg.privkey)
 
@@ -135,6 +132,12 @@ class MnVaultsTest (BitcoinTestFramework):
         break
     assert vout is not None
 
+    # In a real-world implementation, the unvaulting transaction would
+    # be created and backed up before the vaulting one is broadcasted
+    # or mined.  But this has no effect on the divid's or the behaviour
+    # we want to test here.
+    self.mine_blocks (1)
+
     unvaultAddr = self.nodes[0].getnewaddress ("unvaulted")
     data = self.nodes[0].validateaddress (unvaultAddr)
 
@@ -156,7 +159,7 @@ class MnVaultsTest (BitcoinTestFramework):
     # FIXME: Use reward address from node 0.
     self.cfg.rewardAddr = addr
 
-    for i in [0, 2]:
+    for i in [0, 1, 2]:
       self.stop_node (i)
       self.start_node (i)
 
@@ -166,7 +169,7 @@ class MnVaultsTest (BitcoinTestFramework):
     # shut down for the rest of the test.
     bc = self.nodes[2].startmasternode ("mn", True)
     assert_equal (bc["status"], "success")
-    self.broadcast = bc["broadcastData"]
+    assert_equal (self.nodes[1].importmnbroadcast (bc["broadcastData"]), True)
     self.stop_node (2)
 
     self.mine_blocks (20)
@@ -190,8 +193,7 @@ class MnVaultsTest (BitcoinTestFramework):
 
     # Now start and activate the masternode based on the stored
     # broadcast message.
-    self.start_node (1)
-    bc = self.nodes[1].broadcaststartmasternode (self.broadcast, "update_ping")
+    bc = self.nodes[1].startmasternode ("mn")
     assert_equal (bc["status"], "success")
 
     # Finish masternode sync.

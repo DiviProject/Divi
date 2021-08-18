@@ -39,7 +39,7 @@ public:
         CKey managerKey;
         managerKey.MakeNewKey(true);
         return CreateStakingVaultScript(
-            ToByteVector(wallet.vchDefaultKey.GetID()),
+            ToByteVector(wallet.GetDefaultKey().GetID()),
             ToByteVector(managerKey.GetPubKey().GetID()));
     }
     CScript vaultScriptAsManager() const
@@ -48,7 +48,7 @@ public:
         ownerKey.MakeNewKey(true);
         return CreateStakingVaultScript(
             ToByteVector(ownerKey.GetPubKey().GetID()),
-            ToByteVector(wallet.vchDefaultKey.GetID()) );
+            ToByteVector(wallet.GetDefaultKey().GetID()) );
     }
 };
 
@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingNonVaultFundsIfOwnedVaultCoinsRequeste
 
 BOOST_AUTO_TEST_CASE(willFindThatTransactionsByDefaultHaveNegativeDepth)
 {
-    CScript normalScript = GetScriptForDestination(wallet.vchDefaultKey.GetID());
+    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
     unsigned outputIndex=0;
     auto normalTx = wallet.AddDefaultTx(normalScript,outputIndex,100*COIN);
     BOOST_CHECK_MESSAGE(wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx)==-1,"Found wallet transaction has non-negative depth in empty chain!");
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(willFindThatTransactionsByDefaultHaveNegativeDepth)
 
 BOOST_AUTO_TEST_CASE(willFindThatTransactionsWillHaveDepthAccordingToLengthOfChain)
 {
-    CScript normalScript = GetScriptForDestination(wallet.vchDefaultKey.GetID());
+    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& normalTx = wallet.AddDefaultTx(normalScript,outputIndex,100*COIN);
     wallet.FakeAddToChain(normalTx);
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(willFindThatTransactionsWillHaveDepthAccordingToLengthOfCha
 
 BOOST_AUTO_TEST_CASE(willReturnZeroBalancesWhenTransactionsAreUnconfirmed)
 {
-    CScript normalScript = GetScriptForDestination(wallet.vchDefaultKey.GetID());
+    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
     CScript ownedVaultScript = vaultScriptAsOwner();
     CScript managedVaultScript = vaultScriptAsManager();
 
@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(willReturnZeroBalancesWhenTransactionsAreUnconfirmed)
 
 BOOST_AUTO_TEST_CASE(willReturnCorrectBalanceWhenTransactionIsConfirmed)
 {
-    CScript normalScript = GetScriptForDestination(wallet.vchDefaultKey.GetID());
+    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& normalTx = wallet.AddDefaultTx(normalScript,outputIndex,100*COIN);
     wallet.FakeAddToChain(normalTx);
@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE(willReturnCorrectBalanceWhenTransactionIsConfirmed)
 
 BOOST_AUTO_TEST_CASE(willFindStakingBalanceMatchesBalanceWhenOwnWalletFundsAreNotVaulted)
 {
-    CScript normalScript = GetScriptForDestination(wallet.vchDefaultKey.GetID());
+    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
     CScript managedVaultScript = vaultScriptAsManager();
     wallet.AddCScript(managedVaultScript);
 
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE(willTreatOwnedVaultAsUnspendableButWillRecordBalance)
 
 BOOST_AUTO_TEST_CASE(willEnsureBalancesAreAsExpected)
 {
-    CScript normalScript = GetScriptForDestination(wallet.vchDefaultKey.GetID());
+    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
     CScript ownedVaultScript = vaultScriptAsOwner();
     CScript managedVaultScript = vaultScriptAsManager();
     wallet.AddCScript(managedVaultScript);
@@ -358,7 +358,7 @@ BOOST_AUTO_TEST_CASE(willEnsureBalancesAreAsExpected)
 
 BOOST_AUTO_TEST_CASE(willEnsureLockedCoinsDoNotCountTowardStakableBalance)
 {
-    CScript normalScript = GetScriptForDestination(wallet.vchDefaultKey.GetID());
+    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
     CScript ownedVaultScript = vaultScriptAsOwner();
     CScript managedVaultScript = vaultScriptAsManager();
     wallet.AddCScript(managedVaultScript);
@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE(willEnsureLockedCoinsDoNotCountTowardStakableBalance)
 
 BOOST_AUTO_TEST_CASE(willEnsureStakingBalanceAndTotalBalanceAgreeEvenIfTxsBelongToCommonBlock)
 {
-    CScript normalScript = GetScriptForDestination(wallet.vchDefaultKey.GetID());
+    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
 
     CAmount firstNormalTxValue = (GetRand(1000)+1)*COIN;
     CAmount secondNormalTxValue = (GetRand(1000)+1)*COIN;

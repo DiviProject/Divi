@@ -90,13 +90,11 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
 {
   defaultKeyPoolTopUp = (int64_t)3;
   bool firstLoad = true;
-  CPubKey newDefaultKey;
   LoadWallet(firstLoad);
   //GenerateNewHDChain();
   SetHDChain(getHDWalletSeedForTesting(),false);
   SetMinVersion(FEATURE_HD);
-  GetKeyFromPool(newDefaultKey, false);
-  SetDefaultKey(newDefaultKey);
+  InitializeDefaultKey();
 }
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)

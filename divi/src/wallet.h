@@ -133,6 +133,8 @@ public:
         const CTxDestination& address,
         const std::string& strName,
         const std::string& purpose);
+
+    std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 };
 
 class CWallet :
@@ -404,8 +406,6 @@ public:
 
     std::set<std::set<CTxDestination> > GetAddressGroupings();
     std::map<CTxDestination, CAmount> GetAddressBalances();
-
-    std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 
     bool AllInputsAreMine(const CWalletTx& walletTransaction) const;
     isminetype IsMine(const CTxDestination& dest) const;

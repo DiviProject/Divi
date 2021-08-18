@@ -462,8 +462,9 @@ Value dumpwallet(const Array& params, bool fHelp)
         std::string strAddr = CBitcoinAddress(keyid).ToString();
         CKey key;
         if (pwalletMain->GetKey(keyid, key)) {
-            if (pwalletMain->mapAddressBook.count(keyid)) {
-                file << strprintf("%s %s label=%s # addr=%s", CBitcoinSecret(key).ToString(), strTime, EncodeDumpString(pwalletMain->mapAddressBook[keyid].name), strAddr);
+            const AddressBook& addressBook = pwalletMain->GetAddressBook();
+            if (addressBook.count(keyid)) {
+                file << strprintf("%s %s label=%s # addr=%s", CBitcoinSecret(key).ToString(), strTime, EncodeDumpString(addressBook.find(keyid)->second.name), strAddr);
             } else if (setKeyPool.count(keyid)) {
                 file << strprintf("%s %s reserve=1 # addr=%s", CBitcoinSecret(key).ToString(), strTime, strAddr);
             } else {

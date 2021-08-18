@@ -151,9 +151,21 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , strWalletFile()
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
-    , confirmationNumberCalculator_(new MerkleTxConfirmationNumberCalculator(activeChain_,blockIndexByHash_,Params().COINBASE_MATURITY(),mempool,cs_main))
+    , confirmationNumberCalculator_(
+        new MerkleTxConfirmationNumberCalculator(
+            activeChain_,
+            blockIndexByHash_,
+            Params().COINBASE_MATURITY(),
+            mempool,
+            cs_main))
     , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) )
+    , signatureSizeEstimator_(new SignatureSizeEstimator())
+    , defaultCoinSelectionAlgorithm_(
+        new MinimumFeeCoinSelectionAlgorithm(
+            *this,
+            *signatureSizeEstimator_,
+            priorityFeeCalculator.getMinimumRelayFeeRate()))
     , orderedTransactionIndex()
     , nWalletVersion(FEATURE_BASE)
     , nWalletMaxVersion(FEATURE_BASE)
@@ -171,8 +183,6 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , pwalletdbEncryption(NULL)
     , walletStakingOnly(false)
     , allowSpendingZeroConfirmationOutputs(false)
-    , signatureSizeEstimator_(new SignatureSizeEstimator())
-    , defaultCoinSelectionAlgorithm_(new MinimumFeeCoinSelectionAlgorithm(*this,*signatureSizeEstimator_,priorityFeeCalculator.getMinimumRelayFeeRate()))
     , defaultKeyPoolTopUp(0)
 {
     SetNull();

@@ -332,7 +332,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             ssKey >> strAddress;
             if(pwallet)
             {
-                ssValue >> pwallet->mapAddressBook[CBitcoinAddress(strAddress).Get()].name;
+                ssValue >> pwallet->ModifyAddressBookData(CBitcoinAddress(strAddress).Get()).name;
             }
             else
             {
@@ -344,7 +344,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             ssKey >> strAddress;
             if(pwallet)
             {
-                ssValue >> pwallet->mapAddressBook[CBitcoinAddress(strAddress).Get()].purpose;
+                ssValue >> pwallet->ModifyAddressBookData(CBitcoinAddress(strAddress).Get()).purpose;
             }
             else
             {

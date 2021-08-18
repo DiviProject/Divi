@@ -261,6 +261,16 @@ bool CWallet::VerifyHDKeys() const
     }
     return true;
 }
+
+const AddressBook& CWallet::GetAddressBook() const
+{
+    return mapAddressBook;
+}
+CAddressBookData& CWallet::ModifyAddressBookData(const CTxDestination& address)
+{
+    return mapAddressBook[address];
+}
+
 void CWallet::toggleSpendingZeroConfirmationOutputs()
 {
     allowSpendingZeroConfirmationOutputs = !allowSpendingZeroConfirmationOutputs;

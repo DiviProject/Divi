@@ -370,8 +370,11 @@ Value validateaddress(const Array& params, bool fHelp)
             Object detail = boost::apply_visitor(DescribeAddressVisitor(mine), dest);
             ret.insert(ret.end(), detail.begin(), detail.end());
         }
-        if (pwalletMain && pwalletMain->mapAddressBook.count(dest))
-            ret.push_back(Pair("account", pwalletMain->mapAddressBook[dest].name));
+        if (pwalletMain)
+        {
+            const AddressBook& addressBook = pwalletMain->GetAddressBook();
+            if(addressBook.count(dest)) ret.push_back(Pair("account", addressBook.find(dest)->second.name));
+        }
 
 
         CKeyID keyID;

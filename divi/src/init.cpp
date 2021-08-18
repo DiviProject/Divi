@@ -1338,8 +1338,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("mapBlockIndex.size() = %u\n", mapBlockIndex.size());
     LogPrintf("chainActive.Height() = %d\n", chainActive.Height());
 #ifdef ENABLE_WALLET
-    LogPrintf("setKeyPool.size() = %u\n", pwalletMain ? pwalletMain->GetKeyPoolSize() : 0);
-    LogPrintf("mapAddressBook.size() = %u\n", pwalletMain ? pwalletMain->mapAddressBook.size() : 0);
+    LogPrintf("Key Pool size = %u\n", pwalletMain ? pwalletMain->GetKeyPoolSize() : 0);
+    LogPrintf("Address Book size = %u\n", pwalletMain ? pwalletMain->GetAddressBook().size() : 0);
 #endif
 
     if (settings.GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION))

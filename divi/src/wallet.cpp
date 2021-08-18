@@ -271,6 +271,28 @@ CAddressBookData& CWallet::ModifyAddressBookData(const CTxDestination& address)
     return mapAddressBook[address];
 }
 
+const CPubKey& CWallet::GetDefaultKey() const
+{
+    return vchDefaultKey;
+}
+
+bool CWallet::InitializeDefaultKey()
+{
+    CPubKey newDefaultKey;
+    if (GetKeyFromPool(newDefaultKey, false))
+    {
+        SetDefaultKey(newDefaultKey);
+        if (!SetAddressBook(vchDefaultKey.GetID(), "", "receive")) {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+    return true;
+}
+
 void CWallet::toggleSpendingZeroConfirmationOutputs()
 {
     allowSpendingZeroConfirmationOutputs = !allowSpendingZeroConfirmationOutputs;
@@ -2395,9 +2417,9 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
     return CWalletDB(settings,strWalletFile).WriteName(CBitcoinAddress(address).ToString(), strName);
 }
 
-bool CWallet::SetDefaultKey(const CPubKey& vchPubKey)
+bool CWallet::SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
 {
-    if (fFileBacked) {
+    if (fFileBacked && updateDatabase) {
         if (!CWalletDB(settings,strWalletFile).WriteDefaultKey(vchPubKey))
             return false;
     }

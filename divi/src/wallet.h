@@ -159,6 +159,7 @@ private:
     LockedCoinsSet setLockedCoins;
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
     AddressBook mapAddressBook;
+    CPubKey vchDefaultKey;
 
 public:
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
@@ -168,7 +169,10 @@ public:
     CAddressBookData& ModifyAddressBookData(const CTxDestination& address);
     bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
 
-    CPubKey vchDefaultKey;
+    bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase = true);
+    const CPubKey& GetDefaultKey() const;
+    bool InitializeDefaultKey();
+
     int64_t nTimeFirstKey;
 private:
     int64_t timeOfLastChainTipUpdate;
@@ -433,7 +437,6 @@ public:
     DBErrors ZapWalletTx(std::vector<CWalletTx>& vWtx);
 
     unsigned int GetKeyPoolSize() const;
-    bool SetDefaultKey(const CPubKey& vchPubKey);
 
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
     bool SetMinVersion(enum WalletFeature, CWalletDB* pwalletdbIn = NULL, bool fExplicit = false);

@@ -2984,47 +2984,6 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const
         mapKeyBirth[it->first] = it->second->GetBlockTime() - 7200; // block times can be 2h off
 }
 
-bool CWallet::AddDestData(const CTxDestination& dest, const std::string& key, const std::string& value)
-{
-    if (boost::get<CNoDestination>(&dest))
-        return false;
-
-    ModifyAddressBookData(dest).destdata.insert(std::make_pair(key, value));
-    if (!fFileBacked)
-        return true;
-    return CWalletDB(settings,strWalletFile).WriteDestData(CBitcoinAddress(dest).ToString(), key, value);
-}
-
-bool CWallet::EraseDestData(const CTxDestination& dest, const std::string& key)
-{
-    if (!ModifyAddressBookData(dest).destdata.erase(key))
-        return false;
-    if (!fFileBacked)
-        return true;
-    return CWalletDB(settings,strWalletFile).EraseDestData(CBitcoinAddress(dest).ToString(), key);
-}
-
-bool CWallet::LoadDestData(const CTxDestination& dest, const std::string& key, const std::string& value)
-{
-    ModifyAddressBookData(dest).destdata.insert(std::make_pair(key, value));
-    return true;
-}
-
-bool CWallet::GetDestData(const CTxDestination& dest, const std::string& key, std::string* value) const
-{
-    const AddressBook& addressBook = GetAddressBook();
-    std::map<CTxDestination, CAddressBookData>::const_iterator i = addressBook.find(dest);
-    if (i != addressBook.end()) {
-        CAddressBookData::StringMap::const_iterator j = i->second.destdata.find(key);
-        if (j != i->second.destdata.end()) {
-            if (value)
-                *value = j->second;
-            return true;
-        }
-    }
-    return false;
-}
-
 CKeyPool::CKeyPool()
 {
     nTime = GetTime();

@@ -181,6 +181,8 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , nNextResend(0)
     , nLastResend(0)
     , pwalletdbEncryption(NULL)
+    , setInternalKeyPool()
+    , setExternalKeyPool()
     , walletStakingOnly(false)
     , allowSpendingZeroConfirmationOutputs(false)
     , defaultKeyPoolTopUp(0)
@@ -311,6 +313,11 @@ bool CWallet::InitializeDefaultKey()
         return false;
     }
     return true;
+}
+
+void CWallet::SetDefaultKeyTopUp(int64_t keypoolTopUp)
+{
+    defaultKeyPoolTopUp = keypoolTopUp;
 }
 
 void CWallet::toggleSpendingZeroConfirmationOutputs()

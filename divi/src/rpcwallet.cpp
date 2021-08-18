@@ -155,8 +155,10 @@ CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
                 if (txout.scriptPubKey == scriptPubKey)
                 {
                     bKeyUsed = true;
+                    break;
                 }
             }
+            if(bKeyUsed) break;
         }
     }
     if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed)

@@ -132,7 +132,7 @@ Value getnewaddress(const Array& params, bool fHelp)
     return CBitcoinAddress(keyID).ToString();
 }
 
-bool AccountShouldUseNewKey(const CAccount& account)
+bool AccountShouldUseNewKey(CWallet& wallet, const CAccount& account)
 {
     if (account.vchPubKey.IsValid())
     {
@@ -157,18 +157,18 @@ bool AccountShouldUseNewKey(const CAccount& account)
     }
 }
 
-CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
+CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForceNew = false)
 {
-    CWalletDB walletdb(settings,pwalletMain->dbFilename());
+    CWalletDB walletdb(settings,wallet.dbFilename());
 
     CAccount account;
     walletdb.ReadAccount(strAccount, account);
-    if (bForceNew || AccountShouldUseNewKey(account))
+    if (bForceNew || AccountShouldUseNewKey(wallet, account))
     {// Generate a new key
-        if (!pwalletMain->GetKeyFromPool(account.vchPubKey, false))
+        if (!wallet.GetKeyFromPool(account.vchPubKey, false))
             throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
 
-        pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount, "receive");
+        wallet.SetAddressBook(account.vchPubKey.GetID(), strAccount, "receive");
         walletdb.WriteAccount(strAccount, account);
     }
 
@@ -191,11 +191,7 @@ Value getaccountaddress(const Array& params, bool fHelp)
     // Parse the account first so we don't generate a key if there's an error
     string strAccount = AccountFromValue(params[0]);
 
-    Value ret;
-
-    ret = GetAccountAddress(strAccount).ToString();
-
-    return ret;
+    return GetAccountAddress(*pwalletMain, strAccount).ToString();
 }
 
 
@@ -254,8 +250,8 @@ Value setaccount(const Array& params, bool fHelp)
         const AddressBook& addressBook = pwalletMain->GetAddressBook();
         if (addressBook.count(address.Get())) {
             string strOldAccount = addressBook.find(address.Get())->second.name;
-            if (address == GetAccountAddress(strOldAccount))
-                GetAccountAddress(strOldAccount, true);
+            if (address == GetAccountAddress(*pwalletMain,strOldAccount))
+                GetAccountAddress(*pwalletMain,strOldAccount, true);
         }
         pwalletMain->SetAddressBook(address.Get(), strAccount, "receive");
     } else

@@ -166,6 +166,7 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
             *this,
             *signatureSizeEstimator_,
             priorityFeeCalculator.getMinimumRelayFeeRate()))
+    , pwalletdbEncryption()
     , orderedTransactionIndex()
     , nWalletVersion(FEATURE_BASE)
     , nWalletMaxVersion(FEATURE_BASE)
@@ -180,7 +181,6 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , timeOfLastChainTipUpdate(0)
     , nNextResend(0)
     , nLastResend(0)
-    , pwalletdbEncryption(NULL)
     , setInternalKeyPool()
     , setExternalKeyPool()
     , walletStakingOnly(false)
@@ -199,10 +199,9 @@ CWallet::CWallet(const std::string& strWalletFileIn, const CChain& chain, const 
 
 CWallet::~CWallet()
 {
+    pwalletdbEncryption.reset();
     defaultCoinSelectionAlgorithm_.reset();
     signatureSizeEstimator_.reset();
-    delete pwalletdbEncryption;
-    pwalletdbEncryption = NULL;
     outputTracker_.reset();
     transactionRecord_.reset();
     confirmationNumberCalculator_.reset();
@@ -214,7 +213,7 @@ void CWallet::SetNull()
     nWalletMaxVersion = FEATURE_BASE;
     fFileBacked = false;
     nMasterKeyMaxID = 0;
-    pwalletdbEncryption = NULL;
+    pwalletdbEncryption.reset();
     orderedTransactionIndex = 0;
     nNextResend = 0;
     nLastResend = 0;
@@ -1070,10 +1069,9 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
         mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
         if (fFileBacked) {
             assert(!pwalletdbEncryption);
-            pwalletdbEncryption = new CWalletDB(settings,strWalletFile);
+            pwalletdbEncryption.reset(new CWalletDB(settings,strWalletFile));
             if (!pwalletdbEncryption->TxnBegin()) {
-                delete pwalletdbEncryption;
-                pwalletdbEncryption = NULL;
+                pwalletdbEncryption.reset();
                 return false;
             }
             pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey);
@@ -1087,7 +1085,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
         {
             if (fFileBacked) {
                 pwalletdbEncryption->TxnAbort();
-                delete pwalletdbEncryption;
+                pwalletdbEncryption.reset();
             }
             // We now probably have half of our keys encrypted in memory, and half not...
             // die and let the user reload the unencrypted wallet.
@@ -1108,19 +1106,18 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
         }
 
         // Encryption was introduced in version 0.4.0
-        SetMinVersion(FEATURE_WALLETCRYPT, pwalletdbEncryption, true);
+        SetMinVersion(FEATURE_WALLETCRYPT, pwalletdbEncryption.get(), true);
 
         if (fFileBacked)
         {
             if (!pwalletdbEncryption->TxnCommit()) {
-                delete pwalletdbEncryption;
+                pwalletdbEncryption.reset();
                 // We now have keys encrypted in memory, but not on disk...
                 // die to avoid confusion and let the user reload the unencrypted wallet.
                 assert(false);
             }
 
-            delete pwalletdbEncryption;
-            pwalletdbEncryption = NULL;
+            pwalletdbEncryption.reset();
         }
 
         Lock();

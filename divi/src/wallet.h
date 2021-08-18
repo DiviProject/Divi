@@ -125,7 +125,26 @@ public:
     boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
 };
 
-class CWallet : public CCryptoKeyStore, public NotificationInterface, public virtual I_KeypoolReserver, public I_WalletGuiNotifications, public I_StakingWallet
+class AddressBookManager
+{
+private:
+    AddressBook mapAddressBook;
+public:
+    const AddressBook& GetAddressBook() const;
+    CAddressBookData& ModifyAddressBookData(const CTxDestination& address);
+    virtual bool SetAddressBook(
+        const CTxDestination& address,
+        const std::string& strName,
+        const std::string& purpose);
+};
+
+class CWallet :
+    public CCryptoKeyStore,
+    public NotificationInterface,
+    public AddressBookManager,
+    public virtual I_KeypoolReserver,
+    public I_WalletGuiNotifications,
+    public I_StakingWallet
 {
 public:
     /*
@@ -163,7 +182,6 @@ private:
 
     LockedCoinsSet setLockedCoins;
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
-    AddressBook mapAddressBook;
     CPubKey vchDefaultKey;
     int64_t nTimeFirstKey;
 
@@ -195,9 +213,7 @@ public:
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
     bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
     bool VerifyHDKeys() const;
-    const AddressBook& GetAddressBook() const;
-    CAddressBookData& ModifyAddressBookData(const CTxDestination& address);
-    bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
+    bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose) override;
 
     bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase = true);
     const CPubKey& GetDefaultKey() const;

@@ -162,19 +162,6 @@ private:
     CPubKey vchDefaultKey;
     int64_t nTimeFirstKey;
 
-public:
-    CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
-    bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
-    bool VerifyHDKeys() const;
-    const AddressBook& GetAddressBook() const;
-    CAddressBookData& ModifyAddressBookData(const CTxDestination& address);
-    bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
-
-    bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase = true);
-    const CPubKey& GetDefaultKey() const;
-    bool InitializeDefaultKey();
-
-private:
     int64_t timeOfLastChainTipUpdate;
     int64_t nNextResend;
     int64_t nLastResend;
@@ -187,7 +174,19 @@ private:
     std::unique_ptr<I_CoinSelectionAlgorithm> defaultCoinSelectionAlgorithm_;
 
     bool SubmitTransactionToMemoryPool(const CWalletTx& wtx) const;
+
 public:
+    CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
+    bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
+    bool VerifyHDKeys() const;
+    const AddressBook& GetAddressBook() const;
+    CAddressBookData& ModifyAddressBookData(const CTxDestination& address);
+    bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
+
+    bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase = true);
+    const CPubKey& GetDefaultKey() const;
+    bool InitializeDefaultKey();
+
     int64_t defaultKeyPoolTopUp;
     void toggleSpendingZeroConfirmationOutputs();
     DBErrors ReorderTransactionsByTimestamp();

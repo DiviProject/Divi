@@ -132,18 +132,9 @@ Value getnewaddress(const Array& params, bool fHelp)
     return CBitcoinAddress(keyID).ToString();
 }
 
-
-CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
+bool AccountShouldUseNewKey(const CAccount& account)
 {
-    CWalletDB walletdb(settings,pwalletMain->dbFilename());
-
-    CAccount account;
-    walletdb.ReadAccount(strAccount, account);
-
-    bool bKeyUsed = false;
-
-    // Check if the current key has been used
-    if (!bForceNew && account.vchPubKey.IsValid())
+    if (account.vchPubKey.IsValid())
     {
         CScript scriptPubKey = GetScriptForDestination(account.vchPubKey.GetID());
         std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
@@ -154,14 +145,25 @@ CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
             {
                 if (txout.scriptPubKey == scriptPubKey)
                 {
-                    bKeyUsed = true;
-                    break;
+                    return true;
                 }
             }
-            if(bKeyUsed) break;
         }
+        return false;
     }
-    if (bForceNew || !account.vchPubKey.IsValid() || bKeyUsed)
+    else
+    {
+        return true;
+    }
+}
+
+CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
+{
+    CWalletDB walletdb(settings,pwalletMain->dbFilename());
+
+    CAccount account;
+    walletdb.ReadAccount(strAccount, account);
+    if (bForceNew || AccountShouldUseNewKey(account))
     {// Generate a new key
         if (!pwalletMain->GetKeyFromPool(account.vchPubKey, false))
             throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");

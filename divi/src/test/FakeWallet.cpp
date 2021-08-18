@@ -41,7 +41,7 @@ const CHDChain& getHDWalletSeedForTesting()
   {
     FakeBlockIndexWithHashes dummyChain(1, 1600000000, 1);
     CWallet wallet("test_wallet.dat", *dummyChain.activeChain, *dummyChain.blockIndexByHash);
-    wallet.defaultKeyPoolTopUp = 1;
+    wallet.SetDefaultKeyTopUp(1);
     bool firstLoad = true;
     wallet.LoadWallet(firstLoad);
     wallet.GenerateNewHDChain();
@@ -88,7 +88,7 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
   : CWallet(GetWalletFilename(), *c.activeChain, *c.blockIndexByHash),
     fakeChain(c)
 {
-  defaultKeyPoolTopUp = (int64_t)3;
+  SetDefaultKeyTopUp(3);
   bool firstLoad = true;
   LoadWallet(firstLoad);
   //GenerateNewHDChain();

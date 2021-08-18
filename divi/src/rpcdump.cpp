@@ -470,7 +470,8 @@ Value dumpwallet(const Array& params, bool fHelp)
                 file << strprintf("%s %s change=1 # addr=%s", CBitcoinSecret(key).ToString(), strTime, strAddr);
             }
 
-            file << strprintf(" %s", pwalletMain->mapHdPubKeys.at(keyid).GetKeyPath());
+            CKeyMetadata metadata = pwalletMain->getKeyMetadata(CBitcoinAddress(keyid));
+            file << strprintf(" %s", metadata.hdkeypath);
 
             file << "\n";
         }

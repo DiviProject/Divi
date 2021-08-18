@@ -2199,15 +2199,9 @@ Value walletverify(const json_spirit::Array& params, bool fHelp)
     if(!pwalletMain->IsHDEnabled())
         throw runtime_error("HD wallet is disabled, checking integrity works only with HD wallets");
 
-    for(auto &&entry : pwalletMain->mapHdPubKeys) {
-        CKey derivedKey;
-        if(!pwalletMain->GetKey(entry.first, derivedKey)) {
-            return false;
-        }
-
-        if(!derivedKey.VerifyPubKey(entry.second.extPubKey.pubkey)) {
-            return false;
-        }
+    if(!pwalletMain->VerifyHDKeys())
+    {
+        return false;
     }
 
     return true;

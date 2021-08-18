@@ -434,10 +434,6 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             if (strType == "key") {
                 wss.nKeys++;
                 ssValue >> pkey;
-            } else {
-                CWalletKey wkey;
-                ssValue >> wkey;
-                pkey = wkey.vchPrivKey;
             }
 
             // Old wallets store keys as "key" [pubkey] => [privkey]

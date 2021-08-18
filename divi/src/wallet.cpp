@@ -246,7 +246,21 @@ bool CWallet::LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey)
 
     return true;
 }
+bool CWallet::VerifyHDKeys() const
+{
+    for(const auto& entry : mapHdPubKeys)
+    {
+        CKey derivedKey;
+        if(!GetKey(entry.first, derivedKey)) {
+            return false;
+        }
 
+        if(!derivedKey.VerifyPubKey(entry.second.extPubKey.pubkey)) {
+            return false;
+        }
+    }
+    return true;
+}
 void CWallet::toggleSpendingZeroConfirmationOutputs()
 {
     allowSpendingZeroConfirmationOutputs = !allowSpendingZeroConfirmationOutputs;

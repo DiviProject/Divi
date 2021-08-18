@@ -3030,12 +3030,6 @@ CKeyPool::CKeyPool(const CPubKey& vchPubKeyIn, bool fInternalIn)
     fInternal = fInternalIn;
 }
 
-CWalletKey::CWalletKey(int64_t nExpires)
-{
-    nTimeCreated = (nExpires ? GetTime() : 0);
-    nTimeExpires = nExpires;
-}
-
 void CWallet::LoadKeyPool(int nIndex, const CKeyPool &keypool)
 {
     if (keypool.fInternal) {

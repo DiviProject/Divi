@@ -146,6 +146,8 @@ private:
     std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationNumberCalculator_;
     std::unique_ptr<WalletTransactionRecord> transactionRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
+    std::unique_ptr<I_SignatureSizeEstimator> signatureSizeEstimator_;
+    std::unique_ptr<I_CoinSelectionAlgorithm> defaultCoinSelectionAlgorithm_;
 
     int64_t orderedTransactionIndex;
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
@@ -170,10 +172,21 @@ private:
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
     bool allowSpendingZeroConfirmationOutputs;
-    std::unique_ptr<I_SignatureSizeEstimator> signatureSizeEstimator_;
-    std::unique_ptr<I_CoinSelectionAlgorithm> defaultCoinSelectionAlgorithm_;
 
     bool SubmitTransactionToMemoryPool(const CWalletTx& wtx) const;
+
+    void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
+
+    // Notification interface methods
+    void SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType) override;
+    void RebroadcastWalletTransactions() override;
+    void SetBestChain(const CBlockLocator& loc) override;
+    void UpdatedBlockTip(const CBlockIndex *pindex) override;
+
+    isminetype IsMine(const CScript& scriptPubKey) const;
+    isminetype IsMine(const CTxIn& txin) const;
+    isminetype IsMine(const CTxOut& txout) const;
+    bool IsMine(const CTransaction& tx) const;
 
 public:
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
@@ -195,21 +208,7 @@ public:
 
     void UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions);
     void IncrementDBUpdateCount() const;
-private:
-    void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
-    // Notification interface methods
-    void SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType) override;
-    void RebroadcastWalletTransactions() override;
-    void SetBestChain(const CBlockLocator& loc) override;
-    void UpdatedBlockTip(const CBlockIndex *pindex) override;
-
-    isminetype IsMine(const CScript& scriptPubKey) const;
-    isminetype IsMine(const CTxIn& txin) const;
-    isminetype IsMine(const CTxOut& txout) const;
-    bool IsMine(const CTransaction& tx) const;
-
-public:
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     void UpdateBestBlockLocation();
 

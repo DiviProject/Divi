@@ -111,6 +111,28 @@ class MnStoredBroadcastTest (BitcoinTestFramework):
     print ("Testing imported data...")
     assert_equal (self.nodes[1].listmnbroadcasts (), expected)
 
+    # Bump the time, so the stored ping in the broadcast message
+    # is expired.  It should be auto-refreshed when starting the masternode.
+    blk = self.nodes[0].getblock (self.nodes[0].getbestblockhash ())
+    for i in range (100):
+      set_node_times (self.nodes, blk["time"] + i * 100)
+      time.sleep (0.01)
+
+    print ("Starting masternode with stored broadcast...")
+    for n in self.nodes:
+      assert_equal (n.listmasternodes (), [])
+    res = self.nodes[1].startmasternode ("mn")
+    assert_equal (res["status"], "success")
+    res = self.nodes[1].getmasternodestatus ()
+    assert_equal (res["status"], 4)
+    assert_equal (res["message"], "Masternode successfully started")
+    time.sleep (1)
+    for n in self.nodes:
+      lst = n.listmasternodes ()
+      assert_equal (len (lst), 1)
+      assert_equal (lst[0]["txhash"], cfg.txid)
+      assert_equal (lst[0]["status"], "ENABLED")
+
 
 if __name__ == '__main__':
   MnStoredBroadcastTest ().main ()

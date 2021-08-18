@@ -136,11 +136,6 @@ public:
     bool ReadAccount(const std::string& strAccount, CAccount& account);
     bool WriteAccount(const std::string& strAccount, const CAccount& account);
 
-    /// Write destination data key,value tuple to database
-    bool WriteDestData(const std::string& address, const std::string& key, const std::string& value);
-    /// Erase destination data tuple from wallet database
-    bool EraseDestData(const std::string& address, const std::string& key);
-
     bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);
     bool WriteAccountingEntry(const CAccountingEntry& acentry);
     CAmount GetAccountCreditDebit(const std::string& strAccount);

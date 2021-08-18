@@ -143,22 +143,24 @@ CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
     bool bKeyUsed = false;
 
     // Check if the current key has been used
-    if (account.vchPubKey.IsValid()) {
+    if (account.vchPubKey.IsValid())
+    {
         CScript scriptPubKey = GetScriptForDestination(account.vchPubKey.GetID());
         std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-        for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin();
-             it != walletTransactions.end() && account.vchPubKey.IsValid();
-             ++it)
+        for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
         {
             const CWalletTx& wtx = *(*it);
             BOOST_FOREACH (const CTxOut& txout, wtx.vout)
-                    if (txout.scriptPubKey == scriptPubKey)
+            {
+                if (txout.scriptPubKey == scriptPubKey)
+                {
                     bKeyUsed = true;
+                }
+            }
         }
     }
-
-    // Generate a new key
-    if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed) {
+    if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed)
+    {// Generate a new key
         if (!pwalletMain->GetKeyFromPool(account.vchPubKey, false))
             throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
 

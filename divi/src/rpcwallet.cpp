@@ -907,7 +907,11 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
 
     // Get the set of pub keys assigned to account
     string strAccount = AccountFromValue(params[0]);
-    set<CTxDestination> setAddress = pwalletMain->GetAccountAddresses(strAccount);
+    std::set<CTxDestination> setAddress;
+    {
+        LOCK(pwalletMain->cs_wallet);
+        setAddress = pwalletMain->GetAccountAddresses(strAccount);
+    }
 
     // Tally
     CAmount nAmount = 0;

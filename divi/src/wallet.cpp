@@ -165,6 +165,19 @@ bool AddressBookManager::SetAddressBook(const CTxDestination& address, const std
     return fUpdated;
 }
 
+std::set<CTxDestination> AddressBookManager::GetAccountAddresses(std::string strAccount) const
+{
+    std::set<CTxDestination> result;
+    BOOST_FOREACH (const PAIRTYPE(CTxDestination, CAddressBookData) & item, mapAddressBook) {
+        const CTxDestination& address = item.first;
+        const std::string& strName = item.second.name;
+        if (strName == strAccount)
+            result.insert(address);
+    }
+    return result;
+}
+
+
 CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     ): cs_wallet()
     , fFileBacked(false)
@@ -2781,19 +2794,6 @@ std::set<std::set<CTxDestination> > CWallet::GetAddressGroupings()
     }
 
     return ret;
-}
-
-std::set<CTxDestination> CWallet::GetAccountAddresses(std::string strAccount) const
-{
-    LOCK(cs_wallet);
-    std::set<CTxDestination> result;
-    BOOST_FOREACH (const PAIRTYPE(CTxDestination, CAddressBookData) & item, GetAddressBook()) {
-        const CTxDestination& address = item.first;
-        const std::string& strName = item.second.name;
-        if (strName == strAccount)
-            result.insert(address);
-    }
-    return result;
 }
 
 static void LoadReserveKeysToSet(std::set<CKeyID>& setAddress, const std::set<int64_t>& setKeyPool, CWalletDB& walletdb)

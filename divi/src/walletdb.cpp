@@ -516,14 +516,11 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                     pwallet->nTimeFirstKey = keyMeta.nCreateTime;
             }
         } else if (strType == "defaultkey") {
+            CPubKey pubkey;
+            ssValue >> pubkey;
             if(pwallet)
             {
-                ssValue >> pwallet->vchDefaultKey;
-            }
-            else
-            {
-                CPubKey pubkey;
-                ssValue >> pubkey;
+                pwallet->SetDefaultKey(pubkey,false);
             }
         } else if (strType == "pool") {
             int64_t nIndex;
@@ -611,7 +608,7 @@ static bool IsKeyType(string strType)
 
 DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
 {
-    pwallet->vchDefaultKey = CPubKey();
+    pwallet->SetDefaultKey(CPubKey(),false);
     CWalletScanState wss;
     bool fNoncriticalErrors = false;
     DBErrors result = DB_LOAD_OK;
@@ -716,7 +713,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
 
 DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, std::vector<CWalletTx>& vWtx)
 {
-    pwallet->vchDefaultKey = CPubKey();
+    pwallet->SetDefaultKey(CPubKey(),false);
     bool fNoncriticalErrors = false;
     DBErrors result = DB_LOAD_OK;
 

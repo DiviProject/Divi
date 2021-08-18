@@ -941,13 +941,9 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
             pwalletMain->SetMinVersion(FEATURE_HD);
         }
 
-        CPubKey newDefaultKey;
-        if (pwalletMain->GetKeyFromPool(newDefaultKey, false)) {
-            pwalletMain->SetDefaultKey(newDefaultKey);
-            if (!pwalletMain->SetAddressBook(pwalletMain->vchDefaultKey.GetID(), "", "receive")) {
-                InitError(translate("Cannot write default address") += "\n");
-                return false;
-            }
+        if(!pwalletMain->InitializeDefaultKey())
+        {
+            return InitError(translate("Cannot write default address") += "\n");
         }
 
         pwalletMain->UpdateBestBlockLocation();

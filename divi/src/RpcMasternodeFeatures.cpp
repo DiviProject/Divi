@@ -15,6 +15,7 @@
 #include <MasternodeNetworkMessageManager.h>
 #include <masternode-payments.h>
 #include <sync.h>
+#include <StoredMasternodeBroadcasts.h>
 #include <timedata.h>
 #include <utilstrencodings.h>
 #include <MasternodeHelpers.h>
@@ -125,7 +126,7 @@ MasternodeStartResult RelayMasternodeBroadcast(const std::string& hexData, const
     return RelayParsedMasternodeBroadcast(mnb, updatePing);
 }
 
-MasternodeStartResult StartMasternode(const CKeyStore& keyStore, std::string alias, bool deferRelay)
+MasternodeStartResult StartMasternode(const CKeyStore& keyStore, const StoredMasternodeBroadcasts& stored, std::string alias, bool deferRelay)
 {
     const auto& mnModule = GetMasternodeModule();
     auto& mnodeman = mnModule.getMasternodeManager();
@@ -137,6 +138,7 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore, std::string ali
             continue;
 
         CMasternodeBroadcast mnb;
+        bool updatePing = false;
 
         if(!CMasternodeBroadcastFactory::Create(
                 keyStore,
@@ -146,8 +148,25 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore, std::string ali
                 false,
                 deferRelay))
         {
-            result.status = false;
-            return result;
+            /* We failed to sign a new broadcast with our wallet, but we may
+               have a stored one.  */
+
+            COutPoint outp;
+            if (!configEntry.parseInputReference(outp))
+            {
+                result.status = false;
+                result.errorMessage = "Failed to parse input reference";
+                return result;
+            }
+
+            if (!stored.GetBroadcast(outp, mnb))
+            {
+                result.status = false;
+                result.errorMessage = "No broadcast message available";
+                return result;
+            }
+
+            updatePing = true;
         }
 
         CDataStream serializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);
@@ -159,7 +178,7 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore, std::string ali
             return result;
         }
 
-        return RelayParsedMasternodeBroadcast (mnb, false);
+        return RelayParsedMasternodeBroadcast (mnb, updatePing);
     }
     result.status = false;
     result.errorMessage = "Invalid alias, couldn't find MN. Check your masternode.conf file";

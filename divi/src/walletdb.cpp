@@ -538,17 +538,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             int64_t txIndex;
             ssValue >> txIndex;
             if(pwallet) pwallet->UpdateNextTransactionIndexAvailable(txIndex);
-        } else if (strType == "destdata") {
-            std::string strAddress, strKey, strValue;
-            ssKey >> strAddress;
-            ssKey >> strKey;
-            ssValue >> strValue;
-            if (pwallet && !pwallet->LoadDestData(CBitcoinAddress(strAddress).Get(), strKey, strValue)) {
-                strErr = "Error reading wallet database: LoadDestData failed";
-                return false;
-            }
-        }
-        else if (strType == "hdchain")
+        } else if (strType == "hdchain")
         {
             CHDChain chain;
             ssValue >> chain;
@@ -986,16 +976,4 @@ bool CWalletDB::WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& key
         return false;
 
     return Write(std::make_pair(std::string("hdpubkey"), hdPubKey.extPubKey.pubkey), hdPubKey, false);
-}
-
-bool CWalletDB::WriteDestData(const std::string& address, const std::string& key, const std::string& value)
-{
-    walletDbUpdated_++;
-    return Write(std::make_pair(std::string("destdata"), std::make_pair(address, key)), value);
-}
-
-bool CWalletDB::EraseDestData(const std::string& address, const std::string& key)
-{
-    walletDbUpdated_++;
-    return Erase(std::make_pair(std::string("destdata"), std::make_pair(address, key)));
 }

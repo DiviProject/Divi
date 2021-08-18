@@ -172,6 +172,7 @@ private:
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
     bool allowSpendingZeroConfirmationOutputs;
+    int64_t defaultKeyPoolTopUp;
 
     bool SubmitTransactionToMemoryPool(const CWalletTx& wtx) const;
 
@@ -200,7 +201,7 @@ public:
     const CPubKey& GetDefaultKey() const;
     bool InitializeDefaultKey();
 
-    int64_t defaultKeyPoolTopUp;
+    void SetDefaultKeyTopUp(int64_t keypoolTopUp);
     void toggleSpendingZeroConfirmationOutputs();
     DBErrors ReorderTransactionsByTimestamp();
     int64_t GetNextTransactionIndexAvailable() const;

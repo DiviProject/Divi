@@ -160,6 +160,7 @@ private:
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
     AddressBook mapAddressBook;
     CPubKey vchDefaultKey;
+    int64_t nTimeFirstKey;
 
 public:
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
@@ -173,7 +174,6 @@ public:
     const CPubKey& GetDefaultKey() const;
     bool InitializeDefaultKey();
 
-    int64_t nTimeFirstKey;
 private:
     int64_t timeOfLastChainTipUpdate;
     int64_t nNextResend;

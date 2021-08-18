@@ -406,7 +406,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             }
             // Watch-only addresses have no birthday information for now,
             // so set the wallet birthday to the beginning of time.
-            if(pwallet) pwallet->nTimeFirstKey = 1;
+            if(pwallet) pwallet->UpdateTimeFirstKey(1);
         } else if (strType == "multisig") {
             CScript script;
             ssKey >> script;
@@ -419,7 +419,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
 
             // MultiSig addresses have no birthday information for now,
             // so set the wallet birthday to the beginning of time.
-            if(pwallet) pwallet->nTimeFirstKey = 1;
+            if(pwallet) pwallet->UpdateTimeFirstKey(1);
         } else if (strType == "key" || strType == "wkey") {
             CPubKey vchPubKey;
             ssKey >> vchPubKey;
@@ -509,11 +509,8 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             if(pwallet)
             {
                 pwallet->LoadKeyMetadata(vchPubKey, keyMeta);
-
                 // find earliest key creation time, as wallet birthday
-                if (!pwallet->nTimeFirstKey ||
-                    (keyMeta.nCreateTime < pwallet->nTimeFirstKey))
-                    pwallet->nTimeFirstKey = keyMeta.nCreateTime;
+                pwallet->UpdateTimeFirstKey(keyMeta.nCreateTime);
             }
         } else if (strType == "defaultkey") {
             CPubKey pubkey;
@@ -681,7 +678,10 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
 
     // nTimeFirstKey is only reliable if all keys have metadata
     if ((wss.nKeys + wss.nCKeys) != wss.nKeyMeta)
-        pwallet->nTimeFirstKey = 1; // 0 would be considered 'no value'
+    {
+        LOCK(pwallet->cs_wallet);
+        pwallet->UpdateTimeFirstKey(1); // 0 would be considered 'no value'
+    }
 
     BOOST_FOREACH (uint256 hash, wss.vWalletUpgrade)
     {

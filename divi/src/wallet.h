@@ -139,6 +139,8 @@ public:
     bool isBackedByFile() const;
     const std::string dbFilename() const;
 private:
+    void SetNull();
+
     bool fFileBacked;
     std::string strWalletFile;
     const CChain& activeChain_;
@@ -148,6 +150,7 @@ private:
     std::unique_ptr<SpentOutputTracker> outputTracker_;
     std::unique_ptr<I_SignatureSizeEstimator> signatureSizeEstimator_;
     std::unique_ptr<I_CoinSelectionAlgorithm> defaultCoinSelectionAlgorithm_;
+    std::unique_ptr<CWalletDB> pwalletdbEncryption;
 
     int64_t orderedTransactionIndex;
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
@@ -167,7 +170,6 @@ private:
     int64_t timeOfLastChainTipUpdate;
     int64_t nNextResend;
     int64_t nLastResend;
-    CWalletDB* pwalletdbEncryption;
     std::set<int64_t> setInternalKeyPool;
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
@@ -233,7 +235,6 @@ public:
     explicit CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap);
     ~CWallet();
 
-    void SetNull();
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;
     std::vector<const CWalletTx*> GetWalletTransactionReferences() const;

@@ -1017,18 +1017,14 @@ Value getbalance(const Array& params, bool fHelp)
             if (!IsFinalTx(wtx, chainActive) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
                 continue;
 
-            CAmount allFee;
-            string strSentAccount;
-            list<COutputEntry> listReceived;
-            list<COutputEntry> listSent;
-            pwalletMain->GetAmounts(wtx,listReceived, listSent, allFee, filter);
+            WalletOutputEntryParsing parsedEntry = pwalletMain->GetAmounts(wtx, filter);
             if (confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
-                BOOST_FOREACH (const COutputEntry& r, listReceived)
+                BOOST_FOREACH (const COutputEntry& r, parsedEntry.listReceived)
                         nBalance += r.amount;
             }
-            BOOST_FOREACH (const COutputEntry& s, listSent)
+            BOOST_FOREACH (const COutputEntry& s, parsedEntry.listSent)
                     nBalance -= s.amount;
-            nBalance -= allFee;
+            nBalance -= parsedEntry.nFee;
         }
         return ValueFromAmount(nBalance);
     }
@@ -1478,10 +1474,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
     static SuperblockSubsidyContainer superblockSubsidies(Params());
     static const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
 
-    CAmount nFee;
-    string strSentAccount;
-    list<COutputEntry> listReceived;
-    list<COutputEntry> listSent;
+    string strSentAccount = wtx.strFromAccount;
     bool fAllAccounts = (strAccount == string("*"));
 
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
@@ -1596,11 +1589,11 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         }
         else
         {
-            wallet.GetAmounts(wtx,listReceived, listSent, nFee, filter);
+            WalletOutputEntryParsing parsedEntry = wallet.GetAmounts(wtx, filter);
 
             // Sent
-            if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
-                BOOST_FOREACH (const COutputEntry& s, listSent) {
+            if ((!parsedEntry.listSent.empty() || parsedEntry.nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
+                BOOST_FOREACH (const COutputEntry& s, parsedEntry.listSent) {
                     Object entry;
                     if (involvesWatchonly || (wallet.IsMine(s.destination) == isminetype::ISMINE_WATCH_ONLY))
                         entry.push_back(Pair("involvesWatchonly", true));
@@ -1610,7 +1603,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                     entry.push_back(Pair("category", (it != wtx.mapValue.end() && it->second == "1") ? "darksent" : "send"));
                     entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
                     entry.push_back(Pair("vout", s.vout));
-                    entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
+                    entry.push_back(Pair("fee", ValueFromAmount(-parsedEntry.nFee)));
                     if (fLong)
                         WalletTxToJSON(wallet, wtx, entry);
                     ret.push_back(entry);
@@ -1618,8 +1611,8 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             }
 
             // Received
-            if (listReceived.size() > 0 && confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
-                BOOST_FOREACH (const COutputEntry& r, listReceived) {
+            if (parsedEntry.listReceived.size() > 0 && confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
+                BOOST_FOREACH (const COutputEntry& r, parsedEntry.listReceived) {
                     string account;
                     const AddressBook& addressBook = pwalletMain->GetAddressBook();
                     if (addressBook.count(r.destination))
@@ -1821,21 +1814,18 @@ Value listaccounts(const Array& params, bool fHelp)
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
-        CAmount nFee;
-        string strSentAccount;
-        list<COutputEntry> listReceived;
-        list<COutputEntry> listSent;
+        string strSentAccount = wtx.strFromAccount;
         int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
         if (confsCalculator.GetBlocksToMaturity(wtx) > 0 || nDepth < 0)
             continue;
-        pwalletMain->GetAmounts(wtx,listReceived, listSent, nFee, filter);
-        mapAccountBalances[strSentAccount] -= nFee;
-        BOOST_FOREACH (const COutputEntry& s, listSent)
+        WalletOutputEntryParsing parsedEntry = pwalletMain->GetAmounts(wtx, filter);
+        mapAccountBalances[strSentAccount] -= parsedEntry.nFee;
+        BOOST_FOREACH (const COutputEntry& s, parsedEntry.listSent)
                 mapAccountBalances[strSentAccount] -= s.amount;
         if (nDepth >= nMinDepth)
         {
             const AddressBook& addressBook = pwalletMain->GetAddressBook();
-            BOOST_FOREACH (const COutputEntry& r, listReceived)
+            BOOST_FOREACH (const COutputEntry& r, parsedEntry.listReceived)
             {
                 if (addressBook.count(r.destination))
                     mapAccountBalances[addressBook.find(r.destination)->second.name] += r.amount;

@@ -78,15 +78,8 @@ WalletOutputEntryParsing GetAmounts(
     for (unsigned int i = 0; i < wtx.vout.size(); ++i) {
         const CTxOut& txout = wtx.vout[i];
         const bool skippedByFilter = !(filter.hasRequested(wallet.IsMine(txout)));
-        // Only need to handle txouts if AT LEAST one of these is true:
-        //   1) they debit from us (sent)
-        //   2) the output is to us (received)
-        if (nDebit > 0) {
-            // Don't report 'change' txouts
-            if (wallet.IsChange(txout))
-                continue;
-        } else if (skippedByFilter)
-            continue;
+        if (nDebit > 0 && wallet.IsChange(txout)) continue;
+        if (!(nDebit > 0) && skippedByFilter) continue;
 
         // In either case, we need to get the destination address
         CTxDestination address;
@@ -1683,7 +1676,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         }
         else
         {
-            WalletOutputEntryParsing parsedEntry = GetAmounts(wallet, wtx, filter);
+            WalletOutputEntryParsing parsedEntry = GetAmounts(wallet,wtx, filter);
 
             // Sent
             if ((!parsedEntry.listSent.empty() || parsedEntry.nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
@@ -1912,7 +1905,7 @@ Value listaccounts(const Array& params, bool fHelp)
         int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
         if (confsCalculator.GetBlocksToMaturity(wtx) > 0 || nDepth < 0)
             continue;
-        WalletOutputEntryParsing parsedEntry = GetAmounts(*pwalletMain, wtx, filter);
+        WalletOutputEntryParsing parsedEntry = GetAmounts(*pwalletMain,wtx, filter);
         mapAccountBalances[strSentAccount] -= parsedEntry.nFee;
         BOOST_FOREACH (const COutputEntry& s, parsedEntry.listSent)
                 mapAccountBalances[strSentAccount] -= s.amount;

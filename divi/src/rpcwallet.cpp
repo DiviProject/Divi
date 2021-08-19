@@ -49,6 +49,100 @@ extern CChain chainActive;
 extern CWallet* pwalletMain;
 extern Settings& settings;
 
+struct WalletOutputEntryParsing
+{
+    std::list<COutputEntry> listReceived;
+    std::list<COutputEntry> listSent;
+    CAmount nFee;
+};
+
+WalletOutputEntryParsing GetAmounts(
+    const CWallet& wallet,
+    const CWalletTx& wtx,
+    const UtxoOwnershipFilter& filter)
+{
+    WalletOutputEntryParsing parsedEntry;
+    parsedEntry.nFee = 0;
+    parsedEntry.listReceived.clear();
+    parsedEntry.listSent.clear();
+
+    // Compute fee:
+    CAmount nDebit = wallet.GetDebit(wtx,filter);
+    if (nDebit > 0 && wallet.AllInputsAreMine(wtx)) // debit>0 means we were involved in sending this transaction
+    {
+        CAmount nValueOut = wtx.GetValueOut();
+        parsedEntry.nFee = nDebit - nValueOut;
+    }
+
+    // Sent/received.
+    for (unsigned int i = 0; i < wtx.vout.size(); ++i) {
+        const CTxOut& txout = wtx.vout[i];
+        const bool skippedByFilter = !(filter.hasRequested(wallet.IsMine(txout)));
+        // Only need to handle txouts if AT LEAST one of these is true:
+        //   1) they debit from us (sent)
+        //   2) the output is to us (received)
+        if (nDebit > 0) {
+            // Don't report 'change' txouts
+            if (wallet.IsChange(txout))
+                continue;
+        } else if (skippedByFilter)
+            continue;
+
+        // In either case, we need to get the destination address
+        CTxDestination address;
+        if (!ExtractDestination(txout.scriptPubKey, address)) {
+            if (!wtx.IsCoinStake() && !wtx.IsCoinBase()) {
+                LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n", wtx.ToStringShort());
+            }
+            address = CNoDestination();
+        }
+
+        COutputEntry output = {address, txout.nValue, (int)i};
+
+        // If we are debited by the transaction, add the output as a "sent" entry
+        if (nDebit > 0)
+            parsedEntry.listSent.push_back(output);
+
+        // If we are receiving the output, add it as a "received" entry
+        if (!skippedByFilter)
+            parsedEntry.listReceived.push_back(output);
+    }
+    return parsedEntry;
+}
+
+void GetAccountAmounts(
+    const CWallet& wallet,
+    const CWalletTx& wtx,
+    const std::string& strAccount,
+    CAmount& nReceived,
+    CAmount& nSent,
+    CAmount& nFee,
+    const UtxoOwnershipFilter& filter)
+{
+    nReceived = nSent = nFee = 0;
+
+    std::string strSentAccount = wtx.strFromAccount;
+    WalletOutputEntryParsing parsedEntry = GetAmounts(wallet,wtx, filter);
+
+    if (strAccount == strSentAccount) {
+        for (const COutputEntry& s : parsedEntry.listSent)
+            nSent += s.amount;
+        nFee = parsedEntry.nFee;
+    }
+    {
+        LOCK(wallet.cs_wallet);
+        const AddressBook& addressBook = wallet.GetAddressBook();
+        for (const COutputEntry& r : parsedEntry.listReceived)
+        {
+            std::map<CTxDestination, CAddressBookData>::const_iterator mi = addressBook.find(r.destination);
+            if ((mi != addressBook.end() && mi->second.name == strAccount) || strAccount.empty())
+            {
+                nReceived += r.amount;
+            }
+        }
+    }
+}
+
 std::string HelpRequiringPassphrase()
 {
     return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
@@ -948,7 +1042,7 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
             continue;
 
         CAmount nReceived, nSent, nFee;
-        pwalletMain->GetAccountAmounts(wtx,strAccount, nReceived, nSent, nFee, filter);
+        GetAccountAmounts(*pwalletMain,wtx,strAccount, nReceived, nSent, nFee, filter);
 
         if (nReceived != 0 && confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
             nBalance += nReceived;
@@ -1017,7 +1111,7 @@ Value getbalance(const Array& params, bool fHelp)
             if (!IsFinalTx(wtx, chainActive) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
                 continue;
 
-            WalletOutputEntryParsing parsedEntry = pwalletMain->GetAmounts(wtx, filter);
+            WalletOutputEntryParsing parsedEntry = GetAmounts(*pwalletMain,wtx, filter);
             if (confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
                 BOOST_FOREACH (const COutputEntry& r, parsedEntry.listReceived)
                         nBalance += r.amount;
@@ -1589,7 +1683,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         }
         else
         {
-            WalletOutputEntryParsing parsedEntry = wallet.GetAmounts(wtx, filter);
+            WalletOutputEntryParsing parsedEntry = GetAmounts(wallet, wtx, filter);
 
             // Sent
             if ((!parsedEntry.listSent.empty() || parsedEntry.nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
@@ -1818,7 +1912,7 @@ Value listaccounts(const Array& params, bool fHelp)
         int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
         if (confsCalculator.GetBlocksToMaturity(wtx) > 0 || nDepth < 0)
             continue;
-        WalletOutputEntryParsing parsedEntry = pwalletMain->GetAmounts(wtx, filter);
+        WalletOutputEntryParsing parsedEntry = GetAmounts(*pwalletMain, wtx, filter);
         mapAccountBalances[strSentAccount] -= parsedEntry.nFee;
         BOOST_FOREACH (const COutputEntry& s, parsedEntry.listSent)
                 mapAccountBalances[strSentAccount] -= s.amount;

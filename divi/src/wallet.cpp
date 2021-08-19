@@ -3169,7 +3169,7 @@ void CWallet::GetAmounts(
 
     // Compute fee:
     CAmount nDebit = GetDebit(wtx,filter);
-    if (nDebit > 0) // debit>0 means we signed/sent this transaction
+    if (nDebit > 0 && AllInputsAreMine(wtx)) // debit>0 means we were involved in sending this transaction
     {
         CAmount nValueOut = wtx.GetValueOut();
         nFee = nDebit - nValueOut;

@@ -421,7 +421,6 @@ public:
         std::list<COutputEntry>& listReceived,
         std::list<COutputEntry>& listSent,
         CAmount& nFee,
-        std::string& strSentAccount,
         const UtxoOwnershipFilter& filter) const;
     void GetAccountAmounts(
         const CWalletTx& wtx,

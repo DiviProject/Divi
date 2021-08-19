@@ -1021,7 +1021,7 @@ Value getbalance(const Array& params, bool fHelp)
             string strSentAccount;
             list<COutputEntry> listReceived;
             list<COutputEntry> listSent;
-            pwalletMain->GetAmounts(wtx,listReceived, listSent, allFee, strSentAccount, filter);
+            pwalletMain->GetAmounts(wtx,listReceived, listSent, allFee, filter);
             if (confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
                 BOOST_FOREACH (const COutputEntry& r, listReceived)
                         nBalance += r.amount;
@@ -1596,7 +1596,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         }
         else
         {
-            wallet.GetAmounts(wtx,listReceived, listSent, nFee, strSentAccount, filter);
+            wallet.GetAmounts(wtx,listReceived, listSent, nFee, filter);
 
             // Sent
             if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
@@ -1828,7 +1828,7 @@ Value listaccounts(const Array& params, bool fHelp)
         int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
         if (confsCalculator.GetBlocksToMaturity(wtx) > 0 || nDepth < 0)
             continue;
-        pwalletMain->GetAmounts(wtx,listReceived, listSent, nFee, strSentAccount, filter);
+        pwalletMain->GetAmounts(wtx,listReceived, listSent, nFee, filter);
         mapAccountBalances[strSentAccount] -= nFee;
         BOOST_FOREACH (const COutputEntry& s, listSent)
                 mapAccountBalances[strSentAccount] -= s.amount;

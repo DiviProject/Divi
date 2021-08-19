@@ -47,6 +47,7 @@ void CWalletTx::Init()
     fWatchDebitCached = false;
     fWatchCreditCached = false;
     fChangeCached = false;
+    totalInputsCached =false;
     nDebitCached = 0;
     nCreditCached = 0;
     nImmatureCreditCached = 0;
@@ -54,6 +55,7 @@ void CWalletTx::Init()
     nWatchDebitCached = 0;
     nWatchCreditCached = 0;
     nChangeCached = 0;
+    totalInputs = 0;
     nOrderPos = -1;
 }
 
@@ -66,6 +68,7 @@ void CWalletTx::RecomputeCachedQuantities()
     fWatchCreditCached = false;
     fDebitCached = false;
     fChangeCached = false;
+    totalInputsCached = false;
 }
 
 int64_t CWalletTx::GetTxTime() const

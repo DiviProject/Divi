@@ -40,6 +40,7 @@ public:
     mutable bool fWatchDebitCached;
     mutable bool fWatchCreditCached;
     mutable bool fChangeCached;
+    mutable bool totalInputsCached;
     mutable CAmount nDebitCached;
     mutable CAmount nCreditCached;
     mutable CAmount nImmatureCreditCached;
@@ -47,6 +48,7 @@ public:
     mutable CAmount nWatchDebitCached;
     mutable CAmount nWatchCreditCached;
     mutable CAmount nChangeCached;
+    mutable CAmount totalInputs;
 
     CWalletTx();
     CWalletTx(const CTransaction& txIn);

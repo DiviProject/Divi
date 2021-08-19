@@ -137,13 +137,6 @@ public:
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 };
 
-struct WalletOutputEntryParsing
-{
-    std::list<COutputEntry> listReceived;
-    std::list<COutputEntry> listSent;
-    CAmount nFee;
-};
-
 class CWallet :
     public CCryptoKeyStore,
     public NotificationInterface,
@@ -423,16 +416,6 @@ public:
     CAmount ComputeChange(const CTxOut& txout) const;
     bool DebitsFunds(const CTransaction& tx) const;
     bool DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const;
-    WalletOutputEntryParsing GetAmounts(
-        const CWalletTx& wtx,
-        const UtxoOwnershipFilter& filter) const;
-    void GetAccountAmounts(
-        const CWalletTx& wtx,
-        const std::string& strAccount,
-        CAmount& nReceived,
-        CAmount& nSent,
-        CAmount& nFee,
-        const UtxoOwnershipFilter& filter) const;
 
     CAmount ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const;
     CAmount GetDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;

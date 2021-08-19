@@ -54,25 +54,85 @@ struct WalletOutputEntryParsing
     std::list<COutputEntry> listReceived;
     std::list<COutputEntry> listSent;
     CAmount nFee;
+    CAmount sentByOthers;
+    bool debitsFromAccount;
+    std::vector<CTxOut> previousOutputsSpent;
 };
+
+bool DebitsFromAccount(const CWallet& wallet,const CTxOut& txout, const std::string accountName)
+{
+    const AddressBook& addressBook = wallet.GetAddressBook();
+    CTxDestination address;
+    if (ExtractDestination(txout.scriptPubKey, address) &&
+        addressBook.count(address) > 0 &&
+        addressBook.find(address)->second.name == accountName)
+    {
+        return true;
+    }
+    return false;
+}
+bool DebitsFromAnyAccount(const CWallet& wallet,const CTxOut& txout)
+{
+    const AddressBook& addressBook = wallet.GetAddressBook();
+    CTxDestination address;
+    if (ExtractDestination(txout.scriptPubKey, address) &&
+        addressBook.count(address) > 0 &&
+        !addressBook.find(address)->second.name.empty())
+    {
+        return true;
+    }
+    return false;
+}
 
 WalletOutputEntryParsing GetAmounts(
     const CWallet& wallet,
     const CWalletTx& wtx,
-    const UtxoOwnershipFilter& filter)
+    const UtxoOwnershipFilter& filter,
+    bool collectPreviousOutputs = false)
 {
     WalletOutputEntryParsing parsedEntry;
+    parsedEntry.debitsFromAccount = false;
     parsedEntry.nFee = 0;
+    parsedEntry.sentByOthers = 0;
     parsedEntry.listReceived.clear();
     parsedEntry.listSent.clear();
+    parsedEntry.previousOutputsSpent.clear();
 
-    // Compute fee:
     CAmount nDebit = wallet.GetDebit(wtx,filter);
-    if (nDebit > 0 && wallet.AllInputsAreMine(wtx)) // debit>0 means we were involved in sending this transaction
+    wtx.totalInputs = 0;
+    if(nDebit > 0)
     {
-        CAmount nValueOut = wtx.GetValueOut();
-        parsedEntry.nFee = nDebit - nValueOut;
+        if(wallet.AllInputsAreMine(wtx))
+        {
+            parsedEntry.nFee = nDebit - wtx.GetValueOut();
+            wtx.totalInputs = nDebit;
+            if(collectPreviousOutputs)
+            {
+                for(const CTxIn& txin: wtx.vin)
+                {
+                    const CWalletTx* otherWtx = wallet.GetWalletTx(txin.prevout.hash);
+                    assert(otherWtx);
+                    parsedEntry.previousOutputsSpent.push_back(otherWtx->vout[txin.prevout.n]);
+                }
+            }
+        }
+        else
+        {
+            CAmount totalInputs = 0;
+
+            for(const CTxIn& txin: wtx.vin)
+            {
+                uint256 hashBlock;
+                CTransaction tx;
+                assert(GetTransaction(txin.prevout.hash,tx,hashBlock,true));
+                if(collectPreviousOutputs) parsedEntry.previousOutputsSpent.push_back(tx.vout[txin.prevout.n]);
+                totalInputs += tx.vout[txin.prevout.n].nValue;
+            }
+            wtx.totalInputs = totalInputs;
+            parsedEntry.nFee = wtx.totalInputs - wtx.GetValueOut();
+        }
     }
+    parsedEntry.sentByOthers = wtx.totalInputs - nDebit;
 
     // Sent/received.
     for (unsigned int i = 0; i < wtx.vout.size(); ++i) {
@@ -99,6 +159,7 @@ WalletOutputEntryParsing GetAmounts(
         // If we are receiving the output, add it as a "received" entry
         if (!skippedByFilter)
             parsedEntry.listReceived.push_back(output);
+
     }
     return parsedEntry;
 }
@@ -115,16 +176,44 @@ void GetAccountAmounts(
     nReceived = nSent = nFee = 0;
 
     std::string strSentAccount = wtx.strFromAccount;
-    WalletOutputEntryParsing parsedEntry = GetAmounts(wallet,wtx, filter);
+    WalletOutputEntryParsing parsedEntry = GetAmounts(wallet,wtx, filter,true);
 
-    if (strAccount == strSentAccount) {
+    const AddressBook& addressBook = wallet.GetAddressBook();
+    bool debitsFromAccount = strAccount == strSentAccount;
+
+    if(!strAccount.empty())
+    {
+        // Spend from account
+        for (const CTxOut& s : parsedEntry.previousOutputsSpent)
+        {
+            if(DebitsFromAccount(wallet,s,strAccount))
+            {
+                nSent += s.nValue;
+            }
+        }
+        // Receive to account
+        for (const CTxOut& s : wtx.vout)
+        {
+            if(DebitsFromAccount(wallet,s,strAccount))
+            {
+                nReceived += s.nValue;
+            }
+        }
+        parsedEntry.nFee = 0;
+        return;
+    }
+
+    if (debitsFromAccount)
+    {
         for (const COutputEntry& s : parsedEntry.listSent)
+        {
             nSent += s.amount;
+        }
+        nSent -= parsedEntry.sentByOthers;
         nFee = parsedEntry.nFee;
     }
     {
         LOCK(wallet.cs_wallet);
-        const AddressBook& addressBook = wallet.GetAddressBook();
         for (const COutputEntry& r : parsedEntry.listReceived)
         {
             std::map<CTxDestination, CAddressBookData>::const_iterator mi = addressBook.find(r.destination);
@@ -1129,6 +1218,7 @@ Value getbalance(const Array& params, bool fHelp)
             BOOST_FOREACH (const COutputEntry& s, parsedEntry.listSent)
                     nBalance -= s.amount;
             nBalance -= parsedEntry.nFee;
+            nBalance += parsedEntry.sentByOthers;
         }
         return ValueFromAmount(nBalance);
     }

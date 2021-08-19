@@ -3239,11 +3239,7 @@ void CWallet::GetAccountAmounts(
         for (const COutputEntry& r : listReceived)
         {
             std::map<CTxDestination, CAddressBookData>::const_iterator mi = addressBook.find(r.destination);
-            if (mi != addressBook.end() && mi->second.name == strAccount)
-            {
-                nReceived += r.amount;
-            }
-            else if (strAccount.empty())
+            if ((mi != addressBook.end() && mi->second.name == strAccount) || strAccount.empty())
             {
                 nReceived += r.amount;
             }

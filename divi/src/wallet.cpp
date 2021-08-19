@@ -3161,13 +3161,11 @@ void CWallet::GetAmounts(
     std::list<COutputEntry>& listReceived,
     std::list<COutputEntry>& listSent,
     CAmount& nFee,
-    std::string& strSentAccount,
     const UtxoOwnershipFilter& filter) const
 {
     nFee = 0;
     listReceived.clear();
     listSent.clear();
-    strSentAccount = wtx.strFromAccount;
 
     // Compute fee:
     CAmount nDebit = GetDebit(wtx,filter);
@@ -3223,10 +3221,10 @@ void CWallet::GetAccountAmounts(
     nReceived = nSent = nFee = 0;
 
     CAmount allFee;
-    std::string strSentAccount;
     std::list<COutputEntry> listReceived;
     std::list<COutputEntry> listSent;
-    GetAmounts(wtx, listReceived, listSent, allFee, strSentAccount, filter);
+    std::string strSentAccount = wtx.strFromAccount;
+    GetAmounts(wtx, listReceived, listSent, allFee, filter);
 
     if (strAccount == strSentAccount) {
         for (const COutputEntry& s : listSent)

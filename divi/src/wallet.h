@@ -212,7 +212,6 @@ private:
 
     isminetype IsMine(const CScript& scriptPubKey) const;
     isminetype IsMine(const CTxIn& txin) const;
-    isminetype IsMine(const CTxOut& txout) const;
     bool IsMine(const CTransaction& tx) const;
 
 public:
@@ -415,6 +414,7 @@ public:
     std::map<CTxDestination, CAmount> GetAddressBalances();
 
     bool AllInputsAreMine(const CWalletTx& walletTransaction) const;
+    isminetype IsMine(const CTxOut& txout) const;
     isminetype IsMine(const CTxDestination& dest) const;
 
     CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;

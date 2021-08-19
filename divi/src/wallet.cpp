@@ -3156,23 +3156,21 @@ bool CWallet::MoveFundsBetweenAccounts(std::string from, std::string to, CAmount
     return true;
 }
 
-void CWallet::GetAmounts(
+WalletOutputEntryParsing CWallet::GetAmounts(
     const CWalletTx& wtx,
-    std::list<COutputEntry>& listReceived,
-    std::list<COutputEntry>& listSent,
-    CAmount& nFee,
     const UtxoOwnershipFilter& filter) const
 {
-    nFee = 0;
-    listReceived.clear();
-    listSent.clear();
+    WalletOutputEntryParsing parsedEntry;
+    parsedEntry.nFee = 0;
+    parsedEntry.listReceived.clear();
+    parsedEntry.listSent.clear();
 
     // Compute fee:
     CAmount nDebit = GetDebit(wtx,filter);
     if (nDebit > 0 && AllInputsAreMine(wtx)) // debit>0 means we were involved in sending this transaction
     {
         CAmount nValueOut = wtx.GetValueOut();
-        nFee = nDebit - nValueOut;
+        parsedEntry.nFee = nDebit - nValueOut;
     }
 
     // Sent/received.
@@ -3202,12 +3200,13 @@ void CWallet::GetAmounts(
 
         // If we are debited by the transaction, add the output as a "sent" entry
         if (nDebit > 0)
-            listSent.push_back(output);
+            parsedEntry.listSent.push_back(output);
 
         // If we are receiving the output, add it as a "received" entry
         if (!skippedByFilter)
-            listReceived.push_back(output);
+            parsedEntry.listReceived.push_back(output);
     }
+    return parsedEntry;
 }
 
 void CWallet::GetAccountAmounts(
@@ -3220,21 +3219,18 @@ void CWallet::GetAccountAmounts(
 {
     nReceived = nSent = nFee = 0;
 
-    CAmount allFee;
-    std::list<COutputEntry> listReceived;
-    std::list<COutputEntry> listSent;
     std::string strSentAccount = wtx.strFromAccount;
-    GetAmounts(wtx, listReceived, listSent, allFee, filter);
+    WalletOutputEntryParsing parsedEntry = GetAmounts(wtx, filter);
 
     if (strAccount == strSentAccount) {
-        for (const COutputEntry& s : listSent)
+        for (const COutputEntry& s : parsedEntry.listSent)
             nSent += s.amount;
-        nFee = allFee;
+        nFee = parsedEntry.nFee;
     }
     {
         LOCK(cs_wallet);
         const AddressBook& addressBook = GetAddressBook();
-        for (const COutputEntry& r : listReceived)
+        for (const COutputEntry& r : parsedEntry.listReceived)
         {
             std::map<CTxDestination, CAddressBookData>::const_iterator mi = addressBook.find(r.destination);
             if ((mi != addressBook.end() && mi->second.name == strAccount) || strAccount.empty())

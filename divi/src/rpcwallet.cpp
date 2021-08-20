@@ -388,6 +388,72 @@ CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwn
     return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
 }
 
+
+
+class I_AccountCoinSelector: public I_CoinSelectionAlgorithm
+{
+protected:
+    std::unique_ptr<I_CoinSelectionAlgorithm> coinSelector_;
+    virtual std::vector<COutput> FilterCoinsByAccountName(const std::vector<COutput>& vCoins) const = 0;
+public:
+    virtual ~I_AccountCoinSelector(){}
+    std::set<COutput> SelectCoins(
+        const CMutableTransaction& transactionToSelectCoinsFor,
+        const std::vector<COutput>& vCoins,
+        CAmount& fees) const override final
+    {
+        std::vector<COutput> accountCoins = FilterCoinsByAccountName(vCoins);
+        return coinSelector_? coinSelector_->SelectCoins(transactionToSelectCoinsFor,accountCoins,fees) : std::set<COutput>();
+    }
+};
+
+class AccountCoinSelector final: public I_AccountCoinSelector
+{
+private:
+    const CWallet& wallet_;
+    SignatureSizeEstimator signatureSizeEstimator_;
+    const AddressBook& addressBook_;
+    std::string accountName_;
+
+    std::vector<COutput> FilterCoinsByAccountName(const std::vector<COutput>& vCoins) const override
+    {
+        std::vector<COutput> accountCoins;
+        accountCoins.reserve(vCoins.size());
+        for(const COutput& out: vCoins)
+        {
+            if( (!accountName_.empty() && DebitsFromAccount(wallet_,out.tx->vout[out.i],accountName_)) ||
+                (accountName_.empty() && !DebitsFromAnyAccount(wallet_,out.tx->vout[out.i]) ))
+            {
+                accountCoins.push_back(out);
+            }
+        }
+        return accountCoins;
+    }
+public:
+    AccountCoinSelector(
+        const CWallet& wallet
+        ): wallet_(wallet)
+        , signatureSizeEstimator_()
+        , addressBook_(wallet.GetAddressBook())
+        , accountName_()
+    {
+        coinSelector_.reset(
+            new MinimumFeeCoinSelectionAlgorithm(
+                wallet,
+                signatureSizeEstimator_,
+                FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate()));
+    }
+
+    void SetAccountName(std::string accountName)
+    {
+        accountName_ = accountName;
+    }
+};
+
+
+
+
+
 Value getaccountaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
@@ -528,66 +594,6 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
     }
     return ret;
 }
-
-class I_AccountCoinSelector: public I_CoinSelectionAlgorithm
-{
-protected:
-    std::unique_ptr<I_CoinSelectionAlgorithm> coinSelector_;
-    virtual std::vector<COutput> FilterCoinsByAccountName(const std::vector<COutput>& vCoins) const = 0;
-public:
-    virtual ~I_AccountCoinSelector(){}
-    std::set<COutput> SelectCoins(
-        const CMutableTransaction& transactionToSelectCoinsFor,
-        const std::vector<COutput>& vCoins,
-        CAmount& fees) const override final
-    {
-        std::vector<COutput> accountCoins = FilterCoinsByAccountName(vCoins);
-        return coinSelector_? coinSelector_->SelectCoins(transactionToSelectCoinsFor,accountCoins,fees) : std::set<COutput>();
-    }
-};
-
-class AccountCoinSelector final: public I_AccountCoinSelector
-{
-private:
-    const CWallet& wallet_;
-    SignatureSizeEstimator signatureSizeEstimator_;
-    const AddressBook& addressBook_;
-    std::string accountName_;
-
-    std::vector<COutput> FilterCoinsByAccountName(const std::vector<COutput>& vCoins) const override
-    {
-        std::vector<COutput> accountCoins;
-        accountCoins.reserve(vCoins.size());
-        for(const COutput& out: vCoins)
-        {
-            if( (!accountName_.empty() && DebitsFromAccount(wallet_,out.tx->vout[out.i],accountName_)) ||
-                (accountName_.empty() && !DebitsFromAnyAccount(wallet_,out.tx->vout[out.i]) ))
-            {
-                accountCoins.push_back(out);
-            }
-        }
-        return accountCoins;
-    }
-public:
-    AccountCoinSelector(
-        const CWallet& wallet
-        ): wallet_(wallet)
-        , signatureSizeEstimator_()
-        , addressBook_(wallet.GetAddressBook())
-        , accountName_()
-    {
-        coinSelector_.reset(
-            new MinimumFeeCoinSelectionAlgorithm(
-                wallet,
-                signatureSizeEstimator_,
-                FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate()));
-    }
-
-    void SetAccountName(std::string accountName)
-    {
-        accountName_ = accountName;
-    }
-};
 
 void SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsToFund, CWalletTx& wtxNew, bool spendFromVaults)
 {

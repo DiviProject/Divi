@@ -30,6 +30,7 @@
 #include <MinimumFeeCoinSelectionAlgorithm.h>
 #include <SignatureSizeEstimator.h>
 #include <FeeAndPriorityCalculator.h>
+#include <numeric>
 
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
@@ -621,13 +622,58 @@ void SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsTo
 
     // Create and send the transaction
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
-    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(scriptsToFund, wtxNew, coinTypeFilter);
+    static AccountCoinSelector coinSelector(*pwalletMain);
+    coinSelector.SetAccountName("");
+    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(scriptsToFund, wtxNew, coinTypeFilter,&coinSelector);
     if (!txCreation.second)
     {
         strError = txCreation.first;
         LogPrintf("SendMoney() : %s\n", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
+}
+
+void SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>& vecSend, CWalletTx& wtxNew, std::string accountName, int nMinDepth)
+{
+    // Check funds
+    CAmount nBalance = GetAccountBalance(accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
+    CAmount nValue = std::accumulate(vecSend.begin(),vecSend.end(),CAmount(0),
+        [](const CAmount& runningTotal, const std::pair<CScript,CAmount>& recipient)
+        {
+            return runningTotal + recipient.second;
+        }
+        );
+    if (nValue > nBalance)
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
+
+    // Check amount
+    if (nValue <= 0)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid amount");
+
+    string strError;
+    if (pwalletMain->IsLocked()) {
+        strError = "Error: Wallet locked, unable to create transaction!";
+        LogPrintf("SendMoney() : %s", strError);
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+
+    // Create and send the transaction
+    constexpr AvailableCoinsType coinTypeFilter = ALL_SPENDABLE_COINS;
+    static AccountCoinSelector coinSelector(*pwalletMain);
+    coinSelector.SetAccountName(accountName);
+    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(vecSend, wtxNew, coinTypeFilter,&coinSelector);
+    if (!txCreation.second)
+    {
+        strError = txCreation.first;
+        LogPrintf("SendMoney() : %s\n", strError);
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+}
+
+void SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, CWalletTx& wtxNew, std::string accountName, int nMinDepth)
+{
+    const CScript scriptPubKey = GetScriptForDestination(destination);
+    SendMoneyFromAccount({{scriptPubKey,nValue}},wtxNew,accountName,nMinDepth);
 }
 
 void SendMoneyToAddress(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
@@ -1358,13 +1404,7 @@ Value sendfrom(const Array& params, bool fHelp)
         wtx.mapValue["to"] = params[5].get_str();
 
     EnsureWalletIsUnlocked();
-
-    // Check funds
-    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, isminetype::ISMINE_SPENDABLE);
-    if (nAmount > nBalance)
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
-
-    SendMoneyToAddress(address.Get(), nAmount, wtx);
+    SendMoneyFromAccount(address.Get(), nAmount, wtx, strAccount, nMinDepth);
 
     return wtx.GetHash().GetHex();
 }
@@ -1434,7 +1474,7 @@ Value sendmany(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     // Send
-    SendMoneyToScripts(vecSend,wtx,false);
+    SendMoneyFromAccount(vecSend,wtx,strAccount, nMinDepth);
     return wtx.GetHash().GetHex();
 }
 

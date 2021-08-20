@@ -63,7 +63,7 @@ class MnCollateralTest (BitcoinTestFramework):
 
     # It should still be possible to spend the coins, invalidating the
     # masternode funding.
-    node.sendtoaddress (node.getnewaddress (), 1000)
+    node.sendfrom ("alloc->spent",node.getnewaddress (), 299.999)
     self.mine_blocks (1)
     self.check_balance (1250)
     assert_equal (node.gettxout (cfg.txid, cfg.vout), None)
@@ -100,7 +100,7 @@ class MnCollateralTest (BitcoinTestFramework):
 
     # Now we can spend the collateral.
     assert_equal (node.listlockunspent (), [])
-    node.sendtoaddress (node.getnewaddress (), 1200)
+    node.sendfrom ("alloc->gold", node.getnewaddress (), 999.999)
     self.mine_blocks (1)
     self.check_balance (1250)
 

@@ -34,7 +34,7 @@ using namespace json_spirit;
 
 extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
-extern void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool spendFromVaults = false);
+extern void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew);
 extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool bForceNew = false);
 
 static MasternodeTier GetMasternodeTierFromString(std::string str)

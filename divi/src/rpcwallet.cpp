@@ -434,9 +434,17 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
     }
 }
 
-void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool spendFromVaults = false)
+void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
 {
     // Parse DIVI address
+    constexpr bool spendFromVaults = false;
+    CScript scriptPubKey = GetScriptForDestination(address);
+    SendMoney(scriptPubKey, nValue, wtxNew, spendFromVaults);
+}
+
+void SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
+{
+    constexpr bool spendFromVaults = true;
     CScript scriptPubKey = GetScriptForDestination(address);
     SendMoney(scriptPubKey, nValue, wtxNew, spendFromVaults);
 }
@@ -647,7 +655,7 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
 
 
     EnsureWalletIsUnlocked();
-    SendMoney(address.Get(), nAmount, wtx,true);
+    SendMoneyFromVaults(address.Get(), nAmount, wtx);
     return wtx.GetHash().GetHex();
 }
 

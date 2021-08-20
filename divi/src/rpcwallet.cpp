@@ -262,6 +262,40 @@ CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForc
     return CBitcoinAddress(account.vchPubKey.GetID());
 }
 
+
+CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
+{
+    CAmount nBalance = 0;
+
+    // Tally wallet transactions
+    std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = pwalletMain->getConfirmationCalculator();
+    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    {
+        const CWalletTx& wtx = *(*it);
+        if (!IsFinalTx(wtx, chainActive) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
+            continue;
+
+        CAmount nReceived, nSent, nFee;
+        GetAccountAmounts(*pwalletMain,wtx,strAccount, nReceived, nSent, nFee, filter);
+
+        if (nReceived != 0 && confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
+            nBalance += nReceived;
+        nBalance -= nSent + nFee;
+    }
+
+    // Tally internal accounting entries
+    nBalance += walletdb.GetAccountCreditDebit(strAccount);
+
+    return nBalance;
+}
+
+CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
+{
+    CWalletDB walletdb(settings,pwalletMain->dbFilename());
+    return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
+}
+
 Value getaccountaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
@@ -1026,40 +1060,6 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
     }
 
     return (double)nAmount / (double)COIN;
-}
-
-
-CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
-{
-    CAmount nBalance = 0;
-
-    // Tally wallet transactions
-    std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = pwalletMain->getConfirmationCalculator();
-    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
-    {
-        const CWalletTx& wtx = *(*it);
-        if (!IsFinalTx(wtx, chainActive) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
-            continue;
-
-        CAmount nReceived, nSent, nFee;
-        GetAccountAmounts(*pwalletMain,wtx,strAccount, nReceived, nSent, nFee, filter);
-
-        if (nReceived != 0 && confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
-            nBalance += nReceived;
-        nBalance -= nSent + nFee;
-    }
-
-    // Tally internal accounting entries
-    nBalance += walletdb.GetAccountCreditDebit(strAccount);
-
-    return nBalance;
-}
-
-CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
-{
-    CWalletDB walletdb(settings,pwalletMain->dbFilename());
-    return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
 }
 
 

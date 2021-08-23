@@ -41,7 +41,7 @@ public:
         I_VaultManagerDatabase& vaultManagerDB);
     ~VaultManager();
 
-    void addTransaction(const CTransaction& tx, const CBlock *pblock);
+    void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit);
     void addManagedScript(const CScript& script);
     UnspentOutputs getUTXOs() const;
 

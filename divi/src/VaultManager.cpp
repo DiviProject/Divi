@@ -84,12 +84,13 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx) const
     return false;
 }
 
-void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock)
+void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit)
 {
     LOCK(cs_vaultManager_);
     if(transactionIsRelevant(tx))
     {
         CWalletTx walletTx(tx);
+        if(deposit) walletTx.mapValue["isVaultDeposit"] = "1";
         if(pblock) walletTx.SetMerkleBranch(*pblock);
         outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
         ++transactionOrderingIndex_;

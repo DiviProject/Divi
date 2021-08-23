@@ -38,7 +38,7 @@ public:
                 *(fakeBlockIndexWithHashesResource->blockIndexByHash)
             ))
         , scriptGenerator()
-        , manager( new VaultManager(Params(), *confirmationsCalculator ))
+        , manager( new VaultManager(*confirmationsCalculator ))
     {
     }
     ~VaultManagerTestFixture()
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(willNotAddUTXOsFromAnEmptyTx)
 {
     CMutableTransaction tx;
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningFirstTx);
+    manager->addTransaction(tx,&blockMiningFirstTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(),0u);
 }
 
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(willNotAddUTXOsFromATxContainingUnknownScripts)
     tx.vout.push_back( CTxOut(100,unknownScript) );
 
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningFirstTx);
+    manager->addTransaction(tx,&blockMiningFirstTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(),0u);
 }
 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScripts)
     tx.vout.push_back(CTxOut(100,managedScript));
 
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningFirstTx);
+    manager->addTransaction(tx,&blockMiningFirstTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(),1u);
 }
 
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsFromATxContainingKnownScriptsEvenIfUnknownScrip
     tx.vout.push_back( CTxOut(100,knownScript) );
 
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningFirstTx);
+    manager->addTransaction(tx,&blockMiningFirstTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(),1u);
 }
 
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(willRecognizeAsManyUTXOsWithKnownScriptsAsAreAvailableInATr
     tx.vout.push_back( CTxOut(100,knownScript) );
 
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningFirstTx);
+    manager->addTransaction(tx,&blockMiningFirstTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(),3u);
 }
 
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScriptsUpToSetLimit)
     tx.vout.push_back(CTxOut(100,managedScript));
     tx.vout.push_back(CTxOut(100,managedScript));
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningFirstTx);
+    manager->addTransaction(tx,&blockMiningFirstTx);
 
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 2u);
 
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScriptsUpToSetLimit)
     otherTx.vout.push_back(CTxOut(100,managedScript));
 
     CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
-    manager->SyncTransaction(otherTx,&blockMiningSecondTx);
+    manager->addTransaction(otherTx,&blockMiningSecondTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 3u);
 }
 
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(willDiscountSpentUTXOs)
     tx.vout.push_back(CTxOut(100,managedScript));
     tx.vout.push_back(CTxOut(300,managedScript));
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningFirstTx);
+    manager->addTransaction(tx,&blockMiningFirstTx);
 
     CMutableTransaction otherTx;
     otherTx.vin.emplace_back( COutPoint(tx.GetHash(), 1u) );
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(willDiscountSpentUTXOs)
     otherTx.vout.push_back(CTxOut(100,managedScript));
     otherTx.vout.push_back(CTxOut(100,managedScript));
     CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
-    manager->SyncTransaction(otherTx,&blockMiningSecondTx);
+    manager->addTransaction(otherTx,&blockMiningSecondTx);
 
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
 }
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(willNotCountUTXOsFromTransactionsWithoutConfirmations)
     tx.vout.push_back(CTxOut(100,managedScript));
     tx.vout.push_back(CTxOut(100,managedScript));
     tx.vout.push_back(CTxOut(100,managedScript));
-    manager->SyncTransaction(tx,nullptr);
+    manager->addTransaction(tx,nullptr);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
 }
 
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(willCheckThatCoinbaseTransactionsAreDeepEnoughToSpend)
     assert(CTransaction(tx).IsCoinBase());
 
     CBlock blockMiningTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningTx);
+    manager->addTransaction(tx,&blockMiningTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
     mineAdditionalBlocks(20);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE(willCheckThatCoinstakeTransactionsAreDeepEnoughToSpend)
     assert(CTransaction(tx).IsCoinStake());
 
     CBlock blockMiningTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningTx);
+    manager->addTransaction(tx,&blockMiningTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
     mineAdditionalBlocks(20);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
     tx.vout.push_back(CTxOut(100,managedScript));
 
     CBlock blockMiningTx = getBlockToMineTransaction(tx);
-    manager->SyncTransaction(tx,&blockMiningTx);
+    manager->addTransaction(tx,&blockMiningTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
 
     const CWalletTx expectedTx = manager->GetTransaction(tx.GetHash());
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
             return true;
         }
     ));
-    manager.reset(new VaultManager(Params(), *confirmationsCalculator, *mockPtr ));
+    manager.reset(new VaultManager(*confirmationsCalculator, *mockPtr ));
 
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
     BOOST_CHECK(expectedTx==manager->GetTransaction(tx.GetHash()));
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
         tx.vout.push_back(CTxOut(randomSentAmount,scriptGenerator(10)));
 
         dummyTransactions.emplace_back(tx);
-        manager->SyncTransaction(tx,nullptr);
+        manager->addTransaction(tx,nullptr);
 
         const CWalletTx expectedTx = manager->GetTransaction(tx.GetHash());
         streamOfTransactions[txCount] << expectedTx;
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
             return false;
         }
     ));
-    manager.reset(new VaultManager(Params(), *confirmationsCalculator, *mockPtr ));
+    manager.reset(new VaultManager(*confirmationsCalculator, *mockPtr ));
 
     for(unsigned txCount =0 ; txCount < 10u; ++txCount)
     {

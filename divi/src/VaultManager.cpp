@@ -6,13 +6,10 @@
 #include <SpentOutputTracker.h>
 #include <I_VaultManagerDatabase.h>
 #include <I_MerkleTxConfirmationNumberCalculator.h>
-#include <chainparams.h>
 
 VaultManager::VaultManager(
-    const CChainParams& chainParameters,
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
     ): confirmationsCalculator_(confirmationsCalculator)
-    , requiredCoinbaseMaturity_(chainParameters.COINBASE_MATURITY())
     , cs_vaultManager_()
     , transactionOrderingIndex_(0)
     , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_))
@@ -23,10 +20,9 @@ VaultManager::VaultManager(
 
 
 VaultManager::VaultManager(
-    const CChainParams& chainParameters,
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
     I_VaultManagerDatabase& vaultManagerDB
-    ): VaultManager(chainParameters,confirmationsCalculator)
+    ): VaultManager(confirmationsCalculator)
 {
     LOCK(cs_vaultManager_);
     vaultManagerDB.ReadManagedScripts(managedScriptsLimits_);
@@ -52,7 +48,7 @@ VaultManager::~VaultManager()
     walletTxRecord_.reset();
 }
 
-void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)
+void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock)
 {
     LOCK(cs_vaultManager_);
     for(const CTxOut& output: tx.vout)

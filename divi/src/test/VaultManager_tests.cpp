@@ -330,5 +330,29 @@ BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
     }
 }
 
+BOOST_AUTO_TEST_CASE(willHaveUTXOCountDiminishIfThirdPartySpendsScript)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(300,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx);
+
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 2u);
+
+    CScript otherScript = scriptGenerator(10);
+    CMutableTransaction otherTx;
+    otherTx.vin.emplace_back( COutPoint(tx.GetHash(), 1u) );
+    otherTx.vout.push_back(CTxOut(100,otherScript));
+    otherTx.vout.push_back(CTxOut(100,otherScript));
+    otherTx.vout.push_back(CTxOut(100,otherScript));
+    CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
+    manager->addTransaction(otherTx,&blockMiningSecondTx);
+
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 1u);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

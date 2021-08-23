@@ -87,17 +87,12 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx) const
 void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock)
 {
     LOCK(cs_vaultManager_);
-    for(const CTxOut& output: tx.vout)
+    if(transactionIsRelevant(tx))
     {
-        auto it = managedScriptsLimits_.find(output.scriptPubKey);
-        if(it != managedScriptsLimits_.end())
-        {
-            CWalletTx walletTx(tx);
-            if(pblock) walletTx.SetMerkleBranch(*pblock);
-            outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
-            ++transactionOrderingIndex_;
-            break;
-        }
+        CWalletTx walletTx(tx);
+        if(pblock) walletTx.SetMerkleBranch(*pblock);
+        outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
+        ++transactionOrderingIndex_;
     }
 }
 

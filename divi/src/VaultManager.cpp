@@ -84,6 +84,28 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx) const
     return false;
 }
 
+bool VaultManager::allInputsAreKnown(const CTransaction& tx) const
+{
+    AssertLockHeld(cs_vaultManager_);
+    for(const CTxIn& input: tx.vin)
+    {
+        const CWalletTx* walletTx = walletTxRecord_->GetWalletTx(input.prevout.hash);
+        if(walletTx)
+        {
+            const CTxOut& output = walletTx->vout[input.prevout.n];
+            if(!isManagedScript(output.scriptPubKey))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit)
 {
     LOCK(cs_vaultManager_);
@@ -112,6 +134,10 @@ UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const
     {
         uint256 hash = hashAndTransaction.first;
         const CWalletTx& tx = hashAndTransaction.second;
+        if(onlyManagedCoins)
+        {
+            if(!allInputsAreKnown(tx)) continue;
+        }
         const int depth = confirmationsCalculator_.GetNumberOfBlockConfirmations(tx);
         if(depth < 1) continue;
         if((tx.IsCoinBase() || tx.IsCoinStake()) && confirmationsCalculator_.GetBlocksToMaturity(tx) > 0) continue;

@@ -19,13 +19,11 @@ class I_VaultManagerDatabase;
 class WalletTransactionRecord;
 class SpentOutputTracker;
 class I_MerkleTxConfirmationNumberCalculator;
-class CChainParams;
 
 class VaultManager
 {
 private:
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
-    const int requiredCoinbaseMaturity_;
     mutable CCriticalSection cs_vaultManager_;
     uint64_t transactionOrderingIndex_;
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;
@@ -33,14 +31,13 @@ private:
     ManagedScripts managedScriptsLimits_;
 public:
     VaultManager(
-        const CChainParams& chainParameters,
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
     VaultManager(
-        const CChainParams& chainParameters,
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
         I_VaultManagerDatabase& vaultManagerDB);
     ~VaultManager();
-    void SyncTransaction(const CTransaction& tx, const CBlock *pblock);
+
+    void addTransaction(const CTransaction& tx, const CBlock *pblock);
     void addManagedScript(const CScript& script, unsigned limit);
     UnspentOutputs getUTXOs() const;
     const CWalletTx& GetTransaction(const uint256&) const;

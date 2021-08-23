@@ -136,7 +136,7 @@ UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const
         const CWalletTx& tx = hashAndTransaction.second;
         if(onlyManagedCoins)
         {
-            if(!allInputsAreKnown(tx)) continue;
+            if(!( allInputsAreKnown(tx) && (tx.IsCoinStake() || tx.mapValue.count("isVaultDeposit") > 0) )) continue;
         }
         const int depth = confirmationsCalculator_.GetNumberOfBlockConfirmations(tx);
         if(depth < 1) continue;

@@ -455,4 +455,59 @@ BOOST_AUTO_TEST_CASE(willStopRecognizingUTXOsAsManagedWhenNotAllInputsAreManaged
     BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
 }
 
+BOOST_AUTO_TEST_CASE(willIgnoreManagedUTXOsIfNotSpentByCoinstakeNorDeposited)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript otherManagedScript = scriptGenerator(10);
+    manager->addManagedScript(otherManagedScript);
+
+    CMutableTransaction otherTx;
+    otherTx.vout.push_back(CTxOut(100,otherManagedScript));
+    otherTx.vout.push_back(CTxOut(100,otherManagedScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(otherTx);
+    manager->addTransaction(otherTx,&blockMiningDummyTx, true);
+
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, true);
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),4u);
+
+    CMutableTransaction spendingTx;
+    spendingTx.vin.emplace_back( COutPoint(tx.GetHash(), 0u) );
+    spendingTx.vin.emplace_back( COutPoint(otherTx.GetHash(), 0u) );
+    spendingTx.vout.push_back(CTxOut(50,managedScript));
+    spendingTx.vout.push_back(CTxOut(50,managedScript));
+    spendingTx.vout.push_back(CTxOut(50,managedScript));
+    CBlock blockMiningSecondTx = getBlockToMineTransaction(spendingTx);
+    manager->addTransaction(spendingTx,&blockMiningSecondTx, false);
+
+    assert(!CTransaction(spendingTx).IsCoinStake());
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),2u);
+
+    CMutableTransaction secondSpendingTx;
+    secondSpendingTx.vin.emplace_back( COutPoint(tx.GetHash(), 1u) );
+    secondSpendingTx.vin.emplace_back( COutPoint(otherTx.GetHash(), 1u) );
+    secondSpendingTx.vout.emplace_back();
+    secondSpendingTx.vout.back().SetEmpty();
+    secondSpendingTx.vout.push_back(CTxOut(50,managedScript));
+    secondSpendingTx.vout.push_back(CTxOut(50,managedScript));
+    secondSpendingTx.vout.push_back(CTxOut(50,managedScript));
+    CBlock blockMiningThirdTx = getBlockToMineTransaction(secondSpendingTx);
+
+    BOOST_CHECK(secondSpendingTx.vin.size() > 0);
+    BOOST_CHECK(!secondSpendingTx.vin[0].prevout.IsNull());
+    BOOST_CHECK(secondSpendingTx.vout.size() >= 2);
+    BOOST_CHECK(secondSpendingTx.vout[0].IsEmpty());
+
+    manager->addTransaction(secondSpendingTx,&blockMiningThirdTx, false);
+    mineAdditionalBlocks(20);
+
+    assert(CTransaction(secondSpendingTx).IsCoinStake());
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),3u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

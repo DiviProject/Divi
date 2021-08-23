@@ -80,7 +80,8 @@ UnspentOutputs VaultManager::getUTXOs() const
     {
         uint256 hash = hashAndTransaction.first;
         const CWalletTx& tx = hashAndTransaction.second;
-        if(confirmationsCalculator_.GetNumberOfBlockConfirmations(tx)<1) continue;
+        const int depth = confirmationsCalculator_.GetNumberOfBlockConfirmations(tx);
+        if(depth < 1) continue;
         if((tx.IsCoinBase() || tx.IsCoinStake()) && confirmationsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
@@ -88,7 +89,7 @@ UnspentOutputs VaultManager::getUTXOs() const
             auto it = managedScriptsLimitsCopy.find(output.scriptPubKey);
             if(it != managedScriptsLimitsCopy.end() && !outputTracker_->IsSpent(hash,outputIndex))
             {
-                outputs.insert(COutPoint{hash,outputIndex});
+                outputs.emplace_back(&tx, outputIndex,depth,true);
             }
         }
     }

@@ -5,11 +5,12 @@
 #include <set>
 #include <memory>
 #include <sync.h>
+#include <Output.h>
 
 class CScript;
 using ManagedScripts = std::set<CScript>;
 class COutPoint;
-using UnspentOutputs = std::set<COutPoint>;
+using UnspentOutputs = std::vector<COutput>;
 class CTransaction;
 class CBlock;
 class CWalletTx;

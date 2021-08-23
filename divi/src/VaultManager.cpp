@@ -103,7 +103,7 @@ void VaultManager::addManagedScript(const CScript& script)
     managedScriptsLimits_.insert({script});
 }
 
-UnspentOutputs VaultManager::getUTXOs() const
+UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const
 {
     LOCK(cs_vaultManager_);
     UnspentOutputs outputs;
@@ -125,6 +125,15 @@ UnspentOutputs VaultManager::getUTXOs() const
         }
     }
     return outputs;
+}
+
+UnspentOutputs VaultManager::getAllUTXOs() const
+{
+    return getUTXOs(false);
+}
+UnspentOutputs VaultManager::getManagedUTXOs() const
+{
+    return getUTXOs(true);
 }
 
 const CWalletTx& VaultManager::getTransaction(const uint256& hash) const

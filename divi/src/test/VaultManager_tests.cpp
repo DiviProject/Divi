@@ -402,4 +402,57 @@ BOOST_AUTO_TEST_CASE(willRecordInTheWalletTxWetherTransactionWasADeposit)
     BOOST_CHECK_EQUAL(secondTx.mapValue.count("isVaultDeposit"),0u);
 }
 
+BOOST_AUTO_TEST_CASE(willStopRecognizingUTXOsAsManagedWhenNotAllInputsAreKnown)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(dummyTransaction);
+
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, true);
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),1u);
+
+    CMutableTransaction otherTx;
+    otherTx.vin.emplace_back( COutPoint(tx.GetHash(), 0u) );
+    otherTx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    otherTx.vout.push_back(CTxOut(50,managedScript));
+    CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
+    manager->addTransaction(otherTx,&blockMiningSecondTx, false);
+
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
+}
+
+BOOST_AUTO_TEST_CASE(willStopRecognizingUTXOsAsManagedWhenNotAllInputsAreManaged)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(dummyTransaction);
+    manager->addTransaction(dummyTransaction,&blockMiningDummyTx, false);
+
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, true);
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),1u);
+
+    CMutableTransaction otherTx;
+    otherTx.vin.emplace_back( COutPoint(tx.GetHash(), 0u) );
+    otherTx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    otherTx.vout.push_back(CTxOut(50,managedScript));
+    CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
+    manager->addTransaction(otherTx,&blockMiningSecondTx, false);
+
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

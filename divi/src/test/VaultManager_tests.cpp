@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(willNotAddUTXOsFromAnEmptyTx)
     CMutableTransaction tx;
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningFirstTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(),0u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(),0u);
 }
 
 BOOST_AUTO_TEST_CASE(willNotAddUTXOsFromATxContainingUnknownScripts)
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(willNotAddUTXOsFromATxContainingUnknownScripts)
 
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningFirstTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(),0u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(),0u);
 }
 
 BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScripts)
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScripts)
 
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningFirstTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(),1u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(),1u);
 }
 
 BOOST_AUTO_TEST_CASE(willNotAddUTXOsOfManagedScriptsIfTheyHaveZeroValue)
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(willNotAddUTXOsOfManagedScriptsIfTheyHaveZeroValue)
 
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningFirstTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(),0u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(),0u);
 }
 
 BOOST_AUTO_TEST_CASE(willNotAddTransactionsWithZeroValueUTXOsForManagedScripts)
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsFromATxContainingKnownScriptsEvenIfUnknownScrip
 
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningFirstTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(),1u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(),1u);
 }
 
 BOOST_AUTO_TEST_CASE(willRecognizeAsManyUTXOsWithKnownScriptsAsAreAvailableInATransaction)
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(willRecognizeAsManyUTXOsWithKnownScriptsAsAreAvailableInATr
 
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningFirstTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(),3u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(),3u);
 }
 
 
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScriptsIncrementally)
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningFirstTx, true);
 
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 2u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 2u);
 
     CMutableTransaction otherTx;
     otherTx.vout.push_back(CTxOut(100,managedScript));
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScriptsIncrementally)
 
     CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
     manager->addTransaction(otherTx,&blockMiningSecondTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 5u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 5u);
 }
 
 BOOST_AUTO_TEST_CASE(willDiscountSpentUTXOs)
@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(willDiscountSpentUTXOs)
     CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
     manager->addTransaction(otherTx,&blockMiningSecondTx, true);
 
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 4u);
 }
 
 BOOST_AUTO_TEST_CASE(willNotCountUTXOsFromTransactionsWithoutConfirmations)
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(willNotCountUTXOsFromTransactionsWithoutConfirmations)
     tx.vout.push_back(CTxOut(100,managedScript));
     tx.vout.push_back(CTxOut(100,managedScript));
     manager->addTransaction(tx,nullptr, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 0u);
 }
 
 BOOST_AUTO_TEST_CASE(willCheckThatCoinbaseTransactionsAreDeepEnoughToSpend)
@@ -224,9 +224,9 @@ BOOST_AUTO_TEST_CASE(willCheckThatCoinbaseTransactionsAreDeepEnoughToSpend)
 
     CBlock blockMiningTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 0u);
     mineAdditionalBlocks(20);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 4u);
 }
 
 BOOST_AUTO_TEST_CASE(willCheckThatCoinstakeTransactionsAreDeepEnoughToSpend)
@@ -250,9 +250,9 @@ BOOST_AUTO_TEST_CASE(willCheckThatCoinstakeTransactionsAreDeepEnoughToSpend)
 
     CBlock blockMiningTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 0u);
     mineAdditionalBlocks(20);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 4u);
 }
 
 BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
 
     CBlock blockMiningTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningTx, true);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 4u);
 
     const CWalletTx expectedTx = manager->getTransaction(tx.GetHash());
     CDataStream txStream(SER_DISK, CLIENT_VERSION);
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
     ));
     manager.reset(new VaultManager(*confirmationsCalculator, *mockPtr ));
 
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 4u);
     BOOST_CHECK(expectedTx==manager->getTransaction(tx.GetHash()));
 }
 
@@ -362,7 +362,7 @@ BOOST_AUTO_TEST_CASE(willHaveUTXOCountDiminishIfThirdPartySpendsScript)
     CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
     manager->addTransaction(tx,&blockMiningFirstTx, true);
 
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 2u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 2u);
 
     CScript otherScript = scriptGenerator(10);
     CMutableTransaction otherTx;
@@ -373,7 +373,7 @@ BOOST_AUTO_TEST_CASE(willHaveUTXOCountDiminishIfThirdPartySpendsScript)
     CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
     manager->addTransaction(otherTx,&blockMiningSecondTx, true);
 
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 1u);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 1u);
 }
 
 BOOST_AUTO_TEST_CASE(willRecordInTheWalletTxWetherTransactionWasADeposit)

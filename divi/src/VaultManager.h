@@ -40,7 +40,8 @@ public:
     void addTransaction(const CTransaction& tx, const CBlock *pblock);
     void addManagedScript(const CScript& script, unsigned limit);
     UnspentOutputs getUTXOs() const;
-    const CWalletTx& GetTransaction(const uint256&) const;
-    const ManagedScripts& GetManagedScriptLimits() const;
+
+    const CWalletTx& getTransaction(const uint256&) const;
+    const ManagedScripts& getManagedScriptLimits() const;
 };
 #endif// VAULT_MANAGER_H

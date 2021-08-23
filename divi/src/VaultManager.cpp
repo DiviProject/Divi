@@ -96,7 +96,7 @@ UnspentOutputs VaultManager::getUTXOs() const
     return outputs;
 }
 
-const CWalletTx& VaultManager::GetTransaction(const uint256& hash) const
+const CWalletTx& VaultManager::getTransaction(const uint256& hash) const
 {
     static CWalletTx dummyValue;
 
@@ -109,7 +109,7 @@ const CWalletTx& VaultManager::GetTransaction(const uint256& hash) const
     return *tx;
 }
 
-const ManagedScripts& VaultManager::GetManagedScriptLimits() const
+const ManagedScripts& VaultManager::getManagedScriptLimits() const
 {
     return managedScriptsLimits_;
 }

@@ -253,12 +253,12 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
     manager->addTransaction(tx,&blockMiningTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
 
-    const CWalletTx expectedTx = manager->GetTransaction(tx.GetHash());
+    const CWalletTx expectedTx = manager->getTransaction(tx.GetHash());
     CDataStream txStream(SER_DISK, CLIENT_VERSION);
-    txStream << manager->GetTransaction(tx.GetHash());
+    txStream << manager->getTransaction(tx.GetHash());
 
     CDataStream serializedManagedScripts(SER_DISK, CLIENT_VERSION);
-    serializedManagedScripts << manager->GetManagedScriptLimits();
+    serializedManagedScripts << manager->getManagedScriptLimits();
 
 
     ON_CALL(*mockPtr, ReadManagedScripts(_)).WillByDefault(Invoke(
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
     manager.reset(new VaultManager(*confirmationsCalculator, *mockPtr ));
 
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
-    BOOST_CHECK(expectedTx==manager->GetTransaction(tx.GetHash()));
+    BOOST_CHECK(expectedTx==manager->getTransaction(tx.GetHash()));
 }
 
 
@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
         dummyTransactions.emplace_back(tx);
         manager->addTransaction(tx,nullptr);
 
-        const CWalletTx expectedTx = manager->GetTransaction(tx.GetHash());
+        const CWalletTx expectedTx = manager->getTransaction(tx.GetHash());
         streamOfTransactions[txCount] << expectedTx;
         expectedTransactions.emplace_back(expectedTx);
     }
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
 
     for(unsigned txCount =0 ; txCount < 10u; ++txCount)
     {
-         BOOST_CHECK(expectedTransactions[txCount] == manager->GetTransaction(dummyTransactions[txCount].GetHash()));
+         BOOST_CHECK(expectedTransactions[txCount] == manager->getTransaction(dummyTransactions[txCount].GetHash()));
     }
 }
 

@@ -3,7 +3,7 @@
 #include <map>
 class CWalletTx;
 class CScript;
-using ManagedScripts = std::map<CScript,unsigned>;
+using ManagedScripts = std::set<CScript>;
 class I_VaultManagerDatabase
 {
 public:

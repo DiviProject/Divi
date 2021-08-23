@@ -65,10 +65,10 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock)
     }
 }
 
-void VaultManager::addManagedScript(const CScript& script, unsigned limit)
+void VaultManager::addManagedScript(const CScript& script)
 {
     LOCK(cs_vaultManager_);
-    managedScriptsLimits_.insert({script, limit});
+    managedScriptsLimits_.insert({script});
 }
 
 UnspentOutputs VaultManager::getUTXOs() const
@@ -86,10 +86,9 @@ UnspentOutputs VaultManager::getUTXOs() const
         {
             const CTxOut& output = tx.vout[outputIndex];
             auto it = managedScriptsLimitsCopy.find(output.scriptPubKey);
-            if(it != managedScriptsLimitsCopy.end() && it->second > 0u && !outputTracker_->IsSpent(hash,outputIndex))
+            if(it != managedScriptsLimitsCopy.end() && !outputTracker_->IsSpent(hash,outputIndex))
             {
                 outputs.insert(COutPoint{hash,outputIndex});
-                --(it->second);
             }
         }
     }

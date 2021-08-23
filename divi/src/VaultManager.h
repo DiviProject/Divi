@@ -33,6 +33,7 @@ private:
 
     bool isManagedScript(const CScript& script) const;
     bool transactionIsRelevant(const CTransaction& tx) const;
+    bool allInputsAreKnown(const CTransaction& tx) const;
     UnspentOutputs getUTXOs(bool onlyManagedCoins) const;
 public:
     VaultManager(

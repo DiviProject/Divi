@@ -33,6 +33,7 @@ private:
 
     bool isManagedScript(const CScript& script) const;
     bool transactionIsRelevant(const CTransaction& tx) const;
+    UnspentOutputs getUTXOs(bool onlyManagedCoins) const;
 public:
     VaultManager(
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
@@ -43,7 +44,8 @@ public:
 
     void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit);
     void addManagedScript(const CScript& script);
-    UnspentOutputs getUTXOs() const;
+    UnspentOutputs getManagedUTXOs() const;
+    UnspentOutputs getAllUTXOs() const;
 
     const CWalletTx& getTransaction(const uint256&) const;
     const ManagedScripts& getManagedScriptLimits() const;

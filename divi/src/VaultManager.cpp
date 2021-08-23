@@ -117,7 +117,7 @@ UnspentOutputs VaultManager::getUTXOs() const
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
             const CTxOut& output = tx.vout[outputIndex];
-            if(isManagedScript(output.scriptPubKey) && !outputTracker_->IsSpent(hash,outputIndex))
+            if(output.nValue >0 && isManagedScript(output.scriptPubKey) && !outputTracker_->IsSpent(hash,outputIndex))
             {
                 outputs.emplace_back(&tx, outputIndex,depth,true);
             }

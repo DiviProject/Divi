@@ -48,6 +48,42 @@ VaultManager::~VaultManager()
     walletTxRecord_.reset();
 }
 
+bool VaultManager::isManagedScript(const CScript& script) const
+{
+    AssertLockHeld(cs_vaultManager_);
+    auto it = managedScriptsLimits_.find(script);
+    if(it != managedScriptsLimits_.end())
+    {
+        return true;
+    }
+    return false;
+}
+
+bool VaultManager::transactionIsRelevant(const CTransaction& tx) const
+{
+    AssertLockHeld(cs_vaultManager_);
+    for(const CTxIn& input: tx.vin)
+    {
+        const CWalletTx* walletTx = walletTxRecord_->GetWalletTx(input.prevout.hash);
+        if(walletTx)
+        {
+            const CTxOut& output = walletTx->vout[input.prevout.n];
+            if(isManagedScript(output.scriptPubKey))
+            {
+                return true;
+            }
+        }
+    }
+    for(const CTxOut& output: tx.vout)
+    {
+        if(isManagedScript(output.scriptPubKey))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock)
 {
     LOCK(cs_vaultManager_);
@@ -86,8 +122,7 @@ UnspentOutputs VaultManager::getUTXOs() const
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
             const CTxOut& output = tx.vout[outputIndex];
-            auto it = managedScriptsLimitsCopy.find(output.scriptPubKey);
-            if(it != managedScriptsLimitsCopy.end() && !outputTracker_->IsSpent(hash,outputIndex))
+            if(isManagedScript(output.scriptPubKey) && !outputTracker_->IsSpent(hash,outputIndex))
             {
                 outputs.emplace_back(&tx, outputIndex,depth,true);
             }

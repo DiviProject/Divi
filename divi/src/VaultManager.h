@@ -30,6 +30,9 @@ private:
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
     ManagedScripts managedScriptsLimits_;
+
+    bool isManagedScript(const CScript& script) const;
+    bool transactionIsRelevant(const CTransaction& tx) const;
 public:
     VaultManager(
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);

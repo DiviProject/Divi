@@ -76,7 +76,7 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx) const
     }
     for(const CTxOut& output: tx.vout)
     {
-        if(isManagedScript(output.scriptPubKey))
+        if(output.nValue >0 && isManagedScript(output.scriptPubKey))
         {
             return true;
         }

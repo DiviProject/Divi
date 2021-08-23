@@ -7,7 +7,7 @@
 #include <sync.h>
 
 class CScript;
-using ManagedScripts = std::map<CScript,unsigned>;
+using ManagedScripts = std::set<CScript>;
 class COutPoint;
 using UnspentOutputs = std::set<COutPoint>;
 class CTransaction;
@@ -38,7 +38,7 @@ public:
     ~VaultManager();
 
     void addTransaction(const CTransaction& tx, const CBlock *pblock);
-    void addManagedScript(const CScript& script, unsigned limit);
+    void addManagedScript(const CScript& script);
     UnspentOutputs getUTXOs() const;
 
     const CWalletTx& getTransaction(const uint256&) const;

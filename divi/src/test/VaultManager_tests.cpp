@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(willNotAddUTXOsFromATxContainingUnknownScripts)
 {
     CScript knownScript = scriptGenerator(10);
     CScript unknownScript = scriptGenerator(10);
-    manager->addManagedScript(knownScript,1);
+    manager->addManagedScript(knownScript);
     CMutableTransaction tx;
     tx.vout.push_back( CTxOut(100,unknownScript) );
 
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(willNotAddUTXOsFromATxContainingUnknownScripts)
 BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScripts)
 {
     CScript managedScript = scriptGenerator(10);
-    manager->addManagedScript(managedScript,1);
+    manager->addManagedScript(managedScript);
     CMutableTransaction tx;
     tx.vout.push_back(CTxOut(100,managedScript));
 
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsFromATxContainingKnownScriptsEvenIfUnknownScrip
 {
     CScript knownScript = scriptGenerator(10);
     CScript unknownScript = scriptGenerator(10);
-    manager->addManagedScript(knownScript,1);
+    manager->addManagedScript(knownScript);
     CMutableTransaction tx;
     tx.vout.push_back( CTxOut(100,unknownScript) );
     tx.vout.push_back( CTxOut(100,knownScript) );
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(willRecognizeAsManyUTXOsWithKnownScriptsAsAreAvailableInATr
 {
     CScript knownScript = scriptGenerator(10);
     CScript unknownScript = scriptGenerator(10);
-    manager->addManagedScript(knownScript,5);
+    manager->addManagedScript(knownScript);
     CMutableTransaction tx;
     tx.vout.push_back( CTxOut(100,knownScript) );
     tx.vout.push_back( CTxOut(100,unknownScript) );
@@ -129,10 +129,10 @@ BOOST_AUTO_TEST_CASE(willRecognizeAsManyUTXOsWithKnownScriptsAsAreAvailableInATr
 }
 
 
-BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScriptsUpToSetLimit)
+BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScriptsIncrementally)
 {
     CScript managedScript = scriptGenerator(10);
-    manager->addManagedScript(managedScript, 3);
+    manager->addManagedScript(managedScript);
 
     CMutableTransaction tx;
     tx.vout.push_back(CTxOut(100,managedScript));
@@ -149,13 +149,13 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScriptsUpToSetLimit)
 
     CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
     manager->addTransaction(otherTx,&blockMiningSecondTx);
-    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 3u);
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 5u);
 }
 
 BOOST_AUTO_TEST_CASE(willDiscountSpentUTXOs)
 {
     CScript managedScript = scriptGenerator(10);
-    manager->addManagedScript(managedScript, 5);
+    manager->addManagedScript(managedScript);
 
     CMutableTransaction tx;
     tx.vout.push_back(CTxOut(100,managedScript));
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(willDiscountSpentUTXOs)
 BOOST_AUTO_TEST_CASE(willNotCountUTXOsFromTransactionsWithoutConfirmations)
 {
     CScript managedScript = scriptGenerator(10);
-    manager->addManagedScript(managedScript, 3);
+    manager->addManagedScript(managedScript);
 
     CMutableTransaction tx;
     tx.vout.push_back(CTxOut(100,managedScript));
@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE(willNotCountUTXOsFromTransactionsWithoutConfirmations)
 BOOST_AUTO_TEST_CASE(willCheckThatCoinbaseTransactionsAreDeepEnoughToSpend)
 {
     CScript managedScript = scriptGenerator(10);
-    manager->addManagedScript(managedScript, 4);
+    manager->addManagedScript(managedScript);
 
     CMutableTransaction tx;
     tx.vin.push_back(CTxIn());
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(willCheckThatCoinbaseTransactionsAreDeepEnoughToSpend)
 BOOST_AUTO_TEST_CASE(willCheckThatCoinstakeTransactionsAreDeepEnoughToSpend)
 {
     CScript managedScript = scriptGenerator(10);
-    manager->addManagedScript(managedScript, 4);
+    manager->addManagedScript(managedScript);
 
     CMutableTransaction dummyTransaction;
     dummyTransaction.vout.push_back(CTxOut(100,scriptGenerator(10)));
@@ -237,7 +237,7 @@ BOOST_AUTO_TEST_CASE(willCheckThatCoinstakeTransactionsAreDeepEnoughToSpend)
 BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
 {
     CScript managedScript = scriptGenerator(10);
-    manager->addManagedScript(managedScript, 4);
+    manager->addManagedScript(managedScript);
 
     CMutableTransaction dummyTransaction;
     dummyTransaction.vout.push_back(CTxOut(100,scriptGenerator(10)));

@@ -106,6 +106,18 @@ BOOST_AUTO_TEST_CASE(willNotAddUTXOsOfManagedScriptsIfTheyHaveZeroValue)
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(),0u);
 }
 
+BOOST_AUTO_TEST_CASE(willNotAddTransactionsWithZeroValueUTXOsForManagedScripts)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(0,managedScript));
+
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx);
+    BOOST_CHECK(manager->getTransaction(tx.GetHash()).vout.empty());
+}
+
 BOOST_AUTO_TEST_CASE(willAddUTXOsFromATxContainingKnownScriptsEvenIfUnknownScriptsArePresent)
 {
     CScript knownScript = scriptGenerator(10);

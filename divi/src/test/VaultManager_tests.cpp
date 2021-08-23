@@ -19,8 +19,6 @@ using ::testing::_;
 using ::testing::Invoke;
 struct VaultManagerTestFixture
 {
-private:
-    std::vector<CScript> managedScripts;
 public:
     std::unique_ptr<MockVaultManagerDatabase> mockPtr;
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashesResource;
@@ -29,8 +27,7 @@ public:
     std::unique_ptr<VaultManager> manager;
 
     VaultManagerTestFixture(
-        ): managedScripts()
-        , mockPtr(new MockVaultManagerDatabase)
+        ): mockPtr(new MockVaultManagerDatabase)
         , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(1,0,CBlock::CURRENT_VERSION))
         , confirmationsCalculator(
             new FakeMerkleTxConfirmationNumberCalculator(

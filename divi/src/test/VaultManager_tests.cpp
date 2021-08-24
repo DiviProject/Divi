@@ -462,6 +462,23 @@ BOOST_AUTO_TEST_CASE(willRecoverPreviouslyStakedUTXOsAfterReorg)
     BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 3u);
 }
 
+BOOST_AUTO_TEST_CASE(willNotUseUTXOsOfABlockThatsBeenDisconnected)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(300,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+
+    manager->addTransaction(tx,&blockMiningFirstTx, true);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 2u);
+
+    manager->addTransaction(tx,nullptr,false);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 0u);
+}
+
 BOOST_AUTO_TEST_CASE(willRecordInTheWalletTxWetherTransactionWasADeposit)
 {
     CScript managedScript = scriptGenerator(10);

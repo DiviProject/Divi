@@ -726,4 +726,25 @@ BOOST_AUTO_TEST_CASE(willNotAddDepositUnconfirmedTransactions)
     BOOST_CHECK_EQUAL(walletTx.vout.size(),0u);
 }
 
+BOOST_AUTO_TEST_CASE(willStopRecognizingUTXOsForWhichTheScriptHasBeenRevoked)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(dummyTransaction);
+
+    CMutableTransaction tx;
+    tx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock block = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&block, true);
+
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),1u);
+    manager->removeManagedScript(managedScript);
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

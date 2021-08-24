@@ -652,4 +652,78 @@ BOOST_AUTO_TEST_CASE(willAllowUpdatingUTXOsToDepositStatus)
     BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),1u);
 }
 
+BOOST_AUTO_TEST_CASE(willIgnoreTransactionsThatAreNeitherCoinstakeNorDeposits)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(dummyTransaction);
+
+    CMutableTransaction tx;
+    tx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, false);
+
+    const auto& walletTx = manager->getTransaction(tx.GetHash());
+    BOOST_CHECK_EQUAL(walletTx.vin.size(),0u);
+    BOOST_CHECK_EQUAL(walletTx.vout.size(),0u);
+
+    CMutableTransaction otherTx;
+    otherTx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    otherTx.vout.emplace_back();
+    otherTx.vout.back().SetEmpty();
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
+    manager->addTransaction(otherTx,&blockMiningSecondTx, false);
+    assert(CTransaction(otherTx).IsCoinStake());
+
+    const auto& otherWalletTx = manager->getTransaction(otherTx.GetHash());
+    BOOST_CHECK_EQUAL(otherWalletTx.vin.size(),1u);
+    BOOST_CHECK_EQUAL(otherWalletTx.vout.size(),2u);
+}
+
+BOOST_AUTO_TEST_CASE(willNotAddNonDepositUnconfirmedTransactions)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(dummyTransaction);
+
+    CMutableTransaction tx;
+    tx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    tx.vout.push_back(CTxOut(100,managedScript));
+    manager->addTransaction(tx,nullptr, false);
+
+    const auto& walletTx = manager->getTransaction(tx.GetHash());
+    BOOST_CHECK_EQUAL(walletTx.vin.size(),0u);
+    BOOST_CHECK_EQUAL(walletTx.vout.size(),0u);
+}
+
+BOOST_AUTO_TEST_CASE(willNotAddDepositUnconfirmedTransactions)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(dummyTransaction);
+
+    CMutableTransaction tx;
+    tx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    tx.vout.push_back(CTxOut(100,managedScript));
+    manager->addTransaction(tx,nullptr, true);
+
+    const auto& walletTx = manager->getTransaction(tx.GetHash());
+    BOOST_CHECK_EQUAL(walletTx.vin.size(),0u);
+    BOOST_CHECK_EQUAL(walletTx.vout.size(),0u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -82,3 +82,31 @@ int64_t CWalletTx::GetComputedTxTime() const
     int64_t nTime = GetTxTime();
     return nTime;
 }
+
+bool CWalletTx::UpdateTransaction(const CWalletTx& other, bool reorg)
+{
+    // Merge
+    bool walletTransactionHasBeenUpdated = false;
+    if (other.hashBlock != 0 && other.hashBlock != hashBlock)
+    {
+        hashBlock = other.hashBlock;
+        walletTransactionHasBeenUpdated = true;
+    }
+    if (other.merkleBranchIndex != -1 && (other.vMerkleBranch != vMerkleBranch || other.merkleBranchIndex != merkleBranchIndex))
+    {
+        vMerkleBranch = other.vMerkleBranch;
+        merkleBranchIndex = other.merkleBranchIndex;
+        walletTransactionHasBeenUpdated = true;
+    }
+    if (other.createdByMe && other.createdByMe != createdByMe)
+    {
+        createdByMe = other.createdByMe;
+        walletTransactionHasBeenUpdated = true;
+    }
+    if(reorg && !other.createdByMe && !other.MerkleBranchIsSet() && MerkleBranchIsSet())
+    {
+        ClearMerkleBranch();
+        walletTransactionHasBeenUpdated = true;
+    }
+    return walletTransactionHasBeenUpdated;
+}

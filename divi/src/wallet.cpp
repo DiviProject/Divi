@@ -1251,7 +1251,6 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
 
     bool walletTransactionHasBeenUpdated = false;
-    bool reorgTransactionDetected = false;
     if (transactionHashIsNewToWallet)
     {
         wtx.nOrderPos = IncOrderPosNext();
@@ -1272,41 +1271,17 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     }
     else
     {
-        // Merge
-        if (wtxIn.hashBlock != 0 && wtxIn.hashBlock != wtx.hashBlock)
-        {
-            wtx.hashBlock = wtxIn.hashBlock;
-            walletTransactionHasBeenUpdated = true;
-        }
-        if (wtxIn.merkleBranchIndex != -1 && (wtxIn.vMerkleBranch != wtx.vMerkleBranch || wtxIn.merkleBranchIndex != wtx.merkleBranchIndex))
-        {
-            wtx.vMerkleBranch = wtxIn.vMerkleBranch;
-            wtx.merkleBranchIndex = wtxIn.merkleBranchIndex;
-            walletTransactionHasBeenUpdated = true;
-        }
-        if (wtxIn.createdByMe && wtxIn.createdByMe != wtx.createdByMe)
-        {
-            wtx.createdByMe = wtxIn.createdByMe;
-            walletTransactionHasBeenUpdated = true;
-        }
-
-        // Reset merkle branch - block reorg
-        if(blockDisconnection && !wtxIn.createdByMe && !wtxIn.MerkleBranchIsSet() && wtx.MerkleBranchIsSet())
-        {
-            wtx.ClearMerkleBranch();
-            reorgTransactionDetected = true;
-        }
+        walletTransactionHasBeenUpdated = wtx.UpdateTransaction(wtxIn,blockDisconnection);
     }
 
     //// debug print
     const std::string updateDescription =
         transactionHashIsNewToWallet ? "new":
-        walletTransactionHasBeenUpdated? "update" :
-        reorgTransactionDetected? "reorg": "";
+        walletTransactionHasBeenUpdated? "update" : "";
     LogPrintf("AddToWallet %s %s\n", wtxIn.ToStringShort(), updateDescription);
 
     // Write to disk
-    if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated || reorgTransactionDetected)
+    if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated)
     {
         if(!WriteTxToDisk(this,wtx))
         {
@@ -1319,7 +1294,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     wtx.RecomputeCachedQuantities();
 
     // Notify UI of new or updated transaction
-    NotifyTransactionChanged(hash, (transactionHashIsNewToWallet && !reorgTransactionDetected) ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
+    NotifyTransactionChanged(hash, (transactionHashIsNewToWallet) ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
     return true;
 }
 

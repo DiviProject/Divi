@@ -7,6 +7,8 @@
 #include <I_VaultManagerDatabase.h>
 #include <I_MerkleTxConfirmationNumberCalculator.h>
 
+constexpr const char* VAULT_DEPOSIT_DESCRIPTION = "isVaultDeposit";
+
 VaultManager::VaultManager(
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
     ): confirmationsCalculator_(confirmationsCalculator)
@@ -112,7 +114,7 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
     if(transactionIsRelevant(tx))
     {
         CWalletTx walletTx(tx);
-        if(deposit) walletTx.mapValue["isVaultDeposit"] = "1";
+        if(deposit) walletTx.mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
         if(pblock) walletTx.SetMerkleBranch(*pblock);
         outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
         ++transactionOrderingIndex_;
@@ -136,7 +138,7 @@ UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const
         const CWalletTx& tx = hashAndTransaction.second;
         if(onlyManagedCoins)
         {
-            if(!( allInputsAreKnown(tx) && (tx.IsCoinStake() || tx.mapValue.count("isVaultDeposit") > 0) )) continue;
+            if(!( allInputsAreKnown(tx) && (tx.IsCoinStake() || tx.mapValue.count(VAULT_DEPOSIT_DESCRIPTION) > 0) )) continue;
         }
         const int depth = confirmationsCalculator_.GetNumberOfBlockConfirmations(tx);
         if(depth < 1) continue;

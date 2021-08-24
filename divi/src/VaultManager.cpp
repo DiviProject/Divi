@@ -132,6 +132,11 @@ void VaultManager::addManagedScript(const CScript& script)
     LOCK(cs_vaultManager_);
     managedScripts_.insert(script);
 }
+void VaultManager::removeManagedScript(const CScript& script)
+{
+    LOCK(cs_vaultManager_);
+    managedScripts_.erase(script);
+}
 
 UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const
 {

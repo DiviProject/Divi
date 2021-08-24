@@ -10,21 +10,14 @@
 constexpr const char* VAULT_DEPOSIT_DESCRIPTION = "isVaultDeposit";
 
 VaultManager::VaultManager(
-    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
+    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
+    I_VaultManagerDatabase& vaultManagerDB
     ): confirmationsCalculator_(confirmationsCalculator)
     , cs_vaultManager_()
     , transactionOrderingIndex_(0)
     , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_))
     , outputTracker_(new SpentOutputTracker(*walletTxRecord_,confirmationsCalculator_))
     , managedScriptsLimits_()
-{
-}
-
-
-VaultManager::VaultManager(
-    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
-    I_VaultManagerDatabase& vaultManagerDB
-    ): VaultManager(confirmationsCalculator)
 {
     LOCK(cs_vaultManager_);
     vaultManagerDB.ReadManagedScripts(managedScriptsLimits_);

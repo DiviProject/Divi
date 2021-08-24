@@ -26,7 +26,7 @@ VaultManager::VaultManager(
     while(continueLoadingTransactions)
     {
         CWalletTx txToAdd;
-        if(vaultManagerDB_.ReadTx(transactionOrderingIndex_,txToAdd))
+        if(vaultManagerDB_.ReadTx(txToAdd))
         {
             outputTracker_->UpdateSpends(txToAdd,transactionOrderingIndex_,true);
             ++transactionOrderingIndex_;

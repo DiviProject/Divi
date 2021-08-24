@@ -29,7 +29,7 @@ private:
     uint64_t transactionOrderingIndex_;
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
-    ManagedScripts managedScriptsLimits_;
+    ManagedScripts managedScripts_;
 
     bool isManagedScript(const CScript& script) const;
     bool transactionIsRelevant(const CTransaction& tx) const;

@@ -17,10 +17,10 @@ VaultManager::VaultManager(
     , transactionOrderingIndex_(0)
     , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_))
     , outputTracker_(new SpentOutputTracker(*walletTxRecord_,confirmationsCalculator_))
-    , managedScriptsLimits_()
+    , managedScripts_()
 {
     LOCK(cs_vaultManager_);
-    vaultManagerDB.ReadManagedScripts(managedScriptsLimits_);
+    vaultManagerDB.ReadManagedScripts(managedScripts_);
     bool continueLoadingTransactions = true;
     while(continueLoadingTransactions)
     {
@@ -46,8 +46,8 @@ VaultManager::~VaultManager()
 bool VaultManager::isManagedScript(const CScript& script) const
 {
     AssertLockHeld(cs_vaultManager_);
-    auto it = managedScriptsLimits_.find(script);
-    if(it != managedScriptsLimits_.end())
+    auto it = managedScripts_.find(script);
+    if(it != managedScripts_.end())
     {
         return true;
     }
@@ -124,14 +124,14 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
 void VaultManager::addManagedScript(const CScript& script)
 {
     LOCK(cs_vaultManager_);
-    managedScriptsLimits_.insert({script});
+    managedScripts_.insert(script);
 }
 
 UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const
 {
     LOCK(cs_vaultManager_);
     UnspentOutputs outputs;
-    auto managedScriptsLimitsCopy = managedScriptsLimits_;
+    auto managedScriptsLimitsCopy = managedScripts_;
     for(const auto& hashAndTransaction: walletTxRecord_->mapWallet)
     {
         uint256 hash = hashAndTransaction.first;
@@ -179,5 +179,5 @@ const CWalletTx& VaultManager::getTransaction(const uint256& hash) const
 
 const ManagedScripts& VaultManager::getManagedScriptLimits() const
 {
-    return managedScriptsLimits_;
+    return managedScripts_;
 }

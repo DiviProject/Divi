@@ -4,6 +4,57 @@
 #include <blockmap.h>
 #include <primitives/block.h>
 
+namespace ChainExtensionHelpers
+{
+    void extendFakeBlockIndexChain(
+        CChain& currentChain,
+        int heightAtTip,
+        int32_t time,
+        int32_t version)
+    {
+        while(currentChain.Height() < heightAtTip)
+        {
+            CBlockIndex* pindex = new CBlockIndex();
+            pindex->nHeight = currentChain.Height()+1;
+            pindex->pprev = pindex->nHeight > 0 ? currentChain.Tip(): nullptr;
+            pindex->nTime = time;
+            pindex->nVersion = version;
+            pindex->BuildSkip();
+            currentChain.SetTip(pindex);
+        }
+    }
+    void extendTo(
+        CChain& currentChain,
+        int heightAtTip,
+        int32_t time,
+        int32_t version)
+    {
+        ChainExtensionHelpers::extendFakeBlockIndexChain(currentChain,heightAtTip,time,version);
+    }
+    void extendBy(
+        CChain& currentChain,
+        unsigned additionalBlocks,
+        int32_t time,
+        int32_t version)
+    {
+        int heightAtTip = currentChain.Height() + additionalBlocks;
+        ChainExtensionHelpers::extendTo(currentChain,heightAtTip,time,version);
+    }
+
+    void attachNewBlock(CChain& currentChain, const CBlock& block)
+    {
+        assert(currentChain.Tip());
+        CBlockIndex* chainTip = currentChain.Tip();
+        CBlockIndex* pindex = new CBlockIndex(block);
+        pindex->nHeight = currentChain.Height()+1;
+        pindex->pprev = chainTip;
+        pindex->BuildSkip();
+        currentChain.SetTip(pindex);
+    }
+
+}
+
+
 void FakeBlockIndexChain::resetFakeChain()
 {
     for(CBlockIndex* ptr: fakeChain)
@@ -94,7 +145,6 @@ FakeBlockIndexWithHashes::FakeBlockIndexWithHashes(
     unsigned blockStartTime,
     unsigned versionNumber
     ): randomBlockHashSeed_(uint256S("135bd924226929c2f4267f5e5c653d2a4ae0018187588dc1f016ceffe525fad2"))
-    , fakeBlockIndexChain_()
     , blockIndexByHash(new BlockMap())
     , activeChain(new CChain())
 {
@@ -103,6 +153,15 @@ FakeBlockIndexWithHashes::FakeBlockIndexWithHashes(
 FakeBlockIndexWithHashes::~FakeBlockIndexWithHashes()
 {
     activeChain.reset();
+    BlockMap& blockIndices = *blockIndexByHash;
+    for(auto& hashAndIndexPair: blockIndices)
+    {
+        if(hashAndIndexPair.second)
+        {
+            delete hashAndIndexPair.second;
+            hashAndIndexPair.second = nullptr;
+        }
+    }
     blockIndexByHash.reset();
 }
 
@@ -113,25 +172,24 @@ void FakeBlockIndexWithHashes::extendChainBlocks(
     unsigned blockStartTime)
 {
     unsigned startingBlockHeight = 0u;
-    const CBlockIndex* chainTip = chainToExtend;
-    if(chainTip)
+    if(chainToExtend)
     {
-        startingBlockHeight = chainTip->nHeight+1;
-        blockStartTime = fakeBlockIndexChain_.at(0)->GetBlockTime();
-        if(fakeBlockIndexChain_.Tip()!=chainTip)
+        startingBlockHeight = chainToExtend->nHeight+1;
+        blockStartTime = activeChain->operator[](0)->GetBlockTime();
+        if(activeChain->Tip()!=chainToExtend)
         {
-            fakeBlockIndexChain_.pruneToHeight(chainTip->nHeight);
-            assert(fakeBlockIndexChain_.Tip()==chainTip);
+            activeChain->SetTip(chainToExtend);
+            assert(activeChain->Tip()==chainToExtend);
         }
     }
 
     for(unsigned blockHeight = startingBlockHeight; blockHeight < numberOfBlocks+startingBlockHeight; ++blockHeight)
     {
-        fakeBlockIndexChain_.extendBy(1,blockStartTime+60*blockHeight,versionNumber);
+        ChainExtensionHelpers::extendBy(*activeChain,1,blockStartTime+60*blockHeight,versionNumber);
         CHashWriter hasher(SER_GETHASH,0);
         hasher << randomBlockHashSeed_++ << blockHeight;
-        BlockMap::iterator it = blockIndexByHash->insert(std::make_pair(hasher.GetHash(), fakeBlockIndexChain_.Tip() )).first;
-        fakeBlockIndexChain_.Tip()->phashBlock = &(it->first);
+        BlockMap::iterator it = blockIndexByHash->insert(std::make_pair(hasher.GetHash(), activeChain->Tip() )).first;
+        activeChain->Tip()->phashBlock = &(it->first);
     }
 }
 
@@ -140,20 +198,18 @@ void FakeBlockIndexWithHashes::addBlocks(
     unsigned versionNumber,
     unsigned blockStartTime)
 {
-    extendChainBlocks(fakeBlockIndexChain_.Tip(),numberOfBlocks,versionNumber,blockStartTime);
-    activeChain->SetTip(fakeBlockIndexChain_.Tip());
+    extendChainBlocks(activeChain->Tip(),numberOfBlocks,versionNumber,blockStartTime);
 }
 
 void FakeBlockIndexWithHashes::fork(
     unsigned numberOfBlocks,
     unsigned ancestorDepth)
 {
-    CBlockIndex* chainTip = fakeBlockIndexChain_.Tip();
+    CBlockIndex* chainTip = activeChain->Tip();
     assert(chainTip);
     CBlockIndex* chainToExtend = chainTip->GetAncestor(chainTip->nHeight - ancestorDepth);
     assert(chainToExtend);
     extendChainBlocks(chainToExtend,numberOfBlocks,chainToExtend->nVersion,chainToExtend->nTime);
-    activeChain->SetTip(fakeBlockIndexChain_.Tip());
     assert((activeChain->Tip()->nHeight - chainToExtend->nHeight) == static_cast<int>(numberOfBlocks) );
 }
 
@@ -167,10 +223,9 @@ void FakeBlockIndexWithHashes::addSingleBlock(CBlock& block)
     block.hashMerkleRoot = block.BuildMerkleTree();
     assert(chainTip->phashBlock);
     block.hashPrevBlock = chainTip->GetBlockHash();
-    fakeBlockIndexChain_.attachNewBlock(block);
-    chainTip = fakeBlockIndexChain_.Tip();
+    ChainExtensionHelpers::attachNewBlock(*activeChain,block);
+    chainTip = activeChain->Tip();
 
     BlockMap::iterator it = blockIndexByHash->insert(std::make_pair(block.GetHash(), chainTip )).first;
     chainTip->phashBlock = &(it->first);
-    activeChain->SetTip(chainTip);
 }

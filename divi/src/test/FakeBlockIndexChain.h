@@ -40,7 +40,6 @@ class FakeBlockIndexWithHashes
 {
 private:
     uint256 randomBlockHashSeed_;
-    FakeBlockIndexChain fakeBlockIndexChain_;
 
     void extendChainBlocks(
         CBlockIndex* chainToExtend,

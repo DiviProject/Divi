@@ -295,14 +295,15 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
         }
     ));
 
-    ON_CALL(*mockPtr, ReadTx(_,_)).WillByDefault(Invoke(
-        [&txStream](const uint64_t txIndex,CWalletTx& returnTx)
+    ON_CALL(*mockPtr, ReadTx(_)).WillByDefault(Invoke(
+        [&txStream](CWalletTx& returnTx)
         {
-            if(txIndex != 0u)
+            if(txStream.size() == 0u)
             {
                 return false;
             }
             txStream >> returnTx;
+            txStream.clear();
             return true;
         }
     ));
@@ -337,12 +338,13 @@ BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
         expectedTransactions.emplace_back(expectedTx);
     }
 
-    ON_CALL(*mockPtr, ReadTx(_,_)).WillByDefault(Invoke(
-        [&streamOfTransactions](const uint64_t txIndex,CWalletTx& returnTx)
+    ON_CALL(*mockPtr, ReadTx(_)).WillByDefault(Invoke(
+        [&streamOfTransactions](CWalletTx& returnTx)
         {
+            static uint64_t txIndex = 0;
             if(txIndex < streamOfTransactions.size())
             {
-                streamOfTransactions[txIndex] >> returnTx;
+                streamOfTransactions[txIndex++] >> returnTx;
                 return true;
             }
             return false;

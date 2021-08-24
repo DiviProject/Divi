@@ -56,6 +56,10 @@ public:
     {
         fakeBlockIndexWithHashesResource->addBlocks(additionalBlocks,CBlock::CURRENT_VERSION);
     }
+    void reorgBlocks(unsigned additionalBlocks,unsigned reorgDepth=1)
+    {
+        fakeBlockIndexWithHashesResource->fork(additionalBlocks,reorgDepth);
+    }
 
 };
 
@@ -374,6 +378,88 @@ BOOST_AUTO_TEST_CASE(willHaveUTXOCountDiminishIfThirdPartySpendsScript)
     manager->addTransaction(otherTx,&blockMiningSecondTx, true);
 
     BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 1u);
+}
+
+BOOST_AUTO_TEST_CASE(willNotRecoverDepositUTXOsAfterReorg)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(300,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, true);
+
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 2u);
+    mineAdditionalBlocks(1);
+
+    CScript otherScript = scriptGenerator(10);
+    CMutableTransaction otherTx;
+    otherTx.vin.emplace_back( COutPoint(tx.GetHash(), 0u) );
+    otherTx.vin.emplace_back( COutPoint(tx.GetHash(), 1u) );
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
+    manager->addTransaction(otherTx,&blockMiningSecondTx, true);
+
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 3u);
+
+    reorgBlocks(1);
+
+    const CWalletTx& firstTx = manager->getTransaction(tx.GetHash());
+    const CWalletTx& secondTx = manager->getTransaction(otherTx.GetHash());
+    BOOST_CHECK_EQUAL(confirmationsCalculator->GetNumberOfBlockConfirmations(firstTx),3);
+    BOOST_CHECK_EQUAL(confirmationsCalculator->GetNumberOfBlockConfirmations(secondTx),0);
+
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 0u);
+}
+
+BOOST_AUTO_TEST_CASE(willRecoverPreviouslyStakedUTXOsAfterReorg)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(300,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, true);
+
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 2u);
+    mineAdditionalBlocks(1);
+
+    CScript otherScript = scriptGenerator(10);
+    CMutableTransaction otherTx;
+    otherTx.vin.emplace_back( COutPoint(tx.GetHash(), 0u) );
+    otherTx.vin.emplace_back( COutPoint(tx.GetHash(), 1u) );
+    otherTx.vout.emplace_back();
+    otherTx.vout.back().SetEmpty();
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
+    manager->addTransaction(otherTx,&blockMiningSecondTx, true);
+
+    assert(CTransaction(otherTx).IsCoinStake());
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 0u);
+    mineAdditionalBlocks(20);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 3u);
+
+    reorgBlocks(1,21);
+
+    const CWalletTx& firstTx = manager->getTransaction(tx.GetHash());
+    const CWalletTx& secondTx = manager->getTransaction(otherTx.GetHash());
+    BOOST_CHECK_EQUAL(confirmationsCalculator->GetNumberOfBlockConfirmations(firstTx),3);
+    BOOST_CHECK_EQUAL(confirmationsCalculator->GetNumberOfBlockConfirmations(secondTx),-1);
+
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 2u);
+    CBlock reminingBlock = getBlockToMineTransaction(otherTx);
+    manager->addTransaction(otherTx,&reminingBlock, true);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 0u);
+    mineAdditionalBlocks(20);
+    BOOST_CHECK_EQUAL(manager->getAllUTXOs().size(), 3u);
 }
 
 BOOST_AUTO_TEST_CASE(willRecordInTheWalletTxWetherTransactionWasADeposit)

@@ -40,6 +40,12 @@ class FakeBlockIndexWithHashes
 private:
     uint256 randomBlockHashSeed_;
     FakeBlockIndexChain fakeBlockIndexChain_;
+
+    void extendChainBlocks(
+        CBlockIndex* chainToExtend,
+        unsigned numberOfBlocks,
+        unsigned versionNumber,
+        unsigned blockStartTime);
 public:
     std::unique_ptr<BlockMap> blockIndexByHash;
     std::unique_ptr<CChain> activeChain;

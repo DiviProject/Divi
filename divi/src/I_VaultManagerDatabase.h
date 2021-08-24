@@ -1,6 +1,6 @@
 #ifndef I_VAULT_MANAGER_DATABASE_H
 #define I_VAULT_MANAGER_DATABASE_H
-#include <map>
+#include <set>
 class CWalletTx;
 class CScript;
 using ManagedScripts = std::set<CScript>;

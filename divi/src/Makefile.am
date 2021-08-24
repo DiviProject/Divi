@@ -319,6 +319,7 @@ BITCOIN_CORE_H = \
   versionbits.h \
   version.h \
   I_VaultManagerDatabase.h \
+  VaultManagerDatabase.h \
   VaultManager.h \
   Output.h \
   I_SignatureSizeEstimator.h \
@@ -518,6 +519,7 @@ libbitcoin_wallet_a_SOURCES = \
   reservekey.cpp \
   rpcdump.cpp \
   rpcwallet.cpp \
+  VaultManagerDatabase.cpp \
   VaultManager.cpp \
   SignatureSizeEstimator.cpp \
   CoinControlSelectionAlgorithm.cpp \

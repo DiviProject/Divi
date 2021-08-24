@@ -19,7 +19,7 @@ std::pair<const CBlockIndex*,int> FakeMerkleTxConfirmationNumberCalculator::Find
     auto it = blockIndices_.find(merkleTx.hashBlock);
     if(it == blockIndices_.end() || !activeChain_.Contains(it->second))
     {
-        return {nullptr,0};
+        return {nullptr,(merkleTx.IsCoinBase() || merkleTx.IsCoinStake())? -1:0};
     }
     else
     {

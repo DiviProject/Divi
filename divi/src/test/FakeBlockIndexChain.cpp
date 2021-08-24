@@ -80,6 +80,14 @@ CBlockIndex* FakeBlockIndexChain::at(unsigned height) const
      return fakeChain.empty()? NULL: fakeChain.back();
  }
 
+ void FakeBlockIndexChain::pruneToHeight(unsigned int height)
+ {
+     if(fakeChain.size()>height+1)
+     {
+         fakeChain.resize(height+1);
+     }
+ }
+
  // FakeBlockIndexChainWithHashes
 FakeBlockIndexWithHashes::FakeBlockIndexWithHashes(
     unsigned numberOfBlocks,
@@ -110,13 +118,18 @@ void FakeBlockIndexWithHashes::extendChainBlocks(
     {
         startingBlockHeight = chainTip->nHeight+1;
         blockStartTime = fakeBlockIndexChain_.at(0)->GetBlockTime();
+        if(fakeBlockIndexChain_.Tip()!=chainTip)
+        {
+            fakeBlockIndexChain_.pruneToHeight(chainTip->nHeight);
+            assert(fakeBlockIndexChain_.Tip()==chainTip);
+        }
     }
 
     for(unsigned blockHeight = startingBlockHeight; blockHeight < numberOfBlocks+startingBlockHeight; ++blockHeight)
     {
         fakeBlockIndexChain_.extendBy(1,blockStartTime+60*blockHeight,versionNumber);
         CHashWriter hasher(SER_GETHASH,0);
-        hasher << randomBlockHashSeed_ << blockHeight;
+        hasher << randomBlockHashSeed_++ << blockHeight;
         BlockMap::iterator it = blockIndexByHash->insert(std::make_pair(hasher.GetHash(), fakeBlockIndexChain_.Tip() )).first;
         fakeBlockIndexChain_.Tip()->phashBlock = &(it->first);
     }
@@ -129,6 +142,19 @@ void FakeBlockIndexWithHashes::addBlocks(
 {
     extendChainBlocks(fakeBlockIndexChain_.Tip(),numberOfBlocks,versionNumber,blockStartTime);
     activeChain->SetTip(fakeBlockIndexChain_.Tip());
+}
+
+void FakeBlockIndexWithHashes::fork(
+    unsigned numberOfBlocks,
+    unsigned ancestorDepth)
+{
+    CBlockIndex* chainTip = fakeBlockIndexChain_.Tip();
+    assert(chainTip);
+    CBlockIndex* chainToExtend = chainTip->GetAncestor(chainTip->nHeight - ancestorDepth);
+    assert(chainToExtend);
+    extendChainBlocks(chainToExtend,numberOfBlocks,chainToExtend->nVersion,chainToExtend->nTime);
+    activeChain->SetTip(fakeBlockIndexChain_.Tip());
+    assert((activeChain->Tip()->nHeight - chainToExtend->nHeight) == static_cast<int>(numberOfBlocks) );
 }
 
 void FakeBlockIndexWithHashes::addSingleBlock(CBlock& block)

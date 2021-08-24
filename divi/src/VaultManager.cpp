@@ -113,6 +113,7 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         if(!walletTxAndRecordStatus.second)
         {
             walletTxAndRecordStatus.first->UpdateTransaction(walletTx,pblock==nullptr);
+            if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
         }
         else
         {

@@ -31,6 +31,7 @@ public:
     CBlockIndex* at(unsigned int) const;
     CBlockIndex* Tip() const;
     void attachNewBlock(const CBlock& block);
+    void pruneToHeight(unsigned int height);
 };
 
 class BlockMap;
@@ -59,6 +60,10 @@ public:
         unsigned numberOfBlocks,
         unsigned versionNumber,
         unsigned blockStartTime = 0);
+
+    void fork(
+        unsigned numberOfBlocks,
+        unsigned ancestorDepth=1);
 
     void addSingleBlock(CBlock& block);
 };

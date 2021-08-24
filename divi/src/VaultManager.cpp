@@ -13,6 +13,7 @@ VaultManager::VaultManager(
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
     I_VaultManagerDatabase& vaultManagerDB
     ): confirmationsCalculator_(confirmationsCalculator)
+    , vaultManagerDB_(vaultManagerDB)
     , cs_vaultManager_()
     , transactionOrderingIndex_(0)
     , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_))
@@ -20,12 +21,12 @@ VaultManager::VaultManager(
     , managedScripts_()
 {
     LOCK(cs_vaultManager_);
-    vaultManagerDB.ReadManagedScripts(managedScripts_);
+    vaultManagerDB_.ReadManagedScripts(managedScripts_);
     bool continueLoadingTransactions = true;
     while(continueLoadingTransactions)
     {
         CWalletTx txToAdd;
-        if(vaultManagerDB.ReadTx(transactionOrderingIndex_,txToAdd))
+        if(vaultManagerDB_.ReadTx(transactionOrderingIndex_,txToAdd))
         {
             outputTracker_->UpdateSpends(txToAdd,transactionOrderingIndex_,true);
             ++transactionOrderingIndex_;
@@ -117,11 +118,15 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
         if(!walletTxAndRecordStatus.second)
         {
-            walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull);
+            if(walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull))
+            {
+                vaultManagerDB_.WriteTx(*walletTxAndRecordStatus.first);
+            }
             if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
         }
         else
         {
+            vaultManagerDB_.WriteTx(*walletTxAndRecordStatus.first);
             ++transactionOrderingIndex_;
         }
     }
@@ -131,11 +136,13 @@ void VaultManager::addManagedScript(const CScript& script)
 {
     LOCK(cs_vaultManager_);
     managedScripts_.insert(script);
+    vaultManagerDB_.WriteManagedScript(script);
 }
 void VaultManager::removeManagedScript(const CScript& script)
 {
     LOCK(cs_vaultManager_);
     managedScripts_.erase(script);
+    vaultManagerDB_.EraseManagedScript(script);
 }
 
 UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const

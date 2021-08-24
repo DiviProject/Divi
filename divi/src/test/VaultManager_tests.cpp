@@ -632,4 +632,24 @@ BOOST_AUTO_TEST_CASE(willAcceptDepositBasedUTXOsEvenIfInputsArentKnown)
     BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),1u);
 }
 
+BOOST_AUTO_TEST_CASE(willAllowUpdatingUTXOsToDepositStatus)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(dummyTransaction);
+
+    CMutableTransaction tx;
+    tx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, false);
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
+    manager->addTransaction(tx,&blockMiningFirstTx, true);
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),1u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

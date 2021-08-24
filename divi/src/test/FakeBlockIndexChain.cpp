@@ -127,22 +127,7 @@ void FakeBlockIndexWithHashes::addBlocks(
     unsigned versionNumber,
     unsigned blockStartTime)
 {
-    unsigned startingBlockHeight = 0u;
-    const CBlockIndex* chainTip = fakeBlockIndexChain_.Tip();
-    if(chainTip)
-    {
-        startingBlockHeight = chainTip->nHeight+1;
-        blockStartTime = fakeBlockIndexChain_.at(0)->GetBlockTime();
-    }
-
-    for(unsigned blockHeight = startingBlockHeight; blockHeight < numberOfBlocks+startingBlockHeight; ++blockHeight)
-    {
-        fakeBlockIndexChain_.extendBy(1,blockStartTime+60*blockHeight,versionNumber);
-        CHashWriter hasher(SER_GETHASH,0);
-        hasher << randomBlockHashSeed_ << blockHeight;
-        BlockMap::iterator it = blockIndexByHash->insert(std::make_pair(hasher.GetHash(), fakeBlockIndexChain_.Tip() )).first;
-        fakeBlockIndexChain_.Tip()->phashBlock = &(it->first);
-    }
+    extendChainBlocks(fakeBlockIndexChain_.Tip(),numberOfBlocks,versionNumber,blockStartTime);
     activeChain->SetTip(fakeBlockIndexChain_.Tip());
 }
 

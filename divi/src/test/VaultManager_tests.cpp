@@ -747,4 +747,40 @@ BOOST_AUTO_TEST_CASE(willStopRecognizingUTXOsForWhichTheScriptHasBeenRevoked)
     BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
 }
 
+BOOST_AUTO_TEST_CASE(willWriteManagedScriptToBackendOnAddition)
+{
+    CScript managedScript = scriptGenerator(10);
+    EXPECT_CALL(*mockPtr,WriteManagedScript(managedScript)).Times(1);
+    manager->addManagedScript(managedScript);
+}
+
+BOOST_AUTO_TEST_CASE(willWriteTxToBackendOnAddition)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(dummyTransaction);
+
+    CMutableTransaction tx;
+    tx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock block = getBlockToMineTransaction(tx);
+
+    CWalletTx walletTx(tx);
+    EXPECT_CALL(*mockPtr,WriteTx(walletTx)).Times(1);
+    manager->addTransaction(tx,&block, true);
+}
+
+BOOST_AUTO_TEST_CASE(willEraseManagedScriptToBackendOnRemoval)
+{
+    CScript managedScript = scriptGenerator(10);
+    EXPECT_CALL(*mockPtr,WriteManagedScript(managedScript)).Times(1);
+    manager->addManagedScript(managedScript);
+    EXPECT_CALL(*mockPtr,EraseManagedScript(managedScript)).Times(1);
+    manager->removeManagedScript(managedScript);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

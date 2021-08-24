@@ -37,8 +37,6 @@ private:
     UnspentOutputs getUTXOs(bool onlyManagedCoins) const;
 public:
     VaultManager(
-        const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
-    VaultManager(
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
         I_VaultManagerDatabase& vaultManagerDB);
     ~VaultManager();

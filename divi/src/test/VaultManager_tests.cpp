@@ -16,18 +16,19 @@
 #include <gmock/gmock.h>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Invoke;
 struct VaultManagerTestFixture
 {
 public:
-    std::unique_ptr<MockVaultManagerDatabase> mockPtr;
+    std::unique_ptr<NiceMock<MockVaultManagerDatabase>> mockPtr;
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashesResource;
     std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator;
     RandomCScriptGenerator scriptGenerator;
     std::unique_ptr<VaultManager> manager;
 
     VaultManagerTestFixture(
-        ): mockPtr(new MockVaultManagerDatabase)
+        ): mockPtr(new NiceMock<MockVaultManagerDatabase>)
         , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(1,0,CBlock::CURRENT_VERSION))
         , confirmationsCalculator(
             new FakeMerkleTxConfirmationNumberCalculator(
@@ -35,7 +36,7 @@ public:
                 *(fakeBlockIndexWithHashesResource->blockIndexByHash)
             ))
         , scriptGenerator()
-        , manager( new VaultManager(*confirmationsCalculator ))
+        , manager( new VaultManager(*confirmationsCalculator,*mockPtr ))
     {
     }
     ~VaultManagerTestFixture()

@@ -32,7 +32,7 @@ private:
     ManagedScripts managedScripts_;
 
     bool isManagedScript(const CScript& script) const;
-    bool transactionIsRelevant(const CTransaction& tx) const;
+    bool transactionIsRelevant(const CTransaction& tx, bool checkOutputs) const;
     bool allInputsAreKnown(const CTransaction& tx) const;
     UnspentOutputs getUTXOs(bool onlyManagedCoins) const;
 public:

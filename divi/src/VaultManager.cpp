@@ -116,8 +116,15 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         CWalletTx walletTx(tx);
         if(deposit) walletTx.mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
         if(pblock) walletTx.SetMerkleBranch(*pblock);
-        outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
-        ++transactionOrderingIndex_;
+        std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
+        if(!walletTxAndRecordStatus.second)
+        {
+            walletTxAndRecordStatus.first->UpdateTransaction(walletTx,pblock==nullptr);
+        }
+        else
+        {
+            ++transactionOrderingIndex_;
+        }
     }
 }
 

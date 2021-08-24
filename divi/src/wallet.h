@@ -53,6 +53,8 @@ class CWalletDB;
 class COutPoint;
 class CTxIn;
 class I_MerkleTxConfirmationNumberCalculator;
+class I_VaultManagerDatabase;
+class VaultManager;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
@@ -164,6 +166,8 @@ private:
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
     std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationNumberCalculator_;
+    std::unique_ptr<I_VaultManagerDatabase> vaultDB_;
+    std::unique_ptr<VaultManager> vaultManager_;
     std::unique_ptr<WalletTransactionRecord> transactionRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
     std::unique_ptr<I_SignatureSizeEstimator> signatureSizeEstimator_;
@@ -208,6 +212,8 @@ private:
     bool IsMine(const CTransaction& tx) const;
 
 public:
+    void activateVaultMode();
+
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
     bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
     bool VerifyHDKeys() const;

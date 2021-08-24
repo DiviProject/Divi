@@ -42,6 +42,8 @@
 #include <SignatureSizeEstimator.h>
 #include <MerkleTxConfirmationNumberCalculator.h>
 #include <random.h>
+#include <VaultManager.h>
+#include <VaultManagerDatabase.h>
 
 #include "Settings.h"
 extern Settings& settings;
@@ -191,6 +193,8 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
             Params().COINBASE_MATURITY(),
             mempool,
             cs_main))
+    , vaultDB_()
+    , vaultManager_()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) )
     , signatureSizeEstimator_(new SignatureSizeEstimator())
@@ -236,7 +240,18 @@ CWallet::~CWallet()
     signatureSizeEstimator_.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
+    vaultManager_.reset();
+    vaultDB_.reset();
     confirmationNumberCalculator_.reset();
+}
+
+void CWallet::activateVaultMode()
+{
+    if(!vaultManager_)
+    {
+        vaultDB_.reset(new VaultManagerDatabase(0));
+        vaultManager_.reset(new VaultManager(*confirmationNumberCalculator_,*vaultDB_));
+    }
 }
 
 void CWallet::SetNull()

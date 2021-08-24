@@ -43,6 +43,7 @@ public:
 
     void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit);
     void addManagedScript(const CScript& script);
+    void removeManagedScript(const CScript& script);
     UnspentOutputs getManagedUTXOs() const;
     UnspentOutputs getAllUTXOs() const;
 

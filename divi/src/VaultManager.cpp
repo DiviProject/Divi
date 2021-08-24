@@ -107,15 +107,17 @@ bool VaultManager::allInputsAreKnown(const CTransaction& tx) const
 void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit)
 {
     LOCK(cs_vaultManager_);
-    if(transactionIsRelevant(tx,true))
+    const bool blockIsNull = pblock==nullptr;
+    if( (!blockIsNull && transactionIsRelevant(tx,deposit || tx.IsCoinStake()) ) ||
+        (blockIsNull && walletTxRecord_->GetWalletTx(tx.GetHash()) != nullptr) )
     {
         CWalletTx walletTx(tx);
         if(deposit) walletTx.mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
-        if(pblock) walletTx.SetMerkleBranch(*pblock);
+        if(!blockIsNull) walletTx.SetMerkleBranch(*pblock);
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
         if(!walletTxAndRecordStatus.second)
         {
-            walletTxAndRecordStatus.first->UpdateTransaction(walletTx,pblock==nullptr);
+            walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull);
             if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
         }
         else

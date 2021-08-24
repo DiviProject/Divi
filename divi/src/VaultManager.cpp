@@ -54,7 +54,7 @@ bool VaultManager::isManagedScript(const CScript& script) const
     return false;
 }
 
-bool VaultManager::transactionIsRelevant(const CTransaction& tx) const
+bool VaultManager::transactionIsRelevant(const CTransaction& tx, bool checkOutputs) const
 {
     AssertLockHeld(cs_vaultManager_);
     for(const CTxIn& input: tx.vin)
@@ -69,11 +69,14 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx) const
             }
         }
     }
-    for(const CTxOut& output: tx.vout)
+    if(checkOutputs)
     {
-        if(output.nValue >0 && isManagedScript(output.scriptPubKey))
+        for(const CTxOut& output: tx.vout)
         {
-            return true;
+            if(output.nValue >0 && isManagedScript(output.scriptPubKey))
+            {
+                return true;
+            }
         }
     }
     return false;
@@ -104,7 +107,7 @@ bool VaultManager::allInputsAreKnown(const CTransaction& tx) const
 void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit)
 {
     LOCK(cs_vaultManager_);
-    if(transactionIsRelevant(tx))
+    if(transactionIsRelevant(tx,true))
     {
         CWalletTx walletTx(tx);
         if(deposit) walletTx.mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";

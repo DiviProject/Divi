@@ -25,6 +25,7 @@ class VaultManager
 {
 private:
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
+    I_VaultManagerDatabase& vaultManagerDB_;
     mutable CCriticalSection cs_vaultManager_;
     uint64_t transactionOrderingIndex_;
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;

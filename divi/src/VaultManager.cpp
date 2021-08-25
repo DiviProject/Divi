@@ -135,14 +135,20 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
 void VaultManager::addManagedScript(const CScript& script)
 {
     LOCK(cs_vaultManager_);
-    managedScripts_.insert(script);
-    vaultManagerDB_.WriteManagedScript(script);
+    if(managedScripts_.count(script) == 0)
+    {
+        managedScripts_.insert(script);
+        vaultManagerDB_.WriteManagedScript(script);
+    }
 }
 void VaultManager::removeManagedScript(const CScript& script)
 {
     LOCK(cs_vaultManager_);
-    managedScripts_.erase(script);
-    vaultManagerDB_.EraseManagedScript(script);
+    if(managedScripts_.count(script) > 0)
+    {
+        managedScripts_.erase(script);
+        vaultManagerDB_.EraseManagedScript(script);
+    }
 }
 
 UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const

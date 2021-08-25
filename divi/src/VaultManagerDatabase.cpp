@@ -29,22 +29,38 @@ VaultManagerDatabase::VaultManagerDatabase(
     bool fMemory,
     bool fWipe
     ):  CLevelDBWrapper(GetDataDir() / getNewVaultId(), nCacheSize, fMemory, fWipe)
-    , txIndex(0u)
+    , txidLookup()
     , scriptIDLookup()
 {
 }
 
 bool VaultManagerDatabase::WriteTx(const CWalletTx& walletTransaction)
 {
-    const bool success = Write(MakeTxIndex(txIndex),walletTransaction);
-    if(success) ++txIndex;
-    return success;
+    const uint256 id = walletTransaction.GetHash();
+    if(txidLookup.count(id) == 0u)
+    {
+        uint64_t nextIndex = txidLookup.size();
+        if(Write(MakeTxIndex(nextIndex),walletTransaction))
+        {
+            txidLookup[id] =  nextIndex;
+            return true;
+        }
+        return false;
+    }
+    else
+    {
+        return Write(MakeTxIndex(txidLookup[id]),walletTransaction);
+    }
 }
 
 bool VaultManagerDatabase::ReadTx(CWalletTx& walletTransaction)
 {
-    const bool success = Read(MakeTxIndex(txIndex),walletTransaction);
-    if(success) ++txIndex;
+    uint64_t nextIndex = txidLookup.size();
+    const bool success = Read(MakeTxIndex(nextIndex),walletTransaction);
+    if(success)
+    {
+        txidLookup[walletTransaction.GetHash()] = nextIndex;
+    }
     return success;
 }
 

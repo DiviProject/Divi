@@ -62,7 +62,7 @@ class StakingVaultStakingTest(BitcoinTestFramework):
         self.nodes = []
         self.nodes.append(start_node(0, self.options.tmpdir,["-debug","-autocombine=0"]))
         self.nodes.append(start_node(1, self.options.tmpdir,["-debug","-autocombine=0"]))
-        self.nodes.append(start_node(2, self.options.tmpdir,["-debug","-autocombine=0"]))
+        self.nodes.append(start_node(2, self.options.tmpdir,["-debug","-autocombine=0","-vault=1"]))
 
         connect_nodes_bi(self.nodes, 0, 1)
         connect_nodes_bi(self.nodes, 0, 2)

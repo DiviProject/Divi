@@ -1268,6 +1268,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             // Off by default in wallet
             pwalletMain->toggleSpendingZeroConfirmationOutputs();
         }
+        if(settings.GetBoolArg("-vault", false))
+        {
+            // Off by default in wallet
+            pwalletMain->activateVaultMode();
+        }
 
 
         LogPrintf("%s", strErrors.str());

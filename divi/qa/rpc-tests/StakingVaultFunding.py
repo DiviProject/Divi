@@ -55,6 +55,26 @@ class StakingVaultFunding(BitcoinTestFramework):
         self.is_network_split = False
         self.sync_all()
 
+    def verify_vault_folder_recovers_state(self,intendedVaultedAmount):
+        vaultNode = self.nodes[1]
+        seed = vaultNode.dumphdinfo()["hdseed"]
+        source_directory = self.options.tmpdir + "/node"+str(1)+"/regtest/"
+        target_directory = self.options.tmpdir + "/node"+str(3)+"/regtest/"
+        subdirectories = [x[0].split("/")[-1] for x in os.walk(source_directory) if "vault_" in str(x[0])]
+        assert_equal(len(subdirectories),1)
+        shutil.copytree(source_directory+subdirectories[0],target_directory+subdirectories[0])
+        self.nodes.append( start_node(3, self.options.tmpdir, ["-hdseed="+str(seed),"-vault=1"]) )
+        connect_nodes(self.nodes[3], 0)
+        sync_blocks(self.nodes)
+        otherVaultNode = self.nodes[-1]
+
+        vaultNodeAllocations = otherVaultNode.getcoinavailability()
+        managedFunds = vaultNodeAllocations["Stakable"] - vaultNodeAllocations["Spendable"]
+        assert_near(vaultNodeAllocations["Spendable"], 0.0,1e-10)
+        assert_near(vaultNodeAllocations["Stakable"], intendedVaultedAmount,1e-10)
+        assert_near(vaultNodeAllocations["Vaulted"], 0.0,1e-10)
+        assert_equal(vaultNodeAllocations["Spendable"] +managedFunds+ vaultNodeAllocations["Vaulted"], otherVaultNode.getbalance())
+
     def run_test(self):
         miningNode = self.nodes[0]
         vaultNode = self.nodes[1]
@@ -113,6 +133,8 @@ class StakingVaultFunding(BitcoinTestFramework):
         assert_near(vaultNodeAllocations["Stakable"], intendedVaultedAmount,1e-10)
         assert_near(vaultNodeAllocations["Vaulted"], 0.0,1e-10)
         assert_equal(vaultNodeAllocations["Spendable"] +managedFunds+ vaultNodeAllocations["Vaulted"], vaultNode.getbalance())
+
+        self.verify_vault_folder_recovers_state(intendedVaultedAmount)
 
 
 

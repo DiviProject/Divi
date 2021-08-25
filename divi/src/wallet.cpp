@@ -249,7 +249,9 @@ void CWallet::activateVaultMode()
 {
     if(!vaultManager_)
     {
-        vaultDB_.reset(new VaultManagerDatabase(0));
+        const std::string keystring = vchDefaultKey.GetID().ToString();
+        const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
+        vaultDB_.reset(new VaultManagerDatabase(vaultID,0));
         vaultManager_.reset(new VaultManager(*confirmationNumberCalculator_,*vaultDB_));
     }
 }

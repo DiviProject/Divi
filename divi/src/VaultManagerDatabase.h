@@ -3,11 +3,12 @@
 #include <I_VaultManagerDatabase.h>
 #include <leveldbwrapper.h>
 #include <destination.h>
+#include <uint256.h>
 
 class VaultManagerDatabase final: public I_VaultManagerDatabase, public CLevelDBWrapper
 {
 private:
-    uint64_t txIndex;
+    std::map<uint256,uint64_t> txidLookup;
     std::map<CScriptID,uint64_t> scriptIDLookup;
 
 public:

@@ -113,14 +113,14 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         (blockIsNull && walletTxRecord_->GetWalletTx(tx.GetHash()) != nullptr) )
     {
         CWalletTx walletTx(tx);
-        if(deposit) walletTx.mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
         if(!blockIsNull) walletTx.SetMerkleBranch(*pblock);
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
+
+        if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
         if(!walletTxAndRecordStatus.second)
         {
             if(walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull) || deposit)
             {
-                if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
                 vaultManagerDB_.WriteTx(*walletTxAndRecordStatus.first);
             }
         }

@@ -12,7 +12,7 @@ private:
     std::map<CScriptID,uint64_t> scriptIDLookup;
 
 public:
-    VaultManagerDatabase(size_t nCacheSize, bool fMemory = false, bool fWipe = false);
+    VaultManagerDatabase(std::string vaultID, size_t nCacheSize, bool fMemory = false, bool fWipe = false);
 
     bool WriteTx(const CWalletTx& walletTransaction) override;
     bool ReadTx(CWalletTx& walletTransaction) override;

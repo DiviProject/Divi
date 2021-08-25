@@ -785,4 +785,22 @@ BOOST_AUTO_TEST_CASE(willEraseManagedScriptToBackendOnRemoval)
     manager->removeManagedScript(managedScript);
 }
 
+BOOST_AUTO_TEST_CASE(willNotWriteManagedScriptToBackendOnAdditionMoreThanOnce)
+{
+    CScript managedScript = scriptGenerator(10);
+    EXPECT_CALL(*mockPtr,WriteManagedScript(managedScript)).Times(1);
+    manager->addManagedScript(managedScript);
+    manager->addManagedScript(managedScript);
+}
+
+BOOST_AUTO_TEST_CASE(willNotEraseManagedScriptToBackendOnRemovalMoreThanOnce)
+{
+    CScript managedScript = scriptGenerator(10);
+    EXPECT_CALL(*mockPtr,WriteManagedScript(managedScript)).Times(1);
+    manager->addManagedScript(managedScript);
+    EXPECT_CALL(*mockPtr,EraseManagedScript(managedScript)).Times(1);
+    manager->removeManagedScript(managedScript);
+    manager->removeManagedScript(managedScript);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

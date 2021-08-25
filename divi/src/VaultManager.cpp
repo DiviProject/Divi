@@ -118,11 +118,11 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
         if(!walletTxAndRecordStatus.second)
         {
-            if(walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull))
+            if(walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull) || deposit)
             {
+                if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
                 vaultManagerDB_.WriteTx(*walletTxAndRecordStatus.first);
             }
-            if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
         }
         else
         {

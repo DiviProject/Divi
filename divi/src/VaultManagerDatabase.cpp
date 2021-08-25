@@ -5,16 +5,6 @@
 #include <DataDirectory.h>
 #include <sync.h>
 
-static CCriticalSection vaultIdLock;
-static unsigned vaultId;
-
-static std::string getNewVaultId()
-{
-    LOCK(vaultIdLock);
-    return std::string("vault") + std::to_string(vaultId++);
-}
-
-
 static std::pair<std::string,uint64_t> MakeTxIndex(uint64_t txIndex)
 {
     return std::make_pair("tx",txIndex);
@@ -25,10 +15,11 @@ static std::pair<std::string,uint64_t> MakeScriptIndex(uint64_t scriptIndex)
 }
 
 VaultManagerDatabase::VaultManagerDatabase(
+    std::string vaultID,
     size_t nCacheSize,
     bool fMemory,
     bool fWipe
-    ):  CLevelDBWrapper(GetDataDir() / getNewVaultId(), nCacheSize, fMemory, fWipe)
+    ):  CLevelDBWrapper(GetDataDir() / vaultID, nCacheSize, fMemory, fWipe)
     , txidLookup()
     , scriptIDLookup()
 {

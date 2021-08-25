@@ -151,7 +151,7 @@ void VaultManager::removeManagedScript(const CScript& script)
     }
 }
 
-UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const
+UnspentOutputs VaultManager::getManagedUTXOs() const
 {
     LOCK(cs_vaultManager_);
     UnspentOutputs outputs;
@@ -160,10 +160,8 @@ UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const
     {
         uint256 hash = hashAndTransaction.first;
         const CWalletTx& tx = hashAndTransaction.second;
-        if(onlyManagedCoins)
-        {
-            if(!( (allInputsAreKnown(tx) && tx.IsCoinStake()) || tx.mapValue.count(VAULT_DEPOSIT_DESCRIPTION) > 0 )) continue;
-        }
+        if(!( (allInputsAreKnown(tx) && tx.IsCoinStake()) || tx.mapValue.count(VAULT_DEPOSIT_DESCRIPTION) > 0 )) continue;
+
         const int depth = confirmationsCalculator_.GetNumberOfBlockConfirmations(tx);
         if(depth < 1) continue;
         if((tx.IsCoinBase() || tx.IsCoinStake()) && confirmationsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
@@ -177,15 +175,6 @@ UnspentOutputs VaultManager::getUTXOs(bool onlyManagedCoins) const
         }
     }
     return outputs;
-}
-
-UnspentOutputs VaultManager::getAllUTXOs() const
-{
-    return getUTXOs(false);
-}
-UnspentOutputs VaultManager::getManagedUTXOs() const
-{
-    return getUTXOs(true);
 }
 
 const CWalletTx& VaultManager::getTransaction(const uint256& hash) const

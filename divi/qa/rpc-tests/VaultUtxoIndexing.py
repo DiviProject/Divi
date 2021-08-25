@@ -20,7 +20,8 @@ class VaultUtxoIndexing (BitcoinTestFramework):
 
     def setup_network (self, split=False):
         self.config_args = ["-debug","-spentindex=1","-addressindex=1"]
-        self.nodes = start_nodes (2, self.options.tmpdir, extra_args=[self.config_args]*2)
+        staker_config_args = self.config_args + ["-vault=1"]
+        self.nodes = start_nodes (2, self.options.tmpdir, extra_args=[self.config_args,staker_config_args])
         connect_nodes_bi(self.nodes,0,1)
         self.owner = self.nodes[0]
         self.staker = self.nodes[1]

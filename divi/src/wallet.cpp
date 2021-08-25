@@ -857,20 +857,26 @@ bool CWallet::AddVault(
     const CBlockIndex* blockIndexToBlockContainingTx,
     const CTransaction& tx)
 {
-    AddCScript(vaultScript);
-    CBlock block;
-    ReadBlockFromDisk(block, blockIndexToBlockContainingTx);
-    SyncTransaction(tx, &block,TransactionSyncType::RESCAN);
-    auto wtx = GetWalletTx(tx.GetHash());
-    return wtx != nullptr;
+    if(vaultManager_)
+    {
+        LOCK(cs_wallet);
+        vaultManager_->addManagedScript(vaultScript);
+        CBlock block;
+        ReadBlockFromDisk(block, blockIndexToBlockContainingTx);
+        vaultManager_->addTransaction(tx, &block, true);
+        return true;
+    }
+    return false;
 }
 bool CWallet::RemoveVault(const CScript& vaultScript)
 {
-    LOCK2(cs_KeyStore,cs_wallet);
-    mapScripts.erase(vaultScript);
-    if (!fFileBacked)
+    if(vaultManager_)
+    {
+        LOCK(cs_wallet);
+        vaultManager_->removeManagedScript(vaultScript);
         return true;
-    return CWalletDB(settings,strWalletFile).EraseCScript(Hash160(vaultScript));
+    }
+    return false;
 }
 
 
@@ -1322,6 +1328,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
 {
     {
         AssertLockHeld(cs_wallet);
+        if(vaultManager_) vaultManager_->addTransaction(tx,pblock,false);
         bool fExisted = GetWalletTx(tx.GetHash()) != nullptr;
         if (fExisted && !fUpdate) return false;
         if (fExisted || IsMine(tx) || DebitsFunds(tx)) {
@@ -1606,6 +1613,14 @@ CAmount CWallet::GetBalance() const
             if (IsTrusted(*pcoin))
                 nTotal += GetAvailableCredit(*pcoin);
         }
+        if(vaultManager_)
+        {
+            auto utxos = vaultManager_->getManagedUTXOs();
+            for(const auto& utxo: utxos)
+            {
+                nTotal += utxo.Value();
+            }
+        }
     }
 
     return nTotal;
@@ -1626,6 +1641,15 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
                 nTotal += ComputeCredit(*pcoin,isminetype::ISMINE_SPENDABLE, additionalFilterFlags);
             }
 
+        }
+
+        if(coinType == STAKABLE_COINS && vaultManager_)
+        {
+            auto utxos = vaultManager_->getManagedUTXOs();
+            for(const auto& utxo: utxos)
+            {
+                nTotal += utxo.Value();
+            }
         }
     }
 
@@ -1696,14 +1720,6 @@ bool CWallet::IsAvailableForSpending(
     {
         return false;
     }
-    if(settings.ParameterIsSet("-vault_min"))
-    {
-        if(vaultType==MANAGED_VAULT &&
-            pcoin->vout[i].nValue <  settings.GetArg("-vault_min",0)*COIN)
-        {
-            return false;
-        }
-    }
 
     const uint256 hash = pcoin->GetHash();
 
@@ -1755,6 +1771,25 @@ void CWallet::AvailableCoins(
                 }
 
                 vCoins.emplace_back(COutput(pcoin, i, nDepth, fIsSpendable));
+            }
+        }
+        if(nCoinType == AvailableCoinsType::STAKABLE_COINS && vaultManager_)
+        {
+            std::vector<COutput> utxos = vaultManager_->getManagedUTXOs();
+            for (const auto& entry : utxos)
+            {
+                const CWalletTx* pcoin = entry.tx;
+
+                int nDepth = 0;
+                if(!SatisfiesMinimumDepthRequirements(pcoin,nDepth,fOnlyConfirmed))
+                {
+                    continue;
+                }
+                if(settings.ParameterIsSet("-vault_min") && entry.Value() <  settings.GetArg("-vault_min",0)*COIN)
+                {
+                    continue;
+                }
+                vCoins.emplace_back(COutput(pcoin, entry.i, nDepth, entry.fSpendable));
             }
         }
     }

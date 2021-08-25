@@ -654,6 +654,52 @@ BOOST_AUTO_TEST_CASE(willAllowUpdatingUTXOsToDepositStatus)
     BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),1u);
 }
 
+BOOST_AUTO_TEST_CASE(willUpdatingDepositStatusWillPersist)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    std::vector<CDataStream> mockDBCache;
+    ON_CALL(*mockPtr,WriteTx(_)).WillByDefault(
+        Invoke(
+            [&mockDBCache](const CWalletTx& walletTx)-> bool
+            {
+                mockDBCache.emplace_back(SER_DISK, CLIENT_VERSION);
+                mockDBCache.back() << walletTx;
+                return true;
+            }
+        )
+    );
+    ON_CALL(*mockPtr,ReadTx(_)).WillByDefault(
+        Invoke(
+            [&mockDBCache](CWalletTx& walletTx)-> bool
+            {
+                if(mockDBCache.size()==0) return false;
+                mockDBCache.back() >> walletTx;
+                mockDBCache.pop_back();
+                return true;
+            }
+        )
+    );
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(dummyTransaction);
+
+    CMutableTransaction tx;
+    tx.vin.emplace_back( COutPoint(dummyTransaction.GetHash(), 0u) );
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, false);
+    BOOST_CHECK_EQUAL(manager->getTransaction(tx.GetHash()).mapValue.count("isVaultDeposit"),0u);
+    manager->addTransaction(tx,&blockMiningFirstTx, true);
+    BOOST_CHECK_EQUAL(manager->getTransaction(tx.GetHash()).mapValue.count("isVaultDeposit"),1u);
+
+    manager.reset( new VaultManager(*confirmationsCalculator,*mockPtr ));
+    BOOST_CHECK_EQUAL(manager->getTransaction(tx.GetHash()).mapValue.count("isVaultDeposit"),1u);
+}
+
 BOOST_AUTO_TEST_CASE(willIgnoreTransactionsThatAreNeitherCoinstakeNorDeposits)
 {
     CScript managedScript = scriptGenerator(10);

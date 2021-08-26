@@ -235,6 +235,19 @@ protected:
     CNodeSignals* nodeSignals_;
     std::unique_ptr<CNodeState> nodeState_;
 
+private:
+
+    CNode(
+        I_CommunicationChannel& channel,
+        CNodeSignals* nodeSignals,
+        CAddrMan& addressMananger,
+        CAddress addrIn,
+        std::string addrNameIn,
+        bool fInboundIn,
+        bool whiteListed);
+
+    void LogMessageSize(unsigned int messageDataSize) const;
+
 public:
     uint256 hashContinue;
     int nStartingHeight;
@@ -264,17 +277,14 @@ public:
 
     int nSporksSynced = 0;
 
-    CNode(
-        I_CommunicationChannel& channel,
-        CNodeSignals* nodeSignals,
-        CAddrMan& addressMananger,
-        CAddress addrIn,
-        std::string addrNameIn,
-        bool fInboundIn,
-        bool whiteListed);
+    template <typename ...Args>
+    static CNode* CreateNode(Args&&... args)
+    {
+        return new CNode(std::forward<Args>(args)...);
+    }
+
     ~CNode();
 
-    void LogMessageSize(unsigned int messageDataSize) const;
 public:
     template <typename ...Args>
     void PushMessage(const char* pszCommand, Args&&... args)

@@ -40,8 +40,10 @@ private:
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
     ManagedScripts managedScripts_;
+    ManagedScripts whiteListedScripts_;
 
     bool isManagedScript(const CScript& script) const;
+    bool transactionIsWhitelisted(const CTransaction& tx) const;
     bool transactionIsRelevant(const CTransaction& tx, bool checkOutputs) const;
     bool allInputsAreKnown(const CTransaction& tx) const;
 public:
@@ -52,6 +54,7 @@ public:
 
     void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit);
     void addManagedScript(const CScript& script);
+    void addWhiteListedScript(const CScript& script);
     void removeManagedScript(const CScript& script);
     UnspentOutputs getManagedUTXOs(VaultUTXOFilters filter = VaultUTXOFilters::CONFIRMED_AND_MATURED) const;
 

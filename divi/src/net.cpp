@@ -163,7 +163,7 @@ public:
         SOCKET socket,
         Args&&... args
         ): channel_(new SocketChannel(socket))
-        , node_(new CNode(*channel_,std::forward<Args>(args)...))
+        , node_(CNode::CreateNode(*channel_,std::forward<Args>(args)...))
     {
     }
     ~NodeWithSocket()

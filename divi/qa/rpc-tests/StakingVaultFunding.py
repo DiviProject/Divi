@@ -135,6 +135,15 @@ class StakingVaultFunding(BitcoinTestFramework):
         assert_equal(vaultNodeAllocations["Spendable"] +managedFunds+ vaultNodeAllocations["Vaulted"], vaultNode.getbalance())
 
         self.verify_vault_folder_recovers_state(intendedVaultedAmount)
+        stop_node(vaultNode,1)
+        vaultScript = vaultFundingData["script"]
+        self.nodes[1]=start_node(1, self.options.tmpdir, ["-vault=1","-whitelisted_vault="+str(vaultScript)])
+        connect_nodes(self.nodes[1], 0)
+        self.sync_all()
+
+        miningNode.fundvault(vaultFundingData["vault"],intendedVaultedAmount)
+        self.sync_all()
+        assert_equal(vaultNode.getwalletinfo()["unconfirmed_balance"], Decimal(intendedVaultedAmount))
 
 
 

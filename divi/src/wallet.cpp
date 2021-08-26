@@ -253,6 +253,13 @@ void CWallet::activateVaultMode()
         const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
         vaultDB_.reset(new VaultManagerDatabase(vaultID,0));
         vaultManager_.reset(new VaultManager(*confirmationNumberCalculator_,*vaultDB_));
+        for(const std::string& whitelistedVaultScript: settings.GetMultiParameter("-whitelisted_vault"))
+        {
+            auto byteVector = ParseHex(whitelistedVaultScript);
+            CScript whitelistedScript(byteVector.begin(),byteVector.end());
+            assert(HexStr(ToByteVector(whitelistedScript)) == whitelistedVaultScript);
+            vaultManager_->addWhiteListedScript(whitelistedScript);
+        }
     }
 }
 

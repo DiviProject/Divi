@@ -23,6 +23,7 @@ std::map<NodeId, CNodeState*> mapNodeState;
 // Requires cs_main.
 CNodeState* State(NodeId nodeId)
 {
+    AssertLockHeld(cs_main);
     std::map<NodeId, CNodeState*>::iterator it = mapNodeState.find(nodeId);
     if (it == mapNodeState.end())
         return NULL;

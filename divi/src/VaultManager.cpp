@@ -151,7 +151,7 @@ void VaultManager::removeManagedScript(const CScript& script)
     }
 }
 
-UnspentOutputs VaultManager::getManagedUTXOs() const
+UnspentOutputs VaultManager::getManagedUTXOs(VaultUTXOFilters filter) const
 {
     LOCK(cs_vaultManager_);
     UnspentOutputs outputs;
@@ -163,8 +163,15 @@ UnspentOutputs VaultManager::getManagedUTXOs() const
         if(!( (allInputsAreKnown(tx) && tx.IsCoinStake()) || tx.mapValue.count(VAULT_DEPOSIT_DESCRIPTION) > 0 )) continue;
 
         const int depth = confirmationsCalculator_.GetNumberOfBlockConfirmations(tx);
-        if(depth < 1) continue;
-        if((tx.IsCoinBase() || tx.IsCoinStake()) && confirmationsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
+        if( depth < 0) continue;
+        if( (filter & VaultUTXOFilters::CONFIRMED) > 0 && depth < 1) continue;
+        if( (filter & VaultUTXOFilters::UNCONFIRMED) > 0 && depth != 0) continue;
+
+        if(depth < 1 && (tx.IsCoinBase() || tx.IsCoinStake())) continue;
+        const int blocksTillMaturity = confirmationsCalculator_.GetBlocksToMaturity(tx);
+        if( (filter & VaultUTXOFilters::MATURED) > 0 && blocksTillMaturity > 0 ) continue;
+        if( (filter & VaultUTXOFilters::INMATURE) > 0 && blocksTillMaturity < 1 ) continue;
+
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
             const CTxOut& output = tx.vout[outputIndex];

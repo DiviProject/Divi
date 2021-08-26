@@ -21,6 +21,15 @@ class WalletTransactionRecord;
 class SpentOutputTracker;
 class I_MerkleTxConfirmationNumberCalculator;
 
+enum VaultUTXOFilters
+{
+    NO_FILTER = 0,
+    CONFIRMED = 1 << 0,
+    UNCONFIRMED = 1 << 1,
+    MATURED = 1 << 2,
+    INMATURE = 1 << 3,
+    CONFIRMED_AND_MATURED = CONFIRMED | MATURED
+};
 class VaultManager
 {
 private:
@@ -44,7 +53,7 @@ public:
     void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit);
     void addManagedScript(const CScript& script);
     void removeManagedScript(const CScript& script);
-    UnspentOutputs getManagedUTXOs() const;
+    UnspentOutputs getManagedUTXOs(VaultUTXOFilters filter = VaultUTXOFilters::CONFIRMED_AND_MATURED) const;
 
     const CWalletTx& getTransaction(const uint256&) const;
     const ManagedScripts& getManagedScriptLimits() const;

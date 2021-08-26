@@ -793,8 +793,12 @@ Value addvault(const Array& params, bool fHelp)
     if(pwalletMain->HaveKey(managerKeyID) )
     {
         CScript script = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
-
-        if(!pwalletMain->AddVault(script,blockSearchStart,tx))
+        CBlock block;
+        if(!ReadBlockFromDisk(block,blockSearchStart))
+        {
+            throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: error reading block from disk");
+        }
+        if(!pwalletMain->AddVault(script,&block,tx))
         {
             throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Unable to sync TX!");
         }

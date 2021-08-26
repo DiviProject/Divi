@@ -656,6 +656,7 @@ Value fundvault(const Array& params, bool fHelp)
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", wtx.GetHash().GetHex()));
     fundingAttemptResult.push_back(Pair("vault",addressEncodings));
+    fundingAttemptResult.push_back(Pair("script",HexStr(ToByteVector(vaultScript) ) ));
     return fundingAttemptResult;
 }
 

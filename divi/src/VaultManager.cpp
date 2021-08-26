@@ -6,6 +6,7 @@
 #include <SpentOutputTracker.h>
 #include <I_VaultManagerDatabase.h>
 #include <I_MerkleTxConfirmationNumberCalculator.h>
+#include <Logging.h>
 
 constexpr const char* VAULT_DEPOSIT_DESCRIPTION = "isVaultDeposit";
 
@@ -19,6 +20,7 @@ VaultManager::VaultManager(
     , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_))
     , outputTracker_(new SpentOutputTracker(*walletTxRecord_,confirmationsCalculator_))
     , managedScripts_()
+    , whiteListedScripts_()
 {
     LOCK(cs_vaultManager_);
     vaultManagerDB_.ReadManagedScripts(managedScripts_);
@@ -83,6 +85,20 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx, bool checkOutpu
     return false;
 }
 
+bool VaultManager::transactionIsWhitelisted(const CTransaction& tx) const
+{
+    AssertLockHeld(cs_vaultManager_);
+    if(whiteListedScripts_.size() == 0u) return false;
+    for(const CTxOut& output: tx.vout)
+    {
+        if(output.nValue >0 && whiteListedScripts_.count(output.scriptPubKey) > 0u)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool VaultManager::allInputsAreKnown(const CTransaction& tx) const
 {
     AssertLockHeld(cs_vaultManager_);
@@ -109,7 +125,12 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
 {
     LOCK(cs_vaultManager_);
     const bool blockIsNull = pblock==nullptr;
-    if( (!blockIsNull && transactionIsRelevant(tx,deposit || tx.IsCoinStake()) ) ||
+    const bool txIsWhiteListed = transactionIsWhitelisted(tx);
+    const bool checkOutputs = txIsWhiteListed? false: (deposit || tx.IsCoinStake());
+    deposit = deposit || txIsWhiteListed;
+
+    if( txIsWhiteListed ||
+        (!blockIsNull && transactionIsRelevant(tx, checkOutputs ) ) ||
         (blockIsNull && walletTxRecord_->GetWalletTx(tx.GetHash()) != nullptr) )
     {
         CWalletTx walletTx(tx);
@@ -139,6 +160,15 @@ void VaultManager::addManagedScript(const CScript& script)
     {
         managedScripts_.insert(script);
         vaultManagerDB_.WriteManagedScript(script);
+    }
+}
+void VaultManager::addWhiteListedScript(const CScript& script)
+{
+    LOCK(cs_vaultManager_);
+    if(whiteListedScripts_.count(script) == 0)
+    {
+        addManagedScript(script);
+        whiteListedScripts_.insert(script);
     }
 }
 void VaultManager::removeManagedScript(const CScript& script)

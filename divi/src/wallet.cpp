@@ -856,16 +856,14 @@ bool CWallet::LoadCScript(const CScript& redeemScript)
 
 bool CWallet::AddVault(
     const CScript& vaultScript,
-    const CBlockIndex* blockIndexToBlockContainingTx,
+    const CBlock* pblock,
     const CTransaction& tx)
 {
     if(vaultManager_)
     {
         LOCK(cs_wallet);
         vaultManager_->addManagedScript(vaultScript);
-        CBlock block;
-        ReadBlockFromDisk(block, blockIndexToBlockContainingTx);
-        vaultManager_->addTransaction(tx, &block, true);
+        vaultManager_->addTransaction(tx, pblock, true);
         return true;
     }
     return false;
@@ -1668,6 +1666,14 @@ CAmount CWallet::GetUnconfirmedBalance() const
             if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin) == 0))
                 nTotal += GetAvailableCredit(*pcoin);
         }
+        if(vaultManager_)
+        {
+            auto utxos = vaultManager_->getManagedUTXOs(VaultUTXOFilters::UNCONFIRMED);
+            for(const auto& utxo: utxos)
+            {
+                nTotal += utxo.Value();
+            }
+        }
     }
     return nTotal;
 }
@@ -1680,6 +1686,14 @@ CAmount CWallet::GetImmatureBalance() const
         for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             nTotal += GetImmatureCredit(*pcoin);
+        }
+        if(vaultManager_)
+        {
+            auto utxos = vaultManager_->getManagedUTXOs(VaultUTXOFilters::INMATURE);
+            for(const auto& utxo: utxos)
+            {
+                nTotal += utxo.Value();
+            }
         }
     }
     return nTotal;

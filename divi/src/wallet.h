@@ -320,7 +320,7 @@ public:
     bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
     bool AddCScript(const CScript& redeemScript);
     bool LoadCScript(const CScript& redeemScript);
-    bool AddVault(const CScript& vaultScript, const CBlockIndex* blockIndexToBlockContainingTx,const CTransaction& tx);
+    bool AddVault(const CScript& vaultScript, const CBlock* pblock,const CTransaction& tx);
     bool RemoveVault(const CScript& vaultScript);
 
     //! Adds a watch-only address to the store, and saves it to disk.

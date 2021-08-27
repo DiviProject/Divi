@@ -659,7 +659,7 @@ public:
             pnode->Release();
         clearedCopy = true;
     }
-    std::vector<CNode*>& Nodes()
+    const std::vector<CNode*>& Nodes()
     {
         return copyOfNodes;
     }
@@ -900,7 +900,7 @@ void ThreadMessageHandler()
     SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
     while (true) {
         ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
-        std::vector<CNode*>& vNodesCopy = safeNodesCopy.Nodes();
+        const std::vector<CNode*>& vNodesCopy = safeNodesCopy.Nodes();
 
         bool rebroadcast = (!IsInitialBlockDownload() && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
 

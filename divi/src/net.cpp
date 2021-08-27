@@ -308,7 +308,7 @@ public:
 static std::vector<ListenSocket>& vhListenSocket = NodeManager::Instance().listeningSockets();
 static CCriticalSection& cs_vNodes = NodeManager::Instance().nodesLock();
 static std::vector<CNode*>& vNodes = NodeManager::Instance().nodes();
-static std::list<CNode*>& vNodesDisconnected = NodeManager::Instance().disconnectedNodes();
+
 PeerSyncQueryService peerSyncQueryService(vNodes,cs_vNodes);
 PeerNotificationOfMintService peerBlockNotify(vNodes,cs_vNodes);
 template <typename ...Args>

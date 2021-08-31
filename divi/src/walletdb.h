@@ -136,9 +136,6 @@ public:
     bool ReadAccount(const std::string& strAccount, CAccount& account);
     bool WriteAccount(const std::string& strAccount, const CAccount& account);
 
-    CAmount GetAccountCreditDebit(const std::string& strAccount);
-    void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& acentries);
-
     DBErrors LoadWallet(CWallet* pwallet);
     DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, WalletTxVector& vWtx);
     DBErrors ZapWalletTx(CWallet* pwallet, WalletTxVector& vWtx);

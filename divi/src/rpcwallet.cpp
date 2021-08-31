@@ -285,7 +285,6 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
     }
 
     // Tally internal accounting entries
-    nBalance += walletdb.GetAccountCreditDebit(strAccount);
 
     return nBalance;
 }
@@ -1812,18 +1811,12 @@ Value listtransactions(const Array& params, bool fHelp)
 
     Array ret;
 
-    std::list<CAccountingEntry> acentries;
-    CWallet::TxItems txOrdered = pwalletMain->OrderedTxItems(acentries, strAccount);
+    CWallet::TxItems txOrdered = pwalletMain->OrderedTxItems();
 
     // iterate backwards until we have nCount items to return:
     for (CWallet::TxItems::reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
-        CWalletTx* const pwtx = (*it).second.first;
-        if (pwtx != 0)
-            ParseTransactionDetails(*pwalletMain, *pwtx, strAccount, 0, true, ret, filter);
-        CAccountingEntry* const pacentry = (*it).second.second;
-        if (pacentry != 0)
-            AcentryToJSON(*pacentry, strAccount, ret);
-
+        const CWalletTx* const pwtx = (*it).second;
+        ParseTransactionDetails(*pwalletMain, *pwtx, strAccount, 0, true, ret, filter);
         if ((int)ret.size() >= (nCount + nFrom)) break;
     }
     // ret is newest to oldest
@@ -1907,11 +1900,6 @@ Value listaccounts(const Array& params, bool fHelp)
             }
         }
     }
-
-    list<CAccountingEntry> acentries;
-    CWalletDB(settings,pwalletMain->dbFilename()).ListAccountCreditDebit("*", acentries);
-    BOOST_FOREACH (const CAccountingEntry& entry, acentries)
-            mapAccountBalances[entry.strAccount] += entry.nCreditDebit;
 
     Object ret;
     BOOST_FOREACH (const PAIRTYPE(string, CAmount) & accountBalance, mapAccountBalances) {

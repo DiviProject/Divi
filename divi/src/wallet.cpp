@@ -2042,72 +2042,6 @@ bool CWallet::SelectCoinsMinConf(
     return true;
 }
 
-DBErrors CWallet::ReorderTransactionsByTimestamp()
-{
-    LOCK(cs_wallet);
-    CWalletDB walletdb(settings,strWalletFile);
-    // Old wallets didn't have any defined order for transactions
-    // Probably a bad idea to change the output of this
-
-    // First: get all CWalletTx and CAccountingEntry into a sorted-by-time multimap.
-    typedef std::pair<CWalletTx*, CAccountingEntry*> TxPair;
-    typedef std::multimap<int64_t, TxPair> TxItems;
-    TxItems txByTime;
-
-    std::vector<const CWalletTx*> walletTransactionPtrs = GetWalletTransactionReferences();
-    for (auto it = walletTransactionPtrs.begin(); it != walletTransactionPtrs.end(); ++it)
-    {
-        CWalletTx* wtx = const_cast<CWalletTx*>(*it);
-        txByTime.insert(std::make_pair(wtx->nTimeReceived, TxPair(wtx, (CAccountingEntry*)0)));
-    }
-    std::list<CAccountingEntry> acentries;
-    walletdb.ListAccountCreditDebit("", acentries);
-    BOOST_FOREACH (CAccountingEntry& entry, acentries) {
-        txByTime.insert(std::make_pair(entry.nTime, TxPair((CWalletTx*)0, &entry)));
-    }
-
-    int64_t _orderedTransactionIndex = GetNextTransactionIndexAvailable();
-    _orderedTransactionIndex = 0;
-    std::vector<int64_t> newIndicesOfPreviouslyUnorderedTransactions;
-    for (TxItems::iterator it = txByTime.begin(); it != txByTime.end(); ++it) {
-        CWalletTx* const pwtx = (*it).second.first;
-        CAccountingEntry* const pacentry = (*it).second.second;
-        int64_t& transactionOrderIndex = (pwtx != 0) ? pwtx->nOrderPos : pacentry->nOrderPos;
-
-        if (transactionOrderIndex == -1) {
-            transactionOrderIndex = _orderedTransactionIndex++;
-            newIndicesOfPreviouslyUnorderedTransactions.push_back(transactionOrderIndex);
-
-            if (pwtx) {
-                if (!walletdb.WriteTx(pwtx->GetHash(), *pwtx))
-                    return DB_LOAD_FAIL;
-            } else if (!walletdb.WriteAccountingEntry(pacentry->nEntryNo, *pacentry))
-                return DB_LOAD_FAIL;
-        } else {
-            int64_t numberOfSmallerPreviouslyUsedIndices = 0;
-            BOOST_FOREACH (const int64_t& previouslyUsedIndex, newIndicesOfPreviouslyUnorderedTransactions) {
-                if (transactionOrderIndex >= previouslyUsedIndex)
-                    ++numberOfSmallerPreviouslyUsedIndices;
-            }
-            transactionOrderIndex += numberOfSmallerPreviouslyUsedIndices;
-            _orderedTransactionIndex = std::max(_orderedTransactionIndex, transactionOrderIndex + 1);
-
-            if (!numberOfSmallerPreviouslyUsedIndices)
-                continue;
-
-            // Since we're changing the order, write it back
-            if (pwtx) {
-                if (!walletdb.WriteTx(pwtx->GetHash(), *pwtx))
-                    return DB_LOAD_FAIL;
-            } else if (!walletdb.WriteAccountingEntry(pacentry->nEntryNo, *pacentry))
-                return DB_LOAD_FAIL;
-        }
-    }
-    UpdateNextTransactionIndexAvailable(_orderedTransactionIndex);
-    walletdb.WriteOrderPosNext(_orderedTransactionIndex);
-    return DB_LOAD_OK;
-}
-
 int64_t CWallet::GetNextTransactionIndexAvailable() const
 {
     return orderedTransactionIndex;
@@ -3172,36 +3106,6 @@ void CWallet::LockFully()
     LOCK(cs_wallet);
     walletStakingOnly = false;
     Lock();
-}
-
-bool CWallet::MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment)
-{
-    CWalletDB walletdb(settings,strWalletFile);
-    if (!walletdb.TxnBegin()) return false;
-    int64_t nNow = GetAdjustedTime();
-
-    // Debit
-    CAccountingEntry debit;
-    debit.nOrderPos = IncOrderPosNext(&walletdb);
-    debit.strAccount = from;
-    debit.nCreditDebit = -amount;
-    debit.nTime = nNow;
-    debit.strOtherAccount = to;
-    debit.strComment = comment;
-    walletdb.WriteAccountingEntry(debit);
-
-    // Credit
-    CAccountingEntry credit;
-    credit.nOrderPos = IncOrderPosNext(&walletdb);
-    credit.strAccount = to;
-    credit.nCreditDebit = amount;
-    credit.nTime = nNow;
-    credit.strOtherAccount = from;
-    credit.strComment = comment;
-    walletdb.WriteAccountingEntry(credit);
-    if (!walletdb.TxnCommit()) return false;
-
-    return true;
 }
 
 void CAccountingEntry::ReadOrderPos(int64_t& orderPosition, std::map<std::string,std::string>& mapping)

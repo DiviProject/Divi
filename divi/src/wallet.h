@@ -344,15 +344,13 @@ public:
      */
     int64_t IncOrderPosNext(CWalletDB* pwalletdb = NULL);
 
-    typedef std::pair<CWalletTx*, CAccountingEntry*> TxPair;
-    typedef std::multimap<int64_t, TxPair> TxItems;
-
     /**
      * Get the wallet's activity log
      * @return multimap of ordered transactions and accounting entries
      * @warning Returned pointers are *only* valid within the scope of passed acentries
      */
-    TxItems OrderedTxItems(std::list<CAccountingEntry>& acentries, std::string strAccount = "");
+    typedef std::multimap<int64_t, const CWalletTx*> TxItems;
+    TxItems OrderedTxItems();
 
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
     void LoadWalletTransaction(const CWalletTx& wtxIn);

@@ -1206,26 +1206,19 @@ int64_t CWallet::IncOrderPosNext(CWalletDB* pwalletdb)
     return nRet;
 }
 
-CWallet::TxItems CWallet::OrderedTxItems(std::list<CAccountingEntry>& acentries, std::string strAccount)
+CWallet::TxItems CWallet::OrderedTxItems()
 {
     AssertLockHeld(cs_wallet); // mapWallet
-    CWalletDB walletdb(settings,strWalletFile);
-
     // First: get all CWalletTx and CAccountingEntry into a sorted-by-order multimap.
     TxItems txOrdered;
 
     // Note: maintaining indices in the database of (account,time) --> txid and (account, time) --> acentry
     // would make this much faster for applications that do this a lot.
-    for (std::map<uint256, CWalletTx>::iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
-        CWalletTx* wtx = &((*it).second);
-        txOrdered.insert(std::make_pair(wtx->nOrderPos, TxPair(wtx, (CAccountingEntry*)0)));
+    for (std::map<uint256, CWalletTx>::iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it)
+    {
+        const CWalletTx* wtx = &((*it).second);
+        txOrdered.insert(std::make_pair(wtx->nOrderPos, wtx));
     }
-    acentries.clear();
-    walletdb.ListAccountCreditDebit(strAccount, acentries);
-    BOOST_FOREACH (CAccountingEntry& entry, acentries) {
-        txOrdered.insert(std::make_pair(entry.nOrderPos, TxPair((CWalletTx*)0, &entry)));
-    }
-
     return txOrdered;
 }
 
@@ -1236,20 +1229,18 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
     {
         // Tolerate times up to the last timestamp in the wallet not more than 5 minutes into the future
         int64_t latestTolerated = latestNow + 300;
-        std::list<CAccountingEntry> acentries;
-        TxItems txOrdered = OrderedTxItems(acentries);
+        TxItems txOrdered = OrderedTxItems();
         for (TxItems::reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
-            CWalletTx* const pwtx = (*it).second.first;
+            const CWalletTx* const pwtx = (*it).second;
             if (pwtx == &wtx)
                 continue;
-            CAccountingEntry* const pacentry = (*it).second.second;
             int64_t nSmartTime;
-            if (pwtx) {
+            if (pwtx)
+            {
                 nSmartTime = pwtx->nTimeSmart;
                 if (!nSmartTime)
                     nSmartTime = pwtx->nTimeReceived;
-            } else
-                nSmartTime = pacentry->nTime;
+            }
             if (nSmartTime <= latestTolerated) {
                 latestEntry = nSmartTime;
                 if (nSmartTime > latestNow)

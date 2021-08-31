@@ -438,9 +438,14 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
 }
 
 
-void SendMoneyToScript(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, bool spendFromVaults)
+void SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsToFund, CWalletTx& wtxNew, bool spendFromVaults)
 {
     // Check amount
+    CAmount nValue = 0;
+    for(const auto& scriptToFund: scriptsToFund)
+    {
+        nValue += scriptToFund.second;
+    }
     if (nValue <= 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid amount");
 
@@ -459,7 +464,7 @@ void SendMoneyToScript(const CScript& scriptPubKey, CAmount nValue, CWalletTx& w
 
     // Create and send the transaction
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
-    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney({std::make_pair(scriptPubKey, nValue)}, wtxNew, coinTypeFilter);
+    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(scriptsToFund, wtxNew, coinTypeFilter);
     if (!txCreation.second)
     {
         strError = txCreation.first;
@@ -473,14 +478,14 @@ void SendMoneyToAddress(const CTxDestination& address, CAmount nValue, CWalletTx
     // Parse DIVI address
     constexpr bool spendFromVaults = false;
     CScript scriptPubKey = GetScriptForDestination(address);
-    SendMoneyToScript(scriptPubKey, nValue, wtxNew, spendFromVaults);
+    SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, wtxNew, spendFromVaults);
 }
 
 void SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
 {
     constexpr bool spendFromVaults = true;
     CScript scriptPubKey = GetScriptForDestination(address);
-    SendMoneyToScript(scriptPubKey, nValue, wtxNew, spendFromVaults);
+    SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, wtxNew, spendFromVaults);
 }
 
 Value getcoinavailability(const Array& params, bool fHelp)
@@ -651,7 +656,7 @@ Value fundvault(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
     // Amount & Send
     CAmount nAmount = AmountFromValue(params[1]);
-    SendMoneyToScript(vaultScript, nAmount, wtx);
+    SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, wtx,false);
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", wtx.GetHash().GetHex()));
@@ -1300,10 +1305,7 @@ Value sendmany(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     // Send
-    std::pair<std::string,bool> fCreated = pwalletMain->SendMoney(vecSend, wtx);
-    if (!fCreated.second)
-        throw JSONRPCError(RPC_WALLET_ERROR, fCreated.first);
-
+    SendMoneyToScripts(vecSend,wtx,false);
     return wtx.GetHash().GetHex();
 }
 

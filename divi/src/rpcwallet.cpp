@@ -438,7 +438,7 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
 }
 
 
-void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, bool spendFromVaults = false)
+void SendMoneyToScript(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, bool spendFromVaults)
 {
     // Check amount
     if (nValue <= 0)
@@ -468,19 +468,19 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
     }
 }
 
-void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
+void SendMoneyToAddress(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
 {
     // Parse DIVI address
     constexpr bool spendFromVaults = false;
     CScript scriptPubKey = GetScriptForDestination(address);
-    SendMoney(scriptPubKey, nValue, wtxNew, spendFromVaults);
+    SendMoneyToScript(scriptPubKey, nValue, wtxNew, spendFromVaults);
 }
 
 void SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
 {
     constexpr bool spendFromVaults = true;
     CScript scriptPubKey = GetScriptForDestination(address);
-    SendMoney(scriptPubKey, nValue, wtxNew, spendFromVaults);
+    SendMoneyToScript(scriptPubKey, nValue, wtxNew, spendFromVaults);
 }
 
 Value getcoinavailability(const Array& params, bool fHelp)
@@ -651,7 +651,7 @@ Value fundvault(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
     // Amount & Send
     CAmount nAmount = AmountFromValue(params[1]);
-    SendMoney(vaultScript, nAmount, wtx);
+    SendMoneyToScript(vaultScript, nAmount, wtx);
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", wtx.GetHash().GetHex()));
@@ -849,7 +849,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    SendMoney(address.Get(), nAmount, wtx);
+    SendMoneyToAddress(address.Get(), nAmount, wtx);
 
     return wtx.GetHash().GetHex();
 }
@@ -1230,7 +1230,7 @@ Value sendfrom(const Array& params, bool fHelp)
     if (nAmount > nBalance)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
-    SendMoney(address.Get(), nAmount, wtx);
+    SendMoneyToAddress(address.Get(), nAmount, wtx);
 
     return wtx.GetHash().GetHex();
 }

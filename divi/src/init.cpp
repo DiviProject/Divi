@@ -513,13 +513,6 @@ bool EnableWalletFeatures()
         if (settings.SoftSetBoolArg("-rescan", true))
             LogPrintf("InitializeDivi : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n");
     }
-
-    // -zapwallettx implies a rescan
-    if (settings.GetBoolArg("-zapwallettxes", false)) {
-        if (settings.SoftSetBoolArg("-rescan", true))
-            LogPrintf("InitializeDivi : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
-    }
-
     return true;
 }
 
@@ -971,7 +964,7 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     return true;
 }
 
-void ScanBlockchainForWalletUpdates(std::string strWalletFile,const std::vector<CWalletTx>& vWtx, int64_t& nStart)
+void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
 {
     CBlockIndex* pindexRescan = chainActive.Tip();
     if (settings.GetBoolArg("-rescan", false))
@@ -992,11 +985,6 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile,const std::vector<
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
         pwalletMain->UpdateBestBlockLocation();
         pwalletMain->IncrementDBUpdateCount();
-
-        // Restore wallet transaction metadata after -zapwallettxes=1
-        if (settings.GetBoolArg("-zapwallettxes", false) && settings.GetArg("-zapwallettxes", "1") != "2") {
-            pwalletMain->UpdateTransactionMetadata(vWtx);
-        }
     }
 }
 
@@ -1014,25 +1002,6 @@ void LockUpMasternodeCollateral()
                 walletReference.LockCoin(outpoint);
             });
     }
-}
-
-bool ZapWalletTransactionsIfRequested(const std::string& strWalletFile, std::vector<CWalletTx>& vWtx)
-{
-    if (settings.GetBoolArg("-zapwallettxes", false))
-    {
-        uiInterface.InitMessage(translate("Zapping all transactions from wallet..."));
-
-        pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex);
-        DBErrors nZapWalletRet = pwalletMain->ZapWalletTx(vWtx);
-        if (nZapWalletRet != DB_LOAD_OK) {
-            uiInterface.InitMessage(translate("Error loading wallet.dat: Wallet corrupted"));
-            return false;
-        }
-
-        delete pwalletMain;
-        pwalletMain = NULL;
-    }
-    return true;
 }
 
 bool InitializeDivi(boost::thread_group& threadGroup)
@@ -1248,13 +1217,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         pwalletMain = NULL;
         LogPrintf("Wallet disabled!\n");
     } else {
-        // needed to restore wallet transaction meta data after -zapwallettxes
-        std::vector<CWalletTx> vWtx;
-        if(!ZapWalletTransactionsIfRequested(strWalletFile,vWtx))
-        {
-            return false;
-        }
-
         uiInterface.InitMessage(translate("Loading wallet..."));
         fVerifyingBlocks = true;
 
@@ -1280,7 +1242,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
         RegisterValidationInterface(pwalletMain);
 
-        ScanBlockchainForWalletUpdates(strWalletFile,vWtx,nStart);
+        ScanBlockchainForWalletUpdates(strWalletFile, nStart);
         fVerifyingBlocks = false;
 
     }  // (!fDisableWallet)

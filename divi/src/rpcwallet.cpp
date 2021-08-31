@@ -1153,36 +1153,7 @@ Value getunconfirmedbalance(const Array& params, bool fHelp)
 
 Value movecmd(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 3 || params.size() > 5)
-        throw runtime_error(
-                "move \"fromaccount\" \"toaccount\" amount ( minconf \"comment\" )\n"
-                "\nMove a specified amount from one account in your wallet to another.\n"
-                "\nArguments:\n"
-                "1. \"fromaccount\"   (string, required) The name of the account to move funds from. May be the default account using \"\".\n"
-                "2. \"toaccount\"     (string, required) The name of the account to move funds to. May be the default account using \"\".\n"
-                "3. minconf           (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
-                "4. \"comment\"       (string, optional) An optional comment, stored in the wallet only.\n"
-                "\nResult:\n"
-                "true|false           (boolean) true if successfull.\n"
-                "\nExamples:\n"
-                "\nMove 0.01 DIVI from the default account to the account named tabby\n" +
-                HelpExampleCli("move", "\"\" \"tabby\" 0.01") +
-                "\nMove 0.01 DIVI timotei to akiko with a comment and funds have 6 confirmations\n" + HelpExampleCli("move", "\"timotei\" \"akiko\" 0.01 6 \"happy birthday!\"") +
-                "\nAs a json rpc call\n" + HelpExampleRpc("move", "\"timotei\", \"akiko\", 0.01, 6, \"happy birthday!\""));
-
-    string strFrom = AccountFromValue(params[0]);
-    string strTo = AccountFromValue(params[1]);
-    CAmount nAmount = AmountFromValue(params[2]);
-    if (params.size() > 3)
-        // unused parameter, used to be nMinDepth, keep type-checking it though
-        (void)params[3].get_int();
-    string strComment;
-    if (params.size() > 4)
-        strComment = params[4].get_str();
-
-    if(!pwalletMain->MoveFundsBetweenAccounts(strFrom,strTo,nAmount,strComment))
-        throw JSONRPCError(RPC_DATABASE_ERROR, "database error");
-    return true;
+      throw std::runtime_error("move is deprecated!");
 }
 
 

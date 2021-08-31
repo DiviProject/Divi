@@ -425,7 +425,6 @@ public:
     CAmount ComputeChange(const CTransaction& tx) const;
 
     DBErrors LoadWallet(bool& fFirstRunRet);
-    DBErrors ZapWalletTx(std::vector<CWalletTx>& vWtx);
 
     unsigned int GetKeyPoolSize() const;
 

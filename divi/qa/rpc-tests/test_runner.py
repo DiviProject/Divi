@@ -113,6 +113,7 @@ BASE_SCRIPTS = [
     'smartfees.py',
     'sync.py',
     'txindex.py',
+    'TxInputsStandardness.py',
     'txn_doublespend.py',
     'txn_doublespend.py --mineblock',
     'VaultUtxoIndexing.py',

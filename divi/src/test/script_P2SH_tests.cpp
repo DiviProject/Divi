@@ -351,9 +351,10 @@ BOOST_AUTO_TEST_CASE(AreInputsStandard)
     BOOST_CHECK(SignSignature(keystore, txFrom, txTo, 2));
     // SignSignature doesn't know how to sign these. We're
     // not testing validating signatures, so just create
-    // dummy signatures that DO include the correct P2SH scripts:
+    // dummy signatures that DO include the correct P2SH scripts
+    // and number of expected arguments.
     txTo.vin[3].scriptSig << OP_11 << OP_11 << static_cast<vector<unsigned char> >(oneAndTwo);
-    txTo.vin[4].scriptSig << static_cast<vector<unsigned char> >(fifteenSigops);
+    txTo.vin[4].scriptSig << OP_0 << OP_11 << static_cast<vector<unsigned char> >(fifteenSigops);
 
     BOOST_CHECK(::AreInputsStandard(txTo, coins));
     // 22 P2SH sigops for all inputs (1 for vin[0], 6 for vin[3], 15 for vin[4]

@@ -96,12 +96,6 @@ bool CWalletDB::WriteTx(uint256 hash, const CWalletTx& wtx)
     return Write(std::make_pair(std::string("tx"), hash), wtx);
 }
 
-bool CWalletDB::EraseTx(uint256 hash)
-{
-    walletDbUpdated_++;
-    return Erase(std::make_pair(std::string("tx"), hash));
-}
-
 bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta)
 {
     walletDbUpdated_++;
@@ -617,83 +611,6 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         assert(false && "Transactions not being reordered");
     }
     return result;
-}
-
-DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, std::vector<CWalletTx>& vWtx)
-{
-    pwallet->SetDefaultKey(CPubKey(),false);
-    bool fNoncriticalErrors = false;
-    DBErrors result = DB_LOAD_OK;
-
-    try {
-        LOCK(pwallet->cs_wallet);
-        int nMinVersion = 0;
-        if (Read((string) "minversion", nMinVersion)) {
-            if (nMinVersion > CLIENT_VERSION)
-                return DB_TOO_NEW;
-            pwallet->LoadMinVersion(nMinVersion);
-        }
-
-        // Get cursor
-        Dbc* pcursor = GetCursor();
-        if (!pcursor) {
-            LogPrintf("Error getting wallet database cursor\n");
-            return DB_CORRUPT;
-        }
-
-        while (true) {
-            // Read next record
-            CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-            CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-            int ret = ReadAtCursor(pcursor, ssKey, ssValue);
-            if (ret == DB_NOTFOUND)
-                break;
-            else if (ret != 0) {
-                LogPrintf("Error reading next record from wallet database\n");
-                return DB_CORRUPT;
-            }
-
-            string strType;
-            ssKey >> strType;
-            if (strType == "tx") {
-                uint256 hash;
-                ssKey >> hash;
-
-                CWalletTx wtx;
-                ssValue >> wtx;
-
-                vTxHash.push_back(hash);
-                vWtx.push_back(wtx);
-            }
-        }
-        pcursor->close();
-    } catch (boost::thread_interrupted) {
-        throw;
-    } catch (...) {
-        result = DB_CORRUPT;
-    }
-
-    if (fNoncriticalErrors && result == DB_LOAD_OK)
-        result = DB_NONCRITICAL_ERROR;
-
-    return result;
-}
-
-DBErrors CWalletDB::ZapWalletTx(CWallet* pwallet, std::vector<CWalletTx>& vWtx)
-{
-    // build list of wallet TXs
-    std::vector<uint256> vTxHash;
-    DBErrors err = FindWalletTx(pwallet, vTxHash, vWtx);
-    if (err != DB_LOAD_OK)
-        return err;
-
-    // erase each wallet TX
-    BOOST_FOREACH (uint256& hash, vTxHash) {
-        if (!EraseTx(hash))
-            return DB_CORRUPT;
-    }
-
-    return DB_LOAD_OK;
 }
 
 void ThreadFlushWalletDB(const string& strFile)

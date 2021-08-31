@@ -105,7 +105,6 @@ public:
     bool ErasePurpose(const std::string& strAddress);
 
     bool WriteTx(uint256 hash, const CWalletTx& wtx);
-    bool EraseTx(uint256 hash);
 
     bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta);
     bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret, const CKeyMetadata& keyMeta);
@@ -137,8 +136,6 @@ public:
     bool WriteAccount(const std::string& strAccount, const CAccount& account);
 
     DBErrors LoadWallet(CWallet* pwallet);
-    DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, WalletTxVector& vWtx);
-    DBErrors ZapWalletTx(CWallet* pwallet, WalletTxVector& vWtx);
     static bool Recover(
         CDBEnv& dbenv,
         std::string filename,

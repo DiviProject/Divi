@@ -123,7 +123,6 @@ BASE_SCRIPTS = [
     'wallet_notifications.py',
     'wallet_sends.py',
     'wallet_autocombine.py',
-    'zapwallettxes.py',
     'zmq_test.py',
 ]
 

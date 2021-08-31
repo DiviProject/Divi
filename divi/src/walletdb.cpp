@@ -26,7 +26,6 @@
 using namespace boost;
 using namespace std;
 
-static uint64_t nAccountingEntryNumber = 0;
 //
 // CWalletDB
 //
@@ -237,15 +236,6 @@ bool CWalletDB::WriteAccount(const string& strAccount, const CAccount& account)
     return Write(std::make_pair(string("acc"), strAccount), account);
 }
 
-bool CWalletDB::WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry)
-{
-    return Write(std::make_pair(std::string("acentry"), std::make_pair(acentry.strAccount, nAccEntryNum)), acentry);
-}
-
-bool CWalletDB::WriteAccountingEntry(const CAccountingEntry& acentry)
-{
-    return WriteAccountingEntry(++nAccountingEntryNumber, acentry);
-}
 
 CAmount CWalletDB::GetAccountCreditDebit(const string& strAccount)
 {
@@ -381,20 +371,6 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                 wss.fAnyUnordered = true;
 
             if(pwallet) pwallet->LoadWalletTransaction(wtx);
-        } else if (strType == "acentry") {
-            string strAccount;
-            ssKey >> strAccount;
-            uint64_t nNumber;
-            ssKey >> nNumber;
-            if (nNumber > nAccountingEntryNumber)
-                nAccountingEntryNumber = nNumber;
-
-            if (!wss.fAnyUnordered) {
-                CAccountingEntry acentry;
-                ssValue >> acentry;
-                if (acentry.nOrderPos == -1)
-                    wss.fAnyUnordered = true;
-            }
         } else if (strType == "watchs") {
             CScript script;
             ssKey >> script;
@@ -692,7 +668,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
     if (wss.fAnyUnordered)
     {
         LogPrintf("Transaction reordering required during wallet load...\n");
-        result = pwallet->ReorderTransactionsByTimestamp();
+        assert(false && "Transactions not being reordered");
     }
     return result;
 }

@@ -225,7 +225,6 @@ public:
 
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
     void toggleSpendingZeroConfirmationOutputs();
-    DBErrors ReorderTransactionsByTimestamp();
     int64_t GetNextTransactionIndexAvailable() const;
     void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);
 
@@ -234,8 +233,6 @@ public:
 
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     void UpdateBestBlockLocation();
-
-    bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);
 
     bool HasAgedCoins() override;
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;

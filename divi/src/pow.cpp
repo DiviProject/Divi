@@ -8,7 +8,6 @@
 
 #include "chain.h"
 #include "chainparams.h"
-#include "main.h"
 #include "primitives/block.h"
 #include "uint256.h"
 #include <Logging.h>

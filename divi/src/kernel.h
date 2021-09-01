@@ -6,7 +6,6 @@
 #define BITCOIN_KERNEL_H
 
 #include <stdint.h>
-#include <uint256.h>
 #include <amount.h>
 #include <map>
 class CBlockIndex;
@@ -14,12 +13,17 @@ class CBlockRewards;
 class CBlock;
 class CCoinsViewCache;
 class CTransaction;
-class CChain;
+class uint256;
+class I_ProofOfStakeGenerator;
+class BlockMap;
+class Settings;
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return
 bool CheckProofOfStake(
-    CChain& activeChain,
+    const I_ProofOfStakeGenerator& posGenerator,
+    const Settings& settings,
+    const BlockMap& mapBlockIndex,
     const CBlock& block,
     CBlockIndex* pindexPrev,
     uint256& hashProofOfStake);
@@ -39,6 +43,6 @@ bool CheckStakeModifierCheckpoints(
     int nHeight,
     unsigned int nStakeModifierChecksum);
 
-void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew);
+void SetStakeModifiersForNewBlockIndex(const BlockMap& mapBlockIndex,CBlockIndex* pindexNew);
 
 #endif // BITCOIN_KERNEL_H

@@ -73,6 +73,7 @@
 #include <NodeStateRegistry.h>
 #include <Node.h>
 #include <TransactionSearchIndexes.h>
+#include <ProofOfStakeModule.h>
 
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;
@@ -1618,7 +1619,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
         }
 
         // ppcoin: compute stake modifier
-        SetStakeModifiersForNewBlockIndex(pindexNew);
+        SetStakeModifiersForNewBlockIndex(mapBlockIndex, pindexNew);
     }
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
@@ -1839,11 +1840,13 @@ bool CheckWork(const CBlock block, CBlockIndex* const pindexPrev)
     if (block.nBits != nBitsRequired)
         return error("%s : incorrect proof of work at %d", __func__, pindexPrev->nHeight + 1);
 
+    static ProofOfStakeModule posModule(Params(),chainActive,mapBlockIndex);
+    static const I_ProofOfStakeGenerator& posGenerator = posModule.proofOfStakeGenerator();
     if (block.IsProofOfStake()) {
         uint256 hashProofOfStake;
         uint256 hash = block.GetHash();
 
-        if(!CheckProofOfStake(chainActive,block,pindexPrev, hashProofOfStake)) {
+        if(!CheckProofOfStake(posGenerator,settings,mapBlockIndex,block,pindexPrev, hashProofOfStake)) {
             LogPrintf("WARNING: ProcessBlock(): check proof-of-stake failed for block %s\n", hash);
             return false;
         }

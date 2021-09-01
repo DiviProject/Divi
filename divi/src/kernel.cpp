@@ -55,21 +55,23 @@ const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex
 // select a block from the candidate blocks in vSortedByTimestamp, excluding
 // already selected blocks in vSelectedBlocks, and with timestamp up to
 // nSelectionIntervalStop.
-static bool SelectBlockFromCandidates(
+static const CBlockIndex* SelectBlockFromCandidates(
     const BlockMap& mapBlockIndex,
     const std::vector<std::pair<int64_t, uint256> >& vSortedByTimestamp,
     const std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
     int64_t nSelectionIntervalStop,
-    uint64_t nStakeModifierPrev,
-    const CBlockIndex** pindexSelected)
+    uint64_t nStakeModifierPrev)
 {
     bool fSelected = false;
     uint256 hashBest = 0;
-    *pindexSelected = (const CBlockIndex*)0;
+    const CBlockIndex* pindexSelected = nullptr;
     for (const std::pair<int64_t, uint256>& item: vSortedByTimestamp)
     {
         if (!mapBlockIndex.count(item.second))
-            return error("%s: failed to find block index for candidate block %s",__func__, item.second);
+        {
+            error("%s: failed to find block index for candidate block %s",__func__, item.second);
+            return nullptr;
+        }
 
         const CBlockIndex* pindex = mapBlockIndex.find(item.second)->second;
         if (fSelected && pindex->GetBlockTime() > nSelectionIntervalStop)
@@ -93,14 +95,14 @@ static bool SelectBlockFromCandidates(
 
         if (fSelected && hashSelection < hashBest) {
             hashBest = hashSelection;
-            *pindexSelected = (const CBlockIndex*)pindex;
+            pindexSelected = pindex;
         } else if (!fSelected) {
             fSelected = true;
             hashBest = hashSelection;
-            *pindexSelected = (const CBlockIndex*)pindex;
+            pindexSelected = pindex;
         }
     }
-    return fSelected;
+    return pindexSelected;
 }
 
 // Stake Modifier (hash modifier of proof-of-stake):
@@ -173,12 +175,11 @@ bool ComputeNextStakeModifier(
     int64_t nSelectionIntervalStop = 0;
     std::vector<std::pair<int64_t, uint256> > vSortedByTimestamp = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev,nSelectionIntervalStop);
 
-    const CBlockIndex* pindex = nullptr;
     std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
     for (int nRound = 0; nRound < std::min(64, (int)vSortedByTimestamp.size()); nRound++) {
         nSelectionIntervalStop += GetStakeModifierSelectionIntervalSection(nRound);
-        if (!SelectBlockFromCandidates(mapBlockIndex,vSortedByTimestamp, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier, &pindex))
-            return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
+        const CBlockIndex* pindex = SelectBlockFromCandidates(mapBlockIndex,vSortedByTimestamp, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier);
+        if (!pindex) return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         nStakeModifierNew |= (((uint64_t)pindex->GetStakeEntropyBit()) << nRound);
         mapSelectedBlocks.insert(std::make_pair(pindex->GetBlockHash(), pindex));

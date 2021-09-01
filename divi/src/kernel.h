@@ -14,10 +14,7 @@ class CBlockRewards;
 class CBlock;
 class CCoinsViewCache;
 class CTransaction;
-class COutPoint;
-class BlockMap;
 class CChain;
-struct StakingData;
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return

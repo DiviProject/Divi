@@ -83,15 +83,12 @@ static const CBlockIndex* SelectBlockFromCandidates(
         // compute the selection hash by hashing an input that is unique to that block
         uint256 hashProof = pindex->IsProofOfStake() ? 0 : pindex->GetBlockHash();
 
-        CDataStream ss(SER_GETHASH, 0);
-        ss << hashProof << nStakeModifierPrev;
-        uint256 hashSelection = Hash(ss.begin(), ss.end());
-
         // the selection hash is divided by 2**32 so that proof-of-stake block
         // is always favored over proof-of-work block. this is to preserve
         // the energy efficiency property
-        if (pindex->IsProofOfStake())
-            hashSelection >>= 32;
+        CDataStream ss(SER_GETHASH, 0);
+        ss << hashProof << nStakeModifierPrev;
+        const uint256 hashSelection = pindex->IsProofOfStake()? Hash(ss.begin(), ss.end()) >> 32 : Hash(ss.begin(), ss.end());
 
         if (fSelected && hashSelection < hashBest) {
             hashBest = hashSelection;

@@ -174,9 +174,11 @@ bool ComputeNextStakeModifier(
     if (!indexWhereLastStakeModifierWasSet || !indexWhereLastStakeModifierWasSet->GeneratedStakeModifier())
         return error("ComputeNextStakeModifier: unable to get last modifier prior to blockhash %s\n",pindexPrev->GetBlockHash());
 
-    nextStakeModifier = indexWhereLastStakeModifierWasSet->nStakeModifier;
     if (indexWhereLastStakeModifierWasSet->GetBlockTime() / MODIFIER_INTERVAL >= pindexPrev->GetBlockTime() / MODIFIER_INTERVAL)
+    {
+        nextStakeModifier = indexWhereLastStakeModifierWasSet->nStakeModifier;
         return true;
+    }
 
     uint64_t nStakeModifierNew = 0;
     RecentBlockHashesSortedByIncreasingTimestamp recentBlockHashesAndTimestamps = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev);
@@ -186,7 +188,7 @@ bool ComputeNextStakeModifier(
     std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
     for (int nRound = 0; nRound < std::min(64, (int)timestampSortedBlockHashes.size()); nRound++) {
         timestampUpperBound += GetStakeModifierSelectionIntervalSection(nRound);
-        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, mapSelectedBlocks, timestampUpperBound, nextStakeModifier);
+        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, mapSelectedBlocks, timestampUpperBound, indexWhereLastStakeModifierWasSet->nStakeModifier);
         if (!pindex) return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         nStakeModifierNew |= (((uint64_t)pindex->GetStakeEntropyBit()) << nRound);

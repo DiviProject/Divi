@@ -118,12 +118,12 @@ static const CBlockIndex* SelectBlockFromCandidates(
 // block. This is to make it difficult for an attacker to gain control of
 // additional bits in the stake modifier, even after generating a chain of
 // blocks.
-struct SortedBlockHashesWithTimestampLowerBound
+struct RecentBlockHashesSortedByIncreasingTimestamp
 {
     std::vector<std::pair<int64_t, uint256> > timestampSortedBlockHashes;
     int64_t timestampLowerBound;
 
-    SortedBlockHashesWithTimestampLowerBound(int64_t smallestTimestamp): timestampSortedBlockHashes(),timestampLowerBound(smallestTimestamp)
+    RecentBlockHashesSortedByIncreasingTimestamp(int64_t smallestTimestamp): timestampSortedBlockHashes(),timestampLowerBound(smallestTimestamp)
     {
         timestampSortedBlockHashes.reserve(64);
     }
@@ -141,11 +141,11 @@ struct SortedBlockHashesWithTimestampLowerBound
     }
 };
 
-SortedBlockHashesWithTimestampLowerBound GetRecentBlocksSortedByIncreasingTimestamp(const CBlockIndex* pindexPrev)
+RecentBlockHashesSortedByIncreasingTimestamp GetRecentBlocksSortedByIncreasingTimestamp(const CBlockIndex* pindexPrev)
 {
     // Sort candidate blocks by timestamp
     int64_t blockSelectionTimestampLowerBound = (pindexPrev->GetBlockTime() / MODIFIER_INTERVAL) * MODIFIER_INTERVAL - GetStakeModifierSelectionInterval();
-    SortedBlockHashesWithTimestampLowerBound sortedBlockHashes(blockSelectionTimestampLowerBound);
+    RecentBlockHashesSortedByIncreasingTimestamp sortedBlockHashes(blockSelectionTimestampLowerBound);
     sortedBlockHashes.recordBlockHashesAndTimestamps(pindexPrev);
     return sortedBlockHashes;
 }
@@ -181,7 +181,7 @@ bool ComputeNextStakeModifier(
         return true;
 
     uint64_t nStakeModifierNew = 0;
-    SortedBlockHashesWithTimestampLowerBound vSortedByTimestamp = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev);
+    RecentBlockHashesSortedByIncreasingTimestamp vSortedByTimestamp = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev);
 
     const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes = vSortedByTimestamp.timestampSortedBlockHashes;
     int64_t nSelectionIntervalStop = vSortedByTimestamp.timestampLowerBound;

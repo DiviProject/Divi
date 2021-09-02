@@ -28,16 +28,6 @@ bool CheckProofOfStake(
     CBlockIndex* pindexPrev,
     uint256& hashProofOfStake);
 
-/** Checks if the transaction is a valid coinstake after the staking vault
- *  fork (which adds extra rules, like paying back at least the expected
- *  staking reward to the same script that the staking input came from).
- *  Note that the extra conditions only apply to actual stake inputs that
- *  are vault scripts; if the tx is a coinstake but the input is not a vault,
- *  then the fucntion just returns true without further checks.  */
-bool CheckCoinstakeForVaults(const CTransaction& tx,
-                             const CBlockRewards& expectedRewards,
-                             const CCoinsViewCache& view);
-
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(
     int nHeight,

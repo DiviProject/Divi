@@ -5,7 +5,7 @@
 #include "BlockRewards.h"
 #include "coins.h"
 #include "hash.h"
-#include "kernel.h"
+#include "BlockTransactionChecker.h"
 #include "script/StakingVaultScript.h"
 #include "utilstrencodings.h"
 
@@ -74,7 +74,7 @@ protected:
 
   bool RunCheck(const CMutableTransaction& mtx)
   {
-    return CheckCoinstakeForVaults(CTransaction(mtx), rewards, coins);
+    return BlockTransactionChecker::CheckCoinstakeForVaults(CTransaction(mtx), rewards, coins);
   }
 
 };

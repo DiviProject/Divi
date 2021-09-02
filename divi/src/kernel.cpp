@@ -52,12 +52,12 @@ const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex
     return pindex;
 }
 
-// select a block from the candidate blocks in vSortedByTimestamp, excluding
+// select a block from the candidate blocks in timestampSortedBlockHashes, excluding
 // already selected blocks in vSelectedBlocks, and with timestamp up to
 // nSelectionIntervalStop.
 static const CBlockIndex* SelectBlockFromCandidates(
     const BlockMap& blockIndicesByHash,
-    const std::vector<std::pair<int64_t, uint256> >& vSortedByTimestamp,
+    const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes,
     const std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
     int64_t nSelectionIntervalStop,
     uint64_t nStakeModifierPrev)
@@ -65,7 +65,7 @@ static const CBlockIndex* SelectBlockFromCandidates(
     bool fSelected = false;
     uint256 hashBest = 0;
     const CBlockIndex* pindexSelected = nullptr;
-    for (const std::pair<int64_t, uint256>& item: vSortedByTimestamp)
+    for (const std::pair<int64_t, uint256>& item: timestampSortedBlockHashes)
     {
         if (!blockIndicesByHash.count(item.second))
         {

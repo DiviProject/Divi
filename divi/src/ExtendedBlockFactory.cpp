@@ -3,7 +3,58 @@
 #include <BlockFactory.h>
 #include <primitives/transaction.h>
 #include <BlockTemplate.h>
+#include <I_BlockTransactionCollector.h>
 #include <sync.h>
+
+class ExtendedBlockTransactionCollector final: public I_BlockTransactionCollector
+{
+public:
+    const std::vector<std::shared_ptr<CTransaction>>& extraTransactions_;
+    const std::unique_ptr<CTransaction>& customCoinstake_;
+    const bool& ignoreMempool_;
+    I_BlockTransactionCollector& decoratedTransactionCollector_;
+public:
+    ExtendedBlockTransactionCollector(
+        const std::vector<std::shared_ptr<CTransaction>>& extraTransactions,
+        const std::unique_ptr<CTransaction>& customCoinstake,
+        const bool& ignoreMempool,
+        I_BlockTransactionCollector& decoratedTransactionCollector
+        ): extraTransactions_(extraTransactions)
+        , customCoinstake_(customCoinstake)
+        , ignoreMempool_(ignoreMempool)
+        , decoratedTransactionCollector_(decoratedTransactionCollector)
+    {
+    }
+
+    bool CollectTransactionsIntoBlock(CBlockTemplate& pblocktemplate) const override
+    {
+        if(!decoratedTransactionCollector_.CollectTransactionsIntoBlock(pblocktemplate))
+        {
+            return false;
+        }
+
+        CBlock& block = pblocktemplate.block;
+        if (ignoreMempool_) {
+            const unsigned targetSize = (block.IsProofOfStake() ? 2 : 1);
+            assert(block.vtx.size() >= targetSize);
+            block.vtx.resize(targetSize);
+        }
+
+        for (const auto& tx : extraTransactions_)
+            block.vtx.push_back(*tx);
+
+        if (customCoinstake_ != nullptr)
+        {
+            if (!block.IsProofOfStake())
+                throw std::runtime_error("trying to set custom coinstake on PoW block");
+            assert(block.vtx.size() >= 2);
+            CTransaction& coinstake = block.vtx[1];
+            assert(coinstake.IsCoinStake());
+            coinstake = *customCoinstake_;
+        }
+        return true;
+    }
+};
 
 ExtendedBlockFactory::ExtendedBlockFactory(
     const I_BlockSubsidyProvider& blockSubsidies,
@@ -12,9 +63,11 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     const Settings& settings,
     const CChain& chain,
     const CChainParams& chainParameters
-    ): blockFactory_(new BlockFactory(blockSubsidies,blockTransactionCollector,coinstakeCreator, settings, chain,chainParameters))
-    , extraTransactions_()
+    ): extraTransactions_()
     , customCoinstake_()
+    , ignoreMempool_(false)
+    , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,customCoinstake_,ignoreMempool_,blockTransactionCollector))
+    , blockFactory_(new BlockFactory(blockSubsidies,*extendedTransactionCollector_,coinstakeCreator, settings, chain,chainParameters))
 {
 }
 ExtendedBlockFactory::~ExtendedBlockFactory()
@@ -25,28 +78,7 @@ ExtendedBlockFactory::~ExtendedBlockFactory()
 
 CBlockTemplate* ExtendedBlockFactory::CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake)
 {
-    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake));
-    CBlock& block = pblocktemplate->block;
-
-    if (ignoreMempool_) {
-        const unsigned targetSize = (block.IsProofOfStake() ? 2 : 1);
-        assert(block.vtx.size() >= targetSize);
-        block.vtx.resize(targetSize);
-    }
-
-    for (const auto& tx : extraTransactions_)
-        block.vtx.push_back(*tx);
-
-    if (customCoinstake_ != nullptr) {
-        if (!block.IsProofOfStake())
-            throw std::runtime_error("trying to set custom coinstake on PoW block");
-        assert(block.vtx.size() >= 2);
-        CTransaction& coinstake = block.vtx[1];
-        assert(coinstake.IsCoinStake());
-        coinstake = *customCoinstake_;
-    }
-
-    return pblocktemplate.release();
+    return blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake);
 }
 
 /** Adds a transaction to be added in addition to standard mempool

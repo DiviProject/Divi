@@ -152,10 +152,10 @@ RecentBlockHashesSortedByIncreasingTimestamp GetRecentBlocksSortedByIncreasingTi
 bool ComputeNextStakeModifier(
     const BlockMap& blockIndicesByHash,
     const CBlockIndex* pindexPrev,
-    uint64_t& nStakeModifier,
+    uint64_t& nextStakeModifier,
     bool& fGeneratedStakeModifier)
 {
-    nStakeModifier = 0;
+    nextStakeModifier = 0;
     fGeneratedStakeModifier = false;
     if (!pindexPrev) {
         fGeneratedStakeModifier = true;
@@ -164,7 +164,7 @@ bool ComputeNextStakeModifier(
     if (pindexPrev->nHeight == 0) {
         //Give a stake modifier to the first block
         fGeneratedStakeModifier = true;
-        nStakeModifier = uint64_t("stakemodifier");
+        nextStakeModifier = uint64_t("stakemodifier");
         return true;
     }
 
@@ -174,7 +174,7 @@ bool ComputeNextStakeModifier(
     if (!indexWhereLastStakeModifierWasSet || !indexWhereLastStakeModifierWasSet->GeneratedStakeModifier())
         return error("ComputeNextStakeModifier: unable to get last modifier prior to blockhash %s\n",pindexPrev->GetBlockHash());
 
-    nStakeModifier = indexWhereLastStakeModifierWasSet->nStakeModifier;
+    nextStakeModifier = indexWhereLastStakeModifierWasSet->nStakeModifier;
     if (indexWhereLastStakeModifierWasSet->GetBlockTime() / MODIFIER_INTERVAL >= pindexPrev->GetBlockTime() / MODIFIER_INTERVAL)
         return true;
 
@@ -186,7 +186,7 @@ bool ComputeNextStakeModifier(
     std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
     for (int nRound = 0; nRound < std::min(64, (int)timestampSortedBlockHashes.size()); nRound++) {
         nSelectionIntervalStop += GetStakeModifierSelectionIntervalSection(nRound);
-        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier);
+        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, mapSelectedBlocks, nSelectionIntervalStop, nextStakeModifier);
         if (!pindex) return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         nStakeModifierNew |= (((uint64_t)pindex->GetStakeEntropyBit()) << nRound);
@@ -197,11 +197,11 @@ bool ComputeNextStakeModifier(
     {
         CHashWriter hasher(SER_GETHASH,0);
         hasher << pindexPrev->GetBlockHash() << nStakeModifierNew;
-        nStakeModifier = hasher.GetHash().GetLow64();
+        nextStakeModifier = hasher.GetHash().GetLow64();
     }
     else
     {
-        nStakeModifier = nStakeModifierNew;
+        nextStakeModifier = nStakeModifierNew;
     }
 
     fGeneratedStakeModifier = true;
@@ -234,14 +234,14 @@ bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierCheck
 
 void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBlockIndex* pindexNew)
 {
-    uint64_t nStakeModifier = 0;
+    uint64_t nextStakeModifier = 0;
     bool fGeneratedStakeModifier = false;
-    if (!ComputeNextStakeModifier(blockIndicesByHash, pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
+    if (!ComputeNextStakeModifier(blockIndicesByHash, pindexNew->pprev, nextStakeModifier, fGeneratedStakeModifier))
         LogPrintf("%s : ComputeNextStakeModifier() failed \n",__func__);
-    pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
+    pindexNew->SetStakeModifier(nextStakeModifier, fGeneratedStakeModifier);
     pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
     if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
-        LogPrintf("%s : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", __func__, pindexNew->nHeight, boost::lexical_cast<std::string>(nStakeModifier));
+        LogPrintf("%s : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", __func__, pindexNew->nHeight, boost::lexical_cast<std::string>(nextStakeModifier));
 }
 
 // Check kernel hash target and coinstake signature

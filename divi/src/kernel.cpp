@@ -59,8 +59,8 @@ static const CBlockIndex* SelectBlockFromCandidates(
     const BlockMap& blockIndicesByHash,
     const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes,
     const std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
-    int64_t timestampUpperBound,
-    uint64_t nStakeModifierPrev)
+    const int64_t timestampUpperBound,
+    const uint64_t lastStakeModifier)
 {
     bool fSelected = false;
     uint256 hashBest = 0;
@@ -87,7 +87,7 @@ static const CBlockIndex* SelectBlockFromCandidates(
         // is always favored over proof-of-work block. this is to preserve
         // the energy efficiency property
         CDataStream ss(SER_GETHASH, 0);
-        ss << blockSelectionRandomnessSeed << nStakeModifierPrev;
+        ss << blockSelectionRandomnessSeed << lastStakeModifier;
         const uint256 hashSelection = pindex->IsProofOfStake()? Hash(ss.begin(), ss.end()) >> 32 : Hash(ss.begin(), ss.end());
 
         if (fSelected && hashSelection < hashBest)

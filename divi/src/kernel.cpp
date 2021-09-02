@@ -174,10 +174,8 @@ bool ComputeNextStakeModifier(
     if (!indexWhereLastStakeModifierWasSet || !indexWhereLastStakeModifierWasSet->GeneratedStakeModifier())
         return error("ComputeNextStakeModifier: unable to get last modifier prior to blockhash %s\n",pindexPrev->GetBlockHash());
 
-    int64_t nModifierTime = indexWhereLastStakeModifierWasSet->GetBlockTime();
     nStakeModifier = indexWhereLastStakeModifierWasSet->nStakeModifier;
-
-    if (nModifierTime / MODIFIER_INTERVAL >= pindexPrev->GetBlockTime() / MODIFIER_INTERVAL)
+    if (indexWhereLastStakeModifierWasSet->GetBlockTime() / MODIFIER_INTERVAL >= pindexPrev->GetBlockTime() / MODIFIER_INTERVAL)
         return true;
 
     uint64_t nStakeModifierNew = 0;

@@ -236,7 +236,6 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
         if (!AppendProofOfStakeToBlock(*pblocktemplate))
             return NULL;
     }
-
     // Collect memory pool transactions into the block
     if(!blockTransactionCollector_.CollectTransactionsIntoBlock(*pblocktemplate))
     {
@@ -244,6 +243,12 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     }
 
     FinalizeBlock(*pblocktemplate,fProofOfStake);
+    if (!fProofOfStake)
+    {
+        boost::this_thread::interruption_point();
+        if (!AppendProofOfWorkToBlock(*pblocktemplate))
+            return NULL;
+    }
 
     LogPrintf("CreateNewBlock(): releasing template %s\n", "");
     return pblocktemplate.release();

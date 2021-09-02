@@ -14,6 +14,14 @@
 
 #include <math.h>
 
+#include <I_ProofOfStakeGenerator.h>
+#include <Settings.h>
+#include <StakingData.h>
+#include <BlockDiskAccessor.h>
+#include <TransactionDiskAccessor.h>
+#include <script/SignatureCheckers.h>
+#include <blockmap.h>
+#include <script/standard.h>
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock, const CChainParams& chainParameters)
 {
@@ -142,4 +150,86 @@ uint256 GetBlockProof(const CBlockIndex& block)
     // as bnTarget+1, it is equal to ((2**256 - bnTarget - 1) / (bnTarget+1)) + 1,
     // or ~bnTarget / (nTarget+1) + 1.
     return (~bnTarget / (bnTarget + 1)) + 1;
+}
+
+// Check kernel hash target and coinstake signature
+bool CheckProofOfStakeContextAndRecoverStakingData(
+    const Settings& settings,
+    const BlockMap& blockIndicesByHash,
+    const CBlock& block,
+    CBlockIndex* pindexPrev,
+    StakingData& stakingData)
+{
+    static const unsigned maxInputs = settings.MaxNumberOfPoSCombinableInputs();
+    const CTransaction tx = block.vtx[1];
+    if (!tx.IsCoinStake())
+        return error("CheckProofOfStake() : called on non-coinstake %s", tx.ToStringShort());
+
+    if(tx.vin.size() > maxInputs) {
+        return error("CheckProofOfStake() : invalid amount of stake inputs, current: %d, max: %d", tx.vin.size(), maxInputs);
+    }
+
+    // Kernel (input 0) must match the stake hash target per coin age (nBits)
+    const CTxIn& txin = tx.vin[0];
+
+    // First try finding the previous transaction in database
+    uint256 hashBlock;
+    CTransaction txPrev;
+    if (!GetTransaction(txin.prevout.hash, txPrev, hashBlock, true))
+        return error("CheckProofOfStake() : INFO: read txPrev failed");
+
+    const CScript &kernelScript = txPrev.vout[txin.prevout.n].scriptPubKey;
+
+    // All other inputs (if any) must pay to the same script.
+    for (unsigned i = 1; i < tx.vin.size (); ++i) {
+        CTransaction txPrev2;
+        uint256 hashBlock2;
+        if (!GetTransaction(tx.vin[i].prevout.hash, txPrev2, hashBlock2, true))
+            return error("CheckProofOfStake() : INFO: read txPrev failed for input %u", i);
+        if (txPrev2.vout[tx.vin[i].prevout.n].scriptPubKey != kernelScript)
+            return error("CheckProofOfStake() : Stake input %u pays to different script", i);
+    }
+
+    //verify signature and script
+    if (!VerifyScript(txin.scriptSig, txPrev.vout[txin.prevout.n].scriptPubKey, POS_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&tx, 0)))
+        return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.ToStringShort());
+
+    CBlockIndex* pindex = NULL;
+    BlockMap::const_iterator it = blockIndicesByHash.find(hashBlock);
+    if (it != blockIndicesByHash.end())
+        pindex = it->second;
+    else
+        return error("CheckProofOfStake() : read block failed");
+
+    // Read block header
+    CBlock blockprev;
+    if (!ReadBlockFromDisk(blockprev, pindex->GetBlockPos()))
+        return error("CheckProofOfStake(): INFO: failed to find block");
+
+    stakingData = StakingData(
+        block.nBits,
+        blockprev.GetBlockTime(),
+        blockprev.GetHash(),
+        txin.prevout,
+        txPrev.vout[txin.prevout.n].nValue,
+        pindexPrev->GetBlockHash());
+
+    return true;
+}
+bool CheckProofOfStake(
+    const I_ProofOfStakeGenerator& posGenerator,
+    const Settings& settings,
+    const BlockMap& blockIndicesByHash,
+    const CBlock& block,
+    CBlockIndex* pindexPrev,
+    uint256& hashProofOfStake)
+{
+    StakingData stakingData;
+    if(!CheckProofOfStakeContextAndRecoverStakingData(settings,blockIndicesByHash,block,pindexPrev,stakingData))
+        return false;
+    if (!posGenerator.ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
+        return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",
+            block.vtx[1].ToStringShort(), hashProofOfStake); // may occur during initial download or if behind on block chain sync
+
+    return true;
 }

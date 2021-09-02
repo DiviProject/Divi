@@ -249,57 +249,9 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
     LogPrintf("Running DIVIMiner with %u transactions in block (%u bytes)\n", block->vtx.size(),
                 ::GetSerializeSize(*block, SER_NETWORK, PROTOCOL_VERSION));
 
-    int64_t nStart = GetTime();
-    uint256 hashTarget = uint256().SetCompact(block->nBits);
-    while (true)
-    {
-        unsigned int nHashesDone = 0;
-        blockSuccessfullyCreated = false;
-        uint256 hash;
-        while (mintingIsRequested_) {
-            hash = block->GetHash();
-            if (hash <= hashTarget)
-            {
-                // Found a solution
-                SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey,fProofOfStake);
-                SetThreadPriority(THREAD_PRIORITY_LOWEST);
-                LogPrintf("%s:\n",__func__);
-                LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash, hashTarget);
-                // In regression test mode, stop mining after a block is found. This
-                // allows developers to controllably generate a block on demand.
-                if (chainParameters_.MineBlocksOnDemand())
-                    return blockSuccessfullyCreated;
-
-                break;
-            }
-            block->nNonce += 1;
-            nHashesDone += 1;
-            if ((block->nNonce & 0xFF) == 0)
-                break;
-        }
-
-        // Check for stop or if block needs to be rebuilt
-        boost::this_thread::interruption_point();
-        if(!mintingIsRequested_) break;
-        // Regtest mode doesn't require peers
-        if (peerNotifier_.havePeersToNotify() && chainParameters_.MiningRequiresPeers())
-            break;
-        if (block->nNonce >= 0xffff0000)
-            break;
-        if (mempool_.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
-            break;
-        if (pindexPrev != chain_.Tip())
-            break;
-
-        // Update nTime every few seconds
-        UpdateTime(block, pindexPrev);
-        if (chainParameters_.AllowMinDifficultyBlocks())
-        {
-            // Changing block->nTime can change work required on testnet:
-            hashTarget.SetCompact(block->nBits);
-        }
-    }
+    SetThreadPriority(THREAD_PRIORITY_NORMAL);
+    blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey,fProofOfStake);
+    SetThreadPriority(THREAD_PRIORITY_LOWEST);
     return blockSuccessfullyCreated;
 }
 

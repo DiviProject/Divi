@@ -148,7 +148,7 @@ void BlockFactory::SetCoinbaseRewardAndHeight (
     }
 }
 
-void BlockFactory::UpdateBlockCoinBaseAndHeaders (
+void BlockFactory::FinalizeBlock (
     CBlockTemplate& blocktemplate,
     const bool& fProofOfStake) const
 {
@@ -243,7 +243,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
         return NULL;
     }
 
-    UpdateBlockCoinBaseAndHeaders(*pblocktemplate,fProofOfStake);
+    FinalizeBlock(*pblocktemplate,fProofOfStake);
 
     LogPrintf("CreateNewBlock(): releasing template %s\n", "");
     return pblocktemplate.release();

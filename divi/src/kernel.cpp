@@ -144,8 +144,8 @@ struct SortedBlockHashesWithTimestampLowerBound
 SortedBlockHashesWithTimestampLowerBound GetRecentBlocksSortedByIncreasingTimestamp(const CBlockIndex* pindexPrev)
 {
     // Sort candidate blocks by timestamp
-    int64_t nSelectionIntervalStart = (pindexPrev->GetBlockTime() / MODIFIER_INTERVAL) * MODIFIER_INTERVAL - GetStakeModifierSelectionInterval();
-    SortedBlockHashesWithTimestampLowerBound sortedBlockHashes(nSelectionIntervalStart);
+    int64_t blockSelectionTimestampLowerBound = (pindexPrev->GetBlockTime() / MODIFIER_INTERVAL) * MODIFIER_INTERVAL - GetStakeModifierSelectionInterval();
+    SortedBlockHashesWithTimestampLowerBound sortedBlockHashes(blockSelectionTimestampLowerBound);
     sortedBlockHashes.recordBlockHashesAndTimestamps(pindexPrev);
     return sortedBlockHashes;
 }

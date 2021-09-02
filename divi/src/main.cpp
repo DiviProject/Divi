@@ -704,25 +704,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 // CBlock and CBlockIndex
 //
 
-double ConvertBitsToDouble(unsigned int nBits)
-{
-    int nShift = (nBits >> 24) & 0xff;
-
-    double dDiff =
-            (double)0x0000ffff / (double)(nBits & 0x00ffffff);
-
-    while (nShift < 29) {
-        dDiff *= 256.0;
-        nShift++;
-    }
-    while (nShift > 29) {
-        dDiff /= 256.0;
-        nShift--;
-    }
-
-    return dDiff;
-}
-
 bool IsInitialBlockDownload()	//2446
 {
     LOCK(cs_main);
@@ -1820,43 +1801,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleR
     return true;
 }
 
-bool CheckWork(const CBlock block, CBlockIndex* const pindexPrev)
-{
-    if (pindexPrev == NULL)
-        return error("%s : null pindexPrev for block %s", __func__, block.GetHash());
-
-    unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev, &block,Params());
-
-    if (block.IsProofOfWork() && (pindexPrev->nHeight + 1 <= 68589)) {
-        double n1 = ConvertBitsToDouble(block.nBits);
-        double n2 = ConvertBitsToDouble(nBitsRequired);
-
-        if (abs(n1 - n2) > n1 * 0.5)
-            return error("%s : incorrect proof of work (DGW pre-fork) - %f %f %f at %d", __func__, abs(n1 - n2), n1, n2, pindexPrev->nHeight + 1);
-
-        return true;
-    }
-
-    if (block.nBits != nBitsRequired)
-        return error("%s : incorrect proof of work at %d", __func__, pindexPrev->nHeight + 1);
-
-    static ProofOfStakeModule posModule(Params(),chainActive,mapBlockIndex);
-    static const I_ProofOfStakeGenerator& posGenerator = posModule.proofOfStakeGenerator();
-    if (block.IsProofOfStake()) {
-        uint256 hashProofOfStake;
-        uint256 hash = block.GetHash();
-
-        if(!CheckProofOfStake(posGenerator,settings,mapBlockIndex,block,pindexPrev, hashProofOfStake)) {
-            LogPrintf("WARNING: ProcessBlock(): check proof-of-stake failed for block %s\n", hash);
-            return false;
-        }
-        if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
-            mapProofOfStake.insert(make_pair(hash, hashProofOfStake));
-    }
-
-    return true;
-}
-
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex* const pindexPrev)
 {
     const uint256 hash = block.GetHash();
@@ -2008,8 +1952,18 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         }
     }
 
-    if (block.GetHash() != Params().HashGenesisBlock() && !CheckWork(block, pindexPrev))
-        return false;
+    static ProofOfStakeModule posModule(Params(),chainActive,mapBlockIndex);
+    static const I_ProofOfStakeGenerator& posGenerator = posModule.proofOfStakeGenerator();
+
+    const uint256 blockHash = block.GetHash();
+    if (blockHash != Params().HashGenesisBlock())
+    {
+        if(!CheckWork(Params(),posGenerator,mapBlockIndex,settings,block,mapProofOfStake, pindexPrev))
+        {
+            LogPrintf("WARNING: %s: check difficulty check failed for %s block %s\n",__func__, block.IsProofOfWork()?"PoW":"PoS", blockHash);
+            return false;
+        }
+    }
 
     if (!AcceptBlockHeader(block, state, &pindex))
         return false;

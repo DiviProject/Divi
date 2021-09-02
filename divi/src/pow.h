@@ -7,6 +7,7 @@
 #define BITCOIN_POW_H
 
 #include <stdint.h>
+#include <map>
 
 class CBlockHeader;
 class CBlockIndex;
@@ -32,6 +33,7 @@ class I_ProofOfStakeGenerator;
 class CBlock;
 class BlockMap;
 class Settings;
+class CChain;
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return
@@ -42,4 +44,13 @@ bool CheckProofOfStake(
     const CBlock& block,
     CBlockIndex* pindexPrev,
     uint256& hashProofOfStake);
+
+bool CheckWork(
+    const CChainParams& chainParameters,
+    const I_ProofOfStakeGenerator& posGenerator,
+    const BlockMap& blockIndicesByHash,
+    const Settings& settings,
+    const CBlock& block,
+    std::map<uint256, uint256>& mapProofOfStake,
+    CBlockIndex* const pindexPrev);
 #endif // BITCOIN_POW_H

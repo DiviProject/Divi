@@ -10,7 +10,6 @@
 #include <chainparams.h>
 #include "keystore.h"
 #include "net.h"
-#include "pow.h"
 #include "script/sign.h"
 #include "serialize.h"
 #include <Settings.h>

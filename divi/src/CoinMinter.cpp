@@ -17,6 +17,7 @@
 #include <Logging.h>
 #include <MasternodeHelpers.h>
 #include <ThreadManagementHelpers.h>
+#include <pow.h>
 #include <reservekey.h>
 
 constexpr int hashingDelay = 45;

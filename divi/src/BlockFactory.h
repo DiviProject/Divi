@@ -9,6 +9,7 @@ class CWallet;
 class CReserveKey;
 class CBlock;
 class CMutableTransaction;
+class I_BlockSubsidyProvider;
 class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
 class CChain;
@@ -22,6 +23,7 @@ private:
     const CChain& chain_;
     const CChainParams& chainParameters_;
 
+    const I_BlockSubsidyProvider& blockSubsidies_;
     I_BlockTransactionCollector& blockTransactionCollector_;
     I_PoSTransactionCreator& coinstakeCreator_;
 
@@ -37,6 +39,7 @@ private:
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
     BlockFactory(
+        const I_BlockSubsidyProvider& blockSubsidies,
         I_BlockTransactionCollector& blockTransactionCollector,
         I_PoSTransactionCreator& coinstakeCreator,
         const Settings& settings,

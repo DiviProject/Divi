@@ -12,6 +12,7 @@ class CChain;
 class CChainParams;
 class CBlockTemplate;
 class CReserveKey;
+class I_BlockSubsidyProvider;
 class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
 class Settings;
@@ -29,6 +30,7 @@ private:
 
 public:
     ExtendedBlockFactory(
+        const I_BlockSubsidyProvider& blockSubsidies,
         I_BlockTransactionCollector& blockTransactionCollector,
         I_PoSTransactionCreator& coinstakeCreator,
         const Settings& settings,

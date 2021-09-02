@@ -243,6 +243,8 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
         return NULL;
     }
 
+    UpdateBlockCoinBaseAndHeaders(*pblocktemplate,fProofOfStake);
+
     LogPrintf("CreateNewBlock(): releasing template %s\n", "");
     return pblocktemplate.release();
 }

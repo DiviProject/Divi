@@ -210,19 +210,13 @@ bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
     constexpr const bool fProofOfStake = true;
     bool blockSuccessfullyCreated = false;
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
-    unsigned nExtraNonce = 0u;
 
     if (!pblocktemplate.get())
         return false;
 
-    const CBlockIndex* pindexPrev = pblocktemplate->previousBlockIndex;
-
-    CBlock* block = &pblocktemplate->block;
-    SetCoinbaseRewardAndHeight(*pblocktemplate, fProofOfStake);
-    SetBlockHeaders(*pblocktemplate, fProofOfStake);
-    IncrementExtraNonce(block, pindexPrev, nExtraNonce);
-
     //Stake miner main
+    const CBlockIndex* pindexPrev = pblocktemplate->previousBlockIndex;
+    CBlock* block = &(pblocktemplate->block);
     LogPrintf("%s: proof-of-stake block found %s \n",__func__, block->GetHash());
 
     if (!SignBlock(wallet_, *block)) {
@@ -243,7 +237,6 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
     constexpr const bool fProofOfStake = false;
     bool blockSuccessfullyCreated = false;
     unsigned int nTransactionsUpdatedLast = mempool_.GetTransactionsUpdated();
-    unsigned int nExtraNonce = 0u;
 
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
 
@@ -251,11 +244,7 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
         return false;
 
     const CBlockIndex* pindexPrev = pblocktemplate->previousBlockIndex;
-
     CBlock* block = &pblocktemplate->block;
-    SetCoinbaseRewardAndHeight(*pblocktemplate, fProofOfStake);
-    SetBlockHeaders(*pblocktemplate, fProofOfStake);
-    IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     LogPrintf("Running DIVIMiner with %u transactions in block (%u bytes)\n", block->vtx.size(),
                 ::GetSerializeSize(*block, SER_NETWORK, PROTOCOL_VERSION));

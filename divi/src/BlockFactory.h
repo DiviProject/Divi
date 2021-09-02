@@ -51,7 +51,7 @@ private:
     void SetCoinbaseRewardAndHeight (
         CBlockTemplate& pblocktemplate,
         const bool& fProofOfStake) const;
-    void UpdateBlockCoinBaseAndHeaders (
+    void FinalizeBlock (
         CBlockTemplate& pblocktemplate,
         const bool& fProofOfStake) const;
     bool AppendProofOfWorkToBlock(

@@ -90,10 +90,13 @@ static const CBlockIndex* SelectBlockFromCandidates(
         ss << hashProof << nStakeModifierPrev;
         const uint256 hashSelection = pindex->IsProofOfStake()? Hash(ss.begin(), ss.end()) >> 32 : Hash(ss.begin(), ss.end());
 
-        if (fSelected && hashSelection < hashBest) {
+        if (fSelected && hashSelection < hashBest)
+        {
             hashBest = hashSelection;
             pindexSelected = pindex;
-        } else if (!fSelected) {
+        }
+        else if (!fSelected)
+        {
             fSelected = true;
             hashBest = hashSelection;
             pindexSelected = pindex;

@@ -55,7 +55,7 @@ const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex
 // select a block from the candidate blocks in timestampSortedBlockHashes, excluding
 // already selected blocks in vSelectedBlocks, and with timestamp up to
 // timestampUpperBound.
-static const CBlockIndex* SelectBlockFromCandidates(
+static const CBlockIndex* SelectBlockIndexWithTimestampUpperBound(
     const BlockMap& blockIndicesByHash,
     const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes,
     const std::set<uint256>& selectedBlockHashes,
@@ -188,7 +188,8 @@ bool ComputeNextStakeModifier(
     std::set<uint256> selectedBlockHashes;
     for (int nRound = 0; nRound < std::min(64, (int)timestampSortedBlockHashes.size()); nRound++) {
         timestampUpperBound += GetStakeModifierSelectionIntervalSection(nRound);
-        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, selectedBlockHashes, timestampUpperBound, indexWhereLastStakeModifierWasSet->nStakeModifier);
+        const CBlockIndex* pindex = SelectBlockIndexWithTimestampUpperBound(
+            blockIndicesByHash, timestampSortedBlockHashes, selectedBlockHashes, timestampUpperBound, indexWhereLastStakeModifierWasSet->nStakeModifier);
         if (!pindex) return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         nStakeModifierNew |= (((uint64_t)pindex->GetStakeEntropyBit()) << nRound);

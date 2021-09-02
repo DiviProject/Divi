@@ -92,15 +92,13 @@ CoinMintingModule::CoinMintingModule(
             activeChain,
             chainParameters))
     , coinMinter_( new CoinMinter(
-        blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockFactory_,
         wallet,
         activeChain,
         chainParameters,
         peerNotifier,
         masternodeModule.getMasternodeSynchronization(),
-        hashedBlockTimestampsByHeight,
-        mempool))
+        hashedBlockTimestampsByHeight))
 {
 }
 

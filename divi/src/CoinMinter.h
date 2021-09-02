@@ -28,7 +28,6 @@ class I_BlockSubsidyProvider;
 class CoinMinter: public I_CoinMinter
 {
     static constexpr int64_t fiveMinutes_ = 5 * 60;
-    const I_BlockSubsidyProvider& blockSubsidies_;
     I_BlockFactory& blockFactory_;
     const I_PeerBlockNotifyService& peerNotifier_;
 
@@ -36,7 +35,6 @@ class CoinMinter: public I_CoinMinter
     I_StakingWallet& wallet_;
     const CChain& chain_;
     const CChainParams& chainParameters_;
-    CTxMemPool& mempool_;
     const CMasternodeSync& masternodeSync_;
     HashedBlockMap& mapHashedBlocks_;
     bool haveMintableCoins_;
@@ -49,30 +47,19 @@ class CoinMinter: public I_CoinMinter
     bool nextBlockIsProofOfStake() const;
 
     bool ProcessBlockFound(CBlock* block, CReserveKey& reservekey, const bool isProofOfStake) const;
-    void IncrementExtraNonce(CBlock* block, const CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const;
-    void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
-
-    void SetBlockHeaders(
-        CBlockTemplate& pblocktemplate,
-        const bool& proofOfStake) const;
-    void SetCoinbaseRewardAndHeight (
-        CBlockTemplate& pblocktemplate,
-        const bool& fProofOfStake) const;
 
     bool createProofOfStakeBlock(CReserveKey& reserveKey) const;
     bool createProofOfWorkBlock(CReserveKey& reserveKey) const;
 
 public:
     CoinMinter(
-        const I_BlockSubsidyProvider& blockSubsidies,
         I_BlockFactory& blockFactory,
         I_StakingWallet& wallet,
         const CChain& chain,
         const CChainParams& chainParameters,
         const I_PeerBlockNotifyService& peers,
         const CMasternodeSync& masternodeSynchronization,
-        HashedBlockMap& mapHashedBlocks,
-        CTxMemPool& mempool);
+        HashedBlockMap& mapHashedBlocks);
 
     virtual bool CanMintCoins();
     virtual void sleep(uint64_t milliseconds) const;

@@ -24,23 +24,19 @@ constexpr int hashingDelay = 45;
 extern bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey);
 
 CoinMinter::CoinMinter(
-    const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockFactory& blockFactory,
     I_StakingWallet& wallet,
     const CChain& chain,
     const CChainParams& chainParameters,
     const I_PeerBlockNotifyService& peerNotifier,
     const CMasternodeSync& masternodeSynchronization,
-    HashedBlockMap& mapHashedBlocks,
-    CTxMemPool& transactionMemoryPool
-    ): blockSubsidies_( blockSubsidies )
-    , blockFactory_( blockFactory )
+    HashedBlockMap& mapHashedBlocks
+    ): blockFactory_( blockFactory )
     , peerNotifier_( peerNotifier)
     , mintingIsRequested_(false)
     , wallet_(wallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
-    , mempool_(transactionMemoryPool)
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)
     , haveMintableCoins_(false)
@@ -135,15 +131,6 @@ bool CoinMinter::mintingHasBeenRequested() const
     return mintingIsRequested_;
 }
 
-void CoinMinter::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const
-{
-    block->nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
-
-    // Updating time can change work required on testnet:
-    if (chainParameters_.AllowMinDifficultyBlocks())
-        block->nBits = GetNextWorkRequired(pindexPrev, block,chainParameters_);
-}
-
 bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey, const bool isProofOfStake) const
 {
     LogPrintf("%s\n", *block);
@@ -154,55 +141,6 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey, const
     if(shouldKeepKey && !isProofOfStake) reservekey.KeepKey();
     if(successfulBlock) peerNotifier_.notifyPeers(block->GetHash());
     return successfulBlock;
-}
-
-void CoinMinter::IncrementExtraNonce(CBlock* block,const CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const
-{
-    /** Constant stuff for coinbase transactions we create: */
-    static CScript COINBASE_FLAGS;
-    // Update nExtraNonce
-    static uint256 hashPrevBlock;
-    if (hashPrevBlock != block->hashPrevBlock) {
-        nExtraNonce = 0;
-        hashPrevBlock = block->hashPrevBlock;
-    }
-    ++nExtraNonce;
-    unsigned int nHeight = pindexPrev->nHeight + 1; // Height first in coinbase required for block.version=2
-    CMutableTransaction txCoinbase(block->vtx[0]);
-    txCoinbase.vin[0].scriptSig = (CScript() << nHeight << CScriptNum(nExtraNonce)) + COINBASE_FLAGS;
-    assert(txCoinbase.vin[0].scriptSig.size() <= 100);
-
-    block->vtx[0] = txCoinbase;
-    block->hashMerkleRoot = block->BuildMerkleTree();
-}
-
-
-void CoinMinter::SetCoinbaseRewardAndHeight (
-    CBlockTemplate& pblocktemplate,
-    const bool& fProofOfStake) const
-{
-    // Compute final coinbase transaction.
-    int nHeight = pblocktemplate.previousBlockIndex->nHeight+1;
-    CBlock& block = pblocktemplate.block;
-    CMutableTransaction& coinbaseTx = *pblocktemplate.coinbaseTransaction;
-    block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
-    if (!fProofOfStake) {
-        coinbaseTx.vout[0].nValue = blockSubsidies_.GetBlockSubsidity(nHeight).nStakeReward;
-        coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
-        block.vtx[0] = coinbaseTx;
-    }
-}
-
-void CoinMinter::SetBlockHeaders(CBlockTemplate& pblocktemplate, const bool& proofOfStake) const
-{
-    // Fill in header
-    CBlock& block = pblocktemplate.block;
-    block.hashPrevBlock = pblocktemplate.previousBlockIndex->GetBlockHash();
-    if (!proofOfStake)
-        UpdateTime(&block, pblocktemplate.previousBlockIndex);
-    block.nBits = GetNextWorkRequired(pblocktemplate.previousBlockIndex, &block, chainParameters_);
-    block.nNonce = 0;
-    block.nAccumulatorCheckpoint = static_cast<uint256>(0);
 }
 
 bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
@@ -236,7 +174,6 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
 {
     constexpr const bool fProofOfStake = false;
     bool blockSuccessfullyCreated = false;
-    unsigned int nTransactionsUpdatedLast = mempool_.GetTransactionsUpdated();
 
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
 

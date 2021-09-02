@@ -233,3 +233,64 @@ bool CheckProofOfStake(
 
     return true;
 }
+
+double ConvertBitsToDouble(unsigned int nBits)
+{
+    int nShift = (nBits >> 24) & 0xff;
+
+    double dDiff =
+            (double)0x0000ffff / (double)(nBits & 0x00ffffff);
+
+    while (nShift < 29) {
+        dDiff *= 256.0;
+        nShift++;
+    }
+    while (nShift > 29) {
+        dDiff /= 256.0;
+        nShift--;
+    }
+
+    return dDiff;
+}
+
+bool CheckWork(
+    const CChainParams& chainParameters,
+    const I_ProofOfStakeGenerator& posGenerator,
+    const BlockMap& blockIndicesByHash,
+    const Settings& settings,
+    const CBlock& block,
+    std::map<uint256, uint256>& mapProofOfStake,
+    CBlockIndex* const pindexPrev)
+{
+    if (pindexPrev == NULL)
+        return error("%s : null pindexPrev for block %s", __func__, block.GetHash());
+
+    unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev, &block,chainParameters);
+
+    if (block.IsProofOfWork() && (pindexPrev->nHeight + 1 <= 68589)) {
+        double n1 = ConvertBitsToDouble(block.nBits);
+        double n2 = ConvertBitsToDouble(nBitsRequired);
+
+        if (abs(n1 - n2) > n1 * 0.5)
+            return error("%s : incorrect proof of work (DGW pre-fork) - %f %f %f at %d", __func__, abs(n1 - n2), n1, n2, pindexPrev->nHeight + 1);
+
+        return true;
+    }
+
+    if (block.nBits != nBitsRequired)
+        return error("%s : incorrect proof of work at %d", __func__, pindexPrev->nHeight + 1);
+
+    if (block.IsProofOfStake()) {
+        uint256 hashProofOfStake;
+        uint256 hash = block.GetHash();
+
+        if(!CheckProofOfStake(posGenerator,settings,blockIndicesByHash,block,pindexPrev, hashProofOfStake)) {
+            LogPrintf("WARNING: ProcessBlock(): check proof-of-stake failed for block %s\n", hash);
+            return false;
+        }
+        if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
+            mapProofOfStake.insert(std::make_pair(hash, hashProofOfStake));
+    }
+
+    return true;
+}

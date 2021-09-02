@@ -179,10 +179,10 @@ bool ComputeNextStakeModifier(
         return true;
 
     uint64_t nStakeModifierNew = 0;
-    RecentBlockHashesSortedByIncreasingTimestamp vSortedByTimestamp = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev);
+    RecentBlockHashesSortedByIncreasingTimestamp recentBlockHashesAndTimestamps = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev);
 
-    const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes = vSortedByTimestamp.timestampSortedBlockHashes;
-    int64_t nSelectionIntervalStop = vSortedByTimestamp.timestampLowerBound;
+    const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes = recentBlockHashesAndTimestamps.timestampSortedBlockHashes;
+    int64_t nSelectionIntervalStop = recentBlockHashesAndTimestamps.timestampLowerBound;
     std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
     for (int nRound = 0; nRound < std::min(64, (int)timestampSortedBlockHashes.size()); nRound++) {
         nSelectionIntervalStop += GetStakeModifierSelectionIntervalSection(nRound);

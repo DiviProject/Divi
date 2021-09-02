@@ -118,6 +118,29 @@ static const CBlockIndex* SelectBlockFromCandidates(
 // block. This is to make it difficult for an attacker to gain control of
 // additional bits in the stake modifier, even after generating a chain of
 // blocks.
+struct SortedBlockHashesWithTimestampLowerBound
+{
+    std::vector<std::pair<int64_t, uint256> > timestampSortedBlockHashes;
+    int64_t timestampLowerBound;
+
+    SortedBlockHashesWithTimestampLowerBound(int64_t smallestTimestamp): timestampSortedBlockHashes(),timestampLowerBound(smallestTimestamp)
+    {
+        timestampSortedBlockHashes.reserve(64);
+    }
+
+    void recordBlockHashesAndTimestamps(const CBlockIndex* blockIndex)
+    {
+        while (blockIndex && blockIndex->GetBlockTime() >= timestampLowerBound)
+        {
+            timestampSortedBlockHashes.push_back(std::make_pair(blockIndex->GetBlockTime(), blockIndex->GetBlockHash()));
+            blockIndex = blockIndex->pprev;
+        }
+
+        std::reverse(timestampSortedBlockHashes.begin(), timestampSortedBlockHashes.end());
+        std::sort(timestampSortedBlockHashes.begin(), timestampSortedBlockHashes.end());
+    }
+};
+
 std::vector<std::pair<int64_t, uint256> > GetRecentBlocksSortedByIncreasingTimestamp(
     const CBlockIndex* pindexPrev,
     int64_t& nSelectionIntervalStop)

@@ -56,7 +56,7 @@ const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex
 // already selected blocks in vSelectedBlocks, and with timestamp up to
 // nSelectionIntervalStop.
 static const CBlockIndex* SelectBlockFromCandidates(
-    const BlockMap& mapBlockIndex,
+    const BlockMap& blockIndicesByHash,
     const std::vector<std::pair<int64_t, uint256> >& vSortedByTimestamp,
     const std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
     int64_t nSelectionIntervalStop,
@@ -67,13 +67,13 @@ static const CBlockIndex* SelectBlockFromCandidates(
     const CBlockIndex* pindexSelected = nullptr;
     for (const std::pair<int64_t, uint256>& item: vSortedByTimestamp)
     {
-        if (!mapBlockIndex.count(item.second))
+        if (!blockIndicesByHash.count(item.second))
         {
             error("%s: failed to find block index for candidate block %s",__func__, item.second);
             return nullptr;
         }
 
-        const CBlockIndex* pindex = mapBlockIndex.find(item.second)->second;
+        const CBlockIndex* pindex = blockIndicesByHash.find(item.second)->second;
         if (fSelected && pindex->GetBlockTime() > nSelectionIntervalStop)
             break;
 
@@ -141,7 +141,7 @@ std::vector<std::pair<int64_t, uint256> > GetRecentBlocksSortedByIncreasingTimes
     return vSortedByTimestamp;
 }
 bool ComputeNextStakeModifier(
-    const BlockMap& mapBlockIndex,
+    const BlockMap& blockIndicesByHash,
     const CBlockIndex* pindexPrev,
     uint64_t& nStakeModifier,
     bool& fGeneratedStakeModifier)
@@ -178,7 +178,7 @@ bool ComputeNextStakeModifier(
     std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
     for (int nRound = 0; nRound < std::min(64, (int)vSortedByTimestamp.size()); nRound++) {
         nSelectionIntervalStop += GetStakeModifierSelectionIntervalSection(nRound);
-        const CBlockIndex* pindex = SelectBlockFromCandidates(mapBlockIndex,vSortedByTimestamp, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier);
+        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,vSortedByTimestamp, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier);
         if (!pindex) return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         nStakeModifierNew |= (((uint64_t)pindex->GetStakeEntropyBit()) << nRound);
@@ -224,11 +224,11 @@ bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierCheck
     return true;
 }
 
-void SetStakeModifiersForNewBlockIndex(const BlockMap& mapBlockIndex, CBlockIndex* pindexNew)
+void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBlockIndex* pindexNew)
 {
     uint64_t nStakeModifier = 0;
     bool fGeneratedStakeModifier = false;
-    if (!ComputeNextStakeModifier(mapBlockIndex, pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
+    if (!ComputeNextStakeModifier(blockIndicesByHash, pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
         LogPrintf("%s : ComputeNextStakeModifier() failed \n",__func__);
     pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
     pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
@@ -239,7 +239,7 @@ void SetStakeModifiersForNewBlockIndex(const BlockMap& mapBlockIndex, CBlockInde
 // Check kernel hash target and coinstake signature
 bool CheckProofOfStakeContextAndRecoverStakingData(
     const Settings& settings,
-    const BlockMap& mapBlockIndex,
+    const BlockMap& blockIndicesByHash,
     const CBlock& block,
     CBlockIndex* pindexPrev,
     StakingData& stakingData)
@@ -279,8 +279,8 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
         return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.ToStringShort());
 
     CBlockIndex* pindex = NULL;
-    BlockMap::const_iterator it = mapBlockIndex.find(hashBlock);
-    if (it != mapBlockIndex.end())
+    BlockMap::const_iterator it = blockIndicesByHash.find(hashBlock);
+    if (it != blockIndicesByHash.end())
         pindex = it->second;
     else
         return error("CheckProofOfStake() : read block failed");
@@ -303,13 +303,13 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
 bool CheckProofOfStake(
     const I_ProofOfStakeGenerator& posGenerator,
     const Settings& settings,
-    const BlockMap& mapBlockIndex,
+    const BlockMap& blockIndicesByHash,
     const CBlock& block,
     CBlockIndex* pindexPrev,
     uint256& hashProofOfStake)
 {
     StakingData stakingData;
-    if(!CheckProofOfStakeContextAndRecoverStakingData(settings,mapBlockIndex,block,pindexPrev,stakingData))
+    if(!CheckProofOfStakeContextAndRecoverStakingData(settings,blockIndicesByHash,block,pindexPrev,stakingData))
         return false;
     if (!posGenerator.ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",

@@ -139,7 +139,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 /** Context-independent validity checks */
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleRoot = true);
-bool CheckWork(const CBlock block, CBlockIndex* const pindexPrev);
 
 /** Context-dependent validity checks */
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex* pindexPrev);

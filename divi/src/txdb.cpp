@@ -5,7 +5,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "txdb.h"
-#include "pow.h"
 #include "uint256.h"
 #include <stdint.h>
 #include <coins.h>
@@ -292,12 +291,6 @@ bool CBlockTreeDB::LoadBlockIndexGuts(BlockMap& blockIndicesByHash)
                 pindexNew->hashProofOfStake = diskindex.hashProofOfStake;
 
                 pindexNew->vLotteryWinnersCoinstakes = diskindex.vLotteryWinnersCoinstakes;
-
-                if (pindexNew->nHeight <= Params().LAST_POW_BLOCK()) {
-                    if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params()))
-                        return error("LoadBlockIndex() : CheckProofOfWork failed: %s", *pindexNew);
-                }
-
                 pcursor->Next();
             } else {
                 break; // if shutdown requested or finished loading block index

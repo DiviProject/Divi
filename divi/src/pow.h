@@ -28,4 +28,18 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const CChainParams& chainParameters);
 uint256 GetBlockProof(const CBlockIndex& block);
 
+class I_ProofOfStakeGenerator;
+class CBlock;
+class BlockMap;
+class Settings;
+
+// Check kernel hash target and coinstake signature
+// Sets hashProofOfStake on success return
+bool CheckProofOfStake(
+    const I_ProofOfStakeGenerator& posGenerator,
+    const Settings& settings,
+    const BlockMap& mapBlockIndex,
+    const CBlock& block,
+    CBlockIndex* pindexPrev,
+    uint256& hashProofOfStake);
 #endif // BITCOIN_POW_H

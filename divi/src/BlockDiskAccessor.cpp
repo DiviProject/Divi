@@ -7,6 +7,7 @@
 #include <chainparams.h>
 #include <Logging.h>
 #include <BlockUndo.h>
+#include <pow.h>
 
 bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos)
 {

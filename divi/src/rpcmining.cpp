@@ -13,7 +13,6 @@
 #include "main.h"
 #include "miner.h"
 #include "net.h"
-#include "pow.h"
 #include "rpcserver.h"
 #include "util.h"
 #ifdef ENABLE_WALLET

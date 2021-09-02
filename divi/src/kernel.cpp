@@ -141,27 +141,15 @@ struct SortedBlockHashesWithTimestampLowerBound
     }
 };
 
-std::vector<std::pair<int64_t, uint256> > GetRecentBlocksSortedByIncreasingTimestamp(
-    const CBlockIndex* pindexPrev,
-    int64_t& nSelectionIntervalStop)
+SortedBlockHashesWithTimestampLowerBound GetRecentBlocksSortedByIncreasingTimestamp(const CBlockIndex* pindexPrev)
 {
     // Sort candidate blocks by timestamp
-    std::vector<std::pair<int64_t, uint256> > vSortedByTimestamp;
-    vSortedByTimestamp.reserve(64);
-    int64_t nSelectionInterval = GetStakeModifierSelectionInterval();
+
+    const int64_t nSelectionInterval = GetStakeModifierSelectionInterval();
     int64_t nSelectionIntervalStart = (pindexPrev->GetBlockTime() / MODIFIER_INTERVAL) * MODIFIER_INTERVAL - nSelectionInterval;
-    const CBlockIndex* pindex = pindexPrev;
-
-    while (pindex && pindex->GetBlockTime() >= nSelectionIntervalStart) {
-        vSortedByTimestamp.push_back(std::make_pair(pindex->GetBlockTime(), pindex->GetBlockHash()));
-        pindex = pindex->pprev;
-    }
-
-    std::reverse(vSortedByTimestamp.begin(), vSortedByTimestamp.end());
-    std::sort(vSortedByTimestamp.begin(), vSortedByTimestamp.end());
-
-    nSelectionIntervalStop = nSelectionIntervalStart;
-    return vSortedByTimestamp;
+    SortedBlockHashesWithTimestampLowerBound sortedBlockHashes(nSelectionIntervalStart);
+    sortedBlockHashes.recordBlockHashesAndTimestamps(pindexPrev);
+    return sortedBlockHashes;
 }
 bool ComputeNextStakeModifier(
     const BlockMap& blockIndicesByHash,
@@ -195,13 +183,14 @@ bool ComputeNextStakeModifier(
         return true;
 
     uint64_t nStakeModifierNew = 0;
-    int64_t nSelectionIntervalStop = 0;
-    std::vector<std::pair<int64_t, uint256> > vSortedByTimestamp = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev,nSelectionIntervalStop);
+    SortedBlockHashesWithTimestampLowerBound vSortedByTimestamp = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev);
 
+    const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes = vSortedByTimestamp.timestampSortedBlockHashes;
+    int64_t nSelectionIntervalStop = vSortedByTimestamp.timestampLowerBound;
     std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
-    for (int nRound = 0; nRound < std::min(64, (int)vSortedByTimestamp.size()); nRound++) {
+    for (int nRound = 0; nRound < std::min(64, (int)timestampSortedBlockHashes.size()); nRound++) {
         nSelectionIntervalStop += GetStakeModifierSelectionIntervalSection(nRound);
-        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,vSortedByTimestamp, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier);
+        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier);
         if (!pindex) return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         nStakeModifierNew |= (((uint64_t)pindex->GetStakeEntropyBit()) << nRound);

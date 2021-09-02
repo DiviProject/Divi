@@ -54,12 +54,12 @@ const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex
 
 // select a block from the candidate blocks in timestampSortedBlockHashes, excluding
 // already selected blocks in vSelectedBlocks, and with timestamp up to
-// nSelectionIntervalStop.
+// timestampUpperBound.
 static const CBlockIndex* SelectBlockFromCandidates(
     const BlockMap& blockIndicesByHash,
     const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes,
     const std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
-    int64_t nSelectionIntervalStop,
+    int64_t timestampUpperBound,
     uint64_t nStakeModifierPrev)
 {
     bool fSelected = false;
@@ -74,7 +74,7 @@ static const CBlockIndex* SelectBlockFromCandidates(
         }
 
         const CBlockIndex* pindex = blockIndicesByHash.find(item.second)->second;
-        if (fSelected && pindex->GetBlockTime() > nSelectionIntervalStop)
+        if (fSelected && pindex->GetBlockTime() > timestampUpperBound)
             break;
 
         if (mapSelectedBlocks.count(pindex->GetBlockHash()) > 0)
@@ -182,11 +182,11 @@ bool ComputeNextStakeModifier(
     RecentBlockHashesSortedByIncreasingTimestamp recentBlockHashesAndTimestamps = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev);
 
     const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes = recentBlockHashesAndTimestamps.timestampSortedBlockHashes;
-    int64_t nSelectionIntervalStop = recentBlockHashesAndTimestamps.timestampLowerBound;
+    int64_t timestampUpperBound = recentBlockHashesAndTimestamps.timestampLowerBound;
     std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
     for (int nRound = 0; nRound < std::min(64, (int)timestampSortedBlockHashes.size()); nRound++) {
-        nSelectionIntervalStop += GetStakeModifierSelectionIntervalSection(nRound);
-        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, mapSelectedBlocks, nSelectionIntervalStop, nextStakeModifier);
+        timestampUpperBound += GetStakeModifierSelectionIntervalSection(nRound);
+        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, mapSelectedBlocks, timestampUpperBound, nextStakeModifier);
         if (!pindex) return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         nStakeModifierNew |= (((uint64_t)pindex->GetStakeEntropyBit()) << nRound);

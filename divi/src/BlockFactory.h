@@ -15,6 +15,8 @@ class I_PoSTransactionCreator;
 class CChain;
 class CChainParams;
 class Settings;
+class CBlockIndex;
+class CBlockHeader;
 
 class BlockFactory: public I_BlockFactory
 {
@@ -35,6 +37,25 @@ private:
     void CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMutableTransaction& coinbaseTx);
     bool AppendProofOfStakeToBlock(
         CBlockTemplate& pBlockTemplate);
+
+    void UpdateTime(
+        CBlockHeader& block,
+        const CBlockIndex* pindexPrev) const;
+    void IncrementExtraNonce(
+        CBlock& block,
+        const CBlockIndex* pindexPrev,
+        unsigned int& nExtraNonce) const;
+    void SetBlockHeaders(
+        CBlockTemplate& pblocktemplate,
+        const bool& proofOfStake) const;
+    void SetCoinbaseRewardAndHeight (
+        CBlockTemplate& pblocktemplate,
+        const bool& fProofOfStake) const;
+    void UpdateBlockCoinBaseAndHeaders (
+        CBlockTemplate& pblocktemplate,
+        const bool& fProofOfStake) const;
+    bool AppendProofOfWorkToBlock(
+        CBlockTemplate& blocktemplate);
 
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:

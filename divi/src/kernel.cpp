@@ -58,7 +58,7 @@ const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex
 static const CBlockIndex* SelectBlockFromCandidates(
     const BlockMap& blockIndicesByHash,
     const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes,
-    const std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
+    const std::set<uint256>& selectedBlockHashes,
     const int64_t timestampUpperBound,
     const uint64_t lastStakeModifier)
 {
@@ -77,7 +77,7 @@ static const CBlockIndex* SelectBlockFromCandidates(
         if (fSelected && pindex->GetBlockTime() > timestampUpperBound)
             break;
 
-        if (mapSelectedBlocks.count(pindex->GetBlockHash()) > 0)
+        if (selectedBlockHashes.count(pindex->GetBlockHash()) > 0)
             continue;
 
         // compute the selection hash by hashing an input that is unique to that block
@@ -185,14 +185,14 @@ bool ComputeNextStakeModifier(
 
     const std::vector<std::pair<int64_t, uint256> >& timestampSortedBlockHashes = recentBlockHashesAndTimestamps.timestampSortedBlockHashes;
     int64_t timestampUpperBound = recentBlockHashesAndTimestamps.timestampLowerBound;
-    std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
+    std::set<uint256> selectedBlockHashes;
     for (int nRound = 0; nRound < std::min(64, (int)timestampSortedBlockHashes.size()); nRound++) {
         timestampUpperBound += GetStakeModifierSelectionIntervalSection(nRound);
-        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, mapSelectedBlocks, timestampUpperBound, indexWhereLastStakeModifierWasSet->nStakeModifier);
+        const CBlockIndex* pindex = SelectBlockFromCandidates(blockIndicesByHash,timestampSortedBlockHashes, selectedBlockHashes, timestampUpperBound, indexWhereLastStakeModifierWasSet->nStakeModifier);
         if (!pindex) return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         nStakeModifierNew |= (((uint64_t)pindex->GetStakeEntropyBit()) << nRound);
-        mapSelectedBlocks.insert(std::make_pair(pindex->GetBlockHash(), pindex));
+        selectedBlockHashes.insert(pindex->GetBlockHash());
     }
 
     if(ActivationState(pindexPrev).IsActive(Fork::HardenedStakeModifier))

@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <map>
+#include <uint256.h>
 
 class CBlockHeader;
 class CBlockIndex;

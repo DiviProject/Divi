@@ -6,12 +6,13 @@
 #include <sync.h>
 
 ExtendedBlockFactory::ExtendedBlockFactory(
+    const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
     const Settings& settings,
     const CChain& chain,
     const CChainParams& chainParameters
-    ): blockFactory_(new BlockFactory(blockTransactionCollector,coinstakeCreator, settings, chain,chainParameters))
+    ): blockFactory_(new BlockFactory(blockSubsidies,blockTransactionCollector,coinstakeCreator, settings, chain,chainParameters))
     , extraTransactions_()
     , customCoinstake_()
 {

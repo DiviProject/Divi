@@ -1,6 +1,7 @@
 #include <BlockFactory.h>
 #include <script/script.h>
 #include <BlockTemplate.h>
+#include <I_BlockSubsidyProvider.h>
 #include <I_BlockTransactionCollector.h>
 #include <I_PoSTransactionCreator.h>
 #include <timedata.h>
@@ -16,6 +17,7 @@
 
 // Actual mining functions
 BlockFactory::BlockFactory(
+    const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
     const Settings& settings,
@@ -24,6 +26,7 @@ BlockFactory::BlockFactory(
     ): settings_(settings)
     , chain_(chain)
     , chainParameters_(chainParameters)
+    , blockSubsidies_(blockSubsidies)
     , blockTransactionCollector_(blockTransactionCollector)
     , coinstakeCreator_( coinstakeCreator)
 {

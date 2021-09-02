@@ -12,6 +12,7 @@
 #include <MasternodeModule.h>
 
 I_BlockFactory* BlockFactorySelector(
+    const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
     const Settings& settings,
@@ -21,6 +22,7 @@ I_BlockFactory* BlockFactorySelector(
     if(chainParameters.NetworkID()==CBaseChainParams::Network::REGTEST)
     {
         return new ExtendedBlockFactory(
+            blockSubsidies,
             blockTransactionCollector,
             coinstakeCreator,
             settings,
@@ -30,6 +32,7 @@ I_BlockFactory* BlockFactorySelector(
     else
     {
         return new BlockFactory(
+            blockSubsidies,
             blockTransactionCollector,
             coinstakeCreator,
             settings,
@@ -82,6 +85,7 @@ CoinMintingModule::CoinMintingModule(
         hashedBlockTimestampsByHeight))
     , blockFactory_(
         BlockFactorySelector(
+            blockSubsidyContainer_->blockSubsidiesProvider(),
             *blockTransactionCollector_,
             *coinstakeTransactionCreator_,
             settings,

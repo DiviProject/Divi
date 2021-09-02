@@ -20,13 +20,14 @@ class Settings;
 class ExtendedBlockFactory : public I_BlockFactory
 {
 private:
-    std::unique_ptr<BlockFactory> blockFactory_;
     std::vector<std::shared_ptr<CTransaction>> extraTransactions_;
     std::unique_ptr<CTransaction> customCoinstake_;
-
     /** If set to true, then the generated block will not use any
      *  mempool transactions.  */
-    bool ignoreMempool_ = false;
+    bool ignoreMempool_;
+
+    std::unique_ptr<I_BlockTransactionCollector> extendedTransactionCollector_;
+    std::unique_ptr<BlockFactory> blockFactory_;
 
 public:
     ExtendedBlockFactory(

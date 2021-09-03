@@ -27,6 +27,7 @@ private:
     bool ignoreMempool_;
 
     std::unique_ptr<I_BlockTransactionCollector> extendedTransactionCollector_;
+    std::unique_ptr<I_PoSTransactionCreator> extendedCoinstakeCreator_;
     std::unique_ptr<BlockFactory> blockFactory_;
 
 public:

@@ -44,15 +44,6 @@ public:
         for (const auto& tx : extraTransactions_)
             block.vtx.push_back(*tx);
 
-        if (customCoinstake_ != nullptr)
-        {
-            if (!block.IsProofOfStake())
-                throw std::runtime_error("trying to set custom coinstake on PoW block");
-            assert(block.vtx.size() >= 2);
-            CTransaction& coinstake = block.vtx[1];
-            assert(coinstake.IsCoinStake());
-            coinstake = *customCoinstake_;
-        }
         return true;
     }
 };
@@ -80,7 +71,7 @@ public:
         if (customCoinstake_ != nullptr)
         {
             if (!customCoinstake_->IsCoinStake())
-                throw std::runtime_error("trying to use non-coinstake to set custom coinstake on PoW block");
+                throw std::runtime_error("trying to use non-coinstake to set custom coinstake in block");
             txCoinStake = CMutableTransaction(*customCoinstake_);
             return true;
         }
@@ -102,7 +93,8 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     , customCoinstake_()
     , ignoreMempool_(false)
     , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,customCoinstake_,ignoreMempool_,blockTransactionCollector))
-    , blockFactory_(new BlockFactory(blockSubsidies,*extendedTransactionCollector_,coinstakeCreator, settings, chain,chainParameters))
+    , extendedCoinstakeCreator_(new ExtendedPoSTransactionCreator(customCoinstake_,coinstakeCreator))
+    , blockFactory_(new BlockFactory(blockSubsidies,*extendedTransactionCollector_,*extendedCoinstakeCreator_, settings, chain,chainParameters))
 {
 }
 ExtendedBlockFactory::~ExtendedBlockFactory()
@@ -113,7 +105,16 @@ ExtendedBlockFactory::~ExtendedBlockFactory()
 
 CBlockTemplate* ExtendedBlockFactory::CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake)
 {
-    return blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake);
+    CBlockTemplate* blockTemplate = blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake);
+    CBlock& block = blockTemplate->block;
+    if (customCoinstake_ != nullptr)
+    {
+        if (!block.IsProofOfStake())
+            throw std::runtime_error("trying to set custom coinstake on PoW block");
+        assert(block.vtx.size() >= 2 && "PoS blocks must have at least 2 transactions");
+        assert(block.vtx[1].IsCoinStake() && "PoS blocks' second transaction must be a coinstake");
+    }
+    return blockTemplate;
 }
 
 /** Adds a transaction to be added in addition to standard mempool

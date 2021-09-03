@@ -65,6 +65,7 @@ public:
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime) override
     {
+        bool coinstakeCreated = transactionCreator_.CreateProofOfStake(chainTip,blockBits,txCoinStake,nTxNewTime);
         if (customCoinstake_ != nullptr)
         {
             if (!customCoinstake_->IsCoinStake())
@@ -74,7 +75,7 @@ public:
         }
         else
         {
-            return transactionCreator_.CreateProofOfStake(chainTip,blockBits,txCoinStake,nTxNewTime);
+            return coinstakeCreated;
         }
     }
 };

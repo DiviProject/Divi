@@ -11,17 +11,14 @@ class ExtendedBlockTransactionCollector final: public I_BlockTransactionCollecto
 {
 public:
     const std::vector<std::shared_ptr<CTransaction>>& extraTransactions_;
-    const std::unique_ptr<CTransaction>& customCoinstake_;
     const bool& ignoreMempool_;
     I_BlockTransactionCollector& decoratedTransactionCollector_;
 public:
     ExtendedBlockTransactionCollector(
         const std::vector<std::shared_ptr<CTransaction>>& extraTransactions,
-        const std::unique_ptr<CTransaction>& customCoinstake,
         const bool& ignoreMempool,
         I_BlockTransactionCollector& decoratedTransactionCollector
         ): extraTransactions_(extraTransactions)
-        , customCoinstake_(customCoinstake)
         , ignoreMempool_(ignoreMempool)
         , decoratedTransactionCollector_(decoratedTransactionCollector)
     {
@@ -92,7 +89,7 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     ): extraTransactions_()
     , customCoinstake_()
     , ignoreMempool_(false)
-    , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,customCoinstake_,ignoreMempool_,blockTransactionCollector))
+    , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,ignoreMempool_,blockTransactionCollector))
     , extendedCoinstakeCreator_(new ExtendedPoSTransactionCreator(customCoinstake_,coinstakeCreator))
     , blockFactory_(new BlockFactory(blockSubsidies,*extendedTransactionCollector_,*extendedCoinstakeCreator_, settings, chain,chainParameters))
 {

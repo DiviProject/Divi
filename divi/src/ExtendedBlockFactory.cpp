@@ -4,6 +4,7 @@
 #include <primitives/transaction.h>
 #include <BlockTemplate.h>
 #include <I_BlockTransactionCollector.h>
+#include <I_PoSTransactionCreator.h>
 #include <sync.h>
 
 class ExtendedBlockTransactionCollector final: public I_BlockTransactionCollector
@@ -53,6 +54,40 @@ public:
             coinstake = *customCoinstake_;
         }
         return true;
+    }
+};
+
+class ExtendedPoSTransactionCreator final: public I_PoSTransactionCreator
+{
+private:
+    const std::unique_ptr<CTransaction>& customCoinstake_;
+    I_PoSTransactionCreator& transactionCreator_;
+public:
+    ExtendedPoSTransactionCreator(
+        const std::unique_ptr<CTransaction>& customCoinstake,
+        I_PoSTransactionCreator& transactionCreator
+        ): customCoinstake_(customCoinstake)
+        , transactionCreator_(transactionCreator)
+    {
+    }
+
+    bool CreateProofOfStake(
+        const CBlockIndex* chainTip,
+        uint32_t blockBits,
+        CMutableTransaction& txCoinStake,
+        unsigned int& nTxNewTime) override
+    {
+        if (customCoinstake_ != nullptr)
+        {
+            if (!customCoinstake_->IsCoinStake())
+                throw std::runtime_error("trying to use non-coinstake to set custom coinstake on PoW block");
+            txCoinStake = CMutableTransaction(*customCoinstake_);
+            return true;
+        }
+        else
+        {
+            return transactionCreator_.CreateProofOfStake(chainTip,blockBits,txCoinStake,nTxNewTime);
+        }
     }
 };
 

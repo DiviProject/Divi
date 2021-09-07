@@ -218,7 +218,6 @@ public:
     void LoadWalletTransaction(const CWalletTx& wtxIn);
     bool LoadWatchOnly(const CScript& dest);
     bool LoadMinVersion(int nVersion);
-    void UpdateTimeFirstKey(int64_t nCreateTime);
     bool LoadMultiSig(const CScript& dest);
     bool LoadKey(const CKey& key, const CPubKey& pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
     bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
@@ -232,7 +231,7 @@ public:
     bool SetCryptedHDChain(const CHDChain& chain, bool memonly);
     bool LoadHDPubKey(const CHDPubKey &hdPubKey);
 
-
+    void UpdateTimeFirstKey(int64_t nCreateTime);
     void activateVaultMode();
 
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;

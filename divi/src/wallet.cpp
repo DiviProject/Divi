@@ -151,9 +151,9 @@ const AddressBook& AddressBookManager::GetAddressBook() const
 {
     return mapAddressBook;
 }
-CAddressBookData& AddressBookManager::ModifyAddressBookData(const CTxDestination& address)
+AddressBook& AddressBookManager::ModifyAddressBook()
 {
-    return mapAddressBook[address];
+    return mapAddressBook;
 }
 bool AddressBookManager::SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose)
 {
@@ -356,7 +356,7 @@ bool CWallet::InitializeDefaultKey()
     CPubKey newDefaultKey;
     if (GetKeyFromPool(newDefaultKey, false))
     {
-        SetDefaultKey(newDefaultKey);
+        SetDefaultKey(newDefaultKey,true);
         if (!SetAddressBook(vchDefaultKey.GetID(), "", "receive")) {
             return false;
         }
@@ -2393,7 +2393,11 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
     if (!fFileBacked)
         return DB_LOAD_OK;
     fFirstRunRet = false;
-    DBErrors nLoadWalletRet = CWalletDB(settings,strWalletFile,"cr+").LoadWallet(this);
+    DBErrors nLoadWalletRet;
+    {
+        LOCK(cs_wallet);
+        nLoadWalletRet = CWalletDB(settings,strWalletFile,"cr+").LoadWallet(static_cast<I_WalletLoader*>(this));
+    }
     if (nLoadWalletRet == DB_NEED_REWRITE)
     {
         if (CDB::Rewrite(settings,strWalletFile, "\x04pool"))
@@ -2430,6 +2434,11 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
     if (!strPurpose.empty() && !CWalletDB(settings,strWalletFile).WritePurpose(CBitcoinAddress(address).ToString(), strPurpose))
         return false;
     return CWalletDB(settings,strWalletFile).WriteName(CBitcoinAddress(address).ToString(), strName);
+}
+
+CAddressBookData& CWallet::ModifyAddressBookData(const CTxDestination& address)
+{
+    return ModifyAddressBook()[address];
 }
 
 bool CWallet::SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)

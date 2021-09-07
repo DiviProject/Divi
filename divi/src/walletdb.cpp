@@ -250,7 +250,7 @@ public:
     }
 };
 
-bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CWalletScanState& wss, string& strType, string& strErr)
+bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssValue, CWalletScanState& wss, string& strType, string& strErr)
 {
     try {
         // Unserialize
@@ -413,7 +413,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
 
             if(pwallet)
             {
-                pwallet->LoadKeyMetadata(vchPubKey, keyMeta);
+                pwallet->LoadKeyMetadata(vchPubKey, keyMeta,true);
             }
         } else if (strType == "defaultkey") {
             CPubKey pubkey;
@@ -496,7 +496,7 @@ static bool IsKeyType(string strType)
             strType == "mkey" || strType == "ckey");
 }
 
-DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
+DBErrors CWalletDB::LoadWallet(I_WalletLoader* pwallet)
 {
     pwallet->SetDefaultKey(CPubKey(),false);
     CWalletScanState wss;
@@ -504,7 +504,6 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
     DBErrors result = DB_LOAD_OK;
 
     try {
-        LOCK(pwallet->cs_wallet);
         int nMinVersion = 0;
         if (Read((string) "minversion", nMinVersion)) {
             if (nMinVersion > CLIENT_VERSION)

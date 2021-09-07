@@ -129,7 +129,7 @@ private:
     AddressBook mapAddressBook;
 public:
     const AddressBook& GetAddressBook() const;
-    CAddressBookData& ModifyAddressBookData(const CTxDestination& address);
+    AddressBook& ModifyAddressBook();
     virtual bool SetAddressBook(
         const CTxDestination& address,
         const std::string& strName,
@@ -144,7 +144,8 @@ class CWallet :
     public AddressBookManager,
     public virtual I_KeypoolReserver,
     public I_WalletGuiNotifications,
-    public I_StakingWallet
+    public I_StakingWallet,
+    protected I_WalletLoader
 {
 public:
     /*
@@ -210,28 +211,31 @@ private:
     isminetype IsMine(const CTxIn& txin) const;
     bool IsMine(const CTransaction& tx) const;
 
+protected:
+    // CWalletDB: load from disk methods
+    void LoadWalletTransaction(const CWalletTx& wtxIn) override;
+    bool LoadWatchOnly(const CScript& dest) override;
+    bool LoadMinVersion(int nVersion) override;
+    bool LoadMultiSig(const CScript& dest) override;
+    bool LoadKey(const CKey& key, const CPubKey& pubkey) override;
+    bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey) override;
+    bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) override;
+    bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp) override;
+    bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) override;
+    void LoadKeyPool(int nIndex, const CKeyPool &keypool) override;
+    bool LoadCScript(const CScript& redeemScript) override;
+    void UpdateNextTransactionIndexAvailable(int64_t transactionIndex) override;
+    bool SetCryptedHDChain(const CHDChain& chain, bool memonly) override;
+    bool LoadHDPubKey(const CHDPubKey &hdPubKey) override;
+    void ReserializeTransactions(const std::vector<uint256>& transactionIDs) override;
+    CAddressBookData& ModifyAddressBookData(const CTxDestination& address) override;
+    bool SetHDChain(const CHDChain& chain, bool memonly) override;
+
 public:
     explicit CWallet(const CChain& chain, const BlockMap& blockMap);
     explicit CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap);
     ~CWallet();
 
-    void LoadWalletTransaction(const CWalletTx& wtxIn);
-    bool LoadWatchOnly(const CScript& dest);
-    bool LoadMinVersion(int nVersion);
-    bool LoadMultiSig(const CScript& dest);
-    bool LoadKey(const CKey& key, const CPubKey& pubkey);
-    bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
-    bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
-    bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp = true);
-    bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase = true);
-    void LoadKeyPool(int nIndex, const CKeyPool &keypool);
-    bool LoadCScript(const CScript& redeemScript);
-    void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);
-    bool SetHDChain(const CHDChain& chain, bool memonly);
-    bool SetCryptedHDChain(const CHDChain& chain, bool memonly);
-    bool LoadHDPubKey(const CHDPubKey &hdPubKey);
-
-    void ReserializeTransactions(const std::vector<uint256>& transactionIDs);
     void AddKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata);
     void UpdateTimeFirstKey(int64_t nCreateTime);
     void activateVaultMode();

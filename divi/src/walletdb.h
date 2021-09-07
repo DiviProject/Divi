@@ -19,7 +19,6 @@
 #include <vector>
 
 class CAccount;
-class CAccountingEntry;
 struct CBlockLocator;
 class CKeyPool;
 class CMasterKey;

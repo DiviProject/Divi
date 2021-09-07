@@ -1209,7 +1209,7 @@ int64_t CWallet::IncOrderPosNext(CWalletDB* pwalletdb)
 CWallet::TxItems CWallet::OrderedTxItems()
 {
     AssertLockHeld(cs_wallet); // mapWallet
-    // First: get all CWalletTx and CAccountingEntry into a sorted-by-order multimap.
+    // First: get all CWalletTx into a sorted-by-order multimap.
     TxItems txOrdered;
 
     // Note: maintaining indices in the database of (account,time) --> txid and (account, time) --> acentry
@@ -3072,19 +3072,4 @@ void CWallet::LockFully()
     LOCK(cs_wallet);
     walletStakingOnly = false;
     Lock();
-}
-
-void CAccountingEntry::ReadOrderPos(int64_t& orderPosition, std::map<std::string,std::string>& mapping)
-{
-    if (!mapping.count("n")) {
-        orderPosition = -1; // TODO: calculate elsewhere
-        return;
-    }
-    orderPosition = atoi64(mapping["n"].c_str());
-}
-void CAccountingEntry::WriteOrderPos(const int64_t& orderPosition, std::map<std::string,std::string>& mapping)
-{
-    if (orderPosition == -1)
-        return;
-    mapping["n"] = i64tostr(orderPosition);
 }

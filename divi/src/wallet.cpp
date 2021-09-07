@@ -375,15 +375,7 @@ const I_MerkleTxConfirmationNumberCalculator& CWallet::getConfirmationCalculator
 {
     return *confirmationNumberCalculator_;
 }
-void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions)
-{
-    LOCK(cs_wallet);
-    for (const CWalletTx& wtxOld: oldTransactions)
-    {
-        uint256 hash = wtxOld.GetHash();
-        transactionRecord_->UpdateMetadata(hash,wtxOld,true,true);
-    }
-}
+
 void CWallet::IncrementDBUpdateCount() const
 {
     LOCK(cs_wallet);

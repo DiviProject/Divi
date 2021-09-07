@@ -226,8 +226,6 @@ public:
     void toggleSpendingZeroConfirmationOutputs();
     int64_t GetNextTransactionIndexAvailable() const;
     void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);
-
-    void UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions);
     void IncrementDBUpdateCount() const;
 
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;

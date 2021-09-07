@@ -219,7 +219,7 @@ public:
     bool LoadWatchOnly(const CScript& dest);
     bool LoadMinVersion(int nVersion);
     bool LoadMultiSig(const CScript& dest);
-    bool LoadKey(const CKey& key, const CPubKey& pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
+    bool LoadKey(const CKey& key, const CPubKey& pubkey);
     bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
     bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
     bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp = true);

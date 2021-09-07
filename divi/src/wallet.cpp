@@ -801,6 +801,7 @@ bool CWallet::LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& meta, c
         nTimeFirstKey = meta.nCreateTime;
 
     mapKeyMetadata[pubkey.GetID()] = meta;
+    if(updateFirstKeyTimestamp) UpdateTimeFirstKey(meta.nCreateTime);
     return true;
 }
 

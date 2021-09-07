@@ -906,6 +906,9 @@ bool CWallet::RemoveWatchOnly(const CScript& dest)
 
 bool CWallet::LoadWatchOnly(const CScript& dest)
 {
+    // Watch-only addresses have no birthday information for now,
+    // so set the wallet birthday to the beginning of time.
+    UpdateTimeFirstKey(1);
     return CCryptoKeyStore::AddWatchOnly(dest);
 }
 
@@ -936,6 +939,9 @@ bool CWallet::RemoveMultiSig(const CScript& dest)
 
 bool CWallet::LoadMultiSig(const CScript& dest)
 {
+    // MultiSig addresses have no birthday information for now,
+    // so set the wallet birthday to the beginning of time.
+    UpdateTimeFirstKey(1);
     return CCryptoKeyStore::AddMultiSig(dest);
 }
 

@@ -575,18 +575,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         LogPrintf("Some keys lack metadata. Wallet may require a rescan\n");
     }
 
-    BOOST_FOREACH (uint256 hash, wss.vWalletUpgrade)
-    {
-        const CWalletTx* txPtr = pwallet->GetWalletTx(hash);
-        if(!txPtr)
-        {
-            LogPrintf("Trying to write unknown transaction to database!\nHash: %s", hash);
-        }
-        else
-        {
-            WriteTx(hash, *txPtr );
-        }
-    }
+    pwallet->ReserializeTransactions(wss.vWalletUpgrade);
 
     // Rewrite encrypted wallets of versions 0.4.0 and 0.5.0rc:
     if (wss.fIsEncrypted && (wss.nFileVersion == 40000 || wss.nFileVersion == 50000))

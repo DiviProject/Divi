@@ -800,6 +800,23 @@ bool CWallet::AddCryptedKey(const CPubKey& vchPubKey,
     return false;
 }
 
+void CWallet::ReserializeTransactions(const std::vector<uint256>& transactionIDs)
+{
+    CWalletDB walletDB(settings,strWalletFile);
+    for (uint256 hash: transactionIDs)
+    {
+        const CWalletTx* txPtr = GetWalletTx(hash);
+        if(!txPtr)
+        {
+            LogPrintf("Trying to write unknown transaction to database!\nHash: %s", hash);
+        }
+        else
+        {
+            walletDB.WriteTx(hash, *txPtr );
+        }
+    }
+}
+
 void CWallet::AddKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata)
 {
     LoadKeyMetadata(pubkey,metadata,false);

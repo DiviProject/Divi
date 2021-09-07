@@ -1224,16 +1224,13 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
         TxItems txOrdered = OrderedTxItems();
         for (TxItems::reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
             const CWalletTx* const pwtx = (*it).second;
-            if (pwtx == &wtx)
+            if (pwtx == &wtx || pwtx == nullptr)
                 continue;
-            int64_t nSmartTime;
-            if (pwtx)
+            int64_t nSmartTime = pwtx->nTimeSmart;
+            if (!nSmartTime)
+                nSmartTime = pwtx->nTimeReceived;
+            if (nSmartTime <= latestTolerated)
             {
-                nSmartTime = pwtx->nTimeSmart;
-                if (!nSmartTime)
-                    nSmartTime = pwtx->nTimeReceived;
-            }
-            if (nSmartTime <= latestTolerated) {
                 latestEntry = nSmartTime;
                 if (nSmartTime > latestNow)
                     latestNow = nSmartTime;

@@ -414,8 +414,6 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             if(pwallet)
             {
                 pwallet->LoadKeyMetadata(vchPubKey, keyMeta);
-                // find earliest key creation time, as wallet birthday
-                pwallet->UpdateTimeFirstKey(keyMeta.nCreateTime);
             }
         } else if (strType == "defaultkey") {
             CPubKey pubkey;
@@ -574,8 +572,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
     // nTimeFirstKey is only reliable if all keys have metadata
     if ((wss.nKeys + wss.nCKeys) != wss.nKeyMeta)
     {
-        LOCK(pwallet->cs_wallet);
-        pwallet->UpdateTimeFirstKey(1); // 0 would be considered 'no value'
+        LogPrintf("Some keys lack metadata. Wallet may require a rescan\n");
     }
 
     BOOST_FOREACH (uint256 hash, wss.vWalletUpgrade)

@@ -323,6 +323,12 @@ bool CWallet::LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey)
 
     return true;
 }
+
+bool CWallet::LoadKey(const CKey& key, const CPubKey& pubkey)
+{
+    return CCryptoKeyStore::AddKeyPubKey(key, pubkey);
+}
+
 bool CWallet::VerifyHDKeys() const
 {
     for(const auto& entry : mapHdPubKeys)

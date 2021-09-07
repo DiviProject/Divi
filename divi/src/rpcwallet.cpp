@@ -1296,7 +1296,7 @@ Value getbalance(const Array& params, bool fHelp)
                 "\nThe total amount in the account named tabby with at least 6 confirmations\n" + HelpExampleCli("getbalance", "\"tabby\" 6") +
                 "\nAs a json rpc call\n" + HelpExampleRpc("getbalance", "\"tabby\", 6"));
 
-    if (params.size() == 0)
+    if (params.size() == 0 || params[0].get_str() == "*")
         return ValueFromAmount(pwalletMain->GetBalance());
 
     int nMinDepth = 1;
@@ -1309,33 +1309,7 @@ Value getbalance(const Array& params, bool fHelp)
         if (params[2].get_bool())
             filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
-    if (params[0].get_str() == "*") {
-        // Calculate total balance a different way from GetBalance()
-        // (GetBalance() sums up all unspent TxOuts)
-        // getbalance and "getbalance * 1 true" should return the same number
-        CAmount nBalance = 0;
-        std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-        const I_MerkleTxConfirmationNumberCalculator& confsCalculator = pwalletMain->getConfirmationCalculator();
-        for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
-        {
-            const CWalletTx& wtx = *(*it);
-            if (!IsFinalTx(wtx, chainActive) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
-                continue;
-
-            WalletOutputEntryParsing parsedEntry = GetAmounts(*pwalletMain,wtx, filter);
-            if (confsCalculator.GetNumberOfBlockConfirmations(wtx) >= nMinDepth) {
-                BOOST_FOREACH (const COutputEntry& r, parsedEntry.listReceived)
-                        nBalance += r.amount;
-            }
-            BOOST_FOREACH (const COutputEntry& s, parsedEntry.listSent)
-                    nBalance -= s.amount;
-            nBalance -= parsedEntry.nFee;
-            nBalance += parsedEntry.sentByOthers;
-        }
-        return ValueFromAmount(nBalance);
-    }
-
-    string strAccount = AccountFromValue(params[0]);
+    std::string strAccount = AccountFromValue(params[0]);
 
     CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, filter);
 

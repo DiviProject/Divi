@@ -26,7 +26,6 @@ public:
      *  the bare txid that is used after segwit-light to identify outputs.  */
     std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction);
-    void UpdateMetadata(const uint256& hashOfTransactionToUpdate, const CWalletTx& updatedTransaction, bool updateDiskAndTimestamp,bool writeToWalletDb=false);
 };
 
 #endif// WALLET_TRANSACTION_RECORD_H

@@ -608,7 +608,6 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
     if (wss.fAnyUnordered)
     {
         LogPrintf("Transaction reordering required during wallet load...\n");
-        assert(false && "Transactions not being reordered");
     }
     return result;
 }

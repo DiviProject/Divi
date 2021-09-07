@@ -183,9 +183,6 @@ void GetAccountAmounts(
     std::string strSentAccount = wtx.strFromAccount;
     WalletOutputEntryParsing parsedEntry = GetAmounts(wallet,wtx, filter,true);
 
-    const AddressBook& addressBook = wallet.GetAddressBook();
-    bool debitsFromAccount = strAccount == strSentAccount;
-
     if(!strAccount.empty())
     {
         // Spend from account
@@ -207,26 +204,26 @@ void GetAccountAmounts(
         parsedEntry.nFee = 0;
         return;
     }
-
-    if (debitsFromAccount)
+    else
     {
-        for (const COutputEntry& s : parsedEntry.listSent)
+        // Spend from account
+        for (const CTxOut& s : parsedEntry.previousOutputsSpent)
         {
-            nSent += s.amount;
-        }
-        nSent -= parsedEntry.sentByOthers;
-        nFee = parsedEntry.nFee;
-    }
-    {
-        LOCK(wallet.cs_wallet);
-        for (const COutputEntry& r : parsedEntry.listReceived)
-        {
-            std::map<CTxDestination, CAddressBookData>::const_iterator mi = addressBook.find(r.destination);
-            if ((mi != addressBook.end() && mi->second.name == strAccount) || strAccount.empty())
+            if(!DebitsFromAnyAccount(wallet,s))
             {
-                nReceived += r.amount;
+                nSent += s.nValue;
             }
         }
+        // Receive to account
+        for (const CTxOut& s : wtx.vout)
+        {
+            if(!DebitsFromAnyAccount(wallet,s))
+            {
+                nReceived += s.nValue;
+            }
+        }
+        parsedEntry.nFee = 0;
+        return;
     }
 }
 

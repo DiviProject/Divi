@@ -123,7 +123,7 @@ class TxnMallTest(BitcoinTestFramework):
         self.sync_all()
         tx0 = sender.gettransaction(txid0)
         assert_equal(tx0["confirmations"],1)
-        assert_near(sender.getbalance(""),starting_balance, Decimal(0.001))
+        assert_near(sender.getbalance(""),starting_balance-Decimal(to[foo_address]+to[bar_address]), Decimal(0.001))
 
         # Split the network for now.
         self.split_network()

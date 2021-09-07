@@ -22,7 +22,6 @@ private:
 
     void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
     void AddToSpends(const CWalletTx& tx);
-    void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
 
 public:
     SpentOutputTracker(

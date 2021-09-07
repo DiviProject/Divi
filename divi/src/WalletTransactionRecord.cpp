@@ -1,12 +1,6 @@
 #include <WalletTransactionRecord.h>
 
 #include <walletdb.h>
-#include <Settings.h>
-extern Settings& settings;
-static bool WriteTxToDisk(const std::string& walletFilename, const CWalletTx& transactionToWrite)
-{
-    return CWalletDB(settings,walletFilename).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
-}
 
 WalletTransactionRecord::WalletTransactionRecord(
     CCriticalSection& requiredWalletLock,
@@ -69,30 +63,3 @@ std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord:
 
     return res;
 };
-
-void WalletTransactionRecord::UpdateMetadata(
-    const uint256& hashOfTransactionToUpdate,
-    const CWalletTx& updatedTransaction,
-    bool updateDiskAndTimestamp,
-    bool writeToWalletDb)
-{
-    AssertLockHeld(cs_walletTxRecord);
-    CWalletTx* wtxToUpdate = const_cast<CWalletTx*>(GetWalletTx(hashOfTransactionToUpdate));
-    if (wtxToUpdate != nullptr)
-    {
-        const CWalletTx* copyFrom = &updatedTransaction;
-
-        wtxToUpdate->mapValue = copyFrom->mapValue;
-        wtxToUpdate->vOrderForm = copyFrom->vOrderForm;
-        wtxToUpdate->nTimeSmart = copyFrom->nTimeSmart;
-        wtxToUpdate->createdByMe = copyFrom->createdByMe;
-        wtxToUpdate->strFromAccount = copyFrom->strFromAccount;
-
-        if(updateDiskAndTimestamp)
-        {
-            wtxToUpdate->nTimeReceived = copyFrom->nTimeReceived;
-            wtxToUpdate->nOrderPos = copyFrom->nOrderPos;
-            if(writeToWalletDb && !databaseWritesAreDisallowed_) WriteTxToDisk(walletFilename_,*wtxToUpdate);
-        }
-    }
-}

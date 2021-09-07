@@ -15,36 +15,6 @@ SpentOutputTracker::SpentOutputTracker(
 {
 }
 
-void SpentOutputTracker::SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator> range)
-{
-    // We want all the wallet transactions in range to have the same metadata as
-    // the oldest (smallest nOrderPos).
-    // So: find smallest nOrderPos:
-
-    int nMinOrderPos = std::numeric_limits<int>::max();
-    const CWalletTx* copyFrom = NULL;
-    uint256 hashFrom(0);
-    for (TxSpends::iterator it = range.first; it != range.second; ++it) {
-        const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(it->second);
-        if (transactionPtr) {
-            int n = transactionPtr->nOrderPos;
-            if(n < nMinOrderPos)
-            {
-                nMinOrderPos = n;
-                copyFrom = transactionPtr;
-                hashFrom = it->second;
-            }
-        }
-    }
-    // Now copy data from copyFrom to rest:
-    for (TxSpends::iterator it = range.first; it != range.second; ++it)
-    {
-        const uint256& hash = it->second;
-        if(hashFrom == hash) continue;
-        transactionRecord_.UpdateMetadata(hash,*copyFrom,false);
-    }
-}
-
 /**
  * Outpoint is spent if any non-conflicted transaction
  * spends it:
@@ -85,9 +55,6 @@ std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
 void SpentOutputTracker::AddToSpends(const COutPoint& outpoint, const uint256& wtxid)
 {
     mapTxSpends.insert(std::make_pair(outpoint, wtxid));
-    std::pair<TxSpends::iterator, TxSpends::iterator> range;
-    range = mapTxSpends.equal_range(outpoint);
-    SyncMetaData(range);
 }
 
 

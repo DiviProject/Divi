@@ -211,21 +211,40 @@ private:
     bool IsMine(const CTransaction& tx) const;
 
 public:
+    explicit CWallet(const CChain& chain, const BlockMap& blockMap);
+    explicit CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap);
+    ~CWallet();
+
+    void LoadWalletTransaction(const CWalletTx& wtxIn);
+    bool LoadWatchOnly(const CScript& dest);
+    bool LoadMinVersion(int nVersion);
+    void UpdateTimeFirstKey(int64_t nCreateTime);
+    bool LoadMultiSig(const CScript& dest);
+    bool LoadKey(const CKey& key, const CPubKey& pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
+    bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
+    bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
+    bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp = true);
+    bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase = true);
+    void LoadKeyPool(int nIndex, const CKeyPool &keypool);
+    bool LoadCScript(const CScript& redeemScript);
+    void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);
+    bool SetHDChain(const CHDChain& chain, bool memonly);
+    bool SetCryptedHDChain(const CHDChain& chain, bool memonly);
+    bool LoadHDPubKey(const CHDPubKey &hdPubKey);
+
+
     void activateVaultMode();
 
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
-    bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey);
     bool VerifyHDKeys() const;
     bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose) override;
 
-    bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase = true);
     const CPubKey& GetDefaultKey() const;
     bool InitializeDefaultKey();
 
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
     void toggleSpendingZeroConfirmationOutputs();
     int64_t GetNextTransactionIndexAvailable() const;
-    void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);
     void IncrementDBUpdateCount() const;
 
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
@@ -240,14 +259,6 @@ public:
     bool IsUnlockedForStakingOnly() const;
     bool IsFullyUnlocked() const;
     void LockFully();
-
-    void LoadKeyPool(int nIndex, const CKeyPool &keypool);
-
-
-
-    explicit CWallet(const CChain& chain, const BlockMap& blockMap);
-    explicit CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap);
-    ~CWallet();
 
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;
@@ -297,23 +308,17 @@ public:
     //! Adds a HDPubKey into the wallet(database)
     bool AddHDPubKey(const CExtPubKey &extPubKey, bool fInternal);
     //! loads a HDPubKey into the wallets memory
-    bool LoadHDPubKey(const CHDPubKey &hdPubKey);
     //! Adds a key to the store, and saves it to disk.
     bool AddKeyPubKey(const CKey& key, const CPubKey& pubkey);
     //! Adds a key to the store, without saving it to disk (used by LoadWallet)
-    bool LoadKey(const CKey& key, const CPubKey& pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
     //! Load metadata (used by LoadWallet)
-    bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp = true);
 
-    bool LoadMinVersion(int nVersion);
-    void UpdateTimeFirstKey(int64_t nCreateTime);
+
 
     //! Adds an encrypted key to the store, and saves it to disk.
     bool AddCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
     //! Adds an encrypted key to the store, without saving it to disk (used by LoadWallet)
-    bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
     bool AddCScript(const CScript& redeemScript);
-    bool LoadCScript(const CScript& redeemScript);
     bool AddVault(const CScript& vaultScript, const CBlock* pblock,const CTransaction& tx);
     bool RemoveVault(const CScript& vaultScript);
 
@@ -321,13 +326,11 @@ public:
     bool AddWatchOnly(const CScript& dest);
     bool RemoveWatchOnly(const CScript& dest);
     //! Adds a watch-only address to the store, without saving it to disk (used by LoadWallet)
-    bool LoadWatchOnly(const CScript& dest);
 
     //! Adds a MultiSig address to the store, and saves it to disk.
     bool AddMultiSig(const CScript& dest);
     bool RemoveMultiSig(const CScript& dest);
     //! Adds a MultiSig address to the store, without saving it to disk (used by LoadWallet)
-    bool LoadMultiSig(const CScript& dest);
 
     bool Unlock(const SecureString& strWalletPassphrase, bool stakingOnly = false);
     bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
@@ -350,7 +353,6 @@ public:
     TxItems OrderedTxItems();
 
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
-    void LoadWalletTransaction(const CWalletTx& wtxIn);
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
 
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate,bool blockDisconnection);
@@ -397,8 +399,6 @@ public:
     /* Generates a new HD chain */
     void GenerateNewHDChain();
     /* Set the HD chain model (chain child index counters) */
-    bool SetHDChain(const CHDChain& chain, bool memonly);
-    bool SetCryptedHDChain(const CHDChain& chain, bool memonly);
     bool GetDecryptedHDChain(CHDChain& hdChainRet);
 
     std::set<std::set<CTxDestination> > GetAddressGroupings();

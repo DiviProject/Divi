@@ -231,6 +231,7 @@ public:
     bool SetCryptedHDChain(const CHDChain& chain, bool memonly);
     bool LoadHDPubKey(const CHDPubKey &hdPubKey);
 
+    void AddKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata);
     void UpdateTimeFirstKey(int64_t nCreateTime);
     void activateVaultMode();
 

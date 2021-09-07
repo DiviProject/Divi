@@ -800,6 +800,11 @@ bool CWallet::AddCryptedKey(const CPubKey& vchPubKey,
     return false;
 }
 
+void CWallet::AddKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata)
+{
+    LoadKeyMetadata(pubkey,metadata,false);
+}
+
 bool CWallet::LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& meta, const bool updateFirstKeyTimestamp)
 {
     AssertLockHeld(cs_wallet); // mapKeyMetadata

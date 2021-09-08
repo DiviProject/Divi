@@ -44,7 +44,7 @@ bool checkBlockchainSync(std::string& strErrorRet, bool fOffline)
 {
      if (!fOffline && !IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","%s -- %s\n",__func__, strErrorRet);
         return false;
     }
     return true;
@@ -56,7 +56,7 @@ bool setMasternodeKeys(
 {
     if (!CObfuScationSigner::GetKeysFromSecret(strKeyMasternode, masternodeKeyPair.first, masternodeKeyPair.second)) {
         strErrorRet = strprintf("Invalid masternode key %s", strKeyMasternode);
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","%s -- %s\n",__func__, strErrorRet);
         return false;
     }
     return true;
@@ -78,7 +78,7 @@ bool setMasternodeCollateralKeys(
     if (!GetVinAndKeysFromOutput(keyStore,scriptPubKey, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first))
     {
         strError = strprintf("Could not allocate txin %s:%s for masternode", outpoint.hash.ToString(), std::to_string(outpoint.n));
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strError);
+        LogPrint("masternode","%s -- %s\n",__func__, strError);
         return false;
     }
     return true;
@@ -94,7 +94,7 @@ bool checkMasternodeCollateral(
     if(!CMasternode::IsTierValid(nMasternodeTier))
     {
         strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", service, collateralAmount);
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","%s -- %s\n",__func__, strErrorRet);
         return false;
     }
     return true;
@@ -124,7 +124,7 @@ bool createArgumentsFromConfig(
     if(!GetTransaction(txin.prevout.hash,fundingTx,blockHash,true))
     {
         strErrorRet = strprintf("Could not find txin %s for masternode", txin.prevout.ToString());
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","%s -- %s\n",__func__, strErrorRet);
         return false;
     }
     const CScript& collateralScript = fundingTx.vout[txin.prevout.n].scriptPubKey;

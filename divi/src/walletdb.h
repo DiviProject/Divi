@@ -12,6 +12,7 @@
 #include "key.h"
 #include "keystore.h"
 #include <destination.h>
+#include <KeyMetadata.h>
 
 #include <list>
 #include <stdint.h>
@@ -41,50 +42,6 @@ enum DBErrors {
     DB_TOO_NEW,
     DB_LOAD_FAIL,
     DB_NEED_REWRITE
-};
-
-class CKeyMetadata
-{
-public:
-    static const int CURRENT_VERSION = 1;
-    int nVersion;
-    int64_t nCreateTime; // 0 means unknown
-
-    bool unknownKeyID;
-    bool isHDPubKey;
-    std::string hdkeypath;
-    std::string hdchainid;
-
-    CKeyMetadata()
-    {
-        SetNull();
-    }
-    CKeyMetadata(int64_t nCreateTime_)
-    {
-        SetNull();
-        nVersion = CKeyMetadata::CURRENT_VERSION;
-        nCreateTime = nCreateTime_;
-    }
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(this->nVersion);
-        nVersion = this->nVersion;
-        READWRITE(nCreateTime);
-    }
-
-    void SetNull()
-    {
-        nVersion = CKeyMetadata::CURRENT_VERSION;
-        nCreateTime = 0;
-        unknownKeyID = true;
-        isHDPubKey = false;
-        hdkeypath = "";
-        hdchainid = "";
-    }
 };
 
 /** Access to the wallet database (wallet.dat) */

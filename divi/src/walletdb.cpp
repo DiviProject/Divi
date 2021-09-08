@@ -22,6 +22,7 @@
 #include <ValidationState.h>
 #include <WalletTx.h>
 #include <Settings.h>
+#include <I_WalletLoader.h>
 
 using namespace boost;
 using namespace std;

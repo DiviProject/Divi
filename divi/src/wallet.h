@@ -27,6 +27,7 @@
 #include <OutputEntry.h>
 #include <Output.h>
 #include <I_StakingCoinSelector.h>
+#include <I_WalletLoader.h>
 
 class I_SignatureSizeEstimator;
 class I_CoinSelectionAlgorithm;

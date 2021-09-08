@@ -161,6 +161,7 @@ BITCOIN_CORE_H = \
   BlockTransactionChecker.h \
   FeeAndPriorityCalculator.h \
   I_Filesystem.h \
+  I_WalletLoader.h \
   I_WalletBackupCreator.h \
   I_DatabaseWrapper.h \
   I_SuperblockHeightValidator.h \

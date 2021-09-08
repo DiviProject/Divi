@@ -136,6 +136,7 @@ BITCOIN_CORE_H = \
   compat/sanity.h \
   compressor.h \
   KeyMetadata.h \
+  MasterKey.h \
   primitives/block.h \
   primitives/transaction.h \
   core_io.h \

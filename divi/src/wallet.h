@@ -76,19 +76,6 @@ enum AvailableCoinsType {
     OWNED_VAULT_COINS = 2
 };
 
-/** Address book data */
-class CAddressBookData
-{
-public:
-    std::string name;
-    std::string purpose;
-
-    CAddressBookData()
-    {
-        purpose = "unknown";
-    }
-};
-
 /**
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.

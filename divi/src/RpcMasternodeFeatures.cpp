@@ -151,25 +151,34 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore, const StoredMas
                 false,
                 deferRelay))
         {
-            /* We failed to sign a new broadcast with our wallet, but we may
-               have a stored one.  */
+            if(mnModule.localNodeIsAMasternode())
+            {
+                /* We failed to sign a new broadcast with our wallet, but we may
+                have a stored one.  */
 
-            COutPoint outp;
-            if (!configEntry.parseInputReference(outp))
+                COutPoint outp;
+                if (!configEntry.parseInputReference(outp))
+                {
+                    result.status = false;
+                    result.errorMessage = "Failed to parse input reference";
+                    return result;
+                }
+
+                if (!stored.GetBroadcast(outp, mnb))
+                {
+                    result.status = false;
+                    result.errorMessage = "No broadcast message available";
+                    return result;
+                }
+
+                updatePing = true;
+            }
+            else
             {
                 result.status = false;
-                result.errorMessage = "Failed to parse input reference";
+                result.errorMessage = "Could not create MN broadcast. Check your masternode.conf file";
                 return result;
             }
-
-            if (!stored.GetBroadcast(outp, mnb))
-            {
-                result.status = false;
-                result.errorMessage = "No broadcast message available";
-                return result;
-            }
-
-            updatePing = true;
         }
 
         CDataStream serializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);

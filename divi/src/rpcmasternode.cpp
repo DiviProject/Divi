@@ -275,7 +275,7 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     CMasternodeBroadcast mnb;
     std::string errorMsg;
-    if(!CMasternodeBroadcastFactory::Create(config,pubkeyCollateralAddress,errorMsg,mnb))
+    if(!CMasternodeBroadcastFactory::CreateWithoutCollateralKey(config,pubkeyCollateralAddress,errorMsg,mnb))
     {
         throw JSONRPCError(RPC_INVALID_PARAMS,errorMsg);
     }

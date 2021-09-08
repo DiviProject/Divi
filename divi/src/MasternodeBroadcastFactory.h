@@ -25,7 +25,7 @@ public:
         bool fOffline = false,
         bool deferRelay = false);
 
-    static bool Create(
+    static bool CreateWithoutCollateralKey(
         const CMasternodeConfig::CMasternodeEntry configEntry,
         CPubKey pubkeyCollateralAddress,
         std::string& strErrorRet,

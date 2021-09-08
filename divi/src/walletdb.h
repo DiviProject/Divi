@@ -25,7 +25,6 @@ struct CBlockLocator;
 class CKeyPool;
 class CMasterKey;
 class CScript;
-class CWallet;
 class CWalletTx;
 class uint160;
 class uint256;
@@ -115,6 +114,6 @@ private:
 };
 
 void ThreadFlushWalletDB(const std::string& strWalletFile);
-bool BackupWallet(const CWallet& wallet, const std::string& strDest);
+bool BackupWallet(const std::string& walletDBFilename, const std::string& strDest);
 
 #endif // BITCOIN_WALLETDB_H

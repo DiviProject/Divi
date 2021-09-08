@@ -3,6 +3,7 @@
 #include <vector>
 #include <uint256.h>
 #include <destination.h>
+#include <string>
 class CAddressBookData;
 class CWalletTx;
 class CScript;
@@ -13,6 +14,19 @@ class CKeyPool;
 class CHDChain;
 class CHDPubKey;
 class CKeyMetadata;
+
+/** Address book data */
+class CAddressBookData
+{
+public:
+    std::string name;
+    std::string purpose;
+
+    CAddressBookData()
+    {
+        purpose = "unknown";
+    }
+};
 
 class I_WalletLoader
 {

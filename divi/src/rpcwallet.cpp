@@ -335,22 +335,37 @@ bool AccountShouldUseNewKey(CWallet& wallet, const CAccount& account)
     }
 }
 
-CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForceNew = false)
+CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool forceNewKey, bool isWalletDerivedKey)
 {
     CWalletDB walletdb(settings,wallet.dbFilename());
-
     CAccount account;
     walletdb.ReadAccount(strAccount, account);
-    if (bForceNew || AccountShouldUseNewKey(wallet, account))
+    if (forceNewKey || AccountShouldUseNewKey(wallet, account))
     {// Generate a new key
-        if (!wallet.GetKeyFromPool(account.vchPubKey, false))
+        if (isWalletDerivedKey && !wallet.GetKeyFromPool(account.vchPubKey, false))
             throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
+
+        if(!isWalletDerivedKey)
+        {
+            CKey key;
+            key.MakeNewKey(true);
+            account.vchPubKey = key.GetPubKey();
+            {
+                LOCK(wallet.cs_wallet);
+                wallet.AddKeyPubKey(key,account.vchPubKey);
+            }
+        }
 
         wallet.SetAddressBook(account.vchPubKey.GetID(), strAccount, "receive");
         walletdb.WriteAccount(strAccount, account);
     }
 
     return CBitcoinAddress(account.vchPubKey.GetID());
+}
+
+CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForceNew = false)
+{
+    return GetAccountAddress(wallet,strAccount,bForceNew,true);
 }
 
 

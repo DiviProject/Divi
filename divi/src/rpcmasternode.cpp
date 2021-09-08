@@ -35,7 +35,7 @@ using namespace json_spirit;
 extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
 extern void SendMoneyToAddress(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew);
-extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool bForceNew = false);
+extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool forceNewKey, bool isWalletDerivedKey);
 
 static MasternodeTier GetMasternodeTierFromString(std::string str)
 {
@@ -89,7 +89,7 @@ Value allocatefunds(const Array& params, bool fHelp)
     {
         throw std::runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
     }
-	CBitcoinAddress acctAddr = GetAccountAddress(*pwalletMain,"alloc->" + params[1].get_str());
+	CBitcoinAddress acctAddr = GetAccountAddress(*pwalletMain,"alloc->" + params[1].get_str(),false,true);
 	std::string strAmt = params[2].get_str();
 
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
@@ -161,7 +161,7 @@ Value fundmasternode(const Array& params, bool fHelp)
     pwalletMain->TopUpKeyPool();
 
     // Generate a new key that is added to wallet
-    CBitcoinAddress address = GetAccountAddress(*pwalletMain,"reserved->" + alias);
+    CBitcoinAddress address = GetAccountAddress(*pwalletMain,"reserved->" + alias,false,false);
 
     CKeyID keyID;
     if (!address.GetKeyID(keyID))
@@ -248,7 +248,7 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    CBitcoinAddress address = GetAccountAddress(*pwalletMain,"reserved->" + params[0].get_str() );
+    CBitcoinAddress address = GetAccountAddress(*pwalletMain,"reserved->" + params[0].get_str(),false,true);
     CKeyID keyID;
     if (!address.GetKeyID(keyID))
     {

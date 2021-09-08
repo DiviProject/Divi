@@ -13,7 +13,6 @@
 #include "sync.h"
 #include "util.h"
 #include "utiltime.h"
-#include "wallet.h"
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -23,6 +22,8 @@
 #include <WalletTx.h>
 #include <Settings.h>
 #include <I_WalletLoader.h>
+#include <MasterKey.h>
+#include <keypool.h>
 
 using namespace boost;
 using namespace std;

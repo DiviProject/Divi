@@ -148,7 +148,7 @@ bool createArgumentsFromConfig(
 
 } // anonymous namespace
 
-bool CMasternodeBroadcastFactory::Create(
+bool CMasternodeBroadcastFactory::CreateWithoutCollateralKey(
     const CMasternodeConfig::CMasternodeEntry configEntry,
     CPubKey pubkeyCollateralAddress,
     std::string& strErrorRet,

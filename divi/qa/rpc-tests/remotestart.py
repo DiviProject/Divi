@@ -153,40 +153,22 @@ class MnRemoteStartTest (BitcoinTestFramework):
     # Achive masternode synchronization with peers
     assert self.attempt_mnsync()
 
-    id1 = self.nodes[0].allocatefunds ("masternode", "mn1", "copper")["txhash"]
-    id2 = self.nodes[0].allocatefunds ("masternode", "mn2", "silver")["txhash"]
+    def mempoolSync():
+      sync_mempools (self.nodes)
 
-    tx1data = self.nodes[0].gettransaction(id1)["details"][0]["addresses"]
-    collateralAddr1 = [ tx1data[i]["address"]  for i in range(len(tx1data)) if tx1data[i]["account"] == "alloc->mn1"  ]
-    pubkey1 = self.nodes[0].validateaddress( collateralAddr1[0] )["pubkey"]
-    assert(len(collateralAddr1)==1)
-
-    tx2data = self.nodes[0].gettransaction(id2)["details"][0]["addresses"]
-    collateralAddr2 = [ tx2data[i]["address"]  for i in range(len(tx2data)) if tx2data[i]["account"] == "alloc->mn2"  ]
-    pubkey2 = self.nodes[0].validateaddress( collateralAddr2[0] )["pubkey"]
-    assert(len(collateralAddr2)==1)
-
-    addresses = [collateralAddr1[0],collateralAddr2[0]]
-    pubkeys = [ str(pubkey1) , str(pubkey2) ]
-
-    sync_mempools (self.nodes)
-    self.mine_blocks (1)
-    sync_blocks(self.nodes)
-
-    self.funding = [
-      fund_masternode (self.nodes[0], "mn1", "copper", id1, "localhost:%d" % p2p_port (1)),
-      fund_masternode (self.nodes[0], "mn2", "silver", id2, "localhost:%d" % p2p_port (2)),
-    ]
+    controlNode = self.nodes[0]
     self.setup = [
-      setup_masternode(self.nodes[i+1],self.funding[i],pubkeys[i]) for i in range(2)
+      setup_masternode(mempoolSync,controlNode,self.nodes[1],"mn1", "copper","localhost:%d" % p2p_port (1)),
+      setup_masternode(mempoolSync,controlNode,self.nodes[2],"mn2", "silver","localhost:%d" % p2p_port (2))
     ]
     self.cfg = [
-        self.setup[i].cfg for i in range(2)
+        x.cfg for x in self.setup
     ]
     self.sigs = [
-        str(self.nodes[0].signmessage(addresses[i] , self.setup[i].message_to_sign , "hex", "hex")) for i in range(2)
+        str(controlNode.signmessage(x.address, x.message_to_sign , "hex", "hex")) for x in self.setup
     ]
 
+    sync_mempools (self.nodes)
     self.mine_blocks (15*1)
     sync_blocks(self.nodes)
 

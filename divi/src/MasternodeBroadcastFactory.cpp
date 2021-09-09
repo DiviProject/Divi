@@ -152,10 +152,10 @@ bool CMasternodeBroadcastFactory::CreateWithoutCollateralKey(
     const CMasternodeConfig::CMasternodeEntry configEntry,
     CPubKey pubkeyCollateralAddress,
     std::string& strErrorRet,
-    CMasternodeBroadcast& mnbRet,
-    bool fOffline)
+    CMasternodeBroadcast& mnbRet)
 {
     static CBasicKeyStore dummyKeyStore;
+    const bool fOffline = false;
     const bool collateralPrivateKeyIsRemote = true;
     const bool deferRelay = true;
     CTxIn txin;
@@ -199,9 +199,9 @@ bool CMasternodeBroadcastFactory::Create(
     const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
     CMasternodeBroadcast& mnbRet,
-    bool fOffline,
     bool deferRelay)
 {
+    const bool fOffline = false;
     const bool collateralPrivateKeyIsRemote = false;
     std::string strService = configEntry.getIp();
 

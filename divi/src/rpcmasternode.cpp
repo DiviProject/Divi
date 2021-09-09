@@ -73,14 +73,13 @@ Value allocatefunds(const Array& params, bool fHelp)
 {
 	if (fHelp || params.size() != 3)
 		throw std::runtime_error(
-			"allocatefunds purpose alias amount ( \"pay wallet\" ( \"voting wallet\" ) )\n"
+			"allocatefunds purpose alias tier ( \"pay wallet\" ( \"voting wallet\" ) )\n"
 			"\nStarts escrows funds for some purpose.\n"
 
 			"\nArguments:\n"
 			"1. purpose			(string, required) Helpful identifier to recognize this allocation later.  Currently only masternode is recognized. \n"
 			"2. identifier      (string, required) Helpful Identifier to recognize the specific instance of the funding type that the funding is for. \n"
-			"3. amount			(diamond, platinum, gold, silver, copper) tier of masternode. \n"
-			"      <future>     (numeric, required) amount of divi funded will also be accepted for partially funding master nodes and other purposes.\n"
+			"3. tier			(diamond, platinum, gold, silver, copper) tier of masternode. \n"
 
 			"\nResult:\n"
 			"\"vin\"			(string) funding transaction id or bare txid necessary for next step.\n");
@@ -105,6 +104,21 @@ Value allocatefunds(const Array& params, bool fHelp)
 
     Object obj;
     obj.push_back(Pair("txhash", wtx.GetHash().GetHex()));
+    bool found = false;
+    auto nAmount = CMasternode::GetTierCollateralAmount(nMasternodeTier);
+    for(size_t i = 0; i < wtx.vout.size(); ++i)
+    {
+        if(wtx.vout[i].nValue == nAmount)
+        {
+            found = true;
+            obj.push_back(Pair("vout", i));
+            break;
+        }
+    }
+    if (!found)
+    {
+        throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction has correct collateral");
+    }
     return obj;
 }
 

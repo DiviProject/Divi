@@ -37,38 +37,34 @@ def txidFromBroadcast (hexStr):
   return bytesRev[::-1].hex ()
 
 
-class MnStoredBroadcastTest (BitcoinTestFramework):
+class MnStoredBroadcastTest (MnTestFramework):
+
+  def __init__ (self):
+    super ().__init__ ()
+    self.base_args = ["-debug=masternode", "-debug=mocktime", "-spendzeroconfchange"]
+    self.number_of_nodes = 2
 
   def setup_network (self, config_line=None):
-    args = [["-spendzeroconfchange"]] * 2
-    config_lines = [[]] * 2
-
-    if config_line:
-      config_lines = [[config_line.line]] * 2
-      args[1].append ("-masternode")
-      args[1].append ("-masternodeprivkey=%s" % config_line.privkey)
-
-    self.nodes = start_nodes(2, self.options.tmpdir, extra_args=args, mn_config_lines=config_lines)
+    self.nodes = start_nodes(self.number_of_nodes, self.options.tmpdir, extra_args=[self.base_args]*2)
+    self.setup = [None]*self.number_of_nodes
     connect_nodes_bi (self.nodes, 0, 1)
     self.is_network_split = False
     self.sync_all ()
 
   def run_test (self):
     print ("Funding masternode...")
-    self.nodes[0].setgenerate (True, 30)
-    txid = self.nodes[0].allocatefunds ("masternode", "mn", "copper")["txhash"]
-    self.nodes[0].setgenerate (True, 1)
-    cfg = fund_masternode (self.nodes[0], "mn", "copper", txid, "1.2.3.4")
+    self.nodes[0].setgenerate(True,30)
+    self.setup_masternode(0,1,"mn","copper")
+    self.nodes[0].setgenerate (True, 16)
 
     print ("Updating masternode.conf...")
-    stop_nodes (self.nodes)
-    wait_bitcoinds ()
-    self.setup_network (config_line=cfg)
+    self.stop_masternode_daemons()
+    self.start_masternode_daemons()
+    connect_nodes_bi(self.nodes,0,1)
 
     print ("Preparing the masternode broadcast...")
-    mnb = self.nodes[0].startmasternode ("mn", True)
-    assert_equal (mnb["status"], "success")
-    mnb = mnb["broadcastData"]
+    cfg = self.setup[1].cfg
+    mnb = self.nodes[0].signmnbroadcast(self.setup[1].broadcast_data)["broadcast_data"]
 
     # We construct two modified broadcasts:  One for the same prevout with just
     # some of the other data modified, and one for a different prevout.
@@ -104,9 +100,9 @@ class MnStoredBroadcastTest (BitcoinTestFramework):
     assert_equal (self.nodes[1].listmnbroadcasts (), expected)
 
     print ("Restarting node...")
-    stop_nodes (self.nodes)
-    wait_bitcoinds ()
-    self.setup_network (config_line=cfg)
+    self.stop_masternode_daemons()
+    self.start_masternode_daemons()
+    connect_nodes_bi(self.nodes,0,1)
 
     print ("Testing imported data...")
     assert_equal (self.nodes[1].listmnbroadcasts (), expected)
@@ -121,6 +117,7 @@ class MnStoredBroadcastTest (BitcoinTestFramework):
     print ("Starting masternode with stored broadcast...")
     for n in self.nodes:
       assert_equal (n.listmasternodes (), [])
+
     res = self.nodes[1].startmasternode ("mn")
     assert_equal (res["status"], "success")
     res = self.nodes[1].getmasternodestatus ()

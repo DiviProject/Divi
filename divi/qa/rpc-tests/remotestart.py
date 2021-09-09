@@ -23,94 +23,32 @@ import collections
 import time
 
 
-class MnRemoteStartTest (BitcoinTestFramework):
+class MnRemoteStartTest (MnTestFramework):
 
   def __init__ (self):
     super ().__init__ ()
     self.base_args = ["-debug=masternode", "-debug=mocktime"]
+    self.number_of_nodes = 7
 
   def add_options(self, parser):
           parser.add_option("--outdated_ping", dest="outdated_ping", default=False, action="store_true",
                             help="Test outdated ping recovery")
-  def setup_chain (self):
-    for i in range (7):
-      initialize_datadir (self.options.tmpdir, i)
 
   def connect_all_nodes(self):
-    connect_nodes (self.nodes[1], 2)
-    connect_nodes (self.nodes[2], 1)
-    connect_nodes (self.nodes[1], 4)
-    connect_nodes (self.nodes[1], 5)
-    connect_nodes (self.nodes[1], 6)
-    connect_nodes (self.nodes[2], 4)
-    connect_nodes (self.nodes[2], 5)
-    connect_nodes (self.nodes[2], 6)
-    connect_nodes (self.nodes[3], 4)
-    connect_nodes (self.nodes[3], 5)
-    connect_nodes (self.nodes[3], 6)
-    connect_nodes (self.nodes[4], 5)
-    connect_nodes (self.nodes[4], 6)
-    connect_nodes (self.nodes[5], 6)
-    connect_nodes (self.nodes[0], 3)
+    for i in range(self.number_of_nodes):
+      for j in range(self.number_of_nodes):
+        connect_nodes_bi(self.nodes,i,j)
 
   def setup_network (self, config_line=None, extra_args=[]):
-
-    # Initially we just start the funding and mining nodes
-    # and use them to set up the masternodes.
     self.nodes = [
       start_node (i, self.options.tmpdir, extra_args=self.base_args)
-      for i in range(7)
+      for i in range(self.number_of_nodes)
     ]
-
-    # We want to work with mock times that are beyond the genesis
-    # block timestamp but before current time (so that nodes being
-    # started up and before they get on mocktime aren't rejecting
-    # the on-disk blockchain).
+    self.setup=[None]*self.number_of_nodes
     self.time = 1580000000
-    assert self.time < time.time ()
     set_node_times (self.nodes, self.time)
-
     self.connect_all_nodes()
-
     self.is_network_split = False
-
-  def attempt_mnsync(self, ticks=100):
-    print ("Attempting masternode sync...")
-    # Use mocktime ticks to advance the sync status
-    # of the node quickly.
-    for _ in range (ticks):
-      self.advance_time ()
-      time.sleep(0.01)
-
-    result = []
-    for n in [1, 2, 3]:
-      status = self.nodes[n].mnsync ("status")
-      result.append(status["currentMasternodeSyncStatus"] == 999)
-    return all(result)
-
-  def start_node (self, n, startMN = False):
-    """Starts node n (0..2) with the proper arguments
-    and masternode config for it."""
-
-    configs = [
-      [c.line for c in self.cfg],
-      [self.cfg[0].line],
-      [self.cfg[1].line],
-    ]
-
-    args = self.base_args[:]
-    if startMN:
-      args.append ("-masternode")
-      args.append ("-masternodeprivkey=%s" % self.cfg[n - 1].privkey)
-      self.nodes[n] = start_node (n, self.options.tmpdir, extra_args=args, mn_config_lines=configs[n])
-    else:
-      self.nodes[n] = start_node (n, self.options.tmpdir, extra_args=args)
-
-    self.nodes[n].setmocktime (self.time)
-
-    for i in [3, 4, 5, 6]:
-      connect_nodes (self.nodes[n], i)
-    sync_blocks (self.nodes)
 
   def stop_node (self, n):
     """Stops node n (0..2)."""
@@ -136,13 +74,6 @@ class MnRemoteStartTest (BitcoinTestFramework):
 
   def allocate_funds (self):
     print ("Allocating masternode funds...")
-
-    # The collateral needs 15 confirmations, and the masternode broadcast
-    # signature must be later than that block's timestamp.  Thus we start
-    # with a very early timestamp.
-    genesis = self.nodes[0].getblockhash (0)
-    genesisTime = self.nodes[0].getblockheader (genesis)["time"]
-    assert genesisTime < self.time
     set_node_times (self.nodes, self.time)
 
     self.nodes[0].setgenerate (True, 5)
@@ -150,25 +81,16 @@ class MnRemoteStartTest (BitcoinTestFramework):
     self.mine_blocks (25)
     assert_equal (self.nodes[0].getbalance (), 6250)
 
-    # Achive masternode synchronization with peers
-    assert self.attempt_mnsync()
-
-    def mempoolSync():
-      sync_mempools (self.nodes)
-
     controlNode = self.nodes[0]
-    self.setup = [
-      setup_masternode(mempoolSync,controlNode,self.nodes[1],"mn1", "copper","localhost:%d" % p2p_port (1)),
-      setup_masternode(mempoolSync,controlNode,self.nodes[2],"mn2", "silver","localhost:%d" % p2p_port (2))
-    ]
+    self.setup_masternode(0,1,"mn1","copper")
+    self.setup_masternode(0,2,"mn2","silver")
     self.cfg = [
-        x.cfg for x in self.setup
+        x.cfg for x in self.setup if x
     ]
     self.sigs = [
-        str(controlNode.signmessage(x.address, x.message_to_sign , "hex", "hex")) for x in self.setup
+        str(controlNode.signmessage(x.address, x.message_to_sign , "hex", "hex")) for x in [self.setup[1],self.setup[2]]
     ]
 
-    sync_mempools (self.nodes)
     self.mine_blocks (15*1)
     sync_blocks(self.nodes)
 
@@ -178,9 +100,7 @@ class MnRemoteStartTest (BitcoinTestFramework):
     # The masternodes will be inactive until activation.
     time.sleep (0.1)
     assert_equal (self.nodes[3].listmasternodes (), [])
-
-    for i in [1, 2]:
-      assert_raises (JSONRPCException, self.nodes[i].getmasternodestatus)
+    self.check_masternodes_are_locally_inactive()
 
     # Activate the masternodes.  We do not need to keep the
     # cold node online.
@@ -191,23 +111,16 @@ class MnRemoteStartTest (BitcoinTestFramework):
       set_node_times(self.nodes[1:3],self.time)
       self.connect_all_nodes()
 
-    for i in range(1,3):
-        copyOfSig = str(self.sigs[i-1])
-        copyOfData = str(self.setup[i-1].broadcast_data)
-        self.stop_node(i)
-        self.start_node (i,True)
+    self.stop_masternode_daemons()
+    self.start_masternode_daemons()
+    self.connect_masternodes_to_peers([3,4,5,6],updateMockTime=True)
+    for i in range(2):
         if self.options.outdated_ping:
-          result = self.nodes[i].broadcaststartmasternode(copyOfData, copyOfSig)
+          result = self.broadcast_start(self.cfg[i].alias,False,self.sigs[i])
         else:
-          result = self.nodes[0].broadcaststartmasternode(copyOfData, copyOfSig)
+          result = self.broadcast_start(self.cfg[i].alias,True,self.sigs[i])
         assert_equal(result["status"], "success")
-    self.attempt_mnsync()
-    for i in [1, 2]:
-      data = self.nodes[i].getmasternodestatus ()
-      assert_equal (data["status"], 4)
-      assert_equal (data["txhash"], self.cfg[i - 1].txid)
-      assert_equal (data["outputidx"], self.cfg[i - 1].vout)
-      assert_equal (data["message"], "Masternode successfully started")
+    self.wait_for_masternodes_to_be_locally_active(updateMockTime=True)
 
 if __name__ == '__main__':
   MnRemoteStartTest ().main ()

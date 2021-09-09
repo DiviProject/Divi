@@ -30,63 +30,27 @@ import os.path
 import time
 
 
-class NoBlocksForLongTimeTest (BitcoinTestFramework):
+class NoBlocksForLongTimeTest (MnTestFramework):
 
   def __init__ (self):
     super ().__init__ ()
     self.base_args = ["-debug=masternode", "-debug=mocktime"]
-
-  def setup_chain (self):
-    print ("Initializing test directory " + self.options.tmpdir)
-    for i in range (8):
-      initialize_datadir (self.options.tmpdir, i)
+    self.number_of_nodes = 8
 
   def setup_network (self, config_line=None, extra_args=[]):
     self.nodes = [
       start_node (i, self.options.tmpdir, extra_args=self.base_args)
-      for i in range (8)
+      for i in range (self.number_of_nodes)
     ]
-
-    # We want to work with mock times that are beyond the genesis
-    # block timestamp but before current time (so that nodes being
-    # started up and before they get on mocktime aren't rejecting
-    # the on-disk blockchain).
+    self.setup = [None]*self.number_of_nodes
     self.time = 1_580_000_000
     assert self.time < time.time ()
     set_node_times (self.nodes, self.time)
-
-    for n in range (8):
-      for m in range (n + 1, 8):
+    for n in range (self.number_of_nodes):
+      for m in range (n + 1, self.number_of_nodes):
         connect_nodes (self.nodes[n], m)
 
     self.is_network_split = False
-
-  def start_node (self, n):
-    """Starts node n with the proper arguments
-    and masternode config for it."""
-
-    configs = []
-    args = self.base_args[:]
-    if n in self.cfg:
-      configs.append (self.cfg[n].line)
-      args.append ("-masternode")
-      args.append ("-masternodeprivkey=%s" % self.cfg[n].privkey)
-
-    self.nodes[n] = start_node (n, self.options.tmpdir,
-                                extra_args=args, mn_config_lines=configs)
-    self.nodes[n].setmocktime (self.time)
-
-    for m in range (8):
-      if self.nodes[m] and n != m:
-        connect_nodes (self.nodes[n], m)
-    sync_blocks (self.nodes)
-
-  def stop_node (self, n):
-    """Stops node n."""
-
-    if self.nodes[n]:
-      stop_node (self.nodes[n], n)
-      self.nodes[n] = None
 
   def advance_time (self, dt=1):
     """Advances mocktime by the given number of seconds."""
@@ -101,18 +65,16 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
     assert_greater_than (self.nodes[1].getbalance (), 1200)
 
     sendTo = {}
-    for n in range (2, 8):
+    for n in range (2, self.number_of_nodes):
       sendTo[self.nodes[n].getnewaddress ()] = 200
     self.nodes[1].sendmany ("", sendTo)
     self.nodes[1].setgenerate (True, 1)
     sync_blocks (self.nodes)
 
     self.cfg = {}
-    for n in range (2, 8):
-      data = self.nodes[n].allocatefunds ("masternode", "mn", "copper")
-      txid = data["txhash"]
-      self.cfg[n] = fund_masternode (self.nodes[n], "mn", "copper", txid,
-                                     "localhost:%d" % p2p_port (n))
+    for n in range (2, self.number_of_nodes):
+      self.setup_masternode(n,n,"mn"+str(n),"copper")
+      self.cfg[n] = self.setup[n].cfg
 
     sync_mempools (self.nodes)
     self.nodes[1].setgenerate (True, 15)
@@ -122,10 +84,16 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
 
   def start_masternodes (self):
     print ("Starting masternodes...")
+    for n in range (2, self.number_of_nodes):
+      self.broadcast_start("mn"+str(n),True)
 
-    for n in self.cfg.keys ():
-      self.stop_node (n)
-      self.start_node (n)
+    self.stop_masternode_daemons()
+    self.start_masternode_daemons()
+    for n in range (self.number_of_nodes):
+      for m in range (n + 1, self.number_of_nodes):
+        connect_nodes (self.nodes[n], m)
+
+    self.wait_for_masternodes_to_be_locally_active(updateMockTime=True)
 
     # Make sure all nodes are properly connected before we go on
     # starting the masternodes (we don't want any to miss some broadcasts).
@@ -138,37 +106,12 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
           allConnected = False
     sync_blocks (self.nodes)
 
-    for n in self.cfg.keys ():
-      res = self.nodes[n].startmasternode ("mn")
-      assert_equal (res["status"], "success")
-
-      # Check status of the masternode by itself.
-      data = self.nodes[n].getmasternodestatus ()
-      assert_equal (data["status"], 4)
-      assert_equal (data["txhash"], self.cfg[n].txid)
-      assert_equal (data["outputidx"], self.cfg[n].vout)
-      assert_equal (data["message"], "Masternode successfully started")
-
     # Check list of masternodes on node 0.
-    lst = []
-    while len (lst) < 6:
-      time.sleep (1)
-      lst = self.nodes[0].listmasternodes ()
-
+    lst =self.wait_for_mn_list_to_sync(self.nodes[0],expected_mn_count=6)
     assert_equal (len (lst), 6)
     for l in lst:
       assert_equal (l["tier"], "COPPER")
       assert_equal (l["status"], "ENABLED")
-
-  def sync_masternodes (self):
-    # Use mocktime ticks to advance the sync status
-    # of the node quickly.
-    for _ in range (100):
-      self.advance_time ()
-
-    for n in self.nodes:
-      status = n.mnsync ("status")
-      assert_equal (status["currentMasternodeSyncStatus"], 999)
 
   def time_out_blockchain_sync (self):
     """
@@ -179,10 +122,14 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
     itself not blockchain synced and also won't run a full mn sync.
     """
 
-    self.stop_node (0)
+    if self.nodes[0]:
+      stop_node(self.nodes[0],0)
+      self.nodes[0] = None
     for _ in range (10):
       self.advance_time (100)
-    self.start_node (0)
+    self.nodes[0] = start_node(0, self.options.tmpdir, extra_args=self.base_args)
+    for j in range(self.number_of_nodes):
+      connect_nodes_bi(self.nodes,0,j)
     for _ in range (10):
       self.advance_time ()
 
@@ -204,7 +151,7 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
     # need at least 100 blocks and the masternodes need to be active
     # for 8'000 seconds.
     print ("Running initial masternode sync...")
-    self.sync_masternodes ()
+    self.wait_for_mnsync_on_nodes (updateMockTime=True)
     for _ in range (100):
       self.nodes[1].setgenerate (True, 1)
       self.advance_time (100)
@@ -233,7 +180,7 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
     self.time_out_blockchain_sync ()
     self.nodes[1].setgenerate (True, 1)
     sync_blocks (self.nodes)
-    self.sync_masternodes ()
+    self.wait_for_mnsync_on_nodes (updateMockTime=True)
 
     # Similarly, it should also work to generate blocks with a restarted
     # node that does not consider itself mn synced.  It still has the
@@ -243,13 +190,14 @@ class NoBlocksForLongTimeTest (BitcoinTestFramework):
     assert_greater_than (len (self.nodes[0].listmasternodes ()), 0)
     self.nodes[0].setgenerate (True, 1)
     sync_blocks (self.nodes)
-    self.sync_masternodes ()
+    self.wait_for_mnsync_on_nodes (updateMockTime=True)
 
     # If we restart the node and remove the masternode cache, it won't
     # have a list of masternodes (as it will also not process any messages)
     # and will thus not produce a valid block.
     print ("Generating block with node without masternode list...")
-    self.stop_node (0)
+    stop_node(self.nodes[0],0)
+    self.nodes[0] = None
     for f in ["mncache.dat", "mnpayments.dat"]:
       os.remove (os.path.join (self.options.tmpdir, "node0", "regtest", f))
     self.time_out_blockchain_sync ()

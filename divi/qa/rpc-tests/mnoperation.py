@@ -15,7 +15,6 @@
 # - nodes 4-6 are just used to get above the "three full nodes" threshold
 #   (together with node 3, independent of the masternodes online)
 
-from test_framework import BitcoinTestFramework
 from util import *
 from masternode import *
 
@@ -23,37 +22,23 @@ import collections
 import time
 
 
-class MnStatusTest (BitcoinTestFramework):
+class MnStatusTest (MnTestFramework):
 
   def __init__ (self):
     super ().__init__ ()
     self.base_args = ["-debug=masternode", "-debug=mocktime"]
-
-  def setup_chain (self):
-    for i in range (7):
-      initialize_datadir (self.options.tmpdir, i)
+    self.number_of_nodes = 7
 
   def setup_network (self, config_line=None, extra_args=[]):
-
-    # Initially we just start the funding and mining nodes
-    # and use them to set up the masternodes.
     self.nodes = [
-      start_node (0, self.options.tmpdir, extra_args=self.base_args),
-      None,
-      None,
-    ] + [
       start_node (i, self.options.tmpdir, extra_args=self.base_args)
-      for i in [3, 4, 5, 6]
+      for i in range(self.number_of_nodes)
     ]
+    self.setup = [None]*self.number_of_nodes
 
-    # We want to work with mock times that are beyond the genesis
-    # block timestamp but before current time (so that nodes being
-    # started up and before they get on mocktime aren't rejecting
-    # the on-disk blockchain).
     self.time = 1580000000
     assert self.time < time.time ()
     set_node_times (self.nodes, self.time)
-
     connect_nodes (self.nodes[3], 4)
     connect_nodes (self.nodes[3], 5)
     connect_nodes (self.nodes[3], 6)
@@ -61,31 +46,10 @@ class MnStatusTest (BitcoinTestFramework):
     connect_nodes (self.nodes[4], 6)
     connect_nodes (self.nodes[5], 6)
     connect_nodes (self.nodes[0], 3)
+    connect_nodes (self.nodes[0], 1)
+    connect_nodes (self.nodes[0], 2)
 
     self.is_network_split = False
-
-  def start_node (self, n):
-    """Starts node n (0..2) with the proper arguments
-    and masternode config for it."""
-
-    configs = [
-      [c.line for c in self.cfg],
-      [self.cfg[0].line],
-      [self.cfg[1].line],
-    ]
-
-    args = self.base_args[:]
-    if n == 1 or n == 2:
-      args.append ("-masternode")
-      args.append ("-masternodeprivkey=%s" % self.cfg[n - 1].privkey)
-
-    self.nodes[n] = start_node (n, self.options.tmpdir,
-                                extra_args=args, mn_config_lines=configs[n])
-    self.nodes[n].setmocktime (self.time)
-
-    for i in [3, 4, 5, 6]:
-      connect_nodes (self.nodes[n], i)
-    sync_blocks (self.nodes)
 
   def stop_node (self, n):
     """Stops node n (0..2)."""
@@ -107,104 +71,49 @@ class MnStatusTest (BitcoinTestFramework):
     self.nodes[3].setgenerate(True, n)
     sync_blocks (self.nodes)
 
-  def run_test (self):
-    self.fund_masternodes ()
-    self.start_masternodes ()
-    self.sync_masternodes ()
-    self.payments_both_active ()
-    self.payments_one_active ()
-    self.check_rewards ()
-
   def fund_masternodes (self):
     print ("Funding masternodes...")
-
     # The collateral needs 15 confirmations, and the masternode broadcast
     # signature must be later than that block's timestamp.  Thus we start
     # with a very early timestamp.
-    genesis = self.nodes[0].getblockhash (0)
-    genesisTime = self.nodes[0].getblockheader (genesis)["time"]
-    assert genesisTime < self.time
-    set_node_times (self.nodes, genesisTime)
+    set_node_times (self.nodes, self.time)
 
     self.nodes[0].setgenerate (True, 5)
     sync_blocks (self.nodes)
     self.mine_blocks (25)
     assert_equal (self.nodes[0].getbalance (), 6250)
 
-    id1 = self.nodes[0].allocatefunds ("masternode", "mn1", "copper")["txhash"]
-    id2 = self.nodes[0].allocatefunds ("masternode", "mn2", "silver")["txhash"]
-    sync_mempools (self.nodes)
+    self.setup_masternode(0,1,"mn1","copper")
+    self.setup_masternode(0,2,"mn2","silver")
     self.mine_blocks (15)
     set_node_times (self.nodes, self.time)
     self.mine_blocks (1)
 
-    self.cfg = [
-      fund_masternode (self.nodes[0], "mn1", "copper", id1, "localhost:%d" % p2p_port (1)),
-      fund_masternode (self.nodes[0], "mn2", "silver", id2, "localhost:%d" % p2p_port (2)),
-    ]
-
   def start_masternodes (self):
     print ("Starting masternodes...")
-
-    self.stop_node (0)
-    for i in range (3):
-      self.start_node (i)
+    self.stop_masternode_daemons()
+    self.start_masternode_daemons()
+    self.connect_masternodes_to_peers([3, 4, 5, 6],updateMockTime=True)
 
     # The masternodes will be inactive until activation.
-    time.sleep (0.1)
+    sync_blocks(self.nodes)
+    # The masternodes will be inactive until activation.
     assert_equal (self.nodes[3].listmasternodes (), [])
-    for i in [1, 2]:
-      assert_raises (JSONRPCException, self.nodes[i].getmasternodestatus)
-
+    self.check_masternodes_are_locally_inactive()
     # Activate the masternodes.  We do not need to keep the
     # cold node online.
-    self.nodes[0].startmasternode ("mn1")
-    time.sleep (0.1)
-    broadcast = self.nodes[0].startmasternode ("mn2", True)
-    assert_equal (broadcast["status"], "success")
-    res = self.nodes[2].broadcaststartmasternode (broadcast["broadcastData"])
-    assert_equal (res["status"], "success")
-    time.sleep (0.1)
-    self.stop_node (0)
-    time.sleep (0.1)
+    self.mock_wait(100)
+    assert_equal(self.broadcast_start("mn1",True)["status"],"success")
+    assert_equal(self.broadcast_start("mn2",False)["status"],"success")
 
     # Check status of the masternodes themselves.
-    for i in [1, 2]:
-      data = self.nodes[i].getmasternodestatus ()
-      assert_equal (data["status"], 4)
-      assert_equal (data["txhash"], self.cfg[i - 1].txid)
-      assert_equal (data["outputidx"], self.cfg[i - 1].vout)
-      assert_equal (data["message"], "Masternode successfully started")
+    self.wait_for_masternodes_to_be_locally_active(updateMockTime=True)
 
     # Check list of masternodes on node 3.
-    lst = self.nodes[3].listmasternodes()
-    while len(lst) < 2:
-      time.sleep(1)
-      lst = self.nodes[3].listmasternodes()
-
-    assert_equal (len (lst), 2)
-    if lst[0]["tier"] != "COPPER":
-      lst[1],lst[0] = lst[0],lst[1]
-    assert_equal (lst[0]["tier"], "COPPER")
-    assert_equal (lst[1]["tier"], "SILVER")
-    for i in range (2):
-      assert_equal (lst[i]["status"], "ENABLED")
-      assert_equal (lst[i]["addr"],
-                    self.nodes[i + 1].getmasternodestatus ()["addr"])
-      assert_equal (lst[i]["txhash"], self.cfg[i].txid)
-      assert_equal (lst[i]["outidx"], self.cfg[i].vout)
-
-  def sync_masternodes (self):
-    print ("Running masternode sync...")
-
-    # Use mocktime ticks to advance the sync status
-    # of the node quickly.
-    for _ in range (100):
-      self.advance_time (delay=0.1)
-
-    for n in [1, 2, 3]:
-      status = self.nodes[n].mnsync ("status")
-      assert_equal (status["currentMasternodeSyncStatus"], 999)
+    lst = self.wait_for_mn_list_to_sync(self.nodes[3],2)
+    self.check_list_for_all_masternodes(lst)
+    stop_node(self.nodes[0],0)
+    self.nodes[0]=None
 
   def verify_number_of_votes_exist_and_tally_winners(self,startBlockHeight, endBlockHeight, expected_votes, expected_address = None):
     heightSet = set()
@@ -293,7 +202,7 @@ class MnStatusTest (BitcoinTestFramework):
     assert_equal (len (lst), 1)
     assert_equal (lst[0]["tier"], "COPPER")
     assert_equal (lst[0]["status"], "ENABLED")
-    assert_equal (lst[0]["txhash"], self.cfg[0].txid)
+    assert_equal (lst[0]["txhash"], self.setup[1].cfg.txid)
 
     # Generate more blocks.  Payments to the disabled node will
     # stop at least for the blocks for which we do fresh broadcasts.
@@ -306,15 +215,11 @@ class MnStatusTest (BitcoinTestFramework):
     addr = self.nodes[1].getmasternodestatus ()["addr"]
     self.verify_number_of_votes_exist_and_tally_winners(startHeight,endHeight,1,addr)
 
-  def check_rewards (self):
-    print ("Checking rewards in wallet...")
-
-    self.start_node (0)
-    sync_blocks (self.nodes)
-
-    assert_greater_than (self.nodes[0].getbalance ("alloc->mn1"), 0)
-    assert_greater_than (self.nodes[0].getbalance ("alloc->mn2"), 0)
-
+  def run_test (self):
+    self.fund_masternodes ()
+    self.start_masternodes ()
+    self.payments_both_active ()
+    self.payments_one_active ()
 
 if __name__ == '__main__':
   MnStatusTest ().main ()

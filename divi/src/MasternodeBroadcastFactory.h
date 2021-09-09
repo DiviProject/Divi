@@ -22,15 +22,13 @@ public:
         const CMasternodeConfig::CMasternodeEntry configEntry,
         std::string& strErrorRet,
         CMasternodeBroadcast& mnbRet,
-        bool fOffline = false,
-        bool deferRelay = false);
+        bool deferRelay);
 
     static bool CreateWithoutCollateralKey(
         const CMasternodeConfig::CMasternodeEntry configEntry,
         CPubKey pubkeyCollateralAddress,
         std::string& strErrorRet,
-        CMasternodeBroadcast& mnbRet,
-        bool fOffline = false);
+        CMasternodeBroadcast& mnbRet);
 
     static bool signPing(
         const CKey& keyMasternodeNew,

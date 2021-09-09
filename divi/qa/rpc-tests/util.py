@@ -97,6 +97,14 @@ def initialize_datadir(dirname, n):
         f.write("rpcport="+str(rpc_port(n))+"\n")
     return datadir
 
+def prune_datadir(tmpdir,n):
+    os.remove(tmpdir + "/node"+str(n)+"/regtest/mncache.dat")
+    os.remove(tmpdir + "/node"+str(n)+"/regtest/mnpayments.dat")
+    os.remove(tmpdir + "/node"+str(n)+"/regtest/peers.dat")
+    os.remove(tmpdir + "/node"+str(n)+"/regtest/netfulfilled.dat")
+    shutil.rmtree(tmpdir + "/node"+str(n)+"/regtest/blocks")
+    shutil.rmtree(tmpdir + "/node"+str(n)+"/regtest/chainstate")
+
 def _rpchost_to_args(rpchost):
     '''Convert optional IP:port spec to rpcconnect/rpcport args'''
     if rpchost is None:

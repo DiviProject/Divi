@@ -79,12 +79,7 @@ class MnAreSafeToRestart (BitcoinTestFramework):
     print("Masternodes starting...")
     args = self.base_args[:]
     for n in range(1,3):
-      os.remove(self.options.tmpdir + "/node"+str(n)+"/regtest/mncache.dat")
-      os.remove(self.options.tmpdir + "/node"+str(n)+"/regtest/mnpayments.dat")
-      os.remove(self.options.tmpdir + "/node"+str(n)+"/regtest/peers.dat")
-      os.remove(self.options.tmpdir + "/node"+str(n)+"/regtest/netfulfilled.dat")
-      shutil.rmtree(self.options.tmpdir + "/node"+str(n)+"/regtest/blocks")
-      shutil.rmtree(self.options.tmpdir + "/node"+str(n)+"/regtest/chainstate")
+      prune_datadir(self.options.tmpdir,n)
       args.append ("-masternode")
       args.append ("-masternodeprivkey=%s" % self.cfg[n - 1].privkey)
       self.nodes[n] = start_node (n, self.options.tmpdir,

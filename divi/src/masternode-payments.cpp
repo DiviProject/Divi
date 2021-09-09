@@ -546,7 +546,9 @@ bool CheckAndGetScore(CMasternode& mn,
     }
 
     const int64_t nAge = GetAdjustedTime() - mn.sigTime;
-    if (nAge < MN_WINNER_MINIMUM_AGE) {
+    const int64_t minimumAge = Params().NetworkID() != CBaseChainParams::REGTEST? MN_WINNER_MINIMUM_AGE : 60 * 25;
+    if (nAge < minimumAge)
+    {
         LogPrint("masternode", "Skipping just activated Masternode. Age: %ld\n", nAge);
         return false;
     }

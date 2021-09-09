@@ -7,12 +7,17 @@
 # allocate funds, assign it to a masternode (but without running the
 # masternode) and verify the expected locking of the collateral UTXO.
 
-from test_framework import BitcoinTestFramework
 from util import *
 from masternode import *
 
 
-class MnCollateralTest (BitcoinTestFramework):
+class MnCollateralTest (MnTestFramework):
+
+  def __init__ (self):
+    super ().__init__ ()
+    self.base_args = ["-debug=masternode", "-debug=mocktime"]
+    self.time = int(time.time())
+    self.number_of_nodes = 2
 
   def setup_network (self, config_line=None, extra_args=[]):
     args = [(extra_args + ["-spendzeroconfchange"])] * 2
@@ -20,6 +25,7 @@ class MnCollateralTest (BitcoinTestFramework):
     if config_line is not None:
       config_lines[0] = [config_line]
     self.nodes = start_nodes(2, self.options.tmpdir, extra_args=args, mn_config_lines=config_lines)
+    self.setup = [None]*self.number_of_nodes
     connect_nodes_bi (self.nodes, 0, 1)
     self.is_network_split = False
     self.sync_all ()
@@ -27,7 +33,6 @@ class MnCollateralTest (BitcoinTestFramework):
   def mine_blocks (self, n):
     """Mines blocks with node 1.  We use node 0 for the test, so that
     this ensures that node does not get unexpected coins."""
-
     sync_mempools (self.nodes)
     self.nodes[1].setgenerate(True, n)
     sync_blocks (self.nodes)
@@ -35,7 +40,6 @@ class MnCollateralTest (BitcoinTestFramework):
   def check_balance (self, expected, account="*"):
     """Verifies that the balance of node 0 matches the expected amount,
     up to some epsilon for fees."""
-
     actual = self.nodes[0].getbalance (account)
     eps = 1
     assert_greater_than (actual, expected - eps)
@@ -51,14 +55,11 @@ class MnCollateralTest (BitcoinTestFramework):
     self.check_balance (1250)
 
     # Allocate some funds and use them to construct a config line.
-    txid = node.allocatefunds ("masternode", "spent", "silver")["txhash"]
+    self.setup_masternode(0,1,"spent","silver")
     self.mine_blocks (1)
     self.check_balance (300, "alloc->spent")
     self.check_balance (1250)
-    cfg = fund_masternode (node, "spent", "silver", txid, "1.2.3.4")
-    assert_equal (cfg.alias, "spent")
-    assert_equal (cfg.ip, "1.2.3.4:51476")
-    assert_equal (cfg.txid, txid)
+    cfg = self.setup[1].cfg
     assert_equal (node.gettxout (cfg.txid, cfg.vout)["value"], 300)
 
     # It should still be possible to spend the coins, invalidating the
@@ -69,19 +70,20 @@ class MnCollateralTest (BitcoinTestFramework):
     assert_equal (node.gettxout (cfg.txid, cfg.vout), None)
 
     # Allocate some more funds without spending them.
-    txid = node.allocatefunds ("masternode", "gold", "gold")["txhash"]
+    self.setup_masternode(0,1,"gold","gold")
     self.mine_blocks (1)
     self.check_balance (1000, "alloc->gold")
     self.check_balance (1250)
-    cfg = fund_masternode (node, "spent", "gold", txid, "1.2.3.4:1024")
-    assert_equal (cfg.ip, "1.2.3.4:1024")
+    cfg = self.setup[1].cfg
     assert_equal (node.gettxout (cfg.txid, cfg.vout)["value"], 1000)
 
     # Restart with the config line added.
-    stop_nodes (self.nodes)
-    wait_bitcoinds ()
-    self.setup_network (config_line=cfg.line)
+    self.stop_masternode_daemons()
+    self.start_masternode_daemons()
+    stop_node(self.nodes[0],0)
+    self.nodes[0] = start_node(0,dirname=self.options.tmpdir,mn_config_lines=[cfg.line])
     node = self.nodes[0]
+    connect_nodes_bi (self.nodes, 0, 1)
 
     # Now spending the locked coins will not work (but spending less is fine).
     assert_equal (node.listlockunspent (), [
@@ -93,10 +95,10 @@ class MnCollateralTest (BitcoinTestFramework):
     self.check_balance (1250)
 
     # Restart without locking.
-    stop_nodes (self.nodes)
-    wait_bitcoinds ()
-    self.setup_network (extra_args=["-mnconflock=0"], config_line=cfg.line)
+    stop_node(self.nodes[0],0)
+    self.nodes[0] = start_node(0,dirname=self.options.tmpdir,extra_args=["-mnconflock=0"],mn_config_lines=[cfg.line])
     node = self.nodes[0]
+    connect_nodes_bi (self.nodes, 0, 1)
 
     # Now we can spend the collateral.
     assert_equal (node.listlockunspent (), [])

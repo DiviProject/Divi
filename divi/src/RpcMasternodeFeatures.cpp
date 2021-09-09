@@ -148,7 +148,6 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore, const StoredMas
                 configEntry,
                 result.errorMessage,
                 mnb,
-                false,
                 deferRelay))
         {
             if(mnModule.localNodeIsAMasternode())

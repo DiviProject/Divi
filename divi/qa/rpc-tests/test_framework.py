@@ -25,9 +25,9 @@ class BitcoinTestFramework(object):
     def add_options(self, parser):
         pass
 
-    def setup_chain(self):
+    def setup_chain(self,number_of_nodes=4):
         print("Initializing test directory "+self.options.tmpdir)
-        for i in range(4):
+        for i in range(number_of_nodes):
             datadir=initialize_datadir(self.options.tmpdir, i)
 
     def setup_nodes(self):

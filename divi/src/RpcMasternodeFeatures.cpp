@@ -15,6 +15,7 @@
 #include <MasternodeNetworkMessageManager.h>
 #include <masternode-payments.h>
 #include <MasternodePaymentData.h>
+#include <obfuscation.h>
 #include <sync.h>
 #include <StoredMasternodeBroadcasts.h>
 #include <timedata.h>
@@ -119,6 +120,32 @@ MasternodeStartResult RelayParsedMasternodeBroadcast(CMasternodeBroadcast mnb, c
 }
 
 } // anonymous namespace
+
+bool SignMasternodeBroadcast(const CKeyStore& keystore, std::string& hexData)
+{
+    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(hexData);
+    if(!keystore.HaveKey(mnb.pubKeyCollateralAddress.GetID()))
+    {
+        LogPrintf("%s - unknown key\n",__func__);
+        return false;
+    }
+    CKey collateralKey;
+    if(!keystore.GetKey(mnb.pubKeyCollateralAddress.GetID(),collateralKey))
+    {
+        LogPrintf("%s - unable to get key\n",__func__);
+        return false;
+    }
+    std::string errorMessage;
+    if(!CObfuScationSigner::SignAndVerify(mnb,collateralKey,collateralKey.GetPubKey(),errorMessage))
+    {
+        LogPrintf("%s - failed to sign\n",__func__);
+        return false;
+    }
+    CDataStream serializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);
+    serializedBroadcast << mnb;
+    hexData = HexStr(serializedBroadcast.str());
+    return true;
+}
 
 MasternodeStartResult RelayMasternodeBroadcast(const std::string& hexData, const std::string& signature, const bool updatePing)
 {

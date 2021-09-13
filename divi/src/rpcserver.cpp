@@ -136,6 +136,7 @@ extern json_spirit::Value getmasternodecount(const json_spirit::Array& params, b
 extern json_spirit::Value masternodecurrent(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value masternodedebug(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value setupmasternode(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value signmnbroadcast(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value verifymasternodesetup(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value broadcaststartmasternode(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value startmasternode(const json_spirit::Array& params, bool fHelp);
@@ -469,6 +470,7 @@ static const CRPCCommand vRPCCommands[] =
         {"divi", "masternodecurrent", &masternodecurrent, true, true, false},
         // {"divi", "masternodedebug", &masternodedebug, true, true, false},
         {"divi","setupmasternode",&setupmasternode,true,false,true},
+        {"divi","signmnbroadcast",&signmnbroadcast,true,false,true},
         {"divi","verifymasternodesetup",&verifymasternodesetup,true,true,true},
         {"divi", "broadcaststartmasternode", &broadcaststartmasternode, true, true, false},
         {"divi", "startmasternode", &startmasternode, true, true, false},

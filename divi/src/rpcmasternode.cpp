@@ -239,6 +239,28 @@ Value verifymasternodesetup(const Array&params, bool fHelp)
     return result;
 }
 
+Value signmnbroadcast(const Array& params, bool fHelp)
+{
+   	if (fHelp || params.size() != 1)
+		throw std::runtime_error(
+			"signmnbroadcast mnhex\n"
+			"\nStarts escrows funds for some purpose.\n"
+
+			"\nArguments:\n"
+			"1. mnhex			    (string, required) Serialized masternode broadcast to be signed. \n"
+			"\nResult:\n"
+            "\"broadcast_data\"			    (string) Signed broadcast data in serialized format.\n");
+
+    Object result;
+    std::string hexdata = params[0].get_str();
+    if(!SignMasternodeBroadcast(*pwalletMain,hexdata))
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS,"Unable to sign broadcast!");
+    }
+    result.push_back(Pair("broadcast_data",hexdata));
+    return result;
+}
+
 Value setupmasternode(const Array& params, bool fHelp)
 {
 	if (fHelp || params.size() < 5 || params.size() > 6)

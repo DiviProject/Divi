@@ -180,8 +180,7 @@ class MnTestFramework(BitcoinTestFramework):
       else:
         args = self.base_args[:]
         conf = self.setup[nodeIndex].cfg
-        args.append ("-masternode")
-        args.append ("-masternodeprivkey=%s" % conf.privkey)
+        args.append ("-masternode=%s" % conf.alias)
         self.nodes[nodeIndex] = start_node (nodeIndex, self.options.tmpdir, extra_args=args, mn_config_lines=[conf.line])
         if updateMockTime:
           set_node_times([self.nodes[nodeIndex]],self.time)

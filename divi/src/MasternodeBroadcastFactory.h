@@ -18,7 +18,9 @@ class CMasternodeBroadcastFactory
 public:
     /// Create Masternode broadcast, needs to be relayed manually after that
     static bool CreateWithoutCollateralKey(
+        const CKeyStore& walletKeyStore,
         const CMasternodeConfig::CMasternodeEntry configEntry,
+        CPubKey pubkeyMasternode,
         CPubKey pubkeyCollateralAddress,
         std::string& strErrorRet,
         CMasternodeBroadcast& mnbRet);

@@ -13,30 +13,6 @@
 #include <script/standard.h>
 #include <keystore.h>
 
-static bool GetVinAndKeysFromOutput(const CKeyStore& walletKeyStore, CScript pubScript, CPubKey& pubKeyRet, CKey& keyRet)
-{
-    // wait for reindex and/or import to finish
-    if (ReindexingOrImportingIsActive()) return false;
-
-    CTxDestination address1;
-    ExtractDestination(pubScript, address1);
-    CBitcoinAddress address2(address1);
-
-    CKeyID keyID;
-    if (!address2.GetKeyID(keyID)) {
-        LogPrintf("CWallet::GetVinAndKeysFromOutput -- Address does not refer to a key\n");
-        return false;
-    }
-
-    if (!walletKeyStore.GetKey(keyID, keyRet)) {
-        LogPrintf("CWallet::GetVinAndKeysFromOutput -- Private key for address is not known\n");
-        return false;
-    }
-
-    pubKeyRet = keyRet.GetPubKey();
-    return true;
-}
-
 namespace
 {
 
@@ -50,35 +26,15 @@ bool checkBlockchainSync(std::string& strErrorRet, bool fOffline)
     return true;
 }
 bool setMasternodeKeys(
-    const std::string& strKeyMasternode,
+    const CKeyStore& keyStore,
     std::pair<CKey,CPubKey>& masternodeKeyPair,
     std::string& strErrorRet)
 {
-    if (!CObfuScationSigner::GetKeysFromSecret(strKeyMasternode, masternodeKeyPair.first, masternodeKeyPair.second)) {
-        strErrorRet = strprintf("Invalid masternode key %s", strKeyMasternode);
+    CKeyID keyID = masternodeKeyPair.second.GetID();
+    if(!keyStore.GetKey(keyID,masternodeKeyPair.first))
+    {
+        strErrorRet = strprintf("Unknown masternode key %s", keyID.ToString());
         LogPrint("masternode","%s -- %s\n",__func__, strErrorRet);
-        return false;
-    }
-    return true;
-}
-bool setMasternodeCollateralKeys(
-    bool collateralPrivKeyIsRemote,
-    const CKeyStore& keyStore,
-    const CScript& scriptPubKey,
-    const COutPoint& outpoint,
-    std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
-    std::string& strError)
-{
-    if(collateralPrivKeyIsRemote)
-    {
-        masternodeCollateralKeyPair = std::pair<CKey,CPubKey>();
-        return true;
-    }
-    if (ReindexingOrImportingIsActive()) return false;
-    if (!GetVinAndKeysFromOutput(keyStore,scriptPubKey, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first))
-    {
-        strError = strprintf("Could not allocate txin %s:%s for masternode", outpoint.hash.ToString(), std::to_string(outpoint.n));
-        LogPrint("masternode","%s -- %s\n",__func__, strError);
         return false;
     }
     return true;
@@ -108,11 +64,9 @@ bool createArgumentsFromConfig(
     bool collateralPrivKeyIsRemote,
     CTxIn& txin,
     std::pair<CKey,CPubKey>& masternodeKeyPair,
-    std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
     MasternodeTier& nMasternodeTier)
 {
     const std::string strService = configEntry.getIp();
-    const std::string strKeyMasternode = configEntry.getPrivKey();
     CTransaction fundingTx;
     uint256 blockHash;
 
@@ -127,18 +81,11 @@ bool createArgumentsFromConfig(
         LogPrint("masternode","%s -- %s\n",__func__, strErrorRet);
         return false;
     }
-    const CScript& collateralScript = fundingTx.vout[txin.prevout.n].scriptPubKey;
+
     const CAmount& collateralAmount = fundingTx.vout[txin.prevout.n].nValue;
     //need correct blocks to send ping
     if (!checkBlockchainSync(strErrorRet,fOffline)||
-        !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
-        !setMasternodeCollateralKeys(
-            collateralPrivKeyIsRemote,
-            walletKeyStore,
-            collateralScript,
-            txin.prevout,
-            masternodeCollateralKeyPair,
-            strErrorRet) ||
+        !setMasternodeKeys(walletKeyStore,masternodeKeyPair,strErrorRet) ||
         !checkMasternodeCollateral(strService, collateralAmount, nMasternodeTier, strErrorRet))
     {
         return false;
@@ -149,29 +96,30 @@ bool createArgumentsFromConfig(
 } // anonymous namespace
 
 bool CMasternodeBroadcastFactory::CreateWithoutCollateralKey(
+    const CKeyStore& walletKeyStore,
     const CMasternodeConfig::CMasternodeEntry configEntry,
+    CPubKey pubkeyMasternode,
     CPubKey pubkeyCollateralAddress,
     std::string& strErrorRet,
     CMasternodeBroadcast& mnbRet)
 {
-    static CBasicKeyStore dummyKeyStore;
     const bool fOffline = false;
     const bool collateralPrivateKeyIsRemote = true;
     const bool deferRelay = true;
     CTxIn txin;
-    std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
     std::pair<CKey,CPubKey> masternodeKeyPair;
     MasternodeTier nMasternodeTier;
 
+    masternodeKeyPair.second = pubkeyMasternode;
+
     if(!createArgumentsFromConfig(
-        dummyKeyStore,
+        walletKeyStore,
         configEntry,
         strErrorRet,
         fOffline,
         collateralPrivateKeyIsRemote,
         txin,
         masternodeKeyPair,
-        masternodeCollateralKeyPair,
         nMasternodeTier))
     {
         return false;
@@ -181,7 +129,7 @@ bool CMasternodeBroadcastFactory::CreateWithoutCollateralKey(
         txin,
         CService(configEntry.getIp()),
         pubkeyCollateralAddress,
-        masternodeKeyPair.second,
+        pubkeyMasternode,
         nMasternodeTier,
         deferRelay,
         mnbRet);

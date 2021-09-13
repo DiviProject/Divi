@@ -194,48 +194,6 @@ bool CMasternodeBroadcastFactory::CreateWithoutCollateralKey(
     return true;
 }
 
-bool CMasternodeBroadcastFactory::Create(
-    const CKeyStore& walletKeyStore,
-    const CMasternodeConfig::CMasternodeEntry configEntry,
-    std::string& strErrorRet,
-    CMasternodeBroadcast& mnbRet,
-    bool deferRelay)
-{
-    const bool fOffline = false;
-    const bool collateralPrivateKeyIsRemote = false;
-    std::string strService = configEntry.getIp();
-
-    CTxIn txin;
-    std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
-    std::pair<CKey,CPubKey> masternodeKeyPair;
-    MasternodeTier nMasternodeTier;
-
-    if(!createArgumentsFromConfig(
-        walletKeyStore,
-        configEntry,
-        strErrorRet,
-        fOffline,
-        collateralPrivateKeyIsRemote,
-        txin,
-        masternodeKeyPair,
-        masternodeCollateralKeyPair,
-        nMasternodeTier))
-    {
-        return false;
-    }
-
-    return Create(txin,
-                CService(strService),
-                masternodeCollateralKeyPair.first,
-                masternodeCollateralKeyPair.second,
-                masternodeKeyPair.first,
-                masternodeKeyPair.second,
-                nMasternodeTier,
-                strErrorRet,
-                mnbRet,
-                deferRelay);
-}
-
 bool CMasternodeBroadcastFactory::signPing(
     const CKey& keyMasternodeNew,
     const CPubKey& pubKeyMasternodeNew,
@@ -265,25 +223,6 @@ bool CMasternodeBroadcastFactory::signBroadcast(
     }
     return true;
 }
-
-bool CMasternodeBroadcastFactory::provideSignatures(
-    CKey keyMasternodeNew,
-    CPubKey pubKeyMasternodeNew,
-    CKey keyCollateralAddressNew,
-    CMasternodeBroadcast& mnb,
-    std::string& strErrorRet)
-{
-    if(!signPing(keyMasternodeNew,pubKeyMasternodeNew,mnb.lastPing,strErrorRet))
-    {
-        return false;
-    }
-    if (!signBroadcast(keyCollateralAddressNew,mnb,strErrorRet))
-    {
-        return false;
-    }
-    return true;
-}
-
 
 void CMasternodeBroadcastFactory::createWithoutSignatures(
     const CTxIn& txin,
@@ -320,30 +259,4 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
         mnbRet.sigTime = pindexConf->GetBlockTime();
         LogPrint("masternode", "Using collateral confirmation time for broadcast: %d\n", mnbRet.sigTime);
     }
-}
-
-bool CMasternodeBroadcastFactory::Create(
-    const CTxIn& txin,
-    const CService& service,
-    const CKey& keyCollateralAddressNew,
-    const CPubKey& pubKeyCollateralAddressNew,
-    const CKey& keyMasternodeNew,
-    const CPubKey& pubKeyMasternodeNew,
-    const MasternodeTier nMasternodeTier,
-    std::string& strErrorRet,
-    CMasternodeBroadcast& mnbRet,
-    bool deferRelay)
-{
-    // wait for reindex and/or import to finish
-    if (ReindexingOrImportingIsActive()) return false;
-
-    createWithoutSignatures(
-        txin,service,pubKeyCollateralAddressNew,pubKeyMasternodeNew,nMasternodeTier,deferRelay,mnbRet);
-
-    if(!provideSignatures(keyMasternodeNew,pubKeyMasternodeNew,keyCollateralAddressNew,mnbRet,strErrorRet))
-    {
-        return false;
-    }
-
-    return true;
 }

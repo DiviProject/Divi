@@ -17,13 +17,6 @@ class CMasternodeBroadcastFactory
 {
 public:
     /// Create Masternode broadcast, needs to be relayed manually after that
-    static bool Create(
-        const CKeyStore& walletKeyStore,
-        const CMasternodeConfig::CMasternodeEntry configEntry,
-        std::string& strErrorRet,
-        CMasternodeBroadcast& mnbRet,
-        bool deferRelay);
-
     static bool CreateWithoutCollateralKey(
         const CMasternodeConfig::CMasternodeEntry configEntry,
         CPubKey pubkeyCollateralAddress,
@@ -35,6 +28,11 @@ public:
         const CPubKey& pubKeyMasternodeNew,
         CMasternodePing& mnp,
         std::string& strErrorRet);
+
+    static bool signBroadcast(
+        CKey keyCollateralAddressNew,
+        CMasternodeBroadcast& mnb,
+        std::string& strErrorRet);
 private:
     static void createWithoutSignatures(
         const CTxIn& txin,
@@ -44,28 +42,5 @@ private:
         MasternodeTier nMasternodeTier,
         bool deferRelay,
         CMasternodeBroadcast& mnbRet);
-
-    static bool signBroadcast(
-        CKey keyCollateralAddressNew,
-        CMasternodeBroadcast& mnb,
-        std::string& strErrorRet);
-
-    static bool provideSignatures(
-        CKey keyMasternodeNew,
-        CPubKey pubKeyMasternodeNew,
-        CKey keyCollateralAddressNew,
-        CMasternodeBroadcast& mnb,
-        std::string& strErrorRet);
-
-    static bool Create(const CTxIn& vin,
-                       const CService& service,
-                       const CKey& keyCollateralAddressNew,
-                       const CPubKey& pubKeyCollateralAddressNew,
-                       const CKey& keyMasternodeNew,
-                       const CPubKey& pubKeyMasternodeNew,
-                       MasternodeTier nMasternodeTier,
-                       std::string& strErrorRet,
-                       CMasternodeBroadcast& mnbRet,
-                       bool deferRelay);
 };
 #endif //MASTERNODE_BROADCAST_FACTORY_H

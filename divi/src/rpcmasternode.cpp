@@ -307,11 +307,11 @@ Value setupmasternode(const Array& params, bool fHelp)
     if (ipAndPort.find(':') == std::string::npos)
         ipAndPort += ":" + std::to_string(Params().GetDefaultPort());
 
-    CMasternodeConfig::CMasternodeEntry config(alias,ipAndPort,CBitcoinSecret(masternodeKey).ToString(),txHash,outputIndex);
+    CMasternodeConfig::CMasternodeEntry config(alias,ipAndPort,"",txHash,outputIndex);
 
     CMasternodeBroadcast mnb;
     std::string errorMsg;
-    if(!CMasternodeBroadcastFactory::CreateWithoutCollateralKey(config,pubkeyCollateralAddress,errorMsg,mnb))
+    if(!CMasternodeBroadcastFactory::CreateWithoutCollateralKey(*pwalletMain,config,masternodeKey.GetPubKey(),pubkeyCollateralAddress,errorMsg,mnb))
     {
         throw JSONRPCError(RPC_INVALID_PARAMS,errorMsg);
     }

@@ -13,6 +13,7 @@
 
 #include "amount.h"
 #include <blockmap.h>
+#include <base58.h>
 #include "BlockFileOpener.h"
 #include <chainparams.h>
 #include "checkpoints.h"
@@ -1004,6 +1005,34 @@ void LockUpMasternodeCollateral()
     }
 }
 
+void LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& errorMessage)
+{
+    settings.ForceRemoveArg("-masternodeprivkey");
+    if(settings.ParameterIsSet("-masternode"))
+    {
+        std::string alias = settings.GetArg("-masternode","");
+        if(alias.empty()) return;
+        // Pull up keyID by alias and pass it downstream with keystore for lookup of the private key
+        // Potential issues may arise in the event that a person reuses the same alias for a differnt
+        // MN - should assert here that if duplicate potential addresses are found that it will pick
+        // one and maybe not the one that was originally intended
+        alias = "reserved->"+alias;
+        for(const std::pair<CTxDestination, CAddressBookData>& addressData: pwallet->GetAddressBook())
+        {
+            if(addressData.second.name == alias)
+            {
+                CKeyID keyID = boost::get<CKeyID>(addressData.first);
+                CKey mnkey;
+                if(!pwallet->GetKey(keyID,mnkey))
+                {
+                    LogPrintf("%s - Unable to find masternode key\n",__func__);
+                }
+                settings.SetParameter("-masternodeprivkey",CBitcoinSecret(mnkey).ToString());
+            }
+        }
+    }
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1281,6 +1310,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return false;
     }
     uiInterface.InitMessage(translate("Checking for active masternode..."));
+    LookupMasternodeKey(settings,pwalletMain,errorMessage);
     if(!InitializeMasternodeIfRequested(settings,fTxIndex,errorMessage))
     {
         return InitError(errorMessage);

@@ -193,7 +193,7 @@ bool LoadMasternodeConfigurations(const Settings& settings, std::string& errorMe
 
 bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionIndexEnabled, std::string& errorMessage)
 {
-    bool enableMasternode = settings.GetBoolArg("-masternode", false);
+    bool enableMasternode = settings.ParameterIsSet("-masternode");
     if(enableMasternode) mnModule.designateLocalNodeAsMasternode();
 
     fLiteMode = settings.GetBoolArg("-litemode", false);

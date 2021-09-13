@@ -15,7 +15,6 @@
 #include <MasternodeNetworkMessageManager.h>
 #include <masternode-payments.h>
 #include <MasternodePaymentData.h>
-#include <obfuscation.h>
 #include <sync.h>
 #include <StoredMasternodeBroadcasts.h>
 #include <timedata.h>
@@ -136,9 +135,9 @@ bool SignMasternodeBroadcast(const CKeyStore& keystore, std::string& hexData)
         return false;
     }
     std::string errorMessage;
-    if(!CObfuScationSigner::SignAndVerify(mnb,collateralKey,collateralKey.GetPubKey(),errorMessage))
+    if(!CMasternodeBroadcastFactory::signBroadcast(collateralKey,mnb,errorMessage))
     {
-        LogPrintf("%s - failed to sign\n",__func__);
+        LogPrintf("%s - failed to sign. %s\n",__func__,errorMessage);
         return false;
     }
     CDataStream serializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);
@@ -170,41 +169,33 @@ MasternodeStartResult StartMasternode(const CKeyStore& keyStore, const StoredMas
         CMasternodeBroadcast mnb;
         bool updatePing = false;
 
-        if(!CMasternodeBroadcastFactory::Create(
-                keyStore,
-                configEntry,
-                result.errorMessage,
-                mnb,
-                deferRelay))
+        if(mnModule.localNodeIsAMasternode())
         {
-            if(mnModule.localNodeIsAMasternode())
-            {
-                /* We failed to sign a new broadcast with our wallet, but we may
-                have a stored one.  */
+            /* We failed to sign a new broadcast with our wallet, but we may
+            have a stored one.  */
 
-                COutPoint outp;
-                if (!configEntry.parseInputReference(outp))
-                {
-                    result.status = false;
-                    result.errorMessage = "Failed to parse input reference";
-                    return result;
-                }
-
-                if (!stored.GetBroadcast(outp, mnb))
-                {
-                    result.status = false;
-                    result.errorMessage = "No broadcast message available";
-                    return result;
-                }
-
-                updatePing = true;
-            }
-            else
+            COutPoint outp;
+            if (!configEntry.parseInputReference(outp))
             {
                 result.status = false;
-                result.errorMessage = "Could not create MN broadcast. Check your masternode.conf file";
+                result.errorMessage = "Failed to parse input reference";
                 return result;
             }
+
+            if (!stored.GetBroadcast(outp, mnb))
+            {
+                result.status = false;
+                result.errorMessage = "No broadcast message available";
+                return result;
+            }
+
+            updatePing = true;
+        }
+        else
+        {
+            result.status = false;
+            result.errorMessage = "Could not create MN broadcast. Check your masternode.conf file";
+            return result;
         }
 
         CDataStream serializedBroadcast(SER_NETWORK,PROTOCOL_VERSION);

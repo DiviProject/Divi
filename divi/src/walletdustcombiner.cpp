@@ -95,7 +95,7 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
         std::pair<std::string,bool> txCreationResult;
         {
             CoinControlSelectionAlgorithm coinSelectionAlgorithm(coinControl);
-            txCreationResult = wallet_.SendMoney(vecSend, wtx, ALL_SPENDABLE_COINS,&coinSelectionAlgorithm);
+            txCreationResult = wallet_.SendMoney(vecSend, wtx, &coinSelectionAlgorithm, ALL_SPENDABLE_COINS);
         }
         delete coinControl;
         if (!txCreationResult.second) {

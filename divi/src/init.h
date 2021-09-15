@@ -29,5 +29,5 @@ struct StartAndShutdownSignals
     static void EnableUnitTestSignals();
 };
 bool InitializeDivi(boost::thread_group& threadGroup);
-int RescanWalletForTransactions(CWallet& walletToRescan, CBlockIndex* scanStartIndex, bool updateWallet = false);
+int ScanForWalletTransactions(CWallet& walletToRescan, CBlockIndex* scanStartIndex, bool updateWallet = false);
 #endif // BITCOIN_INIT_H

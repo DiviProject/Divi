@@ -12,13 +12,10 @@
 #include "BlockDiskAccessor.h"
 #include "checkpoints.h"
 #include <chain.h>
-#include "coincontrol.h"
 #include <chainparams.h>
-#include "masternode-payments.h"
 #include "net.h"
 #include "script/script.h"
 #include "script/sign.h"
-#include "spork.h"
 #include "timedata.h"
 #include "utilmoneystr.h"
 #include <assert.h>
@@ -26,7 +23,6 @@
 #include <boost/thread.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "FeeAndPriorityCalculator.h"
-#include <ValidationState.h>
 #include <blockmap.h>
 #include <txmempool.h>
 #include <defaultValues.h>
@@ -36,10 +32,7 @@
 #include <SpentOutputTracker.h>
 #include <WalletTx.h>
 #include <WalletTransactionRecord.h>
-#include <StochasticSubsetSelectionAlgorithm.h>
-#include <CoinControlSelectionAlgorithm.h>
-#include <MinimumFeeCoinSelectionAlgorithm.h>
-#include <SignatureSizeEstimator.h>
+#include <I_CoinSelectionAlgorithm.h>
 #include <MerkleTxConfirmationNumberCalculator.h>
 #include <random.h>
 #include <VaultManager.h>

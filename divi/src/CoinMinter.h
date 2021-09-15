@@ -25,7 +25,7 @@ class CBlockTemplate;
 class CTxMemPool;
 class I_BlockSubsidyProvider;
 
-class CoinMinter: public I_CoinMinter
+class CoinMinter final: public I_CoinMinter
 {
     static constexpr int64_t fiveMinutes_ = 5 * 60;
     I_BlockFactory& blockFactory_;
@@ -61,10 +61,10 @@ public:
         const CMasternodeSync& masternodeSynchronization,
         HashedBlockMap& mapHashedBlocks);
 
-    virtual bool CanMintCoins();
-    virtual void sleep(uint64_t milliseconds) const;
-    virtual void setMintingRequestStatus(bool newStatus);
-    virtual bool mintingHasBeenRequested() const;
+    virtual bool CanMintCoins() override;
+    virtual void sleep(uint64_t milliseconds) const override;
+    virtual void setMintingRequestStatus(bool newStatus) override;
+    virtual bool mintingHasBeenRequested() const override;
 
     bool createNewBlock() const override;
 };

@@ -17,6 +17,7 @@
 #include <I_BlockTransactionCollector.h>
 
 class BlockMap;
+class CCriticalSection;
 class CTransaction;
 class CTxIn;
 class CBlock;
@@ -27,9 +28,6 @@ class CBlockTemplate;
 class CBlockHeader;
 class CFeeRate;
 class Settings;
-
-template <typename MutexObj>
-class AnnotatedMixin;
 
 struct PrioritizedTransactionData
 {
@@ -57,7 +55,7 @@ private:
     const CChain& activeChain_;
     const BlockMap& blockIndexMap_;
     CTxMemPool& mempool_;
-    AnnotatedMixin<boost::recursive_mutex>& mainCS_;
+    CCriticalSection& mainCS_;
     const CFeeRate& txFeeRate_;
     const unsigned blockMaxSize_;
     const unsigned blockPrioritySize_;
@@ -124,7 +122,7 @@ public:
         const CChain& activeChain,
         const BlockMap& blockIndexMap,
         CTxMemPool& mempool,
-        AnnotatedMixin<boost::recursive_mutex>& mainCS,
+        CCriticalSection& mainCS,
         const CFeeRate& txFeeRate);
     bool CollectTransactionsIntoBlock (
         CBlockTemplate& pblocktemplate) const override;

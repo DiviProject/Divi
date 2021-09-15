@@ -12,8 +12,7 @@ class CMasternodeSync;
 typedef std::map<unsigned int, unsigned int> BlockTimestampsByHeight;
 class I_BlockFactory;
 class CTxMemPool;
-template <typename MutexObj>
-class AnnotatedMixin;
+class CCriticalSection;
 class BlockMap;
 class I_CoinMinter;
 class I_BlockTransactionCollector;
@@ -42,7 +41,7 @@ class CoinMintingModule
 public:
     CoinMintingModule(
         const Settings& settings,
-        AnnotatedMixin<boost::recursive_mutex>& mainCS,
+        CCriticalSection& mainCS,
         const CChainParams& chainParameters,
         const CChain& activeChain,
         const BlockMap& blockIndexMap,

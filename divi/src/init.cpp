@@ -970,7 +970,8 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
 int RescanWalletForTransactions(CWallet& walletToRescan, CBlockIndex* scanStartIndex, bool updateWallet)
 {
     static BlockDiskDataReader blockReader;
-    return walletToRescan.ScanForWalletTransactions(blockReader,scanStartIndex,updateWallet);
+    static WalletRescanner rescanner(blockReader,chainActive,cs_main);
+    return rescanner.scanForWalletTransactions(walletToRescan,scanStartIndex,updateWallet);
 }
 
 void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)

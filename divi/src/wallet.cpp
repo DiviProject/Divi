@@ -197,12 +197,6 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , vaultManager_()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) )
-    , signatureSizeEstimator_(new SignatureSizeEstimator())
-    , defaultCoinSelectionAlgorithm_(
-        new MinimumFeeCoinSelectionAlgorithm(
-            *this,
-            *signatureSizeEstimator_,
-            priorityFeeCalculator.getMinimumRelayFeeRate()))
     , pwalletdbEncryption()
     , orderedTransactionIndex()
     , nWalletVersion(FEATURE_BASE)
@@ -236,8 +230,6 @@ CWallet::CWallet(const std::string& strWalletFileIn, const CChain& chain, const 
 CWallet::~CWallet()
 {
     pwalletdbEncryption.reset();
-    defaultCoinSelectionAlgorithm_.reset();
-    signatureSizeEstimator_.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
     vaultManager_.reset();
@@ -2286,8 +2278,8 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
-    AvailableCoinsType coin_type,
-    const I_CoinSelectionAlgorithm* coinSelector)
+    const I_CoinSelectionAlgorithm* coinSelector,
+    AvailableCoinsType coin_type)
 {
     if (vecSend.empty())
     {
@@ -2304,7 +2296,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     AvailableCoins(vCoins, true, false, coin_type);
     if(coinSelector == nullptr)
     {
-        coinSelector = defaultCoinSelectionAlgorithm_.get();
+        return {translate("Must provide a coin selection algorithm."),false};
     }
 
     // vouts to the payees
@@ -2374,11 +2366,11 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
 std::pair<std::string,bool> CWallet::SendMoney(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,
-    AvailableCoinsType coin_type,
-    const I_CoinSelectionAlgorithm* coinSelector)
+    const I_CoinSelectionAlgorithm* coinSelector,
+    AvailableCoinsType coin_type)
 {
     CReserveKey reservekey(*this);
-    std::pair<std::string,bool> createTxResult = CreateTransaction(vecSend,wtxNew,reservekey,coin_type,coinSelector);
+    std::pair<std::string,bool> createTxResult = CreateTransaction(vecSend,wtxNew,reservekey,coinSelector,coin_type);
     if(!createTxResult.second) return createTxResult;
     bool commitTxResult = CommitTransaction(wtxNew,reservekey);
     if(!commitTxResult)

@@ -636,7 +636,7 @@ void SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsTo
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
     static AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName("");
-    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(scriptsToFund, wtxNew, coinTypeFilter,&coinSelector);
+    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(scriptsToFund, wtxNew, &coinSelector, coinTypeFilter);
     if (!txCreation.second)
     {
         strError = txCreation.first;
@@ -673,7 +673,7 @@ void SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>& vecSen
     constexpr AvailableCoinsType coinTypeFilter = ALL_SPENDABLE_COINS;
     static AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName(accountName);
-    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(vecSend, wtxNew, coinTypeFilter,&coinSelector);
+    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(vecSend, wtxNew, &coinSelector, coinTypeFilter);
     if (!txCreation.second)
     {
         strError = txCreation.first;

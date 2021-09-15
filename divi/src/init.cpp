@@ -45,6 +45,7 @@
 #include <BlockDiskAccessor.h>
 #include <TransactionInputChecker.h>
 #include <txmempool.h>
+#include <WalletRescanner.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -966,6 +967,12 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     return true;
 }
 
+int RescanWalletForTransactions(CWallet& walletToRescan, CBlockIndex* scanStartIndex, bool updateWallet)
+{
+    static BlockDiskDataReader blockReader;
+    return walletToRescan.ScanForWalletTransactions(blockReader,scanStartIndex,updateWallet);
+}
+
 void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
 {
     BlockDiskDataReader blockReader;
@@ -984,7 +991,7 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
         uiInterface.InitMessage(translate("Rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
-        pwalletMain->ScanForWalletTransactions(blockReader, pindexRescan, true);
+        RescanWalletForTransactions(*pwalletMain,pindexRescan,true);
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
         pwalletMain->UpdateBestBlockLocation();
         pwalletMain->IncrementDBUpdateCount();

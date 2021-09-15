@@ -9,7 +9,7 @@
 
 #include <primitives/transaction.h>
 
-#include "BlockDiskAccessor.h"
+#include <I_BlockDataReader.h>
 #include "checkpoints.h"
 #include <chain.h>
 #include <chainparams.h>
@@ -1489,7 +1489,7 @@ bool CWallet::IsChange(const CTxOut& txout) const
  * from or to us. If fUpdate is true, found transactions that already
  * exist in the wallet will be updated.
  */
-int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
+int CWallet::ScanForWalletTransactions(I_BlockDataReader& blockReader,CBlockIndex* pindexStart, bool fUpdate)
 {
     static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
@@ -1513,8 +1513,9 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
                 ShowProgress(translate("Rescanning..."), std::max(1, std::min(99, (int)((checkpointsVerifier.GuessVerificationProgress(pindex, false) - dProgressStart) / (dProgressTip - dProgressStart) * 100))));
 
             CBlock block;
-            ReadBlockFromDisk(block, pindex);
-            BOOST_FOREACH (CTransaction& tx, block.vtx) {
+            blockReader.ReadBlock(pindex,block);
+            BOOST_FOREACH (CTransaction& tx, block.vtx)
+            {
                 if (AddToWalletIfInvolvingMe(tx, &block, fUpdate,false))
                     ret++;
             }

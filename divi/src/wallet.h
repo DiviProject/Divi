@@ -29,8 +29,8 @@
 #include <I_StakingCoinSelector.h>
 #include <I_WalletLoader.h>
 
-class I_SignatureSizeEstimator;
 class I_CoinSelectionAlgorithm;
+class I_BlockDataReader;
 class CKeyMetadata;
 class CKey;
 class CBlock;
@@ -347,7 +347,7 @@ public:
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
 
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate,bool blockDisconnection);
-    int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false);
+    int ScanForWalletTransactions(I_BlockDataReader& blockReader, CBlockIndex* pindexStart, bool fUpdate = false);
     void ReacceptWalletTransactions();
     CAmount GetBalance() const;
     CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;

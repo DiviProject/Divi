@@ -158,8 +158,6 @@ private:
     std::unique_ptr<VaultManager> vaultManager_;
     std::unique_ptr<WalletTransactionRecord> transactionRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
-    std::unique_ptr<I_SignatureSizeEstimator> signatureSizeEstimator_;
-    std::unique_ptr<I_CoinSelectionAlgorithm> defaultCoinSelectionAlgorithm_;
     std::unique_ptr<CWalletDB> pwalletdbEncryption;
 
     int64_t orderedTransactionIndex;
@@ -365,14 +363,14 @@ public:
         const std::vector<std::pair<CScript, CAmount> >& vecSend,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
-        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
-        const I_CoinSelectionAlgorithm* coinSelector = nullptr);
+        const I_CoinSelectionAlgorithm* coinSelector,
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
     std::pair<std::string,bool> SendMoney(
         const std::vector<std::pair<CScript, CAmount> >& vecSend,
         CWalletTx& wtxNew,
-        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
-        const I_CoinSelectionAlgorithm* coinSelector = nullptr);
+        const I_CoinSelectionAlgorithm* coinSelector,
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
 
     bool NewKeyPool();

@@ -44,7 +44,7 @@ I_BlockFactory* BlockFactorySelector(
 
 CoinMintingModule::CoinMintingModule(
     const Settings& settings,
-    AnnotatedMixin<boost::recursive_mutex>& mainCS,
+    CCriticalSection& mainCS,
     const CChainParams& chainParameters,
     const CChain& activeChain,
     const BlockMap& blockIndexMap,

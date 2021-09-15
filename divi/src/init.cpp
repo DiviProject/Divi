@@ -15,6 +15,7 @@
 #include <blockmap.h>
 #include <base58.h>
 #include "BlockFileOpener.h"
+#include <BlockDiskAccessor.h>
 #include <chainparams.h>
 #include "checkpoints.h"
 #include "compat/sanity.h"
@@ -967,6 +968,7 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
 
 void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
 {
+    BlockDiskDataReader blockReader;
     CBlockIndex* pindexRescan = chainActive.Tip();
     if (settings.GetBoolArg("-rescan", false))
         pindexRescan = chainActive.Genesis();
@@ -982,7 +984,7 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
         uiInterface.InitMessage(translate("Rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
-        pwalletMain->ScanForWalletTransactions(pindexRescan, true);
+        pwalletMain->ScanForWalletTransactions(blockReader, pindexRescan, true);
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
         pwalletMain->UpdateBestBlockLocation();
         pwalletMain->IncrementDBUpdateCount();

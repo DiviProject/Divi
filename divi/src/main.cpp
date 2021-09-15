@@ -582,8 +582,9 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                          REJECT_NONSTANDARD, reason);
     // is it already in the memory pool?
     uint256 hash = tx.GetHash();
-    if (pool.exists(hash)) {
-        LogPrintf("%s tx already in mempool\n", __func__);
+    if (pool.exists(hash))
+    {
+        LogPrint("mempool","%s - tx %s already in mempool\n", __func__,hash);
         return false;
     }
 
@@ -594,6 +595,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             COutPoint outpoint = tx.vin[i].prevout;
             if (pool.mapNextTx.count(outpoint)) {
                 // Disable replacement feature for now
+                LogPrint("mempool","%s - Conflicting tx spending same inputs %s\n",__func__, hash);
                 return false;
             }
         }
@@ -611,7 +613,11 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
             // do we already have it?
             if (view.HaveCoins(hash))
+            {
+                LogPrint("mempool","%s - tx %s outputs already exist\n",__func__,hash);
+
                 return false;
+            }
 
             // do all inputs exist?
             // Note that this does not check for the presence of actual outputs (see the next check for that),
@@ -620,6 +626,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                 if (!view.HaveCoins(txin.prevout.hash)) {
                     if (pfMissingInputs)
                         *pfMissingInputs = true;
+                    LogPrint("mempool","%s - unknown tx %s input\n",__func__, txin.prevout.hash);
                     return false;
                 }
             }
@@ -668,6 +675,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         // but prioritise dstx and don't check fees for it
         if (!ignoreFees && !CheckFeesPaidAreAcceptable(tx,nSize,nFees,chainActive.Height(),fLimitFree,view,state))
         {
+            LogPrint("mempool","%s - Conflicting tx spending same inputs%s",__func__, hash);
             return false;
         }
 

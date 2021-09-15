@@ -8,9 +8,7 @@ class CChain;
 class BlockMap;
 class CTxMemPool;
 class CMerkleTx;
-
-template <typename MutexObj>
-class AnnotatedMixin;
+class CCriticalSection;
 
 class MerkleTxConfirmationNumberCalculator final: public I_MerkleTxConfirmationNumberCalculator
 {
@@ -19,14 +17,14 @@ private:
     const BlockMap& blockIndices_;
     const int coinbaseConfirmationsForMaturity_;
     CTxMemPool& mempool_;
-    AnnotatedMixin<boost::recursive_mutex>& mainCS_;
+    CCriticalSection& mainCS_;
 public:
     MerkleTxConfirmationNumberCalculator(
         const CChain& activeChain,
         const BlockMap& blockIndices,
         const int coinbaseConfirmationsForMaturity,
         CTxMemPool& mempool,
-        AnnotatedMixin<boost::recursive_mutex>& mainCS);
+        CCriticalSection& mainCS);
     std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const;
     int GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const;
     int GetBlocksToMaturity(const CMerkleTx& merkleTx) const;

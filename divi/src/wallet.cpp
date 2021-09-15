@@ -9,7 +9,6 @@
 
 #include <primitives/transaction.h>
 
-#include <I_BlockDataReader.h>
 #include "checkpoints.h"
 #include <chain.h>
 #include <chainparams.h>
@@ -1487,52 +1486,6 @@ bool CWallet::IsChange(const CTxOut& txout) const
         }
     }
     return false;
-}
-
-/**
- * Scan the block chain (starting in pindexStart) for transactions
- * from or to us. If fUpdate is true, found transactions that already
- * exist in the wallet will be updated.
- */
-int CWallet::ScanForWalletTransactions(I_BlockDataReader& blockReader,CBlockIndex* pindexStart, bool fUpdate)
-{
-    static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
-
-    int ret = 0;
-    int64_t nNow = GetTime();
-
-    CBlockIndex* pindex = pindexStart;
-    {
-        LOCK2(cs_main, cs_wallet);
-
-        // no need to read and scan block, if block was created before
-        // our wallet birthday (as adjusted for block time variability)
-        while (pindex && nTimeFirstKey && (pindex->GetBlockTime() < (nTimeFirstKey - 7200)))
-            pindex = activeChain_.Next(pindex);
-
-        ShowProgress(translate("Rescanning..."), 0); // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
-        double dProgressStart = checkpointsVerifier.GuessVerificationProgress(pindex, false);
-        double dProgressTip = checkpointsVerifier.GuessVerificationProgress(activeChain_.Tip(), false);
-        while (pindex) {
-            if (pindex->nHeight % 100 == 0 && dProgressTip - dProgressStart > 0.0)
-                ShowProgress(translate("Rescanning..."), std::max(1, std::min(99, (int)((checkpointsVerifier.GuessVerificationProgress(pindex, false) - dProgressStart) / (dProgressTip - dProgressStart) * 100))));
-
-            CBlock block;
-            blockReader.ReadBlock(pindex,block);
-            BOOST_FOREACH (CTransaction& tx, block.vtx)
-            {
-                if (AddToWalletIfInvolvingMe(tx, &block, fUpdate,false))
-                    ret++;
-            }
-            pindex = activeChain_.Next(pindex);
-            if (GetTime() >= nNow + 60) {
-                nNow = GetTime();
-                LogPrintf("Still rescanning. At block %d. Progress=%f\n", pindex->nHeight, checkpointsVerifier.GuessVerificationProgress(pindex));
-            }
-        }
-        ShowProgress(translate("Rescanning..."), 100); // hide progress dialog in GUI
-    }
-    return ret;
 }
 
 bool CWallet::SubmitTransactionToMemoryPool(const CWalletTx& wtx) const

@@ -1543,8 +1543,9 @@ Value ListReceived(const Array& params, bool fByAccounts)
             filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
     // Tally
-    map<CBitcoinAddress, tallyitem> mapTally;
+    std::map<CBitcoinAddress, tallyitem> mapTally;
     std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = pwalletMain->getConfirmationCalculator();
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
@@ -1552,8 +1553,8 @@ Value ListReceived(const Array& params, bool fByAccounts)
         if (wtx.IsCoinBase() || !IsFinalTx(wtx, chainActive))
             continue;
 
-        int nDepth = pwalletMain->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx);
-        int nBCDepth = pwalletMain->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx);
+        int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
+        int nBCDepth = nDepth;
         if (nDepth < nMinDepth)
             continue;
 

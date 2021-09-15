@@ -138,8 +138,7 @@ Value importprivkey(const Array& params, bool fHelp)
         pwalletMain->UpdateTimeFirstKey(1);
 
         if (fRescan) {
-            BlockDiskDataReader blockReader;
-            pwalletMain->ScanForWalletTransactions(blockReader,chainActive.Genesis(), true);
+            RescanWalletForTransactions(*pwalletMain,chainActive.Genesis(),true);
         }
     }
 
@@ -203,8 +202,7 @@ Value importaddress(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding address to wallet");
 
         if (fRescan) {
-            BlockDiskDataReader blockReader;
-            pwalletMain->ScanForWalletTransactions(blockReader,chainActive.Genesis(), true);
+            RescanWalletForTransactions(*pwalletMain,chainActive.Genesis(),true);
             pwalletMain->ReacceptWalletTransactions();
         }
     }
@@ -298,8 +296,7 @@ Value importwallet(const Array& params, bool fHelp)
     pwalletMain->UpdateTimeFirstKey(nTimeBegin);
 
     LogPrintf("Rescanning last %i blocks\n", chainActive.Height() - pindex->nHeight + 1);
-    BlockDiskDataReader blockReader;
-    pwalletMain->ScanForWalletTransactions(blockReader,pindex);
+    RescanWalletForTransactions(*pwalletMain,pindex);
 
     if (!fGood)
         throw JSONRPCError(RPC_WALLET_ERROR, "Error adding some keys to wallet");
@@ -578,8 +575,7 @@ Value bip38decrypt(const Array& params, bool fHelp)
 
         // whenever a key is imported, we need to scan the whole chain; 0 would be considered 'no value'
         pwalletMain->UpdateTimeFirstKey(1);
-        BlockDiskDataReader blockReader;
-        pwalletMain->ScanForWalletTransactions(blockReader,chainActive.Genesis(), true);
+        RescanWalletForTransactions(*pwalletMain,chainActive.Genesis(), true);
     }
 
     return result;

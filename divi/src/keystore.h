@@ -85,12 +85,12 @@ public:
     virtual bool HaveWatchOnly(const CScript &dest) const override;
     virtual bool HaveWatchOnly() const override;
 
-    virtual bool AddMultiSig(const CScript& dest);
-    virtual bool RemoveMultiSig(const CScript& dest);
-    virtual bool HaveMultiSig(const CScript& dest) const;
-    virtual bool HaveMultiSig() const;
+    virtual bool AddMultiSig(const CScript& dest) override;
+    virtual bool RemoveMultiSig(const CScript& dest) override;
+    virtual bool HaveMultiSig(const CScript& dest) const override;
+    virtual bool HaveMultiSig() const override;
 
-	virtual bool GetHDChain(CHDChain& hdChainRet) const;
+    virtual bool GetHDChain(CHDChain& hdChainRet) const;
 };
 
 typedef std::vector<unsigned char, secure_allocator<unsigned char> > CKeyingMaterial;

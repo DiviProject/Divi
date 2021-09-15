@@ -111,7 +111,7 @@ Value allocatefunds(const Array& params, bool fHelp)
         if(wtx.vout[i].nValue == nAmount)
         {
             found = true;
-            obj.push_back(Pair("vout", i));
+            obj.push_back(Pair("vout", static_cast<int64_t>(i) ));
             break;
         }
     }

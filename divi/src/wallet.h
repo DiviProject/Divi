@@ -302,27 +302,27 @@ public:
     bool AddHDPubKey(const CExtPubKey &extPubKey, bool fInternal);
     //! loads a HDPubKey into the wallets memory
     //! Adds a key to the store, and saves it to disk.
-    bool AddKeyPubKey(const CKey& key, const CPubKey& pubkey);
+    bool AddKeyPubKey(const CKey& key, const CPubKey& pubkey) override;
     //! Adds a key to the store, without saving it to disk (used by LoadWallet)
     //! Load metadata (used by LoadWallet)
 
 
 
     //! Adds an encrypted key to the store, and saves it to disk.
-    bool AddCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
+    bool AddCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) override;
     //! Adds an encrypted key to the store, without saving it to disk (used by LoadWallet)
-    bool AddCScript(const CScript& redeemScript);
+    bool AddCScript(const CScript& redeemScript) override;
     bool AddVault(const CScript& vaultScript, const CBlock* pblock,const CTransaction& tx);
     bool RemoveVault(const CScript& vaultScript);
 
     //! Adds a watch-only address to the store, and saves it to disk.
-    bool AddWatchOnly(const CScript& dest);
-    bool RemoveWatchOnly(const CScript& dest);
+    bool AddWatchOnly(const CScript& dest) override;
+    bool RemoveWatchOnly(const CScript& dest) override;
     //! Adds a watch-only address to the store, without saving it to disk (used by LoadWallet)
 
     //! Adds a MultiSig address to the store, and saves it to disk.
-    bool AddMultiSig(const CScript& dest);
-    bool RemoveMultiSig(const CScript& dest);
+    bool AddMultiSig(const CScript& dest) override;
+    bool RemoveMultiSig(const CScript& dest) override;
     //! Adds a MultiSig address to the store, without saving it to disk (used by LoadWallet)
 
     bool Unlock(const SecureString& strWalletPassphrase, bool stakingOnly = false);

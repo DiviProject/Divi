@@ -271,8 +271,9 @@ bool CheckWork(
         double n1 = ConvertBitsToDouble(block.nBits);
         double n2 = ConvertBitsToDouble(nBitsRequired);
 
-        if (abs(n1 - n2) > n1 * 0.5)
-            return error("%s : incorrect proof of work (DGW pre-fork) - %f %f %f at %d", __func__, abs(n1 - n2), n1, n2, pindexPrev->nHeight + 1);
+        const double absoluteDifference = std::abs(n1 - n2);
+        if (absoluteDifference > n1 * 0.5)
+            return error("%s : incorrect proof of work (DGW pre-fork) - %f %f %f at %d", __func__, absoluteDifference, n1, n2, pindexPrev->nHeight + 1);
 
         return true;
     }

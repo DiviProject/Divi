@@ -226,6 +226,7 @@ public:
     void UpdateTimeFirstKey(int64_t nCreateTime);
     void activateVaultMode();
 
+    int64_t getTimestampOfFistKey() const;
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
     bool VerifyHDKeys() const;
     bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose) override;

@@ -248,6 +248,11 @@ void CWallet::activateVaultMode()
     }
 }
 
+int64_t CWallet::getTimestampOfFistKey() const
+{
+    return nTimeFirstKey;
+}
+
 void CWallet::SetNull()
 {
     nWalletVersion = FEATURE_BASE;

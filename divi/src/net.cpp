@@ -224,6 +224,10 @@ public:
     {
         return listeningSockets_;
     }
+    void addListeningSocket(SOCKET listeningSocket, bool whiteListed)
+    {
+        listeningSockets_.push_back(ListenSocket(listeningSocket, whiteListed));
+    }
     void disconnectUnusedNodes()
     {
         LOCK(cs_vNodes);
@@ -301,7 +305,6 @@ public:
     }
 };
 
-static std::vector<ListenSocket>& vhListenSocket = NodeManager::Instance().listeningSockets();
 static CCriticalSection& cs_vNodes = NodeManager::Instance().nodesLock();
 static std::vector<CNode*>& vNodes = NodeManager::Instance().nodes();
 
@@ -670,8 +673,13 @@ private:
     fd_set fdsetError;
     SOCKET hSocketMax;
     bool have_fds;
+    std::vector<ListenSocket>& listeningSockets_;
 public:
-    SocketsProcessor(): hSocketMax(0), have_fds(false)
+    SocketsProcessor(
+        std::vector<ListenSocket>& listeningSockets
+        ): hSocketMax(0)
+        , have_fds(false)
+        , listeningSockets_(listeningSockets)
     {
         timeout.tv_sec = 0;
         timeout.tv_usec = 50000; // frequency to poll pnode->vSend
@@ -706,9 +714,9 @@ public:
         return FD_ISSET(hSocket, &fdsetRecv);
     }
 
-    void ProcessListeningSockets(const std::vector<ListenSocket>& listeningSockets)
+    void ProcessListeningSockets()
     {
-        for (const ListenSocket& hListenSocket: listeningSockets)
+        for (const ListenSocket& hListenSocket: listeningSockets_)
         {
             FD_SET(hListenSocket.socket, &fdsetRecv);
             hSocketMax = max(hSocketMax, hListenSocket.socket);
@@ -775,9 +783,9 @@ public:
             MilliSleep(timeout.tv_usec / 1000);
         }
     }
-    void AcceptNewConnections(const std::vector<ListenSocket>& listeningSockets, CCriticalSection& nodesLock, std::vector<CNode*>& nodes)
+    void AcceptNewConnections(CCriticalSection& nodesLock, std::vector<CNode*>& nodes)
     {
-        for(const ListenSocket& hListenSocket: listeningSockets)
+        for(const ListenSocket& hListenSocket: listeningSockets_)
         {
             if (hListenSocket.socket != INVALID_SOCKET && FD_ISSET(hListenSocket.socket, &fdsetRecv))
             {
@@ -855,14 +863,14 @@ void ThreadSocketHandler()
             uiInterface.NotifyNumConnectionsChanged(nPrevNodeCount);
         }
 
-        SocketsProcessor socketsProcessor;
-        socketsProcessor.ProcessListeningSockets(vhListenSocket);
+        SocketsProcessor socketsProcessor(NodeManager::Instance().listeningSockets());
+        socketsProcessor.ProcessListeningSockets();
         socketsProcessor.AssignNodesToSendOrReceiveTasks(cs_vNodes,vNodes);
 
         int nSelect = socketsProcessor.CheckSocketCanBeSelected();
         boost::this_thread::interruption_point();
         socketsProcessor.ProcessSocketErrorCode(nSelect);
-        socketsProcessor.AcceptNewConnections(vhListenSocket,cs_vNodes,vNodes);
+        socketsProcessor.AcceptNewConnections(cs_vNodes,vNodes);
 
         //
         // Service each socket
@@ -1427,8 +1435,7 @@ bool BindListenPort(const CService& addrBind, string& strError, bool fWhiteliste
         return false;
     }
 
-    vhListenSocket.push_back(ListenSocket(hListenSocket, fWhitelisted));
-
+    NodeManager::Instance().addListeningSocket(hListenSocket,fWhitelisted);
     if (addrBind.IsRoutable() && fDiscover && !fWhitelisted)
         AddLocal(addrBind, LOCAL_BIND);
 

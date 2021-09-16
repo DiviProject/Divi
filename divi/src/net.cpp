@@ -220,10 +220,6 @@ public:
     {
         return vNodes_;
     }
-    std::list<CNode*>& disconnectedNodes()
-    {
-        return disconnectedNodes_;
-    }
     std::vector<ListenSocket>& listeningSockets()
     {
         return listeningSockets_;

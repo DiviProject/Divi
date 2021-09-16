@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <NodeId.h>
 #include <memory>
+#include <atomic>
 #include <I_CommunicationChannel.h>
 
 #include <boost/thread/condition_variable.hpp>
@@ -226,7 +227,7 @@ public:
     // For such cases node should be released manually (preferably right after corresponding code).
     CCriticalSection cs_filter;
     CBloomFilter* pfilter;
-    int nRefCount;
+    std::atomic<int> nRefCount;
     NodeId id;
 
     int nSporksCount = -1;
@@ -313,8 +314,15 @@ public:
     NodeId GetId() const;
     int GetRefCount() const;
 
-    CNode* AddRef();
-    void Release();
+    CNode* AddRef()
+    {
+        nRefCount++;
+        return this;
+    }
+    void Release()
+    {
+        nRefCount--;
+    }
     void AddAddressKnown(const CAddress& addr);
     void PushAddress(const CAddress& addr);
     void AddInventoryKnown(const CInv& inv);

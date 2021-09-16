@@ -129,16 +129,19 @@ public:
         , peersLock_(peersLock)
     {
     }
-    virtual std::vector<CNode*> GetSporkSyncedOrInboundNodes() const
+    virtual std::vector<NodeRef> GetSporkSyncedOrInboundNodes() const
     {
-        std::vector<CNode*> vSporkSyncedNodes;
+        std::vector<NodeRef> vSporkSyncedNodes;
         {
-        TRY_LOCK(peersLock_, lockedNodes);
-        if (!lockedNodes) return {};
-
-        std::copy_if(std::begin(peers_), std::end(peers_), std::back_inserter(vSporkSyncedNodes), [](const CNode *node) {
-            return node->fInbound || node->AreSporksSynced();
-        });
+            TRY_LOCK(peersLock_, lockedNodes);
+            if (!lockedNodes) return {};
+            for(CNode* node: peers_)
+            {
+                if(node->fInbound || node->AreSporksSynced())
+                {
+                    vSporkSyncedNodes.push_back(NodeReferenceFactory::makeUniqueNodeReference(node));
+                }
+            }
         }
         return vSporkSyncedNodes;
     }
@@ -211,6 +214,7 @@ public:
         LOCK(cs_vNodes);
         vNodes_.push_back(pnode->node());
         socketChannelsByNodeId_[pnode->node()->GetId()].reset(pnode);
+        vNodes_.back()->AddRef();
     }
     CCriticalSection& nodesLock()
     {
@@ -239,13 +243,10 @@ public:
             {
                 // remove from vNodes
                 vNodes_.erase(remove(vNodes_.begin(), vNodes_.end(), pnode), vNodes_.end());
-
                 // close socket and cleanup
                 pnode->CloseCommsAndDisconnect();
 
-                // hold in disconnected pool until all refs are released
-                if (pnode->fNetworkNode || pnode->fInbound)
-                    pnode->Release();
+                if (pnode->fNetworkNode || pnode->fInbound) pnode->Release();
                 disconnectedNodes_.push_back(pnode);
             }
         }
@@ -317,7 +318,6 @@ CNode* CreateNode(SOCKET socket, Args&&... args)
     CNode* pnode = nodeWithSocket->node();
     if (pnode->CommunicationChannelIsValid() && !pnode->fInbound)
         pnode->PushVersion(GetHeight());
-    pnode->AddRef();
 
     NodeManager::Instance().recordNode(nodeWithSocket);
     return pnode;
@@ -552,19 +552,18 @@ CNode* FindNode(const CService& addr)
     return NULL;
 }
 
-CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
+NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool weOpenedNetworkConnection = false)
 {
     if (pszDest == NULL) {
         // we clean masternode connections in CMasternodeMan::ProcessMasternodeConnections()
         // so should be safe to skip this and connect to local Hot MN on CActiveMasternode::ManageStatus()
         if (IsLocal(addrConnect))
-            return NULL;
+            return NodeReferenceFactory::makeUniqueNodeReference(nullptr);
 
         // Look for an existing connection
         CNode* pnode = FindNode((CService)addrConnect);
         if (pnode) {
-            pnode->AddRef();
-            return pnode;
+            return NodeReferenceFactory::makeUniqueNodeReference(pnode);
         }
     }
 
@@ -582,7 +581,7 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
         if (!IsSelectableSocket(hSocket)) {
             LogPrintf("Cannot create connection: non-selectable socket created (fd >= FD_SETSIZE ?)\n");
             CloseSocket(hSocket);
-            return NULL;
+            return NodeReferenceFactory::makeUniqueNodeReference(nullptr);
         }
 
         addrman.Attempt(addrConnect);
@@ -590,22 +589,20 @@ CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
         // Add node
         CNode* pnode = CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addrConnect, pszDest ? pszDest : "", false,false);
         pnode->nTimeConnected = GetTime();
-
-        return pnode;
+        if(weOpenedNetworkConnection) pnode->fNetworkNode = true;
+        return NodeReferenceFactory::makeUniqueNodeReference(pnode);
     } else if (!proxyConnectionFailed) {
         // If connecting to the node failed, and failure is not caused by a problem connecting to
         // the proxy, mark this as an attempt.
         addrman.Attempt(addrConnect);
     }
 
-    return NULL;
+    return NodeReferenceFactory::makeUniqueNodeReference(nullptr);
 }
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo)
 {
-    CNode* pnode = ConnectNode(addrToConnectTo, NULL);
-    bool connectionSuccessful = static_cast<bool>(pnode);
-    if(connectionSuccessful) pnode->Release();
-    return connectionSuccessful;
+    NodeRef pnode = ConnectNode(addrToConnectTo, NULL);
+    return static_cast<bool>(pnode);
 }
 
 static std::vector<CSubNet> vWhitelistedRange;
@@ -631,7 +628,7 @@ class ThreadSafeNodesCopy
 {
 private:
     CCriticalSection& nodesLock_;
-    std::vector<CNode*> copyOfNodes;
+    std::vector<NodeRef> copyOfNodes;
     bool clearedCopy;
 public:
     ThreadSafeNodesCopy(
@@ -642,9 +639,8 @@ public:
         , clearedCopy(true)
     {
         LOCK(nodesLock_);
-        copyOfNodes = originalNodes;
-        for(CNode* pnode: copyOfNodes)
-            pnode->AddRef();
+        for(CNode* pnode: originalNodes)
+            copyOfNodes.push_back(NodeReferenceFactory::makeUniqueNodeReference(pnode));
         clearedCopy = false;
     }
     ~ThreadSafeNodesCopy()
@@ -654,11 +650,14 @@ public:
     void ClearCopy()
     {
         LOCK(nodesLock_);
-        for(CNode* pnode: copyOfNodes)
-            pnode->Release();
+        for(NodeRef& nodeRef: copyOfNodes)
+        {
+            nodeRef.reset();
+        }
+        copyOfNodes.clear();
         clearedCopy = true;
     }
-    const std::vector<CNode*>& Nodes()
+    const std::vector<NodeRef>& Nodes()
     {
         return copyOfNodes;
     }
@@ -876,11 +875,11 @@ void ThreadSocketHandler()
         // Service each socket
         //
         ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
-        for(CNode* pnode: safeNodesCopy.Nodes())
+        for(const NodeRef& pnode: safeNodesCopy.Nodes())
         {
             boost::this_thread::interruption_point();
 
-            if(!socketsProcessor.SocketReceiveDataFromPeer(pnode,messageHandlerCondition) || !socketsProcessor.SocketSendDataToPeer(pnode))
+            if(!socketsProcessor.SocketReceiveDataFromPeer(pnode.get(),messageHandlerCondition) || !socketsProcessor.SocketSendDataToPeer(pnode.get()))
                 continue;
 
             //
@@ -904,18 +903,16 @@ void ThreadMessageHandler()
     SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
     while (true) {
         ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
-        const std::vector<CNode*>& vNodesCopy = safeNodesCopy.Nodes();
+        const std::vector<NodeRef>& vNodesCopy = safeNodesCopy.Nodes();
 
         bool rebroadcast = (!IsInitialBlockDownload() && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
 
         // Poll the connected nodes for messages
-        CNode* pnodeTrickle = NULL;
-        if (!vNodesCopy.empty())
-            pnodeTrickle = vNodesCopy[GetRand(vNodesCopy.size())];
-
+        CNode* pnodeTrickle = vNodesCopy.empty()? nullptr: vNodesCopy[GetRand(vNodesCopy.size())].get();
         bool fSleep = true;
 
-        BOOST_FOREACH (CNode* pnode, vNodesCopy) {
+        for(const NodeRef& pnode: vNodesCopy)
+        {
             if (pnode->IsFlaggedForDisconnection())
                 continue;
 
@@ -932,10 +929,12 @@ void ThreadMessageHandler()
 
             // Rebroadcasting is done for all nodes after the ping
             // of the first; this is to mimic previous behaviour.
-            if (rebroadcast) {
-                for (auto* pnode2 : vNodesCopy)
+            if (rebroadcast)
+            {
+                for (const NodeRef& nodeRef : vNodesCopy)
                 {
-                    pnode2->AdvertizeLocalAddress(nLastRebroadcast);
+                    NodeRef nodeToAdvertiseAddressTo = NodeReferenceFactory::makeUniqueNodeReference(nodeRef.get());
+                    nodeToAdvertiseAddressTo->AdvertizeLocalAddress(nLastRebroadcast);
                     boost::this_thread::interruption_point();
                 }
 
@@ -946,7 +945,7 @@ void ThreadMessageHandler()
             // Send messages
             if (pnode->CanSendMessagesToPeer())
             {
-                pnode->ProcessSendMessages(pnode == pnodeTrickle);
+                pnode->ProcessSendMessages(pnode.get() == pnodeTrickle);
             }
             boost::this_thread::interruption_point();
         }
@@ -1311,13 +1310,11 @@ bool OpenNetworkConnection(const CAddress& addrConnect, const char* pszDest, boo
     } else if (FindNode(pszDest))
         return false;
 
-    CNode* pnode = ConnectNode(addrConnect, pszDest);
-    if(pnode && pnode->GetRefCount() > 1) pnode->Release();
+    NodeRef pnode = ConnectNode(addrConnect, pszDest,true);
     boost::this_thread::interruption_point();
 
     if (!pnode)
         return false;
-    pnode->fNetworkNode = true;
     if (fOneShot)
         pnode->fOneShot = true;
 

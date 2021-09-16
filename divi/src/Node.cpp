@@ -767,15 +767,6 @@ int CNode::GetRefCount() const
     return nRefCount;
 }
 
-CNode* CNode::AddRef()
-{
-    nRefCount++;
-    return this;
-}
-void CNode::Release()
-{
-    nRefCount--;
-}
 void CNode::AddAddressKnown(const CAddress& addr)
 {
     setAddrKnown.insert(addr);

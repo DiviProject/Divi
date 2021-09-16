@@ -435,7 +435,7 @@ void CMasternodeSync::Process()
 
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_INITIAL) ContinueToNextSyncStage();
 
-    std::vector<CNode*> vSporkSyncedNodes = peerSyncService_.GetSporkSyncedOrInboundNodes();
+    std::vector<NodeRef> vSporkSyncedNodes = peerSyncService_.GetSporkSyncedOrInboundNodes();
 
     // don't event attemp to sync if we don't have 3 synced nodes
     if(vSporkSyncedNodes.size() < 3) {
@@ -446,10 +446,10 @@ void CMasternodeSync::Process()
         ContinueToNextSyncStage();
     }
 
-    for(CNode* pnode: vSporkSyncedNodes)
+    for(NodeRef& pnode: vSporkSyncedNodes)
     {
         if (pnode->nVersion >=  ActiveProtocol() &&
-            (!SyncMasternodeList(pnode,now) || !SyncMasternodeWinners(pnode,now)))
+            (!SyncMasternodeList(pnode.get(),now) || !SyncMasternodeWinners(pnode.get(),now)))
         {
             return;
         }

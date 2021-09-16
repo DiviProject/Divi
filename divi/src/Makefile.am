@@ -263,6 +263,7 @@ BITCOIN_CORE_H = \
   netfulfilledman.h \
   net.h \
   AddrDB.h \
+  NodeRef.h \
   Node.h \
   SocketChannel.h \
   I_CommunicationRegistrar.h \
@@ -437,6 +438,7 @@ libbitcoin_server_a_SOURCES = \
   MonthlyWalletBackupCreator.cpp \
   net.cpp \
   AddrDB.cpp \
+  NodeRef.cpp \
   Node.cpp \
   SocketChannel.cpp \
   NodeStats.cpp \

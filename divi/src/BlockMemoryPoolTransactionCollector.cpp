@@ -375,10 +375,9 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     CBlockTemplate& pblocktemplate) const
 {
     LOCK2(mainCS_, mempool_.cs);
+    if(pblocktemplate.previousBlockIndex != activeChain_.Tip()) return false;
 
     CBlock& block = pblocktemplate.block;
-
-    pblocktemplate.previousBlockIndex = activeChain_.Tip();
     const int nHeight = pblocktemplate.previousBlockIndex->nHeight + 1;
     CCoinsViewCache view(baseCoinsViewCache_);
 

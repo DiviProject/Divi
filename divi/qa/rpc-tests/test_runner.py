@@ -88,6 +88,7 @@ BASE_SCRIPTS = [
     'invalidateblock.py',
     'keypool.py',
     'listtransactions.py',
+    'lottery.py',
     'mempool_coinbase_spends.py',
     'mempool_indices.py',
     'mempool_reject.py',

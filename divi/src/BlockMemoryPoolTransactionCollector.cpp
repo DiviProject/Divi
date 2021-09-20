@@ -210,7 +210,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
                     // This should never happen; all transactions in the memory
                     // pool should connect to either transactions in the chain
                     // or other transactions in the memory pool.
-                    LogPrintf("ERROR: mempool transaction missing input\n");
+                    LogPrintf("ERROR: %s - mempool transaction missing input\n",__func__);
                     fMissingInputs = true;
                     break;
                 }
@@ -343,7 +343,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         AddDependingTransactionsToPriorityQueue(dependentTransactions, hash, vecPriority, comparer);
     }
 
-    LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
+    LogPrintf("%s: total size %u\n",__func__, nBlockSize);
     return prioritizedTransactions;
 }
 
@@ -383,6 +383,6 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
 
     AddTransactionsToBlockIfPossible(nHeight, view, block);
 
-    LogPrintf("CreateNewBlock(): block tostring %s\n", block);
+    LogPrintf("%s: block tostring %s\n",__func__, block);
     return true;
 }

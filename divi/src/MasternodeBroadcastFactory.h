@@ -36,6 +36,13 @@ public:
         CMasternodeBroadcast& mnb,
         std::string& strErrorRet);
 private:
+    static CMasternodeBroadcast constructBroadcast(
+        const CService& newAddr,
+        const CTxIn& newVin,
+        const CPubKey& pubKeyCollateralAddress,
+        const CPubKey& pubKeyMasternode,
+        MasternodeTier nMasternodeTier,
+        int protocolVersionIn);
     static void createWithoutSignatures(
         const CTxIn& txin,
         const CService& service,

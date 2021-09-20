@@ -179,9 +179,9 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
 
 void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
     const CTransaction& tx,
-    CBlockTemplate& blocktemplate) const
+    CBlock& block) const
 {
-    blocktemplate.block.vtx.push_back(tx);
+    block.vtx.push_back(tx);
 }
 
 std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTransactions (
@@ -350,7 +350,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
 void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     const int& nHeight,
     CCoinsViewCache& view,
-    CBlockTemplate& blocktemplate) const
+    CBlock& block) const
 {
     DependingTransactionsMap dependentTransactions;
 
@@ -367,7 +367,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     for(const PrioritizedTransactionData& txData: prioritizedTransactions)
     {
         const CTransaction& tx = *txData.tx;
-        AddTransactionToBlock(tx, blocktemplate);
+        AddTransactionToBlock(tx, block);
     }
 }
 
@@ -381,10 +381,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     const int nHeight = pblocktemplate.previousBlockIndex->nHeight + 1;
     CCoinsViewCache view(baseCoinsViewCache_);
 
-    AddTransactionsToBlockIfPossible(
-        nHeight,
-        view,
-        pblocktemplate);
+    AddTransactionsToBlockIfPossible(nHeight, view, block);
 
     LogPrintf("CreateNewBlock(): block tostring %s\n", block);
     return true;

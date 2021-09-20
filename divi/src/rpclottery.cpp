@@ -50,16 +50,18 @@ Value getlotteryblockwinners(const Array& params, bool fHelp)
         chainTip = chainActive.Tip();
         if(!chainTip) throw JSONRPCError(RPC_MISC_ERROR,"Could not acquire lock on chain tip.");
     }
-    int blockHeight = (params.size()>0)? params[0].get_int(): chainTip->nHeight;
+    int blockHeight = (params.size()>0)? std::min(params[0].get_int(),chainTip->nHeight): chainTip->nHeight;
     const CBlockIndex* soughtIndex = chainTip->GetAncestor(blockHeight);
 
     const LotteryCoinstakes& coinstakesAtChainTip = soughtIndex->vLotteryWinnersCoinstakes.getLotteryCoinstakes();
+    const CBlockIndex* lastLotteryBlockIndex = calculator.GetLastLotteryBlockIndexBeforeHeight(soughtIndex->nHeight);
     RankedScoreAwareCoinstakes lotteryCurrentResults =
         calculator.computeRankedScoreAwareCoinstakes(
-            calculator.GetLastLotteryBlockIndexBeforeHeight(soughtIndex->nHeight)->GetBlockHash(),
+            lastLotteryBlockIndex->GetBlockHash(),
             coinstakesAtChainTip);
 
     Object result;
+    result.push_back(Pair("Is Lottery Block", subsidyCointainer.superblockHeightValidator().IsValidLotteryBlockHeight(soughtIndex->nHeight)));
     result.push_back(Pair("Block Height",soughtIndex->nHeight));
     result.push_back(Pair("Block Hash ",soughtIndex->GetBlockHash().ToString()));
     Array lotteryResults;

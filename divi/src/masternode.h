@@ -23,7 +23,6 @@
 
 class CMasternode;
 class CMasternodeBroadcast;
-class CMasternodeBroadcastFactory;
 class CMasternodePing;
 class CMasternodeMan;
 class CDataStream;
@@ -134,17 +133,6 @@ public:
 
 class CMasternodeBroadcast : public CMasternode
 {
-private:
-    CMasternodeBroadcast(
-        const CService& newAddr,
-        const CTxIn& newVin,
-        const CPubKey& pubKeyCollateralAddress,
-        const CPubKey& pubKeyMasternode,
-        MasternodeTier nMasternodeTier,
-        int protocolVersionIn);
-
-    friend class CMasternodeBroadcastFactory;
-
 public:
     CMasternodeBroadcast() = default;
     CMasternodeBroadcast(const CMasternode& mn);

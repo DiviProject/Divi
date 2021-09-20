@@ -234,19 +234,6 @@ bool CMasternode::IsValidNetAddr() const
             (IsReachable(addr) && addr.IsRoutable());
 }
 
-CMasternodeBroadcast::CMasternodeBroadcast(
-    const CService& newAddr, const CTxIn& newVin,
-    const CPubKey& pubKeyCollateralAddressNew, const CPubKey& pubKeyMasternodeNew,
-    const MasternodeTier nMasternodeTier, const int protocolVersionIn)
-{
-    vin = newVin;
-    addr = newAddr;
-    pubKeyCollateralAddress = pubKeyCollateralAddressNew;
-    pubKeyMasternode = pubKeyMasternodeNew;
-    protocolVersion = protocolVersionIn;
-    nTier = nMasternodeTier;
-}
-
 CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
   : CMasternode(mn)
 {}

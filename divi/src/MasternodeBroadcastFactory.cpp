@@ -172,6 +172,21 @@ bool CMasternodeBroadcastFactory::signBroadcast(
     return true;
 }
 
+CMasternodeBroadcast CMasternodeBroadcastFactory::constructBroadcast(
+    const CService& newAddr, const CTxIn& newVin,
+    const CPubKey& pubKeyCollateralAddressNew, const CPubKey& pubKeyMasternodeNew,
+    const MasternodeTier nMasternodeTier, const int protocolVersionIn)
+{
+    CMasternode mn;
+    mn.vin = newVin;
+    mn.addr = newAddr;
+    mn.pubKeyCollateralAddress = pubKeyCollateralAddressNew;
+    mn.pubKeyMasternode = pubKeyMasternodeNew;
+    mn.protocolVersion = protocolVersionIn;
+    mn.nTier = nMasternodeTier;
+    return {mn};
+}
+
 void CMasternodeBroadcastFactory::createWithoutSignatures(
     const CTxIn& txin,
     const CService& service,
@@ -185,7 +200,7 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
              CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
              pubKeyMasternodeNew.GetID().ToString());
 
-    mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
+    mnbRet = CMasternodeBroadcastFactory::constructBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
     const CMasternodePing mnp = (deferRelay
                                     ? createDelayedMasternodePing(mnbRet)
                                     : createCurrentPing(txin));

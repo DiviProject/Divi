@@ -33,16 +33,18 @@ struct PrioritizedTransactionData
 {
     const CTransaction* tx;
     unsigned int nTxSigOps;
+    CAmount fee;
     PrioritizedTransactionData();
     PrioritizedTransactionData(
         const CTransaction& transaction,
-        unsigned txSigOps);
+        unsigned txSigOps,
+        CAmount feePaid);
 };
 
 class COrphan;
 
 // We want to sort transactions by priority and fee rate, so:
-typedef boost::tuple<double, CFeeRate, const CTransaction*> TxPriority;
+typedef boost::tuple<double, CFeeRate, const CTransaction*,CAmount> TxPriority;
 class TxPriorityCompare;
 class CChain;
 
@@ -92,6 +94,7 @@ private:
 
     void AddTransactionToBlock (
         const CTransaction& tx,
+        const CAmount feePaid,
         CBlock& block) const;
 
     std::vector<TxPriority> PrioritizeMempoolTransactions (

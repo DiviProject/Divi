@@ -239,6 +239,32 @@ BOOST_AUTO_TEST_CASE(willIncreaseSpendingToCoverInitialFeeEstimateProvided)
     BOOST_CHECK_MESSAGE(feesPaidEstimate > 1*COIN,"Initial fee estimate not covered");
 }
 
+BOOST_AUTO_TEST_CASE(someNewTest)
+{
+    std::vector<CScript> scripts = { scriptGenerator(25),scriptGenerator(25),scriptGenerator(25)};
+    ON_CALL(mockSignatureSizeEstimator,MaxBytesNeededForSigning(_,scripts[0])).WillByDefault(Return(240u));
+    ON_CALL(mockSignatureSizeEstimator,MaxBytesNeededForSigning(_,scripts[1])).WillByDefault(Return(240u));
+    ON_CALL(mockSignatureSizeEstimator,MaxBytesNeededForSigning(_,scripts[2])).WillByDefault(Return(240u));
+    addSingleUtxo(2*COIN,scripts[0]);
+    addSingleUtxo(2*COIN,scripts[1]);
+    addSingleUtxo(2*COIN,scripts[2]);
+
+    std::vector<COutput> utxos = getSpendableOutputs();
+    CAmount toSpend = 4*COIN-5460;
+    CMutableTransaction novelTx;
+    novelTx.vout.emplace_back(toSpend,RandomCScriptGenerator()(25u));
+    CAmount feesPaidEstimate = 0;
+    std::set<COutput> selectedUTXOs = algorithm.SelectCoins(novelTx,utxos,feesPaidEstimate);
+    CAmount totalInputs = 0;
+    for(const COutput& spentAsInput: selectedUTXOs)
+    {
+        totalInputs += spentAsInput.Value();
+    }
+    BOOST_CHECK_MESSAGE(totalInputs > 0, "Unable to select enough coins");
+    BOOST_CHECK_MESSAGE(totalInputs == 6*COIN, "Spent less than all coins");
+    BOOST_CHECK_MESSAGE(totalInputs >= toSpend + feesPaidEstimate, "Inputs less than intended expenditure");
+}
+
 BOOST_AUTO_TEST_CASE(willNotPayMoreInFeesThanMaximumSet)
 {
     std::vector<CScript> scripts = { scriptGenerator(25),scriptGenerator(25),scriptGenerator(25)};

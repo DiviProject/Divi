@@ -130,13 +130,14 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority (
     uint256 hash = tx.GetHash();
     mempool_.ApplyDeltas(hash, dPriority, nTotalIn);
 
-    CFeeRate feeRate(nTotalIn - tx.GetValueOut(), nTxSize);
+    CAmount fee = nTotalIn - tx.GetValueOut();
+    CFeeRate feeRate(fee, nTxSize);
 
     if (porphan) {
         porphan->dPriority = dPriority;
         porphan->feeRate = feeRate;
     } else
-        vecPriority.push_back(TxPriority(dPriority, feeRate, mempoolTx));
+        vecPriority.push_back(TxPriority(dPriority, feeRate, mempoolTx,fee));
 }
 
 void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue (
@@ -179,8 +180,14 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
 
 void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
     const CTransaction& tx,
+    const CAmount feePaid,
     CBlock& block) const
 {
+    if(block.IsProofOfWork())
+    {
+        assert(feePaid >= 0);
+        block.vtx[0].vout[0].nValue += feePaid;
+    }
     block.vtx.push_back(tx);
 }
 
@@ -260,13 +267,16 @@ void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize
 PrioritizedTransactionData::PrioritizedTransactionData(
     ): tx(nullptr)
     , nTxSigOps(0u)
+    , fee(0)
 {
 }
 PrioritizedTransactionData::PrioritizedTransactionData(
     const CTransaction& transaction,
-    unsigned txSigOps
+    unsigned txSigOps,
+    CAmount feePaid
     ): tx(&transaction)
     , nTxSigOps(txSigOps)
+    , fee(feePaid)
 {
 }
 
@@ -297,6 +307,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         double dPriority = vecPriority.front().get<0>();
         CFeeRate feeRate = vecPriority.front().get<1>();
         const CTransaction& tx = *(vecPriority.front().get<2>());
+        const CAmount fee = vecPriority.front().get<3>();
 
         std::pop_heap(vecPriority.begin(), vecPriority.end(), comparer);
         vecPriority.pop_back();
@@ -332,7 +343,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
             continue;
         }
 
-        prioritizedTransactions.emplace_back(tx, nTxSigOps);
+        prioritizedTransactions.emplace_back(tx, nTxSigOps,fee);
         nBlockSize += nTxSize;
         nBlockSigOps += nTxSigOps;
 
@@ -367,7 +378,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     for(const PrioritizedTransactionData& txData: prioritizedTransactions)
     {
         const CTransaction& tx = *txData.tx;
-        AddTransactionToBlock(tx, block);
+        AddTransactionToBlock(tx, txData.fee, block);
     }
 }
 

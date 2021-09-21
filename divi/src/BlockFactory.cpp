@@ -252,7 +252,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
 CBlockTemplate* BlockFactory::CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake)
 {
     CPubKey pubkey;
-    if (!reservekey.GetReservedKey(pubkey, false))
+    if (!fProofOfStake && !reservekey.GetReservedKey(pubkey, false))
         return NULL;
 
     CScript scriptPubKey = (fProofOfStake)? CScript() : GetScriptForDestination(pubkey.GetID());

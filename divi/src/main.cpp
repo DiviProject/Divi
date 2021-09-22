@@ -1762,8 +1762,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleR
     // because we receive the wrong transactions for it.
 
     // Size limits
-    unsigned int nMaxBlockSize = MAX_BLOCK_SIZE_CURRENT;
-    if (block.vtx.empty() || block.vtx.size() > nMaxBlockSize || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION) > nMaxBlockSize)
+    if (block.vtx.empty() || block.vtx.size() > MAX_BLOCK_SIZE_CURRENT || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_SIZE_CURRENT)
         return state.DoS(100, error("%s : size limits failed",__func__),
                          REJECT_INVALID, "bad-blk-length");
 

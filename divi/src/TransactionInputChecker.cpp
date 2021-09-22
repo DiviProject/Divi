@@ -53,9 +53,9 @@ bool TransactionInputChecker::CheckInputsAndUpdateCoinSupplyRecords(
         return false;
     }
 
-    const CAmount mintingMinusBurn = tx.GetValueOut() - txInputAmount;
-    pindex->nMoneySupply += mintingMinusBurn;
-    pindex->nMint += mintingMinusBurn + txFees;
+    const CAmount supplyChange = tx.GetValueOut() - txInputAmount;
+    pindex->nMoneySupply += supplyChange;
+    pindex->nMint += (tx.IsCoinBase() || tx.IsCoinStake())? supplyChange : 0;
     return true;
 }
 

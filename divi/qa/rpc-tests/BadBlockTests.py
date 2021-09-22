@@ -88,6 +88,34 @@ class BadBlockTests (BitcoinTestFramework):
 
         return txs
 
+    def build_overmint_tx (self):
+      utxos = self.node.listunspent ()
+      random.shuffle(utxos)
+      required = Decimal ('1.00000000')
+      inp = None
+      for i in range (len (utxos)):
+        if utxos[i]["amount"] >= required:
+          inp = utxos[i]
+          del utxos[i]
+          break
+      assert inp is not None, "found no suitable output"
+
+      destAddress = inp["address"]
+      data = self.node.validateaddress (destAddress)
+      scriptToSendTo = codecs.decode (data["scriptPubKey"], "hex")
+      undermint = Decimal ('10000.0')
+      amountToSend = int ((Decimal (inp["amount"]) - undermint) * COIN)
+      amountToReceive = int (undermint * COIN)
+
+      tx = CTransaction ()
+      tx.vout.append( CTxOut() )
+      tx.vout.append( CTxOut(amountToSend, scriptToSendTo )  )
+      tx.vout.append( CTxOut(amountToReceive, scriptToSendTo )  )
+      tx.vin.append (CTxIn (COutPoint (txid=inp["txid"], n=inp["vout"])))
+      unsigned = tx.serialize ().hex ()
+      signed = self.node.signrawtransaction (unsigned)
+      return signed
+
     def check_unconfirmed (self, txid,node):
         if type (txid) == list:
           for t in txid:
@@ -118,6 +146,10 @@ class BadBlockTests (BitcoinTestFramework):
 
         double_spends = self.build_double_spends ()
         assert_raises(JSONRPCException, self.node.generateblock, {"extratx": double_spends} )
+        self.verify_chainstate_unchanged()
+
+        overmint = self.build_overmint_tx()
+        assert_raises(JSONRPCException, self.node.generateblock, {"coinstake": overmint["hex"]} )
         self.verify_chainstate_unchanged()
 
 if __name__ == '__main__':

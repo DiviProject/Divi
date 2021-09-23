@@ -8,6 +8,7 @@
 #include "primitives/block.h"
 
 #include <unordered_map>
+#include <unordered_set>
 
 #include <Settings.h>
 #include <set>
@@ -27,16 +28,18 @@ const std::unordered_map<Fork, int64_t,std::hash<int>> ACTIVATION_TIMES = {
   {Fork::UniformLotteryWinners, unixTimestampForDec31stMidnight},
   /* FIXME: Schedule for a real time.  */
   {Fork::CheckLockTimeVerify, 2000000000},
+  {Fork::DeprecateMasternodes,2000000000}
+};
+
+const std::unordered_set<Fork, std::hash<int>> REQUIRE_BLOCK_INDEX_CONTEXT = {
+  Fork::DeprecateMasternodes
 };
 
 } // anonymous namespace
 
 ActivationState::ActivationState(const CBlockIndex* pi)
-  : nTime(pi->nTime)
-{}
-
-ActivationState::ActivationState(const CBlockHeader& block)
-  : nTime(block.nTime)
+  : blockIndex_(pi)
+  , nTime(pi->nTime)
 {}
 
 bool ActivationState::IsActive(const Fork f) const
@@ -47,7 +50,8 @@ bool ActivationState::IsActive(const Fork f) const
     const int64_t timestampOverride = settings.GetArg(manualForkSettingLookup,0);
     return nTime >= timestampOverride;
   }
+  const int64_t currentTime = (REQUIRE_BLOCK_INDEX_CONTEXT.count(f)>0)? blockIndex_->GetMedianTimePast(): nTime;
   const auto mit = ACTIVATION_TIMES.find(f);
   assert(mit != ACTIVATION_TIMES.end());
-  return nTime >= mit->second;
+  return currentTime >= mit->second;
 }

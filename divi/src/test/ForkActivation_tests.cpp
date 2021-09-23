@@ -71,17 +71,6 @@ public:
     return ActivationState(blocks.back().get());
   }
 
-  /**
-   * Constructs an activation state instance based on the current chain,
-   * constructed just from the top block without context.
-   */
-  ActivationState
-  FromBlock() const
-  {
-    assert(!blocks.empty());
-    return ActivationState(blocks.back()->GetBlockHeader());
-  }
-
 };
 
 } // anonymous namespace
@@ -96,7 +85,6 @@ BOOST_AUTO_TEST_CASE(activationByTimestamp)
 
   /* One block beyond the timestamp is enough to activate the fork for it.  */
   AddBlock()->nTime = 1000000000;
-  BOOST_CHECK_EQUAL(FromBlock().IsActive(Fork::TestByTimestamp), true);
   BOOST_CHECK_EQUAL(FromContext().IsActive(Fork::TestByTimestamp), true);
 
   /* The fork can temporarily get back to inactive as well (although that
@@ -105,7 +93,6 @@ BOOST_AUTO_TEST_CASE(activationByTimestamp)
   for (int i = 0; i < 20; ++i)
     AddBlock()->nTime = 1000000000;
   AddBlock()->nTime = 999999999;
-  BOOST_CHECK_EQUAL(FromBlock().IsActive(Fork::TestByTimestamp), false);
   BOOST_CHECK_EQUAL(FromContext().IsActive(Fork::TestByTimestamp), false);
 }
 

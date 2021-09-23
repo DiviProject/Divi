@@ -23,6 +23,7 @@ enum Fork
   HardenedStakeModifier,
   UniformLotteryWinners,
   CheckLockTimeVerify,
+  DeprecateMasternodes,
 };
 
 /**
@@ -34,14 +35,13 @@ class ActivationState
 {
 
 private:
-
+  const CBlockIndex* const blockIndex_;
   /** The timestamp of the block this is associated to.  */
   const int64_t nTime;
 
 public:
 
   explicit ActivationState(const CBlockIndex* pi);
-  explicit ActivationState(const CBlockHeader& block);
 
   ActivationState(ActivationState&&) = default;
 

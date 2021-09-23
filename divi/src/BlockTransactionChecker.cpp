@@ -47,7 +47,7 @@ BlockTransactionChecker::BlockTransactionChecker(
     const int blocksToSkipChecksFor
     ): blockundo_(block.vtx.size() - 1)
     , block_(block)
-    , activation_(block)
+    , activation_(pindex)
     , state_(state)
     , pindex_(pindex)
     , view_(view)

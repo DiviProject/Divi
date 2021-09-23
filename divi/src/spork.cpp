@@ -91,6 +91,60 @@ static bool IsMultiValueSpork(int nSporkID)
     return false;
 }
 
+bool CSporkManager::GetFullBlockValue(int nHeight, const CChainParams& chainParameters, CAmount& amount) const
+{
+    if(IsSporkActive(SPORK_15_BLOCK_VALUE)) {
+        MultiValueSporkList<BlockSubsiditySporkValue> vBlockSubsiditySporkValues;
+        CSporkManager::ConvertMultiValueSporkVector(GetMultiValueSpork(SPORK_15_BLOCK_VALUE), vBlockSubsiditySporkValues);
+        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight, nBlockTime);
+
+        if(activeSpork.IsValid() &&
+            (activeSpork.nActivationBlockHeight % chainParameters.SubsidyHalvingInterval()) == 0 )
+        {
+            // we expect that this value is in coins, not in satoshis
+            amount = activeSpork.nBlockSubsidity * COIN;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool CSporkManager::GetRewardDistribution(int nHeight, const CChainParams& chainParameters, BlockPaymentSporkValue& blockRewardDistribution) const
+{
+    if(IsSporkActive(SPORK_13_BLOCK_PAYMENTS))
+    {
+        MultiValueSporkList<BlockPaymentSporkValue> vBlockPaymentsValues;
+        CSporkManager::ConvertMultiValueSporkVector(GetMultiValueSpork(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);
+        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight, nBlockTime);
+
+        if(activeSpork.IsValid() &&
+            (activeSpork.nActivationBlockHeight % chainParameters.SubsidyHalvingInterval()) == 0 ) {
+            // we expect that this value is in coins, not in satoshis
+            blockRewardDistribution.set(activeSpork);
+            return true;
+        }
+    }
+    return false;
+}
+bool CSporkManager::GetLotteryTicketMinimum(int nHeight, CAmount& minimumAmountForLotteryTicket) const
+{
+    if(IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
+        MultiValueSporkList<LotteryTicketMinValueSporkValue> vValues;
+        CSporkManager::ConvertMultiValueSporkVector(GetMultiValueSpork(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
+        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight, nBlockTime);
+
+        if(activeSpork.IsValid()) {
+            // we expect that this value is in coins, not in satoshis
+            minimumAmountForLotteryTicket = activeSpork.nEntryTicketValue * COIN;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool CSporkManager::AddActiveSpork(const CSporkMessage &spork)
 {
     auto &sporks = mapSporksActive[spork.nSporkID];
@@ -631,6 +685,15 @@ BlockPaymentSporkValue::BlockPaymentSporkValue(int nStakeRewardIn, int nMasterno
     nCharityReward(nCharityRewardIn)
 {
 
+}
+
+void BlockPaymentSporkValue::set(const BlockPaymentSporkValue& other)
+{
+    nStakeReward=other.nStakeReward;
+    nMasternodeReward=other.nMasternodeReward;
+    nTreasuryReward=other.nTreasuryReward;
+    nProposalsReward=other.nProposalsReward;
+    nCharityReward=other.nCharityReward;
 }
 
 BlockPaymentSporkValue BlockPaymentSporkValue::FromString(std::string strData)

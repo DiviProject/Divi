@@ -17,6 +17,7 @@
 #include <utiltime.h>
 #include <StakableCoin.h>
 #include <timedata.h>
+#include <ForkActivation.h>
 
 class StakedCoins
 {
@@ -250,7 +251,7 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
     std::vector<const CTransaction*>& vwtxPrev)
 {
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
-    CAmount nCredit = stakeData.GetTxOut().nValue + blockSubdidy.nStakeReward;
+    CAmount nCredit = stakeData.GetTxOut().nValue + blockSubdidy.nStakeReward + (ActivationState(chainTip).IsActive(Fork::DeprecateMasternodes)? blockSubdidy.nMasternodeReward : 0);
     constexpr char autocombineSettingLookup[] = "-autocombine";
     bool autocombine = settings_.GetBoolArg(autocombineSettingLookup,true);
     if (nCredit > stakeSplit )

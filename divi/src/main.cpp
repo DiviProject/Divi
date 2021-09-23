@@ -1019,6 +1019,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
     IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
+    if(ActivationState(pindex->pprev).IsActive(Fork::DeprecateMasternodes))
+    {
+        nExpectedMint.nStakeReward += nExpectedMint.nMasternodeReward;
+        nExpectedMint.nMasternodeReward = 0;
+    }
     BlockTransactionChecker blockTxChecker(block,state,pindex,view,mapBlockIndex,blocksToSkipChecksFor);
 
     if(!blockTxChecker.Check(nExpectedMint,fJustCheck,indexDatabaseUpdates))

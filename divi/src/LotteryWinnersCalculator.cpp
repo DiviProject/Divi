@@ -23,23 +23,17 @@ LotteryWinnersCalculator::LotteryWinnersCalculator(
 {
 }
 
-int LotteryWinnersCalculator::minimumCoinstakeForTicket(int nHeight) const
+CAmount LotteryWinnersCalculator::minimumCoinstakeForTicket(int nHeight) const
 {
-    int nMinStakeValue = 10000; // default is 10k
-
-    if(sporkManager_.IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
-        MultiValueSporkList<LotteryTicketMinValueSporkValue> vValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager_.GetMultiValueSpork(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
-        auto nBlockTime = activeChain_[nHeight] ? activeChain_[nHeight]->nTime : GetAdjustedTime();
-        LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight, nBlockTime);
-
-        if(activeSpork.IsValid()) {
-            // we expect that this value is in coins, not in satoshis
-            nMinStakeValue = activeSpork.nEntryTicketValue;
-        }
+    CAmount minimumStaked = 0; // default is 10k
+    if(sporkManager_.GetLotteryTicketMinimum(nHeight,minimumStaked))
+    {
+        return minimumStaked;
     }
-
-    return nMinStakeValue;
+    else
+    {
+        return 10000*COIN;
+    }
 }
 
 uint256 LotteryWinnersCalculator::CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock)
@@ -63,7 +57,7 @@ bool LotteryWinnersCalculator::IsCoinstakeValidForLottery(const CTransaction &tx
     });
     }
 
-    return nAmount > minimumCoinstakeForTicket(nHeight) * COIN; // only if stake is more than 10k
+    return nAmount > minimumCoinstakeForTicket(nHeight); // only if stake is more than 10k
 }
 
 CBlockIndex* LotteryWinnersCalculator::GetLastLotteryBlockIndexBeforeHeight(int blockHeight) const

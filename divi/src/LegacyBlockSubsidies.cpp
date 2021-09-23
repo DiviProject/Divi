@@ -6,8 +6,6 @@
 #include <timedata.h>
 #include <chain.h>
 
-extern CChain chainActive;
-
 // Legacy methods
 CAmount BlockSubsidy(int nHeight, const CChainParams& chainParameters)
 {
@@ -25,22 +23,15 @@ CAmount BlockSubsidy(int nHeight, const CChainParams& chainParameters)
 }
 CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParameters)
 {
-    const CSporkManager& sporkManager = GetSporkManager();
-    if(sporkManager.IsSporkActive(SPORK_15_BLOCK_VALUE)) {
-        MultiValueSporkList<BlockSubsiditySporkValue> vBlockSubsiditySporkValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_15_BLOCK_VALUE), vBlockSubsiditySporkValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
-        BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight, nBlockTime);
-
-        if(activeSpork.IsValid() &&
-            (activeSpork.nActivationBlockHeight % chainParameters.SubsidyHalvingInterval()) == 0 )
-        {
-            // we expect that this value is in coins, not in satoshis
-            return activeSpork.nBlockSubsidity * COIN;
-        }
+    CAmount blockSubsidy = 0u;
+    if(GetSporkManager().GetFullBlockValue(nHeight,chainParameters,blockSubsidy))
+    {
+        return blockSubsidy;
     }
-
-    return BlockSubsidy(nHeight, chainParameters);
+    else
+    {
+        return BlockSubsidy(nHeight, chainParameters);
+    }
 }
 
 CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainParameters)
@@ -76,27 +67,20 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
             helper(nProposalsPercentage));
     };
 
-    const CSporkManager& sporkManager = GetSporkManager();
-    if(sporkManager.IsSporkActive(SPORK_13_BLOCK_PAYMENTS)) {
-        MultiValueSporkList<BlockPaymentSporkValue> vBlockPaymentsValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
-        BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight, nBlockTime);
-
-        if(activeSpork.IsValid() &&
-            (activeSpork.nActivationBlockHeight % chainParameters.SubsidyHalvingInterval()) == 0 ) {
-            // we expect that this value is in coins, not in satoshis
-            return helper(
-                activeSpork.nStakeReward,
-                activeSpork.nMasternodeReward,
-                activeSpork.nTreasuryReward,
-                activeSpork.nProposalsReward,
-                activeSpork.nCharityReward);
-        }
+    BlockPaymentSporkValue rewardDistribution;
+    if(GetSporkManager().GetRewardDistribution(nHeight,chainParameters,rewardDistribution))
+    {
+        return helper(
+                rewardDistribution.nStakeReward,
+                rewardDistribution.nMasternodeReward,
+                rewardDistribution.nTreasuryReward,
+                rewardDistribution.nProposalsReward,
+                rewardDistribution.nCharityReward);
     }
-
-
-    return helper(38, 45, 16, 0, 1);
+    else
+    {
+        return helper(38, 45, 16, 0, 1);
+    }
 }
 
 

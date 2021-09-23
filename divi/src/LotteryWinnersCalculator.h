@@ -1,6 +1,7 @@
 #ifndef LOTTERY_WINNERS_CALCULATOR_H
 #define LOTTERY_WINNERS_CALCULATOR_H
 #include <LotteryCoinstakes.h>
+#include <amount.h>
 
 class CBlockIndex;
 class CTransaction;
@@ -22,7 +23,7 @@ private:
     const CChain& activeChain_;
     const CSporkManager& sporkManager_;
     const I_SuperblockHeightValidator& superblockHeightValidator_;
-    int minimumCoinstakeForTicket(int nHeight) const;
+    CAmount minimumCoinstakeForTicket(int nHeight) const;
     bool IsPaymentScriptVetoed(const CScript& paymentScript, const int blockHeight) const;
     bool TopElevenBestCoinstakesNeedUpdating(
         bool trimDuplicates,

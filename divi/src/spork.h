@@ -8,6 +8,7 @@
 
 #include "key.h"
 #include "pubkey.h"
+#include <amount.h>
 
 class CDataStream;
 class CNode;
@@ -16,6 +17,7 @@ class CSporkMessage;
 class CSporkManager;
 class CSporkDB;
 class uint256;
+class CChainParams;
 
 /*
     Don't ever reuse these IDs for other sporks
@@ -111,12 +113,13 @@ struct BlockPaymentSporkValue : public SporkMultiValue {
 
     bool IsValid() const override;
     std::string ToString() const override;
+    void set(const BlockPaymentSporkValue& other);
 
-    const int nStakeReward;
-    const int nMasternodeReward;
-    const int nTreasuryReward;
-    const int nProposalsReward;
-    const int nCharityReward;
+    int nStakeReward;
+    int nMasternodeReward;
+    int nTreasuryReward;
+    int nProposalsReward;
+    int nCharityReward;
 };
 
 struct BlockSubsiditySporkValue : public SporkMultiValue {
@@ -222,6 +225,13 @@ public:
 
     bool SetSporkAddress(const std::string& strPubKey);
     bool SetPrivKey(const std::string& strPrivKey);
+
+    // Spork for full block subsidy
+    bool GetFullBlockValue(int nHeight, const CChainParams& chainParameters, CAmount& amount) const;
+    // Spork for block reward distribution
+    bool GetRewardDistribution(int nHeight, const CChainParams& chainParameters, BlockPaymentSporkValue& blockRewardDistribution) const;
+    // Spork for lottery ticket minimum
+    bool GetLotteryTicketMinimum(int nHeight, CAmount& minimumAmountForLotteryTicket) const;
 };
 
 #endif

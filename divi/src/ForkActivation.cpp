@@ -32,7 +32,8 @@ const std::unordered_map<Fork, int64_t,std::hash<int>> ACTIVATION_TIMES = {
 };
 
 const std::unordered_set<Fork, std::hash<int>> REQUIRE_BLOCK_INDEX_CONTEXT = {
-  Fork::DeprecateMasternodes
+  Fork::DeprecateMasternodes,
+  Fork::CheckLockTimeVerify
 };
 
 } // anonymous namespace

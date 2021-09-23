@@ -71,7 +71,7 @@ class CheckLockTimeVerifyTest (BitcoinTestFramework):
         # After the fork, the output should not be spendable (even directly
         # in a block) without the lock time.
         set_node_times (self.nodes, ACTIVATION_TIME)
-        self.node.setgenerate (True, 1)
+        self.node.setgenerate (True, 7)
         tx = self.buildSpend (outputs[1])
         assert_raises (JSONRPCException, self.node.generateblock,
                        {"extratx": [tx.serialize ().hex ()]})
@@ -79,14 +79,19 @@ class CheckLockTimeVerifyTest (BitcoinTestFramework):
         # With the lock time, it should still not be spendable before
         # the actual block height.
         tx.nLockTime = 100
+        assert_greater_than(100, self.node.getblockcount())
         assert_raises (JSONRPCException, self.node.generateblock,
                        {"extratx": [tx.serialize ().hex ()]})
 
         # Once the lock height is reached (exceeded), the transaction should
         # be fine, even in the mempool.
-        self.node.setgenerate (True, 100)
-        self.node.sendrawtransaction (tx.serialize ().hex ())
+        additional_blocks = 100 - self.node.getblockcount()
+        self.node.setgenerate (True, additional_blocks-1)
+        assert_raises (JSONRPCException, self.node.generateblock, {"extratx": [tx.serialize ().hex ()]})
         self.node.setgenerate (True, 1)
+        txid = self.node.sendrawtransaction (tx.serialize ().hex ())
+        self.node.setgenerate (True, 1)
+        assert_greater_than(self.node.getrawtransaction(txid,1)["confirmations"],0)
 
         # Make sure the outputs have really been spent.
         assert_equal (self.node.getrawmempool (), [])

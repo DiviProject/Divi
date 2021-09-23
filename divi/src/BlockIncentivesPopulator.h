@@ -14,7 +14,6 @@ class I_SuperblockHeightValidator;
 class I_BlockSubsidyProvider;
 class CTransaction;
 class CMasternodeSync;
-class CSporkManager;
 class MasternodeModule;
 
 class BlockIncentivesPopulator : public I_BlockIncentivesPopulator
@@ -25,7 +24,6 @@ private:
     CMasternodePayments& masternodePayments_;
     const I_SuperblockHeightValidator& heightValidator_;
     const I_BlockSubsidyProvider& blockSubsidies_;
-    const CSporkManager& sporkManager_;
     const std::string treasuryPaymentAddress_;
     const std::string charityPaymentAddress_;
 
@@ -39,8 +37,7 @@ public:
         const CChainParams& chainParameters,
         const MasternodeModule& masternodeModule,
         const I_SuperblockHeightValidator& heightValidator,
-        const I_BlockSubsidyProvider& blockSubsidies,
-        const CSporkManager& sporkManager);
+        const I_BlockSubsidyProvider& blockSubsidies);
 
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip) const override;
     bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const override;

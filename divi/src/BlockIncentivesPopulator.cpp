@@ -15,7 +15,6 @@
 
 #include <Settings.h>
 
-#include <spork.h>
 #include <masternode.h>
 #include <masternode-sync.h>
 #include <MasternodeHelpers.h>
@@ -101,14 +100,12 @@ BlockIncentivesPopulator::BlockIncentivesPopulator(
     const CChainParams& chainParameters,
     const MasternodeModule& masternodeModule,
     const I_SuperblockHeightValidator& heightValidator,
-    const I_BlockSubsidyProvider& blockSubsidies,
-    const CSporkManager& sporkManager
+    const I_BlockSubsidyProvider& blockSubsidies
     ): chainParameters_(chainParameters)
     , masternodeSync_(masternodeModule.getMasternodeSynchronization())
     , masternodePayments_(masternodeModule.getMasternodePayments())
     , heightValidator_(heightValidator)
     , blockSubsidies_(blockSubsidies)
-    , sporkManager_(sporkManager)
     , treasuryPaymentAddress_(
         chainParameters_.NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET)
     , charityPaymentAddress_(
@@ -228,9 +225,5 @@ bool BlockIncentivesPopulator::HasValidMasternodePayee(const CTransaction &txNew
         return true;
     LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew);
 
-    if (sporkManager_.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT))
-        return false;
-    LogPrintf("%s : Masternode payment enforcement is disabled, accepting block\n", __func__);
-
-    return true;
+    return false;
 }

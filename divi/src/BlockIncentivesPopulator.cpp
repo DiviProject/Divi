@@ -20,6 +20,7 @@
 #include <masternode-sync.h>
 #include <MasternodeHelpers.h>
 #include <MasternodeModule.h>
+#include <ForkActivation.h>
 
 extern Settings& settings;
 namespace
@@ -149,7 +150,8 @@ void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const 
     else if(heightValidator_.IsValidLotteryBlockHeight(chainTip->nHeight + 1)) {
         FillLotteryPayment(txNew, payments, chainTip);
     }
-    else {
+    else if(!ActivationState(chainTip).IsActive(Fork::DeprecateMasternodes))
+    {
         masternodePayments_.FillBlockPayee(chainTip,txNew, payments);
     }
 }
@@ -186,9 +188,13 @@ bool BlockIncentivesPopulator::HasValidPayees(const CTransaction &txNew, const C
         const CBlockRewards rewards = blockSubsidies_.GetBlockSubsidity(blockHeight);
         return IsValidLotteryPayment(rewards,txNew, pindex->pprev->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
     }
-    else
+    else if(!ActivationState(pindex->pprev).IsActive(Fork::DeprecateMasternodes))
     {
         return HasValidMasternodePayee(txNew,pindex);
+    }
+    else
+    {
+        return true;
     }
 }
 

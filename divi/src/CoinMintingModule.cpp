@@ -63,8 +63,7 @@ CoinMintingModule::CoinMintingModule(
         chainParameters,
         masternodeModule,
         blockSubsidyContainer_->superblockHeightValidator(),
-        blockSubsidyContainer_->blockSubsidiesProvider(),
-        sporkManager))
+        blockSubsidyContainer_->blockSubsidiesProvider()))
     , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(
         settings,
         baseCoinsViewCache,

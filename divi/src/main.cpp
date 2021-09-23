@@ -1013,8 +1013,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         chainParameters,
         GetMasternodeModule(),
         subsidiesContainer.superblockHeightValidator(),
-        subsidiesContainer.blockSubsidiesProvider(),
-        GetSporkManager());
+        subsidiesContainer.blockSubsidiesProvider());
 
     const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
     IndexDatabaseUpdates indexDatabaseUpdates;

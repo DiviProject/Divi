@@ -700,6 +700,48 @@ BOOST_AUTO_TEST_CASE(willUpdatingDepositStatusWillPersist)
     BOOST_CHECK_EQUAL(manager->getTransaction(tx.GetHash()).mapValue.count("isVaultDeposit"),1u);
 }
 
+BOOST_AUTO_TEST_CASE(willRecordTransactionsSpendingDeposits)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CMutableTransaction fundingTransaction;
+    fundingTransaction.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFundingTx = getBlockToMineTransaction(fundingTransaction);
+    manager->addTransaction(fundingTransaction,&blockMiningFundingTx, true);
+
+    CMutableTransaction tx;
+    tx.vin.emplace_back( COutPoint(fundingTransaction.GetHash(), 0u) );
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, false);
+
+    const auto& walletTx = manager->getTransaction(tx.GetHash());
+    BOOST_CHECK_EQUAL(walletTx.vin.size(),1u);
+    BOOST_CHECK_EQUAL(walletTx.vout.size(),1u);
+}
+
+BOOST_AUTO_TEST_CASE(willNotRecordADepositTransactionThatIsntExplicitlyAdded)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CScript dummyScript = scriptGenerator(10);
+    CMutableTransaction fundingTransaction;
+    fundingTransaction.vout.push_back(CTxOut(100,dummyScript));
+    CBlock blockMiningDummyTx = getBlockToMineTransaction(fundingTransaction);
+
+    CMutableTransaction tx;
+    tx.vin.emplace_back( COutPoint(fundingTransaction.GetHash(), 0u) );
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->addTransaction(tx,&blockMiningFirstTx, false);
+
+    const auto& walletTx = manager->getTransaction(tx.GetHash());
+    BOOST_CHECK_EQUAL(walletTx.vin.size(),0u);
+    BOOST_CHECK_EQUAL(walletTx.vout.size(),0u);
+}
+
 BOOST_AUTO_TEST_CASE(willIgnoreTransactionsThatAreNeitherCoinstakeNorDeposits)
 {
     CScript managedScript = scriptGenerator(10);

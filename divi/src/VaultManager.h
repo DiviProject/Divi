@@ -46,6 +46,7 @@ private:
     bool transactionIsWhitelisted(const CTransaction& tx) const;
     bool transactionIsRelevant(const CTransaction& tx, bool checkOutputs) const;
     bool allInputsAreKnown(const CTransaction& tx) const;
+    bool isMyCoinstake(const CTransaction& tx) const;
 public:
     VaultManager(
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,

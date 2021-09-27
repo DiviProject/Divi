@@ -57,7 +57,7 @@ bool VaultManager::isManagedScript(const CScript& script) const
     return false;
 }
 
-bool VaultManager::transactionIsRelevant(const CTransaction& tx, bool checkOutputs) const
+bool VaultManager::transactionIsRelevant(const CTransaction& tx, bool checkOutputs, const CScript& outputScriptFilter) const
 {
     AssertLockHeld(cs_vaultManager_);
     if(tx.IsCoinStake())
@@ -76,13 +76,24 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx, bool checkOutpu
             }
         }
     }
-    if(checkOutputs)
+    if(checkOutputs || !outputScriptFilter.empty())
     {
         for(const CTxOut& output: tx.vout)
         {
-            if(output.nValue >0 && isManagedScript(output.scriptPubKey))
+            if(output.nValue <= 0) continue;
+            if(!outputScriptFilter.empty())
             {
-                return true;
+                if(output.scriptPubKey == outputScriptFilter)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if(isManagedScript(output.scriptPubKey) )
+                {
+                    return true;
+                }
             }
         }
     }
@@ -134,14 +145,14 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
     deposit = deposit || txIsWhiteListed;
 
     if( txIsWhiteListed ||
-        (!blockIsNull && transactionIsRelevant(tx, checkOutputs ) ) ||
+        (!blockIsNull && transactionIsRelevant(tx, checkOutputs, CScript() ) ) ||
         (blockIsNull && walletTxRecord_->GetWalletTx(tx.GetHash()) != nullptr) )
     {
         CWalletTx walletTx(tx);
         if(!blockIsNull) walletTx.SetMerkleBranch(*pblock);
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
 
-        if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "1";
+        if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "";
         if(!walletTxAndRecordStatus.second)
         {
             if(walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull) || deposit)

@@ -65,7 +65,7 @@ class StakingVaultRedundancy(BitcoinTestFramework):
         else:
           self.vault2.addvault(vault_encoding,txDetails[txCount]["txhash"])
 
-      self.owner_node.setgenerate(True,100- self.owner_node.getblockcount())
+      self.owner_node.setgenerate(True,109- self.owner_node.getblockcount())
       sync_blocks(self.nodes)
 
     def run_test(self):
@@ -74,20 +74,17 @@ class StakingVaultRedundancy(BitcoinTestFramework):
         assert_equal(self.vault1.getbalance()+self.vault2.getbalance(), Decimal(30*400.0))
 
         print ("Vault trying to mine PoS blocks now...")
-        startVault2Balance = self.vault2.getbalance()
-        for _ in range(15):
+        utxos2 = self.vault2.listunspent()
+        for _ in range(10):
           self.vault1.setgenerate(True,1)
           sync_blocks(self.nodes)
-          assert_equal(self.vault2.getbalance(),startVault2Balance)
+          assert_equal(self.vault2.listunspent(),utxos2)
 
-        self.owner_node.setgenerate(True,20)
-        sync_blocks(self.nodes)
-
-        startVault1Balance = self.vault1.getbalance()
-        for _ in range(15):
+        utxos1 = self.vault1.listunspent()
+        for _ in range(10):
           self.vault2.setgenerate(True,1)
           sync_blocks(self.nodes)
-          assert_equal(self.vault1.getbalance(),startVault1Balance)
+          assert_equal(self.vault1.listunspent(),utxos1)
 
         self.owner_node.setgenerate(True,20)
         sync_blocks(self.nodes)

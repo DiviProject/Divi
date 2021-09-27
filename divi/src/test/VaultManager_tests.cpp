@@ -767,7 +767,7 @@ BOOST_AUTO_TEST_CASE(willIgnoreCoinstakeTransactionWithSingleUnamangedInput)
     BOOST_CHECK_EQUAL(otherWalletTx.vout.size(),0u);
 }
 
-BOOST_AUTO_TEST_CASE(willIgnoreCoinstakeTransactionWithAtLeastOneUnamangedInput)
+BOOST_AUTO_TEST_CASE(willIgnoreOutputsInCoinstakeWithAtLeastOneUnamangedInput)
 {
     CScript managedScript = scriptGenerator(10);
     manager->addManagedScript(managedScript);
@@ -797,9 +797,7 @@ BOOST_AUTO_TEST_CASE(willIgnoreCoinstakeTransactionWithAtLeastOneUnamangedInput)
     manager->addTransaction(otherTx,&blockMiningSecondTx, false);
     assert(CTransaction(otherTx).IsCoinStake());
 
-    const auto& otherWalletTx = manager->getTransaction(otherTx.GetHash());
-    BOOST_CHECK_EQUAL(otherWalletTx.vin.size(),0u);
-    BOOST_CHECK_EQUAL(otherWalletTx.vout.size(),0u);
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
 }
 
 BOOST_AUTO_TEST_CASE(willRecordCoinstakeTransactionWithOnlyMangedInputs)

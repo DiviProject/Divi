@@ -61,10 +61,6 @@ bool VaultManager::isManagedScript(const CScript& script) const
 bool VaultManager::transactionIsRelevant(const CTransaction& tx, bool checkOutputs, const CScript& outputScriptFilter) const
 {
     AssertLockHeld(cs_vaultManager_);
-    if(tx.IsCoinStake())
-    {
-        return allInputsAreKnown(tx);
-    }
     for(const CTxIn& input: tx.vin)
     {
         const CWalletTx* walletTx = walletTxRecord_->GetWalletTx(input.prevout.hash);
@@ -77,6 +73,7 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx, bool checkOutpu
             }
         }
     }
+    if(tx.IsCoinStake()) return false;
     if(checkOutputs || !outputScriptFilter.empty())
     {
         for(const CTxOut& output: tx.vout)

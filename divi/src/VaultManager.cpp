@@ -1,5 +1,6 @@
 #include <VaultManager.h>
 #include <primitives/transaction.h>
+#include <primitives/block.h>
 #include <script/script.h>
 #include <WalletTx.h>
 #include <WalletTransactionRecord.h>
@@ -168,6 +169,7 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
 
         if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = scriptToFilterBy.ToString();
+        if(!deposit && !blockIsNull && pblock->isLotteryBlock) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "NoScriptAllowed";
         if(!walletTxAndRecordStatus.second)
         {
             if(walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull) || deposit)

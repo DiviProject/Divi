@@ -136,6 +136,17 @@ bool VaultManager::allInputsAreKnown(const CTransaction& tx) const
     return true;
 }
 
+bool VaultManager::isManagedUTXO(const CWalletTx& walletTransaction,const CTxOut& output) const
+{
+    bool isAllowedByDepositDescription = true;
+    if(walletTransaction.mapValue.count(VAULT_DEPOSIT_DESCRIPTION) > 0)
+    {
+        std::string depositDescription = walletTransaction.mapValue.find(VAULT_DEPOSIT_DESCRIPTION)->second;
+        isAllowedByDepositDescription = depositDescription.empty() || depositDescription == output.scriptPubKey.ToString();
+    }
+    return output.nValue >0 && isAllowedByDepositDescription && isManagedScript(output.scriptPubKey);
+}
+
 void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit)
 {
     LOCK(cs_vaultManager_);
@@ -220,7 +231,7 @@ UnspentOutputs VaultManager::getManagedUTXOs(VaultUTXOFilters filter) const
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
             const CTxOut& output = tx.vout[outputIndex];
-            if(output.nValue >0 && isManagedScript(output.scriptPubKey) && !outputTracker_->IsSpent(hash,outputIndex))
+            if(isManagedUTXO(tx,output) && !outputTracker_->IsSpent(hash,outputIndex))
             {
                 outputs.emplace_back(&tx, outputIndex,depth,true);
             }

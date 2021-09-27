@@ -71,7 +71,7 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx, bool checkOutpu
         if(walletTx)
         {
             const CTxOut& output = walletTx->vout[input.prevout.n];
-            if(isManagedScript(output.scriptPubKey))
+            if(isManagedUTXO(*walletTx,output))
             {
                 return true;
             }

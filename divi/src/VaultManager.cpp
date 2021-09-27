@@ -168,10 +168,13 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         if(!blockIsNull) walletTx.SetMerkleBranch(*pblock);
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
 
-        if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = scriptToFilterBy.ToString();
-        if(!deposit && !blockIsNull)
+        if(deposit)
         {
-            if(pblock->isLotteryBlock || (tx.IsCoinStake() && !allInputsAreKnown(tx)))
+            walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = scriptToFilterBy.ToString();
+        }
+        else if(!txIsWhiteListed)
+        {
+            if( (!blockIsNull && pblock->isLotteryBlock) || (tx.IsCoinStake() && !allInputsAreKnown(tx)))
             {
                 walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "NoScriptAllowed";
             }

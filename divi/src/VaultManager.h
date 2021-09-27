@@ -15,6 +15,7 @@ class CTransaction;
 class CBlock;
 class CWalletTx;
 class uint256;
+class CTxOut;
 
 class I_VaultManagerDatabase;
 class WalletTransactionRecord;
@@ -46,6 +47,7 @@ private:
     bool transactionIsWhitelisted(const CTransaction& tx) const;
     bool transactionIsRelevant(const CTransaction& tx, bool checkOutputs,const CScript& outputScriptFilter) const;
     bool allInputsAreKnown(const CTransaction& tx) const;
+    bool isManagedUTXO(const CWalletTx& walletTransaction,const CTxOut& output) const;
 public:
     VaultManager(
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,

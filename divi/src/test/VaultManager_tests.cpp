@@ -800,6 +800,31 @@ BOOST_AUTO_TEST_CASE(willIgnoreOutputsInCoinstakeWithAtLeastOneUnamangedInput)
     BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
 }
 
+BOOST_AUTO_TEST_CASE(willIgnoreOutputsFromCoinstakeInLotteryBlockByDefault)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript);
+
+    CMutableTransaction fundingTransaction;
+    fundingTransaction.vout.push_back(CTxOut(100,managedScript));
+    fundingTransaction.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningFundingTx = getBlockToMineTransaction(fundingTransaction);
+    manager->addTransaction(fundingTransaction,&blockMiningFundingTx, true);
+
+    CMutableTransaction otherTx;
+    otherTx.vin.emplace_back( COutPoint(fundingTransaction.GetHash(), 0u) );
+    otherTx.vin.emplace_back( COutPoint(fundingTransaction.GetHash(), 1u) );
+    otherTx.vout.emplace_back();
+    otherTx.vout.back().SetEmpty();
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
+    blockMiningSecondTx.isLotteryBlock = true;
+    manager->addTransaction(otherTx,&blockMiningSecondTx, false);
+    assert(CTransaction(otherTx).IsCoinStake());
+
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
+}
+
 BOOST_AUTO_TEST_CASE(willRecordCoinstakeTransactionWithOnlyMangedInputs)
 {
     CScript managedScript = scriptGenerator(10);

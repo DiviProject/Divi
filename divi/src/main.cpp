@@ -1015,6 +1015,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         subsidiesContainer.superblockHeightValidator(),
         subsidiesContainer.blockSubsidiesProvider());
 
+    block.isLotteryBlock = subsidiesContainer.superblockHeightValidator().IsValidLotteryBlockHeight(pindex->nHeight);
     const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
     IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);

@@ -149,6 +149,10 @@ bool VaultManager::isManagedUTXO(const CWalletTx& walletTransaction,const CTxOut
 
 void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit)
 {
+    addTransaction(tx, pblock, deposit,CScript());
+}
+void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy)
+{
     LOCK(cs_vaultManager_);
     const bool blockIsNull = pblock==nullptr;
     const bool txIsWhiteListed = transactionIsWhitelisted(tx);
@@ -156,14 +160,14 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
     deposit = deposit || txIsWhiteListed;
 
     if( txIsWhiteListed ||
-        (!blockIsNull && transactionIsRelevant(tx, checkOutputs, CScript() ) ) ||
+        (!blockIsNull && transactionIsRelevant(tx, checkOutputs, scriptToFilterBy ) ) ||
         (blockIsNull && walletTxRecord_->GetWalletTx(tx.GetHash()) != nullptr) )
     {
         CWalletTx walletTx(tx);
         if(!blockIsNull) walletTx.SetMerkleBranch(*pblock);
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
 
-        if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "";
+        if(deposit) walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = scriptToFilterBy.ToString();
         if(!walletTxAndRecordStatus.second)
         {
             if(walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull) || deposit)

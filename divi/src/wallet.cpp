@@ -880,7 +880,7 @@ bool CWallet::AddVault(
     {
         LOCK(cs_wallet);
         vaultManager_->addManagedScript(vaultScript);
-        vaultManager_->addTransaction(tx, pblock, true);
+        vaultManager_->addTransaction(tx, pblock, true,vaultScript);
         return true;
     }
     return false;

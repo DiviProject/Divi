@@ -55,6 +55,7 @@ public:
     ~VaultManager();
 
     void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit);
+    void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy);
     void addManagedScript(const CScript& script);
     void addWhiteListedScript(const CScript& script);
     void removeManagedScript(const CScript& script);

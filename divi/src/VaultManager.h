@@ -44,7 +44,7 @@ private:
 
     bool isManagedScript(const CScript& script) const;
     bool transactionIsWhitelisted(const CTransaction& tx) const;
-    bool transactionIsRelevant(const CTransaction& tx, bool checkOutputs) const;
+    bool transactionIsRelevant(const CTransaction& tx, bool checkOutputs,const CScript& outputScriptFilter) const;
     bool allInputsAreKnown(const CTransaction& tx) const;
 public:
     VaultManager(

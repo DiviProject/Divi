@@ -125,12 +125,6 @@ bool VaultManager::allInputsAreKnown(const CTransaction& tx) const
     return true;
 }
 
-bool VaultManager::isMyCoinstake(const CTransaction& tx) const
-{
-    AssertLockHeld(cs_vaultManager_);
-    return tx.IsCoinStake() && allInputsAreKnown(tx);
-}
-
 void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit)
 {
     LOCK(cs_vaultManager_);

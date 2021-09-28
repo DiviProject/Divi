@@ -47,7 +47,7 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, CBlockIndex* pin
             blockReader_.ReadBlock(pindex,block);
             BOOST_FOREACH (CTransaction& tx, block.vtx)
             {
-                if (wallet.AddToWalletIfInvolvingMe(tx, &block, fUpdate,false))
+                if (wallet.AddToWalletIfInvolvingMe(tx, &block, fUpdate,TransactionSyncType::RESCAN))
                     ret++;
             }
             pindex = activeChain_.Next(pindex);

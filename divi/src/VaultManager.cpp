@@ -168,12 +168,9 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         {
             walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = scriptToFilterBy.ToString();
         }
-        else if(!txIsWhiteListed)
+        else if( (!blockIsNull && pblock->isLotteryBlock) || (tx.IsCoinStake() && !allInputsAreKnown(tx)))
         {
-            if( (!blockIsNull && pblock->isLotteryBlock) || (tx.IsCoinStake() && !allInputsAreKnown(tx)))
-            {
-                walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "NoScriptAllowed";
-            }
+            walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "NoScriptAllowed";
         }
         if(!walletTxAndRecordStatus.second)
         {

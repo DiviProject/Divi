@@ -155,7 +155,6 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
     const bool blockIsNull = pblock==nullptr;
     const bool txIsWhiteListed = transactionIsWhitelisted(tx);
     const bool checkOutputs = txIsWhiteListed? false: (deposit || tx.IsCoinStake());
-    deposit = deposit || txIsWhiteListed;
 
     if( txIsWhiteListed ||
         (!blockIsNull && transactionIsRelevant(tx, checkOutputs, scriptToFilterBy ) ) ||
@@ -165,7 +164,7 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         if(!blockIsNull) walletTx.SetMerkleBranch(*pblock);
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
 
-        if(deposit)
+        if(deposit || txIsWhiteListed)
         {
             walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = scriptToFilterBy.ToString();
         }
@@ -178,7 +177,7 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         }
         if(!walletTxAndRecordStatus.second)
         {
-            if(walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull) || deposit)
+            if(walletTxAndRecordStatus.first->UpdateTransaction(walletTx,blockIsNull) || deposit || txIsWhiteListed)
             {
                 vaultManagerDB_.WriteTx(*walletTxAndRecordStatus.first);
             }

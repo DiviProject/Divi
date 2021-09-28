@@ -1335,7 +1335,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
  * pblock is optional, but should be provided if the transaction is known to be in a block.
  * If fUpdate is true, existing transactions will be updated.
  */
-bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, bool blockDisconnection)
+bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType)
 {
     {
         AssertLockHeld(cs_wallet);
@@ -1347,7 +1347,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
             // Get merkle branch if transaction was found in a block
             if (pblock)
                 wtx.SetMerkleBranch(*pblock);
-            return AddToWallet(wtx,blockDisconnection);
+            return AddToWallet(wtx,syncType == TransactionSyncType::BLOCK_DISCONNECT);
         }
     }
     return false;
@@ -1356,7 +1356,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
 void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType)
 {
     LOCK2(cs_main, cs_wallet);
-    if (!AddToWalletIfInvolvingMe(tx, pblock, true,syncType == TransactionSyncType::BLOCK_DISCONNECT))
+    if (!AddToWalletIfInvolvingMe(tx, pblock, true,syncType))
         return; // Not one of ours
 
     // If a transaction changes 'conflicted' state, that changes the balance

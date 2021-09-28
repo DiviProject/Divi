@@ -346,7 +346,7 @@ public:
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
 
-    bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate,bool blockDisconnection);
+    bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
     void ReacceptWalletTransactions();
     CAmount GetBalance() const;
     CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;

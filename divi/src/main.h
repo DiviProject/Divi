@@ -92,8 +92,6 @@ bool DisconnectBlocksAndReprocess(int blocks);
 // ***TODO***
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
 
-/** Abort with a message */
-bool AbortNode(const std::string& msg, const std::string& userMessage);
 /** Flush all state, indexes and buffers to disk. */
 void FlushStateToDisk(FlushStateMode mode = FlushStateMode::FLUSH_STATE_ALWAYS);
 

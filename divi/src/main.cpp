@@ -2104,7 +2104,7 @@ bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey)
     return true;
 }
 
-bool AbortNode(const std::string& strMessage, const std::string& userMessage)
+bool AbortNode(const std::string& strMessage, const std::string& userMessage = "")
 {
     strMiscWarning = strMessage;
     LogPrintf("*** %s\n", strMessage);

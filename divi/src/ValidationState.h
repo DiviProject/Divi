@@ -11,9 +11,6 @@
 
 #include <string>
 
-/** Abort with a message */
-bool AbortNode(const std::string& msg, const std::string& userMessage = "");
-
 /** Capture information about block/transaction validation */
 class CValidationState
 {

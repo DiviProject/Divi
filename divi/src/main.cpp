@@ -944,9 +944,7 @@ bool WriteUndoDataToDisk(CBlockIndex* pindex, CValidationState& state, CBlockUnd
             CDiskBlockPos pos;
             if (!FindUndoPos(state, pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
             {
-                AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
-                state.Error("out of disk space");
-                return error("%s : FindUndoPos failed",__func__);
+                return state.Abort("Disk space is low!");
             }
             if (!blockundo.WriteToDisk(pos, pindex->pprev->GetBlockHash()))
                 return state.Abort("Failed to write undo data");
@@ -1099,8 +1097,7 @@ bool static FlushStateToDisk(CBlockTreeDB& blockTreeDB, CValidationState& state,
             // overwrite one. Still, use a conservative safety factor of 2.
             if (!CheckDiskSpace(100 * 2 * 2 * pcoinsTip->GetCacheSize()))
             {
-                AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
-                return state.Error("out of disk space");
+                return state.Abort("Disk space is low!");
             }
             // First make sure all block and undo data is flushed to disk.
             FlushBlockFile();
@@ -1741,8 +1738,7 @@ bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAdd
             }
             else
             {
-                AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
-                return state.Error("out of disk space");
+                return state.Abort("Disk space is low!");
             }
         }
     }

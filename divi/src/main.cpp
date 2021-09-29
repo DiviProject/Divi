@@ -890,8 +890,7 @@ bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, unsigne
         }
         else
         {
-            AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
-            return state.Error("out of disk space");
+            return false;
         }
     }
 
@@ -944,7 +943,11 @@ bool WriteUndoDataToDisk(CBlockIndex* pindex, CValidationState& state, CBlockUnd
         if (pindex->GetUndoPos().IsNull()) {
             CDiskBlockPos pos;
             if (!FindUndoPos(state, pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
+            {
+                AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
+                state.Error("out of disk space");
                 return error("%s : FindUndoPos failed",__func__);
+            }
             if (!blockundo.WriteToDisk(pos, pindex->pprev->GetBlockHash()))
                 return state.Abort("Failed to write undo data");
 

@@ -158,6 +158,7 @@ BITCOIN_CORE_H = \
   hash.h \
   hdchain.h \
   WalletRescanner.h \
+  StartAndShutdownSignals.h \
   init.h \
   LicenseAndInfo.h \
   IndexDatabaseUpdates.h \
@@ -387,6 +388,7 @@ libbitcoin_server_a_SOURCES = \
   checkpoints.cpp \
   FilteredBoostFileSystem.cpp \
   WalletRescanner.cpp \
+  StartAndShutdownSignals.cpp \
   init.cpp \
   IndexDatabaseUpdates.cpp \
   BlockTransactionChecker.cpp \

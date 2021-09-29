@@ -47,6 +47,7 @@
 #include <TransactionInputChecker.h>
 #include <txmempool.h>
 #include <WalletRescanner.h>
+#include <StartAndShutdownSignals.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -330,13 +331,6 @@ void MainShutdown()
 #endif
     CleanupP2PConnections();
     LogPrintf("%s: done\n", __func__);
-}
-
-StartAndShutdownSignals::StartAndShutdownSignals(
-    ): startShutdown()
-    , shutdownRequested()
-    , shutdown()
-{
 }
 
 static StartAndShutdownSignals startAndShutdownSignals;

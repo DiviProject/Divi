@@ -20,13 +20,6 @@ class thread_group;
 void StartShutdown();
 bool ShutdownRequested();
 void Shutdown();
-struct StartAndShutdownSignals
-{
-    boost::signals2::signal<void ()> startShutdown;
-    boost::signals2::signal<bool ()> shutdownRequested;
-    boost::signals2::signal<void ()> shutdown;
-    StartAndShutdownSignals();
-};
 
 void EnableMainSignals();
 void EnableUnitTestSignals();

@@ -985,7 +985,13 @@ bool CheckMintTotalsAndBlockPayees(
 
 } // anonymous namespace
 
-bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
+bool ConnectBlock(
+    const CBlock& block,
+    CValidationState& state,
+    CBlockIndex* pindex,
+    CCoinsViewCache& view,
+    bool fJustCheck,
+    bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
     // Check it again in case a previous version let a bad block in

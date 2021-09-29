@@ -7,6 +7,7 @@
 #include "bip38.h"
 #include "base58.h"
 #include <BlockDiskAccessor.h>
+#include <chain.h>
 #include "init.h"
 #include "main.h"
 #include "rpcserver.h"
@@ -32,6 +33,7 @@
 using namespace json_spirit;
 using namespace std;
 extern CWallet* pwalletMain;
+extern CChain chainActive;
 
 void EnsureWalletIsUnlocked();
 

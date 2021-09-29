@@ -4,6 +4,7 @@
 
 #define BOOST_TEST_MODULE Divi Test Suite
 
+#include <chain.h>
 #include <init.h>
 #include "main.h"
 #include "net.h"
@@ -32,6 +33,7 @@ extern CCoinsViewCache* pcoinsTip;
 extern bool fCheckBlockIndex;
 extern BlockMap mapBlockIndex;
 extern int nScriptCheckThreads;
+extern CChain chainActive;
 
 struct TestingSetup {
     CCoinsViewDB *pcoinsdbview;

@@ -16,6 +16,7 @@
 #include <base58.h>
 #include "BlockFileOpener.h"
 #include <BlockDiskAccessor.h>
+#include <chain.h>
 #include <chainparams.h>
 #include "checkpoints.h"
 #include "compat/sanity.h"
@@ -85,6 +86,7 @@ constexpr int nWalletBackups = 20;
  */
 #endif
 extern CCriticalSection cs_main;
+extern CChain chainActive;
 extern Settings& settings;
 extern bool fReindex;
 extern bool fImporting;

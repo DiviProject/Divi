@@ -26,11 +26,12 @@ bool AbortNode(const std::string& strMessage, const std::string& userMessage = "
 }
 
 
-bool CValidationState::DoS(int level,
-                           bool ret ,
-                           unsigned char chRejectCodeIn ,
-                           std::string strRejectReasonIn ,
-                           bool corruptionIn )
+bool CValidationState::DoS(
+    int level,
+    bool ret,
+    unsigned char chRejectCodeIn,
+    std::string strRejectReasonIn,
+    bool corruptionIn)
 {
     chRejectCode = chRejectCodeIn;
     strRejectReason = strRejectReasonIn;
@@ -43,9 +44,10 @@ bool CValidationState::DoS(int level,
 }
 
 
-bool CValidationState::Invalid(bool ret ,
-                               unsigned char _chRejectCode ,
-                               std::string _strRejectReason)
+bool CValidationState::Invalid(
+    bool ret,
+    unsigned char _chRejectCode,
+    std::string _strRejectReason)
 {
     return DoS(0, ret, _chRejectCode, _strRejectReason);
 }

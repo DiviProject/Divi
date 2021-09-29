@@ -337,10 +337,8 @@ StartAndShutdownSignals::StartAndShutdownSignals(
     , shutdownRequested()
     , shutdown()
 {
-    startShutdown.connect(&MainStartShutdown);
-    shutdownRequested.connect(&MainShutdownRequested);
-    shutdown.connect(&MainShutdown);
 }
+
 static StartAndShutdownSignals startAndShutdownSignals;
 
 void StartShutdown()
@@ -373,11 +371,15 @@ bool UnitTestShutdownRequested()
   return false;
 }
 
-void StartAndShutdownSignals::EnableUnitTestSignals()
+void EnableMainSignals()
 {
-    startAndShutdownSignals.shutdown.disconnect(&MainShutdown);
-    startAndShutdownSignals.startShutdown.disconnect(&MainStartShutdown);
-    startAndShutdownSignals.shutdownRequested.disconnect(&MainShutdownRequested);
+    startAndShutdownSignals.shutdown.connect(&MainShutdown);
+    startAndShutdownSignals.startShutdown.connect(&MainStartShutdown);
+    startAndShutdownSignals.shutdownRequested.connect(&MainShutdownRequested);
+}
+
+void EnableUnitTestSignals()
+{
     startAndShutdownSignals.shutdown.connect(&UnitTestShutdown);
     startAndShutdownSignals.startShutdown.connect(&UnitTestStartShutdown);
     startAndShutdownSignals.shutdownRequested.connect(&UnitTestShutdownRequested);
@@ -1111,6 +1113,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 2: parameter interactions
     // Set this early so that parameter interactions go to console
+    EnableMainSignals();
     UIMessenger uiMessenger(uiInterface);
     SetLoggingAndDebugSettings();
 

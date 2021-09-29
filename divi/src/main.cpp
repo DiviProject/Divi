@@ -98,7 +98,7 @@ extern Settings& settings;
 CCriticalSection cs_main;
 BlockMap mapBlockIndex;
 std::map<uint256, uint256> mapProofOfStake;
-CChain chainActive;
+CChain chainActive; /** The currently-connected chain of blocks. */
 CBlockIndex* pindexBestHeader = NULL;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;

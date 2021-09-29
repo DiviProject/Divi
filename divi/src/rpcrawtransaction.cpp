@@ -8,6 +8,7 @@
 #include "base58.h"
 
 #include <blockmap.h>
+#include <chain.h>
 #include "core_io.h"
 #include <FeeAndPriorityCalculator.h>
 #include "init.h"
@@ -48,6 +49,7 @@ extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;
 extern CBlockTreeDB* pblocktree;
 extern bool fSpentIndex;
+extern CChain chainActive;
 
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex)
 {

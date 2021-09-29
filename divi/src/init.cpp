@@ -846,8 +846,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         {
 
             LOCK(cs_main);
-            const BlockDiskDataReader blockDiskReader;
-            ActiveChainManager chainManager(fAddressIndex,pblocktree,blockDiskReader);
+            const ActiveChainManager& chainManager = GetActiveChainManager();
             CVerifyDB dbVerifier(
                 chainManager,
                 chainActive,

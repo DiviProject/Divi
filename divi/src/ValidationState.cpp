@@ -45,6 +45,11 @@ bool CValidationState::Error(std::string strRejectReasonIn)
 
 bool CValidationState::Abort(const std::string& msg)
 {
+    if(!IsAbortRequested())
+    {
+        abortMessage = msg;
+        abortRequested = true;
+    }
     AbortNode(msg);
     return Error(msg);
 }
@@ -77,6 +82,16 @@ bool CValidationState::CorruptionPossible() const
 {
     return corruptionPossible;
 }
+
+bool CValidationState::IsAbortRequested() const
+{
+    return abortRequested;
+}
+std::string CValidationState::GetAbortMessage() const
+{
+    return abortMessage;
+}
+
 
 unsigned char CValidationState::GetRejectCode() const
 {

@@ -500,8 +500,7 @@ Value verifychain(const Array& params, bool fHelp)
         nCheckDepth = params[1].get_int();
 
     LOCK(cs_main);
-    const BlockDiskDataReader blockDiskReader;
-    ActiveChainManager chainManager(fAddressIndex,pblocktree,blockDiskReader);
+    const ActiveChainManager& chainManager = GetActiveChainManager();
     CVerifyDB dbVerifier(
         chainManager,
         chainActive,

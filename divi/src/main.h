@@ -24,6 +24,7 @@ enum FlushStateMode {
     FLUSH_STATE_ALWAYS
 };
 
+class ActiveChainManager;
 class CBlockIndex;
 class CBlockTreeDB;
 class CSporkDB;
@@ -156,4 +157,6 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex);
 
 /** Remove invalidity status from a block and its descendants. */
 bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
+
+const ActiveChainManager& GetActiveChainManager();
 #endif // BITCOIN_MAIN_H

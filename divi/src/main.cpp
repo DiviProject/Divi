@@ -985,6 +985,13 @@ bool CheckMintTotalsAndBlockPayees(
 
 } // anonymous namespace
 
+const ActiveChainManager& GetActiveChainManager()
+{
+    static const BlockDiskDataReader blockDiskReader;
+    static ActiveChainManager chainManager(fAddressIndex,pblocktree,blockDiskReader);
+    return chainManager;
+}
+
 bool ConnectBlock(
     const CBlock& block,
     CValidationState& state,
@@ -1173,8 +1180,7 @@ bool static DisconnectTip(CValidationState& state)
     assert(pindexDelete);
     mempool.check(pcoinsTip, mapBlockIndex);
     // Read block from disk.
-    static const BlockDiskDataReader blockDiskReader;
-    static ActiveChainManager chainManager(fAddressIndex,pblocktree,blockDiskReader);
+    const ActiveChainManager& chainManager = GetActiveChainManager();
     std::pair<CBlock,bool> disconnectedBlock;
     {
          CCoinsViewCache view(pcoinsTip);

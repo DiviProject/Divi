@@ -25,8 +25,11 @@ private:
     unsigned char chRejectCode;
     bool corruptionPossible;
 
+    std::string abortMessage;
+    bool abortRequested;
+
 public:
-    CValidationState() : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false) {}
+    CValidationState() : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false), abortMessage(""), abortRequested(false) {}
     bool DoS(int level, bool ret = false, unsigned char chRejectCodeIn = 0, std::string strRejectReasonIn = "", bool corruptionIn = false);
 
     bool Invalid(bool ret = false,
@@ -46,6 +49,8 @@ public:
     bool IsInvalid(int& nDoSOut) const;
 
     bool CorruptionPossible() const;
+    bool IsAbortRequested() const;
+    std::string GetAbortMessage() const;
 
     unsigned char GetRejectCode() const ;
     std::string GetRejectReason() const ;

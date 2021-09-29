@@ -66,7 +66,7 @@ struct TestingSetup {
         for (int i=0; i < nScriptCheckThreads-1; i++)
             threadGroup.create_thread(&TransactionInputChecker::ThreadScriptCheck);
         RegisterNodeSignals(GetNodeSignals());
-        StartAndShutdownSignals::EnableUnitTestSignals();
+        EnableUnitTestSignals();
     }
     ~TestingSetup()
     {

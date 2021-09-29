@@ -333,7 +333,7 @@ void MainShutdown()
     LogPrintf("%s: done\n", __func__);
 }
 
-static StartAndShutdownSignals startAndShutdownSignals;
+static StartAndShutdownSignals& startAndShutdownSignals = StartAndShutdownSignals::instance();
 
 void StartShutdown()
 {

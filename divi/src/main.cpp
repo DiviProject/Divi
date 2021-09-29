@@ -2104,17 +2104,6 @@ bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey)
     return true;
 }
 
-bool AbortNode(const std::string& strMessage, const std::string& userMessage = "")
-{
-    strMiscWarning = strMessage;
-    LogPrintf("*** %s\n", strMessage);
-    uiInterface.ThreadSafeMessageBox(
-                userMessage.empty() ? translate("Error: A fatal internal error occured, see debug.log for details") : userMessage,
-                "", CClientUIInterface::MSG_ERROR);
-    StartShutdown();
-    return false;
-}
-
 bool static LoadBlockIndexDB(string& strError)
 {
     if (!pblocktree->LoadBlockIndexGuts(mapBlockIndex))

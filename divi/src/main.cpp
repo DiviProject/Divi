@@ -2459,7 +2459,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp)
             }
         }
     } catch (std::runtime_error& e) {
-        AbortNode(std::string("System error: ") + e.what());
+        CValidationState().Abort(std::string("System error: ") + e.what());
     }
     if (nLoaded > 0)
         LogPrintf("Loaded %i blocks from external file in %dms\n", nLoaded, GetTimeMillis() - nStart);

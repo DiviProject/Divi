@@ -1333,7 +1333,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // ********************************************************* Step 11: start node
 
     if (!CheckDiskSpace())
-        return AbortNode("Disk space is low!", translate("Error: Disk space is low!"));;
+        return CValidationState().Abort("Disk space is low!");
 
     if (!strErrors.str().empty())
         return InitError(strErrors.str());

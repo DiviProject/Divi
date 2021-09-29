@@ -75,9 +75,6 @@
 #include <TransactionSearchIndexes.h>
 #include <ProofOfStakeModule.h>
 
-/** Minimum disk space required - used in CheckDiskSpace() */
-static const uint64_t nMinDiskSpace = 52428800;
-
 using namespace boost;
 using namespace std;
 
@@ -890,8 +887,12 @@ bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, unsigne
                 AllocateFileRange(file, pos.nPos, nNewChunks * UNDOFILE_CHUNK_SIZE - pos.nPos);
                 fclose(file);
             }
-        } else
+        }
+        else
+        {
+            AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
             return state.Error("out of disk space");
+        }
     }
 
     return true;
@@ -1094,7 +1095,10 @@ bool static FlushStateToDisk(CBlockTreeDB& blockTreeDB, CValidationState& state,
             // an overestimation, as most will delete an existing entry or
             // overwrite one. Still, use a conservative safety factor of 2.
             if (!CheckDiskSpace(100 * 2 * 2 * pcoinsTip->GetCacheSize()))
+            {
+                AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
                 return state.Error("out of disk space");
+            }
             // First make sure all block and undo data is flushed to disk.
             FlushBlockFile();
             // Then update all block file information (which may refer to block and undo files).
@@ -1731,8 +1735,12 @@ bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAdd
                     AllocateFileRange(file, pos.nPos, nNewChunks * BLOCKFILE_CHUNK_SIZE - pos.nPos);
                     fclose(file);
                 }
-            } else
+            }
+            else
+            {
+                AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
                 return state.Error("out of disk space");
+            }
         }
     }
 
@@ -2106,17 +2114,6 @@ bool AbortNode(const std::string& strMessage, const std::string& userMessage)
                 "", CClientUIInterface::MSG_ERROR);
     StartShutdown();
     return false;
-}
-
-bool CheckDiskSpace(uint64_t nAdditionalBytes)
-{
-    uint64_t nFreeBytesAvailable = filesystem::space(GetDataDir()).available;
-
-    // Check for nMinDiskSpace bytes (currently 50MB)
-    if (nFreeBytesAvailable < nMinDiskSpace + nAdditionalBytes)
-        return AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
-
-    return true;
 }
 
 bool static LoadBlockIndexDB(string& strError)

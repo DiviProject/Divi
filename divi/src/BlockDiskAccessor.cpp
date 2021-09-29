@@ -1,5 +1,7 @@
 #include <BlockDiskAccessor.h>
 
+#include <boost/filesystem.hpp>
+#include <DataDirectory.h>
 #include <BlockFileOpener.h>
 #include <chain.h>
 #include <streams.h>
@@ -8,6 +10,20 @@
 #include <Logging.h>
 #include <BlockUndo.h>
 #include <pow.h>
+
+/** Check whether enough disk space is available for an incoming block */
+bool CheckDiskSpace(uint64_t nAdditionalBytes)
+{
+    /** Minimum disk space required - used in CheckDiskSpace() */
+    static const uint64_t nMinDiskSpace = 52428800;
+    uint64_t nFreeBytesAvailable = boost::filesystem::space(GetDataDir()).available;
+
+    // Check for nMinDiskSpace bytes (currently 50MB)
+    if (nFreeBytesAvailable < nMinDiskSpace + nAdditionalBytes)
+        return false; // Should call AbortNode when this returns false;
+
+    return true;
+}
 
 bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos)
 {

@@ -7,6 +7,7 @@
 
 #include "amount.h"
 #include "base58.h"
+#include <chain.h>
 #include "chainparams.h"
 #include "core_io.h"
 #include "init.h"
@@ -50,6 +51,7 @@ extern CCoinsViewCache* pcoinsTip;
 extern BlockMap mapBlockIndex;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
+extern CChain chainActive;
 
 LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
 #ifdef ENABLE_WALLET

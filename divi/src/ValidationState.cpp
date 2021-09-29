@@ -8,6 +8,9 @@
 
 #include <ValidationState.h>
 
+/** Abort with a message */
+extern bool AbortNode(const std::string& msg, const std::string& userMessage = "");
+
 bool CValidationState::DoS(int level,
                            bool ret ,
                            unsigned char chRejectCodeIn ,
@@ -84,6 +87,3 @@ std::string CValidationState::GetRejectReason() const
 {
     return strRejectReason;
 }
-
-
-

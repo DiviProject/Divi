@@ -8,8 +8,23 @@
 
 #include <ValidationState.h>
 
+#include <StartAndShutdownSignals.h>
+#include <Logging.h>
+#include <ui_interface.h>
+
 /** Abort with a message */
-extern bool AbortNode(const std::string& msg, const std::string& userMessage = "");
+extern std::string strMiscWarning;
+bool AbortNode(const std::string& strMessage, const std::string& userMessage = "")
+{
+    strMiscWarning = strMessage;
+    LogPrintf("*** %s\n", strMessage);
+    uiInterface.ThreadSafeMessageBox(
+                userMessage.empty() ? translate("Error: A fatal internal error occured, see debug.log for details") : userMessage,
+                "", CClientUIInterface::MSG_ERROR);
+    StartAndShutdownSignals::instance().startShutdown();
+    return false;
+}
+
 
 bool CValidationState::DoS(int level,
                            bool ret ,

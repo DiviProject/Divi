@@ -59,8 +59,6 @@ int GetHeight();
  * @return True if state.IsValid()
  */
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
-/** Check whether enough disk space is available for an incoming block */
-bool CheckDiskSpace(uint64_t nAdditionalBytes = 0);
 
 /** Import blocks from an external file */
 bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp = NULL);

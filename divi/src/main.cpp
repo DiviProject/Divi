@@ -874,7 +874,8 @@ bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int n
 
     unsigned int nNewSize;
     pos.nPos = vinfoBlockFile[nFile].nUndoSize;
-    nNewSize = vinfoBlockFile[nFile].nUndoSize += nAddSize;
+    vinfoBlockFile[nFile].nUndoSize += nAddSize;
+    nNewSize = vinfoBlockFile[nFile].nUndoSize;
     setDirtyFileInfo.insert(nFile);
 
     unsigned int nOldChunks = (pos.nPos + UNDOFILE_CHUNK_SIZE - 1) / UNDOFILE_CHUNK_SIZE;

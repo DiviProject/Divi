@@ -65,8 +65,12 @@ class StakingVaultRedundancy(BitcoinTestFramework):
         else:
           self.vault2.addvault(vault_encoding,txDetails[txCount]["txhash"])
 
-      self.owner_node.setgenerate(True,109- self.owner_node.getblockcount())
-      sync_blocks(self.nodes)
+      remaining_blocks = 109- self.owner_node.getblockcount()
+      while remaining_blocks > 0:
+        mine_blocks = min(remaining_blocks,10)
+        self.owner_node.setgenerate(True,mine_blocks)
+        remaining_blocks -= mine_blocks
+        sync_blocks(self.nodes)
 
     def run_test(self):
         print ("Setting up PoS coins...")

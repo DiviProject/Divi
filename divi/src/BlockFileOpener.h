@@ -2,7 +2,7 @@
 #define BLOCK_FILE_OPENER_H
 
 #include <cstdio>
-class CDiskBlockPos;
+struct CDiskBlockPos;
 
 bool BlockFileExists(const CDiskBlockPos& pos, const char* prefix);
 FILE* OpenBlockFile(const CDiskBlockPos& pos, bool fReadOnly = false);

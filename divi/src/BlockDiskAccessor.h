@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <I_BlockDataReader.h>
 class CBlock;
-class CDiskBlockPos;
+struct CDiskBlockPos;
 class CBlockIndex;
 
 /** Functions for disk access for blocks */

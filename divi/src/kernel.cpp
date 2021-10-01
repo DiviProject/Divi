@@ -164,7 +164,7 @@ bool ComputeNextStakeModifier(
     if (pindexPrev->nHeight == 0) {
         //Give a stake modifier to the first block
         fGeneratedStakeModifier = true;
-        nextStakeModifier = uint64_t("stakemodifier");
+        nextStakeModifier = 0x7374616b656d6f64;
         return true;
     }
 

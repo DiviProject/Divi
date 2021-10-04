@@ -135,6 +135,11 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
     binary = []
     if os.getenv("RUNNER") is not None:
       binary.append(os.getenv("RUNNER"))
+      if os.getenv("RUNNER_FLAGS") is not None:
+        flags = str(os.getenv("RUNNER_FLAGS")).split(" ")
+        print("Using flags: '{}'".format(flags))
+        for flag in flags:
+            binary.append(flag)
     binary.append(os.getenv("BITCOIND", "divid"))
     # By default, Divi checks if Tor is running on the system and if it is,
     # then the real Tor instance will be used as proxy for .onion
@@ -147,7 +152,9 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
     devnull = open("/dev/null", "w+")
     subprocess.check_call([ os.getenv("BITCOINCLI", "divi-cli"), "-datadir="+datadir] +
                           _rpchost_to_args(rpchost)  +
-                          ["-rpcwait", "getblockcount"], stdout=devnull)
+                          ["-rpcwait", "getblockcount"],
+                          stdout=devnull,
+                          timeout=30.0)
     devnull.close()
     url = "http://rt:rt@"
     if rpchost and re.match(".*:\\d+$", rpchost):
@@ -195,7 +202,11 @@ def wait_bitcoinds():
 
 def connect_nodes(from_connection, node_num):
     ip_port = "127.0.0.1:"+str(p2p_port(node_num))
-    from_connection.addnode(ip_port, "onetry")
+    try:
+        from_connection.addnode(ip_port, "onetry")
+    except Exception as e:
+        print("Unable to connect to peer {} through {}: {}".format(node_num,ip_port,e))
+        raise
     # poll until version handshake complete to avoid race conditions
     # with transaction relaying
     while any(peer['version'] == 0 for peer in from_connection.getpeerinfo()):

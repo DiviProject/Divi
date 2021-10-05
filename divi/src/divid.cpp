@@ -68,7 +68,7 @@ bool AppInit(int argc, char* argv[])
     //
     // If Qt is used, parameters/divi.conf are parsed in qt/divi.cpp's main()
     settings.ParseParameters(argc, argv);
-
+    EnableMainSignals();
     // Process help and version before taking care about datadir
     if (settings.ParameterIsSet("-?") || settings.ParameterIsSet("-help") || settings.ParameterIsSet("-version")) {
         std::string strUsage = translate("Divi Core Daemon") + " " + translate("version") + " " + FormatFullVersion() + "\n";

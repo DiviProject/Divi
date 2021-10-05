@@ -60,7 +60,7 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
     {
         std::vector<COutput> coinsToCombine;
         //find masternode rewards that need to be combined
-        CCoinControl* coinControl = new CCoinControl();
+        std::unique_ptr<CCoinControl> coinControl(new CCoinControl());
         CAmount nTotalRewardsValue = 0;
         for(const COutput& out: it->second)
         {
@@ -94,10 +94,9 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
         CWalletTx wtx;
         std::pair<std::string,bool> txCreationResult;
         {
-            CoinControlSelectionAlgorithm coinSelectionAlgorithm(coinControl);
+            CoinControlSelectionAlgorithm coinSelectionAlgorithm(coinControl.get());
             txCreationResult = wallet_.SendMoney(vecSend, wtx, &coinSelectionAlgorithm, ALL_SPENDABLE_COINS);
         }
-        delete coinControl;
         if (!txCreationResult.second) {
             LogPrintf("CombineDust transaction failed, reason: %s\n", txCreationResult.first);
             continue;

@@ -51,7 +51,7 @@ private:
     bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckMasternodeBroadcastContext(CMasternodeBroadcast& mnb, int& nDoS);
     MnUpdateStatus UpdateMasternodeFromBroadcast(CMasternodeBroadcast& mnb);
-    bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool skipPingChainSyncCheck = false);
+    bool CheckAndUpdatePing(CMasternode& mn, const CMasternodePing& mnp, int& nDoS, bool skipPingChainSyncCheck = false);
 
     /** Processes a masternode broadcast.  It is verified first, and then
      *  the masternode updated or added accordingly.
@@ -69,7 +69,7 @@ private:
      *  we apply potential DoS banscores.
      *
      *  Returns true if the ping message was valid.  */
-    bool ProcessPing(CNode* pfrom, CMasternodePing& mnp);
+    bool ProcessPing(CNode* pfrom, const CMasternodePing& mnp);
 public:
 
     CMasternodeMan(

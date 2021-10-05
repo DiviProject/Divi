@@ -22,7 +22,7 @@ private:
     const ActiveChainManager& chainManager_;
     CChain& activeChain_;
     CClientUIInterface& clientInterface_;
-    const unsigned& coinsCacheSize_;
+    const unsigned coinsCacheSize_;
     ShutdownListener shutdownListener_;
 public:
     CVerifyDB(
@@ -32,7 +32,7 @@ public:
         const unsigned& coinsCacheSize,
         ShutdownListener shutdownListener);
     ~CVerifyDB();
-    bool VerifyDB(CCoinsView* coinsview, CCoinsViewCache* pcoinsTip, int nCheckLevel, int nCheckDepth);
+    bool VerifyDB(CCoinsView* coinsview, unsigned coinsTipCacheSize, int nCheckLevel, int nCheckDepth);
 };
 
 #endif

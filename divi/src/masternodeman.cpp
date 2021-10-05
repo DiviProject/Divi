@@ -301,7 +301,7 @@ CMasternodeMan::MnUpdateStatus CMasternodeMan::UpdateMasternodeFromBroadcast(CMa
     return MnUpdateStatus::MN_UPDATED;
 }
 
-bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, int& nDoS,bool skipPingChainSyncCheck)
+bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, const CMasternodePing& mnp, int& nDoS,bool skipPingChainSyncCheck)
 {
     if (mnp.sigTime > GetAdjustedTime() + 60 * 60) {
         LogPrint("masternode", "%s - Signature rejected, too far into the future %s\n",
@@ -504,7 +504,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     return true;
 }
 
-bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
+bool CMasternodeMan::ProcessPing(CNode* pfrom, const CMasternodePing& mnp)
 {
     if (networkMessageManager_.pingIsKnown(mnp.GetHash())) return true; //seen
 

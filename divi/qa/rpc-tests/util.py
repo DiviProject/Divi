@@ -19,7 +19,7 @@ import re
 from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
-portseed = os.getpid()
+portseed = 0
 
 def p2p_port(n):
     return 11000 + n + 10 * (portseed % 99)

@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowAddingBIPsWithOverlappingBits)
 BOOST_AUTO_TEST_CASE(willStateBIPIsEnabledIfTrackerIsInActiveState)
 {
     BIP9Deployment firstBIP("MySegwitVariant", 1, (int64_t)1500000,(int64_t)1600000,1000,900);
-    const CBlockIndex* chainTip = new CBlockIndex();
+    std::unique_ptr<const CBlockIndex> chainTip(new CBlockIndex());
 
     std::vector<ThresholdState> allStates = {
         ThresholdState::DEFINED,
@@ -110,17 +110,17 @@ BOOST_AUTO_TEST_CASE(willStateBIPIsEnabledIfTrackerIsInActiveState)
         ThresholdState::ACTIVE,
     };
 
-    auto testEnvironment = [&firstBIP, chainTip](const ThresholdState& state) -> void {
+    auto testEnvironment = [&firstBIP, &chainTip](const ThresholdState& state) -> void {
         std::shared_ptr<MockBIP9ActivationTrackerFactory> factory_ = std::make_shared<MockBIP9ActivationTrackerFactory>();
         std::shared_ptr<BIP9ActivationManager> manager_ = std::make_shared<BIP9ActivationManager>(*factory_);
 
         ON_CALL(*factory_, create(_,_))
             .WillByDefault(
                 Invoke(
-                    [chainTip, state](const BIP9Deployment& a, ThresholdConditionCache& b)-> I_BIP9ActivationStateTracker*
+                    [&chainTip, state](const BIP9Deployment& a, ThresholdConditionCache& b)-> I_BIP9ActivationStateTracker*
                     {
                         auto mock = new MockBIP9ActivationStateTracker();
-                        ON_CALL(*mock,getLastCachedStatePriorToBlockIndex(chainTip))
+                        ON_CALL(*mock,getLastCachedStatePriorToBlockIndex(chainTip.get()))
                             .WillByDefault(
                                 Return(state)
                             );
@@ -132,11 +132,11 @@ BOOST_AUTO_TEST_CASE(willStateBIPIsEnabledIfTrackerIsInActiveState)
         manager_->addBIP(firstBIP);
         if(state==ThresholdState::ACTIVE)
         {
-            BOOST_CHECK(manager_->networkEnabledBIP(firstBIP.deploymentName,chainTip));
+            BOOST_CHECK(manager_->networkEnabledBIP(firstBIP.deploymentName,chainTip.get()));
         }
         else
         {
-            BOOST_CHECK(!manager_->networkEnabledBIP(firstBIP.deploymentName,chainTip));
+            BOOST_CHECK(!manager_->networkEnabledBIP(firstBIP.deploymentName,chainTip.get()));
         }
     };
 

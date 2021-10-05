@@ -30,6 +30,7 @@ private:
    * will correspond to the "current tip".
    */
   std::vector<std::unique_ptr<CBlockIndex>> blocks;
+  std::vector<std::unique_ptr<uint256>> blockHashes;
 
 public:
 
@@ -54,7 +55,8 @@ public:
     CBlockIndex* res = new CBlockIndex();
     res->pprev = pprev;
     res->nVersion = 4;
-    res->phashBlock = new uint256(res->GetBlockHeader().GetHash());
+    blockHashes.emplace_back(new uint256(res->GetBlockHeader().GetHash()) );
+    res->phashBlock = blockHashes.back().get();
 
     blocks.emplace_back(res);
     return res;

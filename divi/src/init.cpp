@@ -333,23 +333,6 @@ void MainShutdown()
     LogPrintf("%s: done\n", __func__);
 }
 
-static StartAndShutdownSignals& startAndShutdownSignals = StartAndShutdownSignals::instance();
-
-void StartShutdown()
-{
-    startAndShutdownSignals.startShutdown();
-}
-bool ShutdownRequested()
-{
-    bool val = *startAndShutdownSignals.shutdownRequested();
-    return val;
-}
-void Shutdown()
-{
-    startAndShutdownSignals.shutdown();
-    UnloadBlockIndex();
-}
-
 void UnitTestShutdown()
 {
   exit(0);
@@ -365,8 +348,13 @@ bool UnitTestShutdownRequested()
   return false;
 }
 
+static StartAndShutdownSignals& startAndShutdownSignals = StartAndShutdownSignals::instance();
+
 void EnableMainSignals()
 {
+    assert(startAndShutdownSignals.shutdown.empty());
+    assert(startAndShutdownSignals.startShutdown.empty());
+    assert(startAndShutdownSignals.shutdownRequested.empty());
     startAndShutdownSignals.shutdown.connect(&MainShutdown);
     startAndShutdownSignals.startShutdown.connect(&MainStartShutdown);
     startAndShutdownSignals.shutdownRequested.connect(&MainShutdownRequested);
@@ -374,9 +362,30 @@ void EnableMainSignals()
 
 void EnableUnitTestSignals()
 {
+    assert(startAndShutdownSignals.shutdown.empty());
+    assert(startAndShutdownSignals.startShutdown.empty());
+    assert(startAndShutdownSignals.shutdownRequested.empty());
     startAndShutdownSignals.shutdown.connect(&UnitTestShutdown);
     startAndShutdownSignals.startShutdown.connect(&UnitTestStartShutdown);
     startAndShutdownSignals.shutdownRequested.connect(&UnitTestShutdownRequested);
+}
+
+void StartShutdown()
+{
+    assert(!startAndShutdownSignals.startShutdown.empty());
+    startAndShutdownSignals.startShutdown();
+}
+bool ShutdownRequested()
+{
+    assert(!startAndShutdownSignals.shutdownRequested.empty());
+    bool val = *startAndShutdownSignals.shutdownRequested();
+    return val;
+}
+void Shutdown()
+{
+    assert(!startAndShutdownSignals.shutdown.empty());
+    startAndShutdownSignals.shutdown();
+    UnloadBlockIndex();
 }
 
 
@@ -1107,7 +1116,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 2: parameter interactions
     // Set this early so that parameter interactions go to console
-    EnableMainSignals();
     UIMessenger uiMessenger(uiInterface);
     SetLoggingAndDebugSettings();
 

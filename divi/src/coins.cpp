@@ -165,8 +165,8 @@ bool CCoinsViewBacked::GetStats(CCoinsStats& stats) const { return base? base->G
 
 CCoinsKeyHasher::CCoinsKeyHasher() : salt(GetRandHash()) {}
 
-CCoinsViewCache::CCoinsViewCache() : CCoinsViewBacked(nullptr), hasModifier(false), hashBlock(0) {}
-CCoinsViewCache::CCoinsViewCache(CCoinsView* baseIn) : CCoinsViewBacked(baseIn), hasModifier(false), hashBlock(0) {}
+CCoinsViewCache::CCoinsViewCache() : CCoinsViewBacked(nullptr), hasModifier(false), hashBlock(0), cacheCoins() {}
+CCoinsViewCache::CCoinsViewCache(CCoinsView* baseIn) : CCoinsViewBacked(baseIn), hasModifier(false), hashBlock(0), cacheCoins() {}
 
 CCoinsViewCache::~CCoinsViewCache()
 {

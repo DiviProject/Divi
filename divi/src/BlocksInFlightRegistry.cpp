@@ -64,9 +64,9 @@ bool BlocksInFlightRegistry::BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNo
     if(it != nodeSyncByNodeId_.end())
     {
         const std::list<QueuedBlock>& vBlocksInFlight = it->second.blocksInFlight;
+        if(vBlocksInFlight.size() < 1u) return false;
         const int64_t maxTimeout = nNow - 500000 * targetSpacing * (4 + vBlocksInFlight.front().nValidatedQueuedBefore);
-        const bool timedOut = vBlocksInFlight.size() > 0 &&
-            vBlocksInFlight.front().nTime < maxTimeout;
+        const bool timedOut = vBlocksInFlight.front().nTime < maxTimeout;
         if(timedOut)
         {
             LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", vBlocksInFlight.front().hash, nodeId);

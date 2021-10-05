@@ -449,8 +449,7 @@ void ComputeMasternodesAndScores(
     const int nBlockHeight,
     const bool fFilterSigTime,
     std::vector<CMasternode*>& masternodeQueue,
-    std::map<const CMasternode*, uint256>& masternodeScores,
-    std::vector<CMasternode>& filteredMasternodes)
+    std::map<const CMasternode*, uint256>& masternodeScores)
 {
     BOOST_FOREACH (CMasternode& mn, masternodes)
     {
@@ -470,7 +469,6 @@ void ComputeMasternodesAndScores(
         //it's too new, wait for a cycle
         if (fFilterSigTime && mn.sigTime + (nMnCount * 2.6 * 60) > GetAdjustedTime())
         {
-            filteredMasternodes.push_back(mn);
             continue;
         }
         //make sure it has as many confirmations as there are masternodes
@@ -498,21 +496,19 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
         nBlockHeight,
         true,
         masternodeQueue,
-        masternodeScores,
-        filteredMasternodes);
+        masternodeScores);
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
     if (static_cast<int>(masternodeQueue.size()) < nMnCount / 3)
     {
         ComputeMasternodesAndScores(
             *this,
-            filteredMasternodes,
+            networkMessageManager_.masternodes,
             scoringBlockHash,
             nMnCount,
             nBlockHeight,
             false,
             masternodeQueue,
-            masternodeScores,
-            filteredMasternodes);
+            masternodeScores);
     }
 
 

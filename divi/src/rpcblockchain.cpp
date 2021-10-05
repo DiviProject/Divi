@@ -507,7 +507,7 @@ Value verifychain(const Array& params, bool fHelp)
         uiInterface,
         nCoinCacheSize,
         &ShutdownRequested);
-    return dbVerifier.VerifyDB(pcoinsTip,pcoinsTip, nCheckLevel, nCheckDepth);
+    return dbVerifier.VerifyDB(pcoinsTip,pcoinsTip->GetCacheSize(), nCheckLevel, nCheckDepth);
 }
 
 Value getblockchaininfo(const Array& params, bool fHelp)

@@ -5,12 +5,8 @@
 #include <net.h>
 #include <boost/lexical_cast.hpp>
 
-CMasternodePing::CMasternodePing()
+CMasternodePing::CMasternodePing(): vin(), blockHash(0), sigTime(0), signature()
 {
-    vin = CTxIn();
-    blockHash = uint256(0);
-    sigTime = 0;
-    signature = std::vector<unsigned char>();
 }
 
 std::string CMasternodePing::getMessageToSign() const

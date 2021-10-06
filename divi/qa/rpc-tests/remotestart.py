@@ -37,7 +37,8 @@ class MnRemoteStartTest (MnTestFramework):
   def connect_all_nodes(self):
     for i in range(self.number_of_nodes):
       for j in range(self.number_of_nodes):
-        connect_nodes_bi(self.nodes,i,j)
+        if i < j:
+          connect_nodes_bi(self.nodes,i,j)
 
   def setup_network (self, config_line=None, extra_args=[]):
     self.nodes = [

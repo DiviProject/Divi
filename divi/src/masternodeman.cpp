@@ -100,7 +100,7 @@ void CMasternodeMan::ManageLocalMasternode()
     LogPrint("masternode","%s - Begin\n",__func__);
 
     {
-        LOCK(cs);
+        LOCK2(networkMessageManager_.cs_process_message,cs);
         CMasternode* localMN = Find(localActiveMasternode_.pubKeyMasternode);
         if (localMN != NULL && localActiveMasternode_.IsPendingActivation())
         {

@@ -104,8 +104,6 @@ void CMasternodeSync::SyncMasternodeWinnersWithPeer(CNode* node, int nCountNeede
 
 void CMasternodeSync::DsegUpdate(CNode* pnode)
 {
-    LOCK(networkMessageManager_.cs);
-
     if(networkMessageManager_.recordDsegUpdateAttempt(pnode->addr))
     {
         pnode->PushMessage("dseg", CTxIn());
@@ -133,7 +131,6 @@ bool CMasternodeSync::NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer)
         CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
         const uint256 hash = mnb.GetHash();
         peer->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
-        networkMessageManager_.recordBroadcast(mnb);
         return true;
     }
     return false;
@@ -174,7 +171,6 @@ void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strComma
     }
     else if (strCommand == "dseg")
     { //Get Masternode list or specific entry
-        LOCK(networkMessageManager_.cs_process_message);
 
         CTxIn vin;
         vRecv >> vin;
@@ -185,6 +181,7 @@ void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strComma
         }
         else if(!peerIsRequestingMasternodeListSync)
         {
+            LOCK(networkMessageManager_.cs_process_message); // To avoid
             const CMasternode* pmn = networkMessageManager_.find(vin);
             if(pmn != nullptr && NotifyPeerOfMasternode(*pmn,pfrom) )
             {

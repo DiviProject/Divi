@@ -35,7 +35,7 @@ const std::vector<CMasternode>& MasternodeNetworkMessageManager::GetFullMasterno
 
 void MasternodeNetworkMessageManager::clearTimedOutAndExpiredRequests(bool forceExpiredRemoval)
 {
-   LOCK(cs);
+   LOCK2(cs_process_message, cs);
 
     //remove inactive and outdated
     std::vector<CMasternode>::iterator it = masternodes.begin();
@@ -65,6 +65,7 @@ void MasternodeNetworkMessageManager::clearTimedOutAndExpiredRequests(bool force
 
 void MasternodeNetworkMessageManager::clearTimedOutMasternodeListRequestsFromPeers()
 {
+    AssertLockHeld(cs_process_message);
     // check who's asked for the Masternode list
     std::map<CNetAddr, int64_t>::iterator it = mAskedUsForMasternodeList.begin();
     while (it != mAskedUsForMasternodeList.end()) {
@@ -78,6 +79,7 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodeListRequestsFromPee
 
 void MasternodeNetworkMessageManager::clearTimedOutMasternodeListRequestsToPeers()
 {
+    AssertLockHeld(cs_process_message);
     // check who we asked for the Masternode list
     auto it1 = mWeAskedForMasternodeList.begin();
     while (it1 != mWeAskedForMasternodeList.end()) {
@@ -90,6 +92,7 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodeListRequestsToPeers
 }
 void MasternodeNetworkMessageManager::clearTimedOutMasternodeEntryRequests()
 {
+    AssertLockHeld(cs_process_message);
     std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
     while (it2 != mWeAskedForMasternodeListEntry.end()) {
         if ((*it2).second < GetTime()) {
@@ -102,6 +105,7 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodeEntryRequests()
 
 void MasternodeNetworkMessageManager::clearTimedOutMasternodePings()
 {
+    AssertLockHeld(cs_process_message);
     std::map<uint256, CMasternodePing>::iterator it4 = mapSeenMasternodePing.begin();
     while (it4 != mapSeenMasternodePing.end()) {
         if ((*it4).second.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
@@ -114,6 +118,7 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodePings()
 
 void MasternodeNetworkMessageManager::clearTimedOutMasternodeBroadcasts()
 {
+    AssertLockHeld(cs_process_message);
     std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
     while (it3 != mapSeenMasternodeBroadcast.end()) {
         if ((*it3).second.lastPing.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
@@ -126,6 +131,7 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodeBroadcasts()
 }
 void MasternodeNetworkMessageManager::clearExpiredMasternodeBroadcasts(const COutPoint& collateral)
 {
+    AssertLockHeld(cs_process_message);
     std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
     while (it3 != mapSeenMasternodeBroadcast.end()) {
         if ((*it3).second.vin.prevout == collateral) {
@@ -139,6 +145,7 @@ void MasternodeNetworkMessageManager::clearExpiredMasternodeBroadcasts(const COu
 
 void MasternodeNetworkMessageManager::clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral)
 {
+    AssertLockHeld(cs_process_message);
     // allow us to ask for this masternode again if we see another ping
     std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.find(masternodeCollateral);
     if(it2 != mWeAskedForMasternodeListEntry.end())
@@ -149,6 +156,7 @@ void MasternodeNetworkMessageManager::clearExpiredMasternodeEntryRequests(const 
 
 bool MasternodeNetworkMessageManager::peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress)
 {
+    LOCK(cs_process_message);
     std::map<CNetAddr, int64_t>::iterator it = mAskedUsForMasternodeList.find(peerAddress);
     if (it != mAskedUsForMasternodeList.end()) {
         int64_t t = (*it).second;
@@ -164,6 +172,7 @@ bool MasternodeNetworkMessageManager::peerHasRequestedMasternodeListTooOften(con
 
 bool MasternodeNetworkMessageManager::recordDsegUpdateAttempt(const CAddress& peerAddress)
 {
+    LOCK(cs_process_message);
     if (!(peerAddress.IsRFC1918() || peerAddress.IsLocal())) {
         std::map<CNetAddr, int64_t>::iterator it = mWeAskedForMasternodeList.find(peerAddress);
         if (it != mWeAskedForMasternodeList.end()) {
@@ -181,6 +190,7 @@ bool MasternodeNetworkMessageManager::recordDsegUpdateAttempt(const CAddress& pe
 
 bool MasternodeNetworkMessageManager::recordMasternodeEntryRequestAttempt(const COutPoint& masternodeCollateral)
 {
+    LOCK(cs_process_message);
     std::map<COutPoint, int64_t>::iterator i = mWeAskedForMasternodeListEntry.find(masternodeCollateral);
     if (i != mWeAskedForMasternodeListEntry.end()) {
         int64_t t = (*i).second;
@@ -198,7 +208,7 @@ bool MasternodeNetworkMessageManager::recordMasternodeEntryRequestAttempt(const 
 
 void MasternodeNetworkMessageManager::Clear()
 {
-    LOCK(cs);
+    LOCK2(cs_process_message,cs);
     masternodes.clear();
     mAskedUsForMasternodeList.clear();
     mWeAskedForMasternodeList.clear();
@@ -225,28 +235,28 @@ std::string MasternodeNetworkMessageManager::ToString() const
 
 bool MasternodeNetworkMessageManager::broadcastIsKnown(const uint256& broadcastHash) const
 {
+    LOCK(cs_process_message);
     return mapSeenMasternodeBroadcast.count(broadcastHash) >0;
 }
 bool MasternodeNetworkMessageManager::pingIsKnown(const uint256& pingHash) const
 {
+    LOCK(cs_process_message);
     return mapSeenMasternodePing.count(pingHash) >0;
 }
 void MasternodeNetworkMessageManager::recordPing(const CMasternodePing& mnp)
 {
-    mapSeenMasternodePing[mnp.GetHash()] = mnp;
-
+    LOCK2(cs_process_message, cs);
     const CMasternode* pmn = nullptr;
+    for(const CMasternode& mn: masternodes)
     {
-        LOCK(cs);
-        for(const CMasternode& mn: masternodes)
+        if (mn.vin.prevout == mnp.vin.prevout)
         {
-            if (mn.vin.prevout == mnp.vin.prevout)
-            {
-                pmn = &mn;
-                break;
-            }
+            pmn = &mn;
+            break;
         }
     }
+
+    mapSeenMasternodePing[mnp.GetHash()] = mnp;
     if (pmn != nullptr)
     {
         const uint256 mnbHash = CMasternodeBroadcast(*pmn).GetHash();
@@ -259,17 +269,38 @@ void MasternodeNetworkMessageManager::recordPing(const CMasternodePing& mnp)
 }
 void MasternodeNetworkMessageManager::recordBroadcast(const CMasternodeBroadcast& mnb)
 {
+    LOCK(cs_process_message);
     const uint256 hash = mnb.GetHash();
     if(broadcastIsKnown(hash)) return;
     mapSeenMasternodeBroadcast.emplace(hash,mnb);
 }
 const CMasternodeBroadcast& MasternodeNetworkMessageManager::getKnownBroadcast(const uint256& broadcastHash) const
 {
-    return mapSeenMasternodeBroadcast.find(broadcastHash)->second;
+    LOCK(cs_process_message);
+    static CMasternodeBroadcast dummyBroadcast;
+    std::map<uint256, CMasternodeBroadcast>::const_iterator it = mapSeenMasternodeBroadcast.find(broadcastHash);
+    if(it != mapSeenMasternodeBroadcast.end())
+    {
+        return mapSeenMasternodeBroadcast.find(broadcastHash)->second;
+    }
+    else
+    {
+        return dummyBroadcast;
+    }
 }
 const CMasternodePing& MasternodeNetworkMessageManager::getKnownPing(const uint256& pingHash) const
 {
-    return mapSeenMasternodePing.find(pingHash)->second;
+    LOCK(cs_process_message);
+    static CMasternodePing dummyPing;
+    std::map<uint256, CMasternodePing>::const_iterator it = mapSeenMasternodePing.find(pingHash);
+    if(it != mapSeenMasternodePing.end())
+    {
+        return mapSeenMasternodePing.find(pingHash)->second;
+    }
+    else
+    {
+        return dummyPing;
+    }
 }
 const CMasternode* MasternodeNetworkMessageManager::find(const CTxIn& vin) const
 {

@@ -189,7 +189,7 @@ class NodeManager
 private:
     CCriticalSection cs_vNodes;
     std::vector<CNode*> vNodes_;
-    std::list<CNode*> disconnectedNodes_;
+    std::list<std::unique_ptr<NodeWithSocket>> disconnectedNodes_;
     std::vector<ListenSocket> listeningSockets_;
     std::map<NodeId,std::unique_ptr<NodeWithSocket>> socketChannelsByNodeId_;
     NodeManager(): cs_vNodes(), vNodes_(), disconnectedNodes_(), listeningSockets_(), socketChannelsByNodeId_()
@@ -197,7 +197,15 @@ private:
     }
     void deleteNode(CNode* pnode)
     {
+        AssertLockHeld(cs_vNodes);
         NodeId id = pnode->GetId();
+        socketChannelsByNodeId_.erase(id);
+    }
+    void queueForDisconnection(CNode* pnode)
+    {
+        AssertLockHeld(cs_vNodes);
+        NodeId id = pnode->GetId();
+        disconnectedNodes_.emplace_back(socketChannelsByNodeId_[id].release());
         socketChannelsByNodeId_.erase(id);
     }
 public:
@@ -247,21 +255,22 @@ public:
                 pnode->CloseCommsAndDisconnect();
 
                 if (pnode->fNetworkNode || pnode->fInbound) pnode->Release();
-                disconnectedNodes_.push_back(pnode);
+                queueForDisconnection(pnode);
             }
         }
     }
-    void deleteDisconnectedNodes()
+    void deleteDisconnectedNodes(bool forceDelete = false)
     {
         // Delete disconnected nodes
-        std::list<CNode*> vNodesDisconnectedCopy = disconnectedNodes_;
-        for(CNode* pnode: vNodesDisconnectedCopy)
+        for(auto it = disconnectedNodes_.begin(); it != disconnectedNodes_.end(); )
         {
-            // wait until threads are done using it
-            if(!pnode->IsInUse())
+            if(forceDelete || !(*it)->node()->IsInUse())
             {
-                disconnectedNodes_.remove(pnode);
-                deleteNode(pnode);
+                disconnectedNodes_.erase(it++);
+            }
+            else
+            {
+                ++it;
             }
         }
     }
@@ -281,10 +290,7 @@ public:
         }
         // clean up some globals (to help leak detection)
         listeningSockets_.clear();
-        for(CNode* pnode: disconnectedNodes_)
-        {
-            deleteNode(pnode);
-        }
+        deleteDisconnectedNodes(true);
         disconnectedNodes_.clear();
 
     #ifdef WIN32

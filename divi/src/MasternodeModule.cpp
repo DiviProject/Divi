@@ -282,8 +282,10 @@ void ForceMasternodeResync()
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash)
 {
     static const MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
-    if (networkMessageManager.pingIsKnown(inventoryHash)) {
-        peer->PushMessage("mnp", networkMessageManager.getKnownPing(inventoryHash));
+    const CMasternodePing& ping = networkMessageManager.getKnownPing(inventoryHash);
+    if (ping.GetHash() == inventoryHash)
+    {
+        peer->PushMessage("mnp", ping);
         return true;
     }
     return false;
@@ -292,9 +294,10 @@ bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash)
 bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
 {
     static const MasternodeNetworkMessageManager& networkMessageManager = mnModule.getNetworkMessageManager();
-    if (networkMessageManager.broadcastIsKnown(inventoryHash))
+    const CMasternodeBroadcast& broadcast = networkMessageManager.getKnownBroadcast(inventoryHash);
+    if (broadcast.GetHash() == inventoryHash)
     {
-        peer->PushMessage("mnb", networkMessageManager.getKnownBroadcast(inventoryHash));
+        peer->PushMessage("mnb", broadcast);
         return true;
     }
     return false;

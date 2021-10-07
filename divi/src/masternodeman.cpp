@@ -131,8 +131,7 @@ bool CMasternodeMan::Add(const CMasternode& mn)
     if (!mn.IsEnabled())
         return false;
 
-    CMasternode* pmn = Find(mn.vin);
-    if (pmn == NULL) {
+    if (!Find(mn.vin)) {
         LogPrint("masternode", "CMasternodeMan: Adding new Masternode %s - %i now\n", mn.vin.prevout.hash, networkMessageManager_.masternodeCount() + 1);
         networkMessageManager_.masternodes.push_back(mn);
         return true;
@@ -197,6 +196,7 @@ bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, i
 {
     // search existing Masternode list
     // nothing to do here if we already know about this masternode and it's enabled
+    AssertLockHeld(networkMessageManager_.cs_process_message);
     const CMasternode* pmn = Find(mnb.vin);
     if (pmn != nullptr && pmn->IsEnabled())
         return true;
@@ -266,6 +266,7 @@ bool CMasternodeMan::CheckMasternodeBroadcastContext(CMasternodeBroadcast& mnb, 
 CMasternodeMan::MnUpdateStatus CMasternodeMan::UpdateMasternodeFromBroadcast(CMasternodeBroadcast& mnb)
 {
     //search existing Masternode list, this is where we update existing Masternodes with new mnb broadcasts
+    AssertLockHeld(networkMessageManager_.cs_process_message);
     CMasternode* pmn = Find(mnb.vin);
 
     // no such masternode, nothing to update

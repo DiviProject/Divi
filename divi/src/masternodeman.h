@@ -91,13 +91,7 @@ public:
     CMasternode* Find(const CScript& payee) = delete;
     CMasternode* Find(const CTxIn& vin);
     CMasternode* Find(const CPubKey& pubKeyMasternode);
-    /** Records a ping in the list of our seen ping messages, and also updates the
-     *  list of known broadcasts if the ping corresponds to one we know (i.e. updates
-     *  the ping contained in the seen broadcast).
-     *
-     *  This method assumes that the ping has already been checked and is valid.
-     */
-    void RecordLastPing(const CMasternode& mn);
+
     bool ProcessMNBroadcastsAndPings(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     void ManageLocalMasternode();
     std::string ToString() const;

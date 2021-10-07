@@ -56,7 +56,7 @@ private:
     CCriticalSection& cs_mapMasternodeBlocks;
 
     bool GetBlockPayee(const uint256& scoringBlockHash, CScript& payee) const;
-    bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;
+    bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner,const CPubKey& mnPubKey) const;
     bool CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CMasternode& masternode) const;
     bool IsTransactionValid(const CMasternodeBlockPayees& payees, const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew) const;
     bool CheckMasternodeWinnerCandidate(CNode* pfrom, CMasternodePaymentWinner& winner) const;

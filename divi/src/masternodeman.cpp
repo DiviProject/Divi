@@ -114,7 +114,7 @@ void CMasternodeMan::ManageLocalMasternode()
             assert(localMN == nullptr || localMN != nullptr);
             if(localActiveMasternode_.TryUpdatingPing(localMN))
             {
-                RecordSeenPing(localMN->lastPing);
+                RecordLastPing(*localMN);
                 localMN->lastPing.Relay();
             }
         }
@@ -123,6 +123,7 @@ void CMasternodeMan::ManageLocalMasternode()
 
 bool CMasternodeMan::Add(const CMasternode& mn)
 {
+    AssertLockHeld(networkMessageManager_.cs_process_message);
     LOCK(cs);
 
     if (!mn.IsEnabled())
@@ -289,7 +290,7 @@ CMasternodeMan::MnUpdateStatus CMasternodeMan::UpdateMasternodeFromBroadcast(CMa
             if (mnb.lastPing != CMasternodePing() &&
                 CheckAndUpdatePing(*pmn,mnb.lastPing,unusedDoSValue))
             {
-                RecordSeenPing(pmn->lastPing);
+                RecordLastPing(*pmn);
                 pmn->lastPing.Relay();
             }
             Check(*pmn);
@@ -415,9 +416,9 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 // Deterministically select the oldest/best masternode to pay on the network
 //
 
-void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
+void CMasternodeMan::RecordLastPing(const CMasternode& mn)
 {
-    networkMessageManager_.recordPing(mnp);
+    networkMessageManager_.recordLastPing(mn);
 }
 
 bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
@@ -490,7 +491,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     Add(mn);
 
     networkMessageManager_.recordBroadcast(mnb);
-    RecordSeenPing(mnb.lastPing);
+    RecordLastPing(mn);
 
     // if it matches our Masternode privkey, then we've been remotely activated
     if (isOurBroadcast && mnb.protocolVersion == PROTOCOL_VERSION) {
@@ -514,7 +515,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, const CMasternodePing& mnp)
         pmn->IsEnabled() &&
         CheckAndUpdatePing(*pmn,mnp,nDoS))
     {
-        RecordSeenPing(mnp);
+        RecordLastPing(*pmn);
         mnp.Relay();
         return true;
     }

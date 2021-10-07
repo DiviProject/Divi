@@ -243,28 +243,15 @@ bool MasternodeNetworkMessageManager::pingIsKnown(const uint256& pingHash) const
     LOCK(cs_process_message);
     return mapSeenMasternodePing.count(pingHash) >0;
 }
-void MasternodeNetworkMessageManager::recordPing(const CMasternodePing& mnp)
+void MasternodeNetworkMessageManager::recordLastPing(const CMasternode& mn)
 {
-    LOCK2(cs_process_message, cs);
-    const CMasternode* pmn = nullptr;
-    for(const CMasternode& mn: masternodes)
+    LOCK(cs_process_message);
+    mapSeenMasternodePing[mn.lastPing.GetHash()] = mn.lastPing;
+    const uint256 mnbHash = CMasternodeBroadcast(mn).GetHash();
+    auto mit = mapSeenMasternodeBroadcast.find(mnbHash);
+    if (mit != mapSeenMasternodeBroadcast.end())
     {
-        if (mn.vin.prevout == mnp.vin.prevout)
-        {
-            pmn = &mn;
-            break;
-        }
-    }
-
-    mapSeenMasternodePing[mnp.GetHash()] = mnp;
-    if (pmn != nullptr)
-    {
-        const uint256 mnbHash = CMasternodeBroadcast(*pmn).GetHash();
-        auto mit = mapSeenMasternodeBroadcast.find(mnbHash);
-        if (mit != mapSeenMasternodeBroadcast.end())
-        {
-            mit->second.lastPing = mnp;
-        }
+        mit->second.lastPing = mn.lastPing;
     }
 }
 void MasternodeNetworkMessageManager::recordBroadcast(const CMasternodeBroadcast& mnb)

@@ -6,13 +6,17 @@
 #ifndef MASTERNODEMAN_H
 #define MASTERNODEMAN_H
 
-#include "key.h"
-#include "masternode.h"
-
 #include <memory>
+#include <string>
 
 #define MASTERNODES_DUMP_SECONDS (15 * 60)
 
+class CPubKey;
+class CMasternode;
+class CMasternodeBroadcast;
+class CMasternodePing;
+class CTxIn;
+class CDataStream;
 class CMasternodeMan;
 class CMasternodeSync;
 class CMasternodePayments;
@@ -68,7 +72,6 @@ private:
      *  Returns true if the ping message was valid.  */
     bool ProcessPing(CNode* pfrom, const CMasternodePing& mnp);
 
-    CMasternode* Find(const CScript& payee) = delete;
     CMasternode* Find(const CTxIn& vin);
     CMasternode* Find(const CPubKey& pubKeyMasternode);
 public:

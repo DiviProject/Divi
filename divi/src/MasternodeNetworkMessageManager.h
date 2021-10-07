@@ -57,7 +57,7 @@ public:
     bool recordMasternodeEntryRequestAttempt(const COutPoint& masternodeCollateral);
     bool broadcastIsKnown(const uint256& broadcastHash) const;
     bool pingIsKnown(const uint256& pingHash) const;
-    void recordPing(const CMasternodePing& mnp);
+    void recordLastPing(const CMasternode& mn);
     void recordBroadcast(const CMasternodeBroadcast& mnb);
     const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash) const;
     const CMasternodePing& getKnownPing(const uint256& pingHash) const;

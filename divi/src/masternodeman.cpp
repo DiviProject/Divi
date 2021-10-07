@@ -8,23 +8,25 @@
 #include <array>
 #include <activemasternode.h>
 #include <addrman.h>
-#include <masternode.h>
-#include <mruset.h>
-#include <obfuscation.h>
-#include <Logging.h>
-#include <masternode-sync.h>
-#include <MasternodeNetworkMessageManager.h>
-#include <utiltime.h>
-#include <version.h>
-#include <MasternodeHelpers.h>
-#include <script/standard.h>
 #include <chainparams.h>
 #include <chain.h>
 #include <blockmap.h>
-#include <TransactionDiskAccessor.h>
+#include <key.h>
+#include <Logging.h>
+#include <MasternodeHelpers.h>
+#include <masternode.h>
+#include <masternode-sync.h>
+#include <MasternodeNetworkMessageManager.h>
+#include <mruset.h>
 #include <NodeStateRegistry.h>
 #include <Node.h>
+#include <obfuscation.h>
+#include <utiltime.h>
+#include <version.h>
+#include <script/standard.h>
 #include <sync.h>
+#include <TransactionDiskAccessor.h>
+
 
 extern bool ShutdownRequested();
 

@@ -238,7 +238,7 @@ bool CMasternodePayments::CheckMasternodeWinnerCandidate(CNode* pfrom, CMasterno
         return false;
     }
 
-    if (!CheckMasternodeWinnerSignature(winner)) {
+    if (!CheckMasternodeWinnerSignature(winner,pmn->pubKeyMasternode)) {
         LogPrintf("%s : - invalid signature\n", __func__);
         if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetNodeState(), 20);
         // it could just be a non-synced masternode
@@ -274,20 +274,14 @@ bool CMasternodePayments::GetBlockPayee(const uint256& scoringBlockHash, CScript
 
     return false;
 }
-bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const
+bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner,const CPubKey& mnPubKey) const
 {
-    CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
-
-    if (pmn != NULL) {
-        std::string errorMessage = "";
-        if(!CObfuScationSigner::VerifySignature<CMasternodePaymentWinner>(winner,pmn->pubKeyMasternode,errorMessage))
-        {
-            return error("%s - Got bad Masternode address signature %s (%s)\n",__func__, winner.vinMasternode.prevout.hash, errorMessage);
-        }
-        return true;
+    std::string errorMessage = "";
+    if(!CObfuScationSigner::VerifySignature<CMasternodePaymentWinner>(winner,mnPubKey,errorMessage))
+    {
+        return error("%s - Got bad Masternode address signature %s (%s)\n",__func__, winner.vinMasternode.prevout.hash, errorMessage);
     }
-
-    return false;
+    return true;
 }
 bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CMasternode& masternode) const
 {

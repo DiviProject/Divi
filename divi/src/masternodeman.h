@@ -8,7 +8,6 @@
 
 #include "key.h"
 #include "masternode.h"
-#include "sync.h"
 
 #include <memory>
 
@@ -29,8 +28,6 @@ class CMasternodeMan
 private:
     MasternodeNetworkMessageManager& networkMessageManager_;
     CMasternodeSync& masternodeSynchronization_;
-    // critical section to protect the inner data structures
-    CCriticalSection& cs;
 
     const CChain& activeChain_;
     const BlockMap& blockIndicesByHash_;

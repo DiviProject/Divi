@@ -24,6 +24,7 @@
 #include <TransactionDiskAccessor.h>
 #include <NodeStateRegistry.h>
 #include <Node.h>
+#include <sync.h>
 
 extern bool ShutdownRequested();
 
@@ -87,7 +88,6 @@ CMasternodeMan::CMasternodeMan(
     CActiveMasternode& localActiveMasternode
     ):  networkMessageManager_(networkMessageManager)
     , masternodeSynchronization_(masternodeSynchronization)
-    , cs(networkMessageManager_.cs)
     , activeChain_(activeChain)
     , blockIndicesByHash_(blockIndicesByHash)
     , addressManager_(addressManager)
@@ -100,7 +100,7 @@ void CMasternodeMan::ManageLocalMasternode()
     LogPrint("masternode","%s - Begin\n",__func__);
 
     {
-        LOCK2(networkMessageManager_.cs_process_message,cs);
+        LOCK2(networkMessageManager_.cs_process_message,networkMessageManager_.cs);
         CMasternode* localMN = Find(localActiveMasternode_.pubKeyMasternode);
         if (localMN != NULL && localActiveMasternode_.IsPendingActivation())
         {
@@ -124,7 +124,7 @@ void CMasternodeMan::ManageLocalMasternode()
 bool CMasternodeMan::Add(const CMasternode& mn)
 {
     AssertLockHeld(networkMessageManager_.cs_process_message);
-    LOCK(cs);
+    LOCK(networkMessageManager_.cs);
 
     if (!mn.IsEnabled())
         return false;
@@ -141,7 +141,7 @@ bool CMasternodeMan::Add(const CMasternode& mn)
 
 void CMasternodeMan::Check()
 {
-    LOCK(cs);
+    LOCK(networkMessageManager_.cs);
 
     BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
         Check(mn);
@@ -391,7 +391,7 @@ int CMasternodeMan::CountEnabled() const
 
 CMasternode* CMasternodeMan::Find(const CTxIn& vin)
 {
-    LOCK(cs);
+    LOCK(networkMessageManager_.cs);
 
     BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
         if (mn.vin.prevout == vin.prevout)
@@ -401,7 +401,7 @@ CMasternode* CMasternodeMan::Find(const CTxIn& vin)
 }
 bool CMasternodeMan::GetMNCopy(const CTxIn& vin, CMasternode& mnCopy)
 {
-    LOCK(cs);
+    LOCK(networkMessageManager_.cs);
 
     BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
         if (mn.vin.prevout == vin.prevout)
@@ -416,7 +416,7 @@ bool CMasternodeMan::GetMNCopy(const CTxIn& vin, CMasternode& mnCopy)
 
 CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 {
-    LOCK(cs);
+    LOCK(networkMessageManager_.cs);
 
     BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
         if (mn.pubKeyMasternode == pubKeyMasternode)
@@ -562,7 +562,7 @@ bool CMasternodeMan::ProcessMNBroadcastsAndPings(CNode* pfrom, const std::string
 
 void CMasternodeMan::Remove(const CTxIn& vin)
 {
-    LOCK(cs);
+    LOCK(networkMessageManager_.cs);
 
     std::vector<CMasternode>::iterator it = networkMessageManager_.masternodes.begin();
     while (it != networkMessageManager_.masternodes.end()) {

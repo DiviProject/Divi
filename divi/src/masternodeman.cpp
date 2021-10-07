@@ -399,6 +399,19 @@ CMasternode* CMasternodeMan::Find(const CTxIn& vin)
     }
     return NULL;
 }
+bool CMasternodeMan::GetMNCopy(const CTxIn& vin, CMasternode& mnCopy)
+{
+    LOCK(cs);
+
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
+        if (mn.vin.prevout == vin.prevout)
+        {
+            mnCopy = mn;
+            return true;
+        }
+    }
+    return false;
+}
 
 
 CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)

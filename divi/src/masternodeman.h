@@ -70,6 +70,10 @@ private:
      *
      *  Returns true if the ping message was valid.  */
     bool ProcessPing(CNode* pfrom, const CMasternodePing& mnp);
+
+    CMasternode* Find(const CScript& payee) = delete;
+    CMasternode* Find(const CTxIn& vin);
+    CMasternode* Find(const CPubKey& pubKeyMasternode);
 public:
 
     CMasternodeMan(
@@ -87,10 +91,8 @@ public:
     void Check(CMasternode& mn, bool forceCheck = false);
     int CountEnabled() const;
 
-    /// Find an entry
-    CMasternode* Find(const CScript& payee) = delete;
-    CMasternode* Find(const CTxIn& vin);
-    CMasternode* Find(const CPubKey& pubKeyMasternode);
+    /// Find a thread safe copy of mn
+    bool GetMNCopy(const CTxIn& vin, CMasternode& mn);
 
     bool ProcessMNBroadcastsAndPings(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     void ManageLocalMasternode();

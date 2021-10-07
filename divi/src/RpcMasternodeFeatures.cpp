@@ -223,13 +223,12 @@ ActiveMasternodeStatus GetActiveMasternodeStatus()
 
     ActiveMasternodeStatus result;
 
-    CMasternode* pmn = mnodeman.Find(activeMasternode.vin);
-
-    if (pmn) {
+    CMasternode mn;
+    if (mnodeman.GetMNCopy(activeMasternode.vin,mn)) {
         result.txHash = activeMasternode.vin.prevout.hash.ToString();
         result.outputIndex = std::to_string(activeMasternode.vin.prevout.n);
         result.netAddress = activeMasternode.service.ToString();
-        result.collateralAddress = CBitcoinAddress(pmn->pubKeyCollateralAddress.GetID()).ToString();
+        result.collateralAddress = CBitcoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString();
         result.statusCode = std::to_string(activeMasternode.status);
         result.statusMessage = activeMasternode.GetStatus();
         result.activeMasternodeFound = true;

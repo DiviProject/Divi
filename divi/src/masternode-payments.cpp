@@ -220,15 +220,15 @@ bool CMasternodePayments::CheckMasternodeWinnerCandidate(CNode* pfrom, CMasterno
         return false;
     }
 
-    CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
-    if (!pmn)
+    CMasternode mn;
+    if (!masternodeManager_.GetMNCopy(winner.vinMasternode,mn))
     {
         std::string strError = strprintf("Unknown Masternode %s", winner.vinMasternode.prevout.hash.ToString());
         LogPrint("masternode","%s - %s\n",__func__, strError);
         masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
         return false;
     }
-    if (!CheckMasternodeWinnerValidity(winner,*pmn))
+    if (!CheckMasternodeWinnerValidity(winner,mn))
     {
         return false;
     }
@@ -238,7 +238,7 @@ bool CMasternodePayments::CheckMasternodeWinnerCandidate(CNode* pfrom, CMasterno
         return false;
     }
 
-    if (!CheckMasternodeWinnerSignature(winner,pmn->pubKeyMasternode)) {
+    if (!CheckMasternodeWinnerSignature(winner,mn.pubKeyMasternode)) {
         LogPrintf("%s : - invalid signature\n", __func__);
         if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetNodeState(), 20);
         // it could just be a non-synced masternode

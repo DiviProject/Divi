@@ -114,7 +114,7 @@ void CMasternodeMan::ManageLocalMasternode()
             assert(localMN == nullptr || localMN != nullptr);
             if(localActiveMasternode_.TryUpdatingPing(localMN))
             {
-                RecordLastPing(*localMN);
+                networkMessageManager_.recordLastPing(*localMN);
                 localMN->lastPing.Relay();
             }
         }
@@ -290,7 +290,7 @@ CMasternodeMan::MnUpdateStatus CMasternodeMan::UpdateMasternodeFromBroadcast(CMa
             if (mnb.lastPing != CMasternodePing() &&
                 CheckAndUpdatePing(*pmn,mnb.lastPing,unusedDoSValue))
             {
-                RecordLastPing(*pmn);
+                networkMessageManager_.recordLastPing(*pmn);
                 pmn->lastPing.Relay();
             }
             Check(*pmn);
@@ -412,15 +412,6 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
     return NULL;
 }
 
-//
-// Deterministically select the oldest/best masternode to pay on the network
-//
-
-void CMasternodeMan::RecordLastPing(const CMasternode& mn)
-{
-    networkMessageManager_.recordLastPing(mn);
-}
-
 bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
 {
     if (networkMessageManager_.broadcastIsKnown(mnb.GetHash())) { //seen
@@ -491,7 +482,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     Add(mn);
 
     networkMessageManager_.recordBroadcast(mnb);
-    RecordLastPing(mn);
+    networkMessageManager_.recordLastPing(mn);
 
     // if it matches our Masternode privkey, then we've been remotely activated
     if (isOurBroadcast && mnb.protocolVersion == PROTOCOL_VERSION) {
@@ -515,7 +506,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, const CMasternodePing& mnp)
         pmn->IsEnabled() &&
         CheckAndUpdatePing(*pmn,mnp,nDoS))
     {
-        RecordLastPing(*pmn);
+        networkMessageManager_.recordLastPing(*pmn);
         mnp.Relay();
         return true;
     }

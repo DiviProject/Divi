@@ -12,6 +12,7 @@
 #include <primitives/transaction.h>
 #include <sync.h>
 #include <MasternodePayeeData.h>
+#include <array>
 
 class CBlock;
 class CMasternodePayments;
@@ -33,6 +34,14 @@ class CNode;
 // Masternode Payments Class
 // Keeps track of who should get paid for which blocks
 //
+
+struct MnPaymentQueueData
+{
+public:
+    std::vector<CScript> topTwentyMNPayees;
+    unsigned queueSize;
+    MnPaymentQueueData(): topTwentyMNPayees(), queueSize(0u) {}
+};
 
 class CMasternodePayments
 {
@@ -86,8 +95,8 @@ public:
     void FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards) const;
 
     CScript GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset) const;
-    std::vector<CMasternode*> GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset) const;
-    std::vector<CMasternode*> GetMasternodePaymentQueue(const uint256& scoringBlockHash, const int nBlockHeight) const;
+    MnPaymentQueueData GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset) const;
+    MnPaymentQueueData GetMasternodePaymentQueue(const uint256& scoringBlockHash, const int nBlockHeight) const;
 
     /** Returns the given masternode's rank among all active and with the
      *  given minimum protocol version.  Returns (unsigned)-1 if the node is not

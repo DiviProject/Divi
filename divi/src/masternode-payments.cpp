@@ -320,12 +320,10 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePayment
     if(!masternodeSynchronization_.IsSynced()){ return true;}
 
     /* Make sure that the payee is in our own payment queue near the top.  */
-    const std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(scoringBlockHash, winner.GetHeight());
-    for (int i = 0; i < std::min<int>(2 * MNPAYMENTS_SIGNATURES_TOTAL, mnQueue.size()); ++i) {
-        const auto& mn = *mnQueue[i];
-        const CScript mnPayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
-        if (mnPayee == winner.payee)
-            return true;
+    const MnPaymentQueueData mnQueueData = GetMasternodePaymentQueue(scoringBlockHash, winner.GetHeight());
+    for(const CScript& mnPayee: mnQueueData.topTwentyMNPayees)
+    {
+        if(mnPayee == winner.payee) return true;
     }
     return false;
 }
@@ -420,11 +418,10 @@ void CMasternodePayments::PruneOldMasternodeWinnerData()
 
 CScript CMasternodePayments::GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset) const
 {
-    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(pindex, offset);
-    const CMasternode* mn = (!mnQueue.empty())? mnQueue.front(): NULL;
-    return mn? mn->GetPaymentScript(): CScript();
+    const MnPaymentQueueData queueData = GetMasternodePaymentQueue(pindex, offset);
+    return queueData.topTwentyMNPayees.empty()? CScript():queueData.topTwentyMNPayees.front();
 }
-std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset) const
+MnPaymentQueueData CMasternodePayments::GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset) const
 {
     uint256 scoringBlockHash;
     if (!GetBlockHashForScoring(scoringBlockHash, pindex, offset))
@@ -473,9 +470,10 @@ void ComputeMasternodesAndScores(
     }
 }
 
-std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& scoringBlockHash, const int nBlockHeight) const
+MnPaymentQueueData CMasternodePayments::GetMasternodePaymentQueue(const uint256& scoringBlockHash, const int nBlockHeight) const
 {
-    LOCK(networkMessageManager_.cs);
+    LOCK2(networkMessageManager_.cs_process_message,networkMessageManager_.cs);
+    MnPaymentQueueData queueData;
     std::vector< CMasternode* > masternodeQueue;
     std::map<const CMasternode*, uint256> masternodeScores;
     std::vector<CMasternode> filteredMasternodes;
@@ -516,7 +514,21 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
             uint256 bScore = masternodeScores[b];
             return (aScore > bScore);
         }   );
-    return masternodeQueue;
+
+    queueData.topTwentyMNPayees.reserve(2 * MNPAYMENTS_SIGNATURES_TOTAL);
+    queueData.queueSize = masternodeQueue.size();
+    for(CMasternode* pmn: masternodeQueue)
+    {
+        if(pmn != nullptr && queueData.topTwentyMNPayees.size() < 2 * MNPAYMENTS_SIGNATURES_TOTAL)
+        {
+            queueData.topTwentyMNPayees.push_back(GetScriptForDestination(pmn->pubKeyCollateralAddress.GetID()));
+        }
+        else
+        {
+            break;
+        }
+    }
+    return queueData;
 }
 
 

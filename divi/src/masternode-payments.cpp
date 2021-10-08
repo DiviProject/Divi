@@ -478,25 +478,32 @@ MnPaymentQueueData CMasternodePayments::GetMasternodePaymentQueue(const uint256&
     std::map<const CMasternode*, uint256> masternodeScores;
     std::vector<CMasternode> filteredMasternodes;
 
-    int nMnCount = masternodeManager_.CountEnabled();
     masternodeManager_.Check();
+    const int protocolVersion = ActiveProtocol();
+    const int mnCount = std::count_if(
+        networkMessageManager_.masternodes.begin(),
+        networkMessageManager_.masternodes.end(),
+        [protocolVersion](const CMasternode& mn)
+        {
+            return !(mn.protocolVersion < protocolVersion || !mn.IsEnabled());
+        });
     ComputeMasternodesAndScores(
         *this,
         networkMessageManager_.masternodes,
         scoringBlockHash,
-        nMnCount,
+        mnCount,
         nBlockHeight,
         true,
         masternodeQueue,
         masternodeScores);
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
-    if (static_cast<int>(masternodeQueue.size()) < nMnCount / 3)
+    if (static_cast<int>(masternodeQueue.size()) < mnCount / 3)
     {
         ComputeMasternodesAndScores(
             *this,
             networkMessageManager_.masternodes,
             scoringBlockHash,
-            nMnCount,
+            mnCount,
             nBlockHeight,
             false,
             masternodeQueue,

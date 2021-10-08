@@ -328,7 +328,7 @@ static int StableMasternodeCount()
 {
     const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
-    LOCK(networkMessageManager.cs);
+    AssertLockHeld(networkMessageManager.cs_process_message);
     int nStable_size = 0;
     int nMinProtocol = ActiveProtocol();
     int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;
@@ -359,7 +359,7 @@ static void CountNetworks(int& ipv4, int& ipv6, int& onion)
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
 
     mnModule.getMasternodeManager().Check();
-    LOCK(networkMessageManager.cs);
+    AssertLockHeld(networkMessageManager.cs_process_message);
     for(CMasternode& mn: networkMessageManager.masternodes)
     {
         std::string strHost;
@@ -381,21 +381,35 @@ static void CountNetworks(int& ipv4, int& ipv6, int& onion)
     }
 }
 
+static unsigned CountEnabled(const std::vector<CMasternode>& masternodes)
+{
+    const int protocolVersion = ActiveProtocol();
+    unsigned count = 0u;
+    for (const CMasternode& mn : masternodes) {
+        if (mn.protocolVersion < protocolVersion || !mn.IsEnabled()) continue;
+        ++count;
+    }
+
+    return count;
+}
+
 MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
 {
     const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
     auto& masternodePayments = mnModule.getMasternodePayments();
-    auto& mnodeman = mnModule.getMasternodeManager();
 
     MasternodeCountData data;
     if (chainTip != nullptr)
         data.queueCount = masternodePayments.GetMasternodePaymentQueue(chainTip, 0).queueSize;
 
-    CountNetworks(data.ipv4, data.ipv6, data.onion);
-    data.total = networkMessageManager.masternodeCount();
-    data.stable = StableMasternodeCount();
-    data.enabledAndActive = mnodeman.CountEnabled();
+    {
+        LOCK(networkMessageManager.cs_process_message);
+        CountNetworks(data.ipv4, data.ipv6, data.onion);
+        data.stable = StableMasternodeCount();
+        data.enabledAndActive = CountEnabled(networkMessageManager.masternodes);
+        data.total = networkMessageManager.masternodes.size();
+    }
     data.enabled = data.enabledAndActive;
 
     return data;

@@ -392,7 +392,7 @@ MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
 
     MasternodeCountData data;
     if (chainTip != nullptr)
-        data.queueCount = masternodePayments.GetMasternodePaymentQueue(chainTip, 0).size();
+        data.queueCount = masternodePayments.GetMasternodePaymentQueue(chainTip, 0).queueSize;
 
     CountNetworks(data.ipv4, data.ipv6, data.onion);
     data.total = networkMessageManager.masternodeCount();

@@ -380,18 +380,6 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, const CMasternodePing& 
     return false;
 }
 
-int CMasternodeMan::CountEnabled() const
-{
-    int protocolVersion = ActiveProtocol();
-    int i = 0;
-    for (const auto& mn : networkMessageManager_.masternodes) {
-        if (mn.protocolVersion < protocolVersion || !mn.IsEnabled()) continue;
-        i++;
-    }
-
-    return i;
-}
-
 CMasternode* CMasternodeMan::Find(const CTxIn& vin)
 {
     LOCK(networkMessageManager_.cs);

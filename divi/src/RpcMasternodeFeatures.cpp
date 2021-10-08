@@ -158,7 +158,6 @@ MasternodeStartResult RelayMasternodeBroadcast(const std::string& hexData, const
 MasternodeStartResult StartMasternode(const CKeyStore& keyStore, const StoredMasternodeBroadcasts& stored, std::string alias, bool deferRelay)
 {
     const auto& mnModule = GetMasternodeModule();
-    auto& mnodeman = mnModule.getMasternodeManager();
 
     MasternodeStartResult result;
     for(const auto& configEntry : mnModule.getMasternodeConfigurations().getEntries())
@@ -358,7 +357,6 @@ static void CountNetworks(int& ipv4, int& ipv6, int& onion)
 {
     const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();
-    int protocolVersion = ActiveProtocol();
 
     mnModule.getMasternodeManager().Check();
     LOCK(networkMessageManager.cs);

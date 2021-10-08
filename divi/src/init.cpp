@@ -799,9 +799,10 @@ std::pair<size_t,size_t> CalculateDBCacheSizes()
     return std::make_pair(nBlockTreeDBCache,nCoinDBCache);
 }
 
-bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
+enum class BlockLoadingStatus {RETRY_LOADING,FAILED_LOADING,SUCCESS_LOADING};
+
+BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
 {
-    const bool skipLoadingDueToError = true;
     if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
         uiInterface.InitMessage(translate("Preparing databases..."));
@@ -821,26 +822,29 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         if (!LoadBlockIndex(strBlockIndexError)) {
             strLoadError = translate("Error loading block database");
             strLoadError = strprintf("%s : %s", strLoadError, strBlockIndexError);
-            return skipLoadingDueToError;
+            return BlockLoadingStatus::RETRY_LOADING;
         }
 
         // If the loaded chain has a wrong genesis, bail out immediately
         // (we're likely using a testnet datadir, or the other way around).
         uiInterface.InitMessage(translate("Checking genesis block..."));
         if (!mapBlockIndex.empty() && mapBlockIndex.count(Params().HashGenesisBlock()) == 0)
-            return InitError(translate("Incorrect or no genesis block found. Wrong datadir for network?"));
+        {
+            InitError(translate("Incorrect or no genesis block found. Wrong datadir for network?"));
+            return BlockLoadingStatus::FAILED_LOADING;
+        }
 
         // Initialize the block index (no-op if non-empty database was already loaded)
         if(!fReindex) uiInterface.InitMessage(translate("Initializing block index databases..."));
         if (!InitBlockIndex()) {
             strLoadError = translate("Error initializing block database");
-            return skipLoadingDueToError;
+            return BlockLoadingStatus::RETRY_LOADING;
         }
 
         // Check for changed -txindex state
         if (fTxIndex != settings.GetBoolArg("-txindex", true)) {
             strLoadError = translate("You need to rebuild the database using -reindex to change -txindex");
-            return skipLoadingDueToError;
+            return BlockLoadingStatus::RETRY_LOADING;
         }
 
         uiInterface.InitMessage(translate("Verifying blocks..."));
@@ -862,20 +866,18 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
             {
                 strLoadError = translate("Corrupted block database detected");
                 fVerifyingBlocks = false;
-                return skipLoadingDueToError;
+                return BlockLoadingStatus::RETRY_LOADING;
             }
         }
     } catch (std::exception& e) {
         if (fDebug) LogPrintf("%s\n", e.what());
         strLoadError = translate("Error opening block database");
         fVerifyingBlocks = false;
-        return skipLoadingDueToError;
+        return BlockLoadingStatus::RETRY_LOADING;
     }
 
     fVerifyingBlocks = false;
-    fLoaded = true;
-
-    return true;
+    return BlockLoadingStatus::SUCCESS_LOADING;
 }
 
 void ExternalNotificationScript(const uint256& transactionHash,int status)
@@ -1219,7 +1221,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         uiInterface.InitMessage(translate("Loading block index..."));
 
         nStart = GetTimeMillis();
-        if(!TryToLoadBlocks(fLoaded,strLoadError))
+        const BlockLoadingStatus status = TryToLoadBlocks(strLoadError);
+        fLoaded = (status == BlockLoadingStatus::SUCCESS_LOADING);
+        if(!fLoaded && status != BlockLoadingStatus::RETRY_LOADING)
         {
             return false;
         }

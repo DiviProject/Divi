@@ -89,7 +89,6 @@ public:
     /// Check all Masternodes
     void Check();
     void Check(CMasternode& mn, bool forceCheck = false);
-    int CountEnabled() const;
 
     /// Find a thread safe copy of mn
     bool GetMNCopy(const CTxIn& vin, CMasternode& mn);

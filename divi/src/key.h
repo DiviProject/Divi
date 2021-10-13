@@ -11,6 +11,7 @@
 #include "serialize.h"
 #include "uint256.h"
 #include "pubkey.h"
+#include <PrivKey.h>
 
 #include <stdexcept>
 #include <vector>
@@ -25,12 +26,6 @@
  * see www.keylength.com
  * script supports up to 75 for single byte push
  */
-
-/**
- * secure_allocator is defined in allocators.h
- * CPrivKey is a serialized private key, with all parameters included (279 bytes)
- */
-typedef std::vector<unsigned char, secure_allocator<unsigned char> > CPrivKey;
 
 /** An encapsulated private key. */
 class CKey

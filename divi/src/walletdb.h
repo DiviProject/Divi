@@ -8,11 +8,12 @@
 #define BITCOIN_WALLETDB_H
 
 #include "amount.h"
+#include <Account.h>
 #include "db.h"
-#include "key.h"
-#include "keystore.h"
 #include <destination.h>
 #include <KeyMetadata.h>
+#include <script/script.h>
+#include <PrivKey.h>
 
 #include <list>
 #include <stdint.h>
@@ -31,6 +32,9 @@ class uint256;
 class BlockMap;
 class CChain;
 class I_WalletLoader;
+class CHDChain;
+class CHDPubKey;
+class CKeyMetadata;
 using WalletTxVector = std::vector<CWalletTx>;
 
 /** Error statuses for the wallet database */
@@ -43,35 +47,6 @@ enum DBErrors {
     DB_NEED_REWRITE
 };
 
-/**
- * Account information.
- * Stored in wallet with key "acc"+string account name.
- */
-class CAccount
-{
-public:
-    CPubKey vchPubKey;
-
-    CAccount()
-    {
-        SetNull();
-    }
-
-    void SetNull()
-    {
-        vchPubKey = CPubKey();
-    }
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        if (!(nType & SER_GETHASH))
-            READWRITE(nVersion);
-        READWRITE(vchPubKey);
-    }
-};
 /** Access to the wallet database (wallet.dat) */
 class CWalletDB : public CDB
 {
@@ -119,6 +94,11 @@ public:
     bool ReadAccount(const std::string& strAccount, CAccount& account);
     bool WriteAccount(const std::string& strAccount, const CAccount& account);
 
+    //! write the hdchain model (external chain child index counter)
+    bool WriteHDChain(const CHDChain& chain);
+    bool WriteCryptedHDChain(const CHDChain& chain);
+    bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta);
+
     DBErrors LoadWallet(I_WalletLoader* pwallet);
     static bool Recover(
         CDBEnv& dbenv,
@@ -127,11 +107,6 @@ public:
     static bool Recover(
         CDBEnv& dbenv,
         std::string filename);
-
-    //! write the hdchain model (external chain child index counter)
-    bool WriteHDChain(const CHDChain& chain);
-    bool WriteCryptedHDChain(const CHDChain& chain);
-    bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta);
 
 private:
     CWalletDB(const CWalletDB&) = delete;

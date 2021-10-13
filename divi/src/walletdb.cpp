@@ -24,6 +24,7 @@
 #include <I_WalletLoader.h>
 #include <MasterKey.h>
 #include <keypool.h>
+#include <hdchain.h>
 
 using namespace boost;
 using namespace std;

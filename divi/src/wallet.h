@@ -160,7 +160,6 @@ private:
     std::unique_ptr<SpentOutputTracker> outputTracker_;
     std::unique_ptr<CWalletDB> pwalletdbEncryption;
 
-    int64_t orderedTransactionIndex;
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
     std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
@@ -210,7 +209,6 @@ protected:
     bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) override;
     void LoadKeyPool(int nIndex, const CKeyPool &keypool) override;
     bool LoadCScript(const CScript& redeemScript) override;
-    void UpdateNextTransactionIndexAvailable(int64_t transactionIndex) override;
     bool SetCryptedHDChain(const CHDChain& chain, bool memonly) override;
     bool LoadHDPubKey(const CHDPubKey &hdPubKey) override;
     void ReserializeTransactions(const std::vector<uint256>& transactionIDs) override;
@@ -237,7 +235,6 @@ public:
 
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
     void toggleSpendingZeroConfirmationOutputs();
-    int64_t GetNextTransactionIndexAvailable() const;
     void IncrementDBUpdateCount() const;
 
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
@@ -330,12 +327,6 @@ public:
     bool EncryptWallet(const SecureString& strWalletPassphrase);
 
     void GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const;
-
-    /**
-     * Increment the next transaction order id
-     * @return next transaction order id
-     */
-    int64_t IncOrderPosNext(CWalletDB* pwalletdb = NULL);
 
     /**
      * Get the wallet's activity log

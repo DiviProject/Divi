@@ -42,7 +42,6 @@ public:
     virtual bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) = 0;
     virtual void LoadKeyPool(int nIndex, const CKeyPool &keypool) = 0;
     virtual bool LoadCScript(const CScript& redeemScript) = 0;
-    virtual void UpdateNextTransactionIndexAvailable(int64_t transactionIndex) = 0;
     virtual bool SetHDChain(const CHDChain& chain, bool memonly) = 0;
     virtual bool SetCryptedHDChain(const CHDChain& chain, bool memonly) = 0;
     virtual bool LoadHDPubKey(const CHDPubKey &hdPubKey) = 0;

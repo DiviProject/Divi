@@ -8,6 +8,7 @@
 #include "walletdb.h"
 
 #include "base58.h"
+#include <dbenv.h>
 #include "protocol.h"
 #include "serialize.h"
 #include "sync.h"
@@ -55,7 +56,7 @@ CWalletDB::CWalletDB(
     Settings& settings,
     const std::string& strFilename,
     const char* pszMode
-    ) : CDB(settings,strFilename, pszMode)
+    ) : CDB(settings, BerkleyDBEnvWrapper(),strFilename, pszMode)
     , settings_(settings)
     , dbFilename_(strFilename)
     , walletDbUpdated_(lockedDBUpdateMapping(dbFilename_))
@@ -592,6 +593,7 @@ void ThreadFlushWalletDB(const string& strFile)
     unsigned int nLastSeen =  walletDbUpdated;
     unsigned int nLastFlushed = walletDbUpdated;
     int64_t nLastWalletUpdate = GetTime();
+    static CDBEnv& bitdb_ = BerkleyDBEnvWrapper();
     while (true) {
         MilliSleep(500);
 
@@ -601,29 +603,29 @@ void ThreadFlushWalletDB(const string& strFile)
         }
 
         if (nLastFlushed != walletDbUpdated && GetTime() - nLastWalletUpdate >= 2) {
-            TRY_LOCK(CDB::bitdb.cs_db, lockDb);
+            TRY_LOCK(bitdb_.cs_db, lockDb);
             if (lockDb) {
                 // Don't do this if any databases are in use
                 int nRefCount = 0;
-                map<string, int>::iterator mi = CDB::bitdb.mapFileUseCount.begin();
-                while (mi != CDB::bitdb.mapFileUseCount.end()) {
+                map<string, int>::iterator mi = bitdb_.mapFileUseCount.begin();
+                while (mi != bitdb_.mapFileUseCount.end()) {
                     nRefCount += (*mi).second;
                     mi++;
                 }
 
                 if (nRefCount == 0) {
                     boost::this_thread::interruption_point();
-                    map<string, int>::iterator mi = CDB::bitdb.mapFileUseCount.find(strFile);
-                    if (mi != CDB::bitdb.mapFileUseCount.end()) {
+                    map<string, int>::iterator mi = bitdb_.mapFileUseCount.find(strFile);
+                    if (mi != bitdb_.mapFileUseCount.end()) {
                         LogPrint("db", "Flushing wallet.dat\n");
                         nLastFlushed = walletDbUpdated;
                         int64_t nStart = GetTimeMillis();
 
                         // Flush wallet.dat so it's self contained
-                        CDB::bitdb.CloseDb(strFile);
-                        CDB::bitdb.CheckpointLSN(strFile);
+                        bitdb_.CloseDb(strFile);
+                        bitdb_.CheckpointLSN(strFile);
 
-                        CDB::bitdb.mapFileUseCount.erase(mi++);
+                        bitdb_.mapFileUseCount.erase(mi++);
                         LogPrint("db", "Flushed wallet.dat %dms\n", GetTimeMillis() - nStart);
                     }
                 }
@@ -634,14 +636,15 @@ void ThreadFlushWalletDB(const string& strFile)
 
 bool BackupWallet(const std::string& walletDBFilename, const string& strDest)
 {
+    static CDBEnv& bitdb_ = BerkleyDBEnvWrapper();
     while (true) {
         {
-            LOCK(CDB::bitdb.cs_db);
-            if (!CDB::bitdb.mapFileUseCount.count(walletDBFilename) || CDB::bitdb.mapFileUseCount[walletDBFilename] == 0) {
+            LOCK(bitdb_.cs_db);
+            if (!bitdb_.mapFileUseCount.count(walletDBFilename) || bitdb_.mapFileUseCount[walletDBFilename] == 0) {
                 // Flush log data to the dat file
-                CDB::bitdb.CloseDb(walletDBFilename);
-                CDB::bitdb.CheckpointLSN(walletDBFilename);
-                CDB::bitdb.mapFileUseCount.erase(walletDBFilename);
+                bitdb_.CloseDb(walletDBFilename);
+                bitdb_.CheckpointLSN(walletDBFilename);
+                bitdb_.mapFileUseCount.erase(walletDBFilename);
 
                 // Copy wallet.dat
                 filesystem::path pathSrc = GetDataDir() / walletDBFilename;

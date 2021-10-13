@@ -265,3 +265,9 @@ void CDBEnv::Flush(bool fShutdown)
         }
     }
 }
+
+CDBEnv& BerkleyDBEnvWrapper()
+{
+    static CDBEnv instance;
+    return instance;
+}

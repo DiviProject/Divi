@@ -1,5 +1,5 @@
 #include <DatabaseWrapper.h>
-#include <db.h>
+#include <dbenv.h>
 #include <map>
 
 typedef std::map<CDBEnv::VerifyResult,I_DatabaseWrapper::DatabaseStatus> VerificationCodeMapping;
@@ -11,31 +11,31 @@ const VerificationCodeMapping conversionTable = {
 
 bool DatabaseWrapper::Open(const std::string& directory)
 {
-    return CDB::bitdb.Open(directory);
+    return BerkleyDBEnvWrapper().Open(directory);
 }
 
 DatabaseWrapper::DatabaseStatus DatabaseWrapper::Verify(const std::string& walletFilename)
 {
-    return conversionTable.at(CDB::bitdb.Verify(walletFilename,NULL));
+    return conversionTable.at(BerkleyDBEnvWrapper().Verify(walletFilename,NULL));
 }
 
 void DatabaseWrapper::Dettach(const std::string& walletFilename)
 {
-    CDB::bitdb.CloseDb(walletFilename);
-    CDB::bitdb.CheckpointLSN(walletFilename);
-    CDB::bitdb.mapFileUseCount.erase(walletFilename);
+    BerkleyDBEnvWrapper().CloseDb(walletFilename);
+    BerkleyDBEnvWrapper().CheckpointLSN(walletFilename);
+    BerkleyDBEnvWrapper().mapFileUseCount.erase(walletFilename);
 }
 
 bool DatabaseWrapper::FilenameIsInUse(const std::string& walletFilename)
 {
-    auto it = CDB::bitdb.mapFileUseCount.find( walletFilename );
+    auto it = BerkleyDBEnvWrapper().mapFileUseCount.find( walletFilename );
     return (
-        CDB::bitdb.mapFileUseCount.count(walletFilename) > 0 &&
-        ((it != CDB::bitdb.mapFileUseCount.end())?  (it->second > 0)  :  false)
+        BerkleyDBEnvWrapper().mapFileUseCount.count(walletFilename) > 0 &&
+        ((it != BerkleyDBEnvWrapper().mapFileUseCount.end())?  (it->second > 0)  :  false)
     );
 }
 
 CCriticalSection& DatabaseWrapper::GetDatabaseLock()
 {
-    return CDB::bitdb.cs_db;
+    return BerkleyDBEnvWrapper().cs_db;
 }

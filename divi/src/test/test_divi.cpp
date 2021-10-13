@@ -4,6 +4,7 @@
 
 #define BOOST_TEST_MODULE Divi Test Suite
 
+#include <dbenv.h>
 #include <chain.h>
 #include <init.h>
 #include "main.h"
@@ -39,15 +40,17 @@ struct TestingSetup {
     CCoinsViewDB *pcoinsdbview;
     boost::filesystem::path pathTemp;
     boost::thread_group threadGroup;
+    CDBEnv& bitdb_;
 
-    TestingSetup() {
+    TestingSetup(): pcoinsdbview(nullptr), pathTemp(), threadGroup(), bitdb_(BerkleyDBEnvWrapper())
+    {
         SetupEnvironment();
         fPrintToDebugLog = false; // don't want to write to debug.log file
         fCheckBlockIndex = true;
         SelectParams(CBaseChainParams::UNITTEST);
         noui_connect();
 #ifdef ENABLE_WALLET
-        CDB::bitdb.MakeMock();
+        bitdb_.MakeMock();
 #endif
         pathTemp = GetTempPath() / strprintf("test_divi_%lu_%i", (unsigned long)GetTime(), (int)(GetRand(100000)));
         boost::filesystem::create_directories(pathTemp);
@@ -81,7 +84,7 @@ struct TestingSetup {
         delete pcoinsdbview;
         delete pblocktree;
 #ifdef ENABLE_WALLET
-        CDB::bitdb.Flush(true);
+        bitdb_.Flush(true);
 #endif
         boost::filesystem::remove_all(pathTemp);
     }

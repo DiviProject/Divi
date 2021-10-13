@@ -678,23 +678,20 @@ void ClearFoldersForResync()
 }
 
 #endif
-bool BackupWallet(std::string strDataDir, bool fDisableWallet)
+bool BackupWallet(const std::string strDataDir, bool fDisableWallet)
 {
 #ifdef ENABLE_WALLET
-    std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
-    if (!fDisableWallet) {
+    const std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
+    boost::filesystem::path walletPath = boost::filesystem::path(strDataDir) / strWalletFile;
+    if (!fDisableWallet)
+    {
         WalletBackupFeatureContainer walletBackupFeatureContainer(
             settings.GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
         LogPrintf("backing up wallet\n");
-        if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(strDataDir, strWalletFile))
+        if(walletBackupFeatureContainer.GetFileSystem().exists(walletPath.string()))
         {
             return walletBackupFeatureContainer.GetBackupCreator().BackupWallet() &&
                 walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
-        }
-        else
-        {
-            LogPrintf("Error: Wallet integrity check failed.");
-            return false;
         }
     }
 #endif // ENABLE_WALLET

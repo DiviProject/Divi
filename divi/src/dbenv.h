@@ -71,4 +71,5 @@ public:
     }
 };
 
+CDBEnv& BerkleyDBEnvWrapper();
 #endif //DIVI_DB_H

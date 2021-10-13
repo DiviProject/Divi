@@ -5,6 +5,7 @@
 
 #include "db.h"
 
+#include "dbenv.h"
 #include "hash.h"
 #include "protocol.h"
 #include "util.h"
@@ -26,14 +27,13 @@
 //
 // CDB
 //
-
-CDBEnv CDB::bitdb;
-
 CDB::CDB(
     const Settings& settings,
+    CDBEnv& bitdb,
     const std::string& strFilename,
     const char* pszMode
     ) : settings_(settings)
+    , bitdb_(bitdb)
     , pdb(NULL)
     , strFile()
     , activeTxn(NULL)
@@ -49,18 +49,18 @@ CDB::CDB(
         nFlags |= DB_CREATE;
 
     {
-        LOCK(CDB::bitdb.cs_db);
-        if (!CDB::bitdb.Open(GetDataDir()))
+        LOCK(bitdb_.cs_db);
+        if (!bitdb_.Open(GetDataDir()))
             throw std::runtime_error("CDB : Failed to open database environment.");
 
         strFile = strFilename;
         assert(!strFile.empty());
-        ++CDB::bitdb.mapFileUseCount[strFile];
-        pdb = CDB::bitdb.mapDb[strFile];
+        ++bitdb_.mapFileUseCount[strFile];
+        pdb = bitdb_.mapDb[strFile];
         if (pdb == NULL) {
-            pdb = new Db(&CDB::bitdb.dbenv, 0);
+            pdb = new Db(&bitdb_.dbenv, 0);
 
-            bool fMockDb = CDB::bitdb.IsMock();
+            bool fMockDb = bitdb_.IsMock();
             if (fMockDb) {
                 DbMpoolFile* mpf = pdb->get_mpf();
                 ret = mpf->set_flags(DB_MPOOL_NOFILE, 1);
@@ -78,7 +78,7 @@ CDB::CDB(
             if (ret != 0) {
                 delete pdb;
                 pdb = NULL;
-                --CDB::bitdb.mapFileUseCount[strFile];
+                --bitdb_.mapFileUseCount[strFile];
                 strFile = "";
                 throw std::runtime_error(strprintf("CDB : Error %d, can't open database %s", ret, strFilename));
             }
@@ -90,7 +90,7 @@ CDB::CDB(
                 fReadOnly = fTmp;
             }
 
-            CDB::bitdb.mapDb[strFile] = pdb;
+            bitdb_.mapDb[strFile] = pdb;
         }
     }
 }
@@ -102,7 +102,7 @@ void CDB::Flush()
 
     const unsigned int nMinutes = fReadOnly? 1:0;
     const unsigned int dbLogSize = fReadOnly? settings_.GetArg("-dblogsize", 100) * 1024 : 0;
-    CDB::bitdb.dbenv.txn_checkpoint(dbLogSize, nMinutes, 0);
+    bitdb_.dbenv.txn_checkpoint(dbLogSize, nMinutes, 0);
 }
 
 void CDB::Close()
@@ -117,28 +117,28 @@ void CDB::Close()
     Flush();
 
     {
-        LOCK(CDB::bitdb.cs_db);
-        --CDB::bitdb.mapFileUseCount[strFile];
+        LOCK(bitdb_.cs_db);
+        --bitdb_.mapFileUseCount[strFile];
     }
 }
 
-bool CDB::Rewrite(const Settings& settings,const std::string& strFile, const char* pszSkip)
+bool CDB::Rewrite(const Settings& settings, CDBEnv& bitdb, const std::string& strFile, const char* pszSkip)
 {
     while (true) {
         {
-            LOCK(CDB::bitdb.cs_db);
-            if (!CDB::bitdb.mapFileUseCount.count(strFile) || CDB::bitdb.mapFileUseCount[strFile] == 0) {
+            LOCK(bitdb.cs_db);
+            if (!bitdb.mapFileUseCount.count(strFile) || bitdb.mapFileUseCount[strFile] == 0) {
                 // Flush log data to the dat file
-                CDB::bitdb.CloseDb(strFile);
-                CDB::bitdb.CheckpointLSN(strFile);
-                CDB::bitdb.mapFileUseCount.erase(strFile);
+                bitdb.CloseDb(strFile);
+                bitdb.CheckpointLSN(strFile);
+                bitdb.mapFileUseCount.erase(strFile);
 
                 bool fSuccess = true;
                 LogPrintf("CDB::Rewrite : Rewriting %s...\n", strFile);
                 std::string strFileRes = strFile + ".rewrite";
                 { // surround usage of db with extra {}
-                    CDB db(settings, strFile.c_str(), "r");
-                    Db* pdbCopy = new Db(&CDB::bitdb.dbenv, 0);
+                    CDB db(settings, bitdb, strFile.c_str(), "r");
+                    Db* pdbCopy = new Db(&bitdb.dbenv, 0);
 
                     int ret = pdbCopy->open(NULL, // Txn pointer
                         strFileRes.c_str(),       // Filename
@@ -181,17 +181,17 @@ bool CDB::Rewrite(const Settings& settings,const std::string& strFile, const cha
                         }
                     if (fSuccess) {
                         db.Close();
-                        CDB::bitdb.CloseDb(strFile);
+                        bitdb.CloseDb(strFile);
                         if (pdbCopy->close(0))
                             fSuccess = false;
                         delete pdbCopy;
                     }
                 }
                 if (fSuccess) {
-                    Db dbA(&CDB::bitdb.dbenv, 0);
+                    Db dbA(&bitdb.dbenv, 0);
                     if (dbA.remove(strFile.c_str(), NULL, 0))
                         fSuccess = false;
-                    Db dbB(&CDB::bitdb.dbenv, 0);
+                    Db dbB(&bitdb.dbenv, 0);
                     if (dbB.rename(strFileRes.c_str(), NULL, strFile.c_str(), 0))
                         fSuccess = false;
                 }
@@ -203,4 +203,15 @@ bool CDB::Rewrite(const Settings& settings,const std::string& strFile, const cha
         MilliSleep(100);
     }
     return false;
+}
+
+bool CDB::TxnBegin()
+{
+    if (!pdb || activeTxn)
+        return false;
+    DbTxn* ptxn = bitdb_.TxnBegin();
+    if (!ptxn)
+        return false;
+    activeTxn = ptxn;
+    return true;
 }

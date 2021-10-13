@@ -375,11 +375,6 @@ const I_MerkleTxConfirmationNumberCalculator& CWallet::getConfirmationCalculator
     return *confirmationNumberCalculator_;
 }
 
-void CWallet::IncrementDBUpdateCount() const
-{
-    LOCK(cs_wallet);
-    CWalletDB(settings,strWalletFile).IncrementDBUpdateCount();
-}
 
 bool CWallet::CanSupportFeature(enum WalletFeature wf)
 {

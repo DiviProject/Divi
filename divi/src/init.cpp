@@ -999,7 +999,6 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
         ScanForWalletTransactions(*pwalletMain,pindexRescan,true);
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
         pwalletMain->UpdateBestBlockLocation();
-        pwalletMain->IncrementDBUpdateCount();
     }
 }
 

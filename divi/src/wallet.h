@@ -235,7 +235,6 @@ public:
 
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
     void toggleSpendingZeroConfirmationOutputs();
-    void IncrementDBUpdateCount() const;
 
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     void UpdateBestBlockLocation();

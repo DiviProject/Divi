@@ -62,11 +62,6 @@ CWalletDB::CWalletDB(
 {
 }
 
-void CWalletDB::IncrementDBUpdateCount() const
-{
-    walletDbUpdated_++;
-}
-
 bool CWalletDB::WriteName(const string& strAddress, const string& strName)
 {
     walletDbUpdated_++;

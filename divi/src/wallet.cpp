@@ -190,7 +190,6 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) )
     , pwalletdbEncryption()
-    , orderedTransactionIndex()
     , nWalletVersion(FEATURE_BASE)
     , nWalletMaxVersion(FEATURE_BASE)
     , mapKeyMetadata()
@@ -265,7 +264,6 @@ void CWallet::SetNull()
     fFileBacked = false;
     nMasterKeyMaxID = 0;
     pwalletdbEncryption.reset();
-    orderedTransactionIndex = 0;
     nNextResend = 0;
     nLastResend = 0;
     nTimeFirstKey = 0;
@@ -1216,18 +1214,6 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     return true;
 }
 
-int64_t CWallet::IncOrderPosNext(CWalletDB* pwalletdb)
-{
-    AssertLockHeld(cs_wallet); // orderedTransactionIndex
-    int64_t nRet = orderedTransactionIndex++;
-    if (pwalletdb) {
-        pwalletdb->WriteOrderPosNext(orderedTransactionIndex);
-    } else {
-        CWalletDB(settings,strWalletFile).WriteOrderPosNext(orderedTransactionIndex);
-    }
-    return nRet;
-}
-
 CWallet::TxItems CWallet::OrderedTxItems()
 {
     AssertLockHeld(cs_wallet); // mapWallet
@@ -1275,7 +1261,7 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
 
 void CWallet::LoadWalletTransaction(const CWalletTx& wtxIn)
 {
-    outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, true).first->RecomputeCachedQuantities();
+    outputTracker_->UpdateSpends(wtxIn, true).first->RecomputeCachedQuantities();
 }
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
@@ -1283,7 +1269,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     uint256 hash = wtxIn.GetHash();
     LOCK(cs_wallet);
     // Inserts only if not already there, returns tx inserted or tx found
-    std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,orderedTransactionIndex,false);
+    std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,false);
     CWalletTx& wtx = *walletTxAndRecordStatus.first;
     wtx.RecomputeCachedQuantities();
     bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
@@ -1291,8 +1277,6 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     bool walletTransactionHasBeenUpdated = false;
     if (transactionHashIsNewToWallet)
     {
-        wtx.nOrderPos = IncOrderPosNext();
-
         wtx.nTimeSmart = wtx.nTimeReceived;
         if (wtxIn.hashBlock != 0)
         {
@@ -2005,15 +1989,6 @@ bool CWallet::SelectCoinsMinConf(
         }
     }
     return true;
-}
-
-int64_t CWallet::GetNextTransactionIndexAvailable() const
-{
-    return orderedTransactionIndex;
-}
-void CWallet::UpdateNextTransactionIndexAvailable(int64_t transactionIndex)
-{
-    orderedTransactionIndex = transactionIndex;
 }
 
 void AppendOutputs(

@@ -17,7 +17,6 @@ VaultManager::VaultManager(
     ): confirmationsCalculator_(confirmationsCalculator)
     , vaultManagerDB_(vaultManagerDB)
     , cs_vaultManager_()
-    , transactionOrderingIndex_(0)
     , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_))
     , outputTracker_(new SpentOutputTracker(*walletTxRecord_,confirmationsCalculator_))
     , managedScripts_()
@@ -31,8 +30,7 @@ VaultManager::VaultManager(
         CWalletTx txToAdd;
         if(vaultManagerDB_.ReadTx(txToAdd))
         {
-            outputTracker_->UpdateSpends(txToAdd,transactionOrderingIndex_,true);
-            ++transactionOrderingIndex_;
+            outputTracker_->UpdateSpends(txToAdd,true);
         }
         else
         {
@@ -162,7 +160,7 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
     {
         CWalletTx walletTx(tx);
         if(!blockIsNull) walletTx.SetMerkleBranch(*pblock);
-        std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,false);
+        std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,false);
 
         if(deposit || txIsWhiteListed)
         {
@@ -182,7 +180,6 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         else
         {
             vaultManagerDB_.WriteTx(*walletTxAndRecordStatus.first);
-            ++transactionOrderingIndex_;
         }
     }
 }

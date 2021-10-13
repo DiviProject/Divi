@@ -35,7 +35,6 @@ bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
 
 std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
     const CWalletTx& newlyAddedTransaction,
-    int64_t orderedTransactionIndex,
     bool loadedFromDisk)
 {
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = transactionRecord_.AddTransaction(newlyAddedTransaction);
@@ -44,7 +43,7 @@ std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
         if(!loadedFromDisk)
         {
             CWalletTx& addedTx = (*ret.first).second;
-            addedTx.nOrderPos = orderedTransactionIndex;
+            addedTx.nOrderPos = transactionRecord_.mapWallet.size();
             addedTx.nTimeReceived = GetAdjustedTime();
         }
         AddToSpends(ret.first->second);

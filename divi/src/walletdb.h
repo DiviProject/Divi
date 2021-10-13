@@ -136,8 +136,8 @@ public:
     bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta);
 
 private:
-    CWalletDB(const CWalletDB&);
-    void operator=(const CWalletDB&);
+    CWalletDB(const CWalletDB&) = delete;
+    void operator=(const CWalletDB&) = delete;
 };
 
 void ThreadFlushWalletDB(const std::string& strWalletFile);

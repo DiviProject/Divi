@@ -29,6 +29,11 @@ bool WalletBackupFeatureContainer::backupWallet()
     return false;
 }
 
+I_FileSystem& WalletBackupFeatureContainer::GetFileSystem()
+{
+    return *fileSystem_;
+}
+
 I_WalletBackupCreator& WalletBackupFeatureContainer::GetBackupCreator ()
 {
     return *walletBackupCreator_;

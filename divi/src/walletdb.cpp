@@ -187,12 +187,6 @@ bool CWalletDB::ReadBestBlock(CBlockLocator& locator)
     return Read(std::string("bestblock"), locator);
 }
 
-bool CWalletDB::WriteOrderPosNext(int64_t orderedTransactionIndex)
-{
-    walletDbUpdated_++;
-    return Write(std::string("orderposnext"), orderedTransactionIndex);
-}
-
 bool CWalletDB::WriteDefaultKey(const CPubKey& vchPubKey)
 {
     walletDbUpdated_++;
@@ -443,10 +437,6 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
                 strErr = "Error reading wallet database: LoadCScript failed";
                 return false;
             }
-        } else if (strType == "orderposnext") {
-            int64_t txIndex;
-            ssValue >> txIndex;
-            if(pwallet) pwallet->UpdateNextTransactionIndexAvailable(txIndex);
         } else if (strType == "hdchain")
         {
             CHDChain chain;

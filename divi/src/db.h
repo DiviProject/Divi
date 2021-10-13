@@ -19,26 +19,25 @@
 #include <boost/filesystem/path.hpp>
 
 #include <db_cxx.h>
-#include "dbenv.h"
 
 class CDiskBlockIndex;
 class COutPoint;
 class Settings;
 struct CBlockLocator;
+class CDBEnv;
 
 /** RAII class that provides access to a Berkeley database */
 class CDB
 {
-public:
-    static CDBEnv bitdb;
 protected:
     const Settings& settings_;
+    CDBEnv& bitdb_;
     Db* pdb;
     std::string strFile;
     DbTxn* activeTxn;
     bool fReadOnly;
 
-    explicit CDB(const Settings& settings, const std::string& strFilename, const char* pszMode = "r+");
+    explicit CDB(const Settings& settings, CDBEnv& bitdb, const std::string& strFilename, const char* pszMode = "r+");
     ~CDB() { Close(); }
 
 public:
@@ -204,17 +203,7 @@ protected:
     }
 
 public:
-    bool TxnBegin()
-    {
-        if (!pdb || activeTxn)
-            return false;
-        DbTxn* ptxn = CDB::bitdb.TxnBegin();
-        if (!ptxn)
-            return false;
-        activeTxn = ptxn;
-        return true;
-    }
-
+    bool TxnBegin();
     bool TxnCommit()
     {
         if (!pdb || !activeTxn)
@@ -244,7 +233,7 @@ public:
         return Write(std::string("version"), nVersion);
     }
 
-    bool static Rewrite(const Settings& settings, const std::string& strFile, const char* pszSkip = NULL);
+    bool static Rewrite(const Settings& settings, CDBEnv& bitdb, const std::string& strFile, const char* pszSkip = NULL);
 };
 
 #endif // BITCOIN_DB_H

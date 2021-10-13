@@ -21,6 +21,7 @@
 #include "checkpoints.h"
 #include "compat/sanity.h"
 #include <defaultValues.h>
+#include <dbenv.h>
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
@@ -197,7 +198,7 @@ static CCoinsViewDB* pcoinsdbview = NULL;
 static CCoinsViewErrorCatcher* pcoinscatcher = NULL;
 
 #ifdef ENABLE_WALLET
-inline void FlushWallet(bool shutdown = false) { if(pwalletMain) CDB::bitdb.Flush(shutdown);}
+inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWrapper().Flush(shutdown);}
 #endif
 void FlushWalletAndStopMinting()
 {

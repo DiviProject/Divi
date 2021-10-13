@@ -986,9 +986,8 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
     if (settings.GetBoolArg("-rescan", false))
         pindexRescan = chainActive.Genesis();
     else {
-        CWalletDB walletdb(settings,strWalletFile);
         CBlockLocator locator;
-        if (walletdb.ReadBestBlock(locator))
+        if (pwalletMain->GetBlockLocator(locator))
             pindexRescan = FindForkInGlobalIndex(chainActive, locator);
         else
             pindexRescan = chainActive.Genesis();

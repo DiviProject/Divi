@@ -54,6 +54,7 @@ class CTxIn;
 class I_MerkleTxConfirmationNumberCalculator;
 class I_VaultManagerDatabase;
 class VaultManager;
+class CBlockLocator;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
@@ -221,6 +222,7 @@ public:
     explicit CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap);
     ~CWallet();
 
+    bool GetBlockLocator(CBlockLocator& blockLocator);
     void AddKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata);
     void UpdateTimeFirstKey(int64_t nCreateTime);
     void activateVaultMode();

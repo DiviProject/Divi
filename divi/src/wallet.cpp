@@ -229,6 +229,12 @@ CWallet::~CWallet()
     confirmationNumberCalculator_.reset();
 }
 
+bool CWallet::GetBlockLocator(CBlockLocator& blockLocator)
+{
+    CWalletDB walletdb(settings,strWalletFile);
+    return walletdb.ReadBestBlock(blockLocator);
+}
+
 void CWallet::activateVaultMode()
 {
     if(!vaultManager_)

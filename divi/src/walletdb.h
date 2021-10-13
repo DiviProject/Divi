@@ -55,7 +55,6 @@ private:
     std::string dbFilename_;
     unsigned& walletDbUpdated_;
 public:
-    void IncrementDBUpdateCount() const;
 
     CWalletDB(Settings& settings,const std::string& strFilename, const char* pszMode = "r+");
 

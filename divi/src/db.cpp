@@ -29,10 +29,17 @@
 
 CDBEnv CDB::bitdb;
 
-CDB::CDB(const Settings& settings, const std::string& strFilename, const char* pszMode) : settings_(settings), pdb(NULL), activeTxn(NULL)
+CDB::CDB(
+    const Settings& settings,
+    const std::string& strFilename,
+    const char* pszMode
+    ) : settings_(settings)
+    , pdb(NULL)
+    , strFile()
+    , activeTxn(NULL)
+    , fReadOnly( (!strchr(pszMode, '+') && !strchr(pszMode, 'w')) )
 {
-    int ret;
-    fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
+    int ret = 0;
     if (strFilename.empty())
         return;
 
@@ -47,6 +54,7 @@ CDB::CDB(const Settings& settings, const std::string& strFilename, const char* p
             throw std::runtime_error("CDB : Failed to open database environment.");
 
         strFile = strFilename;
+        assert(!strFile.empty());
         ++CDB::bitdb.mapFileUseCount[strFile];
         pdb = CDB::bitdb.mapDb[strFile];
         if (pdb == NULL) {
@@ -72,7 +80,7 @@ CDB::CDB(const Settings& settings, const std::string& strFilename, const char* p
                 pdb = NULL;
                 --CDB::bitdb.mapFileUseCount[strFile];
                 strFile = "";
-                throw std::runtime_error(strprintf("CDB : Error %d, can't open database %s", ret, strFile));
+                throw std::runtime_error(strprintf("CDB : Error %d, can't open database %s", ret, strFilename));
             }
 
             if (fCreate && !Exists(std::string("version"))) {

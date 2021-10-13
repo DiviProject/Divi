@@ -27,10 +27,15 @@ void CDBEnv::EnvShutdown()
         DbEnv(0).remove(strPath.c_str(), 0);
 }
 
-CDBEnv::CDBEnv() : dbenv(DB_CXX_NO_EXCEPTIONS)
+CDBEnv::CDBEnv(
+    ) : fDbEnvInit(false)
+    , fMockDb(false)
+    , strPath()
+    , cs_db()
+    , dbenv(DB_CXX_NO_EXCEPTIONS)
+    , mapFileUseCount()
+    , mapDb()
 {
-    fDbEnvInit = false;
-    fMockDb = false;
 }
 
 CDBEnv::~CDBEnv()
@@ -84,6 +89,7 @@ bool CDBEnv::Open(const boost::filesystem::path& pathIn)
     if (ret != 0)
         return error("CDBEnv::Open : Error %d opening database environment: %s\n", ret, DbEnv::strerror(ret));
 
+    assert(ret == 0);
     fDbEnvInit = true;
     fMockDb = false;
     return true;

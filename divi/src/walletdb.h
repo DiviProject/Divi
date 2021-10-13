@@ -54,6 +54,14 @@ private:
     Settings& settings_;
     std::string dbFilename_;
     unsigned& walletDbUpdated_;
+
+    static bool Recover(
+        CDBEnv& dbenv,
+        std::string filename,
+        bool fOnlyKeys);
+    static bool Recover(
+        CDBEnv& dbenv,
+        std::string filename);
 public:
 
     CWalletDB(Settings& settings,const std::string& strFilename, const char* pszMode = "r+");
@@ -99,13 +107,6 @@ public:
     bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta);
 
     DBErrors LoadWallet(I_WalletLoader* pwallet);
-    static bool Recover(
-        CDBEnv& dbenv,
-        std::string filename,
-        bool fOnlyKeys);
-    static bool Recover(
-        CDBEnv& dbenv,
-        std::string filename);
 
 private:
     CWalletDB(const CWalletDB&) = delete;

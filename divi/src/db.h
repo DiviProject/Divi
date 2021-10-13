@@ -46,8 +46,8 @@ public:
     void Close();
 
 private:
-    CDB(const CDB&);
-    void operator=(const CDB&);
+    CDB(const CDB&) = delete;
+    void operator=(const CDB&) = delete;
 
 protected:
     template <typename K, typename T>

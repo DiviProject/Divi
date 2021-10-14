@@ -893,10 +893,13 @@ void ExternalNotificationScript(const uint256& transactionHash,int status)
 
 bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
 {
-    bool fFirstRun = true;
     pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex);
     pwalletMain->NotifyTransactionChanged.connect(&ExternalNotificationScript);
-    DBErrors nLoadWalletRet = pwalletMain->LoadWallet(fFirstRun);
+    DBErrors nLoadWalletRet = pwalletMain->LoadWallet();
+    const bool fFirstRun = nLoadWalletRet == DB_LOAD_OK_FIRST_RUN;
+    if(nLoadWalletRet != DB_LOAD_OK && (nLoadWalletRet==DB_LOAD_OK_FIRST_RUN || nLoadWalletRet == DB_LOAD_OK_RELOAD))
+        nLoadWalletRet = DB_LOAD_OK;
+
     if (nLoadWalletRet != DB_LOAD_OK) {
         if (nLoadWalletRet == DB_CORRUPT)
             strErrors << translate("Error loading wallet.dat: Wallet corrupted") << "\n";

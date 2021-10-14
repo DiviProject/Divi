@@ -44,7 +44,9 @@ enum DBErrors {
     DB_NONCRITICAL_ERROR,
     DB_TOO_NEW,
     DB_LOAD_FAIL,
-    DB_NEED_REWRITE
+    DB_NEED_REWRITE,
+    DB_LOAD_OK_FIRST_RUN,
+    DB_LOAD_OK_RELOAD,
 };
 
 /** Access to the wallet database (wallet.dat) */

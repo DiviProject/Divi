@@ -2309,11 +2309,10 @@ std::pair<std::string,bool> CWallet::SendMoney(
     return {std::string(""),true};
 }
 
-DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
+DBErrors CWallet::LoadWallet()
 {
     if (!fFileBacked)
         return DB_LOAD_OK;
-    fFirstRunRet = false;
     DBErrors nLoadWalletRet;
     {
         LOCK(cs_wallet);
@@ -2334,11 +2333,9 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
 
     if (nLoadWalletRet != DB_LOAD_OK)
         return nLoadWalletRet;
-    fFirstRunRet = !vchDefaultKey.IsValid();
-
+    nLoadWalletRet = (vchDefaultKey.IsValid())? DB_LOAD_OK_RELOAD: DB_LOAD_OK_FIRST_RUN;
     uiInterface.LoadWallet(this);
-
-    return DB_LOAD_OK;
+    return nLoadWalletRet;
 }
 
 bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose)

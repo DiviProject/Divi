@@ -60,9 +60,8 @@ struct TestingSetup {
         pcoinsTip = new CCoinsViewCache(pcoinsdbview);
         InitBlockIndex();
 #ifdef ENABLE_WALLET
-        bool fFirstRun;
         pwalletMain = new CWallet("wallet.dat", chainActive, mapBlockIndex);
-        pwalletMain->LoadWallet(fFirstRun);
+        pwalletMain->LoadWallet();
         RegisterValidationInterface(pwalletMain);
 #endif
         nScriptCheckThreads = 3;

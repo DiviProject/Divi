@@ -38,6 +38,7 @@ protected:
     bool fReadOnly;
     bool fCreate;
 
+    void Init();
     explicit CDB(const Settings& settings, CDBEnv& bitdb, const std::string& strFilename, const char* pszMode = "r+");
     ~CDB() { Close(); }
 

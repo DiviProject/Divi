@@ -27,18 +27,7 @@
 //
 // CDB
 //
-CDB::CDB(
-    const Settings& settings,
-    CDBEnv& bitdb,
-    const std::string& strFilename,
-    const char* pszMode
-    ) : settings_(settings)
-    , bitdb_(bitdb)
-    , pdb(NULL)
-    , strFile(strFilename)
-    , activeTxn(NULL)
-    , fReadOnly( (!strchr(pszMode, '+') && !strchr(pszMode, 'w')) )
-    , fCreate(strchr(pszMode, 'c') != NULL)
+void CDB::Init()
 {
     int ret = 0;
     if (strFile.empty())
@@ -93,6 +82,22 @@ CDB::CDB(
             bitdb_.mapDb[strFile] = pdb;
         }
     }
+}
+
+CDB::CDB(
+    const Settings& settings,
+    CDBEnv& bitdb,
+    const std::string& strFilename,
+    const char* pszMode
+    ) : settings_(settings)
+    , bitdb_(bitdb)
+    , pdb(NULL)
+    , strFile(strFilename)
+    , activeTxn(NULL)
+    , fReadOnly( (!strchr(pszMode, '+') && !strchr(pszMode, 'w')) )
+    , fCreate(strchr(pszMode, 'c') != NULL)
+{
+    Init();
 }
 
 void CDB::Flush()

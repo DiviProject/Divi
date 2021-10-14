@@ -82,6 +82,19 @@ void CDB::Init()
             bitdb_.mapDb[strFile] = pdb;
         }
     }
+    isOpen = true;
+}
+
+void CDB::Open(const Settings& settings, const char* pszMode)
+{
+    assert(!isOpen);
+    pdb = NULL;
+    activeTxn = NULL;
+    fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
+    fCreate = strchr(pszMode, 'c') != NULL;
+    dbLogMinutes = fReadOnly? 1u:0u;
+    dbLogSize = fReadOnly? (settings.GetArg("-dblogsize", 100) * 1024u) : 0u;
+    Init();
 }
 
 CDB::CDB(
@@ -97,6 +110,7 @@ CDB::CDB(
     , fCreate(strchr(pszMode, 'c') != NULL)
     , dbLogMinutes(fReadOnly? 1u:0u)
     , dbLogSize(fReadOnly? (settings.GetArg("-dblogsize", 100) * 1024u) : 0u)
+    , isOpen(false)
 {
     Init();
 }
@@ -124,6 +138,7 @@ void CDB::Close()
         LOCK(bitdb_.cs_db);
         --bitdb_.mapFileUseCount[strFile];
     }
+    isOpen = false;
 }
 
 bool CDB::Rewrite(const Settings& settings, CDBEnv& bitdb, const std::string& strFile, const char* pszSkip)

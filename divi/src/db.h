@@ -36,14 +36,16 @@ protected:
     DbTxn* activeTxn;
     bool fReadOnly;
     bool fCreate;
-    const unsigned dbLogMinutes;
-    const unsigned dbLogSize;
+    unsigned dbLogMinutes;
+    unsigned dbLogSize;
+    bool isOpen;
 
     void Init();
     explicit CDB(const Settings& settings, CDBEnv& bitdb, const std::string& strFilename, const char* pszMode = "r+");
     ~CDB() { Close(); }
 
 public:
+    void Open(const Settings& settings, const char* pszMode);
     void Flush();
     void Close();
 

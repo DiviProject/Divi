@@ -485,8 +485,9 @@ static bool IsKeyType(string strType)
             strType == "mkey" || strType == "ckey");
 }
 
-DBErrors CWalletDB::LoadWallet(I_WalletLoader* pwallet)
+DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
 {
+    I_WalletLoader* pwallet = &wallet;
     pwallet->SetDefaultKey(CPubKey(),false);
     CWalletScanState wss;
     bool fNoncriticalErrors = false;

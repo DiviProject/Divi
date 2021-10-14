@@ -108,7 +108,7 @@ public:
     bool WriteCryptedHDChain(const CHDChain& chain);
     bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta);
 
-    DBErrors LoadWallet(I_WalletLoader* pwallet);
+    DBErrors LoadWallet(I_WalletLoader& pwallet);
 
 private:
     CWalletDB(const CWalletDB&) = delete;

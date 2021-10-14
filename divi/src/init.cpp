@@ -891,7 +891,14 @@ void ExternalNotificationScript(const uint256& transactionHash,int status)
     }
 }
 
-bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
+enum LoadWalletResult
+{
+    NEW_WALLET_CREATED,
+    EXISTING_WALLET_LOADED,
+    ERROR_LOADING_WALLET,
+};
+
+LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream& strErrors)
 {
     pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex);
     pwalletMain->NotifyTransactionChanged.connect(&ExternalNotificationScript);
@@ -905,7 +912,7 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
         if (nLoadWalletRet == DB_CORRUPT)
         {
             strErrors << translate("Error loading wallet.dat: Wallet corrupted") << "\n";
-            return false;
+            return ERROR_LOADING_WALLET;
         }
         else if (nLoadWalletRet == DB_NONCRITICAL_ERROR)
         {
@@ -922,13 +929,31 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
         {
             strErrors << translate("Wallet needed to be rewritten: restart DIVI Core to complete") << "\n";
             LogPrintf("%s", strErrors.str());
-            return false;
+            return ERROR_LOADING_WALLET;
         }
         else
         {
             strErrors << translate("Error loading wallet.dat: database load failure") << "\n";
-            return false;
+            return ERROR_LOADING_WALLET;
         }
+    }
+    return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
+}
+
+bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
+{
+    const LoadWalletResult loadResult = LoadWallet(strWalletFile, strErrors);
+    bool fFirstRun = false;
+    switch(loadResult)
+    {
+        case ERROR_LOADING_WALLET:
+            return false;
+        case NEW_WALLET_CREATED:
+            fFirstRun = true;
+            break;
+        case EXISTING_WALLET_LOADED:
+            fFirstRun = false;
+            break;
     }
 
     if (settings.GetBoolArg("-upgradewallet", fFirstRun))

@@ -67,7 +67,7 @@ CWalletDB::CWalletDB(
 bool CWalletDB::WriteName(const string& strAddress, const string& strName)
 {
     walletDbUpdated_++;
-    return Write(std::make_pair(string("name"), strAddress), strName);
+    return CDB::Write(std::make_pair(string("name"), strAddress), strName);
 }
 
 bool CWalletDB::EraseName(const string& strAddress)
@@ -75,32 +75,32 @@ bool CWalletDB::EraseName(const string& strAddress)
     // This should only be used for sending addresses, never for receiving addresses,
     // receiving addresses must always have an address book entry if they're not change return.
     walletDbUpdated_++;
-    return Erase(std::make_pair(string("name"), strAddress));
+    return CDB::Erase(std::make_pair(string("name"), strAddress));
 }
 
 bool CWalletDB::WritePurpose(const string& strAddress, const string& strPurpose)
 {
     walletDbUpdated_++;
-    return Write(std::make_pair(string("purpose"), strAddress), strPurpose);
+    return CDB::Write(std::make_pair(string("purpose"), strAddress), strPurpose);
 }
 
 bool CWalletDB::ErasePurpose(const string& strPurpose)
 {
     walletDbUpdated_++;
-    return Erase(std::make_pair(string("purpose"), strPurpose));
+    return CDB::Erase(std::make_pair(string("purpose"), strPurpose));
 }
 
 bool CWalletDB::WriteTx(uint256 hash, const CWalletTx& wtx)
 {
     walletDbUpdated_++;
-    return Write(std::make_pair(std::string("tx"), hash), wtx);
+    return CDB::Write(std::make_pair(std::string("tx"), hash), wtx);
 }
 
 bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta)
 {
     walletDbUpdated_++;
 
-    if (!Write(std::make_pair(std::string("keymeta"), vchPubKey),
+    if (!CDB::Write(std::make_pair(std::string("keymeta"), vchPubKey),
             keyMeta, false))
         return false;
 
@@ -110,7 +110,7 @@ bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, c
     vchKey.insert(vchKey.end(), vchPubKey.begin(), vchPubKey.end());
     vchKey.insert(vchKey.end(), vchPrivKey.begin(), vchPrivKey.end());
 
-    return Write(std::make_pair(std::string("key"), vchPubKey), std::make_pair(vchPrivKey, Hash(vchKey.begin(), vchKey.end())), false);
+    return CDB::Write(std::make_pair(std::string("key"), vchPubKey), std::make_pair(vchPrivKey, Hash(vchKey.begin(), vchKey.end())), false);
 }
 
 bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey,
@@ -120,15 +120,15 @@ bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey,
     const bool fEraseUnencryptedKey = true;
     walletDbUpdated_++;
 
-    if (!Write(std::make_pair(std::string("keymeta"), vchPubKey),
+    if (!CDB::Write(std::make_pair(std::string("keymeta"), vchPubKey),
             keyMeta))
         return false;
 
-    if (!Write(std::make_pair(std::string("ckey"), vchPubKey), vchCryptedSecret, false))
+    if (!CDB::Write(std::make_pair(std::string("ckey"), vchPubKey), vchCryptedSecret, false))
         return false;
     if (fEraseUnencryptedKey) {
-        Erase(std::make_pair(std::string("key"), vchPubKey));
-        Erase(std::make_pair(std::string("wkey"), vchPubKey));
+        CDB::Erase(std::make_pair(std::string("key"), vchPubKey));
+        CDB::Erase(std::make_pair(std::string("wkey"), vchPubKey));
     }
     return true;
 }
@@ -136,92 +136,92 @@ bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey,
 bool CWalletDB::WriteMasterKey(unsigned int nID, const CMasterKey& kMasterKey)
 {
     walletDbUpdated_++;
-    return Write(std::make_pair(std::string("mkey"), nID), kMasterKey, true);
+    return CDB::Write(std::make_pair(std::string("mkey"), nID), kMasterKey, true);
 }
 
 bool CWalletDB::WriteCScript(const uint160& hash, const CScript& redeemScript)
 {
     walletDbUpdated_++;
-    return Write(std::make_pair(std::string("cscript"), hash), redeemScript, false);
+    return CDB::Write(std::make_pair(std::string("cscript"), hash), redeemScript, false);
 }
 bool CWalletDB::EraseCScript(const uint160& hash)
 {
     walletDbUpdated_++;
-    return Erase(std::make_pair(std::string("cscript"), hash));
+    return CDB::Erase(std::make_pair(std::string("cscript"), hash));
 }
 
 bool CWalletDB::WriteWatchOnly(const CScript& dest)
 {
     walletDbUpdated_++;
-    return Write(std::make_pair(std::string("watchs"), dest), '1');
+    return CDB::Write(std::make_pair(std::string("watchs"), dest), '1');
 }
 
 bool CWalletDB::EraseWatchOnly(const CScript& dest)
 {
     walletDbUpdated_++;
-    return Erase(std::make_pair(std::string("watchs"), dest));
+    return CDB::Erase(std::make_pair(std::string("watchs"), dest));
 }
 
 bool CWalletDB::WriteMultiSig(const CScript& dest)
 {
     walletDbUpdated_++;
-    return Write(std::make_pair(std::string("multisig"), dest), '1');
+    return CDB::Write(std::make_pair(std::string("multisig"), dest), '1');
 }
 
 bool CWalletDB::EraseMultiSig(const CScript& dest)
 {
     walletDbUpdated_++;
-    return Erase(std::make_pair(std::string("multisig"), dest));
+    return CDB::Erase(std::make_pair(std::string("multisig"), dest));
 }
 
 bool CWalletDB::WriteBestBlock(const CBlockLocator& locator)
 {
     walletDbUpdated_++;
-    return Write(std::string("bestblock"), locator);
+    return CDB::Write(std::string("bestblock"), locator);
 }
 
 bool CWalletDB::ReadBestBlock(CBlockLocator& locator)
 {
-    return Read(std::string("bestblock"), locator);
+    return CDB::Read(std::string("bestblock"), locator);
 }
 
 bool CWalletDB::WriteDefaultKey(const CPubKey& vchPubKey)
 {
     walletDbUpdated_++;
-    return Write(std::string("defaultkey"), vchPubKey);
+    return CDB::Write(std::string("defaultkey"), vchPubKey);
 }
 
 bool CWalletDB::ReadPool(int64_t nPool, CKeyPool& keypool)
 {
-    return Read(std::make_pair(std::string("pool"), nPool), keypool);
+    return CDB::Read(std::make_pair(std::string("pool"), nPool), keypool);
 }
 
 bool CWalletDB::WritePool(int64_t nPool, const CKeyPool& keypool)
 {
     walletDbUpdated_++;
-    return Write(std::make_pair(std::string("pool"), nPool), keypool);
+    return CDB::Write(std::make_pair(std::string("pool"), nPool), keypool);
 }
 
 bool CWalletDB::ErasePool(int64_t nPool)
 {
     walletDbUpdated_++;
-    return Erase(std::make_pair(std::string("pool"), nPool));
+    return CDB::Erase(std::make_pair(std::string("pool"), nPool));
 }
 
 bool CWalletDB::WriteMinVersion(int nVersion)
 {
-    return Write(std::string("minversion"), nVersion);
+    return CDB::Write(std::string("minversion"), nVersion);
 }
 
 bool CWalletDB::ReadAccount(const string& strAccount, CAccount& account)
 {
     account.SetNull();
-    return Read(std::make_pair(string("acc"), strAccount), account);
+    return CDB::Read(std::make_pair(string("acc"), strAccount), account);
 }
 
 bool CWalletDB::WriteAccount(const string& strAccount, const CAccount& account)
 {
-    return Write(std::make_pair(string("acc"), strAccount), account);
+    return CDB::Write(std::make_pair(string("acc"), strAccount), account);
 }
 
 class CWalletScanState
@@ -496,14 +496,14 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
 
     try {
         int nMinVersion = 0;
-        if (Read((string) "minversion", nMinVersion)) {
+        if (CDB::Read((string) "minversion", nMinVersion)) {
             if (nMinVersion > CLIENT_VERSION)
                 return DB_TOO_NEW;
             pwallet->LoadMinVersion(nMinVersion);
         }
 
         // Get cursor
-        Dbc* pcursor = GetCursor();
+        Dbc* pcursor = CDB::GetCursor();
         if (!pcursor) {
             LogPrintf("Error getting wallet database cursor\n");
             return DB_CORRUPT;
@@ -513,7 +513,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
             // Read next record
             CDataStream ssKey(SER_DISK, CLIENT_VERSION);
             CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-            int ret = ReadAtCursor(pcursor, ssKey, ssValue);
+            int ret = CDB::ReadAtCursor(pcursor, ssKey, ssValue);
             if (ret == DB_NOTFOUND)
                 break;
             else if (ret != 0) {
@@ -572,7 +572,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
         return DB_NEED_REWRITE;
 
     if (wss.nFileVersion < CLIENT_VERSION) // Update
-        WriteVersion(CLIENT_VERSION);
+        CDB::WriteVersion(CLIENT_VERSION);
 
     if (wss.fAnyUnordered)
     {

@@ -106,13 +106,13 @@ CDB::CDB(
     , pdb(NULL)
     , strFile(strFilename)
     , activeTxn(NULL)
-    , fReadOnly( (!strchr(pszMode, '+') && !strchr(pszMode, 'w')) )
-    , fCreate(strchr(pszMode, 'c') != NULL)
-    , dbLogMinutes(fReadOnly? 1u:0u)
-    , dbLogSize(fReadOnly? (settings.GetArg("-dblogsize", 100) * 1024u) : 0u)
+    , fReadOnly(false)
+    , fCreate(false)
+    , dbLogMinutes(0u)
+    , dbLogSize(0u)
     , isOpen(false)
 {
-    Init();
+    Open(settings,pszMode);
 }
 
 void CDB::Flush()

@@ -940,6 +940,67 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }
 
+bool UpdateWalletVersion(std::ostringstream& strErrors)
+{
+    int nMaxVersion = settings.GetArg("-upgradewallet", 0);
+    if (nMaxVersion == 0) // the -upgradewallet without argument case
+    {
+        LogPrintf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
+        nMaxVersion = CLIENT_VERSION;
+        pwalletMain->SetMinVersion(FEATURE_LATEST); // permanently upgrade the wallet immediately
+    }
+    else
+    {
+        LogPrintf("Allowing wallet upgrade up to %i\n", nMaxVersion);
+    }
+    if (nMaxVersion < pwalletMain->GetVersion())
+    {
+        strErrors << translate("Cannot downgrade wallet") << "\n";
+        return false;
+    }
+    pwalletMain->SetMaxVersion(nMaxVersion);
+    return true;
+}
+
+bool InitializeWalletHDAndChainState(std::ostringstream& strErrors)
+{
+     // Create new keyUser and set as default key
+    if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled())
+    {
+        if (settings.GetArg("-mnemonicpassphrase", "").size() > 256)
+        {
+            strErrors << translate("Mnemonic passphrase is too long, must be at most 256 characters") << "\n";
+            return false;
+        }
+
+        pwalletMain->GenerateNewHDChain(); // generate a new master key
+        pwalletMain->SetMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
+    }
+
+    if(!pwalletMain->InitializeDefaultKey())
+    {
+        strErrors << translate("Cannot write default address") << "\n";
+        return false;
+    }
+    pwalletMain->UpdateBestBlockLocation();
+    return true;
+}
+
+bool EnsureWalletHDIsNotChanged(std::ostringstream& strErrors)
+{
+    bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
+    if (pwalletMain->IsHDEnabled() && !useHD)
+    {
+        strErrors << strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"), pwalletMain->dbFilename()) << "\n";
+        return false;
+    }
+    if (!pwalletMain->IsHDEnabled() && useHD) {
+        strErrors << strprintf(translate("Error loading %s: You can't enable HD on a already existing non-HD wallet"), pwalletMain->dbFilename()) << "\n";
+        return false;
+    }
+    return true;
+}
+
 bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
 {
     const LoadWalletResult loadResult = LoadWallet(strWalletFile, strErrors);
@@ -956,61 +1017,17 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
             break;
     }
 
-    if (settings.GetBoolArg("-upgradewallet", fFirstRun))
+    if (settings.GetBoolArg("-upgradewallet", fFirstRun) && !UpdateWalletVersion(strErrors))
     {
-        int nMaxVersion = settings.GetArg("-upgradewallet", 0);
-        if (nMaxVersion == 0) // the -upgradewallet without argument case
-        {
-            LogPrintf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
-            nMaxVersion = CLIENT_VERSION;
-            pwalletMain->SetMinVersion(FEATURE_LATEST); // permanently upgrade the wallet immediately
-        }
-        else
-        {
-            LogPrintf("Allowing wallet upgrade up to %i\n", nMaxVersion);
-        }
-        if (nMaxVersion < pwalletMain->GetVersion())
-        {
-            strErrors << translate("Cannot downgrade wallet") << "\n";
-            return false;
-        }
-        pwalletMain->SetMaxVersion(nMaxVersion);
+        return false;
     }
-
-    if (fFirstRun)
+    if (fFirstRun && !InitializeWalletHDAndChainState(strErrors))
     {
-        // Create new keyUser and set as default key
-        if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled())
-        {
-            if (settings.GetArg("-mnemonicpassphrase", "").size() > 256)
-            {
-                strErrors << translate("Mnemonic passphrase is too long, must be at most 256 characters") << "\n";
-                return false;
-            }
-
-            pwalletMain->GenerateNewHDChain(); // generate a new master key
-            pwalletMain->SetMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
-        }
-
-        if(!pwalletMain->InitializeDefaultKey())
-        {
-            strErrors << translate("Cannot write default address") << "\n";
-            return false;
-        }
-        pwalletMain->UpdateBestBlockLocation();
+        return false;
     }
-    else if (settings.ParameterIsSet("-usehd"))
+    if (!fFirstRun && settings.ParameterIsSet("-usehd") && !EnsureWalletHDIsNotChanged(strErrors))
     {
-        bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
-        if (pwalletMain->IsHDEnabled() && !useHD)
-        {
-            strErrors << strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"), pwalletMain->dbFilename()) << "\n";
-            return false;
-        }
-        if (!pwalletMain->IsHDEnabled() && useHD) {
-            strErrors << strprintf(translate("Error loading %s: You can't enable HD on a already existing non-HD wallet"), pwalletMain->dbFilename()) << "\n";
-            return false;
-        }
+        return false;
     }
 
     // Warn user every time he starts non-encrypted HD wallet

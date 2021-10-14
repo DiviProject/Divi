@@ -900,79 +900,99 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     if(nLoadWalletRet != DB_LOAD_OK && (nLoadWalletRet==DB_LOAD_OK_FIRST_RUN || nLoadWalletRet == DB_LOAD_OK_RELOAD))
         nLoadWalletRet = DB_LOAD_OK;
 
-    if (nLoadWalletRet != DB_LOAD_OK) {
+    if (nLoadWalletRet != DB_LOAD_OK)
+    {
         if (nLoadWalletRet == DB_CORRUPT)
+        {
             strErrors << translate("Error loading wallet.dat: Wallet corrupted") << "\n";
-        else if (nLoadWalletRet == DB_NONCRITICAL_ERROR) {
+            return false;
+        }
+        else if (nLoadWalletRet == DB_NONCRITICAL_ERROR)
+        {
             std::string msg(translate("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
                             " or address book entries might be missing or incorrect."));
             InitWarning(msg);
-        } else if (nLoadWalletRet == DB_TOO_NEW)
-            strErrors << translate("Error loading wallet.dat: Wallet requires newer version of DIVI Core") << "\n";
-        else if (nLoadWalletRet == DB_NEED_REWRITE) {
+        }
+        else if (nLoadWalletRet == DB_TOO_NEW)
+        {
+            strErrors << translate("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly") << "\n";
+            InitWarning(strErrors.str());
+        }
+        else if (nLoadWalletRet == DB_NEED_REWRITE)
+        {
             strErrors << translate("Wallet needed to be rewritten: restart DIVI Core to complete") << "\n";
             LogPrintf("%s", strErrors.str());
-            return InitError(strErrors.str());
-        } else
-            strErrors << translate("Error loading wallet.dat") << "\n";
+            return false;
+        }
+        else
+        {
+            strErrors << translate("Error loading wallet.dat: database load failure") << "\n";
+            return false;
+        }
     }
 
-    if (settings.GetBoolArg("-upgradewallet", fFirstRun)) {
+    if (settings.GetBoolArg("-upgradewallet", fFirstRun))
+    {
         int nMaxVersion = settings.GetArg("-upgradewallet", 0);
         if (nMaxVersion == 0) // the -upgradewallet without argument case
         {
             LogPrintf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
             nMaxVersion = CLIENT_VERSION;
             pwalletMain->SetMinVersion(FEATURE_LATEST); // permanently upgrade the wallet immediately
-        } else
+        }
+        else
+        {
             LogPrintf("Allowing wallet upgrade up to %i\n", nMaxVersion);
+        }
         if (nMaxVersion < pwalletMain->GetVersion())
+        {
             strErrors << translate("Cannot downgrade wallet") << "\n";
+            return false;
+        }
         pwalletMain->SetMaxVersion(nMaxVersion);
     }
 
     if (fFirstRun)
     {
         // Create new keyUser and set as default key
-        if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled()) {
-            if (settings.GetArg("-mnemonicpassphrase", "").size() > 256) {
-                InitError(translate("Mnemonic passphrase is too long, must be at most 256 characters"));
+        if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled())
+        {
+            if (settings.GetArg("-mnemonicpassphrase", "").size() > 256)
+            {
+                strErrors << translate("Mnemonic passphrase is too long, must be at most 256 characters") << "\n";
                 return false;
             }
-            // generate a new master key
-            pwalletMain->GenerateNewHDChain();
 
-            // ensure this wallet.dat can only be opened by clients supporting HD
-            pwalletMain->SetMinVersion(FEATURE_HD);
+            pwalletMain->GenerateNewHDChain(); // generate a new master key
+            pwalletMain->SetMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
         }
 
         if(!pwalletMain->InitializeDefaultKey())
         {
-            return InitError(translate("Cannot write default address") += "\n");
+            strErrors << translate("Cannot write default address") << "\n";
+            return false;
         }
-
         pwalletMain->UpdateBestBlockLocation();
-
     }
-    else if (settings.ParameterIsSet("-usehd")) {
+    else if (settings.ParameterIsSet("-usehd"))
+    {
         bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
-        if (pwalletMain->IsHDEnabled() && !useHD) {
-            InitError(strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"),
-                                pwalletMain->dbFilename()));
+        if (pwalletMain->IsHDEnabled() && !useHD)
+        {
+            strErrors << strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"), pwalletMain->dbFilename()) << "\n";
             return false;
         }
         if (!pwalletMain->IsHDEnabled() && useHD) {
-            InitError(strprintf(translate("Error loading %s: You can't enable HD on a already existing non-HD wallet"),
-                                pwalletMain->dbFilename()));
+            strErrors << strprintf(translate("Error loading %s: You can't enable HD on a already existing non-HD wallet"), pwalletMain->dbFilename()) << "\n";
             return false;
         }
     }
 
     // Warn user every time he starts non-encrypted HD wallet
-    if (!settings.GetBoolArg("-allowunencryptedwallet", false) && settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked()) {
+    if (!settings.GetBoolArg("-allowunencryptedwallet", false) && settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked())
+    {
         InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
     }
-
     return true;
 }
 
@@ -1271,7 +1291,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         nStart = GetTimeMillis();
         if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors))
         {
-            return false;
+            return InitError(strErrors.str());
         }
         if(settings.GetBoolArg("-spendzeroconfchange", false))
         {

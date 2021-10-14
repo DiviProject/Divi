@@ -403,7 +403,7 @@ public:
     CAmount GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeChange(const CTransaction& tx) const;
 
-    DBErrors LoadWallet(bool& fFirstRunRet);
+    DBErrors LoadWallet();
 
     unsigned int GetKeyPoolSize() const;
 

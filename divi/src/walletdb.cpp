@@ -56,11 +56,12 @@ CWalletDB::CWalletDB(
     Settings& settings,
     const std::string& strFilename,
     const char* pszMode
-    ) : CDB(settings, BerkleyDBEnvWrapper(),strFilename, pszMode)
+    ) : CDB(BerkleyDBEnvWrapper(),strFilename)
     , settings_(settings)
     , dbFilename_(strFilename)
     , walletDbUpdated_(lockedDBUpdateMapping(dbFilename_))
 {
+    CDB::Open(settings,pszMode);
 }
 
 bool CWalletDB::WriteName(const string& strAddress, const string& strName)

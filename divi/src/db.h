@@ -41,7 +41,7 @@ protected:
     bool isOpen;
 
     void Init();
-    explicit CDB(const Settings& settings, CDBEnv& bitdb, const std::string& strFilename, const char* pszMode = "r+");
+    explicit CDB(CDBEnv& bitdb, const std::string& strFilename);
     ~CDB() { Close(); }
 
 public:

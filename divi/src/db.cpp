@@ -89,13 +89,14 @@ CDB::CDB(
     CDBEnv& bitdb,
     const std::string& strFilename,
     const char* pszMode
-    ) : settings_(settings)
-    , bitdb_(bitdb)
+    ) : bitdb_(bitdb)
     , pdb(NULL)
     , strFile(strFilename)
     , activeTxn(NULL)
     , fReadOnly( (!strchr(pszMode, '+') && !strchr(pszMode, 'w')) )
     , fCreate(strchr(pszMode, 'c') != NULL)
+    , dbLogMinutes(fReadOnly? 1u:0u)
+    , dbLogSize(fReadOnly? (settings.GetArg("-dblogsize", 100) * 1024u) : 0u)
 {
     Init();
 }
@@ -105,9 +106,7 @@ void CDB::Flush()
     if (activeTxn)
         return;
 
-    const unsigned int nMinutes = fReadOnly? 1:0;
-    const unsigned int dbLogSize = fReadOnly? settings_.GetArg("-dblogsize", 100) * 1024 : 0;
-    bitdb_.dbenv.txn_checkpoint(dbLogSize, nMinutes, 0);
+    bitdb_.dbenv.txn_checkpoint(dbLogSize, dbLogMinutes, 0);
 }
 
 void CDB::Close()

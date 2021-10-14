@@ -30,13 +30,14 @@ class CDBEnv;
 class CDB
 {
 protected:
-    const Settings& settings_;
     CDBEnv& bitdb_;
     Db* pdb;
     std::string strFile;
     DbTxn* activeTxn;
     bool fReadOnly;
     bool fCreate;
+    const unsigned dbLogMinutes;
+    const unsigned dbLogSize;
 
     void Init();
     explicit CDB(const Settings& settings, CDBEnv& bitdb, const std::string& strFilename, const char* pszMode = "r+");

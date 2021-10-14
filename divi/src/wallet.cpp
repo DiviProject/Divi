@@ -2316,7 +2316,7 @@ DBErrors CWallet::LoadWallet()
     DBErrors nLoadWalletRet;
     {
         LOCK(cs_wallet);
-        nLoadWalletRet = CWalletDB(settings,strWalletFile,"cr+").LoadWallet(static_cast<I_WalletLoader*>(this));
+        nLoadWalletRet = CWalletDB(settings,strWalletFile,"cr+").LoadWallet(*static_cast<I_WalletLoader*>(this));
     }
     if (nLoadWalletRet == DB_NEED_REWRITE)
     {

@@ -21,36 +21,10 @@
 #include <utility>
 #include <vector>
 
-class CAccount;
-struct CBlockLocator;
-class CKeyPool;
-class CMasterKey;
-class CScript;
-class CWalletTx;
-class uint160;
-class uint256;
-class BlockMap;
-class CChain;
-class I_WalletLoader;
-class CHDChain;
-class CHDPubKey;
-class CKeyMetadata;
-using WalletTxVector = std::vector<CWalletTx>;
-
-/** Error statuses for the wallet database */
-enum DBErrors {
-    DB_LOAD_OK,
-    DB_CORRUPT,
-    DB_NONCRITICAL_ERROR,
-    DB_TOO_NEW,
-    DB_LOAD_FAIL,
-    DB_NEED_REWRITE,
-    DB_LOAD_OK_FIRST_RUN,
-    DB_LOAD_OK_RELOAD,
-};
+#include <I_WalletDatabase.h>
 
 /** Access to the wallet database (wallet.dat) */
-class CWalletDB : public CDB
+class CWalletDB final: public CDB, public I_WalletDatabase
 {
 private:
     Settings& settings_;
@@ -68,47 +42,33 @@ public:
 
     CWalletDB(Settings& settings,const std::string& strFilename, const char* pszMode = "r+");
 
-    bool WriteName(const std::string& strAddress, const std::string& strName);
-    bool EraseName(const std::string& strAddress);
-
-    bool WritePurpose(const std::string& strAddress, const std::string& purpose);
-    bool ErasePurpose(const std::string& strAddress);
-
-    bool WriteTx(uint256 hash, const CWalletTx& wtx);
-
-    bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta);
-    bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret, const CKeyMetadata& keyMeta);
-    bool WriteMasterKey(unsigned int nID, const CMasterKey& kMasterKey);
-
-    bool WriteCScript(const uint160& hash, const CScript& redeemScript);
-    bool EraseCScript(const uint160& hash);
-
-    bool WriteWatchOnly(const CScript& script);
-    bool EraseWatchOnly(const CScript& script);
-
-    bool WriteMultiSig(const CScript& script);
-    bool EraseMultiSig(const CScript& script);
-
-    bool WriteBestBlock(const CBlockLocator& locator);
-    bool ReadBestBlock(CBlockLocator& locator);
-
-    bool WriteDefaultKey(const CPubKey& vchPubKey);
-
-    bool ReadPool(int64_t nPool, CKeyPool& keypool);
-    bool WritePool(int64_t nPool, const CKeyPool& keypool);
-    bool ErasePool(int64_t nPool);
-
-    bool WriteMinVersion(int nVersion);
-
-    bool ReadAccount(const std::string& strAccount, CAccount& account);
-    bool WriteAccount(const std::string& strAccount, const CAccount& account);
-
-    //! write the hdchain model (external chain child index counter)
-    bool WriteHDChain(const CHDChain& chain);
-    bool WriteCryptedHDChain(const CHDChain& chain);
-    bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta);
-
-    DBErrors LoadWallet(I_WalletLoader& pwallet);
+    bool WriteName(const std::string& strAddress, const std::string& strName) override;
+    bool EraseName(const std::string& strAddress) override;
+    bool WritePurpose(const std::string& strAddress, const std::string& purpose) override;
+    bool ErasePurpose(const std::string& strAddress) override;
+    bool WriteTx(uint256 hash, const CWalletTx& wtx) override;
+    bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta) override;
+    bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret, const CKeyMetadata& keyMeta) override;
+    bool WriteMasterKey(unsigned int nID, const CMasterKey& kMasterKey) override;
+    bool WriteCScript(const uint160& hash, const CScript& redeemScript) override;
+    bool EraseCScript(const uint160& hash) override;
+    bool WriteWatchOnly(const CScript& script) override;
+    bool EraseWatchOnly(const CScript& script) override;
+    bool WriteMultiSig(const CScript& script) override;
+    bool EraseMultiSig(const CScript& script) override;
+    bool WriteBestBlock(const CBlockLocator& locator) override;
+    bool ReadBestBlock(CBlockLocator& locator) override;
+    bool WriteDefaultKey(const CPubKey& vchPubKey) override;
+    bool ReadPool(int64_t nPool, CKeyPool& keypool) override;
+    bool WritePool(int64_t nPool, const CKeyPool& keypool) override;
+    bool ErasePool(int64_t nPool) override;
+    bool WriteMinVersion(int nVersion) override;
+    bool ReadAccount(const std::string& strAccount, CAccount& account) override;
+    bool WriteAccount(const std::string& strAccount, const CAccount& account) override;
+    bool WriteHDChain(const CHDChain& chain) override;
+    bool WriteCryptedHDChain(const CHDChain& chain) override;
+    bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta) override;
+    DBErrors LoadWallet(I_WalletLoader& pwallet) override;
 
 private:
     CWalletDB(const CWalletDB&) = delete;

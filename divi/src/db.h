@@ -36,6 +36,7 @@ protected:
     std::string strFile;
     DbTxn* activeTxn;
     bool fReadOnly;
+    bool fCreate;
 
     explicit CDB(const Settings& settings, CDBEnv& bitdb, const std::string& strFilename, const char* pszMode = "r+");
     ~CDB() { Close(); }

@@ -101,10 +101,8 @@ void CDB::Open(const Settings& settings, const char* pszMode)
 }
 
 CDB::CDB(
-    const Settings& settings,
     CDBEnv& bitdb,
-    const std::string& strFilename,
-    const char* pszMode
+    const std::string& strFilename
     ) : bitdb_(bitdb)
     , pdb(NULL)
     , strFile(strFilename)
@@ -115,7 +113,6 @@ CDB::CDB(
     , dbLogSize(0u)
     , isOpen(false)
 {
-    Open(settings,pszMode);
 }
 
 void CDB::Flush()
@@ -159,7 +156,8 @@ bool CDB::Rewrite(const Settings& settings, CDBEnv& bitdb, const std::string& st
                 LogPrintf("CDB::Rewrite : Rewriting %s...\n", strFile);
                 std::string strFileRes = strFile + ".rewrite";
                 { // surround usage of db with extra {}
-                    CDB db(settings, bitdb, strFile.c_str(), "r");
+                    CDB db(bitdb, strFile.c_str());
+                    db.Open(settings,"r");
                     Db* pdbCopy = new Db(&bitdb.dbenv, 0);
 
                     int ret = pdbCopy->open(NULL, // Txn pointer

@@ -803,3 +803,11 @@ bool CWalletDB::TxnAbort()
 {
     return berkleyDB_->TxnAbort();
 }
+bool CWalletDB::Rewrite(
+    const Settings& settings,
+    CDBEnv& bitdb,
+    const std::string& strFile,
+    const char* pszSkip)
+{
+    return CDB::Rewrite(settings,bitdb,strFile,pszSkip);
+}

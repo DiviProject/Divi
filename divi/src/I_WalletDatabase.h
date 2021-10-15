@@ -66,5 +66,6 @@ public:
     virtual bool WriteCryptedHDChain(const CHDChain& chain) = 0;
     virtual bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta) = 0;
     virtual DBErrors LoadWallet(I_WalletLoader& pwallet) = 0;
+    virtual bool RewriteWallet() = 0;
 };
 #endif // I_WALLET_DATABASE_H

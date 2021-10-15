@@ -2,7 +2,6 @@
 #include <utiltime.h>
 #include <util.h>
 #include <boost/foreach.hpp>
-#include <db.h>
 #include <iostream>
 #include <ui_interface.h>
 

@@ -229,6 +229,11 @@ CWallet::~CWallet()
     confirmationNumberCalculator_.reset();
 }
 
+std::shared_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
+{
+    return std::shared_ptr<I_WalletDatabase>{new CWalletDB(settings,strWalletFile)};
+}
+
 bool CWallet::GetBlockLocator(CBlockLocator& blockLocator)
 {
     CWalletDB walletdb(settings,strWalletFile);

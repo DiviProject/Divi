@@ -337,9 +337,9 @@ bool AccountShouldUseNewKey(CWallet& wallet, const CAccount& account)
 
 CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool forceNewKey, bool isWalletDerivedKey)
 {
-    CWalletDB walletdb(settings,wallet.dbFilename());
+    std::shared_ptr<I_WalletDatabase> walletdb = wallet.GetDatabaseBackend();
     CAccount account;
-    walletdb.ReadAccount(strAccount, account);
+    walletdb->ReadAccount(strAccount, account);
     if (forceNewKey || AccountShouldUseNewKey(wallet, account))
     {// Generate a new key
         if (isWalletDerivedKey && !wallet.GetKeyFromPool(account.vchPubKey, false))
@@ -357,7 +357,7 @@ CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool force
         }
 
         wallet.SetAddressBook(account.vchPubKey.GetID(), strAccount, "receive");
-        walletdb.WriteAccount(strAccount, account);
+        walletdb->WriteAccount(strAccount, account);
     }
 
     return CBitcoinAddress(account.vchPubKey.GetID());
@@ -369,7 +369,7 @@ CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForc
 }
 
 
-CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
+CAmount GetAccountBalance(I_WalletDatabase& walletdb, const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
 {
     CAmount nBalance = 0;
 
@@ -397,8 +397,8 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
 
 CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
 {
-    CWalletDB walletdb(settings,pwalletMain->dbFilename());
-    return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
+    std::shared_ptr<I_WalletDatabase> walletdb = pwalletMain->GetDatabaseBackend();
+    return GetAccountBalance(*walletdb, strAccount, nMinDepth, filter);
 }
 
 

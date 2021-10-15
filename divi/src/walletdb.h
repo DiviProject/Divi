@@ -46,11 +46,6 @@ public:
     CWalletDB(Settings& settings,const std::string& dbFilename, const char* pszMode = "r+");
     ~CWalletDB();
 
-    bool static Rewrite(
-        const Settings& settings,
-        CDBEnv& bitdb,
-        const std::string& strFile,
-        const char* pszSkip = NULL);
     bool TxnBegin();
     bool TxnCommit();
     bool TxnAbort();
@@ -83,6 +78,7 @@ public:
     bool WriteCryptedHDChain(const CHDChain& chain) override;
     bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta) override;
     DBErrors LoadWallet(I_WalletLoader& pwallet) override;
+    bool RewriteWallet() override;
 
 private:
     CWalletDB(const CWalletDB&) = delete;

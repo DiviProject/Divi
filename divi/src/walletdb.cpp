@@ -576,7 +576,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
     // Rewrite encrypted wallets of versions 0.4.0 and 0.5.0rc:
     if (wss.fIsEncrypted && (wss.nFileVersion == 40000 || wss.nFileVersion == 50000))
     {
-        if(CWalletDB::Rewrite(settings_,BerkleyDBEnvWrapper(),dbFilename_, "\x04pool") )
+        if(CDB::Rewrite(settings_,BerkleyDBEnvWrapper(),dbFilename_, "\x04pool") )
         {
             return DB_REWRITTEN;
         }
@@ -809,11 +809,11 @@ bool CWalletDB::TxnAbort()
 {
     return berkleyDB_->TxnAbort();
 }
-bool CWalletDB::Rewrite(
-    const Settings& settings,
-    CDBEnv& bitdb,
-    const std::string& strFile,
-    const char* pszSkip)
+bool CWalletDB::RewriteWallet()
 {
-    return CDB::Rewrite(settings,bitdb,strFile,pszSkip);
+    const char* pszSkip = NULL;
+    const char* pszMode = "r+";
+    berkleyDB_->Close();
+    bool result = CDB::Rewrite(settings_,BerkleyDBEnvWrapper(),dbFilename_,pszSkip);
+    return result;
 }

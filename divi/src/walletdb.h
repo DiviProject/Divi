@@ -30,7 +30,6 @@ class CWalletDB final: public I_WalletDatabase
 {
 private:
     Settings& settings_;
-    std::string dbFilename_;
     unsigned& walletDbUpdated_;
     std::unique_ptr<CDB> berkleyDB_;
 
@@ -43,7 +42,7 @@ private:
         std::string filename);
 public:
 
-    CWalletDB(Settings& settings,const std::string& strFilename, const char* pszMode = "r+");
+    CWalletDB(Settings& settings,const std::string& dbFilename, const char* pszMode = "r+");
     ~CWalletDB();
 
     bool static Rewrite(

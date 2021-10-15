@@ -924,7 +924,7 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
             strErrors << translate("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly") << "\n";
             InitWarning(strErrors.str());
         }
-        else if (nLoadWalletRet == DB_NEED_REWRITE)
+        else if (nLoadWalletRet == DB_NEED_REWRITE || nLoadWalletRet == DB_REWRITTEN)
         {
             strErrors << translate("Wallet needed to be rewritten: restart DIVI Core to complete") << "\n";
             LogPrintf("%s", strErrors.str());

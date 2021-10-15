@@ -78,7 +78,7 @@ CMutableTransaction createDefaultTransaction(const CScript& defaultScript, unsig
 
 bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite)
 {
-  return CWalletDB(Settings::instance(), walletPtr->dbFilename()).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
+  return walletPtr->GetDatabaseBackend()->WriteTx(transactionToWrite.GetHash(),transactionToWrite);
 }
 
 } // anonymous namespace

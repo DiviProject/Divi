@@ -8,6 +8,7 @@
 #include "walletdb.h"
 
 #include "base58.h"
+#include "db.h"
 #include <dbenv.h>
 #include "protocol.h"
 #include "serialize.h"
@@ -56,18 +57,23 @@ CWalletDB::CWalletDB(
     Settings& settings,
     const std::string& strFilename,
     const char* pszMode
-    ) : CDB(BerkleyDBEnvWrapper(),strFilename)
-    , settings_(settings)
+    ) : settings_(settings)
     , dbFilename_(strFilename)
     , walletDbUpdated_(lockedDBUpdateMapping(dbFilename_))
+    , berkleyDB_(new CDB(BerkleyDBEnvWrapper(),dbFilename_))
 {
-    CDB::Open(settings,pszMode);
+    berkleyDB_->Open(settings,pszMode);
+}
+
+CWalletDB::~CWalletDB()
+{
+    berkleyDB_.reset();
 }
 
 bool CWalletDB::WriteName(const string& strAddress, const string& strName)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::make_pair(string("name"), strAddress), strName);
+    return berkleyDB_->Write(std::make_pair(string("name"), strAddress), strName);
 }
 
 bool CWalletDB::EraseName(const string& strAddress)
@@ -75,32 +81,32 @@ bool CWalletDB::EraseName(const string& strAddress)
     // This should only be used for sending addresses, never for receiving addresses,
     // receiving addresses must always have an address book entry if they're not change return.
     walletDbUpdated_++;
-    return CDB::Erase(std::make_pair(string("name"), strAddress));
+    return berkleyDB_->Erase(std::make_pair(string("name"), strAddress));
 }
 
 bool CWalletDB::WritePurpose(const string& strAddress, const string& strPurpose)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::make_pair(string("purpose"), strAddress), strPurpose);
+    return berkleyDB_->Write(std::make_pair(string("purpose"), strAddress), strPurpose);
 }
 
 bool CWalletDB::ErasePurpose(const string& strPurpose)
 {
     walletDbUpdated_++;
-    return CDB::Erase(std::make_pair(string("purpose"), strPurpose));
+    return berkleyDB_->Erase(std::make_pair(string("purpose"), strPurpose));
 }
 
 bool CWalletDB::WriteTx(uint256 hash, const CWalletTx& wtx)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::make_pair(std::string("tx"), hash), wtx);
+    return berkleyDB_->Write(std::make_pair(std::string("tx"), hash), wtx);
 }
 
 bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta)
 {
     walletDbUpdated_++;
 
-    if (!CDB::Write(std::make_pair(std::string("keymeta"), vchPubKey),
+    if (!berkleyDB_->Write(std::make_pair(std::string("keymeta"), vchPubKey),
             keyMeta, false))
         return false;
 
@@ -110,7 +116,7 @@ bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, c
     vchKey.insert(vchKey.end(), vchPubKey.begin(), vchPubKey.end());
     vchKey.insert(vchKey.end(), vchPrivKey.begin(), vchPrivKey.end());
 
-    return CDB::Write(std::make_pair(std::string("key"), vchPubKey), std::make_pair(vchPrivKey, Hash(vchKey.begin(), vchKey.end())), false);
+    return berkleyDB_->Write(std::make_pair(std::string("key"), vchPubKey), std::make_pair(vchPrivKey, Hash(vchKey.begin(), vchKey.end())), false);
 }
 
 bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey,
@@ -120,15 +126,15 @@ bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey,
     const bool fEraseUnencryptedKey = true;
     walletDbUpdated_++;
 
-    if (!CDB::Write(std::make_pair(std::string("keymeta"), vchPubKey),
+    if (!berkleyDB_->Write(std::make_pair(std::string("keymeta"), vchPubKey),
             keyMeta))
         return false;
 
-    if (!CDB::Write(std::make_pair(std::string("ckey"), vchPubKey), vchCryptedSecret, false))
+    if (!berkleyDB_->Write(std::make_pair(std::string("ckey"), vchPubKey), vchCryptedSecret, false))
         return false;
     if (fEraseUnencryptedKey) {
-        CDB::Erase(std::make_pair(std::string("key"), vchPubKey));
-        CDB::Erase(std::make_pair(std::string("wkey"), vchPubKey));
+        berkleyDB_->Erase(std::make_pair(std::string("key"), vchPubKey));
+        berkleyDB_->Erase(std::make_pair(std::string("wkey"), vchPubKey));
     }
     return true;
 }
@@ -136,92 +142,92 @@ bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey,
 bool CWalletDB::WriteMasterKey(unsigned int nID, const CMasterKey& kMasterKey)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::make_pair(std::string("mkey"), nID), kMasterKey, true);
+    return berkleyDB_->Write(std::make_pair(std::string("mkey"), nID), kMasterKey, true);
 }
 
 bool CWalletDB::WriteCScript(const uint160& hash, const CScript& redeemScript)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::make_pair(std::string("cscript"), hash), redeemScript, false);
+    return berkleyDB_->Write(std::make_pair(std::string("cscript"), hash), redeemScript, false);
 }
 bool CWalletDB::EraseCScript(const uint160& hash)
 {
     walletDbUpdated_++;
-    return CDB::Erase(std::make_pair(std::string("cscript"), hash));
+    return berkleyDB_->Erase(std::make_pair(std::string("cscript"), hash));
 }
 
 bool CWalletDB::WriteWatchOnly(const CScript& dest)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::make_pair(std::string("watchs"), dest), '1');
+    return berkleyDB_->Write(std::make_pair(std::string("watchs"), dest), '1');
 }
 
 bool CWalletDB::EraseWatchOnly(const CScript& dest)
 {
     walletDbUpdated_++;
-    return CDB::Erase(std::make_pair(std::string("watchs"), dest));
+    return berkleyDB_->Erase(std::make_pair(std::string("watchs"), dest));
 }
 
 bool CWalletDB::WriteMultiSig(const CScript& dest)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::make_pair(std::string("multisig"), dest), '1');
+    return berkleyDB_->Write(std::make_pair(std::string("multisig"), dest), '1');
 }
 
 bool CWalletDB::EraseMultiSig(const CScript& dest)
 {
     walletDbUpdated_++;
-    return CDB::Erase(std::make_pair(std::string("multisig"), dest));
+    return berkleyDB_->Erase(std::make_pair(std::string("multisig"), dest));
 }
 
 bool CWalletDB::WriteBestBlock(const CBlockLocator& locator)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::string("bestblock"), locator);
+    return berkleyDB_->Write(std::string("bestblock"), locator);
 }
 
 bool CWalletDB::ReadBestBlock(CBlockLocator& locator)
 {
-    return CDB::Read(std::string("bestblock"), locator);
+    return berkleyDB_->Read(std::string("bestblock"), locator);
 }
 
 bool CWalletDB::WriteDefaultKey(const CPubKey& vchPubKey)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::string("defaultkey"), vchPubKey);
+    return berkleyDB_->Write(std::string("defaultkey"), vchPubKey);
 }
 
 bool CWalletDB::ReadPool(int64_t nPool, CKeyPool& keypool)
 {
-    return CDB::Read(std::make_pair(std::string("pool"), nPool), keypool);
+    return berkleyDB_->Read(std::make_pair(std::string("pool"), nPool), keypool);
 }
 
 bool CWalletDB::WritePool(int64_t nPool, const CKeyPool& keypool)
 {
     walletDbUpdated_++;
-    return CDB::Write(std::make_pair(std::string("pool"), nPool), keypool);
+    return berkleyDB_->Write(std::make_pair(std::string("pool"), nPool), keypool);
 }
 
 bool CWalletDB::ErasePool(int64_t nPool)
 {
     walletDbUpdated_++;
-    return CDB::Erase(std::make_pair(std::string("pool"), nPool));
+    return berkleyDB_->Erase(std::make_pair(std::string("pool"), nPool));
 }
 
 bool CWalletDB::WriteMinVersion(int nVersion)
 {
-    return CDB::Write(std::string("minversion"), nVersion);
+    return berkleyDB_->Write(std::string("minversion"), nVersion);
 }
 
 bool CWalletDB::ReadAccount(const string& strAccount, CAccount& account)
 {
     account.SetNull();
-    return CDB::Read(std::make_pair(string("acc"), strAccount), account);
+    return berkleyDB_->Read(std::make_pair(string("acc"), strAccount), account);
 }
 
 bool CWalletDB::WriteAccount(const string& strAccount, const CAccount& account)
 {
-    return CDB::Write(std::make_pair(string("acc"), strAccount), account);
+    return berkleyDB_->Write(std::make_pair(string("acc"), strAccount), account);
 }
 
 class CWalletScanState
@@ -496,14 +502,14 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
 
     try {
         int nMinVersion = 0;
-        if (CDB::Read((string) "minversion", nMinVersion)) {
+        if (berkleyDB_->Read((string) "minversion", nMinVersion)) {
             if (nMinVersion > CLIENT_VERSION)
                 return DB_TOO_NEW;
             pwallet->LoadMinVersion(nMinVersion);
         }
 
         // Get cursor
-        Dbc* pcursor = CDB::GetCursor();
+        Dbc* pcursor = berkleyDB_->GetCursor();
         if (!pcursor) {
             LogPrintf("Error getting wallet database cursor\n");
             return DB_CORRUPT;
@@ -513,7 +519,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
             // Read next record
             CDataStream ssKey(SER_DISK, CLIENT_VERSION);
             CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-            int ret = CDB::ReadAtCursor(pcursor, ssKey, ssValue);
+            int ret = berkleyDB_->ReadAtCursor(pcursor, ssKey, ssValue);
             if (ret == DB_NOTFOUND)
                 break;
             else if (ret != 0) {
@@ -572,7 +578,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
         return DB_NEED_REWRITE;
 
     if (wss.nFileVersion < CLIENT_VERSION) // Update
-        CDB::WriteVersion(CLIENT_VERSION);
+        berkleyDB_->WriteVersion(CLIENT_VERSION);
 
     if (wss.fAnyUnordered)
     {
@@ -760,17 +766,17 @@ bool CWalletDB::Recover(
 bool CWalletDB::WriteHDChain(const CHDChain& chain)
 {
     walletDbUpdated_++;
-    return Write(std::string("hdchain"), chain);
+    return berkleyDB_->Write(std::string("hdchain"), chain);
 }
 
 bool CWalletDB::WriteCryptedHDChain(const CHDChain& chain)
 {
     walletDbUpdated_++;
 
-    if (!Write(std::string("chdchain"), chain))
+    if (!berkleyDB_->Write(std::string("chdchain"), chain))
         return false;
 
-    Erase(std::string("hdchain"));
+    berkleyDB_->Erase(std::string("hdchain"));
 
     return true;
 }
@@ -779,8 +785,21 @@ bool CWalletDB::WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& key
 {
     walletDbUpdated_++;
 
-    if (!Write(std::make_pair(std::string("keymeta"), hdPubKey.extPubKey.pubkey), keyMeta, false))
+    if (!berkleyDB_->Write(std::make_pair(std::string("keymeta"), hdPubKey.extPubKey.pubkey), keyMeta, false))
         return false;
 
-    return Write(std::make_pair(std::string("hdpubkey"), hdPubKey.extPubKey.pubkey), hdPubKey, false);
+    return berkleyDB_->Write(std::make_pair(std::string("hdpubkey"), hdPubKey.extPubKey.pubkey), hdPubKey, false);
+}
+
+bool CWalletDB::TxnBegin()
+{
+    return berkleyDB_->TxnBegin();
+}
+bool CWalletDB::TxnCommit()
+{
+    return berkleyDB_->TxnCommit();
+}
+bool CWalletDB::TxnAbort()
+{
+    return berkleyDB_->TxnAbort();
 }

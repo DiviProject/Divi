@@ -55,12 +55,11 @@ static LockManagedWalletDBUpdatedMapping lockedDBUpdateMapping;
 
 CWalletDB::CWalletDB(
     Settings& settings,
-    const std::string& strFilename,
+    const std::string& dbFilename,
     const char* pszMode
     ) : settings_(settings)
-    , dbFilename_(strFilename)
-    , walletDbUpdated_(lockedDBUpdateMapping(dbFilename_))
-    , berkleyDB_(new CDB(BerkleyDBEnvWrapper(),dbFilename_))
+    , walletDbUpdated_(lockedDBUpdateMapping(dbFilename))
+    , berkleyDB_(new CDB(BerkleyDBEnvWrapper(),dbFilename))
 {
     berkleyDB_->Open(settings,pszMode);
 }

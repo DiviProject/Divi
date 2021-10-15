@@ -28,6 +28,7 @@ enum DBErrors {
     DB_TOO_NEW,
     DB_LOAD_FAIL,
     DB_NEED_REWRITE,
+    DB_REWRITTEN,
     DB_LOAD_OK_FIRST_RUN,
     DB_LOAD_OK_RELOAD,
 };

@@ -30,6 +30,7 @@ class CWalletDB final: public I_WalletDatabase
 {
 private:
     Settings& settings_;
+    const std::string dbFilename_;
     unsigned& walletDbUpdated_;
     std::unique_ptr<CDB> berkleyDB_;
 

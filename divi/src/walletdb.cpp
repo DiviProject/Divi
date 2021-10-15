@@ -58,6 +58,7 @@ CWalletDB::CWalletDB(
     const std::string& dbFilename,
     const char* pszMode
     ) : settings_(settings)
+    , dbFilename_(dbFilename)
     , walletDbUpdated_(lockedDBUpdateMapping(dbFilename))
     , berkleyDB_(new CDB(BerkleyDBEnvWrapper(),dbFilename))
 {
@@ -574,7 +575,13 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
 
     // Rewrite encrypted wallets of versions 0.4.0 and 0.5.0rc:
     if (wss.fIsEncrypted && (wss.nFileVersion == 40000 || wss.nFileVersion == 50000))
+    {
+        if(CWalletDB::Rewrite(settings_,BerkleyDBEnvWrapper(),dbFilename_, "\x04pool") )
+        {
+            return DB_REWRITTEN;
+        }
         return DB_NEED_REWRITE;
+    }
 
     if (wss.nFileVersion < CLIENT_VERSION) // Update
         berkleyDB_->WriteVersion(CLIENT_VERSION);

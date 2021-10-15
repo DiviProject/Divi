@@ -17,7 +17,6 @@
 #include "rpcserver.h"
 #include "util.h"
 #ifdef ENABLE_WALLET
-#include "db.h"
 #include "wallet.h"
 #endif
 #include <I_CoinMinter.h>

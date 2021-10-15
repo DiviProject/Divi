@@ -9,7 +9,6 @@
 
 #include <primitives/transaction.h>
 
-#include <db.h>
 #include <dbenv.h>
 #include "checkpoints.h"
 #include <chain.h>
@@ -1204,7 +1203,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
 
         // Need to completely rewrite the wallet file; if we don't, bdb might keep
         // bits of the unencrypted private key in slack space in the database file.
-        CDB::Rewrite(settings,BerkleyDBEnvWrapper(),strWalletFile);
+        CWalletDB::Rewrite(settings,BerkleyDBEnvWrapper(),strWalletFile);
     }
     NotifyStatusChanged(this);
 
@@ -2321,7 +2320,7 @@ DBErrors CWallet::LoadWallet()
     }
     if (nLoadWalletRet == DB_NEED_REWRITE)
     {
-        if (CDB::Rewrite(settings,BerkleyDBEnvWrapper(),strWalletFile, "\x04pool"))
+        if (CWalletDB::Rewrite(settings,BerkleyDBEnvWrapper(),strWalletFile, "\x04pool"))
         {
             LOCK(cs_wallet);
             setInternalKeyPool.clear();

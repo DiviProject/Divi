@@ -51,7 +51,6 @@
 #include <StartAndShutdownSignals.h>
 
 #ifdef ENABLE_WALLET
-#include "db.h"
 #include "wallet.h"
 #include "walletdb.h"
 #include <WalletTx.h>

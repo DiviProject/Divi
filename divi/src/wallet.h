@@ -220,6 +220,7 @@ public:
     explicit CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap);
     ~CWallet();
 
+    std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;
     bool GetBlockLocator(CBlockLocator& blockLocator);
     void AddKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata);
     void UpdateTimeFirstKey(int64_t nCreateTime);

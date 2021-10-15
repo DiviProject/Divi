@@ -2323,17 +2323,14 @@ DBErrors CWallet::LoadWallet()
         LOCK(cs_wallet);
         nLoadWalletRet = CWalletDB(settings,strWalletFile,"cr+").LoadWallet(*static_cast<I_WalletLoader*>(this));
     }
-    if (nLoadWalletRet == DB_NEED_REWRITE)
+    if (nLoadWalletRet == DB_REWRITTEN)
     {
-        if (CWalletDB::Rewrite(settings,BerkleyDBEnvWrapper(),strWalletFile, "\x04pool"))
-        {
-            LOCK(cs_wallet);
-            setInternalKeyPool.clear();
-            setExternalKeyPool.clear();
-            // Note: can't top-up keypool here, because wallet is locked.
-            // User will be prompted to unlock wallet the next operation
-            // that requires a new key.
-        }
+        LOCK(cs_wallet);
+        setInternalKeyPool.clear();
+        setExternalKeyPool.clear();
+        // Note: can't top-up keypool here, because wallet is locked.
+        // User will be prompted to unlock wallet the next operation
+        // that requires a new key.
     }
 
     if (nLoadWalletRet != DB_LOAD_OK)

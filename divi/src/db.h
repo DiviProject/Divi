@@ -41,10 +41,11 @@ protected:
     bool isOpen;
 
     void Init();
+
+public:
     explicit CDB(CDBEnv& bitdb, const std::string& strFilename);
     ~CDB() { Close(); }
 
-public:
     void Open(const Settings& settings, const char* pszMode);
     void Flush();
     void Close();
@@ -53,7 +54,7 @@ private:
     CDB(const CDB&) = delete;
     void operator=(const CDB&) = delete;
 
-protected:
+public:
     template <typename K, typename T>
     bool Read(const K& key, T& value)
     {
@@ -207,7 +208,6 @@ protected:
         return 0;
     }
 
-public:
     bool TxnBegin();
     bool TxnCommit()
     {

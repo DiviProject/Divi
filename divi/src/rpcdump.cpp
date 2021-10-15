@@ -18,6 +18,7 @@
 #include "utilstrencodings.h"
 #include "utiltime.h"
 #include "wallet.h"
+#include <clientversion.h>
 
 #include <fstream>
 #include <secp256k1.h>

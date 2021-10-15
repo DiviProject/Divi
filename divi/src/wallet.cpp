@@ -9,6 +9,7 @@
 
 #include <primitives/transaction.h>
 
+#include <db.h>
 #include <dbenv.h>
 #include "checkpoints.h"
 #include <chain.h>

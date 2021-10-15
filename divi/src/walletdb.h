@@ -9,7 +9,6 @@
 
 #include "amount.h"
 #include <Account.h>
-#include "db.h"
 #include <destination.h>
 #include <KeyMetadata.h>
 #include <script/script.h>
@@ -24,12 +23,16 @@
 #include <I_WalletDatabase.h>
 
 /** Access to the wallet database (wallet.dat) */
-class CWalletDB final: public CDB, public I_WalletDatabase
+class CDB;
+class CDBEnv;
+class Settings;
+class CWalletDB final: public I_WalletDatabase
 {
 private:
     Settings& settings_;
     std::string dbFilename_;
     unsigned& walletDbUpdated_;
+    std::unique_ptr<CDB> berkleyDB_;
 
     static bool Recover(
         CDBEnv& dbenv,
@@ -41,7 +44,13 @@ private:
 public:
 
     CWalletDB(Settings& settings,const std::string& strFilename, const char* pszMode = "r+");
+    ~CWalletDB();
 
+    bool TxnBegin();
+    bool TxnCommit();
+    bool TxnAbort();
+
+    //I_WalletDatabase
     bool WriteName(const std::string& strAddress, const std::string& strName) override;
     bool EraseName(const std::string& strAddress) override;
     bool WritePurpose(const std::string& strAddress, const std::string& purpose) override;

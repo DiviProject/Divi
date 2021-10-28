@@ -1727,6 +1727,23 @@ static int ComputeBlockHeightOfFirstConfirmation(const uint256 blockHash)
     BlockMap::const_iterator it = mapBlockIndex.find(blockHash);
     return (it==mapBlockIndex.end() || it->second==nullptr)? 0 : it->second->nHeight;
 }
+
+static std::string ParseScriptAsAddressString(const CScript& scriptPubKey, std::string fallbackValueForStakingVault)
+{
+    CTxDestination parsedAddress;
+    if(ExtractDestination(scriptPubKey, parsedAddress))
+    {
+        return CBitcoinAddress(parsedAddress).ToString();
+    }
+    else if(IsStakingVaultScript(scriptPubKey))
+    {
+        return fallbackValueForStakingVault;
+    }
+    else
+    {
+        return "Unknown address";
+    }
+}
 void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const UtxoOwnershipFilter& filter)
 {
     static SuperblockSubsidyContainer superblockSubsidies(Params());
@@ -1758,14 +1775,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
 
             Object entry;
             //stake reward
-            const CScript& stakingScript = wtx.vout[1].scriptPubKey;
-            CTxDestination parsedStakerAddress;
-            ExtractDestination(stakingScript, parsedStakerAddress);
-            CBitcoinAddress rewardAddress(parsedStakerAddress);
-            const std::string addressParsing =
-                rewardAddress.IsValid()?
-                rewardAddress.ToString():
-                (IsStakingVaultScript(stakingScript)? "Vault Reward":"Unknown address" );
+            const std::string addressParsing = ParseScriptAsAddressString(wtx.vout[1].scriptPubKey,"Vault Reward");
             entry.push_back(Pair("involvesWatchonly", stakerAddressOwnership == isminetype::ISMINE_WATCH_ONLY));
             entry.push_back(Pair("address", addressParsing));
             entry.push_back(Pair("amount", ValueFromAmount(nNet)));
@@ -1788,12 +1798,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                     ExtractDestination(scriptPubKey, outDestination);
                     auto strAccountForAddress = GetAccountAddressName(wallet, outDestination);
                     if(!fAllAccounts && strAccount != strAccountForAddress) continue;
-                    CBitcoinAddress outAddress(outDestination);
-                    const std::string addressParsing =
-                        outAddress.IsValid()?
-                        outAddress.ToString():
-                        (IsStakingVaultScript(scriptPubKey)? "Vault Deposit":"Unknown address" );
-
+                    const std::string addressParsing = ParseScriptAsAddressString(scriptPubKey,"Vault Deposit");
                     Object entry;
                     entry.push_back(Pair("involvesWatchonly", mine == isminetype::ISMINE_WATCH_ONLY));
                     entry.push_back(Pair("address",  addressParsing ));
@@ -1828,11 +1833,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             if (addressBook.count(dest)) {
                 account = addressBook.find(dest)->second.name;
             }
-            const CBitcoinAddress outAddress(dest);
-            const AddressParsing addressParsing =
-                outAddress.IsValid()?
-                outAddress.ToString():
-                (IsStakingVaultScript(txout.scriptPubKey)? "Vault Deposit":"Unknown address" );
+            const AddressParsing addressParsing = ParseScriptAsAddressString(txout.scriptPubKey, "Vault Deposit");
             sendAddresses.emplace_back(addressParsing, account);
             fMatchesReceiveAccount |= fAllAccounts || (account == strAccount);
         }

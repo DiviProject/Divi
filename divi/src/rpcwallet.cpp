@@ -1745,47 +1745,14 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
 
     if (isCoinstake)
     {
+        const int blockHeight = ComputeBlockHeightOfFirstConfirmation(wtx.hashBlock);
+        const bool isConfirmedBlock = blockHeight>0;
+        const bool isLotteryPayment = isConfirmedBlock? heightValidator.IsValidLotteryBlockHeight(blockHeight): false;
+
         const isminetype stakerAddressOwnership = wallet.IsMine(wtx.vout[1]);
         const bool stakerAddressIsSpendableByMe = stakerAddressOwnership != isminetype::ISMINE_NO;
-        if (!stakerAddressIsSpendableByMe)
+        if (stakerAddressIsSpendableByMe)
         {
-            const int blockHeight = ComputeBlockHeightOfFirstConfirmation(wtx.hashBlock);
-            if(blockHeight > 0)
-            {
-                bool isLotteryPayment = heightValidator.IsValidLotteryBlockHeight(blockHeight);
-                //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
-                for (unsigned int i = 1; i < wtx.vout.size(); i++) {
-                    CTxDestination outDestination;
-                    const CScript& scriptPubKey = wtx.vout[i].scriptPubKey;
-                    isminetype mine = wallet.IsMine(wtx.vout[i]);
-                    if (mine != isminetype::ISMINE_NO)
-                    {
-                        ExtractDestination(scriptPubKey, outDestination);
-                        auto strAccountForAddress = GetAccountAddressName(wallet, outDestination);
-                        if(!fAllAccounts && strAccount != strAccountForAddress) continue;
-                        CBitcoinAddress outAddress(outDestination);
-                        const std::string addressParsing =
-                            outAddress.IsValid()?
-                            outAddress.ToString():
-                            (IsStakingVaultScript(scriptPubKey)? "Vault Deposit":"Unknown address" );
-
-                        Object entry;
-                        entry.push_back(Pair("involvesWatchonly", mine == isminetype::ISMINE_WATCH_ONLY));
-                        entry.push_back(Pair("address",  addressParsing ));
-                        entry.push_back(Pair("amount", ValueFromAmount(wtx.vout[i].nValue)));
-                        entry.push_back(Pair("vout", static_cast<int>(i)));
-                        entry.push_back(Pair("category", isLotteryPayment ? "lottery" : "mn_reward"));
-                        entry.push_back(Pair("account", strAccountForAddress));
-
-                        if (fLong)
-                            WalletTxToJSON(wallet,wtx, entry);
-
-                        ret.push_back(entry);
-                    }
-                }
-            }
-        } else {
-
             if(!fAllAccounts && strAccount != wtx.strFromAccount)
                 return;
 
@@ -1806,10 +1773,41 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             entry.push_back(Pair("category", "stake_reward"));
             entry.push_back(Pair("account", wtx.strFromAccount));
 
-            if (fLong)
-                WalletTxToJSON(wallet, wtx, entry);
-
+            if (fLong) WalletTxToJSON(wallet, wtx, entry);
             ret.push_back(entry);
+        }
+        if(isConfirmedBlock)
+        {
+            //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
+            for (unsigned int i = 1; i < wtx.vout.size(); i++) {
+                CTxDestination outDestination;
+                const CScript& scriptPubKey = wtx.vout[i].scriptPubKey;
+                isminetype mine = wallet.IsMine(wtx.vout[i]);
+                if (mine != isminetype::ISMINE_NO)
+                {
+                    ExtractDestination(scriptPubKey, outDestination);
+                    auto strAccountForAddress = GetAccountAddressName(wallet, outDestination);
+                    if(!fAllAccounts && strAccount != strAccountForAddress) continue;
+                    CBitcoinAddress outAddress(outDestination);
+                    const std::string addressParsing =
+                        outAddress.IsValid()?
+                        outAddress.ToString():
+                        (IsStakingVaultScript(scriptPubKey)? "Vault Deposit":"Unknown address" );
+
+                    Object entry;
+                    entry.push_back(Pair("involvesWatchonly", mine == isminetype::ISMINE_WATCH_ONLY));
+                    entry.push_back(Pair("address",  addressParsing ));
+                    entry.push_back(Pair("amount", ValueFromAmount(wtx.vout[i].nValue)));
+                    entry.push_back(Pair("vout", static_cast<int>(i)));
+                    entry.push_back(Pair("category", isLotteryPayment ? "lottery" : "mn_reward"));
+                    entry.push_back(Pair("account", strAccountForAddress));
+
+                    if (fLong)
+                        WalletTxToJSON(wallet,wtx, entry);
+
+                    ret.push_back(entry);
+                }
+            }
         }
     }
     else {

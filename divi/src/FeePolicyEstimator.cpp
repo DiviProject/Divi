@@ -114,7 +114,7 @@ void CBlockAverage::Read(CAutoFile& filein, const CFeeRate& minRelayFee)
 
 
 
-CMinerPolicyEstimator::CMinerPolicyEstimator(
+FeePolicyEstimator::FeePolicyEstimator(
     int nEntries
     ): history()
     , sortedFeeSamples()
@@ -124,7 +124,7 @@ CMinerPolicyEstimator::CMinerPolicyEstimator(
     history.resize(nEntries);
 }
 
-void CMinerPolicyEstimator::seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& minRelayFee, double dPriority, int nBlocksAgo)
+void FeePolicyEstimator::seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& minRelayFee, double dPriority, int nBlocksAgo)
 {
     // Last entry records "everything else".
     int nBlocksTruncated = std::min(nBlocksAgo, (int)history.size() - 1);
@@ -149,7 +149,7 @@ void CMinerPolicyEstimator::seenTxConfirm(const CFeeRate& feeRate, const CFeeRat
         assignedTo, feeRate, dPriority, nBlocksAgo);
 }
 
-void CMinerPolicyEstimator::seenBlock(const std::vector<const CTxMemPoolEntry*>& entries, int nBlockHeight, const CFeeRate minRelayFee)
+void FeePolicyEstimator::seenBlock(const std::vector<const CTxMemPoolEntry*>& entries, int nBlockHeight, const CFeeRate minRelayFee)
 {
     if (nBlockHeight <= nBestSeenHeight) {
         // Ignore side chains and re-orgs; assuming they are random
@@ -212,7 +212,7 @@ void CMinerPolicyEstimator::seenBlock(const std::vector<const CTxMemPoolEntry*>&
 /**
  * Can return CFeeRate(0) if we don't have any data for that many blocks back. nBlocksToConfirm is 1 based.
  */
-CFeeRate CMinerPolicyEstimator::estimateFee(int nBlocksToConfirm)
+CFeeRate FeePolicyEstimator::estimateFee(int nBlocksToConfirm)
 {
     nBlocksToConfirm--;
 
@@ -245,7 +245,7 @@ CFeeRate CMinerPolicyEstimator::estimateFee(int nBlocksToConfirm)
     size_t index = std::min(nPrevSize + nBucketSize / 2, sortedFeeSamples.size() - 1);
     return sortedFeeSamples[index];
 }
-double CMinerPolicyEstimator::estimatePriority(int nBlocksToConfirm)
+double FeePolicyEstimator::estimatePriority(int nBlocksToConfirm)
 {
     nBlocksToConfirm--;
 
@@ -275,7 +275,7 @@ double CMinerPolicyEstimator::estimatePriority(int nBlocksToConfirm)
     return sortedPrioritySamples[index];
 }
 
-void CMinerPolicyEstimator::Write(CAutoFile& fileout) const
+void FeePolicyEstimator::Write(CAutoFile& fileout) const
 {
     fileout << nBestSeenHeight;
     fileout << history.size();
@@ -284,7 +284,7 @@ void CMinerPolicyEstimator::Write(CAutoFile& fileout) const
     }
 }
 
-void CMinerPolicyEstimator::Read(CAutoFile& filein, const CFeeRate& minRelayFee)
+void FeePolicyEstimator::Read(CAutoFile& filein, const CFeeRate& minRelayFee)
 {
     int nFileBestSeenHeight;
     filein >> nFileBestSeenHeight;

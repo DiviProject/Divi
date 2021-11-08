@@ -38,7 +38,7 @@ public:
     void Read(CAutoFile& filein, const CFeeRate& minRelayFee);
 };
 
-class CMinerPolicyEstimator
+class FeePolicyEstimator
 {
 private:
     /**
@@ -58,7 +58,7 @@ private:
     void seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& minRelayFee, double dPriority, int nBlocksAgo);
 
 public:
-    CMinerPolicyEstimator(int nEntries);
+    FeePolicyEstimator(int nEntries);
 
     void seenBlock(const std::vector<const CTxMemPoolEntry*>& entries, int nBlockHeight, const CFeeRate minRelayFee);
     CFeeRate estimateFee(int nBlocksToConfirm);

@@ -34,7 +34,7 @@ inline bool AllowFree(double dPriority)
 
 
 /** Fake height value used in CCoins to signify they are only in the memory pool (since 0.8) */
-static const unsigned int MEMPOOL_HEIGHT = 0x7FFFFFFF;
+bool IsMemPoolHeight(unsigned coinHeight);
 
 /**
  * CTxMemPool stores these:

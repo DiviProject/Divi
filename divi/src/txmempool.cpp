@@ -23,6 +23,12 @@
 
 using namespace std;
 
+constexpr const unsigned int MEMPOOL_HEIGHT = 0x7FFFFFFF;
+bool IsMemPoolHeight(unsigned coinHeight)
+{
+    return coinHeight == MEMPOOL_HEIGHT;
+}
+
 CTxMemPoolEntry::CTxMemPoolEntry() : nFee(0), nTxSize(0), nModSize(0), nTime(0), dPriority(0.0)
 {
     nHeight = MEMPOOL_HEIGHT;

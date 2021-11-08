@@ -467,7 +467,7 @@ Value gettxout(const Array& params, bool fHelp)
     BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
     CBlockIndex* pindex = it->second;
     ret.push_back(Pair("bestblock", pindex->GetBlockHash().GetHex()));
-    if ((unsigned int)coins.nHeight == MEMPOOL_HEIGHT)
+    if (IsMemPoolHeight(static_cast<unsigned>(coins.nHeight)))
         ret.push_back(Pair("confirmations", 0));
     else
         ret.push_back(Pair("confirmations", pindex->nHeight - coins.nHeight + 1));

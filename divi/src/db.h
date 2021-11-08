@@ -238,7 +238,7 @@ public:
         return Write(std::string("version"), nVersion);
     }
 
-    bool static Rewrite(const Settings& settings, CDBEnv& bitdb, const std::string& strFile, const char* pszSkip = NULL);
+    bool static Rewrite(const Settings& settings, CDBEnv& bitdb, const std::string& strFile, const char* pszSkip);
 };
 
 #endif // BITCOIN_DB_H

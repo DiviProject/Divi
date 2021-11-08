@@ -811,9 +811,6 @@ bool CWalletDB::TxnAbort()
 }
 bool CWalletDB::RewriteWallet()
 {
-    const char* pszSkip = NULL;
-    const char* pszMode = "r+";
     berkleyDB_->Close();
-    bool result = CDB::Rewrite(settings_,BerkleyDBEnvWrapper(),dbFilename_,pszSkip);
-    return result;
+    return CDB::Rewrite(settings_,BerkleyDBEnvWrapper(),dbFilename_,NULL);
 }

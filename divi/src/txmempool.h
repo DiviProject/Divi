@@ -37,7 +37,7 @@ inline bool AllowFree(double dPriority)
 /** Fake height value used in CCoins to signify they are only in the memory pool (since 0.8) */
 bool IsMemPoolHeight(unsigned coinHeight);
 
-class CMinerPolicyEstimator;
+class FeePolicyEstimator;
 /** An inpoint - a combination of a transaction and an index n into its vin */
 class CInPoint
 {
@@ -74,7 +74,7 @@ class CTxMemPool
 private:
     bool fSanityCheck; //! Normally false, true if -checkmempool or -regtest
     unsigned int nTransactionsUpdated;
-    std::unique_ptr<CMinerPolicyEstimator> minerPolicyEstimator;
+    std::unique_ptr<FeePolicyEstimator> feePolicyEstimator;
 
     const CFeeRate& minRelayFee; //! Passed to constructor to avoid dependency on main
     uint64_t totalTxSize; //! sum of all mempool tx' byte sizes

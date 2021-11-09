@@ -66,24 +66,24 @@ private:
 
 private:
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
-    void RecordOrphanTransaction (
+    void RecordOrphanTransaction(
         std::shared_ptr<COrphan>& porphan,
         const CTransaction& tx,
         const CTxIn& txin,
         DependingTransactionsMap& mapDependers) const;
 
-    void ComputeTransactionPriority (
+    void ComputeTransactionPriority(
         const CTxMemPoolEntry& tx,
         const int nHeight,
         COrphan* porphan,
         std::vector<TxPriority>& vecPriority) const;
-    void AddDependingTransactionsToPriorityQueue (
+    void AddDependingTransactionsToPriorityQueue(
         DependingTransactionsMap& mapDependers,
         const uint256& hash,
         std::vector<TxPriority>& vecPriority,
         TxPriorityCompare& comparer) const;
 
-    bool IsFreeTransaction (
+    bool IsFreeTransaction(
         const uint256& hash,
         const bool& fSortedByFee,
         const CFeeRate& feeRate,
@@ -91,17 +91,17 @@ private:
         const unsigned int& nTxSize,
         const CTransaction& tx) const;
 
-    void AddTransactionToBlock (
+    void AddTransactionToBlock(
         const CTransaction& tx,
         const CAmount feePaid,
         CBlock& block) const;
 
-    std::vector<TxPriority> ComputeMempoolTransactionPriorities (
+    std::vector<TxPriority> ComputeMempoolTransactionPriorities(
         const int& nHeight,
         DependingTransactionsMap& mapDependers,
         CCoinsViewCache& view) const;
 
-    void PrioritizeFeePastPrioritySize (
+    void SwitchToPriotizationByFee (
         std::vector<TxPriority>& vecPriority,
         bool& fSortedByFee,
         TxPriorityCompare& comparer,
@@ -113,7 +113,7 @@ private:
         const int& nHeight,
         CCoinsViewCache& view,
         DependingTransactionsMap& mapDependers) const;
-    void AddTransactionsToBlockIfPossible (
+    void AddTransactionsToBlockIfPossible(
         const int& nHeight,
         CCoinsViewCache& view,
         CBlock& block) const;
@@ -126,7 +126,7 @@ public:
         CTxMemPool& mempool,
         CCriticalSection& mainCS,
         const CFeeRate& txFeeRate);
-    bool CollectTransactionsIntoBlock (
+    bool CollectTransactionsIntoBlock(
         CBlockTemplate& pblocktemplate) const override;
 };
 

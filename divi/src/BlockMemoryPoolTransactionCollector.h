@@ -97,7 +97,7 @@ private:
         const CAmount feePaid,
         CBlock& block) const;
 
-    std::vector<TxPriority> PrioritizeMempoolTransactions (
+    std::vector<TxPriority> ComputeMempoolTransactionPriorities (
         const int& nHeight,
         DependingTransactionsMap& mapDependers,
         CCoinsViewCache& view) const;

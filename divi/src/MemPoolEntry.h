@@ -12,12 +12,12 @@ private:
     size_t nTxSize;       //! ... and avoid recomputing tx size
     size_t nModSize;      //! ... and modified size for priority
     int64_t nTime;        //! Local time when entering the mempool
-    double dPriority;     //! Priority when entering the mempool
+    double initialCoinAgePerByteOfInputs;     //! Priority when entering the mempool
     unsigned int nHeight; //! Chain height when entering the mempool
 
 public:
     static const unsigned int MEMPOOL_HEIGHT;
-    CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, int64_t _nTime, double _dPriority, unsigned int _nHeight);
+    CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, int64_t _nTime, double _initialCoinAgeOfInputs, unsigned int _nHeight);
     CTxMemPoolEntry(const CTxMemPoolEntry& other);
 
     const CTransaction& GetTx() const { return this->tx; }

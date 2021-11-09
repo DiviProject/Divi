@@ -153,7 +153,6 @@ bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
         return false;
 
     //Stake miner main
-    const CBlockIndex* pindexPrev = pblocktemplate->previousBlockIndex;
     CBlock* block = &(pblocktemplate->block);
     LogPrintf("%s: proof-of-stake block found %s \n",__func__, block->GetHash());
 
@@ -180,7 +179,6 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
     if (!pblocktemplate.get())
         return false;
 
-    const CBlockIndex* pindexPrev = pblocktemplate->previousBlockIndex;
     CBlock* block = &pblocktemplate->block;
 
     LogPrintf("Running DIVIMiner with %u transactions in block (%u bytes)\n", block->vtx.size(),

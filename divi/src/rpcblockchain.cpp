@@ -749,10 +749,6 @@ Value getinvalid (const Array& params, bool fHelp)
         strCommand = params[0].get_str();
     }
 
-    bool fShowAll = false;
-    if (strCommand == "all")
-        fShowAll = true;
-
     CAmount nUnspent = 0;
     CAmount nMint = 0;
     CAmount nMixedValid = 0;

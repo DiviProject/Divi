@@ -76,8 +76,7 @@ private:
         const CTransaction& tx,
         CAmount nTotalIn,
         COrphan* porphan,
-        std::vector<TxPriority>& vecPriority,
-        const CTransaction* mempoolTx) const;
+        std::vector<TxPriority>& vecPriority) const;
     void AddDependingTransactionsToPriorityQueue (
         DependingTransactionsMap& mapDependers,
         const uint256& hash,

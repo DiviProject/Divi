@@ -45,7 +45,7 @@ bool FeeAndPriorityCalculator::IsDust(const CTxOut& txout) const
     return txout.nValue < MinimumValueForNonDust(txout);
 }
 
-double FeeAndPriorityCalculator::ComputePriority(const CTransaction& tx, double dPriorityInputs, unsigned int nTxSize) const
+double FeeAndPriorityCalculator::ComputeInputCoinAgePerByte(const CTransaction& tx, double dPriorityInputs, unsigned int nTxSize) const
 {
     nTxSize = CalculateModifiedSize(tx, nTxSize);
     if (nTxSize == 0) return 0.0;

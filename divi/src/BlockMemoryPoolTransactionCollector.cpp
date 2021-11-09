@@ -103,7 +103,7 @@ BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
 
 }
 
-void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
+void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction(
     std::shared_ptr<COrphan>& porphan,
     const CTransaction& tx,
     const CTxIn& txin,
@@ -140,7 +140,7 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
         vecPriority.push_back(TxPriority(dPriority, feeRate, &tx,feePaid));
 }
 
-void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue (
+void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue(
     DependingTransactionsMap& dependentTransactions,
     const uint256& hash,
     std::vector<TxPriority>& vecPriority,
@@ -159,7 +159,7 @@ void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueu
     }
 }
 
-bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
+bool BlockMemoryPoolTransactionCollector::IsFreeTransaction(
     const uint256& hash,
     const bool& fSortedByFee,
     const CFeeRate& feeRate,
@@ -178,7 +178,7 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
         (nBlockSize + nTxSize >= blockMinSize_));
 }
 
-void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
+void BlockMemoryPoolTransactionCollector::AddTransactionToBlock(
     const CTransaction& tx,
     const CAmount feePaid,
     CBlock& block) const
@@ -191,7 +191,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
     block.vtx.push_back(tx);
 }
 
-std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTransactionPriorities (
+std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTransactionPriorities(
     const int& nHeight,
     DependingTransactionsMap& dependentTransactions,
     CCoinsViewCache& view) const
@@ -238,8 +238,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTrans
     return vecPriority;
 }
 
-void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize
-(
+void BlockMemoryPoolTransactionCollector::SwitchToPriotizationByFee(
     std::vector<TxPriority>& vecPriority,
     bool& fSortedByFee,
     TxPriorityCompare& comparer,
@@ -247,8 +246,8 @@ void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize
     const unsigned int& nTxSize,
     double& dPriority) const
 {
-    if (!fSortedByFee &&
-            ((nBlockSize + nTxSize >= blockPrioritySize_) || !AllowFree(dPriority))) {
+    if (!fSortedByFee && ((nBlockSize + nTxSize >= blockPrioritySize_) || !AllowFree(dPriority))
+    {
         fSortedByFee = true;
         comparer = TxPriorityCompare(fSortedByFee);
         std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
@@ -317,7 +316,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         }
         // Prioritise by fee once past the priority size or we run out of high-priority
         // transactions:
-        PrioritizeFeePastPrioritySize(vecPriority, fSortedByFee, comparer, nBlockSize, nTxSize, dPriority);
+        SwitchToPriotizationByFee(vecPriority, fSortedByFee, comparer, nBlockSize, nTxSize, dPriority);
         if (!view.HaveInputs(tx)) {
             continue;
         }
@@ -349,7 +348,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     return prioritizedTransactions;
 }
 
-void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
+void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible(
     const int& nHeight,
     CCoinsViewCache& view,
     CBlock& block) const
@@ -373,7 +372,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     }
 }
 
-bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
+bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock(
     CBlockTemplate& pblocktemplate) const
 {
     LOCK2(mainCS_, mempool_.cs);

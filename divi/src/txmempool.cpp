@@ -484,14 +484,12 @@ bool CTxMemPool::lookupOutpoint(const uint256& hash, CTransaction& result) const
 CFeeRate CTxMemPool::estimateFee(int nBlocks) const
 {
     LOCK(cs);
-    assert(feePolicyEstimator);
-    return feePolicyEstimator->estimateFee(nBlocks);
+    return feePolicyEstimator? feePolicyEstimator->estimateFee(nBlocks): minRelayFee;
 }
 double CTxMemPool::estimatePriority(int nBlocks) const
 {
     LOCK(cs);
-    assert(feePolicyEstimator);
-    return feePolicyEstimator->estimatePriority(nBlocks);
+    return feePolicyEstimator? feePolicyEstimator->estimatePriority(nBlocks) : 0.0;
 }
 
 bool CTxMemPool::WriteFeeEstimates(CAutoFile& fileout) const

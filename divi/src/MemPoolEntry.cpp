@@ -6,11 +6,6 @@
 
 const unsigned int CTxMemPoolEntry::MEMPOOL_HEIGHT = 0x7FFFFFFF;
 
-CTxMemPoolEntry::CTxMemPoolEntry() : nFee(0), nTxSize(0), nModSize(0), nTime(0), dPriority(0.0)
-{
-    nHeight = CTxMemPoolEntry::MEMPOOL_HEIGHT;
-}
-
 CTxMemPoolEntry::CTxMemPoolEntry(
     const CTransaction& _tx,
     const CAmount& _nFee,

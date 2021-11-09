@@ -18,7 +18,6 @@ private:
 public:
     static const unsigned int MEMPOOL_HEIGHT;
     CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, int64_t _nTime, double _dPriority, unsigned int _nHeight);
-    CTxMemPoolEntry();
     CTxMemPoolEntry(const CTxMemPoolEntry& other);
 
     const CTransaction& GetTx() const { return this->tx; }

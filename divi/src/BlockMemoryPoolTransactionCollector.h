@@ -109,7 +109,7 @@ private:
         const uint64_t& nBlockSize,
         const unsigned int& nTxSize,
         double& dPriority) const;
-    std::vector<PrioritizedTransactionData> PrioritizeTransactions(
+    std::vector<PrioritizedTransactionData> PrioritizeTransactionsByBlockSpaceUsage(
         std::vector<TxPriority>& vecPriority,
         const int& nHeight,
         CCoinsViewCache& view,

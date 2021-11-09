@@ -280,7 +280,7 @@ PrioritizedTransactionData::PrioritizedTransactionData(
 {
 }
 
-std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::PrioritizeTransactions(
+std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::PrioritizeTransactionsByBlockSpaceUsage(
     std::vector<TxPriority>& vecPriority,
     const int& nHeight,
     CCoinsViewCache& view,
@@ -369,7 +369,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
         ComputeMempoolTransactionPriorities(nHeight, dependentTransactions, view);
 
     std::vector<PrioritizedTransactionData> prioritizedTransactions =
-        PrioritizeTransactions(
+        PrioritizeTransactionsByBlockSpaceUsage(
             vecPriority,
             nHeight,
             view,

@@ -116,13 +116,12 @@ void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
     porphan->setDependsOn.insert(txin.prevout.hash);
 }
 
-void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority (
+void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
     double& dPriority,
     const CTransaction& tx,
     CAmount nTotalIn,
     COrphan* porphan,
-    std::vector<TxPriority>& vecPriority,
-    const CTransaction* mempoolTx) const
+    std::vector<TxPriority>& vecPriority) const
 {
     unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
     dPriority = FeeAndPriorityCalculator::instance().ComputePriority(tx,dPriority, nTxSize);
@@ -137,7 +136,7 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority (
         porphan->dPriority = dPriority;
         porphan->feeRate = feeRate;
     } else
-        vecPriority.push_back(TxPriority(dPriority, feeRate, mempoolTx,fee));
+        vecPriority.push_back(TxPriority(dPriority, feeRate, &tx,fee));
 }
 
 void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue (
@@ -242,7 +241,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTrans
         if (fMissingInputs) {
             continue;
         }
-        ComputeTransactionPriority(dPriority, tx, nTotalIn, porphan.get(), vecPriority, &mi->second.GetTx());
+        ComputeTransactionPriority(dPriority, tx, nTotalIn, porphan.get(), vecPriority);
     }
     return vecPriority;
 }

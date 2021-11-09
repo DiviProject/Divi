@@ -25,6 +25,7 @@ public:
     double GetPriority(unsigned int currentHeight) const;
     CAmount GetFee() const { return nFee; }
     size_t GetTxSize() const { return nTxSize; }
+    size_t GetModTxSize() const { return nModSize; }
     int64_t GetTime() const { return nTime; }
     unsigned int GetHeight() const { return nHeight; }
 };

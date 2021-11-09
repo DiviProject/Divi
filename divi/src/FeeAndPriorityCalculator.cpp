@@ -45,14 +45,6 @@ bool FeeAndPriorityCalculator::IsDust(const CTxOut& txout) const
     return txout.nValue < MinimumValueForNonDust(txout);
 }
 
-double FeeAndPriorityCalculator::ComputeInputCoinAgePerByte(const CTransaction& tx, double dPriorityInputs, unsigned int nTxSize) const
-{
-    nTxSize = CalculateModifiedSize(tx, nTxSize);
-    if (nTxSize == 0) return 0.0;
-
-    return dPriorityInputs / nTxSize;
-}
-
 unsigned int FeeAndPriorityCalculator::CalculateModifiedSize(const CTransaction& tx, unsigned int nTxSize) const
 {
     // In order to avoid disincentivizing cleaning up the UTXO set we don't count

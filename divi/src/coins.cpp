@@ -10,8 +10,6 @@
 #include <assert.h>
 #include <sstream>
 
-#include "FeeAndPriorityCalculator.h"
-
 CCoins::CCoins(
     ) : fCoinBase(false)
     , fCoinStake(false)
@@ -334,7 +332,7 @@ bool CCoinsViewCache::HaveInputs(const CTransaction& tx) const
     return true;
 }
 
-double CCoinsViewCache::ComputeInputCoinAgePerByte(const CTransaction& tx, int nHeight) const
+double CCoinsViewCache::ComputeInputCoinAge(const CTransaction& tx, int nHeight) const
 {
     if (tx.IsCoinBase() || tx.IsCoinStake())
         return 0.0;
@@ -347,7 +345,7 @@ double CCoinsViewCache::ComputeInputCoinAgePerByte(const CTransaction& tx, int n
             dResult += coins->vout[txin.prevout.n].nValue * (nHeight - coins->nHeight);
         }
     }
-    return FeeAndPriorityCalculator::instance().ComputeInputCoinAgePerByte(tx,dResult);
+    return dResult;
 }
 
 CCoinsModifier::CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_) : cache(cache_), it(it_)

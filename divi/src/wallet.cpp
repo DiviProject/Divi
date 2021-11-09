@@ -2036,34 +2036,37 @@ static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
 
 static bool CanBeSentAsFreeTransaction(
     const bool fSendFreeTransactions,
-    const CTransaction& wtxNew,
-    const unsigned nBytes,
-    const std::set<COutput>& setCoins,
+    const CTxMemPoolEntry& candidateMempoolTxEntry,
     const CTxMemPool& mempool)
 {
     static const unsigned nTxConfirmTarget = settings.GetArg("-txconfirmtarget", 1);
-    double dPriority = 0;
-
-    for (const COutput& output: setCoins)
-    {
-        CAmount nCredit = output.Value();
-        const int age = output.nDepth;
-        dPriority += age==0? 0.0:(double)nCredit * (age+1);
-    }
-    dPriority = priorityFeeCalculator.ComputeInputCoinAgePerByte(wtxNew,dPriority, nBytes);
+    const double coinAgePerByte = candidateMempoolTxEntry.ComputeInputCoinAgePerByte(candidateMempoolTxEntry.GetHeight());
     // Can we complete this as a free transaction?
-    if (fSendFreeTransactions && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE) {
+    if (fSendFreeTransactions)
+    {
         // Not enough fee: enough priority?
-        double dPriorityNeeded = mempool.estimatePriority(nTxConfirmTarget);
+        double coinAgePerByteNeeded = mempool.estimatePriority(nTxConfirmTarget);
         // Not enough mempool history to estimate: use hard-coded AllowFree.
-        if (dPriorityNeeded <= 0 && AllowFree(dPriority))
+        if (coinAgePerByteNeeded <= 0 && AllowFree(coinAgePerByte))
             return true;
 
         // Small enough, and priority high enough, to send for free
-        if (dPriorityNeeded > 0 && dPriority >= dPriorityNeeded)
+        if (coinAgePerByteNeeded > 0 && coinAgePerByte >= coinAgePerByteNeeded)
             return true;
     }
     return false;
+}
+
+static double ComputeCoinAgeOfInputs(const std::set<COutput>& outputsBeingSpent)
+{
+    double coinAge = 0;
+    for (const COutput& output: outputsBeingSpent)
+    {
+        CAmount nCredit = output.Value();
+        const int age = output.nDepth;
+        coinAge += age==0? 0.0:(double)nCredit * (age+1);
+    }
+    return coinAge;
 }
 
 enum class FeeSufficiencyStatus
@@ -2080,14 +2083,16 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
     CAmount& nFeeRet)
 {
     static const bool fSendFreeTransactions = settings.GetBoolArg("-sendfreetransactions", false);
-    unsigned int nBytes = ::GetSerializeSize(wtxNew, SER_NETWORK, PROTOCOL_VERSION);
-    if (nBytes >= MAX_STANDARD_TX_SIZE) {
+    const double coinAge = ComputeCoinAgeOfInputs(outputsBeingSpent);
+    CTxMemPoolEntry candidateMempoolTxEntry(wtxNew,nFeeRet,GetTime(),coinAge, 0);
+
+    if (candidateMempoolTxEntry.GetTxSize() >= MAX_STANDARD_TX_SIZE) {
         return FeeSufficiencyStatus::TX_TOO_LARGE;
     }
 
-    const CAmount nFeeNeeded = GetMinimumFee(totalValueToSend, nBytes);
+    const CAmount nFeeNeeded = GetMinimumFee(totalValueToSend, candidateMempoolTxEntry.GetTxSize());
     const bool feeIsSufficient =
-        (fSendFreeTransactions && CanBeSentAsFreeTransaction(fSendFreeTransactions,wtxNew,nBytes,outputsBeingSpent,mempool)) ||
+        (fSendFreeTransactions && CanBeSentAsFreeTransaction(fSendFreeTransactions,candidateMempoolTxEntry,mempool)) ||
         nFeeRet >= nFeeNeeded;
     if (!feeIsSufficient)
     {

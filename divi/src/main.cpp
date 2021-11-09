@@ -664,8 +664,8 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         }
 
         const CAmount nFees = nValueIn - tx.GetValueOut();
-        double dPriority = view.ComputeInputCoinAgePerByte(tx, chainActive.Height());
-        CTxMemPoolEntry entry(tx, nFees, GetTime(), dPriority, chainActive.Height());
+        const double coinAge = view.ComputeInputCoinAge(tx, chainActive.Height());
+        CTxMemPoolEntry entry(tx, nFees, GetTime(), coinAge, chainActive.Height());
 
         // Don't accept it if it can't get into a block
         // but prioritise dstx and don't check fees for it

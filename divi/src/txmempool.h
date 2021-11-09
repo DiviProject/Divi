@@ -144,7 +144,7 @@ public:
     bool getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
     /** Affect CreateNewBlock prioritisation of transactions */
-    void PrioritiseTransaction(const uint256 hash, const std::string strHash, double dPriorityDelta, const CAmount& nFeeDelta);
+    void PrioritiseTransaction(const uint256 hash, const CAmount nFeeDelta);
     void ApplyDeltas(const uint256 hash, double& dPriorityDelta, CAmount& nFeeDelta);
     void ClearPrioritisation(const uint256 hash);
 

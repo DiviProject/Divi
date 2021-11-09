@@ -116,21 +116,21 @@ void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
 }
 
 void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
-    double& dPriority,
     const CTxMemPoolEntry& mempoolTx,
-    CAmount nTotalIn,
+    const int nHeight,
     COrphan* porphan,
     std::vector<TxPriority>& vecPriority) const
 {
     const unsigned int nTxSize = mempoolTx.GetTxSize();
-    const unsigned int nModSize = mempoolTx.GetModTxSize();
-    dPriority = nModSize == 0? 0.0: dPriority/nModSize;
     const CTransaction& tx = mempoolTx.GetTx();
+    const CAmount feePaid = mempoolTx.GetFee();
+    const CAmount valueSent = tx.GetValueOut();
+    double dPriority = mempoolTx.ComputeInputCoinAgePerByte(nHeight);
+    CAmount nTotalIn = valueSent + feePaid;
 
     uint256 hash = tx.GetHash();
-    CAmount feePaid = nTotalIn - tx.GetValueOut();
     mempool_.ApplyDeltas(hash, dPriority, nTotalIn);
-    CAmount nominalFee = nTotalIn - tx.GetValueOut();
+    CAmount nominalFee = nTotalIn - valueSent;
     CFeeRate feeRate(nominalFee, nTxSize);
 
     if (porphan) {
@@ -224,25 +224,16 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTrans
 
                 // Has to wait for dependencies
                 RecordOrphanTransaction(porphan, tx, txin, dependentTransactions);
-
-                nTotalIn += prevTx.vout[txin.prevout.n].nValue;
                 continue;
             }
 
             const CCoins* coins = view.AccessCoins(txin.prevout.hash);
             assert(coins);
-
-            CAmount nValueIn = coins->vout[txin.prevout.n].nValue;
-            nTotalIn += nValueIn;
-
-            int nConf = nHeight - coins->nHeight;
-
-            dPriority += (double)nValueIn * nConf;
         }
         if (fMissingInputs) {
             continue;
         }
-        ComputeTransactionPriority(dPriority, mi->second, nTotalIn, porphan.get(), vecPriority);
+        ComputeTransactionPriority(mi->second, nHeight, porphan.get(), vecPriority);
     }
     return vecPriority;
 }

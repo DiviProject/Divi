@@ -73,9 +73,8 @@ private:
         DependingTransactionsMap& mapDependers) const;
 
     void ComputeTransactionPriority (
-        double& dPriority,
         const CTxMemPoolEntry& tx,
-        CAmount nTotalIn,
+        const int nHeight,
         COrphan* porphan,
         std::vector<TxPriority>& vecPriority) const;
     void AddDependingTransactionsToPriorityQueue (

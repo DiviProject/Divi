@@ -35,10 +35,10 @@ CTxMemPoolEntry::CTxMemPoolEntry(const CTxMemPoolEntry& other)
     *this = other;
 }
 
-double CTxMemPoolEntry::GetPriority(unsigned int currentHeight) const
+double CTxMemPoolEntry::ComputeInputCoinAgePerByte(unsigned int currentHeight) const
 {
     CAmount nValueIn = tx.GetValueOut() + nFee;
-    double deltaPriority = ((double)(currentHeight - nHeight) * nValueIn) / nModSize;
+    double deltaPriority = nModSize > 0u? ((double)(currentHeight - nHeight) * nValueIn) / nModSize : 0.0;
     double dResult = dPriority + deltaPriority;
     return dResult;
 }

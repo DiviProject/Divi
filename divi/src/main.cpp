@@ -539,7 +539,7 @@ bool CheckFeesPaidAreAcceptable(
     // Require that free transactions have sufficient priority to be mined in the next block.
     if (settings.GetBoolArg("-relaypriority", true) &&
         nFees < minimumRelayFee &&
-        !AllowFree(view.GetPriority(tx, currentChainHeight + 1)))
+        !AllowFree(view.ComputeInputCoinAgePerByte(tx, currentChainHeight + 1)))
     {
         return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
     }
@@ -664,7 +664,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         }
 
         const CAmount nFees = nValueIn - tx.GetValueOut();
-        double dPriority = view.GetPriority(tx, chainActive.Height());
+        double dPriority = view.ComputeInputCoinAgePerByte(tx, chainActive.Height());
         CTxMemPoolEntry entry(tx, nFees, GetTime(), dPriority, chainActive.Height());
         unsigned int nSize = entry.GetTxSize();
 

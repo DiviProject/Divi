@@ -2050,7 +2050,7 @@ static bool CanBeSentAsFreeTransaction(
         const int age = output.nDepth;
         dPriority += age==0? 0.0:(double)nCredit * (age+1);
     }
-    dPriority = priorityFeeCalculator.ComputePriority(wtxNew,dPriority, nBytes);
+    dPriority = priorityFeeCalculator.ComputeInputCoinAgePerByte(wtxNew,dPriority, nBytes);
     // Can we complete this as a free transaction?
     if (fSendFreeTransactions && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE) {
         // Not enough fee: enough priority?

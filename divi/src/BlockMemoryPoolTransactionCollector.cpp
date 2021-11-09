@@ -205,8 +205,6 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTrans
         }
 
         std::shared_ptr<COrphan> porphan;
-        double dPriority = 0;
-        CAmount nTotalIn = 0;
         bool fMissingInputs = false;
         for (const CTxIn& txin : tx.vin) {
 

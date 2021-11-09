@@ -22,7 +22,7 @@ public:
     CTxMemPoolEntry(const CTxMemPoolEntry& other);
 
     const CTransaction& GetTx() const { return this->tx; }
-    double GetPriority(unsigned int currentHeight) const;
+    double ComputeInputCoinAgePerByte(unsigned int currentHeight) const;
     CAmount GetFee() const { return nFee; }
     size_t GetTxSize() const { return nTxSize; }
     size_t GetModTxSize() const { return nModSize; }

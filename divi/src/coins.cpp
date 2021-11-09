@@ -334,7 +334,7 @@ bool CCoinsViewCache::HaveInputs(const CTransaction& tx) const
     return true;
 }
 
-double CCoinsViewCache::GetPriority(const CTransaction& tx, int nHeight) const
+double CCoinsViewCache::ComputeInputCoinAgePerByte(const CTransaction& tx, int nHeight) const
 {
     if (tx.IsCoinBase() || tx.IsCoinStake())
         return 0.0;
@@ -347,7 +347,7 @@ double CCoinsViewCache::GetPriority(const CTransaction& tx, int nHeight) const
             dResult += coins->vout[txin.prevout.n].nValue * (nHeight - coins->nHeight);
         }
     }
-    return FeeAndPriorityCalculator::instance().ComputePriority(tx,dResult);
+    return FeeAndPriorityCalculator::instance().ComputeInputCoinAgePerByte(tx,dResult);
 }
 
 CCoinsModifier::CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_) : cache(cache_), it(it_)

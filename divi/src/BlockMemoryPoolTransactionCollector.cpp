@@ -54,9 +54,9 @@ public:
     const CTransaction* ptx;
     std::set<uint256> setDependsOn;
     CFeeRate feeRate;
-    double dPriority;
+    double coinAgeOfInputs;
 
-    COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), dPriority(0)
+    COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), coinAgeOfInputs(0)
     {
     }
 };
@@ -125,19 +125,19 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
     const CTransaction& tx = mempoolTx.GetTx();
     const CAmount feePaid = mempoolTx.GetFee();
     const CAmount valueSent = tx.GetValueOut();
-    double dPriority = mempoolTx.ComputeInputCoinAgePerByte(nHeight);
+    double coinAgeOfInputs = mempoolTx.ComputeInputCoinAgePerByte(nHeight);
     CAmount nTotalIn = valueSent + feePaid;
 
     uint256 hash = tx.GetHash();
-    mempool_.ApplyDeltas(hash, dPriority, nTotalIn);
+    mempool_.ApplyDeltas(hash, coinAgeOfInputs, nTotalIn);
     CAmount nominalFee = nTotalIn - valueSent;
     CFeeRate feeRate(nominalFee, nTxSize);
 
     if (porphan) {
-        porphan->dPriority = dPriority;
+        porphan->coinAgeOfInputs = coinAgeOfInputs;
         porphan->feeRate = feeRate;
     } else
-        vecPriority.push_back(TxPriority(dPriority, feeRate, &tx,feePaid));
+        vecPriority.push_back(TxPriority(coinAgeOfInputs, feeRate, &tx,feePaid));
 }
 
 void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue(
@@ -151,7 +151,7 @@ void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueu
             if (!porphan->setDependsOn.empty()) {
                 porphan->setDependsOn.erase(hash);
                 if (porphan->setDependsOn.empty()) {
-                    vecPriority.push_back(TxPriority(porphan->dPriority, porphan->feeRate, porphan->ptx));
+                    vecPriority.push_back(TxPriority(porphan->coinAgeOfInputs, porphan->feeRate, porphan->ptx));
                     std::push_heap(vecPriority.begin(), vecPriority.end(), comparer);
                 }
             }
@@ -241,9 +241,9 @@ bool BlockMemoryPoolTransactionCollector::SwitchToPriotizationByFee(
     TxPriorityCompare& comparer,
     const uint64_t& nBlockSize,
     const unsigned int& nTxSize,
-    const double dPriority) const
+    const double coinAgeOfInputs) const
 {
-    if ((nBlockSize + nTxSize >= blockPrioritySize_) || !AllowFree(dPriority))
+    if ((nBlockSize + nTxSize >= blockPrioritySize_) || !AllowFree(coinAgeOfInputs))
     {
         comparer = TxPriorityCompare(true);
         std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
@@ -292,7 +292,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
 
     while (!vecPriority.empty()) {
         // Take highest priority transaction off the priority queue:
-        double dPriority = vecPriority.front().get<0>();
+        double coinAgeOfInputs = vecPriority.front().get<0>();
         CFeeRate feeRate = vecPriority.front().get<1>();
         const CTransaction& tx = *(vecPriority.front().get<2>());
         const CAmount fee = vecPriority.front().get<3>();
@@ -316,7 +316,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         // transactions:
         if(!fSortedByFee)
         {
-            fSortedByFee = SwitchToPriotizationByFee(vecPriority, comparer, nBlockSize, nTxSize, dPriority);
+            fSortedByFee = SwitchToPriotizationByFee(vecPriority, comparer, nBlockSize, nTxSize, coinAgeOfInputs);
         }
         if (!view.HaveInputs(tx)) {
             continue;

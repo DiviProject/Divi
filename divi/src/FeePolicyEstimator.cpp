@@ -11,11 +11,11 @@ static inline double AllowFreeThreshold()
     return COIN * 1440 / 250;
 }
 
-static inline bool AllowFree(double dPriority)
+static inline bool AllowFree(double coinAgeOfInputs)
 {
     // Large (in bytes) low-priority (new, small-coin) transactions
     // need a fee.
-    return dPriority > AllowFreeThreshold();
+    return coinAgeOfInputs > AllowFreeThreshold();
 }
 
 template <typename T>
@@ -124,7 +124,7 @@ FeePolicyEstimator::FeePolicyEstimator(
     history.resize(nEntries);
 }
 
-void FeePolicyEstimator::seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& minRelayFee, double dPriority, int nBlocksAgo)
+void FeePolicyEstimator::seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& minRelayFee, double coinAgeOfInputs, int nBlocksAgo)
 {
     // Last entry records "everything else".
     int nBlocksTruncated = std::min(nBlocksAgo, (int)history.size() - 1);
@@ -133,20 +133,20 @@ void FeePolicyEstimator::seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& 
     // We need to guess why the transaction was included in a block-- either
     // because it is high-priority or because it has sufficient fees.
     bool sufficientFee = (feeRate > minRelayFee);
-    bool sufficientPriority = AllowFree(dPriority);
+    bool sufficientPriority = AllowFree(coinAgeOfInputs);
     const char* assignedTo = "unassigned";
     if (sufficientFee && !sufficientPriority && CBlockAverage::AreSane(feeRate, minRelayFee)) {
         history[nBlocksTruncated].RecordFee(feeRate);
         assignedTo = "fee";
-    } else if (sufficientPriority && !sufficientFee && CBlockAverage::AreSane(dPriority)) {
-        history[nBlocksTruncated].RecordPriority(dPriority);
+    } else if (sufficientPriority && !sufficientFee && CBlockAverage::AreSane(coinAgeOfInputs)) {
+        history[nBlocksTruncated].RecordPriority(coinAgeOfInputs);
         assignedTo = "priority";
     } else {
         // Neither or both fee and priority sufficient to get confirmed:
         // don't know why they got confirmed.
     }
     LogPrint("estimatefee", "Seen TX confirm: %s : %s fee/%g priority, took %d blocks\n",
-        assignedTo, feeRate, dPriority, nBlocksAgo);
+        assignedTo, feeRate, coinAgeOfInputs, nBlocksAgo);
 }
 
 void FeePolicyEstimator::seenBlock(const std::vector<const CTxMemPoolEntry*>& entries, int nBlockHeight, const CFeeRate minRelayFee)
@@ -190,8 +190,8 @@ void FeePolicyEstimator::seenBlock(const std::vector<const CTxMemPoolEntry*>& en
         BOOST_FOREACH (const CTxMemPoolEntry* entry, e) {
             // Fees are stored and reported as DIVI-per-kb:
             CFeeRate feeRate(entry->GetFee(), entry->GetTxSize());
-            double dPriority = entry->ComputeInputCoinAgePerByte(entry->GetHeight()); // Want priority when it went IN
-            seenTxConfirm(feeRate, minRelayFee, dPriority, i);
+            double coinAgeOfInputs = entry->ComputeInputCoinAgePerByte(entry->GetHeight()); // Want priority when it went IN
+            seenTxConfirm(feeRate, minRelayFee, coinAgeOfInputs, i);
         }
     }
 

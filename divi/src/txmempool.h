@@ -26,11 +26,11 @@ inline double AllowFreeThreshold()
     return COIN * 1440 / 250;
 }
 
-inline bool AllowFree(double dPriority)
+inline bool AllowFree(double coinAgeOfInputs)
 {
     // Large (in bytes) low-priority (new, small-coin) transactions
     // need a fee.
-    return dPriority > AllowFreeThreshold();
+    return coinAgeOfInputs > AllowFreeThreshold();
 }
 
 

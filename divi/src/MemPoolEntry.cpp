@@ -10,19 +10,19 @@ CTxMemPoolEntry::CTxMemPoolEntry(
     const CTransaction& _tx,
     const CAmount& _nFee,
     int64_t _nTime,
-    double _dPriority,
+    double _initialCoinAgeOfInputs,
     unsigned int _nHeight
     ) : tx(_tx)
     , nFee(_nFee)
     , nTxSize(0u)
     , nModSize(0u)
     , nTime(_nTime)
-    , dPriority(_dPriority)
+    , initialCoinAgePerByteOfInputs(0.0)
     , nHeight(_nHeight)
 {
     nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-
     nModSize = FeeAndPriorityCalculator::instance().CalculateModifiedSize(tx,nTxSize);
+    initialCoinAgePerByteOfInputs = nModSize? _initialCoinAgeOfInputs/ nModSize: 0.0;
 }
 
 CTxMemPoolEntry::CTxMemPoolEntry(const CTxMemPoolEntry& other)
@@ -33,7 +33,6 @@ CTxMemPoolEntry::CTxMemPoolEntry(const CTxMemPoolEntry& other)
 double CTxMemPoolEntry::ComputeInputCoinAgePerByte(unsigned int currentHeight) const
 {
     CAmount nValueIn = tx.GetValueOut() + nFee;
-    double deltaPriority = nModSize > 0u? ((double)(currentHeight - nHeight) * nValueIn) / nModSize : 0.0;
-    double dResult = dPriority + deltaPriority;
-    return dResult;
+    double deltaCoinAgePerByteOfInputs = nModSize > 0u? ((double)(currentHeight - nHeight) * nValueIn) / nModSize : 0.0;
+    return initialCoinAgePerByteOfInputs + deltaCoinAgePerByteOfInputs;
 }

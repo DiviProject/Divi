@@ -419,7 +419,7 @@ public:
     bool HaveInputs(const CTransaction& tx) const;
 
     //! Return priority of tx at height nHeight
-    double ComputeInputCoinAgePerByte(const CTransaction& tx, int nHeight) const;
+    double ComputeInputCoinAge(const CTransaction& tx, int nHeight) const;
 
     const CTxOut& GetOutputFor(const CTxIn& input) const;
 

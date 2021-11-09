@@ -89,8 +89,8 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry,
     // all the appropriate checks.
     LOCK(cs);
     {
-        mapTx[hash] = entry;
-        const auto* entryInMap = &mapTx[hash];
+        mapTx.emplace(hash,entry);
+        const auto* entryInMap = &mapTx.find(hash)->second;
         const CTransaction& tx = entryInMap->GetTx();
         mapBareTxid.emplace(tx.GetBareTxid(), entryInMap);
         for (unsigned int i = 0; i < tx.vin.size(); i++)
@@ -279,21 +279,24 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
             removeAddressIndex(hash);
             removeSpentIndex(hash);
 
-            const CTransaction& tx = mapTx[hash].GetTx();
-            if (fRecursive) {
-                for (unsigned int i = 0; i < tx.vout.size(); i++) {
-                    std::map<COutPoint, CInPoint>::iterator it = mapNextTx.find(COutPoint(hash, i));
-                    if (it == mapNextTx.end())
-                        continue;
-                    txToRemove.push_back(it->second.ptx->GetHash());
+            {
+                const CTxMemPoolEntry& mempoolTx = mapTx.find(hash)->second;
+                const CTransaction& tx = mempoolTx.GetTx();
+                if (fRecursive) {
+                    for (unsigned int i = 0; i < tx.vout.size(); i++) {
+                        std::map<COutPoint, CInPoint>::iterator it = mapNextTx.find(COutPoint(hash, i));
+                        if (it == mapNextTx.end())
+                            continue;
+                        txToRemove.push_back(it->second.ptx->GetHash());
+                    }
                 }
-            }
-            mapBareTxid.erase(tx.GetBareTxid());
-            for (const auto& txin : tx.vin)
-                mapNextTx.erase(txin.prevout);
+                mapBareTxid.erase(tx.GetBareTxid());
+                for (const auto& txin : tx.vin)
+                    mapNextTx.erase(txin.prevout);
 
-            removed.push_back(tx);
-            totalTxSize -= mapTx[hash].GetTxSize();
+                removed.push_back(tx);
+                totalTxSize -= mempoolTx.GetTxSize();
+            }
             mapTx.erase(hash);
             nTransactionsUpdated++;
         }
@@ -351,7 +354,7 @@ void CTxMemPool::removeForBlock(const std::vector<CTransaction>& vtx, unsigned i
     BOOST_FOREACH (const CTransaction& tx, vtx) {
         uint256 hash = tx.GetHash();
         if (mapTx.count(hash))
-            entries.push_back(&mapTx[hash]);
+            entries.push_back(&mapTx.find(hash)->second);
     }
     if(feePolicyEstimator) feePolicyEstimator->seenBlock(entries, nBlockHeight, minRelayFee);
     BOOST_FOREACH (const CTransaction& tx, vtx) {

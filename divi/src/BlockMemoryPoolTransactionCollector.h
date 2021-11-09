@@ -101,13 +101,12 @@ private:
         DependingTransactionsMap& mapDependers,
         CCoinsViewCache& view) const;
 
-    void SwitchToPriotizationByFee (
+    bool SwitchToPriotizationByFee(
         std::vector<TxPriority>& vecPriority,
-        bool& fSortedByFee,
         TxPriorityCompare& comparer,
         const uint64_t& nBlockSize,
         const unsigned int& nTxSize,
-        double& dPriority) const;
+        const double dPriority) const;
     std::vector<PrioritizedTransactionData> PrioritizeTransactionsByBlockSpaceUsage(
         std::vector<TxPriority>& vecPriority,
         const int& nHeight,

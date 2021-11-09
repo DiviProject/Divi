@@ -238,20 +238,20 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTrans
     return vecPriority;
 }
 
-void BlockMemoryPoolTransactionCollector::SwitchToPriotizationByFee(
+bool BlockMemoryPoolTransactionCollector::SwitchToPriotizationByFee(
     std::vector<TxPriority>& vecPriority,
-    bool& fSortedByFee,
     TxPriorityCompare& comparer,
     const uint64_t& nBlockSize,
     const unsigned int& nTxSize,
-    double& dPriority) const
+    const double dPriority) const
 {
-    if (!fSortedByFee && ((nBlockSize + nTxSize >= blockPrioritySize_) || !AllowFree(dPriority))
+    if ((nBlockSize + nTxSize >= blockPrioritySize_) || !AllowFree(dPriority))
     {
-        fSortedByFee = true;
-        comparer = TxPriorityCompare(fSortedByFee);
+        comparer = TxPriorityCompare(true);
         std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
+        return true;
     }
+    return false;
 }
 
 PrioritizedTransactionData::PrioritizedTransactionData(
@@ -316,7 +316,10 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         }
         // Prioritise by fee once past the priority size or we run out of high-priority
         // transactions:
-        SwitchToPriotizationByFee(vecPriority, fSortedByFee, comparer, nBlockSize, nTxSize, dPriority);
+        if(!fSortedByFee)
+        {
+            fSortedByFee = SwitchToPriotizationByFee(vecPriority, comparer, nBlockSize, nTxSize, dPriority);
+        }
         if (!view.HaveInputs(tx)) {
             continue;
         }

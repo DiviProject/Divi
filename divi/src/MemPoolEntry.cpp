@@ -19,6 +19,8 @@ CTxMemPoolEntry::CTxMemPoolEntry(
     unsigned int _nHeight
     ) : tx(_tx)
     , nFee(_nFee)
+    , nTxSize(0u)
+    , nModSize(0u)
     , nTime(_nTime)
     , dPriority(_dPriority)
     , nHeight(_nHeight)

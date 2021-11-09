@@ -18,6 +18,7 @@
 
 class BlockMap;
 class CCriticalSection;
+class CTxMemPoolEntry;
 class CTransaction;
 class CTxIn;
 class CBlock;
@@ -73,7 +74,7 @@ private:
 
     void ComputeTransactionPriority (
         double& dPriority,
-        const CTransaction& tx,
+        const CTxMemPoolEntry& tx,
         CAmount nTotalIn,
         COrphan* porphan,
         std::vector<TxPriority>& vecPriority) const;

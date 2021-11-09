@@ -520,14 +520,14 @@ bool RateLimiterAllowsFreeTransaction(CValidationState& state, const unsigned nS
 }
 
 bool CheckFeesPaidAreAcceptable(
-    const CTransaction& tx,
-    const unsigned nSize,
-    const CAmount nFees,
-    const int currentChainHeight,
+    const CTxMemPoolEntry& entry,
     bool fLimitFree,
-    const CCoinsViewCache& view,
     CValidationState& state)
 {
+    const unsigned int nSize = entry.GetTxSize();
+    const CTransaction& tx = entry.GetTx();
+    const CAmount nFees = entry.GetFee();
+
     static const CFeeRate& minimumRelayFeeRate = FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate();
     const uint256 hash = tx.GetHash();
     CAmount minimumRelayFee = minimumRelayFeeRate.GetFee(nSize);
@@ -539,7 +539,7 @@ bool CheckFeesPaidAreAcceptable(
     // Require that free transactions have sufficient priority to be mined in the next block.
     if (settings.GetBoolArg("-relaypriority", true) &&
         nFees < minimumRelayFee &&
-        !AllowFree(view.ComputeInputCoinAgePerByte(tx, currentChainHeight + 1)))
+        !AllowFree(entry.ComputeInputCoinAgePerByte(entry.GetHeight() + 1) ))
     {
         return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
     }
@@ -666,11 +666,10 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         const CAmount nFees = nValueIn - tx.GetValueOut();
         double dPriority = view.ComputeInputCoinAgePerByte(tx, chainActive.Height());
         CTxMemPoolEntry entry(tx, nFees, GetTime(), dPriority, chainActive.Height());
-        unsigned int nSize = entry.GetTxSize();
 
         // Don't accept it if it can't get into a block
         // but prioritise dstx and don't check fees for it
-        if (!ignoreFees && !CheckFeesPaidAreAcceptable(tx,nSize,nFees,chainActive.Height(),fLimitFree,view,state))
+        if (!ignoreFees && !CheckFeesPaidAreAcceptable(entry,fLimitFree,state))
         {
             LogPrint("mempool","%s - Conflicting tx spending same inputs%s",__func__, hash);
             return false;

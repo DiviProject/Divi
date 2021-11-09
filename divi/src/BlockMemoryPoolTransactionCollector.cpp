@@ -127,16 +127,16 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
     dPriority = FeeAndPriorityCalculator::instance().ComputePriority(tx,dPriority, nTxSize);
 
     uint256 hash = tx.GetHash();
+    CAmount feePaid = nTotalIn - tx.GetValueOut();
     mempool_.ApplyDeltas(hash, dPriority, nTotalIn);
-
-    CAmount fee = nTotalIn - tx.GetValueOut();
-    CFeeRate feeRate(fee, nTxSize);
+    CAmount nominalFee = nTotalIn - tx.GetValueOut();
+    CFeeRate feeRate(nominalFee, nTxSize);
 
     if (porphan) {
         porphan->dPriority = dPriority;
         porphan->feeRate = feeRate;
     } else
-        vecPriority.push_back(TxPriority(dPriority, feeRate, &tx,fee));
+        vecPriority.push_back(TxPriority(dPriority, feeRate, &tx,feePaid));
 }
 
 void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue (

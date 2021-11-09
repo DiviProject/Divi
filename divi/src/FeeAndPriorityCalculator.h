@@ -27,7 +27,6 @@ public:
     CAmount MinimumValueForNonDust() const;
     CAmount MinimumValueForNonDust(const CTxOut& txout) const;
     bool IsDust(const CTxOut& txout) const;
-    unsigned int CalculateModifiedSize(const CTransaction& tx, unsigned int nTxSize = 0) const;
 };
 
 #endif //FEE_AND_PRIORITY_CALCULATOR

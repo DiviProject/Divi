@@ -106,7 +106,7 @@ private:
         TxPriorityCompare& comparer,
         const uint64_t& nBlockSize,
         const unsigned int& nTxSize,
-        const double dPriority) const;
+        const double coinAgeOfInputs) const;
     std::vector<PrioritizedTransactionData> PrioritizeTransactionsByBlockSpaceUsage(
         std::vector<TxPriority>& vecPriority,
         const int& nHeight,

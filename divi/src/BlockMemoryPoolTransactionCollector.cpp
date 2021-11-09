@@ -3,7 +3,6 @@
 #include <BlockTemplate.h>
 #include "chain.h"
 #include "coins.h"
-#include "FeeAndPriorityCalculator.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "txmempool.h"
@@ -118,13 +117,15 @@ void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
 
 void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
     double& dPriority,
-    const CTransaction& tx,
+    const CTxMemPoolEntry& mempoolTx,
     CAmount nTotalIn,
     COrphan* porphan,
     std::vector<TxPriority>& vecPriority) const
 {
-    unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-    dPriority = FeeAndPriorityCalculator::instance().ComputePriority(tx,dPriority, nTxSize);
+    const unsigned int nTxSize = mempoolTx.GetTxSize();
+    const unsigned int nModSize = mempoolTx.GetModTxSize();
+    dPriority = nModSize == 0? 0.0: dPriority/nModSize;
+    const CTransaction& tx = mempoolTx.GetTx();
 
     uint256 hash = tx.GetHash();
     CAmount feePaid = nTotalIn - tx.GetValueOut();
@@ -241,7 +242,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTrans
         if (fMissingInputs) {
             continue;
         }
-        ComputeTransactionPriority(dPriority, tx, nTotalIn, porphan.get(), vecPriority);
+        ComputeTransactionPriority(dPriority, mi->second, nTotalIn, porphan.get(), vecPriority);
     }
     return vecPriority;
 }

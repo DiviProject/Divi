@@ -32,11 +32,11 @@ public:
     int64_t GetTime() const { return nTime; }
     unsigned int GetHeight() const { return nHeight; }
 
-    static inline bool AllowFree(double coinAgeOfInputs)
+    static inline bool AllowFree(double coinAgeOfInputsPerByte)
     {
         // Large (in bytes) low-priority (new, small-coin) transactions
         // need a fee.
-        return coinAgeOfInputs > AllowFreeThreshold();
+        return coinAgeOfInputsPerByte > AllowFreeThreshold();
     }
 };
 #endif// MEMPOOL_ENTRY_H

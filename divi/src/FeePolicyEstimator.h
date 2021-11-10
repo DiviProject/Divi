@@ -55,7 +55,7 @@ private:
      * nBlocksAgo is 0 based, i.e. transactions that confirmed in the highest seen block are
      * nBlocksAgo == 0, transactions in the block before that are nBlocksAgo == 1 etc.
      */
-    void seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& minRelayFee, double coinAgeOfInputs, int nBlocksAgo);
+    void seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& minRelayFee, double coinAgeOfInputsPerByte, int nBlocksAgo);
 
 public:
     FeePolicyEstimator(int nEntries);

@@ -54,9 +54,9 @@ public:
     const CTransaction* ptx;
     std::set<uint256> setDependsOn;
     CFeeRate feeRate;
-    double coinAgeOfInputs;
+    double coinAgeOfInputsPerByte;
 
-    COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), coinAgeOfInputs(0)
+    COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), coinAgeOfInputsPerByte(0)
     {
     }
 };
@@ -125,19 +125,19 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
     const CTransaction& tx = mempoolTx.GetTx();
     const CAmount feePaid = mempoolTx.GetFee();
     const CAmount valueSent = tx.GetValueOut();
-    double coinAgeOfInputs = mempoolTx.ComputeInputCoinAgePerByte(nHeight);
+    double coinAgeOfInputsPerByte = mempoolTx.ComputeInputCoinAgePerByte(nHeight);
     CAmount nTotalIn = valueSent + feePaid;
 
     uint256 hash = tx.GetHash();
-    mempool_.ApplyDeltas(hash, coinAgeOfInputs, nTotalIn);
+    mempool_.ApplyDeltas(hash, coinAgeOfInputsPerByte, nTotalIn);
     CAmount nominalFee = nTotalIn - valueSent;
     CFeeRate feeRate(nominalFee, nTxSize);
 
     if (porphan) {
-        porphan->coinAgeOfInputs = coinAgeOfInputs;
+        porphan->coinAgeOfInputsPerByte = coinAgeOfInputsPerByte;
         porphan->feeRate = feeRate;
     } else
-        vecPriority.push_back(TxPriority(coinAgeOfInputs, feeRate, &tx,feePaid));
+        vecPriority.push_back(TxPriority(coinAgeOfInputsPerByte, feeRate, &tx,feePaid));
 }
 
 void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue(
@@ -151,7 +151,7 @@ void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueu
             if (!porphan->setDependsOn.empty()) {
                 porphan->setDependsOn.erase(hash);
                 if (porphan->setDependsOn.empty()) {
-                    vecPriority.push_back(TxPriority(porphan->coinAgeOfInputs, porphan->feeRate, porphan->ptx));
+                    vecPriority.push_back(TxPriority(porphan->coinAgeOfInputsPerByte, porphan->feeRate, porphan->ptx));
                     std::push_heap(vecPriority.begin(), vecPriority.end(), comparer);
                 }
             }

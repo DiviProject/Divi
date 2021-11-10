@@ -159,7 +159,7 @@ void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueu
     }
 }
 
-bool BlockMemoryPoolTransactionCollector::IsFreeTransaction(
+bool BlockMemoryPoolTransactionCollector::FreeTxBlockSpaceIsUsedUp(
     const uint256& hash,
     const bool& fSortedByFee,
     const CFeeRate& feeRate,
@@ -308,7 +308,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         const uint256& hash = tx.GetHash();
         if (nBlockSize + nTxSize >= blockMaxSize_ ||
             nBlockSigOps + nTxSigOps >= nMaxBlockSigOps||
-            IsFreeTransaction(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, tx))
+            FreeTxBlockSpaceIsUsedUp(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, tx))
         {
             continue;
         }

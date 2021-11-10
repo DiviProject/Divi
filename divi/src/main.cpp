@@ -539,7 +539,7 @@ bool CheckFeesPaidAreAcceptable(
     // Require that free transactions have sufficient priority to be mined in the next block.
     if (settings.GetBoolArg("-relaypriority", true) &&
         nFees < minimumRelayFee &&
-        !AllowFree(entry.ComputeInputCoinAgePerByte(entry.GetHeight() + 1) ))
+        !CTxMemPoolEntry::AllowFree(entry.ComputeInputCoinAgePerByte(entry.GetHeight() + 1) ))
     {
         return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
     }

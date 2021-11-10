@@ -5,19 +5,6 @@
 #include <Logging.h>
 #include <MemPoolEntry.h>
 
-
-static inline double AllowFreeThreshold()
-{
-    return COIN * 1440 / 250;
-}
-
-static inline bool AllowFree(double coinAgeOfInputs)
-{
-    // Large (in bytes) low-priority (new, small-coin) transactions
-    // need a fee.
-    return coinAgeOfInputs > AllowFreeThreshold();
-}
-
 template <typename T>
 std::vector<T> buf2vec(boost::circular_buffer<T> buf)
 {
@@ -133,7 +120,7 @@ void FeePolicyEstimator::seenTxConfirm(const CFeeRate& feeRate, const CFeeRate& 
     // We need to guess why the transaction was included in a block-- either
     // because it is high-priority or because it has sufficient fees.
     bool sufficientFee = (feeRate > minRelayFee);
-    bool sufficientPriority = AllowFree(coinAgeOfInputs);
+    bool sufficientPriority = CTxMemPoolEntry::AllowFree(coinAgeOfInputs);
     const char* assignedTo = "unassigned";
     if (sufficientFee && !sufficientPriority && CBlockAverage::AreSane(feeRate, minRelayFee)) {
         history[nBlocksTruncated].RecordFee(feeRate);

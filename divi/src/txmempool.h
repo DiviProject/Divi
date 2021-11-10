@@ -21,19 +21,6 @@
 class BlockMap;
 class CAutoFile;
 
-inline double AllowFreeThreshold()
-{
-    return COIN * 1440 / 250;
-}
-
-inline bool AllowFree(double coinAgeOfInputs)
-{
-    // Large (in bytes) low-priority (new, small-coin) transactions
-    // need a fee.
-    return coinAgeOfInputs > AllowFreeThreshold();
-}
-
-
 /** Fake height value used in CCoins to signify they are only in the memory pool (since 0.8) */
 bool IsMemPoolHeight(unsigned coinHeight);
 

@@ -65,7 +65,6 @@ private:
     const unsigned blockMinSize_;
 
 private:
-    void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     void RecordOrphanTransaction(
         std::shared_ptr<COrphan>& porphan,
         const CTransaction& tx,

@@ -2047,7 +2047,7 @@ static bool CanBeSentAsFreeTransaction(
         // Not enough fee: enough priority?
         double coinAgePerByteNeeded = mempool.estimatePriority(nTxConfirmTarget);
         // Not enough mempool history to estimate: use hard-coded AllowFree.
-        if (coinAgePerByteNeeded <= 0 && AllowFree(coinAgePerByte))
+        if (coinAgePerByteNeeded <= 0 && CTxMemPoolEntry::AllowFree(coinAgePerByte))
             return true;
 
         // Small enough, and priority high enough, to send for free

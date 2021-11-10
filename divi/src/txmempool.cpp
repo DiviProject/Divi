@@ -591,12 +591,16 @@ bool CCoinsViewMemPool::GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins)
     return true;
 }
 
-bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx)
+bool SubmitTransactionToMempool(CTxMemPool& mempool, CValidationState& state, const CTransaction& tx)
 {
     constexpr const bool limitFreeTxProcessing = false;
-    CValidationState state;
     bool fAccepted = ::AcceptToMemoryPool(mempool, state, tx, limitFreeTxProcessing);
     if (!fAccepted)
         LogPrintf("%s : %s\n", __func__, state.GetRejectReason());
     return fAccepted;
+}
+bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx)
+{
+    CValidationState state;
+    return SubmitTransactionToMempool(mempool,state,tx);
 }

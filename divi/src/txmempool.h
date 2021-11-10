@@ -191,6 +191,7 @@ public:
     bool HaveCoins(const uint256& txid) const override;
     bool GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const;
 };
-
+class CValidationState;
 bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx);
+bool SubmitTransactionToMempool(CTxMemPool& mempool, CValidationState& state, const CTransaction& tx);
 #endif // BITCOIN_TXMEMPOOL_H

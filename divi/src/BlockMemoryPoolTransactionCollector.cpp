@@ -68,6 +68,8 @@ class TxPriorityCompare
 public:
     TxPriorityCompare(bool _byFee) : byFee(_byFee) {}
 
+    void sortByFee(){ byFee = true;}
+
     bool operator()(const TxPriority& a, const TxPriority& b)
     {
         if (byFee) {
@@ -160,22 +162,12 @@ void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueu
 }
 
 bool BlockMemoryPoolTransactionCollector::FreeTxBlockSpaceIsUsedUp(
-    const uint256& hash,
-    const bool& fSortedByFee,
     const CFeeRate& feeRate,
-    const uint64_t& nBlockSize,
-    const unsigned int& nTxSize,
-    const CTransaction& tx) const
+    const uint64_t nBlockSize,
+    const unsigned int nTxSize) const
 {
-    double dPriorityDelta = 0;
-    CAmount nFeeDelta = 0;
-    mempool_.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
-
-    return (fSortedByFee &&
-        (dPriorityDelta <= 0) &&
-        (nFeeDelta <= 0) &&
-        (feeRate < txFeeRate_) &&
-        (nBlockSize + nTxSize >= blockMinSize_));
+    return feeRate < txFeeRate_ &&
+        (nBlockSize + nTxSize >= blockMinSize_);
 }
 
 void BlockMemoryPoolTransactionCollector::AddTransactionToBlock(
@@ -236,20 +228,12 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTrans
     return vecPriority;
 }
 
-bool BlockMemoryPoolTransactionCollector::SwitchToPriotizationByFee(
-    std::vector<TxPriority>& vecPriority,
-    TxPriorityCompare& comparer,
+bool BlockMemoryPoolTransactionCollector::ShouldSwitchToPriotizationByFee(
     const uint64_t& nBlockSize,
     const unsigned int& nTxSize,
     const bool mustPayFees) const
 {
-    if ((nBlockSize + nTxSize >= blockPrioritySize_) || mustPayFees)
-    {
-        comparer = TxPriorityCompare(true);
-        std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
-        return true;
-    }
-    return false;
+    return (nBlockSize + nTxSize >= blockPrioritySize_) || mustPayFees;
 }
 
 PrioritizedTransactionData::PrioritizedTransactionData(
@@ -285,9 +269,9 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     uint64_t nBlockSize = 1000;
     int nBlockSigOps = 100;
     const unsigned int constexpr nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
-    bool fSortedByFee = (blockPrioritySize_ <= 0);
+    bool txsArePrioritizedByFeePaid = (blockPrioritySize_ <= 0);
 
-    TxPriorityCompare comparer(fSortedByFee);
+    TxPriorityCompare comparer(txsArePrioritizedByFeePaid);
     std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
 
     while (!vecPriority.empty()) {
@@ -305,19 +289,27 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         // Legacy limits on sigOps:
         unsigned int nTxSigOps = GetLegacySigOpCount(tx);
         // Skip free transactions if we're past the minimum block size:
-        const uint256& hash = tx.GetHash();
         if (nBlockSize + nTxSize >= blockMaxSize_ ||
-            nBlockSigOps + nTxSigOps >= nMaxBlockSigOps||
-            FreeTxBlockSpaceIsUsedUp(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, tx))
+            nBlockSigOps + nTxSigOps >= nMaxBlockSigOps)
         {
             continue;
         }
         // Prioritise by fee once past the priority size or we run out of high-priority
         // transactions:
-        if(!fSortedByFee)
+        if(!txsArePrioritizedByFeePaid)
         {
-            fSortedByFee = SwitchToPriotizationByFee(vecPriority, comparer, nBlockSize, nTxSize, mustPayFees);
+            if(ShouldSwitchToPriotizationByFee(nBlockSize, nTxSize, mustPayFees))
+            {
+                txsArePrioritizedByFeePaid = true;
+                comparer.sortByFee();
+                std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
+            }
         }
+        else if(FreeTxBlockSpaceIsUsedUp(feeRate, nBlockSize, nTxSize))
+        {
+            continue;
+        }
+
         if (!view.HaveInputs(tx)) {
             continue;
         }
@@ -342,7 +334,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         UpdateCoinsWithTransaction(tx, view, txundo, nHeight);
 
         // Add transactions that depend on this one to the priority queue
-        AddDependingTransactionsToPriorityQueue(dependentTransactions, hash, vecPriority, comparer);
+        AddDependingTransactionsToPriorityQueue(dependentTransactions, tx.GetHash(), vecPriority, comparer);
     }
 
     LogPrintf("%s: total size %u\n",__func__, nBlockSize);

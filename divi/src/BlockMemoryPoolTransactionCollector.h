@@ -84,8 +84,8 @@ private:
 
     bool ShouldSkipCheapTransaction(
         const CFeeRate& feeRate,
-        const uint64_t nBlockSize,
-        const unsigned int nTxSize) const;
+        const uint64_t currentBlockSize,
+        const unsigned int transactionSize) const;
 
     void AddTransactionToBlock(
         const CTransaction& tx,
@@ -98,8 +98,8 @@ private:
         CCoinsViewCache& view) const;
 
     bool ShouldSwitchToPriotizationByFee(
-        const uint64_t& nBlockSize,
-        const unsigned int& nTxSize,
+        const uint64_t& currentBlockSize,
+        const unsigned int& transactionSize,
         const bool mustPayFees) const;
     std::vector<PrioritizedTransactionData> PrioritizeTransactionsByBlockSpaceUsage(
         std::vector<TxPriority>& vecPriority,

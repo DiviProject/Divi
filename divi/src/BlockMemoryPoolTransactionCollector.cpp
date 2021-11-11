@@ -123,7 +123,7 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
     COrphan* porphan,
     std::vector<TxPriority>& vecPriority) const
 {
-    const unsigned int nTxSize = mempoolTx.GetTxSize();
+    const unsigned int transactionSize = mempoolTx.GetTxSize();
     const CTransaction& tx = mempoolTx.GetTx();
     const CAmount feePaid = mempoolTx.GetFee();
     const CAmount valueSent = tx.GetValueOut();
@@ -133,7 +133,7 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
     uint256 hash = tx.GetHash();
     mempool_.ApplyDeltas(hash, coinAgeOfInputsPerByte, nTotalIn);
     CAmount nominalFee = nTotalIn - valueSent;
-    CFeeRate feeRate(nominalFee, nTxSize);
+    CFeeRate feeRate(nominalFee, transactionSize);
 
     if (porphan) {
         porphan->coinAgeOfInputsPerByte = coinAgeOfInputsPerByte;
@@ -163,11 +163,11 @@ void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueu
 
 bool BlockMemoryPoolTransactionCollector::ShouldSkipCheapTransaction(
     const CFeeRate& feeRate,
-    const uint64_t nBlockSize,
-    const unsigned int nTxSize) const
+    const uint64_t currentBlockSize,
+    const unsigned int transactionSize) const
 {
     return feeRate < txFeeRate_ &&
-        (nBlockSize + nTxSize >= blockMinSize_);
+        (currentBlockSize + transactionSize >= blockMinSize_);
 }
 
 void BlockMemoryPoolTransactionCollector::AddTransactionToBlock(
@@ -229,11 +229,11 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTrans
 }
 
 bool BlockMemoryPoolTransactionCollector::ShouldSwitchToPriotizationByFee(
-    const uint64_t& nBlockSize,
-    const unsigned int& nTxSize,
+    const uint64_t& currentBlockSize,
+    const unsigned int& transactionSize,
     const bool mustPayFees) const
 {
-    return (nBlockSize + nTxSize >= blockPrioritySize_) || mustPayFees;
+    return (currentBlockSize + transactionSize >= blockPrioritySize_) || mustPayFees;
 }
 
 PrioritizedTransactionData::PrioritizedTransactionData(
@@ -259,14 +259,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     DependingTransactionsMap& dependentTransactions) const
 {
     std::vector<PrioritizedTransactionData> prioritizedTransactions;
-
-    // Largest block you're willing to create:
-    // How much of the block should be dedicated to high-priority transactions,
-    // included regardless of the fees they pay
-    // Minimum block size you want to create; block will be filled with free transactions
-    // until there are no more or the block reaches this size:
-
-    uint64_t nBlockSize = 1000;
+    uint64_t currentBlockSize = 1000;
     int nBlockSigOps = 100;
     const unsigned int constexpr nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
     bool txsArePrioritizedByFeePaid = (blockPrioritySize_ <= 0);
@@ -285,12 +278,12 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         vecPriority.pop_back();
 
         // Size limits
-        unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+        unsigned int transactionSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
         // Legacy limits on sigOps:
         unsigned int nTxSigOps = GetLegacySigOpCount(tx);
         const uint256& hash = tx.GetHash();
         // Skip free transactions if we're past the minimum block size:
-        if (nBlockSize + nTxSize >= blockMaxSize_ ||
+        if (currentBlockSize + transactionSize >= blockMaxSize_ ||
             nBlockSigOps + nTxSigOps >= nMaxBlockSigOps)
         {
             continue;
@@ -299,14 +292,14 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         // transactions:
         if(!txsArePrioritizedByFeePaid)
         {
-            if(ShouldSwitchToPriotizationByFee(nBlockSize, nTxSize, mustPayFees))
+            if(ShouldSwitchToPriotizationByFee(currentBlockSize, transactionSize, mustPayFees))
             {
                 txsArePrioritizedByFeePaid = true;
                 comparer.sortByFee();
                 std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
             }
         }
-        else if( !mempool_.IsPrioritizedTransaction(hash) && ShouldSkipCheapTransaction(feeRate, nBlockSize, nTxSize))
+        else if( !mempool_.IsPrioritizedTransaction(hash) && ShouldSkipCheapTransaction(feeRate, currentBlockSize, transactionSize))
         {
             continue;
         }
@@ -328,7 +321,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         }
 
         prioritizedTransactions.emplace_back(tx, nTxSigOps,fee);
-        nBlockSize += nTxSize;
+        currentBlockSize += transactionSize;
         nBlockSigOps += nTxSigOps;
 
         CTxUndo txundo;
@@ -338,7 +331,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         AddDependingTransactionsToPriorityQueue(dependentTransactions, hash, vecPriority, comparer);
     }
 
-    LogPrintf("%s: total size %u\n",__func__, nBlockSize);
+    LogPrintf("%s: total size %u\n",__func__, currentBlockSize);
     return prioritizedTransactions;
 }
 

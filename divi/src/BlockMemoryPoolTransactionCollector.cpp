@@ -238,16 +238,16 @@ bool BlockMemoryPoolTransactionCollector::ShouldSwitchToPriotizationByFee(
 
 PrioritizedTransactionData::PrioritizedTransactionData(
     ): tx(nullptr)
-    , nTxSigOps(0u)
+    , transactionSigOpCount(0u)
     , fee(0)
 {
 }
 PrioritizedTransactionData::PrioritizedTransactionData(
     const CTransaction& transaction,
-    unsigned txSigOps,
+    unsigned transactionSigOps,
     CAmount feePaid
     ): tx(&transaction)
-    , nTxSigOps(txSigOps)
+    , transactionSigOpCount(transactionSigOps)
     , fee(feePaid)
 {
 }
@@ -260,8 +260,8 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
 {
     std::vector<PrioritizedTransactionData> prioritizedTransactions;
     uint64_t currentBlockSize = 1000;
-    int nBlockSigOps = 100;
-    const unsigned int constexpr nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
+    int currentBlockSigOps = 100;
+    const unsigned int constexpr maximumSigOpsPerBlock = MAX_BLOCK_SIGOPS_CURRENT;
     bool txsArePrioritizedByFeePaid = (blockPrioritySize_ <= 0);
 
     TxPriorityCompare comparer(txsArePrioritizedByFeePaid);
@@ -279,11 +279,11 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         vecPriority.pop_back();
 
         // Legacy limits on sigOps:
-        unsigned int nTxSigOps = GetLegacySigOpCount(tx);
+        unsigned int transactionSigOpCount = GetLegacySigOpCount(tx);
         const uint256& hash = tx.GetHash();
         // Skip free transactions if we're past the minimum block size:
         if (currentBlockSize + transactionSize >= blockMaxSize_ ||
-            nBlockSigOps + nTxSigOps >= nMaxBlockSigOps)
+            currentBlockSigOps + transactionSigOpCount >= maximumSigOpsPerBlock)
         {
             continue;
         }
@@ -306,8 +306,8 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         if (!view.HaveInputs(tx)) {
             continue;
         }
-        nTxSigOps += GetP2SHSigOpCount(tx, view);
-        if (nBlockSigOps + nTxSigOps >= nMaxBlockSigOps) {
+        transactionSigOpCount += GetP2SHSigOpCount(tx, view);
+        if (currentBlockSigOps + transactionSigOpCount >= maximumSigOpsPerBlock) {
             continue;
         }
 
@@ -319,9 +319,9 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
             continue;
         }
 
-        prioritizedTransactions.emplace_back(tx, nTxSigOps,fee);
+        prioritizedTransactions.emplace_back(tx, transactionSigOpCount,fee);
         currentBlockSize += transactionSize;
-        nBlockSigOps += nTxSigOps;
+        currentBlockSigOps += transactionSigOpCount;
 
         CTxUndo txundo;
         UpdateCoinsWithTransaction(tx, view, txundo, nHeight);

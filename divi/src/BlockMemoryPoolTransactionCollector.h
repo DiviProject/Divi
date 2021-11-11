@@ -82,7 +82,7 @@ private:
         std::vector<TxPriority>& vecPriority,
         TxPriorityCompare& comparer) const;
 
-    bool FreeTxBlockSpaceIsUsedUp(
+    bool ShouldSkipCheapTransaction(
         const CFeeRate& feeRate,
         const uint64_t nBlockSize,
         const unsigned int nTxSize) const;

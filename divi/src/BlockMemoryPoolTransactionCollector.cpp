@@ -288,6 +288,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
         // Legacy limits on sigOps:
         unsigned int nTxSigOps = GetLegacySigOpCount(tx);
+        const uint256& hash = tx.GetHash();
         // Skip free transactions if we're past the minimum block size:
         if (nBlockSize + nTxSize >= blockMaxSize_ ||
             nBlockSigOps + nTxSigOps >= nMaxBlockSigOps)
@@ -305,7 +306,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
                 std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
             }
         }
-        else if(ShouldSkipCheapTransaction(feeRate, nBlockSize, nTxSize))
+        else if( !mempool_.IsPrioritizedTransaction(hash) && ShouldSkipCheapTransaction(feeRate, nBlockSize, nTxSize))
         {
             continue;
         }
@@ -334,7 +335,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         UpdateCoinsWithTransaction(tx, view, txundo, nHeight);
 
         // Add transactions that depend on this one to the priority queue
-        AddDependingTransactionsToPriorityQueue(dependentTransactions, tx.GetHash(), vecPriority, comparer);
+        AddDependingTransactionsToPriorityQueue(dependentTransactions, hash, vecPriority, comparer);
     }
 
     LogPrintf("%s: total size %u\n",__func__, nBlockSize);

@@ -83,12 +83,9 @@ private:
         TxPriorityCompare& comparer) const;
 
     bool FreeTxBlockSpaceIsUsedUp(
-        const uint256& hash,
-        const bool& fSortedByFee,
         const CFeeRate& feeRate,
-        const uint64_t& nBlockSize,
-        const unsigned int& nTxSize,
-        const CTransaction& tx) const;
+        const uint64_t nBlockSize,
+        const unsigned int nTxSize) const;
 
     void AddTransactionToBlock(
         const CTransaction& tx,
@@ -100,9 +97,7 @@ private:
         DependingTransactionsMap& mapDependers,
         CCoinsViewCache& view) const;
 
-    bool SwitchToPriotizationByFee(
-        std::vector<TxPriority>& vecPriority,
-        TxPriorityCompare& comparer,
+    bool ShouldSwitchToPriotizationByFee(
         const uint64_t& nBlockSize,
         const unsigned int& nTxSize,
         const bool mustPayFees) const;

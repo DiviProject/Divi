@@ -541,6 +541,15 @@ void CTxMemPool::PrioritiseTransaction(const uint256 hash, const CAmount nFeeDel
     LogPrintf("PrioritiseTransaction: %s priority += %f, fee += %d\n", hash. ToString(), proxyForPriorityDelta, FormatMoney(nFeeDelta));
 }
 
+bool CTxMemPool::IsPrioritizedTransaction(const uint256 hash)
+{
+    {
+        LOCK(cs);
+        return mapDeltas.count(hash) > 0;
+    }
+}
+
+
 void CTxMemPool::ApplyDeltas(const uint256 hash, double& dPriorityDelta, CAmount& nFeeDelta)
 {
     LOCK(cs);

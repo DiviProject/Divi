@@ -81,3 +81,8 @@ bool TransactionInputChecker::WaitForScriptsToBeChecked()
 {
     return multiThreadedScriptChecker.Wait();
 }
+
+bool TransactionInputChecker::InputsAreValid(const CTransaction& tx) const
+{
+    return view_.HaveInputs(tx);
+}

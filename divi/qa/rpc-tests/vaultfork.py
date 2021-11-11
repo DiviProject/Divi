@@ -51,6 +51,7 @@ class VaultForkTest (BitcoinTestFramework):
 
         print ("Spending vault as staker...")
         vault = self.fund_vault (self.nodes[0], self.nodes[1], 10)
+        sync_mempools(self.nodes[:2])
         generatePoSBlocks (self.nodes, 1, 1)
         addr = self.nodes[1].getnewaddress ("stolen again")
         unsigned = self.nodes[1].createrawtransaction ([vault], {addr: 9})
@@ -61,6 +62,7 @@ class VaultForkTest (BitcoinTestFramework):
 
         print ("Spending vault as owner...")
         vault = self.fund_vault (self.nodes[0], self.nodes[1], 10)
+        sync_mempools(self.nodes[:2])
         generatePoSBlocks (self.nodes, 1, 1)
         addr = self.nodes[0].getnewaddress ("unvaulted 2")
         unsigned = self.nodes[0].createrawtransaction ([vault], {addr: 9})
@@ -71,6 +73,7 @@ class VaultForkTest (BitcoinTestFramework):
 
         print ("Trying to steal as the staker...")
         vault = self.fund_vault (self.nodes[0], self.nodes[1], 10_000)
+        sync_mempools(self.nodes[:2])
         generatePoSBlocks (self.nodes, 1, 20)
         # Lottery blocks are every 10th on regtest, and treasury blocks
         # the ones after them (eqv 1 mod 10).  We want to avoid them

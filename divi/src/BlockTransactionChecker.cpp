@@ -124,6 +124,11 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
         const CTransaction& tx = block_.vtx[i];
         const TransactionLocationReference txLocationRef(tx, pindex_->nHeight, i);
 
+        if(!txInputChecker_.InputsAreValid(tx))
+        {
+            return state_.DoS(100,
+                error("%s: tx has invalid input",__func__), REJECT_INVALID, "bad-txn-unknown-inputs");
+        }
         if(!txInputChecker_.TotalSigOpsAreBelowMaximum(tx))
         {
             return false;

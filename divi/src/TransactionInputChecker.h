@@ -35,6 +35,8 @@ public:
         unsigned flags,
         const bool fJustCheck,
         CBlockIndex* pindex);
+
+    bool InputsAreValid(const CTransaction& tx) const;
     bool TotalSigOpsAreBelowMaximum(const CTransaction& tx);
     bool WaitForScriptsToBeChecked();
 };

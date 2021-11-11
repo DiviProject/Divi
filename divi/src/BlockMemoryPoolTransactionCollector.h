@@ -33,12 +33,12 @@ class Settings;
 struct PrioritizedTransactionData
 {
     const CTransaction* tx;
-    unsigned int nTxSigOps;
+    unsigned int transactionSigOpCount;
     CAmount fee;
     PrioritizedTransactionData();
     PrioritizedTransactionData(
         const CTransaction& transaction,
-        unsigned txSigOps,
+        unsigned transactionSigOps,
         CAmount feePaid);
 };
 

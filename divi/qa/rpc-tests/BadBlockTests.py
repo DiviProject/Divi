@@ -19,7 +19,7 @@ from decimal import Decimal
 class BadBlockTests (BitcoinTestFramework):
 
     def setup_network (self, split=False):
-        args = [["-rpc"],["-rpc"]]
+        args = [["-debug=rpc"],["-debug=rpc"]]
         self.nodes = start_nodes (2, self.options.tmpdir, extra_args=args)
         self.node = self.nodes[0]
         connect_nodes (self.nodes[0], 1)
@@ -116,6 +116,27 @@ class BadBlockTests (BitcoinTestFramework):
       signed = self.node.signrawtransaction (unsigned)
       return signed
 
+    def create_fake_output(self):
+        txid = ''.join(random.choice('0123456789abcdef') for n in range(64))
+        return {"txid": txid ,"vout":0}
+
+    def build_nonexistent_spend(self):
+      utxos = self.node.listunspent ()
+      random.shuffle(utxos)
+      required = Decimal ('1.00000000')
+      inp = None
+      for i in range (len (utxos)):
+        if utxos[i]["amount"] >= required:
+          inp = utxos[i]
+          del utxos[i]
+          break
+      assert inp is not None, "found no suitable output"
+
+      addr = self.node.getnewaddress ("stolen again")
+      unsigned = self.node.createrawtransaction ([self.create_fake_output(),{"txid":inp["txid"],"vout":inp["vout"]}], {addr: 0.5})
+      signed = self.node.signrawtransaction (unsigned)
+      return signed
+
     def check_unconfirmed (self, txid,node):
         if type (txid) == list:
           for t in txid:
@@ -150,6 +171,10 @@ class BadBlockTests (BitcoinTestFramework):
 
         overmint = self.build_overmint_tx()
         assert_raises(JSONRPCException, self.node.generateblock, {"coinstake": overmint["hex"]} )
+        self.verify_chainstate_unchanged()
+
+        fake_tx = self.build_nonexistent_spend()
+        assert_raises(JSONRPCException, self.node.generateblock, {"extratx": [fake_tx["hex"]]} )
         self.verify_chainstate_unchanged()
 
 if __name__ == '__main__':

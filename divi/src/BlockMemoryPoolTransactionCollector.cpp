@@ -161,7 +161,7 @@ void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueu
     }
 }
 
-bool BlockMemoryPoolTransactionCollector::FreeTxBlockSpaceIsUsedUp(
+bool BlockMemoryPoolTransactionCollector::ShouldSkipCheapTransaction(
     const CFeeRate& feeRate,
     const uint64_t nBlockSize,
     const unsigned int nTxSize) const
@@ -305,7 +305,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
                 std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
             }
         }
-        else if(FreeTxBlockSpaceIsUsedUp(feeRate, nBlockSize, nTxSize))
+        else if(ShouldSkipCheapTransaction(feeRate, nBlockSize, nTxSize))
         {
             continue;
         }

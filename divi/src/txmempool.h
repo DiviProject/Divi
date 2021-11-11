@@ -131,6 +131,7 @@ public:
     bool getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
     /** Affect CreateNewBlock prioritisation of transactions */
+    bool IsPrioritizedTransaction(const uint256 hash);
     void PrioritiseTransaction(const uint256 hash, const CAmount nFeeDelta);
     void ApplyDeltas(const uint256 hash, double& dPriorityDelta, CAmount& nFeeDelta);
     void ClearPrioritisation(const uint256 hash);

@@ -139,7 +139,7 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
         porphan->coinAgeOfInputsPerByte = coinAgeOfInputsPerByte;
         porphan->feeRate = feeRate;
     } else
-        vecPriority.push_back(TxPriority(coinAgeOfInputsPerByte, feeRate, &tx,feePaid));
+        vecPriority.push_back(TxPriority(coinAgeOfInputsPerByte, feeRate, &tx,feePaid,transactionSize));
 }
 
 void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue(
@@ -273,12 +273,11 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         CFeeRate feeRate = vecPriority.front().get<1>();
         const CTransaction& tx = *(vecPriority.front().get<2>());
         const CAmount fee = vecPriority.front().get<3>();
+        const unsigned transactionSize = vecPriority.front().get<4>();
 
         std::pop_heap(vecPriority.begin(), vecPriority.end(), comparer);
         vecPriority.pop_back();
 
-        // Size limits
-        unsigned int transactionSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
         // Legacy limits on sigOps:
         unsigned int nTxSigOps = GetLegacySigOpCount(tx);
         const uint256& hash = tx.GetHash();

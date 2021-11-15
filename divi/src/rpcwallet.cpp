@@ -1728,7 +1728,7 @@ static int ComputeBlockHeightOfFirstConfirmation(const uint256 blockHash)
     return (it==mapBlockIndex.end() || it->second==nullptr)? 0 : it->second->nHeight;
 }
 
-static std::string ParseScriptAsAddressString(const CScript& scriptPubKey, std::string fallbackValueForStakingVault)
+static std::string ParseScriptAsAddressString(const CScript& scriptPubKey)
 {
     CTxDestination parsedAddress;
     if(ExtractDestination(scriptPubKey, parsedAddress))
@@ -1737,7 +1737,7 @@ static std::string ParseScriptAsAddressString(const CScript& scriptPubKey, std::
     }
     else if(IsStakingVaultScript(scriptPubKey))
     {
-        return fallbackValueForStakingVault;
+        return std::string("Staking Vault");
     }
     else
     {
@@ -1748,6 +1748,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
 {
     static SuperblockSubsidyContainer superblockSubsidies(Params());
     static const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    static const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
 
     string strSentAccount = wtx.strFromAccount;
     const std::string allAccounts = "*";
@@ -1758,29 +1759,46 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
     wtx.GetComputedTxTime();
     const CAmount nCredit = wallet.GetCredit(wtx,isminetype::ISMINE_SPENDABLE);
     const CAmount nDebit = wallet.GetDebit(wtx,isminetype::ISMINE_SPENDABLE);
-    const CAmount nNet = nCredit - nDebit;
 
     if (isCoinstake)
     {
         const int blockHeight = ComputeBlockHeightOfFirstConfirmation(wtx.hashBlock);
         const bool isConfirmedBlock = blockHeight>0;
         const bool isLotteryPayment = isConfirmedBlock? heightValidator.IsValidLotteryBlockHeight(blockHeight): false;
+        const CBlockRewards rewards = blockSubsidies.GetBlockSubsidity(blockHeight);
+        bool parsingAmbiguityDetected = false;
 
         const isminetype stakerAddressOwnership = wallet.IsMine(wtx.vout[1]);
         const bool stakerAddressIsSpendableByMe = stakerAddressOwnership != isminetype::ISMINE_NO;
+        const CScript stakerScript = wtx.vout[1].scriptPubKey;
         if (stakerAddressIsSpendableByMe)
         {
             if(!fAllAccounts && strAccount != wtx.strFromAccount)
                 return;
 
+            CAmount stakerRewardTotal = 0;
+            for (unsigned int i = 1; i < wtx.vout.size(); i++)
+            {
+                if(wtx.vout[i].scriptPubKey == stakerScript)
+                {
+                    stakerRewardTotal+= std::max(wtx.vout[i].nValue,CAmount(0));
+                }
+
+                if(!parsingAmbiguityDetected && stakerRewardTotal - nDebit > rewards.nStakeReward)
+                {
+                    parsingAmbiguityDetected = true;
+                }
+            }
+            stakerRewardTotal -= nDebit;
+
             Object entry;
             //stake reward
-            const std::string addressParsing = ParseScriptAsAddressString(wtx.vout[1].scriptPubKey,"Vault Reward");
+            const std::string addressParsing = ParseScriptAsAddressString(stakerScript);
             entry.push_back(Pair("involvesWatchonly", stakerAddressOwnership == isminetype::ISMINE_WATCH_ONLY));
             entry.push_back(Pair("address", addressParsing));
-            entry.push_back(Pair("amount", ValueFromAmount(nNet)));
+            entry.push_back(Pair("amount", ValueFromAmount(stakerRewardTotal)));
             entry.push_back(Pair("vout", 1));
-            entry.push_back(Pair("category", "stake_reward"));
+            entry.push_back(Pair("category", parsingAmbiguityDetected?"stake_reward":"stake_reward+"));
             entry.push_back(Pair("account", wtx.strFromAccount));
 
             if (fLong) WalletTxToJSON(wallet, wtx, entry);
@@ -1789,16 +1807,17 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         if(isConfirmedBlock)
         {
             //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
-            for (unsigned int i = 1; i < wtx.vout.size(); i++) {
-                CTxDestination outDestination;
+            for (unsigned int i = 1; i < wtx.vout.size(); i++)
+            {
                 const CScript& scriptPubKey = wtx.vout[i].scriptPubKey;
                 isminetype mine = wallet.IsMine(wtx.vout[i]);
-                if (mine != isminetype::ISMINE_NO)
+                if (mine != isminetype::ISMINE_NO && scriptPubKey != stakerScript)
                 {
+                    CTxDestination outDestination;
                     ExtractDestination(scriptPubKey, outDestination);
                     auto strAccountForAddress = GetAccountAddressName(wallet, outDestination);
                     if(!fAllAccounts && strAccount != strAccountForAddress) continue;
-                    const std::string addressParsing = ParseScriptAsAddressString(scriptPubKey,"Vault Deposit");
+                    const std::string addressParsing = ParseScriptAsAddressString(scriptPubKey);
                     Object entry;
                     entry.push_back(Pair("involvesWatchonly", mine == isminetype::ISMINE_WATCH_ONLY));
                     entry.push_back(Pair("address",  addressParsing ));
@@ -1833,7 +1852,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             if (addressBook.count(dest)) {
                 account = addressBook.find(dest)->second.name;
             }
-            const AddressParsing addressParsing = ParseScriptAsAddressString(txout.scriptPubKey, "Vault Deposit");
+            const AddressParsing addressParsing = ParseScriptAsAddressString(txout.scriptPubKey);
             sendAddresses.emplace_back(addressParsing, account);
             fMatchesReceiveAccount |= fAllAccounts || (account == strAccount);
         }

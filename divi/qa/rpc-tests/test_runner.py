@@ -98,6 +98,7 @@ BASE_SCRIPTS = [
     'MnAreSafeToRestart.py',
     'mncollateral.py',
     'mnoperation.py',
+    'masternodes_with_vaults.py',
     'mnstoredbroadcast.py',
     'mnvaults.py',
     'multisig.py',

@@ -95,6 +95,13 @@ class MnTestFramework(BitcoinTestFramework):
     self.mn_control_node_indices[alias] = controlNodeIndex
     self.mn_host_node_indices[alias] = hostNodeIndex
 
+  def broadcast_with_ping_update(self,alias):
+    controlNode = self.nodes[self.mn_control_node_indices[alias]]
+    hostNodeSetup = self.setup[self.mn_host_node_indices[alias]]
+    hostNode = self.nodes[self.mn_host_node_indices[alias]]
+    signed_broadcast = controlNode.signmnbroadcast(str(hostNodeSetup.broadcast_data))["broadcast_data"]
+    return hostNode.broadcaststartmasternode(signed_broadcast,"update_ping")
+
   def broadcast_start(self, alias, broadcastLocal,sig=None):
     controlNode = self.nodes[self.mn_control_node_indices[alias]]
     hostNodeSetup = self.setup[self.mn_host_node_indices[alias]]

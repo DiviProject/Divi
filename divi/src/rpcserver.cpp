@@ -49,6 +49,7 @@ extern json_spirit::Value dumpwallet(const json_spirit::Array& params, bool fHel
 extern json_spirit::Value importwallet(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value bip38encrypt(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value bip38decrypt(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value bip38paperwallet(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value setgenerate(const json_spirit::Array& params, bool fHelp); // in rpcmining.cpp
 extern json_spirit::Value generateblock(const json_spirit::Array& params, bool fHelp);
@@ -518,6 +519,7 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "dumpprivkey", &dumpprivkey, true, false, true},
         {"wallet", "dumphdinfo", &dumphdinfo, true, false, true},
         {"wallet", "dumpwallet", &dumpwallet, true, false, true},
+        {"wallet", "bip38paperwallet", &bip38paperwallet, true, false, true},
         {"wallet", "bip38encrypt", &bip38encrypt, true, false, true},
         {"wallet", "bip38decrypt", &bip38decrypt, true, false, true},
         {"wallet", "encryptwallet", &encryptwallet, true, false, true},

@@ -6,6 +6,9 @@
 
 #include "bip38.h"
 #include "base58.h"
+#include <boost/filesystem.hpp>
+#include <DataDirectory.h>
+#include <blockmap.h>
 #include <BlockDiskAccessor.h>
 #include <chain.h>
 #include "init.h"
@@ -523,6 +526,79 @@ Value bip38encrypt(const Array& params, bool fHelp)
     result.push_back(Pair("Addess", strAddress));
     result.push_back(Pair("Encrypted Key", encryptedOut));
 
+    return result;
+}
+
+static bool CheckIntegrity(const std::string strAddress,const std::string strKey,const std::string strPassphrase)
+{
+    uint256 privKey;
+    bool fCompressed;
+    if (!BIP38_Decrypt(strPassphrase, strKey, privKey, fCompressed))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Failed To Decrypt");
+
+    CKey key;
+    key.Set(privKey.begin(), privKey.end(), fCompressed);
+    std::string addressParsed = CBitcoinAddress(key.GetPubKey().GetID()).ToString();
+    return addressParsed.compare(strAddress)==0;
+}
+
+Value bip38paperwallet(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "bip38encrypt \"password\"\n"
+            "\nEncrypts a fresh private key with <password>.\n"
+            "\nArguments:\n"
+            "1. \"diviaddress\"   (string, required) The divi address for the private key (you must hold the key already)\n"
+            "2. \"passphrase\"   (string, required) The passphrase you want the private key to be encrypted with - Valid special chars: !#$%&'()*+,-./:;<=>?`{|}~ \n"
+            "\nResult:\n"
+            "\"key\"                (string) The encrypted private key\n"
+            "\nExamples:\n");
+
+    EnsureWalletIsUnlocked();
+
+    std::string strPassphrase;
+    std::string strAddress;
+    uint256 privKey;
+    bool compressedKey = false;
+    const std::string walletDummyFilename = "paper_wallet.dat";
+    {
+        CChain dummyChain;
+        BlockMap dummyBlockMap;
+        std::unique_ptr<CWallet> temporaryWallet(new CWallet(walletDummyFilename,dummyChain,dummyBlockMap));
+        temporaryWallet->SetDefaultKeyTopUp(1);
+        temporaryWallet->LoadWallet();
+        temporaryWallet->GenerateNewHDChain();
+        temporaryWallet->InitializeDefaultKey();
+        const CPubKey& tempPubKey = temporaryWallet->GetDefaultKey();
+        if(!tempPubKey.IsValid())
+        {
+            temporaryWallet.reset();
+            boost::filesystem::remove(GetDataDir()/walletDummyFilename);
+            throw JSONRPCError(RPC_WALLET_ERROR, "Invalid key");
+        }
+        const CKeyID keyID = tempPubKey.GetID();
+
+        strPassphrase = params[0].get_str();
+        strAddress = CBitcoinAddress(keyID).ToString();
+
+        CKey key;
+        if(!temporaryWallet->GetKey(keyID,key))
+        {
+            temporaryWallet.reset();
+            boost::filesystem::remove(GetDataDir()/walletDummyFilename);
+            throw JSONRPCError(RPC_WALLET_ERROR, "Unknown error when generating fresh throwaway wallet");
+        }
+        privKey = uint256(ToByteVector(key));
+        compressedKey = key.IsCompressed();
+    }
+    boost::filesystem::remove(GetDataDir()/walletDummyFilename);
+    const std::string encryptedOut = BIP38_Encrypt(strAddress, strPassphrase, privKey, compressedKey);
+
+    Object result;
+    result.push_back(Pair("Address", strAddress));
+    result.push_back(Pair("Encrypted Key", encryptedOut));
+    assert(CheckIntegrity(strAddress,encryptedOut,strPassphrase));
     return result;
 }
 

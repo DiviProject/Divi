@@ -3,7 +3,7 @@
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-# Tests basic behaviour (standardness, fees) of OP_META transactions.
+# Tests detection of vault transactions in spent and address indexing
 
 from test_framework import BitcoinTestFramework
 from authproxy import JSONRPCException

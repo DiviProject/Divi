@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #
-# Test ZMQ interface
+# Test multisig operation, creation, funding, and withdrawal
 #
 
 from test_framework import BitcoinTestFramework

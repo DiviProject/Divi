@@ -3,7 +3,7 @@
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-# Tests basic behaviour (standardness, fees) of OP_META transactions.
+# Tests indexing flags are functional
 
 from test_framework import BitcoinTestFramework
 from authproxy import JSONRPCException

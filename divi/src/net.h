@@ -64,7 +64,6 @@ const I_PeerBlockNotifyService& GetPeerBlockNotifyService();
 bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv);
 class CTransaction;
 void RelayTransaction(const CTransaction& tx);
-void RelayTransaction(const CTransaction& tx, const CDataStream& ss);
 void RelayInv(CInv& inv);
 
 void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate);

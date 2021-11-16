@@ -628,8 +628,6 @@ Value bip38decrypt(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_ERROR, "Failed To Decrypt");
 
     Object result;
-    result.push_back(Pair("privatekey", HexStr(privKey)));
-
     CKey key;
     key.Set(privKey.begin(), privKey.end(), fCompressed);
 

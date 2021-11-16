@@ -42,12 +42,13 @@ class PaperWallets (BitcoinTestFramework):
         self.nodes[1].sendtoaddress(paper_wallet["Address"],2000.0)
         self.nodes[1].setgenerate(True,1)
         sync_blocks(self.nodes)
-        self.nodes[2].bip38decrypt(paper_wallet["Encrypted Key"],"password")
+        import_result = self.nodes[2].bip38decrypt(paper_wallet["Encrypted Key"],"password")
         attempts_to_sync = 0
         while self.nodes[2].getblockcount() < 25 and attempts_to_sync < 10:
             time.sleep(0.1)
         assert_equal(self.nodes[2].getblockcount(),25)
         assert_equal(self.nodes[2].getbalance(),2000.0)
+        assert_equal(import_result["Address"],paper_wallet["Address"])
 
 
 if __name__ == '__main__':

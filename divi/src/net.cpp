@@ -1651,15 +1651,7 @@ bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv)
     return false;
 }
 
-void RelayTransaction(const CTransaction& tx)
-{
-    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-    ss.reserve(10000);
-    ss << tx;
-    RelayTransaction(tx, ss);
-}
-
-void RelayTransaction(const CTransaction& tx, const CDataStream& ss)
+static void RelayTransaction(const CTransaction& tx, const CDataStream& ss)
 {
     CInv inv(MSG_TX, tx.GetHash());
     {
@@ -1686,6 +1678,14 @@ void RelayTransaction(const CTransaction& tx, const CDataStream& ss)
             pnode->PushInventory(inv);
     }
 }
+void RelayTransaction(const CTransaction& tx)
+{
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+    ss.reserve(10000);
+    ss << tx;
+    RelayTransaction(tx, ss);
+}
+
 
 void RelayInv(CInv& inv)
 {

@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #
-# Test ZMQ interface
+# Test lottery winners rpc method
 #
 
 from test_framework import BitcoinTestFramework

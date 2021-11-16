@@ -4,6 +4,8 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+# Test wallet's ability to autocombine funds within the same address
+
 from test_framework import BitcoinTestFramework
 from util import *
 import decimal

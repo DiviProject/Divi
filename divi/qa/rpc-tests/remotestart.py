@@ -3,17 +3,7 @@
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-# Tests running of masternodes, querying their status (as well as
-# updates to the status, e.g. if a node goes offline) and the
-# payouts to them.
-#
-# We use seven nodes:
-# - node 0 is used to fund two masternodes but then goes offline
-# - node 1 is a copper masternode
-# - node 2 is a silver masternode
-# - node 3 is used to mine blocks and check the masternode states
-# - nodes 4-6 are just used to get above the "three full nodes" threshold
-#   (together with node 3, independent of the masternodes online)
+# Tests starting of masternodes remotely
 
 from test_framework import BitcoinTestFramework
 from util import *

@@ -334,7 +334,7 @@ public:
      * @warning Returned pointers are *only* valid within the scope of passed acentries
      */
     typedef std::multimap<int64_t, const CWalletTx*> TxItems;
-    TxItems OrderedTxItems();
+    TxItems OrderedTxItems() const;
 
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);

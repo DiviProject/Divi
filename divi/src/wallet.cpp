@@ -1215,7 +1215,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     return true;
 }
 
-CWallet::TxItems CWallet::OrderedTxItems()
+CWallet::TxItems CWallet::OrderedTxItems() const
 {
     AssertLockHeld(cs_wallet); // mapWallet
     // First: get all CWalletTx into a sorted-by-order multimap.
@@ -1223,10 +1223,11 @@ CWallet::TxItems CWallet::OrderedTxItems()
 
     // Note: maintaining indices in the database of (account,time) --> txid and (account, time) --> acentry
     // would make this much faster for applications that do this a lot.
-    for (std::map<uint256, CWalletTx>::iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it)
+    for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it)
     {
         const CWalletTx* wtx = &((*it).second);
         txOrdered.insert(std::make_pair(wtx->nOrderPos, wtx));
+        assert(wtx->GetHash()==(*it).first);
     }
     return txOrdered;
 }
@@ -1487,14 +1488,14 @@ bool CWallet::SubmitTransactionToMemoryPool(const CWalletTx& wtx) const
 void CWallet::ReacceptWalletTransactions()
 {
     LOCK2(cs_main, cs_wallet);
-    BOOST_FOREACH (PAIRTYPE(const uint256, CWalletTx) & item, transactionRecord_->mapWallet) {
-        const uint256& wtxid = item.first;
-        CWalletTx& wtx = item.second;
-        assert(wtx.GetHash() == wtxid);
-
+    auto orderedTransactions = OrderedTxItems();
+    for(const std::pair<int64_t,const CWalletTx*>& item: orderedTransactions)
+    {
+        const CWalletTx& wtx = *(item.second);
         int nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(wtx);
 
-        if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0) {
+        if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0)
+        {
             // Try to add to memory pool
             LOCK(mempool.cs);
             SubmitTransactionToMemoryPool(wtx);

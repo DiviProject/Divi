@@ -76,13 +76,13 @@ public:
     bool operator()(const TxPriority& a, const TxPriority& b)
     {
         if (byFee) {
-            if (a.get<1>() == b.get<1>())
-                return a.get<0>() < b.get<0>();
-            return a.get<1>() < b.get<1>();
+            if (a._nominalFeeRate == b._nominalFeeRate)
+                return a._coinAgeOfInputsPerByte < b._coinAgeOfInputsPerByte;
+            return a._nominalFeeRate < b._nominalFeeRate;
         } else {
-            if (a.get<0>() == b.get<0>())
-                return a.get<1>() < b.get<1>();
-            return a.get<0>() < b.get<0>();
+            if (a._coinAgeOfInputsPerByte == b._coinAgeOfInputsPerByte)
+                return a._nominalFeeRate < b._nominalFeeRate;
+            return a._coinAgeOfInputsPerByte < b._coinAgeOfInputsPerByte;
         }
     }
 };
@@ -276,11 +276,12 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
 
     while (!vecPriority.empty()) {
         // Take highest priority transaction off the priority queue:
-        const bool mustPayFees = !CTxMemPoolEntry::AllowFree(vecPriority.front().get<0>());
-        CFeeRate feeRate = vecPriority.front().get<1>();
-        const CTransaction& tx = *(vecPriority.front().get<2>());
-        const CAmount fee = vecPriority.front().get<3>();
-        const unsigned transactionSize = vecPriority.front().get<4>();
+        const auto& priorityDatum = vecPriority.front();
+        const bool mustPayFees = !CTxMemPoolEntry::AllowFree(priorityDatum._coinAgeOfInputsPerByte);
+        CFeeRate feeRate = priorityDatum._nominalFeeRate;
+        const CTransaction& tx = *(priorityDatum._transactionRef);
+        const CAmount fee = priorityDatum._feePaid;
+        const unsigned transactionSize = priorityDatum._transactionSize;
 
         std::pop_heap(vecPriority.begin(), vecPriority.end(), comparer);
         vecPriority.pop_back();

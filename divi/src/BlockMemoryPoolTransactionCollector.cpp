@@ -22,7 +22,8 @@ static unsigned int GetMaxBlockSize(const Settings& settings,unsigned int defaul
     unsigned int blockMaxSize = settings.GetArg("-blockmaxsize", defaultMaxBlockSize);
     // Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
     unsigned int blockMaxSizeNetwork = maxBlockSizeCurrent;
-    blockMaxSize = std::max((unsigned int)1000, std::min((blockMaxSizeNetwork - 1000), blockMaxSize));
+    unsigned int blockMaxSizeNetworkMinus1k = (blockMaxSizeNetwork - 1000);
+    blockMaxSize = std::max((unsigned int)1000, std::min(blockMaxSizeNetworkMinus1k, blockMaxSize));
     return blockMaxSize;
 }
 
@@ -55,8 +56,10 @@ public:
     std::set<uint256> setDependsOn;
     CFeeRate feeRate;
     double coinAgeOfInputsPerByte;
+    CAmount feePaid;
+    size_t txSize;
 
-    COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), coinAgeOfInputsPerByte(0)
+    COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), coinAgeOfInputsPerByte(0), feePaid(0), txSize(0u)
     {
     }
 };
@@ -102,7 +105,7 @@ BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     , blockPrioritySize_(GetBlockPrioritySize(settings,DEFAULT_BLOCK_PRIORITY_SIZE, blockMaxSize_))
     , blockMinSize_(GetBlockMinSize(settings,DEFAULT_BLOCK_MIN_SIZE, blockMaxSize_))
 {
-
+    assert( blockMaxSize_ <= MAX_BLOCK_SIZE_CURRENT );
 }
 
 void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction(
@@ -123,7 +126,7 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
     COrphan* porphan,
     std::vector<TxPriority>& vecPriority) const
 {
-    const unsigned int transactionSize = mempoolTx.GetTxSize();
+    const size_t transactionSize = mempoolTx.GetTxSize();
     const CTransaction& tx = mempoolTx.GetTx();
     const CAmount feePaid = mempoolTx.GetFee();
     const CAmount valueSent = tx.GetValueOut();
@@ -138,6 +141,8 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority(
     if (porphan) {
         porphan->coinAgeOfInputsPerByte = coinAgeOfInputsPerByte;
         porphan->feeRate = feeRate;
+        porphan->feePaid = feePaid;
+        porphan->txSize = transactionSize;
     } else
         vecPriority.push_back(TxPriority(coinAgeOfInputsPerByte, feeRate, &tx,feePaid,transactionSize));
 }
@@ -153,7 +158,9 @@ void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueu
             if (!porphan->setDependsOn.empty()) {
                 porphan->setDependsOn.erase(hash);
                 if (porphan->setDependsOn.empty()) {
-                    vecPriority.push_back(TxPriority(porphan->coinAgeOfInputsPerByte, porphan->feeRate, porphan->ptx));
+                    vecPriority.push_back(
+                        TxPriority(porphan->coinAgeOfInputsPerByte, porphan->feeRate, porphan->ptx,porphan->feePaid,porphan->txSize)
+                        );
                     std::push_heap(vecPriority.begin(), vecPriority.end(), comparer);
                 }
             }

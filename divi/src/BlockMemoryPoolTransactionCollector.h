@@ -45,7 +45,7 @@ struct PrioritizedTransactionData
 class COrphan;
 
 // We want to sort transactions by priority and fee rate, so:
-typedef boost::tuple<double, CFeeRate, const CTransaction*,CAmount,unsigned> TxPriority;
+typedef boost::tuple<double, CFeeRate, const CTransaction*,CAmount,size_t> TxPriority;
 class TxPriorityCompare;
 class CChain;
 

@@ -1497,7 +1497,6 @@ void CWallet::ReacceptWalletTransactions()
         if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0)
         {
             // Try to add to memory pool
-            LOCK(mempool.cs);
             SubmitTransactionToMemoryPool(wtx);
         }
     }

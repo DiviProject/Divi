@@ -209,7 +209,6 @@ Value importaddress(const Array& params, bool fHelp)
 
         if (fRescan) {
             ScanForWalletTransactions(*pwalletMain,chainActive.Genesis(),true);
-            pwalletMain->ReacceptWalletTransactions();
         }
     }
 

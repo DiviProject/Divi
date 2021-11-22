@@ -10,10 +10,8 @@
 class CBlockIndex;
 constexpr char ZMQ_MSG_HASHBLOCK[]  = "hashblock";
 constexpr char ZMQ_MSG_HASHTX[]     = "hashtx";
-constexpr char ZMQ_MSG_HASHTXLOCK[] = "hashtxlock";
 constexpr char ZMQ_MSG_RAWBLOCK[]   = "rawblock";
 constexpr char ZMQ_MSG_RAWTX[]      = "rawtx";
-constexpr char ZMQ_MSG_RAWTXLOCK[] = "rawtxlock";
 class CZMQAbstractPublishNotifier : public CZMQAbstractNotifier
 {
 private:
@@ -44,13 +42,6 @@ class CZMQPublishHashTransactionNotifier : public CZMQAbstractPublishNotifier
 public:
     bool NotifyTransaction(const CTransaction &transaction) override;
 };
-
-class CZMQPublishHashTransactionLockNotifier : public CZMQAbstractPublishNotifier
-{
-public:
-    bool NotifyTransactionLock(const CTransaction &transaction) override;
-};
-
 class CZMQPublishRawBlockNotifier : public CZMQAbstractPublishNotifier
 {
 public:
@@ -62,11 +53,4 @@ class CZMQPublishRawTransactionNotifier : public CZMQAbstractPublishNotifier
 public:
     bool NotifyTransaction(const CTransaction &transaction) override;
 };
-
-class CZMQPublishRawTransactionLockNotifier : public CZMQAbstractPublishNotifier
-{
-public:
-    bool NotifyTransactionLock(const CTransaction &transaction) override;
-};
-
 #endif // BITCOIN_ZMQ_ZMQPUBLISHNOTIFIER_H

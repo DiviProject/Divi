@@ -153,20 +153,3 @@ void CZMQNotificationInterface::SyncTransaction(const CTransaction &tx, const CB
         }
     }
 }
-
-void CZMQNotificationInterface::NotifyTransactionLock(const CTransaction &tx)
-{
-    for (std::list<CZMQAbstractNotifier*>::iterator i = notifiers.begin(); i!=notifiers.end(); )
-    {
-        CZMQAbstractNotifier *notifier = *i;
-        if (notifier->NotifyTransactionLock(tx))
-        {
-            i++;
-        }
-        else
-        {
-            notifier->Shutdown();
-            i = notifiers.erase(i);
-        }
-    }
-}

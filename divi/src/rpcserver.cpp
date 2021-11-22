@@ -56,7 +56,6 @@ extern json_spirit::Value generateblock(const json_spirit::Array& params, bool f
 extern json_spirit::Value getmininginfo(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value prioritisetransaction(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getblocktemplate(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value submitblock(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value estimatefee(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value estimatepriority(const json_spirit::Array& params, bool fHelp);
 
@@ -433,7 +432,6 @@ static const CRPCCommand vRPCCommands[] =
         {"mining", "getblocktemplate", &getblocktemplate, true, false, false},
         {"mining", "getmininginfo", &getmininginfo, true, false, false},
         {"mining", "prioritisetransaction", &prioritisetransaction, true, false, false},
-        {"mining", "submitblock", &submitblock, true, true, false},
 
 #ifdef ENABLE_WALLET
         /* Coin generation */

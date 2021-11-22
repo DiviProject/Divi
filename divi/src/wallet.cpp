@@ -1362,7 +1362,7 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock,const
 }
 void CWallet::RelayWalletTransaction(const CWalletTx& walletTransaction)
 {
-    if (!walletTransaction.IsCoinBase()) {
+    if (!walletTransaction.IsCoinBase() && !walletTransaction.IsCoinStake()) {
         if (confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) == 0)
         {
             LogPrintf("Relaying wtx %s\n", walletTransaction.ToStringShort());

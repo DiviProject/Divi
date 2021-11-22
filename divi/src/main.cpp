@@ -2991,6 +2991,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         {
             return false;
         }
+        return true;
     }
     else if (pfrom->nVersion == 0)
     {
@@ -3007,8 +3008,10 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             LOCK(cs_main);
             pfrom->SetToCurrentlyConnected();
         }
+        return true;
     }
-    else if (strCommand == "addr")
+
+    if (strCommand == "addr")
     {
         std::vector<CAddress> vAddr;
         vRecv >> vAddr;

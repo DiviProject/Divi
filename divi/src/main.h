@@ -18,12 +18,6 @@
 #include "spentindex.h"
 #include <string>
 
-enum FlushStateMode {
-    FLUSH_STATE_IF_NEEDED,
-    FLUSH_STATE_PERIODIC,
-    FLUSH_STATE_ALWAYS
-};
-
 class ActiveChainManager;
 class CBlockIndex;
 class CBlockTreeDB;
@@ -36,6 +30,14 @@ class CNode;
 struct CNodeSignals;
 class CTxMemPool;
 class CCoinsViewCache;
+
+enum FlushStateMode {
+    FLUSH_STATE_IF_NEEDED,
+    FLUSH_STATE_PERIODIC,
+    FLUSH_STATE_ALWAYS
+};
+/** Flush all state, indexes and buffers to disk. */
+void FlushStateToDisk(FlushStateMode mode = FlushStateMode::FLUSH_STATE_ALWAYS);
 
 /** Register a wallet to receive updates from core */
 void RegisterValidationInterface(NotificationInterface* pwalletIn);
@@ -91,9 +93,6 @@ bool DisconnectBlocksAndReprocess(int blocks);
 
 // ***TODO***
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
-
-/** Flush all state, indexes and buffers to disk. */
-void FlushStateToDisk(FlushStateMode mode = FlushStateMode::FLUSH_STATE_ALWAYS);
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);

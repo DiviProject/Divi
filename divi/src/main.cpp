@@ -1070,7 +1070,6 @@ bool ConnectBlock(
 
     // Watch for changes to the previous coinbase transaction.
     static uint256 hashPrevBestCoinBase;
-    g_signals.UpdatedTransaction(hashPrevBestCoinBase);
     hashPrevBestCoinBase = block.vtx[0].GetHash();
 
     return true;
@@ -1253,7 +1252,6 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     {
         CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
         bool rv = ConnectBlock(*pblock, state, pindexNew, view, false, fAlreadyChecked);
-        g_signals.BlockChecked(*pblock, state);
         if (!rv) {
             if (state.IsInvalid())
                 InvalidBlockFound(pindexNew, state);
@@ -2841,9 +2839,6 @@ void static ProcessGetData(CNode* pfrom, std::deque<CInv>& requestsForData)
                 }
             }
 
-            // Track requests for our stuff.
-            g_signals.Inventory(inv.GetHash());
-
             if (inv.GetType() == MSG_BLOCK || inv.GetType() == MSG_FILTERED_BLOCK)
                 break;
         }
@@ -3072,9 +3067,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                     blockInventory.push_back(&inv);
                 }
             }
-
-            // Track requests for our stuff
-            g_signals.Inventory(inv.GetHash());
 
             if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_OVERFLOWED) {
                 Misbehaving(pfrom->GetNodeState(), 50);

@@ -196,6 +196,9 @@ public:
     void FlagForDisconnection();
     std::deque<CNetMessage>& GetReceivedMessageQueue();
 
+    void ProcessReceivedPing(CDataStream& receivedStream);
+    void ProcessReceivedPong(CDataStream& receivedStream, int64_t nTimeReceived);
+
 private:
     std::deque<CInv> vRecvGetData;
 public:

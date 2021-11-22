@@ -678,6 +678,84 @@ std::deque<CInv>& CNode::GetRequestForDataQueue()
     return vRecvGetData;
 }
 
+void CNode::ProcessReceivedPing(CDataStream& receivedStream)
+{
+    // Echo the message back with the nonce. This allows for two useful features:
+    //
+    // 1) A remote node can quickly check if the connection is operational
+    // 2) Remote nodes can measure the latency of the network thread. If this node
+    //    is overloaded it won't respond to pings quickly and the remote node can
+    //    avoid sending us more work, like chain download requests.
+    //
+    // The nonce stops the remote getting confused between different pings: without
+    // it, if the remote node sends a ping once per second and this node takes 5
+    // seconds to respond to each, the 5th ping the remote sends would appear to
+    // return very quickly.
+    if (nVersion > BIP0031_VERSION) {
+        uint64_t nonce = 0;
+        receivedStream >> nonce;
+        PushMessage("pong", nonce);
+    }
+}
+
+void CNode::ProcessReceivedPong(CDataStream& receivedStream,int64_t nTimeReceived)
+{
+    int64_t pingUsecEnd = nTimeReceived;
+    uint64_t nonce = 0;
+    size_t nAvail = receivedStream.in_avail();
+    bool bPingFinished = false;
+    std::string sProblem;
+
+    if (nAvail >= sizeof(nonce)) {
+        receivedStream >> nonce;
+
+        // Only process pong message if there is an outstanding ping (old ping without nonce should never pong)
+        if (nPingNonceSent != 0) {
+            if (nonce == nPingNonceSent) {
+                // Matching pong received, this ping is no longer outstanding
+                bPingFinished = true;
+                int64_t pingUsecTime = pingUsecEnd - nPingUsecStart;
+                if (pingUsecTime > 0) {
+                    // Successful ping time measurement, replace previous
+                    nPingUsecTime = pingUsecTime;
+                } else {
+                    // This should never happen
+                    sProblem = "Timing mishap";
+                }
+            } else {
+                // Nonce mismatches are normal when pings are overlapping
+                sProblem = "Nonce mismatch";
+                if (nonce == 0) {
+                    // This is most likely a bug in another implementation somewhere, cancel this ping
+                    bPingFinished = true;
+                    sProblem = "Nonce zero";
+                }
+            }
+        } else {
+            sProblem = "Unsolicited pong without ping";
+        }
+    } else {
+        // This is most likely a bug in another implementation somewhere, cancel this ping
+        bPingFinished = true;
+        sProblem = "Short payload";
+    }
+
+    if (!(sProblem.empty()))
+    {
+        LogPrint("net", "pong peer=%d %s: %s, %x expected, %x received, %u bytes\n",
+                    id,
+                    cleanSubVer,
+                    sProblem,
+                    nPingNonceSent,
+                    nonce,
+                    nAvail);
+    }
+    if (bPingFinished)
+    {
+        nPingNonceSent = 0;
+    }
+}
+
 void CNode::CheckForInnactivity()
 {
     /** Time after which to disconnect, after waiting for a ping response (or inactivity). */

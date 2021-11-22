@@ -24,21 +24,21 @@ constexpr int hashingDelay = 45;
 extern bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey);
 
 CoinMinter::CoinMinter(
-    I_BlockFactory& blockFactory,
-    I_StakingWallet& wallet,
     const CChain& chain,
     const CChainParams& chainParameters,
     const I_PeerBlockNotifyService& peerNotifier,
     const CMasternodeSync& masternodeSynchronization,
+    I_BlockFactory& blockFactory,
+    I_StakingWallet& wallet,
     HashedBlockMap& mapHashedBlocks
-    ): blockFactory_( blockFactory )
-    , peerNotifier_( peerNotifier)
-    , mintingIsRequested_(false)
-    , wallet_(wallet)
-    , chain_(chain)
+    ): chain_(chain)
     , chainParameters_(chainParameters)
+    , peerNotifier_( peerNotifier)
     , masternodeSync_(masternodeSynchronization)
+    , blockFactory_( blockFactory )
+    , wallet_(wallet)
     , mapHashedBlocks_(mapHashedBlocks)
+    , mintingIsRequested_(false)
     , haveMintableCoins_(false)
     , lastTimeCheckedMintable_(0)
     , timeToWait_(0)

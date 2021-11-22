@@ -28,15 +28,16 @@ class I_BlockSubsidyProvider;
 class CoinMinter final: public I_CoinMinter
 {
     static constexpr int64_t fiveMinutes_ = 5 * 60;
-    I_BlockFactory& blockFactory_;
-    const I_PeerBlockNotifyService& peerNotifier_;
-
-    bool mintingIsRequested_;
-    I_StakingWallet& wallet_;
     const CChain& chain_;
     const CChainParams& chainParameters_;
+    const I_PeerBlockNotifyService& peerNotifier_;
     const CMasternodeSync& masternodeSync_;
+
+    I_BlockFactory& blockFactory_;
+    I_StakingWallet& wallet_;
     HashedBlockMap& mapHashedBlocks_;
+
+    bool mintingIsRequested_;
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
     int64_t timeToWait_;
@@ -53,12 +54,12 @@ class CoinMinter final: public I_CoinMinter
 
 public:
     CoinMinter(
-        I_BlockFactory& blockFactory,
-        I_StakingWallet& wallet,
         const CChain& chain,
         const CChainParams& chainParameters,
         const I_PeerBlockNotifyService& peers,
         const CMasternodeSync& masternodeSynchronization,
+        I_BlockFactory& blockFactory,
+        I_StakingWallet& wallet,
         HashedBlockMap& mapHashedBlocks);
 
     virtual bool CanMintCoins() override;

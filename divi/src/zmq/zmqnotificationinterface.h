@@ -27,7 +27,6 @@ protected:
     // NotificationInterface
     void SyncTransaction(const CTransaction &tx, const CBlock *pblock, const TransactionSyncType syncType) override;
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
-    void NotifyTransactionLock(const CTransaction &tx) override;
 
 private:
     CZMQNotificationInterface();

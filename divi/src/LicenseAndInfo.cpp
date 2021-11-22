@@ -155,10 +155,8 @@ std::string HelpMessage(HelpMessageMode mode,const Settings& settings, const CCh
     strUsage += HelpMessageGroup(translate("ZeroMQ notification options:"));
     strUsage += HelpMessageOpt("-zmqpubhashblock=<address>", translate("Enable publish hash block in <address>"));
     strUsage += HelpMessageOpt("-zmqpubhashtx=<address>", translate("Enable publish hash transaction in <address>"));
-    strUsage += HelpMessageOpt("-zmqpubhashtxlock=<address>", translate("Enable publish hash transaction (locked via SwiftX) in <address>"));
     strUsage += HelpMessageOpt("-zmqpubrawblock=<address>", translate("Enable publish raw block in <address>"));
     strUsage += HelpMessageOpt("-zmqpubrawtx=<address>", translate("Enable publish raw transaction in <address>"));
-    strUsage += HelpMessageOpt("-zmqpubrawtxlock=<address>", translate("Enable publish raw transaction (locked via SwiftX) in <address>"));
 #endif
 
     strUsage += HelpMessageGroup(translate("Debugging/Testing options:"));

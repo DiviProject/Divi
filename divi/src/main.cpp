@@ -2863,7 +2863,120 @@ void RespondToRequestForDataFrom(CNode* pfrom)
     ProcessGetData(pfrom, pfrom->GetRequestForDataQueue());
 }
 
-bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived)
+constexpr const char* NetworkMessageType_VERSION = "version";
+static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStream& vRecv)
+{
+    // Each connection can only send one version message
+    static const std::string lastCommand = std::string(NetworkMessageType_VERSION);
+    if (pfrom->nVersion != 0) {
+        pfrom->PushMessage("reject", lastCommand, REJECT_DUPLICATE, string("Duplicate version message"));
+        Misbehaving(pfrom->GetNodeState(), 1);
+        return false;
+    }
+
+    int64_t nTime;
+    CAddress addrMe;
+    CAddress addrFrom;
+    uint64_t nNonce = 1;
+    vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
+    if (pfrom->DisconnectOldProtocol(ActiveProtocol(), lastCommand))
+    {
+        PeerBanningService::Ban(GetTime(),pfrom->addr);
+        return false;
+    }
+
+    if (pfrom->nVersion == 10300)
+        pfrom->nVersion = 300;
+    if (!vRecv.empty())
+        vRecv >> addrFrom >> nNonce;
+    if (!vRecv.empty()) {
+        vRecv >> LIMITED_STRING(pfrom->strSubVer, 256);
+        pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
+    }
+    if (!vRecv.empty())
+        vRecv >> pfrom->nStartingHeight;
+    if (!vRecv.empty())
+        vRecv >> pfrom->fRelayTxes; // set to true after we get the first filter* message
+    else
+        pfrom->fRelayTxes = true;
+
+    // Disconnect if we connected to ourself
+    if (pfrom->IsSelfConnection(nNonce))
+    {
+        LogPrintf("connected to self at %s, disconnecting\n", pfrom->addr);
+        pfrom->FlagForDisconnection();
+        return true;
+    }
+
+    pfrom->addrLocal = addrMe;
+    if (pfrom->fInbound && addrMe.IsRoutable()) {
+        SeenLocal(addrMe);
+    }
+
+    // Be shy and don't send version until we hear
+    if (pfrom->fInbound)
+        pfrom->PushVersion(GetHeight());
+
+    pfrom->fClient = !(pfrom->nServices & NODE_NETWORK);
+
+    // Potentially mark this peer as a preferred download peer.
+    pfrom->UpdatePreferredDownloadStatus();
+
+    // Change version
+    pfrom->PushMessage("verack");
+
+    if(pfrom->fInbound) {
+        pfrom->PushMessage("sporkcount", GetSporkManager().GetActiveSporkCount());
+    }
+
+    pfrom->SetOutboundSerializationVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+
+    if (!pfrom->fInbound) {
+        // Advertise our address
+        if (IsListening() && !IsInitialBlockDownload()) {
+            CAddress addr = GetLocalAddress(&pfrom->addr);
+            if (addr.IsRoutable()) {
+                LogPrintf("%s: advertizing address %s\n",__func__, addr);
+                pfrom->PushAddress(addr);
+            } else if (PeersLocalAddressIsGood(pfrom)) {
+                addr.SetIP(pfrom->addrLocal);
+                LogPrintf("%s: advertizing address %s\n",__func__, addr);
+                pfrom->PushAddress(addr);
+            }
+        }
+
+        // Get recent addresses
+        if (pfrom->fOneShot || pfrom->nVersion >= CADDR_TIME_VERSION || addrman.size() < 1000) {
+            pfrom->PushMessage("getaddr");
+            pfrom->fGetAddr = true;
+        }
+        addrman.Good(pfrom->addr);
+    } else {
+        if (((CNetAddr)pfrom->addr) == (CNetAddr)addrFrom) {
+            addrman.Add(addrFrom, addrFrom);
+            addrman.Good(addrFrom);
+        }
+    }
+
+    // Relay alerts
+    RelayAllAlertsTo(pfrom);
+
+    pfrom->fSuccessfullyConnected = true;
+
+    string remoteAddr;
+    if (ShouldLogPeerIPs())
+        remoteAddr = ", peeraddr=" + pfrom->addr.ToString();
+
+    LogPrintf("receive version message: %s: version %d, blocks=%d, us=%s, peer=%d%s\n",
+                pfrom->cleanSubVer, pfrom->nVersion,
+                pfrom->nStartingHeight, addrMe, pfrom->id,
+                remoteAddr);
+
+    AddTimeData(pfrom->addr, nTime);
+    return true;
+}
+
+bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vRecv, int64_t nTimeReceived)
 {
     static CAddrMan& addrman = GetNetworkAddressManager();
     LogPrint("net","received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
@@ -2872,7 +2985,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         return true;
     }
 
-    if (strCommand == "version")
+    if (strCommand == std::string(NetworkMessageType_VERSION))
     {
         // Each connection can only send one version message
         if (pfrom->nVersion != 0) {

@@ -188,7 +188,6 @@ private:
 
     // Notification interface methods
     void SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType) override;
-    void RebroadcastWalletTransactions() override;
     void SetBestChain(const CBlockLocator& loc) override;
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
 

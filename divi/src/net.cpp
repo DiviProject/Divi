@@ -956,7 +956,6 @@ void ThreadMessageHandler()
             boost::this_thread::interruption_point();
         }
 
-
         safeNodesCopy.ClearCopy();
 
         if (fSleep)
@@ -1488,7 +1487,7 @@ void static Discover(boost::thread_group& threadGroup)
 #endif
 }
 
-void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain)
+void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet* pwalletMain)
 {
     uiInterface.InitMessage(translate("Loading addresses..."));
     // Load addresses for peers.dat
@@ -1526,7 +1525,8 @@ void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain)
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "opencon", &ThreadOpenConnections));
 
     // Process messages
-    threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "msghand", &ThreadMessageHandler));
+    threadGroup.create_thread(
+        boost::bind(&TraceThread<void (*)()>, "msghand", &ThreadMessageHandler) );
 
     // Dump network addresses
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
@@ -1651,7 +1651,7 @@ bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv)
     return false;
 }
 
-static void RelayTransaction(const CTransaction& tx, const CDataStream& ss)
+static void RelayTransactionToAllPeers(const CTransaction& tx, const CDataStream& ss)
 {
     CInv inv(MSG_TX, tx.GetHash());
     {
@@ -1683,12 +1683,12 @@ static void RelayTransaction(const CTransaction& tx, const CDataStream& ss)
         }
     }
 }
-void RelayTransaction(const CTransaction& tx)
+void RelayTransactionToAllPeers(const CTransaction& tx)
 {
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss.reserve(10000);
     ss << tx;
-    RelayTransaction(tx, ss);
+    RelayTransactionToAllPeers(tx, ss);
 }
 
 

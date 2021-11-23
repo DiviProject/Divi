@@ -1419,7 +1419,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         StartTorControl(threadGroup);
 
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
-    StartNode(threadGroup,pwalletMain);
+    StartNode(threadGroup,fReindex,pwalletMain);
 
 #ifdef ENABLE_WALLET
     // Generate coins in the background

@@ -35,8 +35,6 @@ struct MainNotificationSignals {
     boost::signals2::signal<void (const CTransaction &, const CBlock *,const TransactionSyncType)> SyncTransaction;
     /** Notifies listeners of a new active block chain. */
     boost::signals2::signal<void (const CBlockLocator &)> SetBestChain;
-    /** Tells listeners to broadcast their data. */
-    boost::signals2::signal<void ()> RebroadcastWalletTransactions;
 };
 
 // These functions dispatch to one or all registered wallets
@@ -61,7 +59,6 @@ protected:
     virtual void UpdatedBlockTip(const CBlockIndex *pindex) {}
     virtual void SyncTransaction(const CTransaction &tx, const CBlock *pblock, const TransactionSyncType) {}
     virtual void SetBestChain(const CBlockLocator &locator) {}
-    virtual void RebroadcastWalletTransactions() {}
 public:
     /** (Un)Register a wallet to receive updates from core */
     void RegisterWith(MainNotificationSignals&);

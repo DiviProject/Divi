@@ -37,6 +37,14 @@ CTxMemPool::CTxMemPool(const CFeeRate& _minRelayFee,
     , minRelayFee(_minRelayFee)
     , fAddressIndex_(addressIndex)
     , fSpentIndex_(spentIndex)
+    , mapAddress()
+    , mapAddressInserted()
+    , mapSpent()
+    , mapSpentInserted()
+    , mapDeltas()
+    , mapBareTxid()
+    , mapTx()
+    , mapNextTx()
 {
     // Sanity checks off by default for performance, because otherwise
     // accepting transactions becomes O(N^2) where N is the number
@@ -94,7 +102,9 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry,
         const CTransaction& tx = entryInMap->GetTx();
         mapBareTxid.emplace(tx.GetBareTxid(), entryInMap);
         for (unsigned int i = 0; i < tx.vin.size(); i++)
+        {
             mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
+        }
         nTransactionsUpdated++;
         totalTxSize += entry.GetTxSize();
     }
@@ -455,14 +465,14 @@ void CTxMemPool::queryHashes(std::vector<uint256>& vtxid)
 
     LOCK(cs);
     vtxid.reserve(mapTx.size());
-    for (map<uint256, CTxMemPoolEntry>::iterator mi = mapTx.begin(); mi != mapTx.end(); ++mi)
+    for (std::map<uint256, CTxMemPoolEntry>::iterator mi = mapTx.begin(); mi != mapTx.end(); ++mi)
         vtxid.push_back((*mi).first);
 }
 
 bool CTxMemPool::lookup(const uint256& hash, CTransaction& result) const
 {
     LOCK(cs);
-    map<uint256, CTxMemPoolEntry>::const_iterator i = mapTx.find(hash);
+    std::map<uint256, CTxMemPoolEntry>::const_iterator i = mapTx.find(hash);
     if (i == mapTx.end()) return false;
     result = i->second.GetTx();
     return true;

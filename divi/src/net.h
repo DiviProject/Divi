@@ -44,7 +44,7 @@ class thread_group;
 
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo);
 bool OpenNetworkConnection(const CAddress& addrConnect, const char* strDest = NULL, bool fOneShot = false);
-void StartNode(boost::thread_group& threadGroup,CWallet* pwalletMain);
+void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet* pwalletMain);
 bool StopNode();
 void CleanupP2PConnections();
 
@@ -63,7 +63,7 @@ const I_PeerBlockNotifyService& GetPeerBlockNotifyService();
 
 bool RepeatRelayedInventory(CNode* pfrom, const CInv& inv);
 class CTransaction;
-void RelayTransaction(const CTransaction& tx);
+void RelayTransactionToAllPeers(const CTransaction& tx);
 void RelayInv(CInv& inv);
 
 void NotifyPeersOfNewChainTip(const int chainHeight, const uint256& updatedBlockHashForChainTip, const int fallbackPeerChainHeightEstimate);

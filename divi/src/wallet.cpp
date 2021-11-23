@@ -1366,47 +1366,7 @@ void CWallet::RelayWalletTransaction(const CWalletTx& walletTransaction)
         if (confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) == 0)
         {
             LogPrintf("Relaying wtx %s\n", walletTransaction.ToStringShort());
-            RelayTransaction(static_cast<CTransaction>(walletTransaction));
-        }
-    }
-}
-void CWallet::RebroadcastWalletTransactions()
-{
-    // Do this infrequently and randomly to avoid giving away
-    // that these are our transactions.
-    if (GetTime() < nNextResend)
-        return;
-    bool fFirst = (nNextResend == 0);
-    nNextResend = GetTime() + GetRand(30 * 60);
-    if (fFirst)
-        return;
-
-    // Only do it if there's been a new block since last time
-    if (timeOfLastChainTipUpdate < nLastResend)
-        return;
-    nLastResend = GetTime();
-
-    // Rebroadcast any of our txes that aren't in a block yet
-    LogPrintf("RebroadcastWalletTransactions()\n");
-    {
-        // Sort them in chronological order
-        std::multimap<unsigned int, CWalletTx*> mapSorted;
-
-        {
-        LOCK(cs_wallet);
-        for (auto& item : transactionRecord_->mapWallet)
-        {
-            CWalletTx& wtx = item.second;
-            // Don't rebroadcast until it's had plenty of time that
-            // it should have gotten in already by now.
-            if (timeOfLastChainTipUpdate - (int64_t)wtx.nTimeReceived > 5 * 60)
-                mapSorted.insert(std::make_pair(wtx.nTimeReceived, &wtx));
-        }
-        }
-
-        for (auto& item : mapSorted) {
-            CWalletTx& wtx = *item.second;
-            RelayWalletTransaction(wtx);
+            RelayTransactionToAllPeers(static_cast<CTransaction>(walletTransaction));
         }
     }
 }

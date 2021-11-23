@@ -96,6 +96,7 @@ CCriticalSection cs_main;
 BlockMap mapBlockIndex;
 std::map<uint256, uint256> mapProofOfStake;
 CChain chainActive; /** The currently-connected chain of blocks. */
+int64_t timeOfLastChainTipUpdate =0;
 CBlockIndex* pindexBestHeader = NULL;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
@@ -1501,6 +1502,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
             // Notify external listeners about the new tip.
             uiInterface.NotifyBlockTip(hashNewTip);
             g_signals.UpdatedBlockTip(pindexNewTip);
+            timeOfLastChainTipUpdate = GetTime();
         }
     } while (pindexMostWork != chainActive.Tip());
     CheckBlockIndex();
@@ -3234,7 +3236,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         if ( AcceptToMemoryPool(mempool, state, tx, true, &fMissingInputs))
         {
             mempool.check(pcoinsTip, mapBlockIndex);
-            RelayTransaction(tx);
+            RelayTransactionToAllPeers(tx);
             vWorkQueue.push_back(inv.GetHash());
 
             LogPrint("mempool", "%s: peer=%d %s : accepted %s (poolsz %u)\n",
@@ -3263,7 +3265,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                         continue;
                     if(AcceptToMemoryPool(mempool, stateDummy, orphanTx, true, &fMissingInputs2)) {
                         LogPrint("mempool", "   accepted orphan tx %s\n", orphanHash);
-                        RelayTransaction(orphanTx);
+                        RelayTransactionToAllPeers(orphanTx);
                         vWorkQueue.push_back(orphanHash);
                         vEraseQueue.push_back(orphanHash);
                     } else if(!fMissingInputs2) {
@@ -3299,7 +3301,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             // if they are already in the mempool (allowing the node to function
             // as a gateway for nodes hidden behind it).
 
-            RelayTransaction(tx);
+            RelayTransactionToAllPeers(tx);
         }
         } // cs_main
 
@@ -3426,29 +3428,6 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         std::vector<CAddress> vAddr = addrman.GetAddr();
         for(const CAddress& addr: vAddr)
                 pfrom->PushAddress(addr);
-    }
-    else if (strCommand == "mempool")
-    {
-        LOCK2(cs_main, pfrom->cs_filter);
-
-        std::vector<uint256> vtxid;
-        mempool.queryHashes(vtxid);
-        std::vector<CInv> vInv;
-        for(uint256& hash: vtxid) {
-            CInv inv(MSG_TX, hash);
-            CTransaction tx;
-            bool fInMemPool = mempool.lookup(hash, tx);
-            if (!fInMemPool) continue; // another thread removed since queryHashes, maybe...
-            if ((pfrom->pfilter && pfrom->pfilter->IsRelevantAndUpdate(tx)) ||
-                    (!pfrom->pfilter))
-                vInv.push_back(inv);
-            if (vInv.size() == MAX_INV_SZ) {
-                pfrom->PushMessage("inv", vInv);
-                vInv.clear();
-            }
-        }
-        if (vInv.size() > 0)
-            pfrom->PushMessage("inv", vInv);
     }
     else if (strCommand == "alert" && AlertsAreEnabled())
     {
@@ -3830,6 +3809,63 @@ void CollectNonBlockDataToRequestAndRequestIt(CNode* pto, int64_t nNow, std::vec
     if (!vGetData.empty())
         pto->PushMessage("getdata", vGetData);
 }
+
+void RebroadcastSomeMempoolTxs()
+{
+    TRY_LOCK(cs_main,mainLockAcquired);
+    constexpr int maxNumberOfRebroadcastableTransactions = 32;
+    std::vector<const CTransaction*> unconfirmedTransactions(maxNumberOfRebroadcastableTransactions,nullptr);
+    if(mainLockAcquired)
+    {
+        TRY_LOCK(mempool.cs,mempoolLockAcquired);
+        if(mempoolLockAcquired)
+        {
+            LogPrintf("Rebroadcasting mempool transactions\n");
+            int numberOfTransactionsCollected = 0;
+            const  std::map<uint256, CTxMemPoolEntry>& mempoolTxs = mempool.mapTx;
+            for(const auto& mempoolEntryByHash: mempoolTxs)
+            {
+                const CTransaction& tx = mempoolEntryByHash.second.GetTx();
+                bool spendsOtherMempoolTransaction = false;
+                for(const auto& input: tx.vin)
+                {
+                    if(mempoolTxs.count(input.prevout.hash)>0)
+                    {
+                        spendsOtherMempoolTransaction = true;
+                        break;
+                    }
+                }
+                if(!spendsOtherMempoolTransaction)
+                {
+                    unconfirmedTransactions[unconfirmedTransactions.size()] = &tx;
+                    ++numberOfTransactionsCollected;
+                }
+                if(numberOfTransactionsCollected >= maxNumberOfRebroadcastableTransactions) break;
+            }
+            for(const CTransaction* tx: unconfirmedTransactions)
+            {
+                if(!tx) break;
+                RelayTransactionToAllPeers(*tx);
+            }
+            unconfirmedTransactions.clear();
+        }
+    }
+}
+
+void PeriodicallyRebroadcastMempoolTxs()
+{
+    static int64_t timeOfLastBroadcast = 0;
+    static int64_t timeOfNextBroadcast = 0;
+    if(GetTime() < timeOfNextBroadcast) return;
+    bool nextTimeBroadcastNeedsToBeInitialized = (timeOfNextBroadcast == 0);
+    timeOfNextBroadcast = GetTime() + GetRand(30*60);
+    if(nextTimeBroadcastNeedsToBeInitialized) return;
+    if(timeOfLastChainTipUpdate < timeOfLastBroadcast) return;
+    timeOfLastBroadcast = GetTime();
+    if(timeOfLastChainTipUpdate > 0)
+        RebroadcastSomeMempoolTxs();
+}
+
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
@@ -3850,13 +3886,8 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         {
             BeginSyncingWithPeer(pto);
         }
-        if (!fReindex)
-        {
-            g_signals.RebroadcastWalletTransactions();
-        }
-
+        if(!fReindex) PeriodicallyRebroadcastMempoolTxs();
         SendInventoryToPeer(pto,fSendTrickle);
-
         int64_t nNow = GetTimeMicros();
         std::vector<CInv> vGetData;
         {

@@ -244,6 +244,8 @@ public:
     bool CanStakeCoins() const override;
 
     bool IsSpent(const CWalletTx& wtx, unsigned int n) const;
+    bool IsFullySpent(const CWalletTx& wtx) const;
+    void PruneWallet();
 
     bool IsUnlockedForStakingOnly() const;
     bool IsFullyUnlocked() const;

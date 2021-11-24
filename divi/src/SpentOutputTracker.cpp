@@ -43,7 +43,7 @@ std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
         if(!loadedFromDisk)
         {
             CWalletTx& addedTx = (*ret.first).second;
-            addedTx.nOrderPos = transactionRecord_.mapWallet.size();
+            addedTx.nOrderPos = transactionRecord_.size();
             addedTx.nTimeReceived = GetAdjustedTime();
         }
         AddToSpends(ret.first->second);

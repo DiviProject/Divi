@@ -6,7 +6,7 @@
 class CCriticalSection;
 struct WalletTransactionRecord
 {
-private:
+protected:
     CCriticalSection& cs_walletTxRecord;
     const std::string walletFilename_;
     const bool databaseWritesAreDisallowed_;
@@ -20,12 +20,25 @@ public:
 
     WalletTransactionRecord(CCriticalSection& requiredWalletLock,const std::string& walletFilename);
     WalletTransactionRecord(CCriticalSection& requiredWalletLock);
-    const CWalletTx* GetWalletTx(const uint256& hash) const;
+    virtual const CWalletTx* GetWalletTx(const uint256& hash) const;
 
     /** Tries to look up a transaction in the wallet, either by hash (txid) or
      *  the bare txid that is used after segwit-light to identify outputs.  */
-    std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
-    std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction);
+    virtual std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
+    virtual std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction);
+    virtual unsigned size() const;
+};
+
+struct PrunedWalletTransactionRecord final: public WalletTransactionRecord
+{
+private:
+    const unsigned txCountOffset_;
+public:
+    PrunedWalletTransactionRecord(
+        CCriticalSection& requiredWalletLock,
+        const std::string& walletFilename,
+        const unsigned txCountOffset);
+    virtual unsigned size() const override;
 };
 
 #endif// WALLET_TRANSACTION_RECORD_H

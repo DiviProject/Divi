@@ -1102,6 +1102,14 @@ bool CWallet::IsSpent(const CWalletTx& wtx, unsigned int n) const
 {
     return outputTracker_->IsSpent(wtx.GetHash(), n);
 }
+bool CWallet::IsFullySpent(const CWalletTx& wtx) const
+{
+    for(unsigned outputIndex = 0; outputIndex < wtx.vout.size(); ++outputIndex)
+    {
+        if(!outputTracker_->IsSpent(wtx.GetHash(), outputIndex)) return false;
+    }
+    return true;
+}
 
 bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
 {
@@ -1264,6 +1272,36 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
 void CWallet::LoadWalletTransaction(const CWalletTx& wtxIn)
 {
     outputTracker_->UpdateSpends(wtxIn, true).first->RecomputeCachedQuantities();
+}
+
+void CWallet::PruneWallet()
+{
+    LOCK2(cs_main,cs_wallet);
+    constexpr int64_t minimumNumberOfConfs = 20;
+    const int64_t maxNumberOfConfs = std::max(settings.GetArg("-prunewalletconfs", minimumNumberOfConfs),minimumNumberOfConfs);
+    const unsigned totalTxs = transactionRecord_->size();
+    std::vector<CWalletTx> transactionsToKeep;
+    transactionsToKeep.reserve(1024);
+    for(const auto& wtxByHash: transactionRecord_->mapWallet)
+    {
+        const CWalletTx& walletTx = wtxByHash.second;
+        const int64_t numberOfConfs = confirmationNumberCalculator_->FindConfirmedBlockIndexAndDepth(walletTx).second;
+        if( numberOfConfs > -1 && (numberOfConfs < maxNumberOfConfs || !IsFullySpent(walletTx)))
+        {
+            transactionsToKeep.push_back(walletTx);
+        }
+    }
+    outputTracker_.reset();
+    transactionRecord_.reset();
+
+    transactionRecord_.reset(new PrunedWalletTransactionRecord(cs_wallet,strWalletFile,totalTxs));
+    outputTracker_.reset( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) );
+    for(const CWalletTx& reloadedTransaction: transactionsToKeep)
+    {
+        LoadWalletTransaction(reloadedTransaction);
+    }
+    settings.ForceRemoveArg("-prunewalletconfs");
+    LogPrintf("Prunned wallet transactions loaded to memory: Original %u vs. Current %u\n",totalTxs,transactionsToKeep.size());
 }
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)

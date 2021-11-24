@@ -1,6 +1,5 @@
 #include <WalletTransactionRecord.h>
-
-#include <walletdb.h>
+#include <sync.h>
 
 WalletTransactionRecord::WalletTransactionRecord(
     CCriticalSection& requiredWalletLock,

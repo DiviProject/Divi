@@ -62,3 +62,24 @@ std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord:
 
     return res;
 };
+
+unsigned WalletTransactionRecord::size() const
+{
+    AssertLockHeld(cs_walletTxRecord);
+    return mapWallet.size();
+}
+
+PrunedWalletTransactionRecord::PrunedWalletTransactionRecord(
+        CCriticalSection& requiredWalletLock,
+        const std::string& walletFilename,
+        const unsigned txCountOffset
+        ): WalletTransactionRecord(requiredWalletLock,walletFilename)
+        , txCountOffset_(txCountOffset)
+{
+
+}
+unsigned PrunedWalletTransactionRecord::size() const
+{
+    AssertLockHeld(cs_walletTxRecord);
+    return txCountOffset_ + mapWallet.size();
+}

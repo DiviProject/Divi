@@ -1,9 +1,9 @@
 #ifndef WALLET_TRANSACTION_RECORD_H
 #define WALLET_TRANSACTION_RECORD_H
-#include <sync.h>
 #include <uint256.h>
 #include <WalletTx.h>
 #include <map>
+class CCriticalSection;
 struct WalletTransactionRecord
 {
 private:

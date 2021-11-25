@@ -235,12 +235,12 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingNonVaultFundsIfOwnedVaultCoinsRequeste
     BOOST_CHECK(fIsSpendable);
 }
 
-BOOST_AUTO_TEST_CASE(willFindThatTransactionsByDefaultHaveNegativeDepth)
+BOOST_AUTO_TEST_CASE(willFindThatTransactionsByDefaultHaveNonPositiveDepth)
 {
     CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
     unsigned outputIndex=0;
     auto normalTx = fakeWallet.AddDefaultTx(normalScript,outputIndex,100*COIN);
-    BOOST_CHECK_MESSAGE(wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx)==-1,"Found wallet transaction has non-negative depth in empty chain!");
+    BOOST_CHECK_MESSAGE(wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx) < 1,"Found wallet transaction has positive depth in empty chain!");
 }
 
 BOOST_AUTO_TEST_CASE(willFindThatTransactionsWillHaveDepthAccordingToLengthOfChain)

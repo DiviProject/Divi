@@ -84,26 +84,33 @@ bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite
 } // anonymous namespace
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
-  : CWallet(GetWalletFilename(), *c.activeChain, *c.blockIndexByHash),
-    fakeChain(c)
+  : fakeChain(c)
+  , wrappedWallet_()
 {
-  SetDefaultKeyTopUp(3);
-  LoadWallet();
-  //GenerateNewHDChain();
-  SetHDChain(getHDWalletSeedForTesting(),false);
-  SetMinVersion(FEATURE_HD);
-  InitializeDefaultKey();
+  const std::string filename = GetWalletFilename();
+  {
+    wrappedWallet_.reset(new CWallet(filename,*fakeChain.activeChain, *fakeChain.blockIndexByHash));
+    wrappedWallet_->LoadWallet();
+    wrappedWallet_->GetDatabaseBackend()->WriteHDChain(getHDWalletSeedForTesting());
+    wrappedWallet_.reset();
+  }
+  wrappedWallet_.reset(new CWallet(filename,*fakeChain.activeChain, *fakeChain.blockIndexByHash));
+  wrappedWallet_->SetDefaultKeyTopUp(3);
+  wrappedWallet_->LoadWallet();
+  wrappedWallet_->SetMinVersion(FEATURE_HD);
+  wrappedWallet_->InitializeDefaultKey();
 }
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)
-  : CWallet(walletFilename, *c.activeChain, *c.blockIndexByHash)
-  , fakeChain(c)
+  : fakeChain(c)
+  , wrappedWallet_(new CWallet(walletFilename, *fakeChain.activeChain, *fakeChain.blockIndexByHash))
 {
-  LoadWallet();
+  wrappedWallet_->LoadWallet();
 }
 
 FakeWallet::~FakeWallet()
 {
+  wrappedWallet_.reset();
 }
 
 void FakeWallet::AddBlock()
@@ -121,8 +128,8 @@ const CWalletTx& FakeWallet::AddDefaultTx(const CScript& scriptToPayTo, unsigned
 {
   const CTransaction tx = createDefaultTransaction(scriptToPayTo, outputIndex, amount);
   CWalletTx wtx(tx);
-  AddToWallet(wtx);
-  const CWalletTx* txPtr = GetWalletTx(wtx.GetHash());
+  wrappedWallet_->AddToWallet(wtx);
+  const CWalletTx* txPtr = wrappedWallet_->GetWalletTx(wtx.GetHash());
   assert(txPtr);
   return *txPtr;
 }
@@ -133,7 +140,7 @@ void FakeWallet::FakeAddToChain(const CWalletTx& tx)
   txPtr->hashBlock = fakeChain.activeChain->Tip()->GetBlockHash();
   txPtr->merkleBranchIndex = 0;
   txPtr->fMerkleVerified = true;
-  WriteTxToDisk(this,*txPtr);
+  WriteTxToDisk(wrappedWallet_.get(),*txPtr);
 }
 
 bool FakeWallet::TransactionIsInMainChain(const CWalletTx* walletTx) const
@@ -152,7 +159,7 @@ bool FakeWallet::TransactionIsInMainChain(const CWalletTx* walletTx) const
 
 void FakeWallet::SetConfirmedTxsToVerified()
 {
-  std::vector<const CWalletTx*> allTransactions = GetWalletTransactionReferences();
+  std::vector<const CWalletTx*> allTransactions = wrappedWallet_->GetWalletTransactionReferences();
   for(auto txPtrCopy: allTransactions)
   {
     if(TransactionIsInMainChain(txPtrCopy))
@@ -165,6 +172,6 @@ void FakeWallet::SetConfirmedTxsToVerified()
 CPubKey FakeWallet::getNewKey()
 {
   CPubKey nextKeyGenerated;
-  GetKeyFromPool(nextKeyGenerated, false);
+  wrappedWallet_->GetKeyFromPool(nextKeyGenerated, false);
   return nextKeyGenerated;
 }

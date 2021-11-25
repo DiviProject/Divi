@@ -18,7 +18,7 @@ class CScript;
  *  that need to exercise wallet functions.
  *
  *  The FakeWallet will hold cs_wallet automatically.  */
-class FakeWallet : public CWallet
+class FakeWallet
 {
 
 private:
@@ -28,6 +28,7 @@ private:
 
   /** The fake chain that we use for the wallet.  */
   FakeBlockIndexWithHashes& fakeChain;
+  std::unique_ptr<CWallet> wrappedWallet_;
 
 public:
 
@@ -35,6 +36,9 @@ public:
   explicit FakeWallet(FakeBlockIndexWithHashes& c);
   explicit FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename);
   ~FakeWallet ();
+
+  operator CWallet&() const { return *wrappedWallet_; }
+  operator const CWallet&() const { return *wrappedWallet_; }
 
   /** Adds a new block to our fake chain.  */
   void AddBlock();

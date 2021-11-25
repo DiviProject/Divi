@@ -16,8 +16,7 @@ class UIMessenger;
 class CMasternodePayments;
 class CKeyStore;
 
-class CChain;
-class BlockMap;
+class ChainstateManager;
 class MasternodeNetworkMessageManager;
 class MasternodePaymentData;
 class CMasternodeConfig;
@@ -33,8 +32,6 @@ class MasternodeModule
 {
 private:
     bool fMasterNode_;
-    const CChain& activeChain_;
-    const BlockMap& blockIndexByHash_;
     std::unique_ptr<CNetFulfilledRequestManager> networkFulfilledRequestManager_;
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
     std::unique_ptr<MasternodePaymentData> masternodePaymentData_;
@@ -48,8 +45,7 @@ public:
     MasternodeModule(
         const I_Clock& clock,
         const I_PeerSyncQueryService& peerSyncQueryService,
-        const CChain& activeChain,
-        const BlockMap& blockIndexByHash,
+        const ChainstateManager& chainstate,
         CAddrMan& addressManager);
     ~MasternodeModule();
 

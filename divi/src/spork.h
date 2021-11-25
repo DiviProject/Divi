@@ -7,6 +7,7 @@
 #define SPORK_H
 
 #include "key.h"
+#include <ChainstateManager.h>
 #include "pubkey.h"
 #include <amount.h>
 
@@ -165,6 +166,7 @@ struct TxFeeSporkValue : public SporkMultiValue {
 class CSporkManager
 {
 private:
+    const ChainstateManager chainstate_;
     std::unique_ptr<CSporkDB> pSporkDB_;
     std::vector<unsigned char> vchSig;
     // Some sporks require to have history, we will use sorted vector for this approach.
@@ -173,11 +175,11 @@ private:
     CPubKey sporkPubKey;
     CKey sporkPrivKey;
 
-private:
     bool AddActiveSpork(const CSporkMessage &spork);
     bool IsNewerSpork(const CSporkMessage &spork) const;
     void ExecuteSpork(int nSporkID);
     void ExecuteMultiValueSpork(int nSporkID);
+    int64_t GetBlockTime(int nHeight) const;
 
 public:
 

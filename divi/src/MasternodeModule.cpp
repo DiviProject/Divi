@@ -3,6 +3,7 @@
 #include <utiltime.h>
 #include <chrono>
 
+#include <ChainstateManager.h>
 #include <masternode-sync.h>
 #include <masternode-payments.h>
 #include <masternodeman.h>
@@ -37,8 +38,6 @@
 #include <I_BlockchainSyncQueryService.h>
 
 bool fLiteMode = false;
-extern CChain chainActive;
-extern BlockMap mapBlockIndex;
 
 class LocalClock final: public I_Clock
 {
@@ -59,25 +58,23 @@ public:
 };
 
 LocalClock localClock;
-MasternodeModule mnModule(localClock,GetPeerSyncQueryService(),chainActive,mapBlockIndex,GetNetworkAddressManager());
+ChainstateManager localChainstate;
+MasternodeModule mnModule(localClock, GetPeerSyncQueryService(), localChainstate, GetNetworkAddressManager());
 
 MasternodeModule::MasternodeModule(
     const I_Clock& clock,
     const I_PeerSyncQueryService& peerSyncQueryService,
-    const CChain& activeChain,
-    const BlockMap& blockIndexByHash,
+    const ChainstateManager& chainstate,
     CAddrMan& addressManager
     ): fMasterNode_(false)
-    , activeChain_(activeChain)
-    , blockIndexByHash_(blockIndexByHash)
     , networkFulfilledRequestManager_(new CNetFulfilledRequestManager(clock))
     , networkMessageManager_( new MasternodeNetworkMessageManager)
     , masternodePaymentData_(new MasternodePaymentData)
     , masternodeConfig_( new CMasternodeConfig)
     , activeMasternode_(new CActiveMasternode(*masternodeConfig_, fMasterNode_))
     , masternodeSync_(new CMasternodeSync(*networkFulfilledRequestManager_,peerSyncQueryService,clock,*networkMessageManager_,*masternodePaymentData_))
-    , mnodeman_(new CMasternodeMan(*networkMessageManager_,*masternodeSync_,activeChain_,blockIndexByHash_,addressManager,*activeMasternode_))
-    , masternodePayments_(new CMasternodePayments(*networkFulfilledRequestManager_,*masternodePaymentData_,*networkMessageManager_,*mnodeman_,*masternodeSync_,activeChain_))
+    , mnodeman_(new CMasternodeMan(*networkMessageManager_, *masternodeSync_, chainstate.ActiveChain(), chainstate.GetBlockMap(), addressManager, *activeMasternode_))
+    , masternodePayments_(new CMasternodePayments(*networkFulfilledRequestManager_, *masternodePaymentData_, *networkMessageManager_, *mnodeman_, *masternodeSync_, chainstate.ActiveChain()))
 {
 }
 

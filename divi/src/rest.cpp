@@ -5,6 +5,7 @@
 
 #include "main.h"
 #include "BlockDiskAccessor.h"
+#include "ChainstateManager.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "rpcserver.h"
@@ -21,7 +22,6 @@
 using namespace std;
 using namespace json_spirit;
 
-extern BlockMap mapBlockIndex;
 extern CCriticalSection cs_main;
 
 enum RetFormat {
@@ -114,10 +114,14 @@ static bool rest_block(AcceptedConnection* conn,
     CBlockIndex* pblockindex = NULL;
     {
         LOCK(cs_main);
-        if (mapBlockIndex.count(hash) == 0)
+        const ChainstateManager chainstate;
+        const auto& blockMap = chainstate.GetBlockMap();
+
+        const auto mit = blockMap.find(hash);
+        if (mit == blockMap.end())
             throw RESTERR(HTTP_NOT_FOUND, hashStr + " not found");
 
-        pblockindex = mapBlockIndex[hash];
+        pblockindex = mit->second;
         if (!ReadBlockFromDisk(block, pblockindex))
             throw RESTERR(HTTP_NOT_FOUND, hashStr + " not found");
     }

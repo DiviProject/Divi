@@ -5,21 +5,19 @@
 #include <vector>
 #include <boost/thread/recursive_mutex.hpp>
 class I_StakingWallet;
-class CChain;
 class CChainParams;
+class ChainstateManager;
 class CNode;
 class CMasternodeSync;
 typedef std::map<unsigned int, unsigned int> BlockTimestampsByHeight;
 class I_BlockFactory;
 class CTxMemPool;
 class CCriticalSection;
-class BlockMap;
 class I_CoinMinter;
 class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
-class BlockMap;
 class CMasternodePayments;
 class ProofOfStakeModule;
 class CSporkManager;
@@ -43,11 +41,9 @@ public:
         const Settings& settings,
         CCriticalSection& mainCS,
         const CChainParams& chainParameters,
-        const CChain& activeChain,
-        const BlockMap& blockIndexByHash,
+        const ChainstateManager& chainstate,
         const MasternodeModule& masternodeModule,
         const CFeeRate& relayTxFeeCalculator,
-        CCoinsViewCache* baseCoinsViewCache,
         CTxMemPool& mempool,
         const I_PeerBlockNotifyService& peers,
         I_StakingWallet& wallet,

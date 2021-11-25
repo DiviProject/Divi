@@ -1,5 +1,6 @@
 #include <CoinMintingModule.h>
 #include <BlockFactory.h>
+#include <ChainstateManager.h>
 #include <CoinMinter.h>
 #include <sync.h>
 #include <ExtendedBlockFactory.h>
@@ -46,17 +47,15 @@ CoinMintingModule::CoinMintingModule(
     const Settings& settings,
     CCriticalSection& mainCS,
     const CChainParams& chainParameters,
-    const CChain& activeChain,
-    const BlockMap& blockIndexByHash,
+    const ChainstateManager& chainstate,
     const MasternodeModule& masternodeModule,
     const CFeeRate& relayTxFeeCalculator,
-    CCoinsViewCache* baseCoinsViewCache,
     CTxMemPool& mempool,
     const I_PeerBlockNotifyService& peerNotifier,
     I_StakingWallet& wallet,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
     const CSporkManager& sporkManager
-    ): posModule_(new ProofOfStakeModule(chainParameters,activeChain,blockIndexByHash))
+    ): posModule_(new ProofOfStakeModule(chainParameters, chainstate.ActiveChain(), chainstate.GetBlockMap()))
     , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
         chainParameters,
@@ -65,17 +64,17 @@ CoinMintingModule::CoinMintingModule(
         blockSubsidyContainer_->blockSubsidiesProvider()))
     , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(
         settings,
-        baseCoinsViewCache,
-        activeChain,
-        blockIndexByHash,
+        &chainstate.CoinsTip(),
+        chainstate.ActiveChain(),
+        chainstate.GetBlockMap(),
         mempool,
         mainCS,
         relayTxFeeCalculator))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(
         settings,
         chainParameters,
-        activeChain,
-        blockIndexByHash,
+        chainstate.ActiveChain(),
+        chainstate.GetBlockMap(),
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockIncentivesPopulator_,
         posModule_->proofOfStakeGenerator(),
@@ -87,10 +86,10 @@ CoinMintingModule::CoinMintingModule(
             *blockTransactionCollector_,
             *coinstakeTransactionCreator_,
             settings,
-            activeChain,
+            chainstate.ActiveChain(),
             chainParameters))
     , coinMinter_( new CoinMinter(
-        activeChain,
+        chainstate.ActiveChain(),
         chainParameters,
         peerNotifier,
         masternodeModule.getMasternodeSynchronization(),

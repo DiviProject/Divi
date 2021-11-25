@@ -40,7 +40,8 @@ const CHDChain& getHDWalletSeedForTesting()
   if (toBeConstructed)
   {
     FakeBlockIndexWithHashes dummyChain(1, 1600000000, 1);
-    CWallet wallet("test_wallet.dat", *dummyChain.activeChain, *dummyChain.blockIndexByHash);
+    FakeMerkleTxConfirmationNumberCalculator confsCalculator(*dummyChain.activeChain, *dummyChain.blockIndexByHash);
+    CWallet wallet("test_wallet.dat", *dummyChain.activeChain, *dummyChain.blockIndexByHash,confsCalculator);
     wallet.SetDefaultKeyTopUp(1);
     wallet.LoadWallet();
     wallet.GenerateNewHDChain();
@@ -85,16 +86,17 @@ bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
   : fakeChain(c)
+  , confirmationsCalculator_(new FakeMerkleTxConfirmationNumberCalculator(*fakeChain.activeChain, *fakeChain.blockIndexByHash))
   , wrappedWallet_()
 {
   const std::string filename = GetWalletFilename();
   {
-    wrappedWallet_.reset(new CWallet(filename,*fakeChain.activeChain, *fakeChain.blockIndexByHash));
+    wrappedWallet_.reset(new CWallet(filename,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
     wrappedWallet_->LoadWallet();
     wrappedWallet_->GetDatabaseBackend()->WriteHDChain(getHDWalletSeedForTesting());
     wrappedWallet_.reset();
   }
-  wrappedWallet_.reset(new CWallet(filename,*fakeChain.activeChain, *fakeChain.blockIndexByHash));
+  wrappedWallet_.reset(new CWallet(filename,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
   wrappedWallet_->SetDefaultKeyTopUp(3);
   wrappedWallet_->LoadWallet();
   wrappedWallet_->SetMinVersion(FEATURE_HD);
@@ -103,7 +105,8 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)
   : fakeChain(c)
-  , wrappedWallet_(new CWallet(walletFilename, *fakeChain.activeChain, *fakeChain.blockIndexByHash))
+  , confirmationsCalculator_(new FakeMerkleTxConfirmationNumberCalculator(*fakeChain.activeChain, *fakeChain.blockIndexByHash))
+  , wrappedWallet_(new CWallet(walletFilename, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_))
 {
   wrappedWallet_->LoadWallet();
 }

@@ -49,6 +49,7 @@
 #include <txmempool.h>
 #include <WalletRescanner.h>
 #include <StartAndShutdownSignals.h>
+#include <MerkleTxConfirmationNumberCalculator.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
@@ -78,14 +79,6 @@
 #include <ValidationState.h>
 #include <verifyDb.h>
 
-#ifdef ENABLE_WALLET
-CWallet* pwalletMain = NULL;
-constexpr int nWalletBackups = 20;
-
-/**
- * Wallet Settings
- */
-#endif
 extern CCriticalSection cs_main;
 extern CChain chainActive;
 extern Settings& settings;
@@ -104,6 +97,16 @@ extern CCoinsViewCache* pcoinsTip;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
+#ifdef ENABLE_WALLET
+std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
+CWallet* pwalletMain = NULL;
+constexpr int nWalletBackups = 20;
+
+/**
+ * Wallet Settings
+ */
+#endif
+
 
 //! -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
 static const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
@@ -117,6 +120,28 @@ bool fAddressIndex = false;
 bool fSpentIndex = false;
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
 CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate(), fAddressIndex, fSpentIndex);
+
+void InitializeWallet(std::string strWalletFile)
+{
+#ifdef ENABLE_WALLET
+    confirmationsCalculator.reset(
+        new MerkleTxConfirmationNumberCalculator(
+            chainActive,
+            mapBlockIndex,
+            Params().COINBASE_MATURITY(),
+            mempool,
+            cs_main));
+    pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex, *confirmationsCalculator);
+#endif
+}
+void DeallocateWallet()
+{
+#ifdef ENABLE_WALLET
+    delete pwalletMain;
+    pwalletMain = nullptr;
+    confirmationsCalculator.reset();
+#endif
+}
 
 bool static InitError(const std::string& str)
 {
@@ -326,8 +351,7 @@ void MainShutdown()
 
 // Shutdown part 2: delete wallet instance
 #ifdef ENABLE_WALLET
-    delete pwalletMain;
-    pwalletMain = NULL;
+    DeallocateWallet();
 #endif
     CleanupP2PConnections();
     LogPrintf("%s: done\n", __func__);
@@ -899,7 +923,7 @@ enum LoadWalletResult
 
 LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream& strErrors)
 {
-    pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex);
+    InitializeWallet(strWalletFile);
     pwalletMain->NotifyTransactionChanged.connect(&ExternalNotificationScript);
     DBErrors nLoadWalletRet = pwalletMain->LoadWallet();
     const bool fFirstRun = nLoadWalletRet == DB_LOAD_OK_FIRST_RUN;

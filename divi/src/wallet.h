@@ -153,7 +153,7 @@ private:
     std::string strWalletFile;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
-    std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationNumberCalculator_;
+    const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator_;
     std::unique_ptr<I_VaultManagerDatabase> vaultDB_;
     std::unique_ptr<VaultManager> vaultManager_;
     std::unique_ptr<WalletTransactionRecord> transactionRecord_;
@@ -215,8 +215,15 @@ protected:
     bool SetHDChain(const CHDChain& chain, bool memonly) override;
 
 public:
-    explicit CWallet(const CChain& chain, const BlockMap& blockMap);
-    explicit CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap);
+    explicit CWallet(
+        const CChain& chain,
+        const BlockMap& blockMap,
+        const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator);
+    explicit CWallet(
+        const std::string& strWalletFileIn,
+        const CChain& chain,
+        const BlockMap& blockMap,
+        const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator);
     ~CWallet();
 
     std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;

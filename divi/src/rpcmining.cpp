@@ -9,6 +9,7 @@
 #include "base58.h"
 #include <chain.h>
 #include "chainparams.h"
+#include <ChainstateManager.h>
 #include "core_io.h"
 #include "init.h"
 #include "main.h"
@@ -47,10 +48,8 @@ using namespace boost::assign;
 extern Settings& settings;
 extern CWallet* pwalletMain;
 extern CCoinsViewCache* pcoinsTip;
-extern BlockMap mapBlockIndex;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern CChain chainActive;
 
 LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
 #ifdef ENABLE_WALLET
@@ -92,9 +91,12 @@ Value setgenerate(const Array& params, bool fHelp)
     int nHeightEnd = 0;
     int nHeight = 0;
 
+    const ChainstateManager chainstate;
+    const auto& chain = chainstate.ActiveChain();
+
     { // Don't keep cs_main locked
         LOCK(cs_main);
-        nHeightStart = chainActive.Height();
+        nHeightStart = chain.Height();
         nHeight = nHeightStart;
         nHeightEnd = nHeightStart + numberOfBlocks;
     }
@@ -114,8 +116,8 @@ Value setgenerate(const Array& params, bool fHelp)
 
         // Don't keep cs_main locked
         LOCK(cs_main);
-        if(nHeight == chainActive.Height())
-            blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
+        if(nHeight == chain.Height())
+            blockHashes.push_back(chain.Tip()->GetBlockHash().GetHex());
     }
     return blockHashes;
 }
@@ -150,9 +152,12 @@ Value generateblock(const Array& params, bool fHelp)
 
     int nHeight = 0;
 
+    const ChainstateManager chainstate;
+    const auto& chain = chainstate.ActiveChain();
+
     { // Don't keep cs_main locked
         LOCK(cs_main);
-        nHeight = chainActive.Height();
+        nHeight = chain.Height();
     }
 
     const CoinMintingModule& mintingModule = GetCoinMintingModule();
@@ -203,11 +208,11 @@ Value generateblock(const Array& params, bool fHelp)
     // Don't keep cs_main locked
     LOCK(cs_main);
 
-    if (!newBlockAdded || chainActive.Height() != nHeight + 1)
+    if (!newBlockAdded || chain.Height() != nHeight + 1)
     {
         throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
     }
-    return chainActive.Tip()->GetBlockHash().GetHex();
+    return chain.Tip()->GetBlockHash().GetHex();
 }
 #endif
 
@@ -231,8 +236,10 @@ Value getmininginfo(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmininginfo", "") + HelpExampleRpc("getmininginfo", ""));
 
+    const ChainstateManager chainstate;
+
     Object obj;
-    obj.push_back(Pair("blocks", (int)chainActive.Height()));
+    obj.push_back(Pair("blocks", (int)chainstate.ActiveChain().Height()));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
     obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));

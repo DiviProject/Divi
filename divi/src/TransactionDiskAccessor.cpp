@@ -1,6 +1,7 @@
 #include <TransactionDiskAccessor.h>
 
 #include <BlockDiskAccessor.h>
+#include <ChainstateManager.h>
 #include <sync.h>
 #include <txmempool.h>
 #include <coins.h>
@@ -12,14 +13,13 @@
 
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern CBlockTreeDB* pblocktree;
 extern bool fTxIndex;
-extern CCoinsViewCache* pcoinsTip;
-extern CChain chainActive;
 
 /** Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock */
 bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow)
 {
+    const ChainstateManager chainstate;
+
     const CBlockIndex* pindexSlow = NULL;
     {
         LOCK(cs_main);
@@ -31,7 +31,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
 
         if (fTxIndex) {
             CDiskTxPos postx;
-            if (pblocktree->ReadTxIndex(hash, postx)) {
+            if (chainstate.BlockTree().ReadTxIndex(hash, postx)) {
                 CAutoFile file(OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
                 if (file.IsNull())
                     return error("%s: OpenBlockFile failed", __func__);
@@ -57,13 +57,12 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
         if (fAllowSlow) { // use coin database to locate block that contains transaction, and scan it
             int nHeight = -1;
             {
-                CCoinsViewCache& view = *pcoinsTip;
-                const CCoins* coins = view.AccessCoins(hash);
+                const CCoins* coins = chainstate.CoinsTip().AccessCoins(hash);
                 if (coins)
                     nHeight = coins->nHeight;
             }
             if (nHeight > 0)
-                pindexSlow = chainActive[nHeight];
+                pindexSlow = chainstate.ActiveChain()[nHeight];
         }
     }
 
@@ -87,7 +86,8 @@ bool CollateralIsExpectedAmount(const COutPoint &outpoint, int64_t expectedAmoun
 {
     CCoins coins;
     LOCK(cs_main);
-    if (!pcoinsTip->GetCoins(outpoint.hash, coins))
+    const ChainstateManager chainstate;
+    if (!chainstate.CoinsTip().GetCoins(outpoint.hash, coins))
         return false;
 
     int n = outpoint.n;

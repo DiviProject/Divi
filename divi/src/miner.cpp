@@ -9,6 +9,7 @@
 
 #include "amount.h"
 #include "chainparams.h"
+#include <ChainstateManager.h>
 #include <masternode-payments.h>
 #include <MasternodeModule.h>
 #include <CoinMintingModule.h>
@@ -27,11 +28,8 @@
 #include <boost/tuple/tuple.hpp>
 
 extern Settings& settings;
-extern CCoinsViewCache* pcoinsTip;
-extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern BlockMap mapBlockIndex;
 
 
 LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight()
@@ -48,16 +46,15 @@ void InitializeCoinMintingModule(I_StakingWallet* pwallet)
     static const CChainParams& chainParameters = Params();
     static const MasternodeModule& masternodeModule = GetMasternodeModule();
     static const I_PeerBlockNotifyService& peerNotification = GetPeerBlockNotifyService();
+    static const ChainstateManager chainstate;
     coinMintingModule.reset(
         new CoinMintingModule(
             settings,
             cs_main,
             chainParameters,
-            chainActive,
-            mapBlockIndex,
+            chainstate,
             masternodeModule,
             FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
-            pcoinsTip,
             mempool,
             peerNotification,
             *pwallet,
@@ -125,10 +122,11 @@ void MinterThread(I_CoinMinter& minter)
 bool HasRecentlyAttemptedToGenerateProofOfStake()
 {
     static const LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
+    const ChainstateManager chainstate;
     bool recentlyAttemptedPoS = false;
-    if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
+    if (mapHashedBlocks.count(chainstate.ActiveChain().Tip()->nHeight))
         recentlyAttemptedPoS = true;
-    else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1))
+    else if (mapHashedBlocks.count(chainstate.ActiveChain().Tip()->nHeight - 1))
         recentlyAttemptedPoS = true;
 
     return recentlyAttemptedPoS;

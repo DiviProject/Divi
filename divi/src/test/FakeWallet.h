@@ -9,6 +9,7 @@
 #include "wallet.h"
 
 #include "test/FakeBlockIndexChain.h"
+#include "test/FakeMerkleTxConfirmationNumberCalculator.h"
 
 #include <cstdint>
 
@@ -28,6 +29,7 @@ private:
 
   /** The fake chain that we use for the wallet.  */
   FakeBlockIndexWithHashes& fakeChain;
+  std::unique_ptr<FakeMerkleTxConfirmationNumberCalculator> confirmationsCalculator_;
   std::unique_ptr<CWallet> wrappedWallet_;
 
 public:

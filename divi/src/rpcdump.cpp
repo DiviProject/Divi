@@ -22,6 +22,7 @@
 #include "utiltime.h"
 #include "wallet.h"
 #include <clientversion.h>
+#include <I_MerkleTxConfirmationNumberCalculator.h>
 
 #include <fstream>
 #include <secp256k1.h>
@@ -541,6 +542,23 @@ static bool CheckIntegrity(const std::string strAddress,const std::string strKey
     return addressParsed.compare(strAddress)==0;
 }
 
+class DummyConfirmationCalculator final: public I_MerkleTxConfirmationNumberCalculator
+{
+public:
+    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const override
+    {
+        return std::make_pair(nullptr,-1);
+    }
+    int GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const override
+    {
+        return -1;
+    }
+    int GetBlocksToMaturity(const CMerkleTx& merkleTx) const override
+    {
+        return 1000;
+    }
+};
+
 Value bip38paperwallet(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
@@ -564,7 +582,8 @@ Value bip38paperwallet(const Array& params, bool fHelp)
     {
         CChain dummyChain;
         BlockMap dummyBlockMap;
-        std::unique_ptr<CWallet> temporaryWallet(new CWallet(walletDummyFilename,dummyChain,dummyBlockMap));
+        DummyConfirmationCalculator dummyConfs;
+        std::unique_ptr<CWallet> temporaryWallet(new CWallet(walletDummyFilename,dummyChain,dummyBlockMap,dummyConfs));
         temporaryWallet->SetDefaultKeyTopUp(1);
         temporaryWallet->LoadWallet();
         temporaryWallet->GenerateNewHDChain();

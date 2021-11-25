@@ -25,4 +25,6 @@ void EnableMainSignals();
 void EnableUnitTestSignals();
 bool InitializeDivi(boost::thread_group& threadGroup);
 int ScanForWalletTransactions(CWallet& walletToRescan, CBlockIndex* scanStartIndex, bool updateWallet = false);
+void InitializeWallet(std::string strWalletFile);
+void DeallocateWallet();
 #endif // BITCOIN_INIT_H

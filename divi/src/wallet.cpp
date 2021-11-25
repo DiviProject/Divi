@@ -173,23 +173,20 @@ std::set<CTxDestination> AddressBookManager::GetAccountAddresses(std::string str
 }
 
 
-CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
+CWallet::CWallet(
+    const CChain& chain,
+    const BlockMap& blockMap,
+    const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator
     ): cs_wallet()
     , fFileBacked(false)
     , strWalletFile()
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
-    , confirmationNumberCalculator_(
-        new MerkleTxConfirmationNumberCalculator(
-            activeChain_,
-            blockIndexByHash_,
-            Params().COINBASE_MATURITY(),
-            mempool,
-            cs_main))
+    , confirmationNumberCalculator_(confirmationNumberCalculator)
     , vaultDB_()
     , vaultManager_()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
-    , outputTracker_( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) )
+    , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
     , pwalletdbEncryption()
     , nWalletVersion(FEATURE_BASE)
     , nWalletMaxVersion(FEATURE_BASE)
@@ -212,8 +209,12 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     SetNull();
 }
 
-CWallet::CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap)
-  : CWallet(chain, blockMap)
+CWallet::CWallet(
+    const std::string& strWalletFileIn,
+    const CChain& chain,
+    const BlockMap& blockMap,
+    const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator
+    ): CWallet(chain, blockMap,confirmationNumberCalculator)
 {
     strWalletFile = strWalletFileIn;
     fFileBacked = true;
@@ -226,7 +227,6 @@ CWallet::~CWallet()
     transactionRecord_.reset();
     vaultManager_.reset();
     vaultDB_.reset();
-    confirmationNumberCalculator_.reset();
 }
 
 std::shared_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
@@ -247,7 +247,7 @@ void CWallet::activateVaultMode()
         const std::string keystring = vchDefaultKey.GetID().ToString();
         const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
         vaultDB_.reset(new VaultManagerDatabase(vaultID,0));
-        vaultManager_.reset(new VaultManager(*confirmationNumberCalculator_,*vaultDB_));
+        vaultManager_.reset(new VaultManager(confirmationNumberCalculator_,*vaultDB_));
         for(const std::string& whitelistedVaultScript: settings.GetMultiParameter("-whitelisted_vault"))
         {
             auto byteVector = ParseHex(whitelistedVaultScript);
@@ -378,7 +378,7 @@ void CWallet::toggleSpendingZeroConfirmationOutputs()
 }
 const I_MerkleTxConfirmationNumberCalculator& CWallet::getConfirmationCalculator() const
 {
-    return *confirmationNumberCalculator_;
+    return confirmationNumberCalculator_;
 }
 
 
@@ -509,7 +509,7 @@ CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& f
 CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (walletTransaction.IsCoinBase() && confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0)
+    if (walletTransaction.IsCoinBase() && confirmationNumberCalculator_.GetBlocksToMaturity(walletTransaction) > 0)
         return 0;
 
     CAmount credit = 0;
@@ -1285,7 +1285,7 @@ void CWallet::PruneWallet()
     for(const auto& wtxByHash: transactionRecord_->mapWallet)
     {
         const CWalletTx& walletTx = wtxByHash.second;
-        const int64_t numberOfConfs = confirmationNumberCalculator_->FindConfirmedBlockIndexAndDepth(walletTx).second;
+        const int64_t numberOfConfs = confirmationNumberCalculator_.FindConfirmedBlockIndexAndDepth(walletTx).second;
         if( numberOfConfs > -1 && (numberOfConfs < maxNumberOfConfs || !IsFullySpent(walletTx)))
         {
             transactionsToKeep.push_back(walletTx);
@@ -1295,7 +1295,7 @@ void CWallet::PruneWallet()
     transactionRecord_.reset();
 
     transactionRecord_.reset(new PrunedWalletTransactionRecord(cs_wallet,strWalletFile,totalTxs));
-    outputTracker_.reset( new SpentOutputTracker(*transactionRecord_,*confirmationNumberCalculator_) );
+    outputTracker_.reset( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) );
     for(const CWalletTx& reloadedTransaction: transactionsToKeep)
     {
         LoadWalletTransaction(reloadedTransaction);
@@ -1401,7 +1401,7 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock,const
 void CWallet::RelayWalletTransaction(const CWalletTx& walletTransaction)
 {
     if (!walletTransaction.IsCoinBase() && !walletTransaction.IsCoinStake()) {
-        if (confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) == 0)
+        if (confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction) == 0)
         {
             LogPrintf("Relaying wtx %s\n", walletTransaction.ToStringShort());
             RelayTransactionToAllPeers(static_cast<CTransaction>(walletTransaction));
@@ -1490,7 +1490,7 @@ void CWallet::ReacceptWalletTransactions()
     for(const std::pair<int64_t,const CWalletTx*>& item: orderedTransactions)
     {
         const CWalletTx& wtx = *(item.second);
-        int nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(wtx);
+        int nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(wtx);
 
         if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0)
         {
@@ -1503,8 +1503,8 @@ void CWallet::ReacceptWalletTransactions()
 CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache) const
 {
     if ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) &&
-        confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0 &&
-        confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction) > 0)
+        confirmationNumberCalculator_.GetBlocksToMaturity(walletTransaction) > 0 &&
+        confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction) > 0)
     {
         if (fUseCache && walletTransaction.fImmatureCreditCached)
             return walletTransaction.nImmatureCreditCached;
@@ -1519,7 +1519,7 @@ CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUse
 CAmount CWallet::GetAvailableCredit(const CWalletTx& walletTransaction, bool fUseCache) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (confirmationNumberCalculator_->GetBlocksToMaturity(walletTransaction) > 0)
+    if (confirmationNumberCalculator_.GetBlocksToMaturity(walletTransaction) > 0)
         return 0;
 
     if (fUseCache && walletTransaction.fAvailableCreditCached)
@@ -1618,7 +1618,7 @@ CAmount CWallet::GetUnconfirmedBalance() const
         LOCK2(cs_main, cs_wallet);
         for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin) == 0))
+            if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*pcoin) == 0))
                 nTotal += GetAvailableCredit(*pcoin);
         }
         if(vaultManager_)
@@ -1665,10 +1665,10 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
     if (fOnlyConfirmed && !IsTrusted(*pcoin))
         return false;
 
-    if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && confirmationNumberCalculator_->GetBlocksToMaturity(*pcoin) > 0)
+    if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && confirmationNumberCalculator_.GetBlocksToMaturity(*pcoin) > 0)
         return false;
 
-    nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin);
+    nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*pcoin);
 
     // We should not consider coins which aren't at least in our mempool
     // It's possible for these to be conflicted via ancestors which we may never be able to detect
@@ -2589,10 +2589,10 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
             if (!IsFinalTx(*pcoin, activeChain_) || !IsTrusted(*pcoin))
                 continue;
 
-            if (pcoin->IsCoinBase() && confirmationNumberCalculator_->GetBlocksToMaturity(*pcoin) > 0)
+            if (pcoin->IsCoinBase() && confirmationNumberCalculator_.GetBlocksToMaturity(*pcoin) > 0)
                 continue;
 
-            int nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(*pcoin);
+            int nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*pcoin);
             if (nDepth < ( DebitsFunds(*pcoin,isminetype::ISMINE_SPENDABLE) ? 0 : 1))
                 continue;
 
@@ -2741,7 +2741,7 @@ bool CWallet::IsTrusted(const CWalletTx& walletTransaction) const
     // Quick answer in most cases
     if (!IsFinalTx(walletTransaction, activeChain_))
         return false;
-    int nDepth = confirmationNumberCalculator_->GetNumberOfBlockConfirmations(walletTransaction);
+    int nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction);
     if (nDepth >= 1)
         return true;
     if (nDepth < 0)

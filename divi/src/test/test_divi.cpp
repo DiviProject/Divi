@@ -60,7 +60,7 @@ struct TestingSetup {
         pcoinsTip = new CCoinsViewCache(pcoinsdbview);
         InitBlockIndex();
 #ifdef ENABLE_WALLET
-        pwalletMain = new CWallet("wallet.dat", chainActive, mapBlockIndex);
+        InitializeWallet("wallet.dat");
         pwalletMain->LoadWallet();
         RegisterValidationInterface(pwalletMain);
 #endif
@@ -76,8 +76,7 @@ struct TestingSetup {
         threadGroup.join_all();
         UnregisterNodeSignals(GetNodeSignals());
 #ifdef ENABLE_WALLET
-        delete pwalletMain;
-        pwalletMain = NULL;
+        DeallocateWallet();
 #endif
         delete pcoinsTip;
         delete pcoinsdbview;

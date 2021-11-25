@@ -19,6 +19,7 @@
 #include <random.h>
 
 #include <test/FakeBlockIndexChain.h>
+#include <test/FakeWallet.h>
 // how many times to run all the tests to have a chance to catch errors that only show up with particular random shuffles
 #define RUN_TESTS 100
 
@@ -45,12 +46,14 @@ class WalletTestFixture
 protected:
 
   FakeBlockIndexWithHashes fakeChain;
-  CWallet wallet;
+  FakeWallet fakeWallet;
+  CWallet& wallet;
   std::vector<COutput> vCoins;
 
   WalletTestFixture()
     : fakeChain(1, 1600000000, 1)
-    , wallet(*fakeChain.activeChain, *fakeChain.blockIndexByHash)
+    , fakeWallet(fakeChain)
+    , wallet(static_cast<CWallet&>(fakeWallet))
   {}
 
   void add_coin(const CAmount nValue, int nAge = 6*24, bool fIsFromMe = false, int nInput = 0);

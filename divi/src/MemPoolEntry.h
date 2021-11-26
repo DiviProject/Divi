@@ -24,7 +24,7 @@ public:
     CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, int64_t _nTime, double _initialCoinAgeOfInputs, unsigned int _nHeight);
     CTxMemPoolEntry(const CTxMemPoolEntry& other);
 
-    const CTransaction& GetTx() const { return this->tx; }
+    const CTransaction& GetTx() const { return tx; }
     double ComputeInputCoinAgePerByte(unsigned int currentHeight) const;
     CAmount GetFee() const { return nFee; }
     size_t GetTxSize() const { return nTxSize; }

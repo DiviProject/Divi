@@ -151,7 +151,8 @@ private:
         auto* mutex = lock.mutex();
         EnterCritical(pszName, pszFile, nLine, mutex->getMutexId() );
 #ifdef DEBUG_LOCKCONTENTION
-        if (!lock.try_lock()) {
+        if (!lock.try_lock())
+        {
             PrintLockContention(pszName, pszFile, nLine);
 #endif
             lock.lock();

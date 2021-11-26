@@ -133,8 +133,12 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
     with open(os.path.join(datadir, "regtest", "masternode.conf"), "w") as f:
       f.write("\n".join(mn_config_lines))
     binary = []
+    runner_name = None
+    timeout_limit = 30.0
     if os.getenv("RUNNER") is not None:
-      binary.append(os.getenv("RUNNER"))
+      runner_name = os.getenv("RUNNER")
+      timeout_limit = 60.0
+      binary.append(runner_name)
       if os.getenv("RUNNER_FLAGS") is not None:
         flags = str(os.getenv("RUNNER_FLAGS")).split(" ")
         print("Using flags: '{}'".format(flags))
@@ -154,7 +158,7 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
                           _rpchost_to_args(rpchost)  +
                           ["-rpcwait", "getblockcount"],
                           stdout=devnull,
-                          timeout=30.0)
+                          timeout=timeout_limit)
     devnull.close()
     url = "http://rt:rt@"
     if rpchost and re.match(".*:\\d+$", rpchost):

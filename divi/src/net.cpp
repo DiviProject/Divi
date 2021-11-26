@@ -1657,7 +1657,8 @@ static void RelayTransaction(const CTransaction& tx, const CDataStream& ss)
     {
         LOCK(cs_mapRelay);
         // Expire old relay messages
-        while (!vRelayExpiration.empty() && vRelayExpiration.front().first < GetTime()) {
+        while (!vRelayExpiration.empty() && vRelayExpiration.front().first < GetTime())
+        {
             mapRelay.erase(vRelayExpiration.front().second);
             vRelayExpiration.pop_front();
         }
@@ -1671,11 +1672,15 @@ static void RelayTransaction(const CTransaction& tx, const CDataStream& ss)
         if (!pnode->fRelayTxes)
             continue;
         LOCK(pnode->cs_filter);
-        if (pnode->pfilter) {
+        if (pnode->pfilter)
+        {
             if (pnode->pfilter->IsRelevantAndUpdate(tx))
                 pnode->PushInventory(inv);
-        } else
+        }
+        else
+        {
             pnode->PushInventory(inv);
+        }
     }
 }
 void RelayTransaction(const CTransaction& tx)

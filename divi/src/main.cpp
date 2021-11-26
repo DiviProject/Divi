@@ -3814,7 +3814,6 @@ void RebroadcastSomeMempoolTxs()
 {
     TRY_LOCK(cs_main,mainLockAcquired);
     constexpr int maxNumberOfRebroadcastableTransactions = 32;
-    std::vector<const CTransaction*> unconfirmedTransactions(maxNumberOfRebroadcastableTransactions,nullptr);
     if(mainLockAcquired)
     {
         TRY_LOCK(mempool.cs,mempoolLockAcquired);
@@ -3837,17 +3836,11 @@ void RebroadcastSomeMempoolTxs()
                 }
                 if(!spendsOtherMempoolTransaction)
                 {
-                    unconfirmedTransactions[unconfirmedTransactions.size()] = &tx;
+                    RelayTransactionToAllPeers(tx);
                     ++numberOfTransactionsCollected;
                 }
                 if(numberOfTransactionsCollected >= maxNumberOfRebroadcastableTransactions) break;
             }
-            for(const CTransaction* tx: unconfirmedTransactions)
-            {
-                if(!tx) break;
-                RelayTransactionToAllPeers(*tx);
-            }
-            unconfirmedTransactions.clear();
         }
     }
 }

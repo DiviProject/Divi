@@ -64,7 +64,7 @@ typedef std::pair<MutexId,MutexId> LockOrderID;
 static boost::mutex dd_mutex;
 static std::map<LockOrderID, LockStack> lockorders;
 static boost::thread_specific_ptr<LockStack> lockstack;
-static boost::thread_specific_ptr<std::vector<LockOrderID>> addedLockOrders;
+static boost::thread_specific_ptr<std::vector<LockOrderID>> tryLockQueue;
 
 static void potential_deadlock_detected(const std::pair<MutexId, MutexId>& mismatch, const LockStack& s1, const LockStack& s2)
 {
@@ -116,8 +116,8 @@ static void push_lock(MutexId c, const CLockLocation& locklocation)
 {
     if (lockstack.get() == NULL)
         lockstack.reset(new LockStack);
-    if(addedLockOrders.get() == NULL)
-        addedLockOrders.reset( new std::vector<LockOrderID>);
+    if(tryLockQueue.get() == NULL)
+        tryLockQueue.reset( new std::vector<LockOrderID>);
 
     (*lockstack).push_back(std::make_pair(c, locklocation));
 
@@ -146,7 +146,7 @@ static void push_lock(MutexId c, const CLockLocation& locklocation)
         }
         else
         {
-            addedLockOrders->push_back(p1);
+            tryLockQueue->push_back(p1);
         }
     }
 }
@@ -167,20 +167,20 @@ void EnterCritical(const char* pszName, const char* pszFile, int nLine, MutexId 
 }
 void ConfirmCritical()
 {
-    for(LockOrderID id: *addedLockOrders)
+    for(LockOrderID id: *tryLockQueue)
     {
         if (lockorders.count(id)>0)
             continue;
         lockorders[id] = (*lockstack);
     }
-    addedLockOrders->clear();
+    tryLockQueue->clear();
     dd_mutex.unlock();
 }
 void LeaveCritical(bool fTry)
 {
     LogPrint("lock", "Unlocked: %s\n", (*lockstack).rbegin()->second);
     if(!fTry) dd_mutex.lock();
-    addedLockOrders->clear();
+    tryLockQueue->clear();
     pop_lock();
     dd_mutex.unlock();
 }

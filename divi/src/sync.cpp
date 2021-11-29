@@ -58,7 +58,40 @@ private:
 
 LOG_FORMAT_WITH_TOSTRING(CLockLocation)
 
-typedef std::vector<std::pair<MutexId, CLockLocation> > LockStack;
+//typedef std::vector<std::pair<MutexId, CLockLocation> > LockStack;
+struct LockStack
+{
+private:
+    std::vector<std::pair<MutexId, CLockLocation> > stack_;
+    unsigned id_;
+public:
+    const std::vector<std::pair<MutexId, CLockLocation> >& stack() const
+    {
+        return stack_;
+    }
+    unsigned id() const
+    {
+        return id_;
+    }
+    void push_back(std::pair<MutexId, CLockLocation>&& pair)
+    {
+        stack_.push_back(pair);
+    }
+    void pop_back()
+    {
+        stack_.pop_back();
+    }
+
+    LockStack(): stack_(), id_(0u) {}
+    LockStack(const unsigned id): stack_(), id_(id) {}
+    LockStack& operator=(const LockStack& other)
+    {
+        stack_ = other.stack();
+        id_ = other.id();
+        return *this;
+    }
+};
+
 typedef std::pair<MutexId,MutexId> LockOrderID;
 
 static boost::mutex dd_mutex;
@@ -77,7 +110,7 @@ static void potential_deadlock_detected(const std::pair<MutexId, MutexId>& misma
     fprintf(stderr, "POTENTIAL DEADLOCK DETECTED\n");
 
     std::string priorLockStackState = "";
-    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & lockIdAndLocation, s2) {
+    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & lockIdAndLocation, s2.stack()) {
         if (lockIdAndLocation.first == mismatch.first)
         {
             lockOrderData += std::string("\tFirst: ") +lockIdAndLocation.second.ToString() + "\n";
@@ -94,7 +127,7 @@ static void potential_deadlock_detected(const std::pair<MutexId, MutexId>& misma
     std::string currentLockStackState = "";
     lockOrderData += "\n\nCurrent Order:\n";
     LogPrintf("Current lock order is:\n");
-    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & lockIdAndLocation, s1) {
+    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & lockIdAndLocation, s1.stack()) {
         if (lockIdAndLocation.first == mismatch.first)
         {
             lockOrderData += std::string("\tFirst: ") +lockIdAndLocation.second.ToString() + "\n";
@@ -108,20 +141,21 @@ static void potential_deadlock_detected(const std::pair<MutexId, MutexId>& misma
     }
     lockOrderData+=std::string("\n")+currentLockStackState+std::string("\n");
 
-    tfm::format(std::cerr, "Assertion failed: detected inconsistent lock order for %s, details in debug log.\n%s", s2.back().second.ToString(),lockOrderData.c_str());
+    tfm::format(std::cerr, "Assertion failed: detected inconsistent lock order for %s, details in debug log.\n%s", s2.stack().back().second.ToString(),lockOrderData.c_str());
     abort();
 }
 
 static void push_lock(MutexId c, const CLockLocation& locklocation)
 {
+    static unsigned lockStackID = 0;
     if (lockstack.get() == NULL)
-        lockstack.reset(new LockStack);
+        lockstack.reset(new LockStack(++lockStackID));
     if(tryLockQueue.get() == NULL)
         tryLockQueue.reset( new std::vector<LockOrderID>);
 
     (*lockstack).push_back(std::make_pair(c, locklocation));
 
-    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & i, (*lockstack))
+    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & i, (*lockstack).stack())
     {
         if (i.first == c)
             break;
@@ -135,12 +169,17 @@ static void push_lock(MutexId c, const CLockLocation& locklocation)
 
             std::pair<MutexId, MutexId> p2 = std::make_pair(c, i.first);
             if (lockorders.count(p2)) {
-                const CLockLocation& currentLock = lockorders[p1].back().second;
-                const CLockLocation& priorLock = lockorders[p2].back().second;
+                const LockStack& currentLockStack = lockorders[p1];
+                const LockStack& priorLockStack = lockorders[p2];
+                if(currentLockStack.id() != priorLockStack.id())
+                {
+                const CLockLocation& currentLock = currentLockStack.stack().back().second;
+                const CLockLocation& priorLock = priorLockStack.stack().back().second;
                 if(!(currentLock.isTry() || priorLock.isTry()))
                 {
                     potential_deadlock_detected(p1, lockorders[p1], lockorders[p2]);
                     break;
+                }
                 }
             }
         }
@@ -178,7 +217,7 @@ void ConfirmCritical()
 }
 void LeaveCritical(bool fTry)
 {
-    LogPrint("lock", "Unlocked: %s\n", (*lockstack).rbegin()->second);
+    LogPrint("lock", "Unlocked: %s\n", (*lockstack).stack().rbegin()->second);
     if(!fTry) dd_mutex.lock();
     tryLockQueue->clear();
     pop_lock();
@@ -188,7 +227,7 @@ void LeaveCritical(bool fTry)
 std::string LocksHeld()
 {
     std::string result;
-    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & i, *lockstack)
+    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & i, (*lockstack).stack())
     {
         std::ostringstream ss;
         ss << (uint64_t)i.first;
@@ -200,7 +239,7 @@ std::string LocksHeld()
 
 void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine, MutexId cs)
 {
-    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & i, *lockstack)
+    BOOST_FOREACH (const PAIRTYPE(MutexId, CLockLocation) & i, (*lockstack).stack())
         if (i.first == cs)
             return;
     std::string errorMessage = LocksHeld();

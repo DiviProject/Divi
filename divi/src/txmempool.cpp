@@ -32,7 +32,6 @@ bool IsMemPoolHeight(unsigned coinHeight)
 CTxMemPool::CTxMemPool(const CFeeRate& _minRelayFee,
                        const bool& addressIndex, const bool& spentIndex
     ): fSanityCheck(false)
-    , nTransactionsUpdated(0)
     , feePolicyEstimator(new FeePolicyEstimator(25))
     , minRelayFee(_minRelayFee)
     , fAddressIndex_(addressIndex)
@@ -77,19 +76,6 @@ void CTxMemPool::pruneSpent(const uint256& hashTx, CCoins& coins) const
     }
 }
 
-unsigned int CTxMemPool::GetTransactionsUpdated() const
-{
-    LOCK(cs);
-    return nTransactionsUpdated;
-}
-
-void CTxMemPool::AddTransactionsUpdated(unsigned int n)
-{
-    LOCK(cs);
-    nTransactionsUpdated += n;
-}
-
-
 bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry, const CCoinsViewCache& view)
 {
     // Add to memory pool without checking anything.
@@ -105,7 +91,6 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry,
         {
             mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
         }
-        nTransactionsUpdated++;
         totalTxSize += entry.GetTxSize();
     }
 
@@ -308,7 +293,6 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
                 totalTxSize -= mempoolTx.GetTxSize();
             }
             mapTx.erase(hash);
-            nTransactionsUpdated++;
         }
     }
 }
@@ -383,7 +367,6 @@ void CTxMemPool::clear()
     mapNextTx.clear();
     mapBareTxid.clear();
     totalTxSize = 0;
-    ++nTransactionsUpdated;
 }
 
 void CTxMemPool::check(const CCoinsViewCache* pcoins, const BlockMap& blockIndexMap) const

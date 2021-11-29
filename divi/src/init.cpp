@@ -305,7 +305,6 @@ void PrepareShutdown()
     /// Be sure that anything that writes files or flushes caches only does this if the respective
     /// module was initialized.
     RenameThread("divi-shutoff");
-    mempool.AddTransactionsUpdated(1);
     StopRPCThreads();
     FlushWalletAndStopMinting();
     StopNode();

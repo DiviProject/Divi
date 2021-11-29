@@ -480,13 +480,13 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
     return CheckTransaction(tx,state,vInOutPoints);
 }
 
-bool TxShouldBePrioritized(const uint256& txHash, unsigned int nBytes)
+bool TxShouldBePrioritized(const uint256& txHash, unsigned int nBytes, CTxMemPool& pool)
 {
     double dPriorityDelta = 0;
     CAmount nFeeDelta = 0;
     {
-        LOCK(mempool.cs);
-        mempool.ApplyDeltas(txHash, dPriorityDelta, nFeeDelta);
+        LOCK(pool.cs);
+        pool.ApplyDeltas(txHash, dPriorityDelta, nFeeDelta);
     }
     if (dPriorityDelta > 0 || nFeeDelta > 0 || nBytes < (DEFAULT_BLOCK_PRIORITY_SIZE - 1000))
         return true;
@@ -522,7 +522,8 @@ bool RateLimiterAllowsFreeTransaction(CValidationState& state, const unsigned nS
 bool CheckFeesPaidAreAcceptable(
     const CTxMemPoolEntry& entry,
     bool fLimitFree,
-    CValidationState& state)
+    CValidationState& state,
+    CTxMemPool& pool)
 {
     const unsigned int nSize = entry.GetTxSize();
     const CTransaction& tx = entry.GetTx();
@@ -531,7 +532,7 @@ bool CheckFeesPaidAreAcceptable(
     static const CFeeRate& minimumRelayFeeRate = FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate();
     const uint256 hash = tx.GetHash();
     CAmount minimumRelayFee = minimumRelayFeeRate.GetFee(nSize);
-    bool txShouldHavePriority = TxShouldBePrioritized(hash, nSize);
+    bool txShouldHavePriority = TxShouldBePrioritized(hash, nSize, pool);
     if (fLimitFree && !txShouldHavePriority && nFees < minimumRelayFee)
         return state.DoS(0, error("%s : not enough fees %s, %d < %d",__func__,
                                     tx.ToStringShort(), nFees, minimumRelayFee),
@@ -669,7 +670,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
         // Don't accept it if it can't get into a block
         // but prioritise dstx and don't check fees for it
-        if (!ignoreFees && !CheckFeesPaidAreAcceptable(entry,fLimitFree,state))
+        if (!ignoreFees && !CheckFeesPaidAreAcceptable(entry,fLimitFree,state,pool))
         {
             LogPrint("mempool","%s - Conflicting tx spending same inputs%s",__func__, hash);
             return false;

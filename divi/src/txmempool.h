@@ -60,7 +60,6 @@ class CTxMemPool
 {
 private:
     bool fSanityCheck; //! Normally false, true if -checkmempool or -regtest
-    unsigned int nTransactionsUpdated;
     std::unique_ptr<FeePolicyEstimator> feePolicyEstimator;
 
     const CFeeRate& minRelayFee; //! Passed to constructor to avoid dependency on main
@@ -122,9 +121,6 @@ public:
     void clear();
     void queryHashes(std::vector<uint256>& vtxid);
     void pruneSpent(const uint256& hash, CCoins& coins) const;
-    unsigned int GetTransactionsUpdated() const;
-    void AddTransactionsUpdated(unsigned int n);
-
     bool getAddressIndex(const std::vector<std::pair<uint160, int> > &addresses,
                          std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> > &results);
 

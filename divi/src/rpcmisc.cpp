@@ -23,6 +23,7 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 #include <boost/assign/list_of.hpp>
+#include <ChainstateManager.h>
 #include <txdb.h>
 #include <addressindex.h>
 #include <spentindex.h>
@@ -60,8 +61,6 @@ using namespace std;
  **/
 extern int64_t nLastCoinStakeSearchInterval;
 extern bool fAddressIndex;
-extern CBlockTreeDB* pblocktree;
-extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern CWallet* pwalletMain;
@@ -138,6 +137,9 @@ Value getinfo(const Array& params, bool fHelp)
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
 
+    const ChainstateManager chainstate;
+    const auto& chain = chainstate.ActiveChain();
+
     Object obj;
     obj.push_back(Pair("version", CLIENT_VERSION_STR));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
@@ -147,13 +149,13 @@ Value getinfo(const Array& params, bool fHelp)
         obj.push_back(Pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
     }
 #endif
-    obj.push_back(Pair("blocks", (int)chainActive.Height()));
+    obj.push_back(Pair("blocks", (int)chain.Height()));
     obj.push_back(Pair("timeoffset", GetTimeOffset()));
     obj.push_back(Pair("connections", (int) GetPeerCount() ));
     obj.push_back(Pair("proxy", (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : string())));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
-    obj.push_back(Pair("moneysupply",ValueFromAmount(chainActive.Tip()->nMoneySupply)));
+    obj.push_back(Pair("moneysupply",ValueFromAmount(chain.Tip()->nMoneySupply)));
 
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
@@ -661,13 +663,16 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
+    const ChainstateManager chainstate;
+    const auto& blockTree = chainstate.BlockTree();
+
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &blockTree, (*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &blockTree, (*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -759,13 +764,16 @@ Value getaddressdeltas(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
+    const ChainstateManager chainstate;
+    const auto& blockTree = chainstate.BlockTree();
+
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &blockTree, (*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &blockTree, (*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -794,12 +802,15 @@ Value getaddressdeltas(const Array& params, bool fHelp)
     if (includeChainInfo && start > 0 && end > 0) {
         LOCK(cs_main);
 
-        if (start > chainActive.Height() || end > chainActive.Height()) {
+        const ChainstateManager chainstate;
+        const auto& chain = chainstate.ActiveChain();
+
+        if (start > chain.Height() || end > chain.Height()) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Start or end is outside chain range");
         }
 
-        const CBlockIndex* startIndex = chainActive[start];
-        const CBlockIndex* endIndex = chainActive[end];
+        const CBlockIndex* startIndex = chain[start];
+        const CBlockIndex* endIndex = chain[end];
 
         Object startInfo;
         Object endInfo;
@@ -850,8 +861,10 @@ Value getaddressbalance(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
+    const ChainstateManager chainstate;
+
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
+        if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &chainstate.BlockTree(), (*it).first, (*it).second, addressIndex)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }
@@ -920,7 +933,9 @@ Value getspentinfo(const Array& params, bool fHelp)
     const CSpentIndexKey key(txid, outputIndex);
     CSpentIndexValue value;
 
-    if (!TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,key, value)) {
+    const ChainstateManager chainstate;
+
+    if (!TransactionSearchIndexes::GetSpentIndex(fSpentIndex, &chainstate.BlockTree(), key, value)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unable to get spent info");
     }
 
@@ -975,8 +990,10 @@ Value getaddressutxos(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue>> unspentOutputs;
 
+    const ChainstateManager chainstate;
+
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!TransactionSearchIndexes::GetAddressUnspent(fAddressIndex,pblocktree,(*it).first, (*it).second, unspentOutputs)) {
+        if (!TransactionSearchIndexes::GetAddressUnspent(fAddressIndex, &chainstate.BlockTree(), (*it).first, (*it).second, unspentOutputs)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }
@@ -1006,8 +1023,10 @@ Value getaddressutxos(const Array& params, bool fHelp)
         result.push_back(Pair("utxos", utxos));
 
         LOCK(cs_main);
-        result.push_back(Pair("hash", chainActive.Tip()->GetBlockHash().GetHex()));
-        result.push_back(Pair("height", (int)chainActive.Height()));
+        const ChainstateManager chainstate;
+        const auto& chain = chainstate.ActiveChain();
+        result.push_back(Pair("hash", chain.Tip()->GetBlockHash().GetHex()));
+        result.push_back(Pair("height", (int)chain.Height()));
         return result;
     } else {
         return utxos;
@@ -1058,8 +1077,10 @@ Value getstakingstatus(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getstakingstatus", "") + HelpExampleRpc("getstakingstatus", ""));
 
+    const ChainstateManager chainstate;
+
     Object obj;
-    obj.push_back(Pair("validtime", chainActive.Tip()->nTime > 1471482000));
+    obj.push_back(Pair("validtime", chainstate.ActiveChain().Tip()->nTime > 1471482000));
     obj.push_back(Pair("haveconnections", GetPeerCount()>0 ));
     if (pwalletMain) {
         obj.push_back(Pair("walletunlocked", !pwalletMain->IsLocked()));

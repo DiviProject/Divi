@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "activemasternode.h"
+#include <ChainstateManager.h>
 #include "init.h"
 #include "main.h"
 #include <chain.h>
@@ -33,7 +34,6 @@
 using namespace json_spirit;
 
 extern CWallet* pwalletMain;
-extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue);
 extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool forceNewKey, bool isWalletDerivedKey);
@@ -388,8 +388,9 @@ Value listmasternodes(const Array& params, bool fHelp)
     Array ret;
     const CBlockIndex* pindex;
     {
+        const ChainstateManager chainstate;
         LOCK(cs_main);
-        pindex = chainActive.Tip();
+        pindex = chainstate.ActiveChain().Tip();
         if(!pindex) return 0;
     }
 
@@ -434,7 +435,8 @@ Value getmasternodecount (const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmasternodecount", "") + HelpExampleRpc("getmasternodecount", ""));
 
-    const CBlockIndex* tip = chainActive.Tip();
+    const ChainstateManager chainstate;
+    const CBlockIndex* tip = chainstate.ActiveChain().Tip();
     MasternodeCountData data = GetMasternodeCounts(tip);
 
     Object obj;
@@ -640,8 +642,9 @@ Value getmasternodewinners (const Array& params, bool fHelp)
     int nHeight;
     const CBlockIndex* pindex = nullptr;
     {
+        const ChainstateManager chainstate;
         LOCK(cs_main);
-        pindex = chainActive.Tip();
+        pindex = chainstate.ActiveChain().Tip();
         if(!pindex) return 0;
         nHeight = pindex->nHeight;
     }

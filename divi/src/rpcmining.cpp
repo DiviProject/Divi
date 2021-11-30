@@ -47,7 +47,6 @@ using namespace boost;
 using namespace boost::assign;
 extern Settings& settings;
 extern CWallet* pwalletMain;
-extern CCoinsViewCache* pcoinsTip;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 

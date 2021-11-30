@@ -9,6 +9,7 @@
 #include "base58.h"
 #include "core_io.h"
 #include <chain.h>
+#include <ChainstateManager.h>
 #include "init.h"
 #include "rpcserver.h"
 #include "timedata.h"
@@ -49,8 +50,6 @@ using namespace json_spirit;
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
 extern CCriticalSection cs_main;
-extern BlockMap mapBlockIndex;
-extern CChain chainActive;
 extern CWallet* pwalletMain;
 extern Settings& settings;
 extern CTxMemPool mempool;
@@ -249,9 +248,10 @@ void WalletTxToJSON(const CWallet& wallet, const CWalletTx& wtx, Object& entry)
     if (wtx.IsCoinBase() || wtx.IsCoinStake())
         entry.push_back(Pair("generated", true));
     if (confirms > 0) {
+        const ChainstateManager chainstate;
         entry.push_back(Pair("blockhash", wtx.hashBlock.GetHex()));
         entry.push_back(Pair("blockindex", wtx.merkleBranchIndex));
-        entry.push_back(Pair("blocktime", mapBlockIndex[wtx.hashBlock]->GetBlockTime()));
+        entry.push_back(Pair("blocktime", chainstate.GetBlockMap().at(wtx.hashBlock)->GetBlockTime()));
     }
     uint256 hash = wtx.GetHash();
     entry.push_back(Pair("txid", hash.GetHex()));
@@ -381,6 +381,9 @@ CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForc
 
 CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
 {
+    const ChainstateManager chainstate;
+    const auto& chain = chainstate.ActiveChain();
+
     CAmount nBalance = 0;
 
     // Tally wallet transactions
@@ -389,7 +392,7 @@ CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwn
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
-        if (!IsFinalTx(wtx, chainActive) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
+        if (!IsFinalTx(wtx, chain) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
             continue;
 
         CAmount nReceived, nSent, nFee;
@@ -1028,7 +1031,8 @@ Value addvault(const Array& params, bool fHelp)
         return result;
     }
 
-    const CBlockIndex* blockSearchStart = chainActive.Tip();
+    const ChainstateManager chainstate;
+    const CBlockIndex* blockSearchStart = chainstate.ActiveChain().Tip();
     while (blockSearchStart->pprev)
     {
         if(blockSearchStart->GetBlockHash() == blockHash) break;
@@ -1211,6 +1215,9 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
     if (params.size() > 1)
         nMinDepth = params[1].get_int();
 
+    const ChainstateManager chainstate;
+    const auto& chain = chainstate.ActiveChain();
+
     // Tally
     CAmount nAmount = 0;
     CScript scriptPubKey = GetScriptForDestination(address.Get());
@@ -1218,7 +1225,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
-        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chainActive))
+        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chain))
             continue;
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout)
@@ -1274,13 +1281,16 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
         setAddress = GetAccountAddresses(pwalletMain->GetAddressBookManager().GetAddressBook(),strAccount);
     }
 
+    const ChainstateManager chainstate;
+    const auto& chain = chainstate.ActiveChain();
+
     // Tally
     CAmount nAmount = 0;
     std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
-        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chainActive))
+        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chain))
             continue;
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout) {
@@ -1538,6 +1548,9 @@ Value ListReceived(const Array& params, bool fByAccounts)
         if (params[2].get_bool())
             filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
+    const ChainstateManager chainstate;
+    const auto& chain = chainstate.ActiveChain();
+
     // Tally
     std::map<CBitcoinAddress, tallyitem> mapTally;
     std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
@@ -1546,7 +1559,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
     {
         const CWalletTx& wtx = *(*it);
 
-        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chainActive))
+        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chain))
             continue;
 
         int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
@@ -1720,8 +1733,10 @@ static std::string GetAccountAddressName(const CWallet& wallet, const CTxDestina
 static int ComputeBlockHeightOfFirstConfirmation(const uint256 blockHash)
 {
     LOCK(cs_main);
-    BlockMap::const_iterator it = mapBlockIndex.find(blockHash);
-    return (it==mapBlockIndex.end() || it->second==nullptr)? 0 : it->second->nHeight;
+    const ChainstateManager chainstate;
+    const auto& blockMap = chainstate.GetBlockMap();
+    const auto it = blockMap.find(blockHash);
+    return (it==blockMap.end() || it->second==nullptr)? 0 : it->second->nHeight;
 }
 
 static std::string ParseScriptAsAddressString(const CScript& scriptPubKey)
@@ -2148,12 +2163,16 @@ Value listsinceblock(const Array& params, bool fHelp)
     UtxoOwnershipFilter filter;
     filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
 
+    const ChainstateManager chainstate;
+    const auto& chain = chainstate.ActiveChain();
+    const auto& blockMap = chainstate.GetBlockMap();
+
     if (params.size() > 0) {
         uint256 blockId = 0;
 
         blockId.SetHex(params[0].get_str());
-        BlockMap::iterator it = mapBlockIndex.find(blockId);
-        if (it != mapBlockIndex.end())
+        const auto it = blockMap.find(blockId);
+        if (it != blockMap.end())
             pindex = it->second;
     }
 
@@ -2168,7 +2187,7 @@ Value listsinceblock(const Array& params, bool fHelp)
         if (params[2].get_bool())
             filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
-    int depth = pindex ? (1 + chainActive.Height() - pindex->nHeight) : -1;
+    int depth = pindex ? (1 + chain.Height() - pindex->nHeight) : -1;
 
     Array transactions;
 
@@ -2181,7 +2200,7 @@ Value listsinceblock(const Array& params, bool fHelp)
             ParseTransactionDetails(*pwalletMain, tx, "*", 0, true, transactions, filter);
     }
 
-    const CBlockIndex* pblockLast = chainActive[chainActive.Height() + 1 - target_confirms];
+    const CBlockIndex* pblockLast = chain[chain.Height() + 1 - target_confirms];
     uint256 lastblock = pblockLast ? pblockLast->GetBlockHash() : 0;
 
     Object ret;

@@ -9,6 +9,7 @@
 
 #include <blockmap.h>
 #include <chain.h>
+#include <ChainstateManager.h>
 #include "core_io.h"
 #include <FeeAndPriorityCalculator.h>
 #include "init.h"
@@ -42,14 +43,10 @@ using namespace boost::assign;
 using namespace json_spirit;
 using namespace std;
 
-extern CCoinsViewCache* pcoinsTip;
 extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern BlockMap mapBlockIndex;
-extern CBlockTreeDB* pblocktree;
 extern bool fSpentIndex;
-extern CChain chainActive;
 
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex)
 {
@@ -79,6 +76,9 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
                       int nHeight = 0, int nConfirmations = 0, int nBlockTime = 0)
 {
 
+    const ChainstateManager chainstate;
+    const auto& blockTree = chainstate.BlockTree();
+
     uint256 txid = tx.GetHash();
     entry.push_back(Pair("txid", txid.GetHex()));
     entry.push_back(Pair("baretxid", tx.GetBareTxid().GetHex()));
@@ -100,7 +100,7 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
             // Add address and value info if spentindex enabled
             CSpentIndexValue spentInfo;
             const CSpentIndexKey spentKey(txin.prevout.hash, txin.prevout.n);
-            if (TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,spentKey, spentInfo)) {
+            if (TransactionSearchIndexes::GetSpentIndex(fSpentIndex, &blockTree, spentKey, spentInfo)) {
                 in.push_back(Pair("value", ValueFromAmount(spentInfo.satoshis)));
                 in.push_back(Pair("valueSat", spentInfo.satoshis));
                 if (spentInfo.addressType == 1) {
@@ -131,9 +131,9 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
         // so we simply try looking up by both txid and bare txid as at
         // most one of them can match anyway.
         CSpentIndexValue spentInfo;
-        bool found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,CSpentIndexKey(txid, i), spentInfo);
+        bool found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex, &blockTree, CSpentIndexKey(txid, i), spentInfo);
         if (!found)
-          found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
+          found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex, &blockTree, CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
         if (found) {
             out.push_back(Pair("spentTxId", spentInfo.txid.GetHex()));
             out.push_back(Pair("spentIndex", (int)spentInfo.inputIndex));
@@ -199,12 +199,16 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)
     entry.push_back(Pair("vout", vout));
 
     if (hashBlock != 0) {
+        const ChainstateManager chainstate;
+        const auto& chain = chainstate.ActiveChain();
+        const auto& blockMap = chainstate.GetBlockMap();
+
         entry.push_back(Pair("blockhash", hashBlock.GetHex()));
-        BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
-        if (mi != mapBlockIndex.end() && (*mi).second) {
+        const auto mi = blockMap.find(hashBlock);
+        if (mi != blockMap.end() && (*mi).second) {
             CBlockIndex* pindex = (*mi).second;
-            if (chainActive.Contains(pindex)) {
-                entry.push_back(Pair("confirmations", 1 + chainActive.Height() - pindex->nHeight));
+            if (chain.Contains(pindex)) {
+                entry.push_back(Pair("confirmations", 1 + chain.Height() - pindex->nHeight));
                 entry.push_back(Pair("time", pindex->GetBlockTime()));
                 entry.push_back(Pair("blocktime", pindex->GetBlockTime()));
             } else
@@ -294,12 +298,16 @@ Value getrawtransaction(const Array& params, bool fHelp)
         if (!GetTransaction(hash, tx, hashBlock, true))
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available about transaction");
 
-        BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
-        if (mi != mapBlockIndex.end() && (*mi).second) {
+        const ChainstateManager chainstate;
+        const auto& chain = chainstate.ActiveChain();
+        const auto& blockMap = chainstate.GetBlockMap();
+
+        const auto mi = blockMap.find(hashBlock);
+        if (mi != blockMap.end() && (*mi).second) {
             CBlockIndex* pindex = (*mi).second;
-            if (chainActive.Contains(pindex)) {
+            if (chain.Contains(pindex)) {
                 nHeight = pindex->nHeight;
-                nConfirmations = 1 + chainActive.Height() - pindex->nHeight;
+                nConfirmations = 1 + chain.Height() - pindex->nHeight;
                 nBlockTime = pindex->GetBlockTime();
             } else {
                 nHeight = -1;
@@ -708,7 +716,8 @@ Value signrawtransaction(const Array& params, bool fHelp)
     CCoinsViewCache view;
     {
         LOCK(mempool.cs);
-        const CCoinsViewCache& viewChain = *pcoinsTip;
+        const ChainstateManager chainstate;
+        const CCoinsViewCache& viewChain = chainstate.CoinsTip();
         const CCoinsViewMemPool viewMempool(&viewChain, mempool);
         view.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
 
@@ -842,7 +851,8 @@ Value signrawtransaction(const Array& params, bool fHelp)
 static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransaction& tx)
 {
     LOCK(mempool.cs);
-    const CCoinsViewMemPool viewMemPool(pcoinsTip, mempool);
+    const ChainstateManager chainstate;
+    const CCoinsViewMemPool viewMemPool(&chainstate.CoinsTip(), mempool);
     const CCoinsViewCache view(&viewMemPool);
 
     if(!view.HaveInputs(tx))
@@ -886,7 +896,8 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     if (params.size() > 1)
         fOverrideFees = params[1].get_bool();
 
-    CCoinsViewCache& view = *pcoinsTip;
+    const ChainstateManager chainstate;
+    const auto& view = chainstate.CoinsTip();
     const bool fHaveMempool = mempool.exists(hashTx);
 
     /* We use the UTXO set as heuristic about whether or not a transaction

@@ -1,4 +1,5 @@
 #include <chain.h>
+#include <ChainstateManager.h>
 #include <spork.h>
 #include <LotteryWinnersCalculator.h>
 #include <SuperblockSubsidyContainer.h>
@@ -9,7 +10,6 @@
 #include <rpcprotocol.h>
 #include <sync.h>
 
-extern CChain chainActive;
 extern CCriticalSection cs_main;
 using namespace json_spirit;
 
@@ -42,12 +42,13 @@ Value getlotteryblockwinners(const Array& params, bool fHelp)
 
     static const CChainParams& chainParameters = Params();
     static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
+    static const ChainstateManager chainstate;
     static LotteryWinnersCalculator calculator(
-        chainParameters.GetLotteryBlockStartBlock(),chainActive, GetSporkManager(),subsidyCointainer.superblockHeightValidator());
+        chainParameters.GetLotteryBlockStartBlock(), chainstate.ActiveChain(), GetSporkManager(),subsidyCointainer.superblockHeightValidator());
     const CBlockIndex* chainTip = nullptr;
     {
         LOCK(cs_main);
-        chainTip = chainActive.Tip();
+        chainTip = chainstate.ActiveChain().Tip();
         if(!chainTip) throw JSONRPCError(RPC_MISC_ERROR,"Could not acquire lock on chain tip.");
     }
     int blockHeight = (params.size()>0)? std::min(params[0].get_int(),chainTip->nHeight): chainTip->nHeight;

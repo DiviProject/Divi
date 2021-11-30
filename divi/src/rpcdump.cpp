@@ -38,7 +38,6 @@
 using namespace json_spirit;
 using namespace std;
 extern CWallet* pwalletMain;
-extern CChain chainActive;
 
 void EnsureWalletIsUnlocked();
 

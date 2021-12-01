@@ -24,7 +24,6 @@ class CAutoFile;
 /** Fake height value used in CCoins to signify they are only in the memory pool (since 0.8) */
 bool IsMemPoolHeight(unsigned coinHeight);
 
-class FeePolicyEstimator;
 /** An inpoint - a combination of a transaction and an index n into its vin */
 class CInPoint
 {
@@ -60,8 +59,6 @@ class CTxMemPool
 {
 private:
     bool fSanityCheck; //! Normally false, true if -checkmempool or -regtest
-    std::unique_ptr<FeePolicyEstimator> feePolicyEstimator;
-
     const CFeeRate& minRelayFee; //! Passed to constructor to avoid dependency on main
     uint64_t totalTxSize; //! sum of all mempool tx' byte sizes
 
@@ -133,16 +130,6 @@ public:
     /** Looks up a transaction by its outpoint for spending, taking potential changes
      *  from the raw txid (e.g. segwit light) into account.  */
     bool lookupOutpoint(const uint256& hash, CTransaction& result) const;
-
-    /** Estimate fee rate needed to get into the next nBlocks */
-    CFeeRate estimateFee(int nBlocks) const;
-
-    /** Estimate priority needed to get into the next nBlocks */
-    double estimatePriority(int nBlocks) const;
-
-    /** Write/Read estimates to disk */
-    bool WriteFeeEstimates(CAutoFile& fileout) const;
-    bool ReadFeeEstimates(CAutoFile& filein);
 };
 
 /**

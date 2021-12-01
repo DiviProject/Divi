@@ -932,7 +932,7 @@ Value getspentinfo(const Array& params, bool fHelp)
     const CSpentIndexKey key(txid, outputIndex);
     CSpentIndexValue value;
 
-    if (!TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,key, value)) {
+    if (!TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,key, value)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unable to get spent info");
     }
 

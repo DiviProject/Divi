@@ -119,7 +119,7 @@ CClientUIInterface uiInterface;
 bool fAddressIndex = false;
 bool fSpentIndex = false;
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
-CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate(), fAddressIndex, fSpentIndex);
+CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate(), fSpentIndex);
 
 void InitializeWallet(std::string strWalletFile)
 {

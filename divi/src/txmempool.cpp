@@ -29,12 +29,10 @@ bool IsMemPoolHeight(unsigned coinHeight)
     return coinHeight == CTxMemPoolEntry::MEMPOOL_HEIGHT;
 }
 
-CTxMemPool::CTxMemPool(const CFeeRate& _minRelayFee,
-                       const bool& addressIndex, const bool& spentIndex
+CTxMemPool::CTxMemPool(const CFeeRate& _minRelayFee, const bool& spentIndex
     ): fSanityCheck(false)
     , feePolicyEstimator(new FeePolicyEstimator(25))
     , minRelayFee(_minRelayFee)
-    , fAddressIndex_(addressIndex)
     , fSpentIndex_(spentIndex)
     , mapSpent()
     , mapSpentInserted()

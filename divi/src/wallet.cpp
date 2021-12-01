@@ -1483,23 +1483,6 @@ bool CWallet::SubmitTransactionToMemoryPool(const CWalletTx& wtx) const
     return ::SubmitTransactionToMempool(mempool,wtx);
 }
 
-void CWallet::ReacceptWalletTransactions()
-{
-    LOCK2(cs_main, cs_wallet);
-    auto orderedTransactions = OrderedTxItems();
-    for(const std::pair<int64_t,const CWalletTx*>& item: orderedTransactions)
-    {
-        const CWalletTx& wtx = *(item.second);
-        int nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(wtx);
-
-        if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0)
-        {
-            // Try to add to memory pool
-            SubmitTransactionToMemoryPool(wtx);
-        }
-    }
-}
-
 CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache) const
 {
     if ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) &&

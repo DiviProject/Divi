@@ -56,8 +56,6 @@ extern json_spirit::Value generateblock(const json_spirit::Array& params, bool f
 extern json_spirit::Value getmininginfo(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value prioritisetransaction(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getblocktemplate(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value estimatefee(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value estimatepriority(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value getnewaddress(const json_spirit::Array& params, bool fHelp); // in rpcwallet.cpp
 extern json_spirit::Value getaccountaddress(const json_spirit::Array& params, bool fHelp);
@@ -450,8 +448,6 @@ static const CRPCCommand vRPCCommands[] =
         {"util", "createmultisig", &createmultisig, true, true, false},
         {"util", "validateaddress", &validateaddress, true, false, false}, /* uses wallet if enabled */
         {"util", "verifymessage", &verifymessage, true, false, false},
-        {"util", "estimatefee", &estimatefee, true, true, false},
-        {"util", "estimatepriority", &estimatepriority, true, true, false},
 
         /* Not shown in help */
         {"hidden", "invalidateblock", &invalidateblock, true, true, false},

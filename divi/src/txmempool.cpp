@@ -20,7 +20,6 @@
 
 #include "FeeAndPriorityCalculator.h"
 #include <ValidationState.h>
-#include <FeePolicyEstimator.h>
 
 using namespace std;
 
@@ -32,7 +31,6 @@ bool IsMemPoolHeight(unsigned coinHeight)
 CTxMemPool::CTxMemPool(
     const CFeeRate& _minRelayFee
     ): fSanityCheck(false)
-    , feePolicyEstimator(new FeePolicyEstimator(25))
     , minRelayFee(_minRelayFee)
     , mapDeltas()
     , mapBareTxid()
@@ -54,7 +52,6 @@ CTxMemPool::CTxMemPool(
 
 CTxMemPool::~CTxMemPool()
 {
-    feePolicyEstimator.reset();
 }
 
 void CTxMemPool::pruneSpent(const uint256& hashTx, CCoins& coins) const
@@ -192,7 +189,6 @@ void CTxMemPool::removeConfirmedTransactions(const std::vector<CTransaction>& vt
         if (mapTx.count(hash))
             entries.push_back(&mapTx.find(hash)->second);
     }
-    if(feePolicyEstimator) feePolicyEstimator->seenBlock(entries, nBlockHeight, minRelayFee);
     BOOST_FOREACH (const CTransaction& tx, vtx) {
         std::list<CTransaction> dummy;
         remove(tx, dummy, false);
@@ -317,51 +313,6 @@ bool CTxMemPool::lookupOutpoint(const uint256& hash, CTransaction& result) const
     /* For now (until we add the UTXO hasher and segwit light), the outpoint
        is just the transaction ID.  */
     return lookup(hash, result);
-}
-
-CFeeRate CTxMemPool::estimateFee(int nBlocks) const
-{
-    LOCK(cs);
-    return feePolicyEstimator? feePolicyEstimator->estimateFee(nBlocks): minRelayFee;
-}
-double CTxMemPool::estimatePriority(int nBlocks) const
-{
-    LOCK(cs);
-    return feePolicyEstimator? feePolicyEstimator->estimatePriority(nBlocks) : 0.0;
-}
-
-bool CTxMemPool::WriteFeeEstimates(CAutoFile& fileout) const
-{
-    try {
-        if(!feePolicyEstimator) throw std::runtime_error("No fee policy estimator available");
-        LOCK(cs);
-        fileout << 120000;         // version required to read: 0.12.00 or later
-        fileout << CLIENT_VERSION; // version that wrote the file
-        feePolicyEstimator->Write(fileout);
-    } catch (const std::exception&) {
-        LogPrintf("CTxMemPool::WriteFeeEstimates() : unable to write policy estimator data (non-fatal)");
-        return false;
-    }
-    return true;
-}
-
-bool CTxMemPool::ReadFeeEstimates(CAutoFile& filein)
-{
-    try {
-        int nVersionRequired, nVersionThatWrote;
-        filein >> nVersionRequired >> nVersionThatWrote;
-        if (nVersionRequired > CLIENT_VERSION)
-            return error("CTxMemPool::ReadFeeEstimates() : up-version (%d) fee estimate file", nVersionRequired);
-
-        if(!feePolicyEstimator) throw std::runtime_error("No fee policy estimator available");
-
-        LOCK(cs);
-        feePolicyEstimator->Read(filein, minRelayFee);
-    } catch (const std::exception&) {
-        LogPrintf("CTxMemPool::ReadFeeEstimates() : unable to read policy estimator data (non-fatal)");
-        return false;
-    }
-    return true;
 }
 
 void CTxMemPool::PrioritiseTransaction(const uint256 hash, const CAmount nFeeDelta)

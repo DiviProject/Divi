@@ -112,7 +112,6 @@ BASE_SCRIPTS = [
     'rpcbind_test.py',
     'remotestart.py',
     'remotestart.py --outdated_ping',
-    'smartfees.py',
     'sync.py',
     'txindex.py',
     'TxInputsStandardness.py',

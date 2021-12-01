@@ -182,8 +182,6 @@ private:
     bool allowSpendingZeroConfirmationOutputs;
     int64_t defaultKeyPoolTopUp;
 
-    bool SubmitTransactionToMemoryPool(const CWalletTx& wtx) const;
-
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
     // Notification interface methods

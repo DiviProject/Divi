@@ -1111,6 +1111,21 @@ void LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& erro
     }
 }
 
+void SubmitUnconfirmedWalletTransactionsToMempool(const CWallet& wallet)
+{
+    LOCK2(cs_main, wallet.cs_wallet);
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
+    for(const std::pair<int64_t,const CWalletTx*>& item: wallet.OrderedTxItems())
+    {
+        const CWalletTx& wtx = *(item.second);
+        if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
+        {
+            // Try to add to memory pool
+            SubmitTransactionToMempool(mempool,wtx);
+        }
+    }
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1433,7 +1448,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
         // Add wallet transactions that aren't already in a block to mapTransactions
-        pwalletMain->ReacceptWalletTransactions();
+        SubmitUnconfirmedWalletTransactionsToMempool(*pwalletMain);
         if(settings.ParameterIsSet("-prunewalletconfs"))
         {
             pwalletMain->PruneWallet();

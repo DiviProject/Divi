@@ -222,27 +222,4 @@ BOOST_AUTO_TEST_CASE(MempoolExists)
     BOOST_CHECK(!testPool.existsBareTxid(txParent.GetBareTxid()));
 }
 
-BOOST_AUTO_TEST_CASE(MempoolSpentIndex)
-{
-    spentIndex = true;
-
-    testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1), coins);
-    testPool.addUnchecked(txChild[0].GetHash(), CTxMemPoolEntry(txChild[0], 0, 0, 0.0, 1), coins);
-
-    const CSpentIndexKey keyParent(txParent.GetHash(), 0);
-    const CSpentIndexKey keyChild(txChild[0].GetHash(), 0);
-
-    CSpentIndexValue value;
-    BOOST_CHECK(testPool.getSpentIndex(keyParent, value));
-    BOOST_CHECK(value.txid == txChild[0].GetHash());
-    BOOST_CHECK_EQUAL(value.inputIndex, 0);
-    BOOST_CHECK(!testPool.getSpentIndex(keyChild, value));
-
-    std::list<CTransaction> removed;
-    testPool.remove(txChild[0], removed, true);
-
-    BOOST_CHECK(!testPool.getSpentIndex(keyParent, value));
-    BOOST_CHECK(!testPool.getSpentIndex(keyChild, value));
-}
-
 BOOST_AUTO_TEST_SUITE_END()

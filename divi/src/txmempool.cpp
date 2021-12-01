@@ -141,7 +141,7 @@ void CTxMemPool::addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewC
             inserted.push_back(key);
         } else if (out.scriptPubKey.IsPayToPublicKeyHash()) {
             std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
-            std::pair<addressDeltaMap::iterator,bool> ret;
+            std::pair<AddressDeltaMap::iterator,bool> ret;
             CMempoolAddressDeltaKey key(1, uint160(hashBytes), txhash, k, 0);
             mapAddress.insert(std::make_pair(key, CMempoolAddressDelta(entry.GetTime(), out.nValue)));
             inserted.push_back(key);
@@ -168,7 +168,7 @@ bool CTxMemPool::getAddressIndex(const std::vector<std::pair<uint160, int> > &ad
 bool CTxMemPool::removeAddressIndex(const uint256 txhash)
 {
     LOCK(cs);
-    addressDeltaMapInserted::iterator it = mapAddressInserted.find(txhash);
+    AddressDeltaInsertedMap::iterator it = mapAddressInserted.find(txhash);
 
     if (it != mapAddressInserted.end()) {
         std::vector<CMempoolAddressDeltaKey> keys = (*it).second;
@@ -220,7 +220,7 @@ void CTxMemPool::addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCac
 bool CTxMemPool::getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value)
 {
     LOCK(cs);
-    mapSpentIndex::iterator it;
+    SpentIndexMap::iterator it;
 
     it = mapSpent.find(key);
     if (it != mapSpent.end()) {
@@ -233,7 +233,7 @@ bool CTxMemPool::getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &valu
 bool CTxMemPool::removeSpentIndex(const uint256& txhash)
 {
     AssertLockHeld(cs);
-    mapSpentIndexInserted::iterator it = mapSpentInserted.find(txhash);
+    SpentIndexInsertedMap::iterator it = mapSpentInserted.find(txhash);
 
     if (it != mapSpentInserted.end()) {
         std::vector<CSpentIndexKey> keys = (*it).second;

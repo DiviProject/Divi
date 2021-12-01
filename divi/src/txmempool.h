@@ -70,17 +70,17 @@ private:
     const bool& fAddressIndex_;
     const bool& fSpentIndex_;
 
-    typedef std::map<CMempoolAddressDeltaKey, CMempoolAddressDelta, CMempoolAddressDeltaKeyCompare> addressDeltaMap;
-    addressDeltaMap mapAddress;
+    typedef std::map<CMempoolAddressDeltaKey, CMempoolAddressDelta, CMempoolAddressDeltaKeyCompare> AddressDeltaMap;
+    AddressDeltaMap mapAddress;
 
-    typedef std::map<uint256, std::vector<CMempoolAddressDeltaKey> > addressDeltaMapInserted;
-    addressDeltaMapInserted mapAddressInserted;
+    typedef std::map<uint256, std::vector<CMempoolAddressDeltaKey> > AddressDeltaInsertedMap;
+    AddressDeltaInsertedMap mapAddressInserted;
 
-    typedef std::map<CSpentIndexKey, CSpentIndexValue, CSpentIndexKeyCompare> mapSpentIndex;
-    mapSpentIndex mapSpent;
+    typedef std::map<CSpentIndexKey, CSpentIndexValue, CSpentIndexKeyCompare> SpentIndexMap;
+    SpentIndexMap mapSpent;
 
-    typedef std::map<uint256, std::vector<CSpentIndexKey> > mapSpentIndexInserted;
-    mapSpentIndexInserted mapSpentInserted;
+    typedef std::map<uint256, std::vector<CSpentIndexKey> > SpentIndexInsertedMap;
+    SpentIndexInsertedMap mapSpentInserted;
 
     std::map<uint256, std::pair<double, CAmount> > mapDeltas;
 

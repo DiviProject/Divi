@@ -2030,29 +2030,6 @@ static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxB
 //! Largest (in bytes) free transaction we're willing to create
 static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
 
-static bool CanBeSentAsFreeTransaction(
-    const bool fSendFreeTransactions,
-    const CTxMemPoolEntry& candidateMempoolTxEntry,
-    const CTxMemPool& mempool)
-{
-    static const unsigned nTxConfirmTarget = settings.GetArg("-txconfirmtarget", 1);
-    const double coinAgePerByte = candidateMempoolTxEntry.ComputeInputCoinAgePerByte(candidateMempoolTxEntry.GetHeight());
-    // Can we complete this as a free transaction?
-    if (fSendFreeTransactions)
-    {
-        // Not enough fee: enough priority?
-        double coinAgePerByteNeeded = mempool.estimatePriority(nTxConfirmTarget);
-        // Not enough mempool history to estimate: use hard-coded AllowFree.
-        if (coinAgePerByteNeeded <= 0 && CTxMemPoolEntry::AllowFree(coinAgePerByte))
-            return true;
-
-        // Small enough, and priority high enough, to send for free
-        if (coinAgePerByteNeeded > 0 && coinAgePerByte >= coinAgePerByteNeeded)
-            return true;
-    }
-    return false;
-}
-
 static double ComputeCoinAgeOfInputs(const std::set<COutput>& outputsBeingSpent)
 {
     double coinAge = 0;
@@ -2071,14 +2048,13 @@ enum class FeeSufficiencyStatus
     NEEDS_MORE_FEES,
     HAS_ENOUGH_FEES,
 };
+
 static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
     const CTransaction& wtxNew,
     const std::set<COutput> outputsBeingSpent,
     const CAmount totalValueToSend,
-    const CTxMemPool& mempool,
     CAmount& nFeeRet)
 {
-    static const bool fSendFreeTransactions = settings.GetBoolArg("-sendfreetransactions", false);
     const double coinAge = ComputeCoinAgeOfInputs(outputsBeingSpent);
     CTxMemPoolEntry candidateMempoolTxEntry(wtxNew,nFeeRet,GetTime(),coinAge, 0);
 
@@ -2087,9 +2063,7 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
     }
 
     const CAmount nFeeNeeded = GetMinimumFee(totalValueToSend, candidateMempoolTxEntry.GetTxSize());
-    const bool feeIsSufficient =
-        (fSendFreeTransactions && CanBeSentAsFreeTransaction(fSendFreeTransactions,candidateMempoolTxEntry,mempool)) ||
-        nFeeRet >= nFeeNeeded;
+    const bool feeIsSufficient = nFeeRet >= nFeeNeeded;
     if (!feeIsSufficient)
     {
         nFeeRet = nFeeNeeded;
@@ -2163,7 +2137,6 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     const CKeyStore& walletKeyStore,
     const I_CoinSelectionAlgorithm* coinSelector,
     const std::vector<COutput>& vCoins,
-    const CTxMemPool& mempool,
     CMutableTransaction& txNew,
     CReserveKey& reservekey,
     CWalletTx& wtxNew)
@@ -2192,7 +2165,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
         return {translate("Signing transaction failed"),false};
     }
 
-    const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,totalValueToSend,mempool,nFeeRet);
+    const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,totalValueToSend,nFeeRet);
     if(status == FeeSufficiencyStatus::TX_TOO_LARGE)
     {
         return {translate("Transaction too large"),false};
@@ -2240,7 +2213,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     {
         return {translate("Transaction output(s) amount too small"),false};
     }
-    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,mempool,txNew,reservekey,wtxNew);
+    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,txNew,reservekey,wtxNew);
 }
 
 /**

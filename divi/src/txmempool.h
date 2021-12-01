@@ -69,21 +69,12 @@ private:
        constructor and refer to the globals in main (normally at least).  */
     const bool& fSpentIndex_;
 
-    typedef std::map<CSpentIndexKey, CSpentIndexValue, CSpentIndexKeyCompare> SpentIndexMap;
-    SpentIndexMap mapSpent;
-
-    typedef std::map<uint256, std::vector<CSpentIndexKey> > SpentIndexInsertedMap;
-    SpentIndexInsertedMap mapSpentInserted;
-
     std::map<uint256, std::pair<double, CAmount> > mapDeltas;
 
     /** Maps bare txid's of transactions to the corresponding mempool entries.
      *  This is used for lookups of outputs available in the mempool instead
      *  of mapTx in case of segwit light.  */
     std::map<uint256, const CTxMemPoolEntry*> mapBareTxid;
-
-    void addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
-    bool removeSpentIndex(const uint256& txhash);
 
     void removeConflicts(const CTransaction& tx, std::list<CTransaction>& removed);
 public:
@@ -110,8 +101,6 @@ public:
     void clear();
     void queryHashes(std::vector<uint256>& vtxid);
     void pruneSpent(const uint256& hash, CCoins& coins) const;
-
-    bool getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
     /** Affect CreateNewBlock prioritisation of transactions */
     bool IsPrioritizedTransaction(const uint256 hash);

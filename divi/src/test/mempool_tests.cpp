@@ -13,9 +13,6 @@ class MempoolTestFixture
 {
 protected:
 
-  /* The test mempool will use these flags instead of the global ones.  */
-  bool spentIndex = false;
-
   /** A parent transaction.  */
   CMutableTransaction txParent;
 
@@ -41,7 +38,7 @@ public:
 
   MempoolTestFixture()
     : fakeChain(1, 1500000000, 1),
-      testPool(CFeeRate(0), spentIndex),
+      testPool(CFeeRate(0)),
       coinsMemPool(nullptr, testPool), coins(&coinsMemPool)
   {
     CMutableTransaction mtx;

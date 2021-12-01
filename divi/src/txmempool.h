@@ -65,10 +65,6 @@ private:
     const CFeeRate& minRelayFee; //! Passed to constructor to avoid dependency on main
     uint64_t totalTxSize; //! sum of all mempool tx' byte sizes
 
-    /* The mempool reads these flags, which are passed by reference in the
-       constructor and refer to the globals in main (normally at least).  */
-    const bool& fSpentIndex_;
-
     std::map<uint256, std::pair<double, CAmount> > mapDeltas;
 
     /** Maps bare txid's of transactions to the corresponding mempool entries.
@@ -82,7 +78,7 @@ public:
     std::map<uint256, CTxMemPoolEntry> mapTx;
     std::map<COutPoint, CInPoint> mapNextTx;
 
-    explicit CTxMemPool(const CFeeRate& _minRelayFee, const bool& spentIndex);
+    explicit CTxMemPool(const CFeeRate& _minRelayFee);
     ~CTxMemPool();
 
     /**

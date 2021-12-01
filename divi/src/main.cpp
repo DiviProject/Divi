@@ -1179,6 +1179,7 @@ void static UpdateTip(CBlockIndex* pindexNew)
 /** Disconnect chainActive's tip. */
 bool static DisconnectTip(CValidationState& state)
 {
+    AssertLockHeld(cs_main);
     CBlockIndex* pindexDelete = chainActive.Tip();
     assert(pindexDelete);
     mempool.check(pcoinsTip, mapBlockIndex);

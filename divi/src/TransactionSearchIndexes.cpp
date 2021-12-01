@@ -1,7 +1,6 @@
 #include <TransactionSearchIndexes.h>
 
 #include <txdb.h>
-#include <txmempool.h>
 #include <Logging.h>
 
 bool TransactionSearchIndexes::GetAddressIndex(
@@ -41,15 +40,11 @@ bool TransactionSearchIndexes::GetAddressUnspent(
 bool TransactionSearchIndexes::GetSpentIndex(
     bool spentIndexEnabled,
     CBlockTreeDB* pblocktree,
-    CTxMemPool& mempool,
     const CSpentIndexKey &key,
     CSpentIndexValue &value)
 {
     if (!spentIndexEnabled)
         return false;
-
-    if (mempool.getSpentIndex(key, value))
-        return true;
 
     if (!pblocktree->ReadSpentIndex(key, value))
         return false;

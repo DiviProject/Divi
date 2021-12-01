@@ -70,12 +70,6 @@ private:
     const bool& fAddressIndex_;
     const bool& fSpentIndex_;
 
-    typedef std::map<CMempoolAddressDeltaKey, CMempoolAddressDelta, CMempoolAddressDeltaKeyCompare> AddressDeltaMap;
-    AddressDeltaMap mapAddress;
-
-    typedef std::map<uint256, std::vector<CMempoolAddressDeltaKey> > AddressDeltaInsertedMap;
-    AddressDeltaInsertedMap mapAddressInserted;
-
     typedef std::map<CSpentIndexKey, CSpentIndexValue, CSpentIndexKeyCompare> SpentIndexMap;
     SpentIndexMap mapSpent;
 
@@ -88,9 +82,6 @@ private:
      *  This is used for lookups of outputs available in the mempool instead
      *  of mapTx in case of segwit light.  */
     std::map<uint256, const CTxMemPoolEntry*> mapBareTxid;
-
-    void addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
-    bool removeAddressIndex(const uint256 txhash);
 
     void addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
     bool removeSpentIndex(const uint256& txhash);
@@ -121,8 +112,6 @@ public:
     void clear();
     void queryHashes(std::vector<uint256>& vtxid);
     void pruneSpent(const uint256& hash, CCoins& coins) const;
-    bool getAddressIndex(const std::vector<std::pair<uint160, int> > &addresses,
-                         std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> > &results);
 
     bool getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 

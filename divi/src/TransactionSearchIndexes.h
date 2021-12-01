@@ -4,7 +4,6 @@
 #include <addressindex.h>
 #include <spentindex.h>
 class CBlockTreeDB;
-class CTxMemPool;
 namespace TransactionSearchIndexes
 {
     bool GetAddressIndex(
@@ -24,7 +23,6 @@ namespace TransactionSearchIndexes
     bool GetSpentIndex(
         bool spentIndexEnabled,
         CBlockTreeDB* pblocktree,
-        CTxMemPool& mempool,
         const CSpentIndexKey &key,
         CSpentIndexValue &value);
 }

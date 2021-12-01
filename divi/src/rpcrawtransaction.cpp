@@ -100,7 +100,7 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
             // Add address and value info if spentindex enabled
             CSpentIndexValue spentInfo;
             const CSpentIndexKey spentKey(txin.prevout.hash, txin.prevout.n);
-            if (TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,spentKey, spentInfo)) {
+            if (TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,spentKey, spentInfo)) {
                 in.push_back(Pair("value", ValueFromAmount(spentInfo.satoshis)));
                 in.push_back(Pair("valueSat", spentInfo.satoshis));
                 if (spentInfo.addressType == 1) {
@@ -131,9 +131,9 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
         // so we simply try looking up by both txid and bare txid as at
         // most one of them can match anyway.
         CSpentIndexValue spentInfo;
-        bool found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,CSpentIndexKey(txid, i), spentInfo);
+        bool found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,CSpentIndexKey(txid, i), spentInfo);
         if (!found)
-          found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
+          found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
         if (found) {
             out.push_back(Pair("spentTxId", spentInfo.txid.GetHex()));
             out.push_back(Pair("spentIndex", (int)spentInfo.inputIndex));

@@ -1478,11 +1478,6 @@ bool CWallet::IsChange(const CTxOut& txout) const
     return false;
 }
 
-bool CWallet::SubmitTransactionToMemoryPool(const CWalletTx& wtx) const
-{
-    return ::SubmitTransactionToMempool(mempool,wtx);
-}
-
 CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache) const
 {
     if ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) &&
@@ -2244,7 +2239,8 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
         }
 
         // Broadcast
-        if (!SubmitTransactionToMemoryPool(wtxNew)) {
+        if (!SubmitTransactionToMempool(mempool,wtxNew))
+        {
             // This must not fail. The transaction has already been signed and recorded.
             LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
             return false;

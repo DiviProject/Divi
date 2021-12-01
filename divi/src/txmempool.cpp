@@ -34,8 +34,6 @@ CTxMemPool::CTxMemPool(const CFeeRate& _minRelayFee, const bool& spentIndex
     , feePolicyEstimator(new FeePolicyEstimator(25))
     , minRelayFee(_minRelayFee)
     , fSpentIndex_(spentIndex)
-    , mapSpent()
-    , mapSpentInserted()
     , mapDeltas()
     , mapBareTxid()
     , mapTx()
@@ -90,76 +88,6 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry,
         totalTxSize += entry.GetTxSize();
     }
 
-    // Add memory spent index
-    if (fSpentIndex_) {
-        addSpentIndex(entry, view);
-    }
-
-    return true;
-}
-
-void CTxMemPool::addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view)
-{
-    LOCK(cs);
-
-    const CTransaction& tx = entry.GetTx();
-    std::vector<CSpentIndexKey> inserted;
-
-    uint256 txhash = tx.GetHash();
-    for (unsigned int j = 0; j < tx.vin.size(); j++) {
-        const CTxIn input = tx.vin[j];
-        const CTxOut &prevout = view.GetOutputFor(input);
-        uint160 addressHash;
-        int addressType;
-
-        if (prevout.scriptPubKey.IsPayToScriptHash()) {
-            addressHash = uint160(vector<unsigned char> (prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22));
-            addressType = 2;
-        } else if (prevout.scriptPubKey.IsPayToPublicKeyHash()) {
-            addressHash = uint160(vector<unsigned char> (prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23));
-            addressType = 1;
-        } else {
-            addressHash.SetNull();
-            addressType = 0;
-        }
-
-        CSpentIndexKey key = CSpentIndexKey(input.prevout.hash, input.prevout.n);
-        CSpentIndexValue value = CSpentIndexValue(txhash, j, -1, prevout.nValue, addressType, addressHash);
-
-        mapSpent.insert(std::make_pair(key, value));
-        inserted.push_back(key);
-
-    }
-
-    mapSpentInserted.insert(std::make_pair(txhash, inserted));
-}
-
-bool CTxMemPool::getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value)
-{
-    LOCK(cs);
-    SpentIndexMap::iterator it;
-
-    it = mapSpent.find(key);
-    if (it != mapSpent.end()) {
-        value = it->second;
-        return true;
-    }
-    return false;
-}
-
-bool CTxMemPool::removeSpentIndex(const uint256& txhash)
-{
-    AssertLockHeld(cs);
-    SpentIndexInsertedMap::iterator it = mapSpentInserted.find(txhash);
-
-    if (it != mapSpentInserted.end()) {
-        std::vector<CSpentIndexKey> keys = (*it).second;
-        for (std::vector<CSpentIndexKey>::iterator mit = keys.begin(); mit != keys.end(); mit++) {
-            mapSpent.erase(*mit);
-        }
-        mapSpentInserted.erase(it);
-    }
-
     return true;
 }
 
@@ -187,8 +115,6 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
             txToRemove.pop_front();
             if (!mapTx.count(hash))
                 continue;
-
-            removeSpentIndex(hash);
 
             {
                 const CTxMemPoolEntry& mempoolTx = mapTx.find(hash)->second;

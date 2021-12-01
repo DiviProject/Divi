@@ -67,7 +67,6 @@ private:
 
     /* The mempool reads these flags, which are passed by reference in the
        constructor and refer to the globals in main (normally at least).  */
-    const bool& fAddressIndex_;
     const bool& fSpentIndex_;
 
     typedef std::map<CSpentIndexKey, CSpentIndexValue, CSpentIndexKeyCompare> SpentIndexMap;
@@ -92,8 +91,7 @@ public:
     std::map<uint256, CTxMemPoolEntry> mapTx;
     std::map<COutPoint, CInPoint> mapNextTx;
 
-    explicit CTxMemPool(const CFeeRate& _minRelayFee,
-                        const bool& addressIndex, const bool& spentIndex);
+    explicit CTxMemPool(const CFeeRate& _minRelayFee, const bool& spentIndex);
     ~CTxMemPool();
 
     /**

@@ -608,7 +608,7 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
     return ret;
 }
 
-std::string SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsToFund, CWalletTx& wtxNew, bool spendFromVaults)
+std::string SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsToFund, TxTextMetadata metadata, bool spendFromVaults)
 {
     // Check amount
     CAmount nValue = 0;
@@ -636,17 +636,18 @@ std::string SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& sc
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
     static AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName("");
-    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(scriptsToFund, wtxNew, &coinSelector, coinTypeFilter);
-    if (!txCreation.second)
+    TransactionCreationRequest request(scriptsToFund, metadata, coinTypeFilter, &coinSelector);
+    TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
+    if (!txCreation.transactionCreationSucceeded)
     {
-        strError = txCreation.first;
+        strError = txCreation.errorMessage;
         LogPrintf("SendMoney() : %s\n", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
-    return wtxNew.GetHash().GetHex();
+    return txCreation.wtxNew->GetHash().GetHex();
 }
 
-std::string SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>& vecSend, CWalletTx& wtxNew, std::string accountName, int nMinDepth)
+std::string SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>& vecSend, TxTextMetadata metadata, std::string accountName, int nMinDepth)
 {
     // Check funds
     CAmount nBalance = GetAccountBalance(accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
@@ -674,35 +675,36 @@ std::string SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>&
     constexpr AvailableCoinsType coinTypeFilter = ALL_SPENDABLE_COINS;
     static AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName(accountName);
-    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney(vecSend, wtxNew, &coinSelector, coinTypeFilter);
-    if (!txCreation.second)
+    TransactionCreationRequest request(vecSend, metadata, coinTypeFilter, &coinSelector);
+    TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
+    if (!txCreation.transactionCreationSucceeded)
     {
-        strError = txCreation.first;
+        strError = txCreation.errorMessage;
         LogPrintf("SendMoney() : %s\n", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
-    return wtxNew.GetHash().GetHex();
+    return txCreation.wtxNew->GetHash().GetHex();
 }
 
-std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, CWalletTx& wtxNew, std::string accountName, int nMinDepth)
+std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, TxTextMetadata metadata, std::string accountName, int nMinDepth)
 {
     const CScript scriptPubKey = GetScriptForDestination(destination);
-    return SendMoneyFromAccount({{scriptPubKey,nValue}},wtxNew,accountName,nMinDepth);
+    return SendMoneyFromAccount({{scriptPubKey,nValue}},metadata,accountName,nMinDepth);
 }
 
-std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
+std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata)
 {
     // Parse DIVI address
     constexpr bool spendFromVaults = false;
     CScript scriptPubKey = GetScriptForDestination(address);
-    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, wtxNew, spendFromVaults);
+    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, metadata, spendFromVaults);
 }
 
-std::string SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
+std::string SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata)
 {
     constexpr bool spendFromVaults = true;
     CScript scriptPubKey = GetScriptForDestination(address);
-    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, wtxNew, spendFromVaults);
+    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, metadata, spendFromVaults);
 }
 
 Value getcoinavailability(const Array& params, bool fHelp)
@@ -861,11 +863,11 @@ Value fundvault(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid owner DIVI address");
 
     // Wallet comments
-    CWalletTx wtx;
+    TxTextMetadata metadata;
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-        wtx.mapValue["comment"] = params[2].get_str();
+        metadata["comment"] = params[2].get_str();
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        wtx.mapValue["to"] = params[3].get_str();
+        metadata["to"] = params[3].get_str();
 
 
     CScript vaultScript = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
@@ -873,7 +875,7 @@ Value fundvault(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
     // Amount & Send
     CAmount nAmount = AmountFromValue(params[1]);
-    const std::string txid = SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, wtx,false);
+    const std::string txid = SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, metadata,false);
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", txid ));
@@ -904,16 +906,15 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
     CAmount nAmount = AmountFromValue(params[1]);
 
     // Wallet comments
-    CWalletTx wtx;
+    TxTextMetadata metadata;
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-        wtx.mapValue["comment"] = params[2].get_str();
+        metadata["comment"] = params[2].get_str();
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        wtx.mapValue["to"] = params[3].get_str();
+        metadata["to"] = params[3].get_str();
 
 
     EnsureWalletIsUnlocked();
-    SendMoneyFromVaults(address.Get(), nAmount, wtx);
-    return wtx.GetHash().GetHex();
+    return SendMoneyFromVaults(address.Get(), nAmount, metadata);
 }
 
 Value removevault(const Array& params, bool fHelp)
@@ -1063,17 +1064,14 @@ Value sendtoaddress(const Array& params, bool fHelp)
     CAmount nAmount = AmountFromValue(params[1]);
 
     // Wallet comments
-    CWalletTx wtx;
+    TxTextMetadata metadata;
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-        wtx.mapValue["comment"] = params[2].get_str();
+        metadata["comment"] = params[2].get_str();
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        wtx.mapValue["to"] = params[3].get_str();
+        metadata["to"] = params[3].get_str();
 
     EnsureWalletIsUnlocked();
-
-    SendMoneyToAddress(address.Get(), nAmount, wtx);
-
-    return wtx.GetHash().GetHex();
+    return SendMoneyToAddress(address.Get(), nAmount, metadata);
 }
 
 Value listaddressgroupings(const Array& params, bool fHelp)
@@ -1384,15 +1382,16 @@ Value sendfrom(const Array& params, bool fHelp)
     if (params.size() > 3)
         nMinDepth = params[3].get_int();
 
-    CWalletTx wtx;
-    wtx.strFromAccount = strAccount;
+
+    TxTextMetadata metadata;
+    metadata["FromAccount"] = strAccount;
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
-        wtx.mapValue["comment"] = params[4].get_str();
+        metadata["comment"] = params[4].get_str();
     if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
-        wtx.mapValue["to"] = params[5].get_str();
+        metadata["to"] = params[5].get_str();
 
     EnsureWalletIsUnlocked();
-    return SendMoneyFromAccount(address.Get(), nAmount, wtx, strAccount, nMinDepth);
+    return SendMoneyFromAccount(address.Get(), nAmount, metadata, strAccount, nMinDepth);
 }
 
 
@@ -1427,10 +1426,10 @@ Value sendmany(const Array& params, bool fHelp)
     if (params.size() > 2)
         nMinDepth = params[2].get_int();
 
-    CWalletTx wtx;
-    wtx.strFromAccount = strAccount;
+    TxTextMetadata metadata;
+    metadata["FromAccount"] = strAccount;
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        wtx.mapValue["comment"] = params[3].get_str();
+        metadata["comment"] = params[3].get_str();
 
     set<CBitcoinAddress> setAddress;
     std::vector<std::pair<CScript, CAmount> > vecSend;
@@ -1460,7 +1459,7 @@ Value sendmany(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     // Send
-    return SendMoneyFromAccount(vecSend,wtx,strAccount, nMinDepth);
+    return SendMoneyFromAccount(vecSend,metadata,strAccount, nMinDepth);
 }
 
 // Defined in rpcmisc.cpp

@@ -35,7 +35,7 @@ using namespace json_spirit;
 extern CWallet* pwalletMain;
 extern CChain chainActive;
 extern CCriticalSection cs_main;
-extern std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew);
+extern std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata);
 extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool forceNewKey, bool isWalletDerivedKey);
 
 static MasternodeTier GetMasternodeTierFromString(std::string str)
@@ -100,16 +100,18 @@ Value allocatefunds(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    CWalletTx wtx;
-    SendMoneyToAddress(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), wtx);
+    const uint256 txid = uint256S(SendMoneyToAddress(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), TxTextMetadata()));
+    const CWalletTx* walletTx = pwalletMain->GetWalletTx(txid);
+    if(!walletTx)
+        throw JSONRPCError(RPC_WALLET_ERROR, "Couldn't find MN allocation transaction");
 
     Object obj;
-    obj.push_back(Pair("txhash", wtx.GetHash().GetHex()));
+    obj.push_back(Pair("txhash", walletTx->GetHash().GetHex() ));
     bool found = false;
     auto nAmount = CMasternode::GetTierCollateralAmount(nMasternodeTier);
-    for(size_t i = 0; i < wtx.vout.size(); ++i)
+    for(size_t i = 0; i < walletTx->vout.size(); ++i)
     {
-        if(wtx.vout[i].nValue == nAmount)
+        if(walletTx->vout[i].nValue == nAmount)
         {
             found = true;
             obj.push_back(Pair("vout", static_cast<int64_t>(i) ));

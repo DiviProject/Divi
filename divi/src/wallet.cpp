@@ -197,6 +197,13 @@ TransactionCreationResult::~TransactionCreationResult()
     wtxNew.reset();
     reserveKey.reset();
 }
+TransactionCreationResult::TransactionCreationResult(TransactionCreationResult&& other)
+{
+    transactionCreationSucceeded = other.transactionCreationSucceeded;
+    errorMessage = other.errorMessage;
+    wtxNew.reset(other.wtxNew.release());
+    reserveKey.reset(other.reserveKey.release());
+}
 
 
 CWallet::CWallet(
@@ -2276,21 +2283,39 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
     return true;
 }
 
-std::pair<std::string,bool> CWallet::SendMoney(
-    const std::vector<std::pair<CScript, CAmount> >& vecSend,
-    CWalletTx& wtxNew,
-    const I_CoinSelectionAlgorithm* coinSelector,
-    AvailableCoinsType coin_type)
+TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& requestedTransaction)
 {
-    CReserveKey reservekey(*this);
-    std::pair<std::string,bool> createTxResult = CreateTransaction(vecSend,wtxNew,reservekey,coinSelector,coin_type);
-    if(!createTxResult.second) return createTxResult;
-    bool commitTxResult = CommitTransaction(wtxNew,reservekey);
-    if(!commitTxResult)
+    TransactionCreationResult result;
+    result.reserveKey.reset(new CReserveKey(*this));
+    result.wtxNew.reset(new CWalletTx());
+    if(!requestedTransaction.metadata.empty())
     {
-        return {translate("The transaction was rejected!"),false};
+        CWalletTx& walletTx = *result.wtxNew;
+        walletTx.mapValue = requestedTransaction.metadata;
+        if(walletTx.mapValue.count("FromAccount") > 0)
+        {
+            walletTx.strFromAccount = walletTx.mapValue["FromAccount"];
+            walletTx.mapValue.erase(walletTx.strFromAccount);
+        }
     }
-    return {std::string(""),true};
+    std::pair<std::string,bool> createTxResult =
+        CreateTransaction(
+            requestedTransaction.scriptsToFund,
+            *result.wtxNew,
+            *result.reserveKey,
+            requestedTransaction.coinSelectionAlgorithm,
+            requestedTransaction.coin_type);
+
+    result.transactionCreationSucceeded = createTxResult.second;
+    result.errorMessage = createTxResult.first;
+    if(!result.transactionCreationSucceeded) return std::move(result);
+
+    result.transactionCreationSucceeded = CommitTransaction(*result.wtxNew,*result.reserveKey);
+    if(!result.transactionCreationSucceeded)
+    {
+        return std::move(result);
+    }
+    return std::move(result);
 }
 
 DBErrors CWallet::LoadWallet()

@@ -708,8 +708,8 @@ Value signrawtransaction(const Array& params, bool fHelp)
     CCoinsViewCache view;
     {
         LOCK(mempool.cs);
-        CCoinsViewCache& viewChain = *pcoinsTip;
-        CCoinsViewMemPool viewMempool(&viewChain, mempool);
+        const CCoinsViewCache& viewChain = *pcoinsTip;
+        const CCoinsViewMemPool viewMempool(&viewChain, mempool);
         view.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
 
         BOOST_FOREACH (const CTxIn& txin, mergedTx.vin) {
@@ -842,9 +842,8 @@ Value signrawtransaction(const Array& params, bool fHelp)
 static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransaction& tx)
 {
     LOCK(mempool.cs);
-    CCoinsViewCache view;
-    CCoinsViewMemPool viewMemPool(pcoinsTip, mempool);
-    view.SetBackend(viewMemPool);
+    const CCoinsViewMemPool viewMemPool(pcoinsTip, mempool);
+    const CCoinsViewCache view(&viewMemPool);
 
     if(!view.HaveInputs(tx))
     {

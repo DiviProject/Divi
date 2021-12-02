@@ -56,7 +56,7 @@ CTxMemPool::~CTxMemPool()
     feePolicyEstimator.reset();
 }
 
-void CTxMemPool::pruneSpent(const uint256& hashTx, CCoins& coins)
+void CTxMemPool::pruneSpent(const uint256& hashTx, CCoins& coins) const
 {
     LOCK(cs);
 
@@ -568,7 +568,7 @@ void CTxMemPool::ClearPrioritisation(const uint256 hash)
 }
 
 
-CCoinsViewMemPool::CCoinsViewMemPool(CCoinsView* baseIn, CTxMemPool& mempoolIn) : CCoinsViewBacked(baseIn), mempool(mempoolIn) {}
+CCoinsViewMemPool::CCoinsViewMemPool(const CCoinsView* baseIn, const CTxMemPool& mempoolIn) : CCoinsViewBacked(baseIn), mempool(mempoolIn) {}
 
 bool CCoinsViewMemPool::GetCoins(const uint256& txid, CCoins& coins) const
 {

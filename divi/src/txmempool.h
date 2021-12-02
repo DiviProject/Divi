@@ -121,7 +121,7 @@ public:
     void removeConfirmedTransactions(const std::vector<CTransaction>& vtx, unsigned int nBlockHeight, std::list<CTransaction>& conflicts);
     void clear();
     void queryHashes(std::vector<uint256>& vtxid);
-    void pruneSpent(const uint256& hash, CCoins& coins);
+    void pruneSpent(const uint256& hash, CCoins& coins) const;
     unsigned int GetTransactionsUpdated() const;
     void AddTransactionsUpdated(unsigned int n);
 
@@ -184,10 +184,10 @@ public:
 class CCoinsViewMemPool : public CCoinsViewBacked
 {
 protected:
-    CTxMemPool& mempool;
+    const CTxMemPool& mempool;
 
 public:
-    CCoinsViewMemPool(CCoinsView* baseIn, CTxMemPool& mempoolIn);
+    CCoinsViewMemPool(const CCoinsView* baseIn, const CTxMemPool& mempoolIn);
     bool GetCoins(const uint256& txid, CCoins& coins) const override;
     bool HaveCoins(const uint256& txid) const override;
     bool GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const;

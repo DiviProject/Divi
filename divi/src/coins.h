@@ -307,15 +307,22 @@ public:
 class CCoinsViewBacked : public CCoinsView
 {
 private:
-    CCoinsView* base;
+    /** The base view used for read-only operations.  */
+    const CCoinsView* roBase;
+    /** The base view used for writing (BatchWrite).  May be null, in which
+     *  case this method must not be called.  */
+    CCoinsView* writeBase;
 
 public:
     CCoinsViewBacked();
-    CCoinsViewBacked(CCoinsView* viewIn);
+    explicit CCoinsViewBacked(CCoinsView* viewIn);
+    explicit CCoinsViewBacked(const CCoinsView* viewIn);
+
     bool GetCoins(const uint256& txid, CCoins& coins) const override;
     bool HaveCoins(const uint256& txid) const override;
     uint256 GetBestBlock() const override;
     void SetBackend(CCoinsView& viewIn);
+    void SetBackend(const CCoinsView& viewIn);
     void DettachBackend();
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override;
     bool GetStats(CCoinsStats& stats) const override;
@@ -371,7 +378,8 @@ protected:
 
 public:
     CCoinsViewCache();
-    CCoinsViewCache(CCoinsView* baseIn);
+    explicit CCoinsViewCache(CCoinsView* baseIn);
+    explicit CCoinsViewCache(const CCoinsView* baseIn);
     ~CCoinsViewCache();
 
     // Standard CCoinsView methods

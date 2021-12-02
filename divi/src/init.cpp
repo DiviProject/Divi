@@ -853,7 +853,7 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
 
             LOCK(cs_main);
             const ActiveChainManager& chainManager = GetActiveChainManager();
-            CVerifyDB dbVerifier(
+            const CVerifyDB dbVerifier(
                 chainManager,
                 chainActive,
                 uiInterface,

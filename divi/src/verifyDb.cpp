@@ -26,7 +26,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleR
 
 CVerifyDB::CVerifyDB(
     const ActiveChainManager& chainManager,
-    CChain& activeChain,
+    const CChain& activeChain,
     CClientUIInterface& clientInterface,
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
@@ -44,7 +44,7 @@ CVerifyDB::~CVerifyDB()
     clientInterface_.ShowProgress("", 100);
 }
 
-bool CVerifyDB::VerifyDB(CCoinsView* coinsview, unsigned coinsTipCacheSize, int nCheckLevel, int nCheckDepth)
+bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize, int nCheckLevel, int nCheckDepth) const
 {
     if (activeChain_.Tip() == NULL || activeChain_.Tip()->pprev == NULL)
         return true;

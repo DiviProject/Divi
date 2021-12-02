@@ -151,20 +151,52 @@ std::string CCoins::ToString() const
     return res.str();
 }
 
-CCoinsViewBacked::CCoinsViewBacked() : base(nullptr) {}
-CCoinsViewBacked::CCoinsViewBacked(CCoinsView* viewIn) : base(viewIn) {}
-bool CCoinsViewBacked::GetCoins(const uint256& txid, CCoins& coins) const { return base? base->GetCoins(txid, coins):false; }
-bool CCoinsViewBacked::HaveCoins(const uint256& txid) const { return base? base->HaveCoins(txid):false; }
-uint256 CCoinsViewBacked::GetBestBlock() const { return base? base->GetBestBlock():uint256(0); }
-void CCoinsViewBacked::SetBackend(CCoinsView& viewIn) { base = &viewIn; }
-void CCoinsViewBacked::DettachBackend() { base = nullptr; }
-bool CCoinsViewBacked::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) { return base? base->BatchWrite(mapCoins, hashBlock):false; }
-bool CCoinsViewBacked::GetStats(CCoinsStats& stats) const { return base? base->GetStats(stats):false; }
+CCoinsViewBacked::CCoinsViewBacked()
+  : roBase(nullptr), writeBase(nullptr)
+{}
+
+CCoinsViewBacked::CCoinsViewBacked(CCoinsView* viewIn)
+  : roBase(viewIn), writeBase(viewIn)
+{}
+
+CCoinsViewBacked::CCoinsViewBacked(const CCoinsView* viewIn)
+  : roBase(viewIn), writeBase(nullptr)
+{}
+
+bool CCoinsViewBacked::GetCoins(const uint256& txid, CCoins& coins) const { return roBase? roBase->GetCoins(txid, coins):false; }
+bool CCoinsViewBacked::HaveCoins(const uint256& txid) const { return roBase? roBase->HaveCoins(txid):false; }
+uint256 CCoinsViewBacked::GetBestBlock() const { return roBase? roBase->GetBestBlock():uint256(0); }
+
+void CCoinsViewBacked::SetBackend(CCoinsView& viewIn)
+{
+  roBase = &viewIn;
+  writeBase = &viewIn;
+}
+
+void CCoinsViewBacked::SetBackend(const CCoinsView& viewIn)
+{
+  roBase = &viewIn;
+  writeBase = nullptr;
+}
+
+void CCoinsViewBacked::DettachBackend()
+{
+  roBase = nullptr;
+  writeBase = nullptr;
+}
+
+bool CCoinsViewBacked::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)
+{
+  return writeBase? writeBase->BatchWrite(mapCoins, hashBlock):false;
+}
+
+bool CCoinsViewBacked::GetStats(CCoinsStats& stats) const { return roBase? roBase->GetStats(stats):false; }
 
 CCoinsKeyHasher::CCoinsKeyHasher() : salt(GetRandHash()) {}
 
-CCoinsViewCache::CCoinsViewCache() : CCoinsViewBacked(nullptr), hasModifier(false), hashBlock(0), cacheCoins() {}
-CCoinsViewCache::CCoinsViewCache(CCoinsView* baseIn) : CCoinsViewBacked(baseIn), hasModifier(false), hashBlock(0), cacheCoins() {}
+CCoinsViewCache::CCoinsViewCache() : CCoinsViewBacked(), hasModifier(false), hashBlock(0) {}
+CCoinsViewCache::CCoinsViewCache(CCoinsView* baseIn) : CCoinsViewBacked(baseIn), hasModifier(false), hashBlock(0) {}
+CCoinsViewCache::CCoinsViewCache(const CCoinsView* baseIn) : CCoinsViewBacked(baseIn), hasModifier(false), hashBlock(0) {}
 
 CCoinsViewCache::~CCoinsViewCache()
 {

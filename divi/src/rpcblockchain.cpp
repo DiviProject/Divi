@@ -501,7 +501,7 @@ Value verifychain(const Array& params, bool fHelp)
 
     LOCK(cs_main);
     const ActiveChainManager& chainManager = GetActiveChainManager();
-    CVerifyDB dbVerifier(
+    const CVerifyDB dbVerifier(
         chainManager,
         chainActive,
         uiInterface,

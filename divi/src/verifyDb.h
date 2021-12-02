@@ -20,19 +20,19 @@ public:
     typedef bool (*ShutdownListener)();
 private:
     const ActiveChainManager& chainManager_;
-    CChain& activeChain_;
+    const CChain& activeChain_;
     CClientUIInterface& clientInterface_;
     const unsigned coinsCacheSize_;
     ShutdownListener shutdownListener_;
 public:
     CVerifyDB(
         const ActiveChainManager& chainManager,
-        CChain& activeChain,
+        const CChain& activeChain,
         CClientUIInterface& clientInterface,
         const unsigned& coinsCacheSize,
         ShutdownListener shutdownListener);
     ~CVerifyDB();
-    bool VerifyDB(CCoinsView* coinsview, unsigned coinsTipCacheSize, int nCheckLevel, int nCheckDepth);
+    bool VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize, int nCheckLevel, int nCheckDepth) const;
 };
 
 #endif

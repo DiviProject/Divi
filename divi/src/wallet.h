@@ -147,6 +147,7 @@ struct TransactionCreationResult
     std::unique_ptr<CReserveKey> reserveKey;
     TransactionCreationResult();
     ~TransactionCreationResult();
+    TransactionCreationResult(TransactionCreationResult&& other);
 };
 
 class CWallet :
@@ -379,6 +380,7 @@ public:
     CAmount GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
     CAmount GetUnconfirmedBalance() const;
     CAmount GetImmatureBalance() const;
+
     std::pair<std::string,bool> CreateTransaction(
         const std::vector<std::pair<CScript, CAmount> >& vecSend,
         CWalletTx& wtxNew,
@@ -386,11 +388,7 @@ public:
         const I_CoinSelectionAlgorithm* coinSelector,
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
-    std::pair<std::string,bool> SendMoney(
-        const std::vector<std::pair<CScript, CAmount> >& vecSend,
-        CWalletTx& wtxNew,
-        const I_CoinSelectionAlgorithm* coinSelector,
-        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
+    TransactionCreationResult SendMoney(const TransactionCreationRequest& requestedTransaction);
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
 
     bool NewKeyPool();

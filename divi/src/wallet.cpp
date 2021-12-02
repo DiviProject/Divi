@@ -173,6 +173,32 @@ std::set<CTxDestination> AddressBookManager::GetAccountAddresses(std::string str
 }
 
 
+TransactionCreationRequest::TransactionCreationRequest(
+    const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
+    TxTextMetadata metadataToSet,
+    AvailableCoinsType coinTypeSelected,
+    const I_CoinSelectionAlgorithm* const algorithm
+    ): scriptsToFund(scriptsToSendTo)
+    , coin_type(coinTypeSelected)
+    , coinSelectionAlgorithm(algorithm)
+    , metadata(metadataToSet)
+{
+}
+
+TransactionCreationResult::TransactionCreationResult(
+    ): transactionCreationSucceeded(false)
+    , errorMessage("")
+    , wtxNew(nullptr)
+    , reserveKey(nullptr)
+{
+}
+TransactionCreationResult::~TransactionCreationResult()
+{
+    wtxNew.reset();
+    reserveKey.reset();
+}
+
+
 CWallet::CWallet(
     const CChain& chain,
     const BlockMap& blockMap,

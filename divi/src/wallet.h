@@ -126,6 +126,29 @@ public:
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 };
 
+typedef std::map<std::string,std::string> TxTextMetadata;
+struct TransactionCreationRequest
+{
+    const std::vector<std::pair<CScript, CAmount> >& scriptsToFund;
+    AvailableCoinsType coin_type;
+    const I_CoinSelectionAlgorithm* const coinSelectionAlgorithm;
+    TxTextMetadata metadata;
+    TransactionCreationRequest(
+        const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
+        TxTextMetadata metadataToSet = TxTextMetadata(),
+        AvailableCoinsType coinTypeSelected = ALL_SPENDABLE_COINS,
+        const I_CoinSelectionAlgorithm* const algorithm = nullptr);
+};
+struct TransactionCreationResult
+{
+    bool transactionCreationSucceeded;
+    std::string errorMessage;
+    std::unique_ptr<CWalletTx> wtxNew;
+    std::unique_ptr<CReserveKey> reserveKey;
+    TransactionCreationResult();
+    ~TransactionCreationResult();
+};
+
 class CWallet :
     public CCryptoKeyStore,
     public NotificationInterface,

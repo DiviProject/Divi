@@ -608,7 +608,7 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
     return ret;
 }
 
-void SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsToFund, CWalletTx& wtxNew, bool spendFromVaults)
+std::string SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsToFund, CWalletTx& wtxNew, bool spendFromVaults)
 {
     // Check amount
     CAmount nValue = 0;
@@ -643,9 +643,10 @@ void SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsTo
         LogPrintf("SendMoney() : %s\n", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
+    return wtxNew.GetHash().GetHex();
 }
 
-void SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>& vecSend, CWalletTx& wtxNew, std::string accountName, int nMinDepth)
+std::string SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>& vecSend, CWalletTx& wtxNew, std::string accountName, int nMinDepth)
 {
     // Check funds
     CAmount nBalance = GetAccountBalance(accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
@@ -680,27 +681,28 @@ void SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>& vecSen
         LogPrintf("SendMoney() : %s\n", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
+    return wtxNew.GetHash().GetHex();
 }
 
-void SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, CWalletTx& wtxNew, std::string accountName, int nMinDepth)
+std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, CWalletTx& wtxNew, std::string accountName, int nMinDepth)
 {
     const CScript scriptPubKey = GetScriptForDestination(destination);
-    SendMoneyFromAccount({{scriptPubKey,nValue}},wtxNew,accountName,nMinDepth);
+    return SendMoneyFromAccount({{scriptPubKey,nValue}},wtxNew,accountName,nMinDepth);
 }
 
-void SendMoneyToAddress(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
+std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
 {
     // Parse DIVI address
     constexpr bool spendFromVaults = false;
     CScript scriptPubKey = GetScriptForDestination(address);
-    SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, wtxNew, spendFromVaults);
+    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, wtxNew, spendFromVaults);
 }
 
-void SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
+std::string SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew)
 {
     constexpr bool spendFromVaults = true;
     CScript scriptPubKey = GetScriptForDestination(address);
-    SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, wtxNew, spendFromVaults);
+    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, wtxNew, spendFromVaults);
 }
 
 Value getcoinavailability(const Array& params, bool fHelp)
@@ -871,10 +873,10 @@ Value fundvault(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
     // Amount & Send
     CAmount nAmount = AmountFromValue(params[1]);
-    SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, wtx,false);
+    const std::string txid = SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, wtx,false);
 
     Object fundingAttemptResult;
-    fundingAttemptResult.push_back(Pair("txhash", wtx.GetHash().GetHex()));
+    fundingAttemptResult.push_back(Pair("txhash", txid ));
     fundingAttemptResult.push_back(Pair("vault",addressEncodings));
     fundingAttemptResult.push_back(Pair("script",HexStr(ToByteVector(vaultScript) ) ));
     return fundingAttemptResult;
@@ -1390,9 +1392,7 @@ Value sendfrom(const Array& params, bool fHelp)
         wtx.mapValue["to"] = params[5].get_str();
 
     EnsureWalletIsUnlocked();
-    SendMoneyFromAccount(address.Get(), nAmount, wtx, strAccount, nMinDepth);
-
-    return wtx.GetHash().GetHex();
+    return SendMoneyFromAccount(address.Get(), nAmount, wtx, strAccount, nMinDepth);
 }
 
 
@@ -1460,8 +1460,7 @@ Value sendmany(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     // Send
-    SendMoneyFromAccount(vecSend,wtx,strAccount, nMinDepth);
-    return wtx.GetHash().GetHex();
+    return SendMoneyFromAccount(vecSend,wtx,strAccount, nMinDepth);
 }
 
 // Defined in rpcmisc.cpp

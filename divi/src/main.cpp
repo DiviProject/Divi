@@ -605,7 +605,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         CAmount nValueIn = 0;
         {
             LOCK(pool.cs);
-            CCoinsViewMemPool viewMemPool(pcoinsTip, pool);
+            const CCoinsViewMemPool viewMemPool(pcoinsTip, pool);
             view.SetBackend(viewMemPool);
 
             // do we already have it?

@@ -64,9 +64,8 @@ struct WalletOutputEntryParsing
     std::vector<CTxOut> previousOutputsSpent;
 };
 
-bool DebitsFromAccount(const CWallet& wallet,const CTxOut& txout, const std::string accountName)
+bool DebitsFromAccount(const AddressBook& addressBook,const CTxOut& txout, const std::string accountName)
 {
-    const AddressBook& addressBook = wallet.GetAddressBook();
     CTxDestination address;
     if (ExtractDestination(txout.scriptPubKey, address) &&
         addressBook.count(address) > 0 &&
@@ -76,9 +75,8 @@ bool DebitsFromAccount(const CWallet& wallet,const CTxOut& txout, const std::str
     }
     return false;
 }
-bool DebitsFromAnyAccount(const CWallet& wallet,const CTxOut& txout)
+bool DebitsFromAnyAccount(const AddressBook& addressBook,const CTxOut& txout)
 {
-    const AddressBook& addressBook = wallet.GetAddressBook();
     CTxDestination address;
     if (ExtractDestination(txout.scriptPubKey, address) &&
         addressBook.count(address) > 0 &&
@@ -182,13 +180,13 @@ void GetAccountAmounts(
 
     std::string strSentAccount = wtx.strFromAccount;
     WalletOutputEntryParsing parsedEntry = GetAmounts(wallet,wtx, filter,true);
-
+    const AddressBook& addressBook = wallet.GetAddressBook();
     if(!strAccount.empty())
     {
         // Spend from account
         for (const CTxOut& s : parsedEntry.previousOutputsSpent)
         {
-            if(DebitsFromAccount(wallet,s,strAccount))
+            if(DebitsFromAccount(addressBook,s,strAccount))
             {
                 nSent += s.nValue;
             }
@@ -196,7 +194,7 @@ void GetAccountAmounts(
         // Receive to account
         for (const CTxOut& s : wtx.vout)
         {
-            if(DebitsFromAccount(wallet,s,strAccount))
+            if(DebitsFromAccount(addressBook,s,strAccount))
             {
                 nReceived += s.nValue;
             }
@@ -209,7 +207,7 @@ void GetAccountAmounts(
         // Spend from account
         for (const CTxOut& s : parsedEntry.previousOutputsSpent)
         {
-            if(!DebitsFromAnyAccount(wallet,s))
+            if(!DebitsFromAnyAccount(addressBook,s))
             {
                 nSent += s.nValue;
             }
@@ -217,7 +215,7 @@ void GetAccountAmounts(
         // Receive to account
         for (const CTxOut& s : wtx.vout)
         {
-            if(!DebitsFromAnyAccount(wallet,s))
+            if(!DebitsFromAnyAccount(addressBook,s))
             {
                 nReceived += s.nValue;
             }
@@ -423,7 +421,6 @@ public:
 class AccountCoinSelector final: public I_AccountCoinSelector
 {
 private:
-    const CWallet& wallet_;
     SignatureSizeEstimator signatureSizeEstimator_;
     const AddressBook& addressBook_;
     std::string accountName_;
@@ -434,8 +431,8 @@ private:
         accountCoins.reserve(vCoins.size());
         for(const COutput& out: vCoins)
         {
-            if( (!accountName_.empty() && DebitsFromAccount(wallet_,out.tx->vout[out.i],accountName_)) ||
-                (accountName_.empty() && !DebitsFromAnyAccount(wallet_,out.tx->vout[out.i]) ))
+            if( (!accountName_.empty() && DebitsFromAccount(addressBook_,out.tx->vout[out.i],accountName_)) ||
+                (accountName_.empty() && !DebitsFromAnyAccount(addressBook_,out.tx->vout[out.i]) ))
             {
                 accountCoins.push_back(out);
             }
@@ -445,8 +442,7 @@ private:
 public:
     AccountCoinSelector(
         const CWallet& wallet
-        ): wallet_(wallet)
-        , signatureSizeEstimator_()
+        ): signatureSizeEstimator_()
         , addressBook_(wallet.GetAddressBook())
         , accountName_()
     {
@@ -456,6 +452,7 @@ public:
                 signatureSizeEstimator_,
                 FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate()));
     }
+    ~AccountCoinSelector(){ coinSelector_.reset(); }
 
     void SetAccountName(std::string accountName)
     {

@@ -63,7 +63,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     std::set<COutput> inputsSelected;
     inputsSelected.clear();
     const CAmount minimumNoDustChange = FeeAndPriorityCalculator::instance().MinimumValueForNonDust();
-    const CAmount totalAmountNeeded = nTargetValue + minimumNoDustChange+fees;
+    const CAmount totalAmountNeeded = nTargetValue + minimumNoDustChange + fees;
     if(totalAmountNeeded > maximumAmountAvailable) return {};
 
     std::sort(
@@ -84,13 +84,12 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     for(const InputToSpendAndSigSize& inputAndSigSize: inputsToSpendAndSignatureSizeEstimates)
     {
         inputsSelected.insert(*inputAndSigSize.outputRef);
-        amountCovered += inputAndSigSize.outputRef->Value();
+        amountCovered += inputAndSigSize.outputRef->Value() - minRelayTxFee_.GetFee(inputAndSigSize.sigSize);
         cummulativeByteSize += inputAndSigSize.sigSize;
         if(cummulativeByteSize >= MAX_STANDARD_TX_SIZE) return {};
-        const CAmount relayFee = minRelayTxFee_.GetFee(cummulativeByteSize);
-        if(amountCovered >= totalAmountNeeded + relayFee)
+        if( amountCovered >= totalAmountNeeded )
         {
-            fees += relayFee;
+            fees += minRelayTxFee_.GetFee(cummulativeByteSize);
             if(minRelayTxFee_.GetMaxTxFee() < fees)
             {
                 return {};

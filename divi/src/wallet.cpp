@@ -2163,13 +2163,13 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     // Choose coins to use
     std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
     CAmount nValueIn = AttachInputs(setCoins,txNew);
-    CAmount nTotalValue = totalValueToSend + nFeeRet;
-    if (setCoins.empty() || nValueIn < nTotalValue)
+    CAmount totalValueToSendPlusFees = totalValueToSend + nFeeRet;
+    if (setCoins.empty() || nValueIn < totalValueToSendPlusFees)
     {
         return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};
     }
 
-    bool changeUsed = SetChangeOutput(nValueIn,nTotalValue,txNew,nFeeRet,changeOutput);
+    bool changeUsed = SetChangeOutput(nValueIn,totalValueToSendPlusFees,txNew,nFeeRet,changeOutput);
     *static_cast<CTransaction*>(&wtxNew) = SignInputs(walletKeyStore,setCoins,txNew);
     if(wtxNew.IsNull())
     {

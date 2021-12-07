@@ -71,7 +71,6 @@ bool VaultManager::transactionIsRelevant(const CTransaction& tx, bool checkOutpu
             }
         }
     }
-    if(tx.IsCoinStake()) return false;
     if(checkOutputs || !outputScriptFilter.empty())
     {
         for(const CTxOut& output: tx.vout)
@@ -162,13 +161,9 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
         if(!blockIsNull) walletTx.SetMerkleBranch(*pblock);
         std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(walletTx,false);
 
-        if(deposit || txIsWhiteListed)
+        if(deposit || txIsWhiteListed || (tx.IsCoinStake() && !allInputsAreKnown(tx)) )
         {
             walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = scriptToFilterBy.ToString();
-        }
-        else if( (!blockIsNull && pblock->isLotteryBlock) || (tx.IsCoinStake() && !allInputsAreKnown(tx)))
-        {
-            walletTxAndRecordStatus.first->mapValue[VAULT_DEPOSIT_DESCRIPTION] = "NoScriptAllowed";
         }
         if(!walletTxAndRecordStatus.second)
         {

@@ -1030,7 +1030,6 @@ bool ConnectBlock(
         subsidiesContainer.superblockHeightValidator(),
         subsidiesContainer.blockSubsidiesProvider());
 
-    block.isLotteryBlock = subsidiesContainer.superblockHeightValidator().IsValidLotteryBlockHeight(pindex->nHeight);
     const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
     IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);

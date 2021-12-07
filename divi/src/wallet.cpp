@@ -2032,7 +2032,7 @@ CTxOut CreateChangeOutput(CReserveKey& reservekey)
     return changeOutput;
 }
 
-static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes)
+static CAmount GetMinimumFee(unsigned int nTxBytes)
 {
     const CFeeRate& feeRate = priorityFeeCalculator.getMinimumRelayFeeRate();
     return std::min(feeRate.GetFee(nTxBytes),feeRate.GetMaxTxFee());
@@ -2063,7 +2063,6 @@ enum class FeeSufficiencyStatus
 static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
     const CTransaction& wtxNew,
     const std::set<COutput> outputsBeingSpent,
-    const CAmount totalValueToSend,
     CAmount& nFeeRet)
 {
     const double coinAge = ComputeCoinAgeOfInputs(outputsBeingSpent);
@@ -2073,7 +2072,7 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
         return FeeSufficiencyStatus::TX_TOO_LARGE;
     }
 
-    const CAmount nFeeNeeded = GetMinimumFee(totalValueToSend, candidateMempoolTxEntry.GetTxSize());
+    const CAmount nFeeNeeded = GetMinimumFee(candidateMempoolTxEntry.GetTxSize());
     const bool feeIsSufficient = nFeeRet >= nFeeNeeded;
     if (!feeIsSufficient)
     {
@@ -2176,7 +2175,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
         return {translate("Signing transaction failed"),false};
     }
 
-    const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,totalValueToSend,nFeeRet);
+    const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,nFeeRet);
     if(status == FeeSufficiencyStatus::TX_TOO_LARGE)
     {
         return {translate("Transaction too large"),false};

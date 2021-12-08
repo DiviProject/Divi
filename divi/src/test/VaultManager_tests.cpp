@@ -793,7 +793,7 @@ BOOST_AUTO_TEST_CASE(willNotIgnoreCoinstakeTransactionWithUnmanagedInputWithUnkn
     BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),1u);
 }
 
-BOOST_AUTO_TEST_CASE(willIgnoreOutputsInCoinstakeWithAtLeastOneUnamangedInput)
+BOOST_AUTO_TEST_CASE(willNotIgnoreOutputsInCoinstakeWithAtLeastOneUnamangedInput)
 {
     CScript managedScript = scriptGenerator(10);
     manager->addManagedScript(managedScript);
@@ -821,9 +821,9 @@ BOOST_AUTO_TEST_CASE(willIgnoreOutputsInCoinstakeWithAtLeastOneUnamangedInput)
     otherTx.vout.push_back(CTxOut(100,managedScript));
     CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
     manager->addTransaction(otherTx,&blockMiningSecondTx, false);
+    mineAdditionalBlocks(20);
     assert(CTransaction(otherTx).IsCoinStake());
-
-    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),0u);
+    BOOST_CHECK_EQUAL(manager->getManagedUTXOs().size(),1u);
 }
 
 BOOST_AUTO_TEST_CASE(willRecordCoinstakeTransactionWithOnlyMangedInputs)

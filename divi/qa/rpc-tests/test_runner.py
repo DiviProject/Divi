@@ -17,6 +17,7 @@ import datetime
 import os
 import time
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -371,11 +372,16 @@ class TestHandler:
             log_stdout = tempfile.SpooledTemporaryFile(max_size=2**16)
             log_stderr = tempfile.SpooledTemporaryFile(max_size=2**16)
             test_argv = test.split()
+            script = self.tests_dir + test_argv[0]
+            st_mode = os.stat (script).st_mode
+            all_execute = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+            if (st_mode & all_execute) != all_execute:
+                sys.exit("Test file %s is missing global execute permissions" % test_argv[0])
             testdir = "{}/{}_{}".format(self.tmpdir, re.sub(".py$", "", test_argv[0]), portseed)
             tmpdir_arg = ["--tmpdir={}".format(testdir)]
             self.jobs.append((test,
                               time.time(),
-                              subprocess.Popen([self.tests_dir + test_argv[0]] + test_argv[1:] + self.flags + portseed_arg + tmpdir_arg,
+                              subprocess.Popen([script] + test_argv[1:] + self.flags + portseed_arg + tmpdir_arg,
                                                universal_newlines=True,
                                                stdout=log_stdout,
                                                stderr=log_stderr),

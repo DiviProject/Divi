@@ -2191,10 +2191,37 @@ static ChangeUseStatus SetChangeOutput(
     return changeOutputShouldBeUsed? ChangeUseStatus::USE_CHANGE_OUTPUT: ChangeUseStatus::ROLLED_CHANGE_INTO_FEES;
 }
 
+static bool RollChangeIntoOutputs(
+    CTxOut& changeOutput,
+    CMutableTransaction& txNew)
+{
+    for(CTxOut& output: txNew.vout)
+    {
+        if(!output.scriptPubKey.empty())
+        {
+            if(output.nValue + changeOutput.nValue >= priorityFeeCalculator.MinimumValueForNonDust(output))
+            {
+                output.nValue += changeOutput.nValue;
+                changeOutput.nValue = 0;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+enum AmountSendMode
+{
+    SENDER_PAYS_FOR_TX_FEES,
+    RECEIVER_PAYS_FOR_TX_FEES,
+    SEND_TO_SELF,
+};
+
 static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     const CKeyStore& walletKeyStore,
     const I_CoinSelectionAlgorithm* coinSelector,
     const std::vector<COutput>& vCoins,
+    const AmountSendMode sendMode,
     CMutableTransaction& txNew,
     CReserveKey& reservekey,
     CWalletTx& wtxNew)
@@ -2217,10 +2244,24 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     }
 
     changeOutput.nValue = nValueIn - totalValueToSendPlusFees;
-    if(false && !SubtractFeesFromOutputs(nFeeRet,changeOutput.nValue,txNew))
+    switch (sendMode)
     {
-        return {translate("Cannot subtract needed fees from outputs."),false};
+    case AmountSendMode::RECEIVER_PAYS_FOR_TX_FEES:
+        if(!SubtractFeesFromOutputs(nFeeRet,changeOutput.nValue,txNew))
+        {
+            return {translate("Cannot subtract needed fees from outputs."),false};
+        }
+        break;
+    case AmountSendMode::SEND_TO_SELF:
+        if(!RollChangeIntoOutputs(changeOutput,txNew))
+        {
+            return {translate("Cannot roll change amounts into outputs."),false};
+        }
+        break;
+    default:
+        break;
     }
+
     bool changeUsed = SetChangeOutput(txNew,nFeeRet,changeOutput) == ChangeUseStatus::USE_CHANGE_OUTPUT;
     *static_cast<CTransaction*>(&wtxNew) = SignInputs(walletKeyStore,setCoins,txNew);
     if(wtxNew.IsNull())
@@ -2275,7 +2316,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     {
         return {translate("Transaction output(s) amount too small"),false};
     }
-    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,txNew,reservekey,wtxNew);
+    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,AmountSendMode::SENDER_PAYS_FOR_TX_FEES,txNew,reservekey,wtxNew);
 }
 
 /**

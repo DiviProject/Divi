@@ -54,10 +54,12 @@ public:
     void updateShuffledSet()
     {
         shuffledSet_.clear();
+        shuffledSet_.reserve(underlyingSet_.size());
         for(const StakableCoin& coin: underlyingSet_)
         {
             shuffledSet_.push_back(&coin);
         }
+        std::random_shuffle(shuffledSet_.begin(), shuffledSet_.end());
     }
     const std::vector<const StakableCoin*>& getShuffledSet() const
     {
@@ -103,7 +105,7 @@ bool PoSTransactionCreator::SelectCoins()
     if (chainParameters_.NetworkID() == CBaseChainParams::REGTEST ||
         GetTime() - stakedCoins_->timestamp() > settings_.GetArg("-stakeupdatetime",300))
     {
-        stakedCoins_->asSet().clear();
+        stakedCoins_->resetCoins();
         if (!wallet_.SelectStakeCoins(stakedCoins_->asSet())) {
             return error("failed to select coins for staking");
         }

@@ -2039,7 +2039,6 @@ CTxOut CreateChangeOutput(CReserveKey& reservekey)
     CPubKey vchPubKey;
     assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
     changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
-    reservekey.ReturnKey();
     return changeOutput;
 }
 
@@ -2228,10 +2227,9 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     }
     else if(status==FeeSufficiencyStatus::HAS_ENOUGH_FEES)
     {
-        if(changeUsed)
+        if(!changeUsed)
         {
-            CPubKey vchPubKey;
-            assert(reservekey.GetReservedKey(vchPubKey, true));
+            reservekey.ReturnKey();
         }
         return {std::string(""),true};
     }

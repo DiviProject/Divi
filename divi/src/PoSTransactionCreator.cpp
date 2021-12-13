@@ -25,14 +25,19 @@ private:
     std::set<StakableCoin> underlyingSet_;
     std::vector<const StakableCoin*> shuffledSet_;
     int64_t timestampOfLastUpdate_;
+    bool utxoPermutationEnabled_;
 public:
     void resetCoins()
     {
         shuffledSet_.clear();
         underlyingSet_.clear();
     }
-
-    StakedCoins(): underlyingSet_(), shuffledSet_(), timestampOfLastUpdate_(0)
+    StakedCoins(
+        bool utxoPermutationEnabled
+        ): underlyingSet_()
+        , shuffledSet_()
+        , timestampOfLastUpdate_(0)
+        , utxoPermutationEnabled_(utxoPermutationEnabled)
     {
     }
     ~StakedCoins()
@@ -59,7 +64,7 @@ public:
         {
             shuffledSet_.push_back(&coin);
         }
-        std::random_shuffle(shuffledSet_.begin(), shuffledSet_.end());
+        if(utxoPermutationEnabled_) std::random_shuffle(shuffledSet_.begin(), shuffledSet_.end());
     }
     const std::vector<const StakableCoin*>& getShuffledSet() const
     {
@@ -88,7 +93,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     , blockSubsidies_( blockSubsidies )
     , incentives_(incentives)
     , proofGenerator_(proofGenerator )
-    , stakedCoins_(new StakedCoins())
+    , stakedCoins_(new StakedCoins(settings_.GetBoolArg("-vault", false)))
     , wallet_(wallet)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
     , hashproofTimestampMinimumValue_(0)

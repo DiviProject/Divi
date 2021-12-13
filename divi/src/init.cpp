@@ -92,8 +92,6 @@ extern bool fVerifyingBlocks;
 extern bool fLiteMode;
 extern BlockMap mapBlockIndex;
 extern Settings& settings;
-extern CBlockTreeDB* pblocktree;
-extern CCoinsViewCache* pcoinsTip;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
@@ -109,6 +107,9 @@ constexpr int nWalletBackups = 20;
  */
 #endif
 
+
+CBlockTreeDB* pblocktree = nullptr;
+CCoinsViewCache* pcoinsTip = nullptr;
 
 //! -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
 static const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
@@ -247,47 +248,80 @@ public:
     // Writes do not need similar protection, as failure to write is handled by the caller.
 };
 
-static CCoinsViewDB* pcoinsdbview = NULL;
-static CCoinsViewErrorCatcher* pcoinscatcher = NULL;
-
 #ifdef ENABLE_WALLET
 inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWrapper().Flush(shutdown);}
 #endif
 
-void DeallocateShallowDatabases()
+namespace
 {
-    delete pcoinsTip;
-    delete pcoinscatcher;
-    delete pcoinsdbview;
-    delete pblocktree;
 
-    pcoinsTip = NULL;
-    pcoinscatcher = NULL;
-    pcoinsdbview = NULL;
-    pblocktree = NULL;
-    GetSporkManager().DeallocateDatabase();
-}
-
-void CleanAndReallocateShallowDatabases(const std::pair<std::size_t,std::size_t>& blockTreeAndCoinDBCacheSizes)
+/** Helper class for constructing and destructing the shallow databases.  */
+class ShallowDatabases
 {
-    DeallocateShallowDatabases();
-    GetSporkManager().AllocateDatabase();
-    pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
-    pcoinsdbview = new CCoinsViewDB(mapBlockIndex,blockTreeAndCoinDBCacheSizes.second, false, fReindex);
-    pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
-    pcoinsTip = new CCoinsViewCache(pcoinscatcher);
-}
 
-void FlushStateAndDeallocateShallowDatabases()
-{
-    LOCK(cs_main);
-    if (pcoinsTip != NULL) {
-        FlushStateToDisk();
-        //record that client took the proper shutdown procedure
-        pblocktree->WriteFlag("shutdown", true);
+private:
+
+    CBlockTreeDB blocktree;
+    CCoinsViewDB coinsdbview;
+    CCoinsViewErrorCatcher coinscatcher;
+    CCoinsViewCache coinsTip;
+
+    /** Singleton instance of this class, if it is constructed yet.  */
+    static std::unique_ptr<ShallowDatabases> instance;
+
+    explicit ShallowDatabases(const std::pair<size_t, size_t>& blockTreeAndCoinDBCacheSizes)
+      : blocktree(blockTreeAndCoinDBCacheSizes.first, false, fReindex),
+        coinsdbview(mapBlockIndex, blockTreeAndCoinDBCacheSizes.second, false, fReindex),
+        coinscatcher(&coinsdbview),
+        coinsTip(&coinscatcher)
+    {}
+
+    /** Cleans up the singleton instance.  */
+    static void Cleanup()
+    {
+        GetSporkManager().DeallocateDatabase();
+        pcoinsTip = nullptr;
+        pblocktree = nullptr;
+        instance.reset();
     }
-    DeallocateShallowDatabases();
-}
+
+public:
+
+    /** (Re-)allocates the singleton instance and sets globals up.  */
+    static void Setup(const std::pair<size_t, size_t>& blockTreeAndCoinDBCacheSizes)
+    {
+        if (instance != nullptr)
+            Cleanup();
+        instance.reset(new ShallowDatabases(blockTreeAndCoinDBCacheSizes));
+        pcoinsTip = &instance->coinsTip;
+        pblocktree = &instance->blocktree;
+        GetSporkManager().AllocateDatabase();
+    }
+
+    /** Flushes state caches and cleans up the singleton instance.  */
+    static void FlushStateAndCleanup()
+    {
+        LOCK(cs_main);
+        if (pcoinsTip != NULL) {
+            FlushStateToDisk();
+            //record that client took the proper shutdown procedure
+            pblocktree->WriteFlag("shutdown", true);
+        }
+        Cleanup();
+    }
+
+    /** Returns the non-catching coins view of the singleton instance.  */
+    static const CCoinsView& GetNonCatchingCoinsView()
+    {
+        assert(instance != nullptr);
+        return instance->coinsdbview;
+    }
+
+};
+
+std::unique_ptr<ShallowDatabases> ShallowDatabases::instance;
+
+} // anonymous namespace
 
 /** Preparing steps before shutting down or restarting the wallet */
 void PrepareShutdown()
@@ -314,7 +348,7 @@ void PrepareShutdown()
     StopTorControl();
     SaveMasternodeDataToDisk();
     UnregisterNodeSignals(GetNodeSignals());
-    FlushStateAndDeallocateShallowDatabases();
+    ShallowDatabases::FlushStateAndCleanup();
 
 #ifdef ENABLE_WALLET
     FlushWallet(true);
@@ -835,8 +869,7 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
     try {
         uiInterface.InitMessage(translate("Preparing databases..."));
         UnloadBlockIndex();
-        std::pair<std::size_t, std::size_t> dbCacheSizes = CalculateDBCacheSizes();
-        CleanAndReallocateShallowDatabases(dbCacheSizes);
+        ShallowDatabases::Setup(CalculateDBCacheSizes());
 
         if (fReindex)
             pblocktree->WriteReindexing(true);
@@ -890,7 +923,7 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
                 uiInterface,
                 nCoinCacheSize,
                 &ShutdownRequested);
-            if (!dbVerifier.VerifyDB(pcoinsdbview,pcoinsTip->GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
+            if (!dbVerifier.VerifyDB(&ShallowDatabases::GetNonCatchingCoinsView(), pcoinsTip->GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
             {
                 strLoadError = translate("Corrupted block database detected");
                 fVerifyingBlocks = false;

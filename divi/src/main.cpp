@@ -60,7 +60,6 @@
 #include <ValidationState.h>
 #include <scriptCheck.h>
 #include <blockFileInfo.h>
-#include <WalletLoggingHelper.h>
 #include <TransactionOpCounting.h>
 #include <OrphanTransactions.h>
 #include <MasternodeModule.h>
@@ -1007,11 +1006,8 @@ bool ConnectBlock(
     // Check it again in case a previous version let a bad block in
     if (!fAlreadyChecked && !CheckBlock(block, state, !fJustCheck))
         return false;
-    LogPrintStr("block " + to_string(pindex->nHeight));
-    LogPrintStr("; time = " + to_string(pindex->nTime));
-    LogWalletBalance();
-    static const CChainParams& chainParameters = Params();
 
+    static const CChainParams& chainParameters = Params();
     VerifyBestBlockIsAtPreviousBlock(pindex,view);
     if (block.GetHash() == Params().HashGenesisBlock())
     {

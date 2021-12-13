@@ -23,10 +23,21 @@ class StakedCoins
 {
 private:
     std::set<StakableCoin> underlyingSet_;
+    std::vector<const StakableCoin*> shuffledSet_;
     int64_t timestampOfLastUpdate_;
 public:
-    StakedCoins(): underlyingSet_(), timestampOfLastUpdate_(0)
+    void resetCoins()
     {
+        shuffledSet_.clear();
+        underlyingSet_.clear();
+    }
+
+    StakedCoins(): underlyingSet_(), shuffledSet_(), timestampOfLastUpdate_(0)
+    {
+    }
+    ~StakedCoins()
+    {
+        resetCoins();
     }
     const int64_t& timestamp() const
     {
@@ -39,6 +50,18 @@ public:
     void resetTimestamp()
     {
         timestampOfLastUpdate_ = 0;
+    }
+    void updateShuffledSet()
+    {
+        shuffledSet_.clear();
+        for(const StakableCoin& coin: underlyingSet_)
+        {
+            shuffledSet_.push_back(&coin);
+        }
+    }
+    const std::vector<const StakableCoin*>& getShuffledSet() const
+    {
+        return shuffledSet_;
     }
     std::set<StakableCoin>& asSet()
     {
@@ -84,7 +107,7 @@ bool PoSTransactionCreator::SelectCoins()
         if (!wallet_.SelectStakeCoins(stakedCoins_->asSet())) {
             return error("failed to select coins for staking");
         }
-
+        stakedCoins_->updateShuffledSet();
         stakedCoins_->updateTimestamp();
     }
 
@@ -223,9 +246,9 @@ const StakableCoin* PoSTransactionCreator::FindProofOfStake(
     unsigned int& nTxNewTime,
     bool& isVaultScript)
 {
-    for (const StakableCoin& pcoin: stakedCoins_->asSet())
+    for (const StakableCoin* const pcoin: stakedCoins_->getShuffledSet())
     {
-        if(!IsSupportedScript(pcoin.GetTxOut().scriptPubKey,isVaultScript))
+        if(!IsSupportedScript(pcoin->GetTxOut().scriptPubKey,isVaultScript))
         {
             continue;
         }
@@ -234,9 +257,9 @@ const StakableCoin* PoSTransactionCreator::FindProofOfStake(
             hashproofTimestampMinimumValue_ = 0;
             return nullptr;
         }
-        if(FindHashproof(chainTip,blockBits, nTxNewTime, pcoin,txCoinStake) )
+        if(FindHashproof(chainTip,blockBits, nTxNewTime, *pcoin,txCoinStake) )
         {
-            return &pcoin;
+            return pcoin;
         }
     }
     hashproofTimestampMinimumValue_ = nTxNewTime;

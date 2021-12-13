@@ -2166,26 +2166,29 @@ static bool SubtractFeesFromOutputs(
     return changeAmountTotal >= minimumValueForNonDust && txNew.GetValueOut() == (totalValueSentInitially - feesToBePaid);
 }
 
-static bool SetChangeOutput(
-    CAmount totalInputs,
-    CAmount totalOutputsPlusFees,
+enum ChangeUseStatus
+{
+    USE_CHANGE_OUTPUT,
+    ROLLED_CHANGE_INTO_FEES,
+};
+
+static ChangeUseStatus SetChangeOutput(
     CMutableTransaction& txNew,
     CAmount& nFeeRet,
     CTxOut& changeOutput)
 {
-    changeOutput.nValue = totalInputs - totalOutputsPlusFees;
-    bool changeUsed = changeOutput.nValue > 0;
-    if (changeUsed && priorityFeeCalculator.IsDust(changeOutput))
+    bool changeOutputShouldBeUsed = changeOutput.nValue > 0;
+    if (changeOutputShouldBeUsed && priorityFeeCalculator.IsDust(changeOutput))
     {
         nFeeRet += changeOutput.nValue;
         changeOutput.nValue = 0;
-        changeUsed = false;
+        changeOutputShouldBeUsed = false;
     }
-    if(changeUsed)
+    if(changeOutputShouldBeUsed)
     {
         AttachChangeOutput(changeOutput,txNew);
     }
-    return changeUsed;
+    return changeOutputShouldBeUsed? ChangeUseStatus::USE_CHANGE_OUTPUT: ChangeUseStatus::ROLLED_CHANGE_INTO_FEES;
 }
 
 static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
@@ -2213,7 +2216,12 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
         return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};
     }
 
-    bool changeUsed = SetChangeOutput(nValueIn,totalValueToSendPlusFees,txNew,nFeeRet,changeOutput);
+    changeOutput.nValue = nValueIn - totalValueToSendPlusFees;
+    if(false && !SubtractFeesFromOutputs(nFeeRet,changeOutput.nValue,txNew))
+    {
+        return {translate("Cannot subtract needed fees from outputs."),false};
+    }
+    bool changeUsed = SetChangeOutput(txNew,nFeeRet,changeOutput) == ChangeUseStatus::USE_CHANGE_OUTPUT;
     *static_cast<CTransaction*>(&wtxNew) = SignInputs(walletKeyStore,setCoins,txNew);
     if(wtxNew.IsNull())
     {

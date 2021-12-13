@@ -105,8 +105,9 @@ bool fTxIndex = true;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
-CCoinsViewCache* pcoinsTip = NULL;
-CBlockTreeDB* pblocktree = NULL;
+
+extern CCoinsViewCache* pcoinsTip;
+extern CBlockTreeDB* pblocktree;
 
 extern bool fAddressIndex;
 extern bool fSpentIndex;

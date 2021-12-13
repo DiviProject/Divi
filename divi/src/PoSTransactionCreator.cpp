@@ -44,6 +44,9 @@ public:
     {
         resetCoins();
     }
+    StakedCoins(const StakedCoins& other) = delete;
+    StakedCoins& operator=(const StakedCoins& other) = delete;
+
     const int64_t& timestamp() const
     {
         return timestampOfLastUpdate_;

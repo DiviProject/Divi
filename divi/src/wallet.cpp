@@ -2118,6 +2118,20 @@ static void AttachChangeOutput(
     txWithoutChange.vout.insert(txWithoutChange.vout.begin() + changeIndex, changeOutput);
 }
 
+static CAmount AttachInputs(
+    const std::set<COutput>& setCoins,
+    CMutableTransaction& txWithoutChange)
+{
+    // Fill vin
+    CAmount nValueIn = 0;
+    for(const COutput& coin: setCoins)
+    {
+        txWithoutChange.vin.emplace_back(coin.tx->GetHash(), coin.i);
+        nValueIn += coin.Value();
+    }
+    return nValueIn;
+}
+
 static bool SetChangeOutput(
     CAmount totalInputs,
     CAmount totalOutputsPlusFees,
@@ -2138,20 +2152,6 @@ static bool SetChangeOutput(
         AttachChangeOutput(changeOutput,txNew);
     }
     return changeUsed;
-}
-
-static CAmount AttachInputs(
-    const std::set<COutput>& setCoins,
-    CMutableTransaction& txWithoutChange)
-{
-    // Fill vin
-    CAmount nValueIn = 0;
-    for(const COutput& coin: setCoins)
-    {
-        txWithoutChange.vin.emplace_back(coin.tx->GetHash(), coin.i);
-        nValueIn += coin.Value();
-    }
-    return nValueIn;
 }
 
 static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(

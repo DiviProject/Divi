@@ -673,7 +673,7 @@ std::string SendMoneyFromAccount(
     int nMinDepth)
 {
     // Check funds
-    CAmount nBalance = GetAccountBalance(accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
+    CAmount nBalance = GetAccountBalance(rpcTxRequest.accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
     CAmount nValue = std::accumulate(vecSend.begin(),vecSend.end(),CAmount(0),
         [](const CAmount& runningTotal, const std::pair<CScript,CAmount>& recipient)
         {
@@ -697,8 +697,8 @@ std::string SendMoneyFromAccount(
     // Create and send the transaction
     constexpr AvailableCoinsType coinTypeFilter = ALL_SPENDABLE_COINS;
     static AccountCoinSelector coinSelector(*pwalletMain);
-    coinSelector.SetAccountName(accountName);
-    TransactionCreationRequest request(vecSend,TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES, metadata, coinTypeFilter, &coinSelector);
+    coinSelector.SetAccountName(rpcTxRequest.accountName);
+    TransactionCreationRequest request(vecSend,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, coinTypeFilter, &coinSelector);
     TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
     if (!txCreation.transactionCreationSucceeded)
     {

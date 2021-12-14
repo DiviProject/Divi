@@ -2212,13 +2212,6 @@ static bool RollChangeIntoOutputs(
     return false;
 }
 
-enum AmountSendMode
-{
-    SENDER_PAYS_FOR_TX_FEES,
-    RECEIVER_PAYS_FOR_TX_FEES,
-    SEND_TO_SELF,
-};
-
 static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     const CKeyStore& walletKeyStore,
     const I_CoinSelectionAlgorithm* coinSelector,

@@ -665,7 +665,12 @@ std::string SendMoneyToScripts(
     return txCreation.wtxNew->GetHash().GetHex();
 }
 
-std::string SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>& vecSend, TxTextMetadata metadata, std::string accountName, int nMinDepth)
+std::string SendMoneyFromAccount(
+    const std::vector<std::pair<CScript, CAmount>>& vecSend,
+    TxTextMetadata metadata,
+    std::string accountName,
+    RpcTransactionCreationRequest rpcTxRequest,
+    int nMinDepth)
 {
     // Check funds
     CAmount nBalance = GetAccountBalance(accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
@@ -707,7 +712,7 @@ std::string SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>&
 std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, TxTextMetadata metadata, std::string accountName, int nMinDepth)
 {
     const CScript scriptPubKey = GetScriptForDestination(destination);
-    return SendMoneyFromAccount({{scriptPubKey,nValue}},metadata,accountName,nMinDepth);
+    return SendMoneyFromAccount({{scriptPubKey,nValue}},metadata,accountName,RpcTransactionCreationRequest(),nMinDepth);
 }
 
 std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, RpcTransactionCreationRequest rpcRequest)
@@ -1489,7 +1494,7 @@ Value sendmany(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     // Send
-    return SendMoneyFromAccount(vecSend,metadata,strAccount, nMinDepth);
+    return SendMoneyFromAccount(vecSend,metadata,strAccount,RpcTransactionCreationRequest(), nMinDepth);
 }
 
 // Defined in rpcmisc.cpp

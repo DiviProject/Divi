@@ -626,8 +626,6 @@ struct RpcTransactionCreationRequest
 
 std::string SendMoneyToScripts(
     const std::vector<std::pair<CScript,CAmount>>& scriptsToFund,
-    TxTextMetadata metadata,
-    bool spendFromVaults,
     RpcTransactionCreationRequest rpcTxRequest)
 {
     // Check amount
@@ -720,7 +718,7 @@ std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, Tx
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = spendFromVaults;
     rpcRequest.txMetadata = metadata;
-    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, metadata, spendFromVaults, rpcRequest);
+    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, rpcRequest);
 }
 
 std::string SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata)
@@ -730,7 +728,7 @@ std::string SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, T
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = spendFromVaults;
     rpcRequest.txMetadata = metadata;
-    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, metadata, spendFromVaults, rpcRequest);
+    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, rpcRequest);
 }
 
 Value getcoinavailability(const Array& params, bool fHelp)
@@ -904,7 +902,7 @@ Value fundvault(const Array& params, bool fHelp)
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = false;
     rpcRequest.txMetadata = metadata;
-    const std::string txid = SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, metadata,false, rpcRequest);
+    const std::string txid = SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, rpcRequest);
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", txid ));

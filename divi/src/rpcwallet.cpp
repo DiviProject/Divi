@@ -726,16 +726,6 @@ std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue)
     return SendMoneyToAddress(address,nValue, rpcRequest);
 }
 
-std::string SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata)
-{
-    constexpr bool spendFromVaults = true;
-    CScript scriptPubKey = GetScriptForDestination(address);
-    RpcTransactionCreationRequest rpcRequest;
-    rpcRequest.txShouldSpendFromVaults = spendFromVaults;
-    rpcRequest.txMetadata = metadata;
-    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, rpcRequest);
-}
-
 Value getcoinavailability(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
@@ -921,7 +911,7 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)
         throw runtime_error(
-                "reclaimvaultfunds destination amount ( \"comment\" \"comment-to\" )\n"
+                "reclaimvaultfunds destination amount (feeMode|metadata) ( \"comment\" \"comment-to\" )\n"
                 "\nWithdraw an amount from your vaults into a separate address. The amount is a real and is rounded to the nearest 0.00000001\n" +
                 HelpRequiringPassphrase() +
                 "\nArguments:\n"
@@ -937,16 +927,37 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
     // Amount
     CAmount nAmount = AmountFromValue(params[1]);
 
-    // Wallet comments
-    TxTextMetadata metadata;
+    RpcTransactionCreationRequest rpcRequest;
+    rpcRequest.txShouldSpendFromVaults = true;
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-        metadata["comment"] = params[2].get_str();
-    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        metadata["to"] = params[3].get_str();
+    {
+        const std::string feeMode = params[2].get_str();
+        if(feeMode == std::string("receiver_pays"))
+        {
+            rpcRequest.txFeeMode = TransactionFeeMode::RECEIVER_PAYS_FOR_TX_FEES;
+        }
+        else if(feeMode == std::string("send_to_self"))
+        {
+            rpcRequest.txFeeMode = TransactionFeeMode::SEND_TO_SELF;
+        }
+        else if(feeMode == std::string("metadata"))
+        {
+        // Wallet comments
+            if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+                rpcRequest.txMetadata["comment"] = params[3].get_str();
+            if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+                rpcRequest.txMetadata["to"] = params[4].get_str();
+        }
+        else
+        {
+            throw JSONRPCError(RPC_INVALID_PARAMETER,"Unknown option for reclaiming vault funds");
+        }
+    }
+
 
 
     EnsureWalletIsUnlocked();
-    return SendMoneyFromVaults(address.Get(), nAmount, metadata);
+    return SendMoneyToAddress(address.Get(), nAmount, rpcRequest);
 }
 
 Value removevault(const Array& params, bool fHelp)
@@ -1072,7 +1083,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 4)
         throw runtime_error(
-                "sendtoaddress \"diviaddress\" amount ( \"comment\" \"comment-to\" )\n"
+                "sendtoaddress \"diviaddress\" amount (feeMode|metadata)( \"comment\" \"comment-to\" )\n"
                 "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
                 HelpRequiringPassphrase() +
                 "\nArguments:\n"
@@ -1099,9 +1110,28 @@ Value sendtoaddress(const Array& params, bool fHelp)
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = false;
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-        rpcRequest.txMetadata["comment"] = params[2].get_str();
-    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        rpcRequest.txMetadata["to"] = params[3].get_str();
+    {
+        const std::string feeMode = params[2].get_str();
+        if(feeMode == std::string("receiver_pays"))
+        {
+            rpcRequest.txFeeMode = TransactionFeeMode::RECEIVER_PAYS_FOR_TX_FEES;
+        }
+        else if(feeMode == std::string("send_to_self"))
+        {
+            rpcRequest.txFeeMode = TransactionFeeMode::SEND_TO_SELF;
+        }
+        else if(feeMode == std::string("metadata"))
+        {
+            if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+                rpcRequest.txMetadata["comment"] = params[3].get_str();
+            if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+                rpcRequest.txMetadata["to"] = params[4].get_str();
+        }
+        else
+        {
+            throw JSONRPCError(RPC_INVALID_PARAMETER,"Unknown option for reclaiming vault funds");
+        }
+    }
 
     EnsureWalletIsUnlocked();
     return SendMoneyToAddress(address.Get(), nAmount, rpcRequest);

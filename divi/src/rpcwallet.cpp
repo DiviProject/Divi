@@ -624,7 +624,11 @@ struct RpcTransactionCreationRequest
     }
 };
 
-std::string SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsToFund, TxTextMetadata metadata, bool spendFromVaults)
+std::string SendMoneyToScripts(
+    const std::vector<std::pair<CScript,CAmount>>& scriptsToFund,
+    TxTextMetadata metadata,
+    bool spendFromVaults,
+    RpcTransactionCreationRequest rpcTxRequest)
 {
     // Check amount
     CAmount nValue = 0;
@@ -713,14 +717,14 @@ std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, Tx
     // Parse DIVI address
     constexpr bool spendFromVaults = false;
     CScript scriptPubKey = GetScriptForDestination(address);
-    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, metadata, spendFromVaults);
+    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, metadata, spendFromVaults, RpcTransactionCreationRequest());
 }
 
 std::string SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata)
 {
     constexpr bool spendFromVaults = true;
     CScript scriptPubKey = GetScriptForDestination(address);
-    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, metadata, spendFromVaults);
+    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, metadata, spendFromVaults, RpcTransactionCreationRequest());
 }
 
 Value getcoinavailability(const Array& params, bool fHelp)
@@ -891,7 +895,7 @@ Value fundvault(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
     // Amount & Send
     CAmount nAmount = AmountFromValue(params[1]);
-    const std::string txid = SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, metadata,false);
+    const std::string txid = SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, metadata,false, RpcTransactionCreationRequest());
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", txid ));

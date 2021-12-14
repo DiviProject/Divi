@@ -1093,16 +1093,14 @@ Value sendtoaddress(const Array& params, bool fHelp)
     CAmount nAmount = AmountFromValue(params[1]);
 
     // Wallet comments
-    TxTextMetadata metadata;
-    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-        metadata["comment"] = params[2].get_str();
-    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        metadata["to"] = params[3].get_str();
-
-    EnsureWalletIsUnlocked();
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = false;
-    rpcRequest.txMetadata = metadata;
+    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
+        rpcRequest.txMetadata["comment"] = params[2].get_str();
+    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+        rpcRequest.txMetadata["to"] = params[3].get_str();
+
+    EnsureWalletIsUnlocked();
     return SendMoneyToAddress(address.Get(), nAmount, rpcRequest);
 }
 

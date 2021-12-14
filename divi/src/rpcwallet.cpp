@@ -712,7 +712,10 @@ std::string SendMoneyFromAccount(
 std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, TxTextMetadata metadata, std::string accountName, int nMinDepth)
 {
     const CScript scriptPubKey = GetScriptForDestination(destination);
-    return SendMoneyFromAccount({{scriptPubKey,nValue}},metadata,accountName,RpcTransactionCreationRequest(),nMinDepth);
+    RpcTransactionCreationRequest rpcTxRequest;
+    rpcTxRequest.txMetadata = metadata;
+    rpcTxRequest.accountName = accountName;
+    return SendMoneyFromAccount({{scriptPubKey,nValue}},metadata,accountName,rpcTxRequest,nMinDepth);
 }
 
 std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, RpcTransactionCreationRequest rpcRequest)
@@ -1494,7 +1497,10 @@ Value sendmany(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     // Send
-    return SendMoneyFromAccount(vecSend,metadata,strAccount,RpcTransactionCreationRequest(), nMinDepth);
+    RpcTransactionCreationRequest rpcTxRequest;
+    rpcTxRequest.txMetadata = metadata;
+    rpcTxRequest.accountName = strAccount;
+    return SendMoneyFromAccount(vecSend,metadata,strAccount,rpcTxRequest, nMinDepth);
 }
 
 // Defined in rpcmisc.cpp

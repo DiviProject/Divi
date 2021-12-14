@@ -126,7 +126,7 @@ public:
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 };
 
-enum AmountSendMode
+enum TransactionFeeMode
 {
     SENDER_PAYS_FOR_TX_FEES,
     RECEIVER_PAYS_FOR_TX_FEES,

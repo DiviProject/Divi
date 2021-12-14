@@ -126,6 +126,12 @@ public:
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 };
 
+enum AmountSendMode
+{
+    SENDER_PAYS_FOR_TX_FEES,
+    RECEIVER_PAYS_FOR_TX_FEES,
+    SEND_TO_SELF,
+};
 typedef std::map<std::string,std::string> TxTextMetadata;
 struct TransactionCreationRequest
 {

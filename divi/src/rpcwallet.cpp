@@ -667,10 +667,10 @@ std::string SendMoneyToScripts(
 
 std::string SendMoneyFromAccount(
     const std::vector<std::pair<CScript, CAmount>>& vecSend,
-    RpcTransactionCreationRequest rpcTxRequest,
-    int nMinDepth)
+    RpcTransactionCreationRequest rpcTxRequest)
 {
     // Check funds
+    const int nMinDepth = 1;
     CAmount nBalance = GetAccountBalance(rpcTxRequest.accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
     CAmount nValue = std::accumulate(vecSend.begin(),vecSend.end(),CAmount(0),
         [](const CAmount& runningTotal, const std::pair<CScript,CAmount>& recipient)
@@ -707,10 +707,10 @@ std::string SendMoneyFromAccount(
     return txCreation.wtxNew->GetHash().GetHex();
 }
 
-std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, RpcTransactionCreationRequest rpcTxRequest, int nMinDepth)
+std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, RpcTransactionCreationRequest rpcTxRequest)
 {
     const CScript scriptPubKey = GetScriptForDestination(destination);
-    return SendMoneyFromAccount({{scriptPubKey,nValue}},rpcTxRequest,nMinDepth);
+    return SendMoneyFromAccount({{scriptPubKey,nValue}},rpcTxRequest);
 }
 
 std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, RpcTransactionCreationRequest rpcRequest)
@@ -1412,9 +1412,9 @@ Value movecmd(const Array& params, bool fHelp)
 
 Value sendfrom(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 3 || params.size() > 6)
+    if (fHelp || params.size() < 3 || params.size() > 5)
         throw runtime_error(
-                "sendfrom \"fromaccount\" \"todiviaddress\" amount ( minconf \"comment\" \"comment-to\" )\n"
+                "sendfrom \"fromaccount\" \"todiviaddress\" amount ( \"comment\" \"comment-to\" )\n"
                 "\nSent an amount from an account to a divi address.\n"
                 "The amount is a real and is rounded to the nearest 0.00000001." +
                 HelpRequiringPassphrase() + "\n"
@@ -1422,10 +1422,9 @@ Value sendfrom(const Array& params, bool fHelp)
                                             "1. \"fromaccount\"       (string, required) The name of the account to send funds from. May be the default account using \"\".\n"
                                             "2. \"todiviaddress\"  (string, required) The divi address to send funds to.\n"
                                             "3. amount                (numeric, required) The amount in DIVI. (transaction fee is added on top).\n"
-                                            "4. minconf               (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
-                                            "5. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
+                                            "4. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
                                             "                                     This is not part of the transaction, just kept in your wallet.\n"
-                                            "6. \"comment-to\"        (string, optional) An optional comment to store the name of the person or organization \n"
+                                            "5. \"comment-to\"        (string, optional) An optional comment to store the name of the person or organization \n"
                                             "                                     to which you're sending the transaction. This is not part of the transaction, \n"
                                             "                                     it is just kept in your wallet.\n"
                                             "\nResult:\n"
@@ -1441,23 +1440,19 @@ Value sendfrom(const Array& params, bool fHelp)
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
     CAmount nAmount = AmountFromValue(params[2]);
-    int nMinDepth = 1;
-    if (params.size() > 3)
-        nMinDepth = params[3].get_int();
-
 
     TxTextMetadata metadata;
     metadata["FromAccount"] = strAccount;
+    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+        metadata["comment"] = params[3].get_str();
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
-        metadata["comment"] = params[4].get_str();
-    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
-        metadata["to"] = params[5].get_str();
+        metadata["to"] = params[4].get_str();
 
     EnsureWalletIsUnlocked();
     RpcTransactionCreationRequest rpcTxRequest;
     rpcTxRequest.txMetadata = metadata;
     rpcTxRequest.accountName = strAccount;
-    return SendMoneyFromAccount(address.Get(), nAmount, rpcTxRequest, nMinDepth);
+    return SendMoneyFromAccount(address.Get(), nAmount, rpcTxRequest);
 }
 
 
@@ -1465,7 +1460,7 @@ Value sendmany(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 4)
         throw runtime_error(
-                "sendmany \"fromaccount\" {\"address\":amount,...} ( minconf \"comment\" )\n"
+                "sendmany \"fromaccount\" {\"address\":amount,...} ( \"comment\" )\n"
                 "\nSend multiple times. Amounts are double-precision floating point numbers." +
                 HelpRequiringPassphrase() + "\n"
                                             "\nArguments:\n"
@@ -1475,8 +1470,7 @@ Value sendmany(const Array& params, bool fHelp)
                                             "      \"address\":amount   (numeric) The divi address is the key, the numeric amount in DIVI is the value\n"
                                             "      ,...\n"
                                             "    }\n"
-                                            "3. minconf                 (numeric, optional, default=1) Only use the balance confirmed at least this many times.\n"
-                                            "4. \"comment\"             (string, optional) A comment\n"
+                                            "3. \"comment\"             (string, optional) A comment\n"
                                             "\nResult:\n"
                                             "\"transactionid\"          (string) The transaction id for the send. Only 1 transaction is created regardless of \n"
                                             "                                    the number of addresses.\n"
@@ -1488,14 +1482,10 @@ Value sendmany(const Array& params, bool fHelp)
 
     string strAccount = AccountFromValue(params[0]);
     Object sendTo = params[1].get_obj();
-    int nMinDepth = 1;
-    if (params.size() > 2)
-        nMinDepth = params[2].get_int();
-
     TxTextMetadata metadata;
     metadata["FromAccount"] = strAccount;
-    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        metadata["comment"] = params[3].get_str();
+    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
+        metadata["comment"] = params[2].get_str();
 
     set<CBitcoinAddress> setAddress;
     std::vector<std::pair<CScript, CAmount> > vecSend;
@@ -1519,16 +1509,11 @@ Value sendmany(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    // Check funds
-    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, isminetype::ISMINE_SPENDABLE);
-    if (totalAmount > nBalance)
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
-
     // Send
     RpcTransactionCreationRequest rpcTxRequest;
     rpcTxRequest.txMetadata = metadata;
     rpcTxRequest.accountName = strAccount;
-    return SendMoneyFromAccount(vecSend,rpcTxRequest, nMinDepth);
+    return SendMoneyFromAccount(vecSend,rpcTxRequest);
 }
 
 // Defined in rpcmisc.cpp

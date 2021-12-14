@@ -35,7 +35,7 @@ using namespace json_spirit;
 extern CWallet* pwalletMain;
 extern CChain chainActive;
 extern CCriticalSection cs_main;
-extern std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata);
+extern std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue);
 extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool forceNewKey, bool isWalletDerivedKey);
 
 static MasternodeTier GetMasternodeTierFromString(std::string str)
@@ -100,7 +100,7 @@ Value allocatefunds(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    const uint256 txid = uint256S(SendMoneyToAddress(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), TxTextMetadata()));
+    const uint256 txid = uint256S(SendMoneyToAddress(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier)));
     const CWalletTx* walletTx = pwalletMain->GetWalletTx(txid);
     if(!walletTx)
         throw JSONRPCError(RPC_WALLET_ERROR, "Couldn't find MN allocation transaction");

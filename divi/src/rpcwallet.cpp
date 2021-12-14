@@ -721,6 +721,11 @@ std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, Tx
     return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, rpcRequest);
 }
 
+std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue)
+{
+    return SendMoneyToAddress(address,nValue, TxTextMetadata());
+}
+
 std::string SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata)
 {
     constexpr bool spendFromVaults = true;

@@ -605,6 +605,25 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
     return ret;
 }
 
+struct RpcTransactionCreationRequest
+{
+    bool txShouldSpendFromVaults;
+    TxTextMetadata txMetadata;
+    TransactionFeeMode txFeeMode;
+    std::string accountName;
+    RpcTransactionCreationRequest(
+        bool spendFromVaults = false,
+        TxTextMetadata metadata = TxTextMetadata(),
+        TransactionFeeMode feeMode = TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES,
+        std::string accountNameToDrawFrom = ""
+        ): txShouldSpendFromVaults(spendFromVaults)
+        , txMetadata(metadata)
+        , txFeeMode(feeMode)
+        , accountName(accountNameToDrawFrom)
+    {
+    }
+};
+
 std::string SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& scriptsToFund, TxTextMetadata metadata, bool spendFromVaults)
 {
     // Check amount
@@ -622,7 +641,7 @@ std::string SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& sc
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
     }
 
-    string strError;
+    std::string strError;
     if (pwalletMain->IsLocked()) {
         strError = "Error: Wallet locked, unable to create transaction!";
         LogPrintf("SendMoney() : %s", strError);

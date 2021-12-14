@@ -707,12 +707,9 @@ std::string SendMoneyFromAccount(
     return txCreation.wtxNew->GetHash().GetHex();
 }
 
-std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, TxTextMetadata metadata, std::string accountName, int nMinDepth)
+std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nValue, RpcTransactionCreationRequest rpcTxRequest, int nMinDepth)
 {
     const CScript scriptPubKey = GetScriptForDestination(destination);
-    RpcTransactionCreationRequest rpcTxRequest;
-    rpcTxRequest.txMetadata = metadata;
-    rpcTxRequest.accountName = accountName;
     return SendMoneyFromAccount({{scriptPubKey,nValue}},rpcTxRequest,nMinDepth);
 }
 
@@ -1427,7 +1424,10 @@ Value sendfrom(const Array& params, bool fHelp)
         metadata["to"] = params[5].get_str();
 
     EnsureWalletIsUnlocked();
-    return SendMoneyFromAccount(address.Get(), nAmount, metadata, strAccount, nMinDepth);
+    RpcTransactionCreationRequest rpcTxRequest;
+    rpcTxRequest.txMetadata = metadata;
+    rpcTxRequest.accountName = strAccount;
+    return SendMoneyFromAccount(address.Get(), nAmount, rpcTxRequest, nMinDepth);
 }
 
 

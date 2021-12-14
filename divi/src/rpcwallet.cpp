@@ -654,7 +654,7 @@ std::string SendMoneyToScripts(
     AvailableCoinsType coinTypeFilter = (!rpcTxRequest.txShouldSpendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
     static AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName(rpcTxRequest.accountName);
-    TransactionCreationRequest request(scriptsToFund,TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES, rpcTxRequest.txMetadata, coinTypeFilter, &coinSelector);
+    TransactionCreationRequest request(scriptsToFund,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, coinTypeFilter, &coinSelector);
     TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
     if (!txCreation.transactionCreationSucceeded)
     {

@@ -667,8 +667,6 @@ std::string SendMoneyToScripts(
 
 std::string SendMoneyFromAccount(
     const std::vector<std::pair<CScript, CAmount>>& vecSend,
-    TxTextMetadata metadata,
-    std::string accountName,
     RpcTransactionCreationRequest rpcTxRequest,
     int nMinDepth)
 {
@@ -715,7 +713,7 @@ std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nVal
     RpcTransactionCreationRequest rpcTxRequest;
     rpcTxRequest.txMetadata = metadata;
     rpcTxRequest.accountName = accountName;
-    return SendMoneyFromAccount({{scriptPubKey,nValue}},metadata,accountName,rpcTxRequest,nMinDepth);
+    return SendMoneyFromAccount({{scriptPubKey,nValue}},rpcTxRequest,nMinDepth);
 }
 
 std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, RpcTransactionCreationRequest rpcRequest)
@@ -1500,7 +1498,7 @@ Value sendmany(const Array& params, bool fHelp)
     RpcTransactionCreationRequest rpcTxRequest;
     rpcTxRequest.txMetadata = metadata;
     rpcTxRequest.accountName = strAccount;
-    return SendMoneyFromAccount(vecSend,metadata,strAccount,rpcTxRequest, nMinDepth);
+    return SendMoneyFromAccount(vecSend,rpcTxRequest, nMinDepth);
 }
 
 // Defined in rpcmisc.cpp

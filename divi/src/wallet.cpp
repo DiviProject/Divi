@@ -2132,6 +2132,41 @@ static CAmount AttachInputs(
     return nValueIn;
 }
 
+static bool SubtractFeesFromOutputs(
+    const CAmount feesToBePaid,
+    CAmount& changeAmountTotal,
+    CMutableTransaction& txNew)
+{
+    if(feesToBePaid < 1) return true;
+    const CAmount totalValueSentInitially = txNew.GetValueOut();
+    if(feesToBePaid > totalValueSentInitially + changeAmountTotal) return false;
+    CAmount totalPaid = 0;
+
+    for(CTxOut& out: txNew.vout)
+    {
+        if(totalPaid >= feesToBePaid) break;
+        const CAmount minimumValue = priorityFeeCalculator.MinimumValueForNonDust(out);
+        const CAmount availableBalanceToPayFees = std::max(out.nValue - minimumValue,CAmount(0));
+        const CAmount change =  std::min(availableBalanceToPayFees, feesToBePaid - totalPaid);
+        totalPaid += change;
+        out.nValue -=  change;
+    }
+
+    const CAmount minimumValueForNonDust = priorityFeeCalculator.MinimumValueForNonDust();
+    const bool feesShouldBeTakenFromChange = totalPaid < feesToBePaid;
+    const bool feesCanBeTakenFromChange = (changeAmountTotal + totalPaid - feesToBePaid) >= minimumValueForNonDust;
+    changeAmountTotal += totalPaid;
+    if(feesShouldBeTakenFromChange)
+    {
+        if(!feesCanBeTakenFromChange)
+        {
+            return false;
+        }
+        changeAmountTotal -= feesToBePaid;
+    }
+    return changeAmountTotal >= minimumValueForNonDust && txNew.GetValueOut() == (totalValueSentInitially - feesToBePaid);
+}
+
 static bool SetChangeOutput(
     CAmount totalInputs,
     CAmount totalOutputsPlusFees,

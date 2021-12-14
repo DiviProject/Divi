@@ -136,11 +136,13 @@ typedef std::map<std::string,std::string> TxTextMetadata;
 struct TransactionCreationRequest
 {
     const std::vector<std::pair<CScript, CAmount> >& scriptsToFund;
+    TransactionFeeMode transactionFeeMode;
     AvailableCoinsType coin_type;
     const I_CoinSelectionAlgorithm* const coinSelectionAlgorithm;
     TxTextMetadata metadata;
     TransactionCreationRequest(
         const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
+        TransactionFeeMode txFeeMode = TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES,
         TxTextMetadata metadataToSet = TxTextMetadata(),
         AvailableCoinsType coinTypeSelected = ALL_SPENDABLE_COINS,
         const I_CoinSelectionAlgorithm* const algorithm = nullptr);
@@ -389,6 +391,7 @@ public:
 
     std::pair<std::string,bool> CreateTransaction(
         const std::vector<std::pair<CScript, CAmount> >& vecSend,
+        const TransactionFeeMode feeMode,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
         const I_CoinSelectionAlgorithm* coinSelector,

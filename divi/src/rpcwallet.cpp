@@ -633,7 +633,7 @@ std::string SendMoneyToScripts(const std::vector<std::pair<CScript,CAmount>>& sc
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
     static AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName("");
-    TransactionCreationRequest request(scriptsToFund, metadata, coinTypeFilter, &coinSelector);
+    TransactionCreationRequest request(scriptsToFund,TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES, metadata, coinTypeFilter, &coinSelector);
     TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
     if (!txCreation.transactionCreationSucceeded)
     {
@@ -672,7 +672,7 @@ std::string SendMoneyFromAccount(const std::vector<std::pair<CScript, CAmount>>&
     constexpr AvailableCoinsType coinTypeFilter = ALL_SPENDABLE_COINS;
     static AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName(accountName);
-    TransactionCreationRequest request(vecSend, metadata, coinTypeFilter, &coinSelector);
+    TransactionCreationRequest request(vecSend,TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES, metadata, coinTypeFilter, &coinSelector);
     TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
     if (!txCreation.transactionCreationSucceeded)
     {

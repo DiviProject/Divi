@@ -175,10 +175,12 @@ std::set<CTxDestination> AddressBookManager::GetAccountAddresses(std::string str
 
 TransactionCreationRequest::TransactionCreationRequest(
     const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
+    TransactionFeeMode txFeeMode,
     TxTextMetadata metadataToSet,
     AvailableCoinsType coinTypeSelected,
     const I_CoinSelectionAlgorithm* const algorithm
     ): scriptsToFund(scriptsToSendTo)
+    , transactionFeeMode(txFeeMode)
     , coin_type(coinTypeSelected)
     , coinSelectionAlgorithm(algorithm)
     , metadata(metadataToSet)
@@ -2281,6 +2283,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
 
 std::pair<std::string,bool> CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
+    const TransactionFeeMode feeMode,
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
     const I_CoinSelectionAlgorithm* coinSelector,
@@ -2310,7 +2313,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     {
         return {translate("Transaction output(s) amount too small"),false};
     }
-    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES,txNew,reservekey,wtxNew);
+    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,feeMode,txNew,reservekey,wtxNew);
 }
 
 /**
@@ -2387,6 +2390,7 @@ TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& r
     std::pair<std::string,bool> createTxResult =
         CreateTransaction(
             requestedTransaction.scriptsToFund,
+            requestedTransaction.transactionFeeMode,
             *result.wtxNew,
             *result.reserveKey,
             requestedTransaction.coinSelectionAlgorithm,

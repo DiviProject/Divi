@@ -710,10 +710,9 @@ std::string SendMoneyFromAccount(const CTxDestination& destination, CAmount nVal
     return SendMoneyFromAccount({{scriptPubKey,nValue}},metadata,accountName,nMinDepth);
 }
 
-std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata, RpcTransactionCreationRequest rpcRequest)
+std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, RpcTransactionCreationRequest rpcRequest)
 {
     // Parse DIVI address
-    constexpr bool spendFromVaults = false;
     CScript scriptPubKey = GetScriptForDestination(address);
     return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, rpcRequest);
 }
@@ -721,7 +720,7 @@ std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, Tx
 std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue)
 {
     RpcTransactionCreationRequest rpcRequest;
-    return SendMoneyToAddress(address,nValue, TxTextMetadata(),rpcRequest);
+    return SendMoneyToAddress(address,nValue, rpcRequest);
 }
 
 std::string SendMoneyFromVaults(const CTxDestination& address, CAmount nValue, TxTextMetadata metadata)
@@ -1102,7 +1101,9 @@ Value sendtoaddress(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
     RpcTransactionCreationRequest rpcRequest;
-    return SendMoneyToAddress(address.Get(), nAmount, metadata,rpcRequest);
+    rpcRequest.txShouldSpendFromVaults = false;
+    rpcRequest.txMetadata = metadata;
+    return SendMoneyToAddress(address.Get(), nAmount, rpcRequest);
 }
 
 Value listaddressgroupings(const Array& params, bool fHelp)

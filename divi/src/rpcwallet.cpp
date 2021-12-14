@@ -639,8 +639,8 @@ std::string SendMoneyToScripts(
     if (nValue <= 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid amount");
 
-    if ( (!spendFromVaults && nValue > pwalletMain->GetSpendableBalance()) ||
-        (spendFromVaults && nValue > pwalletMain->GetBalanceByCoinType(OWNED_VAULT_COINS)  ) )
+    if ( (!rpcTxRequest.txShouldSpendFromVaults && nValue > pwalletMain->GetSpendableBalance()) ||
+        (rpcTxRequest.txShouldSpendFromVaults && nValue > pwalletMain->GetBalanceByCoinType(OWNED_VAULT_COINS)  ) )
     {
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
     }
@@ -653,10 +653,10 @@ std::string SendMoneyToScripts(
     }
 
     // Create and send the transaction
-    AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
+    AvailableCoinsType coinTypeFilter = (!rpcTxRequest.txShouldSpendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
     static AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName("");
-    TransactionCreationRequest request(scriptsToFund,TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES, metadata, coinTypeFilter, &coinSelector);
+    TransactionCreationRequest request(scriptsToFund,TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES, rpcTxRequest.txMetadata, coinTypeFilter, &coinSelector);
     TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
     if (!txCreation.transactionCreationSucceeded)
     {

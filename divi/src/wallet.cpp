@@ -2033,12 +2033,14 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
     return true;
 }
 
-CTxOut CreateChangeOutput(CReserveKey& reservekey)
+CTxOut CreateChangeOutput(
+    const CAmount totalInputs,
+    const CAmount totalOutputsPlusFees,
+    CReserveKey& reservekey)
 {
-    CTxOut changeOutput;
     CPubKey vchPubKey;
     assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
-    changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
+    CTxOut changeOutput(totalInputs - totalOutputsPlusFees, GetScriptForDestination(vchPubKey.GetID()));
     return changeOutput;
 }
 
@@ -2226,7 +2228,6 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     CReserveKey& reservekey,
     CWalletTx& wtxNew)
 {
-    CTxOut changeOutput = CreateChangeOutput(reservekey);
     const CAmount totalValueToSend = txNew.GetValueOut();
     CAmount nFeeRet = 0;
     if(!(totalValueToSend > 0))
@@ -2243,7 +2244,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
         return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};
     }
 
-    changeOutput.nValue = nValueIn - totalValueToSendPlusFees;
+    CTxOut changeOutput = CreateChangeOutput(nValueIn,totalValueToSendPlusFees,reservekey);
     switch (sendMode)
     {
     case AmountSendMode::RECEIVER_PAYS_FOR_TX_FEES:

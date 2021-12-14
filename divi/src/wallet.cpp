@@ -2216,7 +2216,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     const CKeyStore& walletKeyStore,
     const I_CoinSelectionAlgorithm* coinSelector,
     const std::vector<COutput>& vCoins,
-    const AmountSendMode sendMode,
+    const TransactionFeeMode sendMode,
     CMutableTransaction& txNew,
     CReserveKey& reservekey,
     CWalletTx& wtxNew)
@@ -2240,13 +2240,13 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     CTxOut changeOutput = CreateChangeOutput(nValueIn,totalValueToSendPlusFees,reservekey);
     switch (sendMode)
     {
-    case AmountSendMode::RECEIVER_PAYS_FOR_TX_FEES:
+    case TransactionFeeMode::RECEIVER_PAYS_FOR_TX_FEES:
         if(!SubtractFeesFromOutputs(nFeeRet,changeOutput.nValue,txNew))
         {
             return {translate("Cannot subtract needed fees from outputs."),false};
         }
         break;
-    case AmountSendMode::SEND_TO_SELF:
+    case TransactionFeeMode::SEND_TO_SELF:
         if(!RollChangeIntoOutputs(changeOutput,txNew))
         {
             return {translate("Cannot roll change amounts into outputs."),false};
@@ -2310,7 +2310,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     {
         return {translate("Transaction output(s) amount too small"),false};
     }
-    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,AmountSendMode::SENDER_PAYS_FOR_TX_FEES,txNew,reservekey,wtxNew);
+    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES,txNew,reservekey,wtxNew);
 }
 
 /**

@@ -158,6 +158,30 @@ boost::filesystem::path CopyableSettings::GetConfigFile() const
     return pathConfigFile;
 }
 
+static std::string ParseNetworkSpecificFlag(const std::string& key, const CopyableSettings& settings)
+{
+    size_t separatorPosition = key.find('.');
+    if(separatorPosition == std::string::npos)
+    {
+        return key;
+    }
+    const std::string networkType = key.substr(0,separatorPosition);
+    const std::string trimmedKey = key.substr(separatorPosition+1, std::string::npos);
+    if(networkType.empty()) return key;
+    if(settings.ParameterIsSet("testnet") && networkType == "test")
+    {
+        return trimmedKey;
+    }
+    if(!settings.ParameterIsSet("testnet") && !settings.ParameterIsSet("regtest"))
+    {
+        return trimmedKey;
+    }
+    else
+    {
+        return std::string("");
+    }
+}
+
 void CopyableSettings::ReadConfigFile()
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
@@ -174,7 +198,9 @@ void CopyableSettings::ReadConfigFile()
 
     for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it) {
         // Don't overwrite existing settings so command line settings override divi.conf
-        SetParameter(std::string("-") + it->string_key, it->value[0],true);
+        const std::string key = ParseNetworkSpecificFlag(it->string_key,*this);
+        if(key.empty()) continue;
+        SetParameter(std::string("-") + key, it->value[0],true);
     }
     // If datadir is changed in .conf file:
     ClearDatadirCache();

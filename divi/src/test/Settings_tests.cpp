@@ -24,7 +24,7 @@ struct SettingsTestContainer
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(getarg_tests, SettingsTestContainer)
+BOOST_FIXTURE_TEST_SUITE(Settings_tests, SettingsTestContainer)
 
 static void ResetArgs(CopyableSettings& settings, const std::string& commandLineArguments)
 {

@@ -794,20 +794,16 @@ Value getcoinavailability(const Array& params, bool fHelp)
 
 Value fundvault(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 2 || params.size() > 4)
+    if (fHelp || params.size() != 2)
         throw runtime_error(
-                "fundvault \"[owner_address:]manager_address\" amount ( \"comment\" \"comment-to\" )\n"
+                "fundvault \"[owner_address:]manager_address\" amount\n"
                 "\nSend an amount to a given vault manager address. The amount is a real and is rounded to the nearest 0.00000001\n" +
                 HelpRequiringPassphrase() +
                 "\nArguments:\n"
-                "1. \"owner_address\" (string, optional) The address of the key owning the vault funds. Needs ':' separator. \n"
-                "1. \"manager_address\"  (string, required) The divi address owned by the vault manager.\n"
-                "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n"
-                "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
-                "                             This is not part of the transaction, just kept in your wallet.\n"
-                "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
-                "                             to which you're sending the transaction. This is not part of the \n"
-                "                             transaction, just kept in your wallet.\n");
+                "1. \"[owner_address:]manager_address\" (string, required)\n"
+                "   \"owner_address\" -> The address of the key owning the vault funds. Needs ':' separator if used. \n"
+                "   \"manager_address\" -> The divi address owned by the vault manager.\n"
+                "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n");
 
     std::string addressEncodings = params[0].get_str();
     CBitcoinAddress ownerAddress;
@@ -845,14 +841,6 @@ Value fundvault(const Array& params, bool fHelp)
     if (!ownerAddress.IsValid() || !ownerAddress.GetKeyID(ownerKeyID))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid owner DIVI address");
 
-    // Wallet comments
-    TxTextMetadata metadata;
-    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-        metadata["comment"] = params[2].get_str();
-    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        metadata["to"] = params[3].get_str();
-
-
     CScript vaultScript = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
 
     EnsureWalletIsUnlocked();
@@ -860,7 +848,6 @@ Value fundvault(const Array& params, bool fHelp)
     CAmount nAmount = AmountFromValue(params[1]);
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = false;
-    rpcRequest.txMetadata = metadata;
     const std::string txid = SendMoney({std::make_pair(vaultScript, nAmount)}, rpcRequest);
 
     Object fundingAttemptResult;

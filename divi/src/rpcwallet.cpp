@@ -624,6 +624,59 @@ struct RpcTransactionCreationRequest
     }
 };
 
+std::string SendMoney(
+    const std::vector<std::pair<CScript,CAmount>>& scriptsToFund,
+    RpcTransactionCreationRequest rpcTxRequest)
+{
+    // Check amount
+    const bool useDefaultAccount = rpcTxRequest.accountName.empty();
+    assert(useDefaultAccount || !rpcTxRequest.txShouldSpendFromVaults);
+
+    CAmount availableWalletBalance = 0;
+    if(useDefaultAccount)
+    {
+        availableWalletBalance = rpcTxRequest.txShouldSpendFromVaults
+            ? pwalletMain->GetBalanceByCoinType(OWNED_VAULT_COINS)
+            : pwalletMain->GetSpendableBalance();
+    }
+    else
+    {
+        const int nMinDepth = 1;
+        availableWalletBalance = GetAccountBalance(rpcTxRequest.accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
+    }
+    const CAmount totalAmountToSend = std::accumulate(scriptsToFund.begin(),scriptsToFund.end(),CAmount(0),
+        [](const CAmount& runningTotal, const std::pair<CScript,CAmount>& recipient)
+        {
+            return runningTotal + recipient.second;
+        });
+    if (totalAmountToSend <= 0)
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid amount");
+    }
+    else if(totalAmountToSend > availableWalletBalance)
+    {
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
+    }
+    else if (pwalletMain->IsLocked())
+    {
+        std::string strError = "Error: Wallet locked, unable to create transaction!";
+        LogPrintf("SendMoney() : %s", strError);
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+    static AccountCoinSelector coinSelector(*pwalletMain);
+    coinSelector.SetAccountName(rpcTxRequest.accountName);
+    AvailableCoinsType coinTypeFilter = (!rpcTxRequest.txShouldSpendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
+    TransactionCreationRequest request(scriptsToFund,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, coinTypeFilter, &coinSelector);
+    TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
+    if (!txCreation.transactionCreationSucceeded)
+    {
+        std::string strError = txCreation.errorMessage;
+        LogPrintf("SendMoney() : %s\n", strError);
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+    return txCreation.wtxNew->GetHash().GetHex();
+}
+
 std::string SendMoneyToScripts(
     const std::vector<std::pair<CScript,CAmount>>& scriptsToFund,
     RpcTransactionCreationRequest rpcTxRequest)
@@ -717,7 +770,7 @@ std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, Rp
 {
     // Parse DIVI address
     CScript scriptPubKey = GetScriptForDestination(address);
-    return SendMoneyToScripts({std::make_pair(scriptPubKey, nValue)}, rpcRequest);
+    return SendMoney({std::make_pair(scriptPubKey, nValue)}, rpcRequest);
 }
 
 std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue)
@@ -897,7 +950,7 @@ Value fundvault(const Array& params, bool fHelp)
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = false;
     rpcRequest.txMetadata = metadata;
-    const std::string txid = SendMoneyToScripts({std::make_pair(vaultScript, nAmount)}, rpcRequest);
+    const std::string txid = SendMoney({std::make_pair(vaultScript, nAmount)}, rpcRequest);
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", txid ));
@@ -1452,7 +1505,7 @@ Value sendfrom(const Array& params, bool fHelp)
     RpcTransactionCreationRequest rpcTxRequest;
     rpcTxRequest.txMetadata = metadata;
     rpcTxRequest.accountName = strAccount;
-    return SendMoneyFromAccount(address.Get(), nAmount, rpcTxRequest);
+    return SendMoneyToAddress(address.Get(),nAmount,rpcTxRequest);
 }
 
 
@@ -1513,7 +1566,7 @@ Value sendmany(const Array& params, bool fHelp)
     RpcTransactionCreationRequest rpcTxRequest;
     rpcTxRequest.txMetadata = metadata;
     rpcTxRequest.accountName = strAccount;
-    return SendMoneyFromAccount(vecSend,rpcTxRequest);
+    return SendMoney(vecSend,rpcTxRequest);
 }
 
 // Defined in rpcmisc.cpp

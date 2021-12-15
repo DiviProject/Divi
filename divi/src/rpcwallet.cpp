@@ -1772,7 +1772,6 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
 
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
     const bool isCoinstake = wtx.IsCoinStake();
-    wtx.GetComputedTxTime();
     const CAmount nDebit = wallet.GetDebit(wtx,isminetype::ISMINE_SPENDABLE);
 
     if (isCoinstake)

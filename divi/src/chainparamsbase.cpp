@@ -121,15 +121,23 @@ CBaseChainParams::Network NetworkIdFromCommandLine(const Settings& settings)
     bool fRegTest = settings.GetBoolArg("-regtest", false);
     bool fTestNet = settings.GetBoolArg("-testnet", false);
 
-    if (fTestNet && fRegTest)
-        return CBaseChainParams::MAX_NETWORK_TYPES;
-    if (fRegTest)
-        return CBaseChainParams::REGTEST;
-    if (fTestNet)
-        return CBaseChainParams::TESTNET;
-	if (settings.GetBoolArg("-testnet", false))
-		return CBaseChainParams::BETATEST;
-    return CBaseChainParams::MAIN;
+    CBaseChainParams::Network networkID = CBaseChainParams::MAX_NETWORK_TYPES;
+    if ( !(fTestNet && fRegTest) )
+    {
+        if (fRegTest)
+        {
+            networkID = CBaseChainParams::REGTEST;
+        }
+        else if (fTestNet)
+        {
+            networkID = CBaseChainParams::TESTNET;
+        }
+        else
+        {
+            networkID = CBaseChainParams::MAIN;
+        }
+    }
+    return networkID;
 }
 
 bool SelectBaseParamsFromCommandLine(const Settings& settings)

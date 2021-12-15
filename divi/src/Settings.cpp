@@ -31,6 +31,7 @@ static bool InterpretBool(const std::string& strValue)
 
 static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
 {
+    // -no-somesetting=somevalue // parses as -somesetting=0
     if (strKey.length()>3 && strKey[0]=='-' && strKey[1]=='n' && strKey[2]=='o') {
         strKey = "-" + strKey.substr(3);
         strValue = InterpretBool(strValue) ? "0" : "1";
@@ -46,9 +47,9 @@ bool CopyableSettings::GetBoolArg(const std::string& strArg, bool fDefault) cons
 
 bool CopyableSettings::SoftSetArg(const std::string& strArg, const std::string& strValue)
 {
-    if (mapArgs_.count(strArg))
+    if (ParameterIsSet(strArg))
         return false;
-    mapArgs_[strArg] = strValue;
+    SetParameter(strArg,strValue,true);
     return true;
 }
 
@@ -95,9 +96,24 @@ const std::vector<std::string>& CopyableSettings::GetMultiParameter(const std::s
     }
 }
 
-void CopyableSettings::SetParameter (const std::string& key, const std::string& value)
+void CopyableSettings::SetParameter (const std::string& key, const std::string& value, const bool setOnceOnly)
 {
-    mapArgs_[key] = value;
+    // Interpret --foo as -foo.
+    // If both --foo and -foo are set, the last takes effect.
+    // ---foo is ignored
+    std::string prunedKey = key;
+    std::string parsedValue = value;
+    if (prunedKey.length() > 1 && prunedKey[0] == '-' && prunedKey[1] == '-')
+        prunedKey = prunedKey.substr(1);
+    if (prunedKey.length() > 1 && prunedKey[0] == '-' && prunedKey[1] == '-')
+        return;
+
+    InterpretNegativeSetting(prunedKey, parsedValue);
+    if(!setOnceOnly || mapArgs_.count(prunedKey) == 0)
+    {
+        mapArgs_[prunedKey] = parsedValue;
+    }
+    mapMultiArgs_[prunedKey].push_back(parsedValue);
 }
 
 void CopyableSettings::ClearParameter ()
@@ -129,17 +145,7 @@ void CopyableSettings::ParseParameters(int argc, const char* const argv[])
             str = "-" + str.substr(1);
 #endif
 
-        if (str[0] != '-')
-            break;
-
-        // Interpret --foo as -foo.
-        // If both --foo and -foo are set, the last takes effect.
-        if (str.length() > 1 && str[1] == '-')
-            str = str.substr(1);
-        InterpretNegativeSetting(str, strValue);
-
-        SetParameter(str, strValue);
-        mapMultiArgs_[str].push_back(strValue);
+        SetParameter(str, strValue,false);
     }
 }
 
@@ -168,12 +174,7 @@ void CopyableSettings::ReadConfigFile()
 
     for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it) {
         // Don't overwrite existing settings so command line settings override divi.conf
-        std::string strKey = std::string("-") + it->string_key;
-        std::string strValue = it->value[0];
-        InterpretNegativeSetting(strKey, strValue);
-        if (mapArgs_.count(strKey) == 0)
-            mapArgs_[strKey] = strValue;
-        mapMultiArgs_[strKey].push_back(strValue);
+        SetParameter(std::string("-") + it->string_key, it->value[0],true);
     }
     // If datadir is changed in .conf file:
     ClearDatadirCache();

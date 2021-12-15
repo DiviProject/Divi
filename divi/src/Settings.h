@@ -35,7 +35,7 @@ public:
     std::string GetParameter(const std::string& key) const;
     const std::vector<std::string>& GetMultiParameter(const std::string& key) const;
 
-    void SetParameter(const std::string& key, const std::string& value);
+    void SetParameter(const std::string& key, const std::string& value, const bool setOnceOnly = false);
 
     void ClearParameter();
 

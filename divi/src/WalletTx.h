@@ -108,7 +108,6 @@ public:
     void RecomputeCachedQuantities();
 
     int64_t GetTxTime() const;
-    int64_t GetComputedTxTime() const;
     bool UpdateTransaction(const CWalletTx& other, bool reorg);
 };
 #endif// WALLET_TX_H

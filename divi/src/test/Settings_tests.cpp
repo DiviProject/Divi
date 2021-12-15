@@ -33,7 +33,7 @@ static void ResetArgs(CopyableSettings& settings, const std::string& commandLine
       boost::split(vecArg, commandLineArguments, boost::is_space(), boost::token_compress_on);
 
     // Insert dummy executable name:
-    vecArg.insert(vecArg.begin(), "testbitcoin");
+    vecArg.insert(vecArg.begin(), "testdivi");
 
     // Convert to char*:
     std::vector<const char*> vecChar;

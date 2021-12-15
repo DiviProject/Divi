@@ -103,6 +103,7 @@ void CopyableSettings::SetParameter (const std::string& key, const std::string& 
 void CopyableSettings::ClearParameter ()
 {
     mapArgs_.clear();
+    mapMultiArgs_.clear();
 }
 
 bool CopyableSettings::ParameterIsSetForMultiArgs (const std::string& key) const
@@ -113,7 +114,6 @@ bool CopyableSettings::ParameterIsSetForMultiArgs (const std::string& key) const
 void CopyableSettings::ParseParameters(int argc, const char* const argv[])
 {
     ClearParameter();
-    mapMultiArgs_.clear();
 
     for (int i = 1; i < argc; i++) {
         std::string str(argv[i]);

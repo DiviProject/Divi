@@ -77,12 +77,6 @@ int64_t CWalletTx::GetTxTime() const
     return n ? n : nTimeReceived;
 }
 
-int64_t CWalletTx::GetComputedTxTime() const
-{
-    int64_t nTime = GetTxTime();
-    return nTime;
-}
-
 bool CWalletTx::UpdateTransaction(const CWalletTx& other, bool reorg)
 {
     // Merge

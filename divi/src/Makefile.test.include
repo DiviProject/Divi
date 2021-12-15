@@ -52,7 +52,7 @@ BITCOIN_TESTS =\
   test/FakeBlockIndexChain.cpp \
   test/FakeWallet.cpp \
   test/ForkActivation_tests.cpp \
-  test/getarg_tests.cpp \
+  test/Settings_tests.cpp \
   test/hash_tests.cpp \
   test/kernel_tests.cpp \
   test/key_tests.cpp \

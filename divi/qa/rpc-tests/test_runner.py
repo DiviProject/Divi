@@ -125,7 +125,6 @@ BASE_SCRIPTS = [
     'walletbackup.py',
     'wallet_notifications.py',
     'wallet_sends.py',
-    'wallet_autocombine.py',
     'zmq_test.py',
 ]
 

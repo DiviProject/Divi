@@ -34,7 +34,6 @@ extern CCoinsViewCache* pcoinsTip;
 extern bool fCheckBlockIndex;
 extern BlockMap mapBlockIndex;
 extern int nScriptCheckThreads;
-extern CChain chainActive;
 
 struct TestingSetup {
     CCoinsViewDB *pcoinsdbview;

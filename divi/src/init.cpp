@@ -80,7 +80,6 @@
 #include <verifyDb.h>
 
 extern CCriticalSection cs_main;
-extern CChain chainActive;
 extern Settings& settings;
 extern bool fReindex;
 extern bool fImporting;
@@ -90,7 +89,6 @@ extern int nCoinCacheSize;
 extern bool fTxIndex;
 extern bool fVerifyingBlocks;
 extern bool fLiteMode;
-extern BlockMap mapBlockIndex;
 extern Settings& settings;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -108,6 +106,8 @@ constexpr int nWalletBackups = 20;
 #endif
 
 
+CChain chainActive;
+BlockMap mapBlockIndex;
 CBlockTreeDB* pblocktree = nullptr;
 CCoinsViewCache* pcoinsTip = nullptr;
 

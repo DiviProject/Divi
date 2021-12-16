@@ -222,7 +222,6 @@ BITCOIN_CORE_H = \
   TransactionInputChecker.h \
   UtxoCheckingAndUpdating.h\
   WalletLoggingHelper.h \
-  walletdustcombiner.h \
   BlockFileOpener.h \
   BlockDiskAccessor.h \
   TransactionDiskAccessor.h \
@@ -418,7 +417,6 @@ libbitcoin_server_a_SOURCES = \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \
   WalletLoggingHelper.cpp \
-  walletdustcombiner.cpp \
   BlockFactory.cpp \
   ExtendedBlockFactory.cpp \
   BlockFileOpener.cpp \

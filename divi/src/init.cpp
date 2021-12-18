@@ -424,29 +424,28 @@ struct CImportingNow {
     }
 };
 
-void ReconstructBlockIndexIfRequested()
+void ReconstructBlockIndex()
 {
+    RenameThread("divi-reindex");
     // -reindex
-    if (fReindex) {
-        CImportingNow imp;
-        int nFile = 0;
-        while (true) {
-            CDiskBlockPos pos(nFile, 0);
-            if (!BlockFileExists(pos, "blk"))
-                break; // No block files left to reindex
-            FILE* file = OpenBlockFile(pos, true);
-            if (!file)
-                break; // This error is logged in OpenBlockFile
-            LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
-            LoadExternalBlockFile(file, &pos);
-            nFile++;
-        }
-        pblocktree->WriteReindexing(false);
-        fReindex = false;
-        LogPrintf("Reindexing finished\n");
-        // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
-        InitBlockIndex();
+    CImportingNow imp;
+    int nFile = 0;
+    while (true) {
+        CDiskBlockPos pos(nFile, 0);
+        if (!BlockFileExists(pos, "blk"))
+            break; // No block files left to reindex
+        FILE* file = OpenBlockFile(pos, true);
+        if (!file)
+            break; // This error is logged in OpenBlockFile
+        LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
+        LoadExternalBlockFile(file, &pos);
+        nFile++;
     }
+    pblocktree->WriteReindexing(false);
+    fReindex = false;
+    LogPrintf("Reindexing finished\n");
+    // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
+    InitBlockIndex();
 }
 
 void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
@@ -1382,8 +1381,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (!ActivateBestChain(state))
         strErrors << "Failed to connect best block";
 
-    ReconstructBlockIndexIfRequested();
-    if (settings.ParameterIsSet("-loadblock")) {
+    if(fReindex) threadGroup.create_thread(boost::bind(&ReconstructBlockIndex));
+    if (settings.ParameterIsSet("-loadblock"))
+    {
         std::vector<boost::filesystem::path> vImportFiles;
         BOOST_FOREACH (std::string strFile, settings.GetMultiParameter("-loadblock"))
             vImportFiles.push_back(strFile);

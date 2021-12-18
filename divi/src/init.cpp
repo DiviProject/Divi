@@ -426,7 +426,6 @@ struct CImportingNow {
 
 void ReconstructBlockIndex()
 {
-    RenameThread("divi-reindex");
     // -reindex
     CImportingNow imp;
     int nFile = 0;
@@ -448,9 +447,17 @@ void ReconstructBlockIndex()
     InitBlockIndex();
 }
 
-void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
+void ReindexAndImportBlockFiles(const Settings& settings)
 {
     RenameThread("divi-loadblk");
+
+    if(fReindex) ReconstructBlockIndex();
+    std::vector<boost::filesystem::path> vImportFiles;
+    if(settings.ParameterIsSet("-loadblock"))
+    {
+        BOOST_FOREACH (std::string strFile, settings.GetMultiParameter("-loadblock"))
+            vImportFiles.push_back(strFile);
+    }
 
     // hardcoded $DATADIR/bootstrap.dat
     boost::filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
@@ -1381,14 +1388,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (!ActivateBestChain(state))
         strErrors << "Failed to connect best block";
 
-    if(fReindex) threadGroup.create_thread(boost::bind(&ReconstructBlockIndex));
-    if (settings.ParameterIsSet("-loadblock"))
-    {
-        std::vector<boost::filesystem::path> vImportFiles;
-        BOOST_FOREACH (std::string strFile, settings.GetMultiParameter("-loadblock"))
-            vImportFiles.push_back(strFile);
-        threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
-    }
+    threadGroup.create_thread(boost::bind(&ReindexAndImportBlockFiles, settings));
 
     if (chainActive.Tip() == NULL) {
         LogPrintf("Waiting for genesis block to be imported...\n");

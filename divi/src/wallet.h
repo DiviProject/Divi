@@ -308,7 +308,6 @@ public:
         bool fIncludeZeroValue = false,
         AvailableCoinsType nCoinType = ALL_SPENDABLE_COINS,
         CAmount nExactValue = CAmount(0)) const;
-    std::map<CBitcoinAddress, std::vector<COutput> > AvailableCoinsByAddress(bool fConfirmed = true, CAmount maxCoinValue = 0);
     static bool SelectCoinsMinConf(
         const CWallet& wallet,
         const CAmount& nTargetValue,

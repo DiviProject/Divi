@@ -1788,26 +1788,6 @@ void CWallet::AvailableCoins(
     }
 }
 
-std::map<CBitcoinAddress, std::vector<COutput> > CWallet::AvailableCoinsByAddress(bool fConfirmed, CAmount maxCoinValue)
-{
-    std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, fConfirmed);
-
-    std::map<CBitcoinAddress, std::vector<COutput> > mapCoins;
-    BOOST_FOREACH (COutput out, vCoins) {
-        if (maxCoinValue > 0 && out.tx->vout[out.i].nValue > maxCoinValue)
-            continue;
-
-        CTxDestination address;
-        if (!ExtractDestination(out.tx->vout[out.i].scriptPubKey, address))
-            continue;
-
-        mapCoins[CBitcoinAddress(address)].push_back(out);
-    }
-
-    return mapCoins;
-}
-
 static void ApproximateSmallestCoinSubsetForPayment(
     std::vector<COutput> valuedCoins,
     const CAmount& initialEstimateOfBestSubsetTotalValue,

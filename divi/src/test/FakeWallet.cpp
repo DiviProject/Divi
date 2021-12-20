@@ -77,11 +77,6 @@ CMutableTransaction createDefaultTransaction(const CScript& defaultScript, unsig
   return tx;
 }
 
-bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite)
-{
-  return walletPtr->GetDatabaseBackend()->WriteTx(transactionToWrite.GetHash(),transactionToWrite);
-}
-
 } // anonymous namespace
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
@@ -143,7 +138,7 @@ void FakeWallet::FakeAddToChain(const CWalletTx& tx)
   txPtr->hashBlock = fakeChain.activeChain->Tip()->GetBlockHash();
   txPtr->merkleBranchIndex = 0;
   txPtr->fMerkleVerified = true;
-  WriteTxToDisk(wrappedWallet_.get(),*txPtr);
+  wrappedWallet_->GetDatabaseBackend()->WriteTx(txPtr->GetHash(),*txPtr);
 }
 
 bool FakeWallet::TransactionIsInMainChain(const CWalletTx* walletTx) const

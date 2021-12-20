@@ -135,11 +135,6 @@ bool FilterAvailableTypeByOwnershipType(const CKeyStore& keystore, const CScript
     return requiredOwnershipType == recoveredOwnershipType;
 }
 
-bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite)
-{
-    return CWalletDB(settings, walletPtr->dbFilename()).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
-}
-
 const AddressBook& AddressBookManager::GetAddressBook() const
 {
     return mapAddressBook;
@@ -1376,7 +1371,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     // Write to disk
     if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated)
     {
-        if(!WriteTxToDisk(this,wtx))
+        if(!CWalletDB(settings,strWalletFile).WriteTx(wtx.GetHash(),wtx))
         {
             LogPrintf("%s - Unable to write tx (%s) to disk\n",__func__,wtxIn.ToStringShort());
             return false;

@@ -81,7 +81,7 @@ _divid() {
     fi
 
     case "$prev" in
-        backupwallet|dumpwallet|importwallet)
+        backupwallet)
             _filedir
             return 0
             ;;

@@ -45,8 +45,6 @@ extern json_spirit::Value dumpprivkey(const json_spirit::Array& params, bool fHe
 extern json_spirit::Value importprivkey(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value importaddress(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value dumphdinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value dumpwallet(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value importwallet(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value bip38encrypt(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value bip38decrypt(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value bip38paperwallet(const json_spirit::Array& params, bool fHelp);
@@ -509,7 +507,6 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "backupwallet", &backupwallet, true, false, true},
         {"wallet", "dumpprivkey", &dumpprivkey, true, false, true},
         {"wallet", "dumphdinfo", &dumphdinfo, true, false, true},
-        {"wallet", "dumpwallet", &dumpwallet, true, false, true},
         {"wallet", "bip38paperwallet", &bip38paperwallet, true, false, true},
         {"wallet", "bip38encrypt", &bip38encrypt, true, false, true},
         {"wallet", "bip38decrypt", &bip38decrypt, true, false, true},
@@ -527,7 +524,6 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "getunconfirmedbalance", &getunconfirmedbalance, false, false, true},
         {"wallet", "getwalletinfo", &getwalletinfo, false, false, true},
         {"wallet", "importprivkey", &importprivkey, true, false, true},
-        {"wallet", "importwallet", &importwallet, true, false, true},
         {"wallet", "importaddress", &importaddress, true, false, true},
         {"wallet", "keypoolrefill", &keypoolrefill, true, false, true},
         {"wallet", "listaccounts", &listaccounts, false, false, true},

@@ -416,9 +416,6 @@ public:
     /* Set the HD chain model (chain child index counters) */
     bool GetDecryptedHDChain(CHDChain& hdChainRet);
 
-    std::set<std::set<CTxDestination> > GetAddressGroupings();
-    std::map<CTxDestination, CAmount> GetAddressBalances();
-
     bool AllInputsAreMine(const CWalletTx& walletTransaction) const;
     isminetype IsMine(const CTxOut& txout) const;
     isminetype IsMine(const CTxDestination& dest) const;

@@ -206,8 +206,6 @@ private:
     int64_t nTimeFirstKey;
 
     int64_t timeOfLastChainTipUpdate;
-    int64_t nNextResend;
-    int64_t nLastResend;
     std::set<int64_t> setInternalKeyPool;
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;

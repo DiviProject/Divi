@@ -16,7 +16,7 @@ Then 5 iterations of 1/2/3 sending coins amongst
 themselves to get transactions in the wallets,
 and the miner mining one block.
 
-Wallets are backed up using dumpwallet/backupwallet.
+Wallets are backed up using backupwallet.
 Then 5 more iterations of transactions and mining a block.
 
 Miner then generates 101 more blocks, so any
@@ -28,9 +28,6 @@ Sanity check:
 1/2/3 are shutdown, and their wallets erased.
 Then restore using wallet.dat backup. And
 confirm 1/2/3/4 balances are same as before.
-
-Shutdown again, restore using importwallet,
-and confirm again balances are correct.
 """
 
 from test_framework import BitcoinTestFramework
@@ -155,11 +152,8 @@ class WalletBackupTest(BitcoinTestFramework):
         logging.info("Backing up")
 
         self.nodes[0].backupwallet(tmpdir + "/node0/wallet.bak")
-        self.nodes[0].dumpwallet(tmpdir + "/node0/wallet.dump")
         self.nodes[1].backupwallet(tmpdir + "/node1/wallet.bak")
-        self.nodes[1].dumpwallet(tmpdir + "/node1/wallet.dump")
         self.nodes[2].backupwallet(tmpdir + "/node2/wallet.bak")
-        self.nodes[2].dumpwallet(tmpdir + "/node2/wallet.dump")
 
         logging.info("More transactions")
         for i in range(5):
@@ -208,16 +202,6 @@ class WalletBackupTest(BitcoinTestFramework):
         assert_equal(self.nodes[0].getbalance(), 0)
         assert_equal(self.nodes[1].getbalance(), 0)
         assert_equal(self.nodes[2].getbalance(), 0)
-
-        self.nodes[0].importwallet(tmpdir + "/node0/wallet.dump")
-        self.nodes[1].importwallet(tmpdir + "/node1/wallet.dump")
-        self.nodes[2].importwallet(tmpdir + "/node2/wallet.dump")
-
-        sync_blocks(self.nodes)
-
-        assert_equal(self.nodes[0].getbalance(), balance0)
-        assert_equal(self.nodes[1].getbalance(), balance1)
-        assert_equal(self.nodes[2].getbalance(), balance2)
 
         #Check For Monthly Backups
         self.check_monthly()

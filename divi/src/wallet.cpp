@@ -233,8 +233,6 @@ CWallet::CWallet(
     , vchDefaultKey()
     , nTimeFirstKey(0)
     , timeOfLastChainTipUpdate(0)
-    , nNextResend(0)
-    , nLastResend(0)
     , setInternalKeyPool()
     , setExternalKeyPool()
     , walletStakingOnly(false)
@@ -305,8 +303,6 @@ void CWallet::SetNull()
     fFileBacked = false;
     nMasterKeyMaxID = 0;
     pwalletdbEncryption.reset();
-    nNextResend = 0;
-    nLastResend = 0;
     nTimeFirstKey = 0;
     walletStakingOnly = false;
 

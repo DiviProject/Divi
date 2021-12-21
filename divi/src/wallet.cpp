@@ -791,6 +791,7 @@ bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey &pubkey)
     if (HaveWatchOnly(script))
         RemoveWatchOnly(script);
 
+    UpdateTimeFirstKey(1);
     if (!fFileBacked)
         return true;
     if (!IsCrypted()) {

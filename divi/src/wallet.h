@@ -224,8 +224,13 @@ private:
     bool IsMine(const CTransaction& tx) const;
 
     void UpdateTimeFirstKey(int64_t nCreateTime);
+    void RelayWalletTransaction(const CWalletTx& walletTransaction);
+    bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
+    bool IsTrusted(const CWalletTx& walletTransaction) const;
+    int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
 
 protected:
+
     // CWalletDB: load from disk methods
     void LoadWalletTransaction(const CWalletTx& wtxIn) override;
     bool LoadWatchOnly(const CScript& dest) override;
@@ -256,23 +261,30 @@ public:
         const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator);
     ~CWallet();
 
-    std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;
+    DBErrors LoadWallet();
+    //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
+    bool SetMinVersion(enum WalletFeature, CWalletDB* pwalletdbIn = NULL, bool fExplicit = false);
+    //! change which version we're allowed to upgrade to (note that this does not immediately imply upgrading to that format)
+    bool SetMaxVersion(int nVersion);
+    //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
+    int GetVersion();
+
     bool GetBlockLocator(CBlockLocator& blockLocator);
-    void activateVaultMode();
+    const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
+    std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;
 
-    int64_t getTimestampOfFistKey() const;
-    CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
-    bool VerifyHDKeys() const;
-    bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose) override;
-
+    void UpdateBestBlockLocation();
     const CPubKey& GetDefaultKey() const;
     bool InitializeDefaultKey();
-
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
-    void toggleSpendingZeroConfirmationOutputs();
 
-    const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
-    void UpdateBestBlockLocation();
+    void toggleSpendingZeroConfirmationOutputs();
+    void activateVaultMode();
+    int64_t getTimestampOfFistKey() const;
+    CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
+
+    bool VerifyHDKeys() const;
+    bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose) override;
 
     bool HasAgedCoins() override;
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;
@@ -289,7 +301,7 @@ public:
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;
     std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
-    void RelayWalletTransaction(const CWalletTx& walletTransaction);
+    std::set<uint256> GetConflicts(const uint256& txid) const;
 
     //! check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf);
@@ -299,7 +311,6 @@ public:
         bool fIncludeZeroValue,
         bool& fIsSpendable,
         AvailableCoinsType coinType = AvailableCoinsType::ALL_SPENDABLE_COINS) const;
-    bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
     void AvailableCoins(
         std::vector<COutput>& vCoins,
         bool fOnlyConfirmed = true,
@@ -315,70 +326,73 @@ public:
         std::set<COutput>& setCoinsRet,
         CAmount& nValueRet);
 
-    bool IsTrusted(const CWalletTx& walletTransaction) const;
     bool IsLockedCoin(const uint256& hash, unsigned int n) const;
     void LockCoin(const COutPoint& output);
     void UnlockCoin(const COutPoint& output);
     void UnlockAllCoins();
     void ListLockedCoins(CoinVector& vOutpts);
 
+    /**
+     * HD Wallet Functions
+     */
+    bool AddHDPubKey(const CExtPubKey &extPubKey, bool fInternal);
+    bool IsHDEnabled();
+    void GenerateNewHDChain();
+    bool GetDecryptedHDChain(CHDChain& hdChainRet);
+
     //  keystore implementation
     // Generate a new key
     CPubKey GenerateNewKey(uint32_t nAccountIndex, bool fInternal);
-    bool HaveKey(const CKeyID &address) const override;
-    //! GetPubKey implementation that also checks the mapHdPubKeys
-    bool GetPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const override;
-    //! GetKey implementation that can derive a HD private key on the fly
-    bool GetKey(const CKeyID &address, CKey& keyOut) const override;
-    //! Adds a HDPubKey into the wallet(database)
-    bool AddHDPubKey(const CExtPubKey &extPubKey, bool fInternal);
-    //! loads a HDPubKey into the wallets memory
-    //! Adds a key to the store, and saves it to disk.
-    bool AddKeyPubKey(const CKey& key, const CPubKey& pubkey) override;
-    //! Adds a key to the store, without saving it to disk (used by LoadWallet)
-    //! Load metadata (used by LoadWallet)
-
-
-
-    //! Adds an encrypted key to the store, and saves it to disk.
-    bool AddCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) override;
-    //! Adds an encrypted key to the store, without saving it to disk (used by LoadWallet)
-    bool AddCScript(const CScript& redeemScript) override;
     bool AddVault(const CScript& vaultScript, const CBlock* pblock,const CTransaction& tx);
     bool RemoveVault(const CScript& vaultScript);
 
-    //! Adds a watch-only address to the store, and saves it to disk.
-    bool AddWatchOnly(const CScript& dest) override;
-    bool RemoveWatchOnly(const CScript& dest) override;
-    //! Adds a watch-only address to the store, without saving it to disk (used by LoadWallet)
-
-    //! Adds a MultiSig address to the store, and saves it to disk.
-    bool AddMultiSig(const CScript& dest) override;
-    bool RemoveMultiSig(const CScript& dest) override;
-    //! Adds a MultiSig address to the store, without saving it to disk (used by LoadWallet)
-
+    bool AddCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) override;
     bool Unlock(const SecureString& strWalletPassphrase, bool stakingOnly = false);
     bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
     bool EncryptWallet(const SecureString& strWalletPassphrase);
 
-    /**
-     * Get the wallet's activity log
-     * @return multimap of ordered transactions and accounting entries
-     * @warning Returned pointers are *only* valid within the scope of passed acentries
-     */
+    //  keystore implementation
+    bool HaveKey(const CKeyID &address) const override;
+    bool GetPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const override;
+    bool GetKey(const CKeyID &address, CKey& keyOut) const override;
+    bool AddKeyPubKey(const CKey& key, const CPubKey& pubkey) override;
+
+    bool AddCScript(const CScript& redeemScript) override;
+    bool AddWatchOnly(const CScript& dest) override;
+    bool RemoveWatchOnly(const CScript& dest) override;
+    bool AddMultiSig(const CScript& dest) override;
+    bool RemoveMultiSig(const CScript& dest) override;
+
+
     typedef std::multimap<int64_t, const CWalletTx*> TxItems;
     TxItems OrderedTxItems() const;
 
-    int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
-
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
+    bool AllInputsAreMine(const CWalletTx& walletTransaction) const;
+    isminetype IsMine(const CTxOut& txout) const;
+    isminetype IsMine(const CTxDestination& dest) const;
+
+    bool IsChange(const CTxOut& txout) const;
+    CAmount GetChange(const CWalletTx& walletTransaction) const;
+
+    CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
+    CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;
+    CAmount ComputeChange(const CTxOut& txout) const;
+    bool DebitsFunds(const CTransaction& tx) const;
+    bool DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const;
+
+    CAmount ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const;
+    CAmount GetDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;
+    CAmount ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
+    CAmount GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const;
+    CAmount ComputeChange(const CTransaction& tx) const;
+
     CAmount GetBalance() const;
     CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;
     CAmount GetSpendableBalance() const;
     CAmount GetStakingBalance() const;
 
-    CAmount GetChange(const CWalletTx& walletTransaction) const;
     CAmount GetAvailableCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
     CAmount GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
     CAmount GetUnconfirmedBalance() const;
@@ -404,46 +418,6 @@ public:
     void ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool, bool fInternal) override;
     void KeepKey(int64_t nIndex) override;
     void ReturnKey(int64_t nIndex, bool fInternal) override;
-    /**
-     * HD Wallet Functions
-     */
 
-    /* Returns true if HD is enabled */
-    bool IsHDEnabled();
-    /* Generates a new HD chain */
-    void GenerateNewHDChain();
-    /* Set the HD chain model (chain child index counters) */
-    bool GetDecryptedHDChain(CHDChain& hdChainRet);
-
-    bool AllInputsAreMine(const CWalletTx& walletTransaction) const;
-    isminetype IsMine(const CTxOut& txout) const;
-    isminetype IsMine(const CTxDestination& dest) const;
-
-    CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
-    CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;
-    bool IsChange(const CTxOut& txout) const;
-    CAmount ComputeChange(const CTxOut& txout) const;
-    bool DebitsFunds(const CTransaction& tx) const;
-    bool DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const;
-
-    CAmount ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const;
-    CAmount GetDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;
-    CAmount ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
-    CAmount GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const;
-    CAmount ComputeChange(const CTransaction& tx) const;
-
-    DBErrors LoadWallet();
-
-    //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
-    bool SetMinVersion(enum WalletFeature, CWalletDB* pwalletdbIn = NULL, bool fExplicit = false);
-
-    //! change which version we're allowed to upgrade to (note that this does not immediately imply upgrading to that format)
-    bool SetMaxVersion(int nVersion);
-
-    //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
-    int GetVersion();
-
-    //! Get wallet transactions that conflict with given transaction (spend same outputs)
-    std::set<uint256> GetConflicts(const uint256& txid) const;
 };
 #endif // BITCOIN_WALLET_H

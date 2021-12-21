@@ -376,6 +376,16 @@ const CPubKey& CWallet::GetDefaultKey() const
     return vchDefaultKey;
 }
 
+bool CWallet::SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
+{
+    if (fFileBacked && updateDatabase) {
+        if (!CWalletDB(settings,strWalletFile).WriteDefaultKey(vchPubKey))
+            return false;
+    }
+    vchDefaultKey = vchPubKey;
+    return true;
+}
+
 bool CWallet::InitializeDefaultKey()
 {
     CPubKey newDefaultKey;
@@ -2420,16 +2430,6 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
 CAddressBookData& CWallet::ModifyAddressBookData(const CTxDestination& address)
 {
     return ModifyAddressBook()[address];
-}
-
-bool CWallet::SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
-{
-    if (fFileBacked && updateDatabase) {
-        if (!CWalletDB(settings,strWalletFile).WriteDefaultKey(vchPubKey))
-            return false;
-    }
-    vchDefaultKey = vchPubKey;
-    return true;
 }
 
 /**

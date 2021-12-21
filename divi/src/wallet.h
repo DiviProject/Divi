@@ -223,6 +223,8 @@ private:
     isminetype IsMine(const CTxIn& txin) const;
     bool IsMine(const CTransaction& tx) const;
 
+    void UpdateTimeFirstKey(int64_t nCreateTime);
+
 protected:
     // CWalletDB: load from disk methods
     void LoadWalletTransaction(const CWalletTx& wtxIn) override;
@@ -256,7 +258,6 @@ public:
 
     std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;
     bool GetBlockLocator(CBlockLocator& blockLocator);
-    void UpdateTimeFirstKey(int64_t nCreateTime);
     void activateVaultMode();
 
     int64_t getTimestampOfFistKey() const;

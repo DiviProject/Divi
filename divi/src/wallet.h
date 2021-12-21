@@ -256,7 +256,6 @@ public:
 
     std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;
     bool GetBlockLocator(CBlockLocator& blockLocator);
-    void AddKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata);
     void UpdateTimeFirstKey(int64_t nCreateTime);
     void activateVaultMode();
 

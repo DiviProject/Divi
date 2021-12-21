@@ -137,7 +137,6 @@ Value importprivkey(const Array& params, bool fHelp)
         if (pwalletMain->HaveKey(vchAddress))
             return Value::null;
 
-        pwalletMain->AddKeyMetadata(pubkey,CKeyMetadata(1));
         if (!pwalletMain->AddKeyPubKey(key, pubkey))
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
 
@@ -460,7 +459,6 @@ Value bip38decrypt(const Array& params, bool fHelp)
         if (pwalletMain->HaveKey(vchAddress))
             throw JSONRPCError(RPC_WALLET_ERROR, "Key already held by wallet");
 
-        pwalletMain->AddKeyMetadata(pubkey,CKeyMetadata(1));
         if (!pwalletMain->AddKeyPubKey(key, pubkey))
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
 

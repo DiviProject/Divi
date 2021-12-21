@@ -398,8 +398,9 @@ public:
     bool NewKeyPool();
     bool TopUpKeyPool(unsigned int kpSize = 0);
     bool GetKeyFromPool(CPubKey& key, bool fInternal);
-    int64_t GetOldestKeyPoolTime();
-    void GetAllReserveKeys(std::set<CKeyID>& setAddress) const;
+    unsigned int GetKeyPoolSize() const;
+
+    // Implementation of I_KeypoolReserver
     void ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool, bool fInternal) override;
     void KeepKey(int64_t nIndex) override;
     void ReturnKey(int64_t nIndex, bool fInternal) override;
@@ -432,8 +433,6 @@ public:
     CAmount ComputeChange(const CTransaction& tx) const;
 
     DBErrors LoadWallet();
-
-    unsigned int GetKeyPoolSize() const;
 
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
     bool SetMinVersion(enum WalletFeature, CWalletDB* pwalletdbIn = NULL, bool fExplicit = false);

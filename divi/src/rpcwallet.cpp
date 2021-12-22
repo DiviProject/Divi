@@ -308,18 +308,17 @@ Value getnewaddress(const Array& params, bool fHelp)
     return CBitcoinAddress(keyID).ToString();
 }
 
-bool AccountShouldUseNewKey(CWallet& wallet, const CAccount& account)
+bool AccountShouldUseNewKey(CWallet& wallet, const CScript& accountScript)
 {
-    if (account.vchPubKey.IsValid())
+    if (!accountScript.empty())
     {
-        CScript scriptPubKey = GetScriptForDestination(account.vchPubKey.GetID());
         std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
         for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
         {
             const CWalletTx& wtx = *(*it);
             BOOST_FOREACH (const CTxOut& txout, wtx.vout)
             {
-                if (txout.scriptPubKey == scriptPubKey)
+                if (txout.scriptPubKey == accountScript)
                 {
                     return true;
                 }
@@ -335,30 +334,40 @@ bool AccountShouldUseNewKey(CWallet& wallet, const CAccount& account)
 
 CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool forceNewKey, bool isWalletDerivedKey)
 {
-    std::shared_ptr<I_WalletDatabase> walletdb = wallet.GetDatabaseBackend();
-    CAccount account;
-    walletdb->ReadAccount(strAccount, account);
-    if (forceNewKey || AccountShouldUseNewKey(wallet, account))
+    const auto& lastDestinationByLabel = wallet.GetAddressBookManager().GetLastDestinationByLabel();
+    auto it = lastDestinationByLabel.find(strAccount);
+    CScript destinationScript = (it != lastDestinationByLabel.end())? GetScriptForDestination(it->second) : CScript();
+    CPubKey newlyCreatedPubKey;
+    if (forceNewKey || AccountShouldUseNewKey(wallet, destinationScript))
     {// Generate a new key
-        if (isWalletDerivedKey && !wallet.GetKeyFromPool(account.vchPubKey, false))
+        if (isWalletDerivedKey && !wallet.GetKeyFromPool(newlyCreatedPubKey, false))
             throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
 
         if(!isWalletDerivedKey)
         {
             CKey key;
             key.MakeNewKey(true);
-            account.vchPubKey = key.GetPubKey();
+            newlyCreatedPubKey = key.GetPubKey();
             {
                 LOCK(wallet.cs_wallet);
-                wallet.AddKeyPubKey(key,account.vchPubKey);
+                wallet.AddKeyPubKey(key,newlyCreatedPubKey);
             }
         }
 
-        wallet.SetAddressBook(account.vchPubKey.GetID(), strAccount);
-        walletdb->WriteAccount(strAccount, account);
+        wallet.SetAddressBook(newlyCreatedPubKey.GetID(), strAccount);
+    }
+    else
+    {
+        assert(!destinationScript.empty());
+        CTxDestination destination;
+        if(!ExtractDestination(destinationScript,destination))
+        {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: invalid address with known label!");
+        }
+        return CBitcoinAddress(destination);
     }
 
-    return CBitcoinAddress(account.vchPubKey.GetID());
+    return CBitcoinAddress(newlyCreatedPubKey.GetID());
 }
 
 CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForceNew = false)

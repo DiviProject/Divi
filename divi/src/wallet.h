@@ -117,7 +117,7 @@ private:
     AddressBook mapAddressBook;
 public:
     const AddressBook& GetAddressBook() const;
-    virtual bool SetAddressLabel(
+    bool SetAddressLabel(
         const CTxDestination& address,
         const std::string strName);
 
@@ -159,7 +159,6 @@ struct TransactionCreationResult
 class CWallet :
     public CCryptoKeyStore,
     public NotificationInterface,
-    public AddressBookManager,
     public virtual I_KeypoolReserver,
     public I_WalletGuiNotifications,
     public I_StakingWallet,
@@ -184,6 +183,7 @@ private:
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
     const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator_;
+    std::unique_ptr<AddressBookManager> addressBookManager_;
     std::unique_ptr<I_VaultManagerDatabase> vaultDB_;
     std::unique_ptr<VaultManager> vaultManager_;
     std::unique_ptr<WalletTransactionRecord> transactionRecord_;
@@ -258,6 +258,9 @@ public:
         const BlockMap& blockMap,
         const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator);
     ~CWallet();
+
+    const AddressBook& GetAddressBook() const;
+    std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 
     DBErrors LoadWallet();
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower

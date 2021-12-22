@@ -43,6 +43,6 @@ public:
     virtual bool SetCryptedHDChain(const CHDChain& chain, bool memonly) = 0;
     virtual bool LoadHDPubKey(const CHDPubKey &hdPubKey) = 0;
     virtual void ReserializeTransactions(const std::vector<uint256>& transactionIDs) = 0;
-    virtual AddressLabel& ModifyAddressBookData(const CTxDestination& address) = 0;
+    virtual AddressLabel& ModifyAddressLabel(const CTxDestination& address) = 0;
 };
 #endif// I_WALLET_LOADER_H

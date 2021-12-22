@@ -143,15 +143,12 @@ AddressBook& AddressBookManager::ModifyAddressBook()
 {
     return mapAddressBook;
 }
-bool AddressBookManager::SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose)
+bool AddressBookManager::SetAddressBook(const CTxDestination& address, const std::string& strName)
 {
     bool fUpdated = false;
     std::map<CTxDestination, CAddressBookData>::iterator mi = mapAddressBook.find(address);
     fUpdated = mi != mapAddressBook.end();
     mapAddressBook[address].name = strName;
-    if (!strPurpose.empty()) /* update purpose only if requested */
-        mapAddressBook[address].purpose = strPurpose;
-
     return fUpdated;
 }
 
@@ -392,7 +389,7 @@ bool CWallet::InitializeDefaultKey()
     if (GetKeyFromPool(newDefaultKey, false))
     {
         SetDefaultKey(newDefaultKey,true);
-        if (!SetAddressBook(vchDefaultKey.GetID(), "", "receive")) {
+        if (!SetAddressBook(vchDefaultKey.GetID(), "")) {
             return false;
         }
     }
@@ -2411,18 +2408,15 @@ DBErrors CWallet::LoadWallet()
     return nLoadWalletRet;
 }
 
-bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose)
+bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& strName)
 {
     bool fUpdated = false;
     {
         LOCK(cs_wallet);
-        fUpdated = AddressBookManager::SetAddressBook(address,strName,strPurpose);
+        fUpdated = AddressBookManager::SetAddressBook(address,strName);
     }
-    NotifyAddressBookChanged(address, strName, ::IsMine(*this, address) != isminetype::ISMINE_NO,
-                             strPurpose, (fUpdated ? CT_UPDATED : CT_NEW));
+    NotifyAddressBookChanged(address, strName, ::IsMine(*this, address) != isminetype::ISMINE_NO, (fUpdated ? CT_UPDATED : CT_NEW));
     if (!fFileBacked)
-        return false;
-    if (!strPurpose.empty() && !CWalletDB(settings,strWalletFile).WritePurpose(CBitcoinAddress(address).ToString(), strPurpose))
         return false;
     return CWalletDB(settings,strWalletFile).WriteName(CBitcoinAddress(address).ToString(), strName);
 }

@@ -104,7 +104,7 @@ class I_WalletGuiNotifications
 {
 public:
     virtual ~I_WalletGuiNotifications(){}
-    boost::signals2::signal<void(const CTxDestination& address, const std::string& label, bool isMine, const std::string& purpose, ChangeType status)> NotifyAddressBookChanged;
+    boost::signals2::signal<void(const CTxDestination& address, const std::string& label, bool isMine, ChangeType status)> NotifyAddressBookChanged;
     boost::signals2::signal<void(const uint256& hashTx, int status)> NotifyTransactionChanged;
     boost::signals2::signal<void(const std::string& title, int nProgress)> ShowProgress;
     boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
@@ -120,8 +120,7 @@ public:
     AddressBook& ModifyAddressBook();
     virtual bool SetAddressBook(
         const CTxDestination& address,
-        const std::string& strName,
-        const std::string& purpose);
+        const std::string& strName);
 
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 };
@@ -284,7 +283,7 @@ public:
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 
     bool VerifyHDKeys() const;
-    bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose) override;
+    bool SetAddressBook(const CTxDestination& address, const std::string& strName) override;
 
     bool HasAgedCoins() override;
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;

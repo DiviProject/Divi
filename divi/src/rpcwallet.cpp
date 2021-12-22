@@ -16,7 +16,6 @@
 #include "utiltime.h"
 #include "utilmoneystr.h"
 #include "wallet.h"
-#include "walletdb.h"
 #include "masternode-payments.h"
 #include <SuperblockSubsidyContainer.h>
 #include <script/standard.h>
@@ -376,7 +375,7 @@ CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForc
 }
 
 
-CAmount GetAccountBalance(I_WalletDatabase& walletdb, const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
+CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
 {
     CAmount nBalance = 0;
 
@@ -401,14 +400,6 @@ CAmount GetAccountBalance(I_WalletDatabase& walletdb, const string& strAccount, 
 
     return nBalance;
 }
-
-CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
-{
-    std::shared_ptr<I_WalletDatabase> walletdb = pwalletMain->GetDatabaseBackend();
-    return GetAccountBalance(*walletdb, strAccount, nMinDepth, filter);
-}
-
-
 
 class I_AccountCoinSelector: public I_CoinSelectionAlgorithm
 {

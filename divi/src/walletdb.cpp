@@ -245,17 +245,15 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
         // Taking advantage of the fact that pair serialization
         // is just the two items serialized one after the other
         ssKey >> strType;
-        if (strType == "name") {
+        if (strType == "name")
+        {
             string strAddress;
             ssKey >> strAddress;
             if(pwallet)
             {
-                ssValue >> pwallet->ModifyAddressLabel(CBitcoinAddress(strAddress).Get()).name;
-            }
-            else
-            {
                 std::string name;
                 ssValue >> name;
+                pwallet->LoadAddressLabel(CBitcoinAddress(strAddress).Get(),name);
             }
         } else if (strType == "tx") {
             uint256 hash;

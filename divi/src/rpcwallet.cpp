@@ -596,7 +596,7 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
 
     // Find all addresses that have the given account
     Array ret;
-    BOOST_FOREACH (const PAIRTYPE(CBitcoinAddress, CAddressBookData) & item, pwalletMain->GetAddressBook()) {
+    BOOST_FOREACH (const PAIRTYPE(CBitcoinAddress, AddressLabel) & item, pwalletMain->GetAddressBook()) {
         const CBitcoinAddress& address = item.first;
         const string& strName = item.second.name;
         if (strName == strAccount)
@@ -1539,7 +1539,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
     // Reply
     Array ret;
     map<string, tallyitem> mapAccountTally;
-    BOOST_FOREACH (const PAIRTYPE(CBitcoinAddress, CAddressBookData) & item, pwalletMain->GetAddressBook()) {
+    BOOST_FOREACH (const PAIRTYPE(CBitcoinAddress, AddressLabel) & item, pwalletMain->GetAddressBook()) {
         const CBitcoinAddress& address = item.first;
         const string& strAccount = item.second.name;
         map<CBitcoinAddress, tallyitem>::iterator it = mapTally.find(address);
@@ -2031,7 +2031,7 @@ Value listaccounts(const Array& params, bool fHelp)
             filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
     map<string, CAmount> mapAccountBalances;
-    BOOST_FOREACH (const PAIRTYPE(CTxDestination, CAddressBookData) & entry, pwalletMain->GetAddressBook()) {
+    BOOST_FOREACH (const PAIRTYPE(CTxDestination, AddressLabel) & entry, pwalletMain->GetAddressBook()) {
         if (filter.hasRequested(pwalletMain->IsMine(entry.first))) // This address belongs to me
             mapAccountBalances[entry.second.name] = 0;
     }

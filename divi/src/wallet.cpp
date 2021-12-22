@@ -146,7 +146,7 @@ AddressBook& AddressBookManager::ModifyAddressBook()
 bool AddressBookManager::SetAddressBook(const CTxDestination& address, const std::string& strName)
 {
     bool fUpdated = false;
-    std::map<CTxDestination, CAddressBookData>::iterator mi = mapAddressBook.find(address);
+    std::map<CTxDestination, AddressLabel>::iterator mi = mapAddressBook.find(address);
     fUpdated = mi != mapAddressBook.end();
     mapAddressBook[address].name = strName;
     return fUpdated;
@@ -155,7 +155,7 @@ bool AddressBookManager::SetAddressBook(const CTxDestination& address, const std
 std::set<CTxDestination> AddressBookManager::GetAccountAddresses(std::string strAccount) const
 {
     std::set<CTxDestination> result;
-    BOOST_FOREACH (const PAIRTYPE(CTxDestination, CAddressBookData) & item, mapAddressBook) {
+    BOOST_FOREACH (const PAIRTYPE(CTxDestination, AddressLabel) & item, mapAddressBook) {
         const CTxDestination& address = item.first;
         const std::string& strName = item.second.name;
         if (strName == strAccount)
@@ -2421,7 +2421,7 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
     return CWalletDB(settings,strWalletFile).WriteName(CBitcoinAddress(address).ToString(), strName);
 }
 
-CAddressBookData& CWallet::ModifyAddressBookData(const CTxDestination& address)
+AddressLabel& CWallet::ModifyAddressBookData(const CTxDestination& address)
 {
     return ModifyAddressBook()[address];
 }

@@ -1101,7 +1101,7 @@ void LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& erro
         // MN - should assert here that if duplicate potential addresses are found that it will pick
         // one and maybe not the one that was originally intended
         alias = "reserved->"+alias;
-        for(const std::pair<CTxDestination, CAddressBookData>& addressData: pwallet->GetAddressBook())
+        for(const std::pair<CTxDestination, AddressLabel>& addressData: pwallet->GetAddressBook())
         {
             if(addressData.second.name == alias)
             {

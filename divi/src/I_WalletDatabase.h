@@ -58,8 +58,6 @@ public:
     virtual bool WritePool(int64_t nPool, const CKeyPool& keypool) = 0;
     virtual bool ErasePool(int64_t nPool) = 0;
     virtual bool WriteMinVersion(int nVersion) = 0;
-    virtual bool ReadAccount(const std::string& strAccount, CAccount& account) = 0;
-    virtual bool WriteAccount(const std::string& strAccount, const CAccount& account) = 0;
     virtual bool WriteHDChain(const CHDChain& chain) = 0;
     virtual bool WriteCryptedHDChain(const CHDChain& chain) = 0;
     virtual bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta) = 0;

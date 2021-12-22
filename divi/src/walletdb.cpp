@@ -207,17 +207,6 @@ bool CWalletDB::WriteMinVersion(int nVersion)
     return berkleyDB_->Write(std::string("minversion"), nVersion);
 }
 
-bool CWalletDB::ReadAccount(const string& strAccount, CAccount& account)
-{
-    account.SetNull();
-    return berkleyDB_->Read(std::make_pair(string("acc"), strAccount), account);
-}
-
-bool CWalletDB::WriteAccount(const string& strAccount, const CAccount& account)
-{
-    return berkleyDB_->Write(std::make_pair(string("acc"), strAccount), account);
-}
-
 class CWalletScanState
 {
 public:

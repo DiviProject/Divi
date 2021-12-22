@@ -257,8 +257,6 @@ public:
         const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator);
     ~CWallet();
 
-    const AddressBook& GetAddressBook() const;
-
     DBErrors LoadWallet();
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
     bool SetMinVersion(enum WalletFeature, CWalletDB* pwalletdbIn = NULL, bool fExplicit = false);
@@ -267,6 +265,7 @@ public:
     //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
     int GetVersion();
 
+    const AddressBook& GetAddressBook() const;
     bool GetBlockLocator(CBlockLocator& blockLocator);
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;

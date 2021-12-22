@@ -53,8 +53,6 @@ public:
     //I_WalletDatabase
     bool WriteName(const std::string& strAddress, const std::string& strName) override;
     bool EraseName(const std::string& strAddress) override;
-    bool WritePurpose(const std::string& strAddress, const std::string& purpose) override;
-    bool ErasePurpose(const std::string& strAddress) override;
     bool WriteTx(uint256 hash, const CWalletTx& wtx) override;
     bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta) override;
     bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret, const CKeyMetadata& keyMeta) override;

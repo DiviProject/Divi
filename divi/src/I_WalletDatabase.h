@@ -41,8 +41,6 @@ public:
 
     virtual bool WriteName(const std::string& strAddress, const std::string& strName) = 0;
     virtual bool EraseName(const std::string& strAddress) = 0;
-    virtual bool WritePurpose(const std::string& strAddress, const std::string& purpose) = 0;
-    virtual bool ErasePurpose(const std::string& strAddress) = 0;
     virtual bool WriteTx(uint256 hash, const CWalletTx& wtx) = 0;
     virtual bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta) = 0;
     virtual bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret, const CKeyMetadata& keyMeta) = 0;

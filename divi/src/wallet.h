@@ -120,8 +120,6 @@ public:
     bool SetAddressLabel(
         const CTxDestination& address,
         const std::string strName);
-
-    std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 };
 
 enum TransactionFeeMode
@@ -260,7 +258,6 @@ public:
     ~CWallet();
 
     const AddressBook& GetAddressBook() const;
-    std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 
     DBErrors LoadWallet();
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower

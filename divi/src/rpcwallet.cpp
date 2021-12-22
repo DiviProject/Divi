@@ -1205,6 +1205,18 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
     return ValueFromAmount(nAmount);
 }
 
+std::set<CTxDestination> GetAccountAddresses(const AddressBook& addressBook, std::string strAccount)
+{
+    std::set<CTxDestination> result;
+    BOOST_FOREACH (const PAIRTYPE(CTxDestination, AddressLabel) & item, addressBook)
+    {
+        const CTxDestination& address = item.first;
+        const std::string& strName = item.second.name;
+        if (strName == strAccount)
+            result.insert(address);
+    }
+    return result;
+}
 
 Value getreceivedbyaccount(const Array& params, bool fHelp)
 {
@@ -1234,7 +1246,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
     std::set<CTxDestination> setAddress;
     {
         LOCK(pwalletMain->cs_wallet);
-        setAddress = pwalletMain->GetAccountAddresses(strAccount);
+        setAddress = GetAccountAddresses(pwalletMain->GetAddressBook(),strAccount);
     }
 
     // Tally

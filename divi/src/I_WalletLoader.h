@@ -20,11 +20,8 @@ class CAddressBookData
 {
 public:
     std::string name;
-    std::string purpose;
-
     CAddressBookData()
     {
-        purpose = "unknown";
     }
 };
 

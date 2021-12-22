@@ -139,17 +139,11 @@ const AddressBook& AddressBookManager::GetAddressBook() const
 {
     return mapAddressBook;
 }
-AddressBook& AddressBookManager::ModifyAddressBook()
+bool AddressBookManager::SetAddressLabel(const CTxDestination& address, const std::string newLabel)
 {
-    return mapAddressBook;
-}
-bool AddressBookManager::SetAddressBook(const CTxDestination& address, const std::string& strName)
-{
-    bool fUpdated = false;
-    std::map<CTxDestination, AddressLabel>::iterator mi = mapAddressBook.find(address);
-    fUpdated = mi != mapAddressBook.end();
-    mapAddressBook[address].name = strName;
-    return fUpdated;
+    bool updatesExistingLabel = mapAddressBook.find(address) != mapAddressBook.end();
+    mapAddressBook[address].name = newLabel;
+    return updatesExistingLabel;
 }
 
 std::set<CTxDestination> AddressBookManager::GetAccountAddresses(std::string strAccount) const
@@ -2413,7 +2407,7 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
     bool fUpdated = false;
     {
         LOCK(cs_wallet);
-        fUpdated = AddressBookManager::SetAddressBook(address,strName);
+        fUpdated = AddressBookManager::SetAddressLabel(address,strName);
     }
     NotifyAddressBookChanged(address, strName, ::IsMine(*this, address) != isminetype::ISMINE_NO, (fUpdated ? CT_UPDATED : CT_NEW));
     if (!fFileBacked)
@@ -2423,7 +2417,7 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
 
 void CWallet::LoadAddressLabel(const CTxDestination& address, const std::string newLabel)
 {
-    AddressBookManager::SetAddressBook(address,newLabel);
+    AddressBookManager::SetAddressLabel(address,newLabel);
 }
 
 /**

@@ -117,10 +117,9 @@ private:
     AddressBook mapAddressBook;
 public:
     const AddressBook& GetAddressBook() const;
-    AddressBook& ModifyAddressBook();
-    virtual bool SetAddressBook(
+    virtual bool SetAddressLabel(
         const CTxDestination& address,
-        const std::string& strName);
+        const std::string strName);
 
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 };
@@ -283,7 +282,7 @@ public:
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 
     bool VerifyHDKeys() const;
-    bool SetAddressBook(const CTxDestination& address, const std::string& strName) override;
+    bool SetAddressBook(const CTxDestination& address, const std::string& strName);
 
     bool HasAgedCoins() override;
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;

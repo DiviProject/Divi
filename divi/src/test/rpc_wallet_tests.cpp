@@ -7,7 +7,6 @@
 
 #include "base58.h"
 #include <wallet.h>
-#include <walletdb.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
 #include "test_only.h"
@@ -76,7 +75,6 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
     Value retValue;
     string strAccount = "walletDemoAccount";
     BOOST_CHECK_NO_THROW({ /*Initialize Wallet with an account */
-        std::shared_ptr<I_WalletDatabase> walletdb = pwalletMain->GetDatabaseBackend();
         CAccount account;
         account.vchPubKey = demoPubkey;
         pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount);

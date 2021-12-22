@@ -1101,7 +1101,7 @@ void LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& erro
         // MN - should assert here that if duplicate potential addresses are found that it will pick
         // one and maybe not the one that was originally intended
         alias = "reserved->"+alias;
-        for(const std::pair<CTxDestination, AddressLabel>& addressData: pwallet->GetAddressBook())
+        for(const std::pair<CTxDestination, AddressLabel>& addressData: pwallet->GetAddressBookManager().GetAddressBook())
         {
             if(addressData.second.name == alias)
             {
@@ -1425,7 +1425,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("chainActive.Height() = %d\n", chainActive.Height());
 #ifdef ENABLE_WALLET
     LogPrintf("Key Pool size = %u\n", pwalletMain ? pwalletMain->GetKeyPoolSize() : 0);
-    LogPrintf("Address Book size = %u\n", pwalletMain ? pwalletMain->GetAddressBook().size() : 0);
+    LogPrintf("Address Book size = %u\n", pwalletMain ? pwalletMain->GetAddressBookManager().GetAddressBook().size() : 0);
 #endif
 
     if (settings.GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION))

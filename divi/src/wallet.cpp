@@ -204,6 +204,7 @@ CWallet::CWallet(
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
     , confirmationNumberCalculator_(confirmationNumberCalculator)
+    , addressBookManager_(new AddressBookManager())
     , vaultDB_()
     , vaultManager_()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
@@ -2407,7 +2408,7 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
     bool fUpdated = false;
     {
         LOCK(cs_wallet);
-        fUpdated = AddressBookManager::SetAddressLabel(address,strName);
+        fUpdated = addressBookManager_->SetAddressLabel(address,strName);
     }
     NotifyAddressBookChanged(address, strName, ::IsMine(*this, address) != isminetype::ISMINE_NO, (fUpdated ? CT_UPDATED : CT_NEW));
     if (!fFileBacked)
@@ -2415,9 +2416,18 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
     return CWalletDB(settings,strWalletFile).WriteName(CBitcoinAddress(address).ToString(), strName);
 }
 
+const AddressBook& CWallet::GetAddressBook() const
+{
+    return addressBookManager_->GetAddressBook();
+}
+std::set<CTxDestination> CWallet::GetAccountAddresses(std::string strAccount) const
+{
+    return addressBookManager_->GetAccountAddresses(strAccount);
+}
+
 void CWallet::LoadAddressLabel(const CTxDestination& address, const std::string newLabel)
 {
-    AddressBookManager::SetAddressLabel(address,newLabel);
+    addressBookManager_->SetAddressLabel(address,newLabel);
 }
 
 /**

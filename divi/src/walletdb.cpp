@@ -84,18 +84,6 @@ bool CWalletDB::EraseName(const string& strAddress)
     return berkleyDB_->Erase(std::make_pair(string("name"), strAddress));
 }
 
-bool CWalletDB::WritePurpose(const string& strAddress, const string& strPurpose)
-{
-    walletDbUpdated_++;
-    return berkleyDB_->Write(std::make_pair(string("purpose"), strAddress), strPurpose);
-}
-
-bool CWalletDB::ErasePurpose(const string& strPurpose)
-{
-    walletDbUpdated_++;
-    return berkleyDB_->Erase(std::make_pair(string("purpose"), strPurpose));
-}
-
 bool CWalletDB::WriteTx(uint256 hash, const CWalletTx& wtx)
 {
     walletDbUpdated_++;
@@ -268,18 +256,6 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             {
                 std::string name;
                 ssValue >> name;
-            }
-        } else if (strType == "purpose") {
-            string strAddress;
-            ssKey >> strAddress;
-            if(pwallet)
-            {
-                ssValue >> pwallet->ModifyAddressBookData(CBitcoinAddress(strAddress).Get()).purpose;
-            }
-            else
-            {
-                std::string purpose;
-                ssValue >> purpose;
             }
         } else if (strType == "tx") {
             uint256 hash;

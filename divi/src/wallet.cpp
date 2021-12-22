@@ -146,19 +146,6 @@ bool AddressBookManager::SetAddressLabel(const CTxDestination& address, const st
     return updatesExistingLabel;
 }
 
-std::set<CTxDestination> AddressBookManager::GetAccountAddresses(std::string strAccount) const
-{
-    std::set<CTxDestination> result;
-    BOOST_FOREACH (const PAIRTYPE(CTxDestination, AddressLabel) & item, mapAddressBook) {
-        const CTxDestination& address = item.first;
-        const std::string& strName = item.second.name;
-        if (strName == strAccount)
-            result.insert(address);
-    }
-    return result;
-}
-
-
 TransactionCreationRequest::TransactionCreationRequest(
     const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
     TransactionFeeMode txFeeMode,
@@ -2419,10 +2406,6 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
 const AddressBook& CWallet::GetAddressBook() const
 {
     return addressBookManager_->GetAddressBook();
-}
-std::set<CTxDestination> CWallet::GetAccountAddresses(std::string strAccount) const
-{
-    return addressBookManager_->GetAccountAddresses(strAccount);
 }
 
 void CWallet::LoadAddressLabel(const CTxDestination& address, const std::string newLabel)

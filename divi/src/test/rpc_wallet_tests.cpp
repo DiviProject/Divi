@@ -80,7 +80,6 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
         CAccount account;
         account.vchPubKey = demoPubkey;
         pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount);
-        walletdb->WriteAccount(strAccount, account);
     });
 
     CPubKey setaccountDemoPubkey = pwalletMain->GenerateNewKey(0,false);

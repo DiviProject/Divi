@@ -113,10 +113,15 @@ public:
 
 class AddressBookManager
 {
+public:
+    typedef std::map<std::string,CTxDestination> LastDestinationByLabel;
 private:
     AddressBook mapAddressBook;
+    LastDestinationByLabel destinationByLabel_;
 public:
+    AddressBookManager();
     const AddressBook& GetAddressBook() const;
+    const LastDestinationByLabel& GetLastDestinationByLabel() const;
     bool SetAddressLabel(
         const CTxDestination& address,
         const std::string strName);

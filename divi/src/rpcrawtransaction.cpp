@@ -383,7 +383,7 @@ Value listunspent(const Array& params, bool fHelp)
     std::vector<COutput> vecOutputs;
     assert(pwalletMain != NULL);
     pwalletMain->AvailableCoins(vecOutputs, false);
-    const AddressBook& addressBook = pwalletMain->GetAddressBook();
+    const AddressBook& addressBook = pwalletMain->GetAddressBookManager().GetAddressBook();
     BOOST_FOREACH (const COutput& out, vecOutputs) {
         if (out.nDepth < nMinDepth || out.nDepth > nMaxDepth)
             continue;

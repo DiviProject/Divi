@@ -2421,9 +2421,9 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
     return CWalletDB(settings,strWalletFile).WriteName(CBitcoinAddress(address).ToString(), strName);
 }
 
-AddressLabel& CWallet::ModifyAddressLabel(const CTxDestination& address)
+void CWallet::LoadAddressLabel(const CTxDestination& address, const std::string newLabel)
 {
-    return ModifyAddressBook()[address];
+    AddressBookManager::SetAddressBook(address,newLabel);
 }
 
 /**

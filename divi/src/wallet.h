@@ -245,7 +245,7 @@ protected:
     bool SetCryptedHDChain(const CHDChain& chain, bool memonly) override;
     bool LoadHDPubKey(const CHDPubKey &hdPubKey) override;
     void ReserializeTransactions(const std::vector<uint256>& transactionIDs) override;
-    AddressLabel& ModifyAddressLabel(const CTxDestination& address) override;
+    void LoadAddressLabel(const CTxDestination& address, const std::string newLabel) override;
     bool SetHDChain(const CHDChain& chain, bool memonly) override;
 
 public:

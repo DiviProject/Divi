@@ -4,7 +4,7 @@
 #include <uint256.h>
 #include <destination.h>
 #include <string>
-class CAddressBookData;
+class AddressLabel;
 class CWalletTx;
 class CScript;
 class CKey;
@@ -16,11 +16,11 @@ class CHDPubKey;
 class CKeyMetadata;
 
 /** Address book data */
-class CAddressBookData
+class AddressLabel
 {
 public:
     std::string name;
-    CAddressBookData()
+    AddressLabel()
     {
     }
 };
@@ -43,6 +43,6 @@ public:
     virtual bool SetCryptedHDChain(const CHDChain& chain, bool memonly) = 0;
     virtual bool LoadHDPubKey(const CHDPubKey &hdPubKey) = 0;
     virtual void ReserializeTransactions(const std::vector<uint256>& transactionIDs) = 0;
-    virtual CAddressBookData& ModifyAddressBookData(const CTxDestination& address) = 0;
+    virtual AddressLabel& ModifyAddressBookData(const CTxDestination& address) = 0;
 };
 #endif// I_WALLET_LOADER_H

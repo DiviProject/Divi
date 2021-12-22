@@ -70,8 +70,6 @@ public:
     bool WritePool(int64_t nPool, const CKeyPool& keypool) override;
     bool ErasePool(int64_t nPool) override;
     bool WriteMinVersion(int nVersion) override;
-    bool ReadAccount(const std::string& strAccount, CAccount& account) override;
-    bool WriteAccount(const std::string& strAccount, const CAccount& account) override;
     bool WriteHDChain(const CHDChain& chain) override;
     bool WriteCryptedHDChain(const CHDChain& chain) override;
     bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta) override;

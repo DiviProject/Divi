@@ -90,7 +90,7 @@ enum TransactionCreditFilters
 };
 using LockedCoinsSet = std::set<COutPoint>;
 using CoinVector = std::vector<COutPoint>;
-using AddressBook = std::map<CTxDestination, CAddressBookData>;
+using AddressBook = std::map<CTxDestination, AddressLabel>;
 using Inputs = std::vector<CTxIn>;
 using Outputs = std::vector<CTxOut>;
 
@@ -245,7 +245,7 @@ protected:
     bool SetCryptedHDChain(const CHDChain& chain, bool memonly) override;
     bool LoadHDPubKey(const CHDPubKey &hdPubKey) override;
     void ReserializeTransactions(const std::vector<uint256>& transactionIDs) override;
-    CAddressBookData& ModifyAddressBookData(const CTxDestination& address) override;
+    AddressLabel& ModifyAddressBookData(const CTxDestination& address) override;
     bool SetHDChain(const CHDChain& chain, bool memonly) override;
 
 public:

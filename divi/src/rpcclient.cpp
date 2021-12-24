@@ -107,8 +107,11 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"mnvoteraw", 4},
 
         {"getaddresstxids", 0},
+        {"getaddresstxids", 1},
         {"getaddressdeltas", 0},
+        {"getaddressdeltas", 1},
         {"getaddressbalance", 0},
+        {"getaddressbalance", 1},
         {"getaddressutxos", 0},
         {"getaddressutxos", 1},
         {"getspentinfo", 0}

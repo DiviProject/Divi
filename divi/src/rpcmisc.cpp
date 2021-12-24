@@ -623,18 +623,14 @@ Value getaddresstxids(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddresstxids [addresses] ( start end ) [only_vaults]\n"
+            "getaddresstxids <address>|<addresses> (only_vaults)\n"
             "\nReturns the txids for an address(es) (requires addressindex to be enabled).\n"
             "\nArguments:\n"
-            "{\n"
-            "  \"addresses\"\n"
-            "    [\n"
-            "      \"address\"  (string) The base58check encoded address\n"
-            "      ,...\n"
-            "    ]\n"
-            "  \"start\" (number) The start block height\n"
-            "  \"end\" (number) The end block height\n"
-            "}\n"
+            "address: (string) The base58check encoded address\n"
+            "\"addresses\": (optional JSON object) An object with fields:\n"
+            "               (1) '\"addresses\"' (required) array of base58check encoded addresses\n"
+            "               (2) '\"start\"' (optional field) integer block height to start at\n"
+            "               (3) '\"end\"' (optional field) integer block height to stop at\n"
             "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult:\n"
             "[\n"
@@ -706,21 +702,17 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
 Value getaddressdeltas(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 1 || params.size() > 2 || params[0].type() != obj_type)
+    if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddressdeltas {addresses:...} [only_vaults]\n"
+            "getaddressdeltas <address>|<addresses> (only_vaults)\n"
             "\nReturns all changes for an address (requires addressindex to be enabled).\n"
             "\nArguments:\n"
-            "{\n"
-            "  \"addresses\"\n"
-            "    [\n"
-            "      \"address\"  (string) The base58check encoded address\n"
-            "      ,...\n"
-            "    ]\n"
-            "  \"start\" (number) The start block height\n"
-            "  \"end\" (number) The end block height\n"
-            "  \"chainInfo\" (boolean) Include chain info in results, only applies if start and end specified\n"
-            "}\n"
+            "address: (string) The base58check encoded address\n"
+            "\"addresses\": (optional JSON object) An object with fields:\n"
+            "               (1) '\"addresses\"' (required) array of base58check encoded addresses\n"
+            "               (2) '\"start\"' (optional field) integer block height to start at\n"
+            "               (3) '\"end\"' (optional field) integer block height to stop at\n"
+            "               (4) '\"chainInfo\"' (optional field) bool flag to include chain info\n"
             "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult:\n"
             "[\n"
@@ -737,31 +729,31 @@ Value getaddressdeltas(const Array& params, bool fHelp)
             + HelpExampleRpc("getaddressdeltas", "{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}")
         );
 
-    Value startValue = find_value(params[0].get_obj(), "start");
-    Value endValue = find_value(params[0].get_obj(), "end");
-
-    Value chainInfo = find_value(params[0].get_obj(), "chainInfo");
-    bool includeChainInfo = false;
-    if (chainInfo.type() == bool_type) {
-        includeChainInfo = chainInfo.get_bool();
-    }
-
     int start = 0;
     int end = 0;
+    bool includeChainInfo = false;
+    if (params[0].type() == obj_type)
+    {
+        Value startValue = find_value(params[0].get_obj(), "start");
+        Value endValue = find_value(params[0].get_obj(), "end");
 
-    if (startValue.type() == int_type && endValue.type() == int_type) {
-        start = startValue.get_int();
-        end = endValue.get_int();
-        if (start <= 0 || end <= 0) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Start and end is expected to be greater than zero");
+        Value chainInfo = find_value(params[0].get_obj(), "chainInfo");
+        if (chainInfo.type() == bool_type) {
+            includeChainInfo = chainInfo.get_bool();
         }
-        if (end < start) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "End value is expected to be greater than start");
+        if (startValue.type() == int_type && endValue.type() == int_type) {
+            start = startValue.get_int();
+            end = endValue.get_int();
+            if (start <= 0 || end <= 0) {
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Start and end is expected to be greater than zero");
+            }
+            if (end < start) {
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "End value is expected to be greater than start");
+            }
         }
     }
 
     std::vector<std::pair<uint160, int>> addresses;
-
     if (!getAddressesFromParams(params, addresses)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
@@ -831,18 +823,14 @@ Value getaddressdeltas(const Array& params, bool fHelp)
 
 Value getaddressbalance(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 1 || params.size() > 2 || params[0].type() != obj_type)
+    if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddressbalance {addresses:...} [only_vaults]\n"
+            "getaddressbalance <address>|<addresses> (only_vaults)\n"
             "\nReturns the balance for an address(es) (requires addressindex to be enabled).\n"
             "\nArguments:\n"
-            "{\n"
-            "  \"addresses\"\n"
-            "    [\n"
-            "      \"address\"  (string) The base58check encoded address\n"
-            "      ,...\n"
-            "    ]\n"
-            "}\n"
+            "address: (string) The base58check encoded address\n"
+            "\"addresses\": (JSON object) An object with field '\"addresses\"' holding array\n"
+            "               of base58check encoded addresses\n"
             "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult:\n"
             "{\n"
@@ -850,6 +838,7 @@ Value getaddressbalance(const Array& params, bool fHelp)
             "  \"received\"  (string) The total number of satoshis received (including change)\n"
             "}\n"
             "\nExamples:\n"
+            + HelpExampleCli("getaddressbalance", "'\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"'")
             + HelpExampleCli("getaddressbalance", "'{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}'")
             + HelpExampleRpc("getaddressbalance", "{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}")
         );
@@ -948,17 +937,13 @@ Value getaddressutxos(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddressutxos {addresses:...} [only_vaults]\n"
+            "getaddressutxos <address>|<addresses> (only_vaults)\n"
             "\nReturns all unspent outputs for an address (requires addressindex to be enabled).\n"
             "\nArguments:\n"
-            "{\n"
-            "  \"addresses\"\n"
-            "    [\n"
-            "      \"address\"  (string) The base58check encoded address\n"
-            "      ,...\n"
-            "    ],\n"
-            "  \"chainInfo\"  (boolean) Include chain info with results\n"
-            "}\n"
+            "address: (string) The base58check encoded address\n"
+            "\"addresses\": (optional JSON object) An object with fields:\n"
+            "               (1) '\"addresses\"' (required) array of base58check encoded addresses\n"
+            "               (2) '\"chainInfo\"' (optional field) bool flag to include chain info\n"
             "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult\n"
             "[\n"

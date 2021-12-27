@@ -223,12 +223,6 @@ static CCoinsViewErrorCatcher* pcoinscatcher = NULL;
 #ifdef ENABLE_WALLET
 inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWrapper().Flush(shutdown);}
 #endif
-void FlushWalletAndStopMinting()
-{
-#ifdef ENABLE_WALLET
-    FlushWallet();
-#endif
-}
 
 void DeallocateShallowDatabases()
 {
@@ -282,7 +276,9 @@ void PrepareShutdown()
     /// module was initialized.
     RenameThread("divi-shutoff");
     StopRPCThreads();
-    FlushWalletAndStopMinting();
+#ifdef ENABLE_WALLET
+    FlushWallet(true);
+#endif
     StopNode();
     InterruptTorControl();
     StopTorControl();

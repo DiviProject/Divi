@@ -622,6 +622,11 @@ struct RpcTransactionCreationRequest
         , accountName(accountNameToDrawFrom)
     {
     }
+
+    AvailableCoinsType coinType()
+    {
+        return (!txShouldSpendFromVaults)? AvailableCoinsType::ALL_SPENDABLE_COINS: AvailableCoinsType::OWNED_VAULT_COINS;
+    }
 };
 
 std::string SendMoney(
@@ -665,8 +670,7 @@ std::string SendMoney(
     }
     static AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName(rpcTxRequest.accountName);
-    AvailableCoinsType coinTypeFilter = (!rpcTxRequest.txShouldSpendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
-    TransactionCreationRequest request(scriptsToFund,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, coinTypeFilter, &coinSelector);
+    TransactionCreationRequest request(scriptsToFund,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), &coinSelector);
     TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
     if (!txCreation.transactionCreationSucceeded)
     {

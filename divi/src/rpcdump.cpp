@@ -84,7 +84,7 @@ Value importprivkey(const Array& params, bool fHelp)
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
     {
-        pwalletMain->SetAddressBook(vchAddress, strLabel);
+        pwalletMain->SetAddressLabel(vchAddress, strLabel);
 
         // Don't throw error in case a key is already there
         if (pwalletMain->HaveKey(vchAddress))
@@ -150,7 +150,7 @@ Value importaddress(const Array& params, bool fHelp)
 
         // add to address book or update label
         if (address.IsValid())
-            pwalletMain->SetAddressBook(address.Get(), strLabel);
+            pwalletMain->SetAddressLabel(address.Get(), strLabel);
 
         // Don't throw error in case an address is already there
         if (pwalletMain->HaveWatchOnly(script))
@@ -405,7 +405,7 @@ Value bip38decrypt(const Array& params, bool fHelp)
     result.push_back(Pair("Address", CBitcoinAddress(pubkey.GetID()).ToString()));
     CKeyID vchAddress = pubkey.GetID();
     {
-        pwalletMain->SetAddressBook(vchAddress, "");
+        pwalletMain->SetAddressLabel(vchAddress, "");
 
         // Don't throw error in case a key is already there
         if (pwalletMain->HaveKey(vchAddress))

@@ -302,7 +302,7 @@ Value getnewaddress(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
     CKeyID keyID = newKey.GetID();
 
-    pwalletMain->SetAddressBook(keyID, strAccount);
+    pwalletMain->SetAddressLabel(keyID, strAccount);
 
     return CBitcoinAddress(keyID).ToString();
 }
@@ -353,7 +353,7 @@ CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool force
             }
         }
 
-        wallet.SetAddressBook(newlyCreatedPubKey.GetID(), strAccount);
+        wallet.SetAddressLabel(newlyCreatedPubKey.GetID(), strAccount);
     }
     else
     {
@@ -542,7 +542,7 @@ Value setaccount(const Array& params, bool fHelp)
             if (address == GetAccountAddress(*pwalletMain,strOldAccount))
                 GetAccountAddress(*pwalletMain,strOldAccount, true);
         }
-        pwalletMain->SetAddressBook(address.Get(), strAccount);
+        pwalletMain->SetAddressLabel(address.Get(), strAccount);
     } else
         throw JSONRPCError(RPC_MISC_ERROR, "setaccount can only be used with own address");
 
@@ -825,7 +825,7 @@ Value fundvault(const Array& params, bool fHelp)
         if (!pwalletMain->GetKeyFromPool(ownerKey, false))
             throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
         CKeyID ownerKeyID = ownerKey.GetID();
-        pwalletMain->SetAddressBook(ownerKeyID, strAccount);
+        pwalletMain->SetAddressLabel(ownerKeyID, strAccount);
 
         ownerAddress.Set(ownerKeyID);
         managerAddress.SetString(addressEncodings);
@@ -1475,7 +1475,7 @@ Value addmultisigaddress(const Array& params, bool fHelp)
     pwalletMain->AddCScript(inner);
     if(::IsMine(*pwalletMain,inner)!= isminetype::ISMINE_SPENDABLE) pwalletMain->AddWatchOnly(inner);
 
-    pwalletMain->SetAddressBook(innerID, strAccount);
+    pwalletMain->SetAddressLabel(innerID, strAccount);
     return CBitcoinAddress(innerID).ToString();
 }
 

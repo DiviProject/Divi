@@ -381,7 +381,7 @@ bool CWallet::InitializeDefaultKey()
     if (GetKeyFromPool(newDefaultKey, false))
     {
         SetDefaultKey(newDefaultKey,true);
-        if (!SetAddressBook(vchDefaultKey.GetID(), "")) {
+        if (!SetAddressLabel(vchDefaultKey.GetID(), "")) {
             return false;
         }
     }
@@ -2400,7 +2400,7 @@ DBErrors CWallet::LoadWallet()
     return nLoadWalletRet;
 }
 
-bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& strName)
+bool CWallet::SetAddressLabel(const CTxDestination& address, const std::string& strName)
 {
     bool fUpdated = false;
     {

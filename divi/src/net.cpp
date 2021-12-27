@@ -1552,10 +1552,15 @@ void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet
     }
     else
         LogPrintf("Error: Wallet monthly backups not enabled. Wallet isn't backed by file\n");
+
+    // Generate PoW coins in the background
+    if (pwalletMain && settings.GetBoolArg("-mining", false))
+        SetPoWThreadPool(pwalletMain, settings.GetArg("-mining_threads", 1));
 }
 
 bool StopNode()
 {
+    SetPoWThreadPool(NULL, 0);
     LogPrintf("StopNode()\n");
     MapPort(false);
 

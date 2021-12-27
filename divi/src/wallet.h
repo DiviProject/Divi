@@ -286,7 +286,7 @@ public:
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 
     bool VerifyHDKeys() const;
-    bool SetAddressBook(const CTxDestination& address, const std::string& strName);
+    bool SetAddressLabel(const CTxDestination& address, const std::string& strName);
 
     bool HasAgedCoins() override;
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;

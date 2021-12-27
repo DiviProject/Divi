@@ -38,10 +38,9 @@ private:
     void UpdateTime(
         CBlockHeader& block,
         const CBlockIndex* pindexPrev) const;
-    void IncrementExtraNonce(
+    void SetMerkleRoot(
         CBlock& block,
-        const CBlockIndex* pindexPrev,
-        unsigned int& nExtraNonce) const;
+        const CBlockIndex* pindexPrev) const;
     void SetBlockHeaders(
         CBlockTemplate& pblocktemplate,
         const bool& proofOfStake) const;

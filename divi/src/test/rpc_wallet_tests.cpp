@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
     BOOST_CHECK_NO_THROW({ /*Initialize Wallet with an account */
         CAccount account;
         account.vchPubKey = demoPubkey;
-        pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount);
+        pwalletMain->SetAddressLabel(account.vchPubKey.GetID(), strAccount);
     });
 
     CPubKey setaccountDemoPubkey = pwalletMain->GenerateNewKey(0,false);

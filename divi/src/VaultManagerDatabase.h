@@ -19,5 +19,6 @@ public:
     bool WriteManagedScript(const CScript& managedScript) override;
     bool EraseManagedScript(const CScript& managedScript) override;
     bool ReadManagedScripts(ManagedScripts& managedScripts) override;
+    bool Sync() override;
 };
 #endif// VAULT_MANAGER_DATABASE_H

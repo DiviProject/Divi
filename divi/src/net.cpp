@@ -1534,7 +1534,12 @@ void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
-        threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "stakemint", &ThreadStakeMinter, pwalletMain));
+        threadGroup.create_thread(
+            boost::bind(
+                &TraceThread<void (*)(I_StakingWallet*), I_StakingWallet*>,
+                "stakemint",
+                &ThreadStakeMinter,
+                static_cast<I_StakingWallet*>(pwalletMain) ));
 
     if(pwalletMain && pwalletMain->isBackedByFile())
     {

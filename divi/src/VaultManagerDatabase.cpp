@@ -101,3 +101,8 @@ bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
     }
     return true;
 }
+
+bool VaultManagerDatabase::Sync()
+{
+    return CLevelDBWrapper::Sync();
+}

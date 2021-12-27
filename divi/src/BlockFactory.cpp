@@ -88,20 +88,14 @@ void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev
         block.nBits = GetNextWorkRequired(pindexPrev, &block,chainParameters_);
 }
 
-void BlockFactory::IncrementExtraNonce(
+void BlockFactory::SetMerkleRoot(
     CBlock& block,
-    const CBlockIndex* pindexPrev,
-    unsigned int& nExtraNonce) const
+    const CBlockIndex* pindexPrev) const
 {
     /** Constant stuff for coinbase transactions we create: */
     static CScript COINBASE_FLAGS;
-    // Update nExtraNonce
-    static uint256 hashPrevBlock;
-    if (hashPrevBlock != block.hashPrevBlock) {
-        nExtraNonce = 0;
-        hashPrevBlock = block.hashPrevBlock;
-    }
-    ++nExtraNonce;
+
+    const unsigned int nExtraNonce = 1u;
     unsigned int nHeight = pindexPrev->nHeight + 1; // Height first in coinbase required for block.version=2
     CMutableTransaction txCoinbase(block.vtx[0]);
     txCoinbase.vin[0].scriptSig = (CScript() << nHeight << CScriptNum(nExtraNonce)) + COINBASE_FLAGS;
@@ -152,10 +146,9 @@ void BlockFactory::FinalizeBlock (
     CBlockTemplate& blocktemplate,
     const bool& fProofOfStake) const
 {
-    unsigned int extraNonce = 0u;
     CBlock& block = blocktemplate.block;
     SetBlockHeaders(blocktemplate, fProofOfStake);
-    IncrementExtraNonce(block, blocktemplate.previousBlockIndex, extraNonce);
+    SetMerkleRoot(block, blocktemplate.previousBlockIndex);
 }
 
 bool BlockFactory::AppendProofOfWorkToBlock(

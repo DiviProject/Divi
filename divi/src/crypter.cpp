@@ -387,7 +387,6 @@ bool CCryptoKeyStore::EncryptHDChain(const CKeyingMaterial& vMasterKeyIn)
     if (!EncryptSecret(vMasterKeyIn, hdChain.GetSeed(), hdChain.GetID(), vchCryptedSeed))
         return false;
 
-    hdChain.Debug(__func__);
     cryptedHDChain = hdChain;
     cryptedHDChain.SetCrypted(true);
 
@@ -466,7 +465,6 @@ bool CCryptoKeyStore::DecryptHDChain(CHDChain& hdChainRet) const
     }
 
     hdChainRet.SetCrypted(false);
-    hdChainRet.Debug(__func__);
 
     return true;
 }

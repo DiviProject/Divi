@@ -860,7 +860,7 @@ Value fundvault(const Array& params, bool fHelp)
 
 Value reclaimvaultfunds(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 2)
+    if (fHelp || params.size() < 2 || params.size() > 5)
         throw runtime_error(
                 "reclaimvaultfunds destination amount (feeMode|metadata) ( \"comment\" \"comment-to\" )\n"
                 "\nWithdraw an amount from your vaults into a separate address. The amount is a real and is rounded to the nearest 0.00000001\n" +
@@ -1032,7 +1032,7 @@ Value addvault(const Array& params, bool fHelp)
 
 Value sendtoaddress(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 2 || params.size() > 4)
+    if (fHelp || params.size() < 2 || params.size() > 5)
         throw runtime_error(
                 "sendtoaddress \"diviaddress\" amount (feeMode|metadata)( \"comment\" \"comment-to\" )\n"
                 "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +

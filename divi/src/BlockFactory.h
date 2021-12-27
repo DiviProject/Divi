@@ -31,7 +31,6 @@ private:
 
     void SetRequiredWork(CBlockTemplate& pblocktemplate);
     void SetBlockTime(CBlock& block);
-    void CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMutableTransaction& coinbaseTx) const;
     bool AppendProofOfStakeToBlock(
         CBlockTemplate& pBlockTemplate);
 
@@ -46,7 +45,6 @@ private:
         const bool& proofOfStake) const;
     void SetCoinbaseRewardAndHeight (
         CBlockTemplate& pblocktemplate,
-        const CScript& scriptPubKeyIn,
         const bool& fProofOfStake) const;
     void FinalizeBlock (
         CBlockTemplate& pblocktemplate,

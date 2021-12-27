@@ -26,7 +26,6 @@
 #include "main.h"
 #include "obfuscation.h"
 #include <WalletBackupFeatureContainer.h>
-#include "miner.h"
 #include "net.h"
 #include "rpcserver.h"
 #include "script/standard.h"
@@ -228,7 +227,6 @@ void FlushWalletAndStopMinting()
 {
 #ifdef ENABLE_WALLET
     FlushWallet();
-    SetPoWThreadPool(NULL, 0);
 #endif
 }
 
@@ -1433,12 +1431,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
     StartNode(threadGroup,fReindex,pwalletMain);
-
-#ifdef ENABLE_WALLET
-    // Generate coins in the background
-    if (pwalletMain && settings.GetBoolArg("-mining", false))
-        SetPoWThreadPool(pwalletMain, settings.GetArg("-mining_threads", 1));
-#endif
 
     // ********************************************************* Step 12: finished
 

@@ -13,14 +13,14 @@ class CBlock;
 class CBlockHeader;
 class CBlockIndex;
 class CScript;
-class CWallet;
+class I_StakingWallet;
 class I_CoinMinter;
 
 struct CBlockTemplate;
 
 /** Run the miner threads */
-void SetPoWThreadPool(CWallet* pwallet, int nThreads = -1);
-void ThreadStakeMinter(CWallet* pwallet);
+void SetPoWThreadPool(I_StakingWallet* pwallet, int nThreads = -1);
+void ThreadStakeMinter(I_StakingWallet* pwallet);
 
 void MintCoins(
     bool fProofOfStake,

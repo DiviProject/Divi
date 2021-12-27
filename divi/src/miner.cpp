@@ -22,7 +22,6 @@
 #include <chain.h>
 #include <map>
 #include <FeeAndPriorityCalculator.h>
-#include <wallet.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -105,7 +104,7 @@ bool HasRecentlyAttemptedToGenerateProofOfStake()
 }
 
 // ppcoin: stake minter thread
-void ThreadStakeMinter(CWallet* pwallet)
+void ThreadStakeMinter(I_StakingWallet* pwallet)
 {
     static const CSporkManager& sporkManager = GetSporkManager();
     static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
@@ -139,7 +138,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     LogPrintf("ThreadStakeMinter exiting,\n");
 }
 
-void static ThreadPoWMinter(CWallet* pwallet)
+void static ThreadPoWMinter(I_StakingWallet* pwallet)
 {
     static const CSporkManager& sporkManager = GetSporkManager();
     static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
@@ -174,7 +173,7 @@ void static ThreadPoWMinter(CWallet* pwallet)
     LogPrintf("ThreadPoWMinter exiting\n");
 }
 
-void SetPoWThreadPool(CWallet* pwallet, int nThreads)
+void SetPoWThreadPool(I_StakingWallet* pwallet, int nThreads)
 {
     static boost::thread_group* minerThreads = NULL;
 

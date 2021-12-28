@@ -111,8 +111,6 @@ void BlockFactory::SetBlockHeaders(
 {
     // Fill in header
     CBlock& block = pblocktemplate.block;
-    if (!proofOfStake)
-        UpdateTime(block, pblocktemplate.previousBlockIndex);
 }
 
 static void SetCoinbaseTransactionAndRewards(
@@ -130,7 +128,6 @@ void BlockFactory::FinalizeBlock (
     const bool& fProofOfStake) const
 {
     CBlock& block = blocktemplate.block;
-    SetBlockHeaders(blocktemplate, fProofOfStake);
     block.hashMerkleRoot = block.BuildMerkleTree();
 }
 
@@ -238,6 +235,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     if (!fProofOfStake)
     {
         boost::this_thread::interruption_point();
+        UpdateTime(pblocktemplate->block, pblocktemplate->previousBlockIndex);
         if (!AppendProofOfWorkToBlock(*pblocktemplate))
             return NULL;
     }

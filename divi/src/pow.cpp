@@ -23,7 +23,7 @@
 #include <blockmap.h>
 #include <script/standard.h>
 
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock, const CChainParams& chainParameters)
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CChainParams& chainParameters)
 {
     /* current difficulty formula, divi - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
     const CBlockIndex* BlockLastSolved = pindexLast;
@@ -265,7 +265,7 @@ bool CheckWork(
     if (pindexPrev == NULL)
         return error("%s : null pindexPrev for block %s", __func__, block.GetHash());
 
-    unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev, &block,chainParameters);
+    unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev,chainParameters);
 
     if (block.IsProofOfWork() && (pindexPrev->nHeight + 1 <= 68589)) {
         double n1 = ConvertBitsToDouble(block.nBits);

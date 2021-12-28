@@ -113,7 +113,6 @@ void BlockFactory::SetBlockHeaders(
     CBlock& block = pblocktemplate.block;
     if (!proofOfStake)
         UpdateTime(block, pblocktemplate.previousBlockIndex);
-    block.nBits = GetNextWorkRequired(pblocktemplate.previousBlockIndex, chainParameters_);
 }
 
 static void SetCoinbaseTransactionAndRewards(

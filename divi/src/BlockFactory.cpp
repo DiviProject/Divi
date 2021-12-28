@@ -232,12 +232,13 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     return pblocktemplate.release();
 }
 
-CBlockTemplate* BlockFactory::CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake)
+CBlockTemplate* BlockFactory::CreateNewPoWBlock(const CScript& scriptPubKey)
 {
-    CPubKey pubkey;
-    if (!fProofOfStake && !reservekey.GetReservedKey(pubkey, false))
-        return NULL;
-
-    CScript scriptPubKey = (fProofOfStake)? CScript() : GetScriptForDestination(pubkey.GetID());
-    return CreateNewBlock(scriptPubKey, fProofOfStake);
-}
+    constexpr bool isBlockProofOfStake = false;
+    return CreateNewBlock(scriptPubKey, isBlockProofOfStake);
+};
+CBlockTemplate* BlockFactory::CreateNewPoSBlock()
+{
+    constexpr bool isBlockProofOfStake = true;
+    return CreateNewBlock(CScript(), isBlockProofOfStake);
+};

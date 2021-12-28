@@ -6,6 +6,7 @@
 #include <vector>
 #include <boost/thread/recursive_mutex.hpp>
 
+class CBlock;
 class BlockFactory;
 class CTransaction;
 class CChain;
@@ -30,6 +31,7 @@ private:
     std::unique_ptr<I_PoSTransactionCreator> extendedCoinstakeCreator_;
     std::unique_ptr<BlockFactory> blockFactory_;
 
+    void VerifyBlockWithIsCompatibleWithCustomCoinstake(const CBlock& block);
 public:
     ExtendedBlockFactory(
         const I_BlockSubsidyProvider& blockSubsidies,
@@ -40,7 +42,8 @@ public:
         const CChainParams& chainParameters);
     ~ExtendedBlockFactory();
 
-    CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake) override;
+    CBlockTemplate* CreateNewPoWBlock(const CScript& scriptPubKey) override;
+    CBlockTemplate* CreateNewPoSBlock() override;
     void addExtraTransaction(const CTransaction& tx);
     void setCustomCoinstake(const CTransaction& tx);
     void setIgnoreMempool(bool val);

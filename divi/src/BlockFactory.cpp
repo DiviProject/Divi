@@ -9,7 +9,6 @@
 #include <pow.h>
 #include <chain.h>
 #include <chainparams.h>
-#include <reservekey.h>
 #include <sync.h>
 #include <Logging.h>
 #include <script/standard.h>

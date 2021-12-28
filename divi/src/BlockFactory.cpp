@@ -39,7 +39,7 @@ BlockFactory::BlockFactory(
 void BlockFactory::SetRequiredWork(CBlockTemplate& pBlockTemplate)
 {
     CBlock& block = pBlockTemplate.block;
-    block.nBits = GetNextWorkRequired(pBlockTemplate.previousBlockIndex, &block,chainParameters_);
+    block.nBits = GetNextWorkRequired(pBlockTemplate.previousBlockIndex, chainParameters_);
 }
 
 void BlockFactory::SetBlockTime(CBlock& block)
@@ -97,7 +97,7 @@ void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev
 
     // Updating time can change work required on testnet:
     if (chainParameters_.AllowMinDifficultyBlocks())
-        block.nBits = GetNextWorkRequired(pindexPrev, &block,chainParameters_);
+        block.nBits = GetNextWorkRequired(pindexPrev, chainParameters_);
 }
 
 void BlockFactory::SetMerkleRoot(
@@ -126,7 +126,7 @@ void BlockFactory::SetBlockHeaders(
     block.hashPrevBlock = pblocktemplate.previousBlockIndex->GetBlockHash();
     if (!proofOfStake)
         UpdateTime(block, pblocktemplate.previousBlockIndex);
-    block.nBits = GetNextWorkRequired(pblocktemplate.previousBlockIndex, &block, chainParameters_);
+    block.nBits = GetNextWorkRequired(pblocktemplate.previousBlockIndex, chainParameters_);
     block.nNonce = 0;
     block.nAccumulatorCheckpoint = static_cast<uint256>(0);
 }

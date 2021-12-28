@@ -126,6 +126,8 @@ bool BlockFactory::AppendProofOfWorkToBlock(
     CBlockTemplate& blocktemplate)
 {
     CBlock& block = blocktemplate.block;
+    const CBlockIndex* const previousBlockIndex = blocktemplate.previousBlockIndex;
+    UpdateTime(block, previousBlockIndex);
     int64_t nStart = GetTime();
     uint256 hashTarget = uint256().SetCompact(block.nBits);
     while (true)
@@ -154,11 +156,11 @@ bool BlockFactory::AppendProofOfWorkToBlock(
             break;
         if (GetTime() - nStart > 60)
             break;
-        if (blocktemplate.previousBlockIndex != chain_.Tip())
+        if (previousBlockIndex != chain_.Tip())
             break;
 
         // Update nTime every few seconds
-        UpdateTime(block, blocktemplate.previousBlockIndex);
+        UpdateTime(block, previousBlockIndex);
         if (chainParameters_.AllowMinDifficultyBlocks())
         {
             // Changing block->nTime can change work required on testnet:
@@ -221,7 +223,6 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     else
     {
         pblocktemplate->block.hashMerkleRoot = pblocktemplate->block.BuildMerkleTree();
-        UpdateTime(pblocktemplate->block, pblocktemplate->previousBlockIndex);
         boost::this_thread::interruption_point();
         if (!AppendProofOfWorkToBlock(*pblocktemplate))
             return NULL;

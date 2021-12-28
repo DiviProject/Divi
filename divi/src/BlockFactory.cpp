@@ -69,6 +69,17 @@ static CMutableTransaction CreateCoinbaseTransaction(const unsigned int blockHei
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
     return txNew;
 }
+static CMutableTransaction CreateDummyCoinstakeTransaction()
+{
+    static uint256 dummyTxHash = uint256S("0x64");
+    CMutableTransaction txNew;
+    txNew.vin.resize(1);
+    txNew.vout.resize(2);
+    txNew.vin[0].prevout = COutPoint(dummyTxHash,0);
+    txNew.vout[0].SetEmpty();
+    assert(CTransaction(txNew).IsCoinStake());
+    return txNew;
+}
 bool BlockFactory::AppendProofOfStakeToBlock(
     CBlockTemplate& pBlockTemplate)
 {
@@ -82,7 +93,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
             nTxNewTime))
     {
         block.nTime = nTxNewTime;
-        block.vtx.push_back(CTransaction(txCoinStake));
+        block.vtx[1]=txCoinStake;
         return true;
     }
 
@@ -202,6 +213,13 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
         pblocktemplate->block,
         *(pblocktemplate->coinbaseTransaction),
         (!fProofOfStake)? blockSubsidies_.GetBlockSubsidity(nextBlockHeight).nStakeReward: 0);
+
+    if(fProofOfStake)
+    {
+        assert(pblocktemplate->block.vtx.size()==1);
+        pblocktemplate->block.vtx.push_back(CreateDummyCoinstakeTransaction());
+        assert(pblocktemplate->block.IsProofOfStake());
+    }
 
     SetRequiredWork(*pblocktemplate);
     SetBlockTime(pblocktemplate->block);

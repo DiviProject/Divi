@@ -36,13 +36,13 @@ BlockFactory::BlockFactory(
 }
 
 
-void BlockFactory::SetRequiredWork(CBlockTemplate& pBlockTemplate)
+void BlockFactory::SetRequiredWork(CBlockTemplate& pBlockTemplate) const
 {
     CBlock& block = pBlockTemplate.block;
     block.nBits = GetNextWorkRequired(pBlockTemplate.previousBlockIndex, chainParameters_);
 }
 
-void BlockFactory::SetBlockTime(CBlock& block)
+void BlockFactory::SetBlockTime(CBlock& block) const
 {
     block.nTime = GetAdjustedTime();
 }

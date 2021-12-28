@@ -12,13 +12,12 @@
 #include <I_BlockFactory.h>
 #include <BlockTemplate.h>
 #include <BlockSigning.h>
-#include <txmempool.h>
 #include <I_BlockSubsidyProvider.h>
 #include <Logging.h>
 #include <MasternodeHelpers.h>
 #include <ThreadManagementHelpers.h>
-#include <pow.h>
 #include <reservekey.h>
+#include <script/standard.h>
 
 constexpr int hashingDelay = 45;
 extern bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey);

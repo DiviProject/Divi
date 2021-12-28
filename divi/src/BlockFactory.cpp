@@ -111,12 +111,9 @@ void BlockFactory::SetBlockHeaders(
 {
     // Fill in header
     CBlock& block = pblocktemplate.block;
-    block.hashPrevBlock = pblocktemplate.previousBlockIndex->GetBlockHash();
     if (!proofOfStake)
         UpdateTime(block, pblocktemplate.previousBlockIndex);
     block.nBits = GetNextWorkRequired(pblocktemplate.previousBlockIndex, chainParameters_);
-    block.nNonce = 0;
-    block.nAccumulatorCheckpoint = static_cast<uint256>(0);
 }
 
 static void SetCoinbaseTransactionAndRewards(
@@ -223,6 +220,9 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
 
     SetRequiredWork(*pblocktemplate);
     SetBlockTime(pblocktemplate->block);
+    pblocktemplate->block.hashPrevBlock = pblocktemplate->previousBlockIndex->GetBlockHash();
+    pblocktemplate->block.nNonce = 0;
+    pblocktemplate->block.nAccumulatorCheckpoint = static_cast<uint256>(0);
     // Collect memory pool transactions into the block
     if(!blockTransactionCollector_.CollectTransactionsIntoBlock(*pblocktemplate))
     {

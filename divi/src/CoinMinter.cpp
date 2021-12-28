@@ -147,7 +147,7 @@ bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
 {
     constexpr const bool fProofOfStake = true;
     bool blockSuccessfullyCreated = false;
-    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewPoSBlock());
 
     if (!pblocktemplate.get())
         return false;
@@ -174,7 +174,11 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
     constexpr const bool fProofOfStake = false;
     bool blockSuccessfullyCreated = false;
 
-    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
+    CPubKey pubkey;
+    if (!fProofOfStake && !reserveKey.GetReservedKey(pubkey, false))
+        return NULL;
+    CScript scriptPubKey = GetScriptForDestination(pubkey.GetID());
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewPoWBlock(scriptPubKey));
 
     if (!pblocktemplate.get())
         return false;

@@ -54,6 +54,7 @@ public:
         const CChain& chain,
         const CChainParams& chainParameters);
 
-    CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake) override;
+    CBlockTemplate* CreateNewPoWBlock(const CScript& scriptPubKey) override;
+    CBlockTemplate* CreateNewPoSBlock() override;
 };
 #endif // BLOCK_FACTORY_H

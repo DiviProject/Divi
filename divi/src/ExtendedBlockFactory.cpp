@@ -101,10 +101,8 @@ ExtendedBlockFactory::~ExtendedBlockFactory()
     blockFactory_.reset();
 }
 
-CBlockTemplate* ExtendedBlockFactory::CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake)
+void ExtendedBlockFactory::VerifyBlockWithIsCompatibleWithCustomCoinstake(const CBlock& block)
 {
-    CBlockTemplate* blockTemplate = blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake);
-    CBlock& block = blockTemplate->block;
     if (customCoinstake_ != nullptr)
     {
         if (!block.IsProofOfStake())
@@ -112,6 +110,16 @@ CBlockTemplate* ExtendedBlockFactory::CreateNewBlockWithKey(CReserveKey& reserve
         assert(block.vtx.size() >= 2 && "PoS blocks must have at least 2 transactions");
         assert(block.vtx[1].IsCoinStake() && "PoS blocks' second transaction must be a coinstake");
     }
+}
+
+CBlockTemplate* ExtendedBlockFactory::CreateNewPoWBlock(const CScript& scriptPubKey)
+{
+    return blockFactory_->CreateNewPoWBlock(scriptPubKey);
+}
+CBlockTemplate* ExtendedBlockFactory::CreateNewPoSBlock()
+{
+    CBlockTemplate* blockTemplate = blockFactory_->CreateNewPoSBlock();
+    VerifyBlockWithIsCompatibleWithCustomCoinstake(blockTemplate->block);
     return blockTemplate;
 }
 

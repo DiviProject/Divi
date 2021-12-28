@@ -92,12 +92,16 @@ void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev
     block.nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
 }
 
-void BlockFactory::SetBlockHeaders(
-    CBlockTemplate& pblocktemplate,
-    const bool& proofOfStake) const
+void BlockFactory::SetBlockHeader(
+    CBlockHeader& block,
+    const CBlockIndex* previousBlockIndex) const
 {
     // Fill in header
-    CBlock& block = pblocktemplate.block;
+    block.nBits = GetNextWorkRequired(previousBlockIndex, chainParameters_);
+    block.nTime = GetAdjustedTime();
+    block.hashPrevBlock = previousBlockIndex->GetBlockHash();
+    block.nNonce = 0;
+    block.nAccumulatorCheckpoint = static_cast<uint256>(0);
 }
 
 static void SetCoinbaseTransactionAndRewards(
@@ -201,11 +205,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
         assert(pblocktemplate->block.IsProofOfStake());
     }
 
-    pblocktemplate->block.nBits = GetNextWorkRequired(pblocktemplate->previousBlockIndex, chainParameters_);
-    pblocktemplate->block.nTime = GetAdjustedTime();
-    pblocktemplate->block.hashPrevBlock = pblocktemplate->previousBlockIndex->GetBlockHash();
-    pblocktemplate->block.nNonce = 0;
-    pblocktemplate->block.nAccumulatorCheckpoint = static_cast<uint256>(0);
+    SetBlockHeader(pblocktemplate->block,pblocktemplate->previousBlockIndex);
     // Collect memory pool transactions into the block
     if(!blockTransactionCollector_.CollectTransactionsIntoBlock(*pblocktemplate))
     {

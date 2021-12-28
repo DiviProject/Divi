@@ -374,6 +374,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock(
     if(pblocktemplate.previousBlockIndex != activeChain_.Tip()) return false;
 
     CBlock& block = pblocktemplate.block;
+    if(block.vtx.size() < 1) return false; // Block reward transaction must be set first
     const int nHeight = pblocktemplate.previousBlockIndex->nHeight + 1;
     CCoinsViewCache view(baseCoinsViewCache_);
 

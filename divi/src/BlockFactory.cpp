@@ -223,16 +223,16 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
 
     SetRequiredWork(*pblocktemplate);
     SetBlockTime(pblocktemplate->block);
+    // Collect memory pool transactions into the block
+    if(!blockTransactionCollector_.CollectTransactionsIntoBlock(*pblocktemplate))
+    {
+        return NULL;
+    }
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
 
         if (!AppendProofOfStakeToBlock(*pblocktemplate))
             return NULL;
-    }
-    // Collect memory pool transactions into the block
-    if(!blockTransactionCollector_.CollectTransactionsIntoBlock(*pblocktemplate))
-    {
-        return NULL;
     }
 
     FinalizeBlock(*pblocktemplate,fProofOfStake);

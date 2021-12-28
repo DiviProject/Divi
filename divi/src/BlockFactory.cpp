@@ -100,13 +100,6 @@ void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev
         block.nBits = GetNextWorkRequired(pindexPrev, chainParameters_);
 }
 
-void BlockFactory::SetMerkleRoot(
-    CBlock& block,
-    const CBlockIndex* pindexPrev) const
-{
-    block.hashMerkleRoot = block.BuildMerkleTree();
-}
-
 void BlockFactory::SetBlockHeaders(
     CBlockTemplate& pblocktemplate,
     const bool& proofOfStake) const
@@ -137,7 +130,7 @@ void BlockFactory::FinalizeBlock (
 {
     CBlock& block = blocktemplate.block;
     SetBlockHeaders(blocktemplate, fProofOfStake);
-    SetMerkleRoot(block, blocktemplate.previousBlockIndex);
+    block.hashMerkleRoot = block.BuildMerkleTree();
 }
 
 bool BlockFactory::AppendProofOfWorkToBlock(

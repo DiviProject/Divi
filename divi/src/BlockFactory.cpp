@@ -35,19 +35,6 @@ BlockFactory::BlockFactory(
 
 }
 
-
-void BlockFactory::SetRequiredWork(CBlockTemplate& pBlockTemplate) const
-{
-    CBlock& block = pBlockTemplate.block;
-    block.nBits = GetNextWorkRequired(pBlockTemplate.previousBlockIndex, chainParameters_);
-}
-
-void BlockFactory::SetBlockTime(CBlock& block) const
-{
-    block.nTime = GetAdjustedTime();
-}
-
-
 static CMutableTransaction CreateEmptyCoinbaseTransaction(const unsigned int blockHeight)
 {
     /** Constant stuff for coinbase transactions we create: */
@@ -214,8 +201,8 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
         assert(pblocktemplate->block.IsProofOfStake());
     }
 
-    SetRequiredWork(*pblocktemplate);
-    SetBlockTime(pblocktemplate->block);
+    pblocktemplate->block.nBits = GetNextWorkRequired(pblocktemplate->previousBlockIndex, chainParameters_);
+    pblocktemplate->block.nTime = GetAdjustedTime();
     pblocktemplate->block.hashPrevBlock = pblocktemplate->previousBlockIndex->GetBlockHash();
     pblocktemplate->block.nNonce = 0;
     pblocktemplate->block.nAccumulatorCheckpoint = static_cast<uint256>(0);

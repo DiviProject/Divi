@@ -29,8 +29,6 @@ private:
     I_BlockTransactionCollector& blockTransactionCollector_;
     I_PoSTransactionCreator& coinstakeCreator_;
 
-    void SetRequiredWork(CBlockTemplate& pblocktemplate) const;
-    void SetBlockTime(CBlock& block) const;
     bool AppendProofOfStakeToBlock(
         CBlockTemplate& pBlockTemplate);
 

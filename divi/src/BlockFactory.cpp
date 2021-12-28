@@ -131,14 +131,14 @@ void BlockFactory::SetBlockHeaders(
     block.nAccumulatorCheckpoint = static_cast<uint256>(0);
 }
 
-void BlockFactory::SetCoinbaseTransactionAndRewards(
+static void SetCoinbaseTransactionAndRewards(
     CBlock& block,
     CMutableTransaction& coinbaseTx,
-    const unsigned nextBlockheight,
-    const bool fProofOfStake) const
+    const CAmount reward)
 {
-    coinbaseTx.vout[0].nValue = !fProofOfStake? blockSubsidies_.GetBlockSubsidity(nextBlockheight).nStakeReward: 0;
+    coinbaseTx.vout[0].nValue = reward;
     block.vtx.push_back(coinbaseTx);
+    assert(block.vtx.size()==1);
 }
 
 void BlockFactory::FinalizeBlock (
@@ -214,18 +214,17 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     if(!pblocktemplate->previousBlockIndex) return NULL;
 
     // Create coinbase tx
-    const unsigned nextBlockNeight = pblocktemplate->previousBlockIndex->nHeight+1;
+    const unsigned nextBlockHeight = pblocktemplate->previousBlockIndex->nHeight+1;
     pblocktemplate->coinbaseTransaction =
         std::make_shared<CMutableTransaction>(
             fProofOfStake
-            ?CreateEmptyCoinbaseTransaction(nextBlockNeight)
-            :CreateCoinbaseTransaction(nextBlockNeight,scriptPubKeyIn));
+            ?CreateEmptyCoinbaseTransaction(nextBlockHeight)
+            :CreateCoinbaseTransaction(nextBlockHeight,scriptPubKeyIn));
 
     SetCoinbaseTransactionAndRewards(
         pblocktemplate->block,
         *(pblocktemplate->coinbaseTransaction),
-        nextBlockNeight,
-        fProofOfStake);
+        (!fProofOfStake)? blockSubsidies_.GetBlockSubsidity(nextBlockHeight).nStakeReward: 0);
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
 

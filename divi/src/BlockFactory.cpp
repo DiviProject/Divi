@@ -229,13 +229,13 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
 
         if (!AppendProofOfStakeToBlock(*pblocktemplate))
             return NULL;
+        pblocktemplate->block.hashMerkleRoot = pblocktemplate->block.BuildMerkleTree();
     }
-
-    FinalizeBlock(*pblocktemplate,fProofOfStake);
-    if (!fProofOfStake)
+    else
     {
-        boost::this_thread::interruption_point();
+        pblocktemplate->block.hashMerkleRoot = pblocktemplate->block.BuildMerkleTree();
         UpdateTime(pblocktemplate->block, pblocktemplate->previousBlockIndex);
+        boost::this_thread::interruption_point();
         if (!AppendProofOfWorkToBlock(*pblocktemplate))
             return NULL;
     }

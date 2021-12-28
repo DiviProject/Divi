@@ -37,9 +37,6 @@ private:
     void UpdateTime(
         CBlockHeader& block,
         const CBlockIndex* pindexPrev) const;
-    void SetMerkleRoot(
-        CBlock& block,
-        const CBlockIndex* pindexPrev) const;
     void SetBlockHeaders(
         CBlockTemplate& pblocktemplate,
         const bool& proofOfStake) const;

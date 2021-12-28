@@ -104,16 +104,6 @@ void BlockFactory::SetMerkleRoot(
     CBlock& block,
     const CBlockIndex* pindexPrev) const
 {
-    /** Constant stuff for coinbase transactions we create: */
-    static CScript COINBASE_FLAGS;
-
-    const unsigned int nExtraNonce = 1u;
-    unsigned int nHeight = pindexPrev->nHeight + 1; // Height first in coinbase required for block.version=2
-    CMutableTransaction txCoinbase(block.vtx[0]);
-    txCoinbase.vin[0].scriptSig = (CScript() << nHeight << CScriptNum(nExtraNonce)) + COINBASE_FLAGS;
-    assert(txCoinbase.vin[0].scriptSig.size() <= 100);
-
-    block.vtx[0] = txCoinbase;
     block.hashMerkleRoot = block.BuildMerkleTree();
 }
 

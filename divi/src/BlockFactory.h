@@ -43,11 +43,6 @@ private:
     void SetBlockHeaders(
         CBlockTemplate& pblocktemplate,
         const bool& proofOfStake) const;
-    void SetCoinbaseTransactionAndRewards(
-        CBlock& block,
-        CMutableTransaction& coinbaseTx,
-        const unsigned nextBlockheight,
-        const bool fProofOfStake) const;
     void FinalizeBlock (
         CBlockTemplate& pblocktemplate,
         const bool& fProofOfStake) const;

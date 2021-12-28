@@ -72,9 +72,6 @@ bool BlockFactory::AppendProofOfStakeToBlock(
     CBlockTemplate& pBlockTemplate)
 {
     CBlock& block = pBlockTemplate.block;
-    SetRequiredWork(pBlockTemplate);
-    SetBlockTime(block);
-
     CMutableTransaction txCoinStake;
     unsigned int nTxNewTime = block.nTime;
     if(coinstakeCreator_.CreateProofOfStake(
@@ -204,6 +201,9 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
         pblocktemplate->block,
         *(pblocktemplate->coinbaseTransaction),
         (!fProofOfStake)? blockSubsidies_.GetBlockSubsidity(nextBlockHeight).nStakeReward: 0);
+
+    SetRequiredWork(*pblocktemplate);
+    SetBlockTime(pblocktemplate->block);
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
 

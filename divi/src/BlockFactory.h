@@ -35,9 +35,9 @@ private:
     void UpdateTime(
         CBlockHeader& block,
         const CBlockIndex* pindexPrev) const;
-    void SetBlockHeaders(
-        CBlockTemplate& pblocktemplate,
-        const bool& proofOfStake) const;
+    void SetBlockHeader(
+        CBlockHeader& block,
+        const CBlockIndex* pindexPrev) const;
     void FinalizeBlock (
         CBlockTemplate& pblocktemplate,
         const bool& fProofOfStake) const;

@@ -364,6 +364,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible(
         const CTransaction& tx = *txData.tx;
         AddTransactionToBlock(tx, txData.fee, block);
     }
+    if(block.IsProofOfWork()) block.vtx[0] = CMutableTransaction(block.vtx[0]);
 }
 
 bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock(

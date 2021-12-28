@@ -94,10 +94,6 @@ bool BlockFactory::AppendProofOfStakeToBlock(
 void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev) const
 {
     block.nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
-
-    // Updating time can change work required on testnet:
-    if (chainParameters_.AllowMinDifficultyBlocks())
-        block.nBits = GetNextWorkRequired(pindexPrev, chainParameters_);
 }
 
 void BlockFactory::SetBlockHeaders(

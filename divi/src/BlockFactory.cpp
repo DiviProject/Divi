@@ -60,6 +60,7 @@ static CMutableTransaction CreateEmptyCoinbaseTransaction(const unsigned int blo
     txNew.vin[0].scriptSig = (CScript() << blockHeight << CScriptNum(nExtraNonce)) + COINBASE_FLAGS;
     txNew.vout.resize(1);
     txNew.vout.back().SetEmpty();
+    assert(CTransaction(txNew).IsCoinBase());
     return txNew;
 }
 static CMutableTransaction CreateCoinbaseTransaction(const unsigned int blockHeight,const CScript& scriptPubKeyIn)

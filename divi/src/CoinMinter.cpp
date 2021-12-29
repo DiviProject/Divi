@@ -6,7 +6,6 @@
 #include <chainparams.h>
 #include <I_PeerBlockNotifyService.h>
 #include <masternode-sync.h>
-#include <utilmoneystr.h>
 #include <timedata.h>
 #include <boost/thread.hpp>
 #include <I_BlockFactory.h>
@@ -132,9 +131,6 @@ bool CoinMinter::mintingHasBeenRequested() const
 
 bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey, const bool isProofOfStake) const
 {
-    LogPrintf("%s\n", *block);
-    LogPrintf("generated %s\n", FormatMoney(block->vtx[0].vout[0].nValue));
-
     bool shouldKeepKey = false;
     bool successfulBlock = ProcessNewBlockFoundByMe(block,shouldKeepKey);
     if(shouldKeepKey && !isProofOfStake) reservekey.KeepKey();

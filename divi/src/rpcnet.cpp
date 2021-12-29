@@ -23,6 +23,7 @@
 #include <QueuedBlock.h>
 #include <NodeState.h>
 #include <NodeStateRegistry.h>
+#include <tinyformat.h>
 
 #include <boost/foreach.hpp>
 

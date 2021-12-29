@@ -47,7 +47,7 @@ class CoinMinter final: public I_CoinMinter
     bool limitStakingSpeed() const;
     bool nextBlockIsProofOfStake() const;
 
-    bool ProcessBlockFound(CBlock* block, CReserveKey& reservekey, const bool isProofOfStake) const;
+    bool ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const;
 
     bool createProofOfStakeBlock(CReserveKey& reserveKey) const;
     bool createProofOfWorkBlock(CReserveKey& reserveKey) const;

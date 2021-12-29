@@ -133,7 +133,11 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey* reservekey) const
 {
     if(ProcessNewBlockFoundByMe(block))
     {
-        if(block->IsProofOfWork()) reservekey->KeepKey();
+        if(block->IsProofOfWork())
+        {
+            assert(reservekey);
+            reservekey->KeepKey();
+        }
         peerNotifier_.notifyPeers(block->GetHash());
         return true;
     }
@@ -143,7 +147,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey* reservekey) const
     }
 }
 
-bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
+bool CoinMinter::createProofOfStakeBlock() const
 {
     bool blockSuccessfullyCreated = false;
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewPoSBlock());
@@ -162,15 +166,16 @@ bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
 
     LogPrintf("%s: proof-of-stake block was signed %s \n", __func__, block->GetHash());
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-    blockSuccessfullyCreated = ProcessBlockFound(block, &reserveKey);
+    blockSuccessfullyCreated = ProcessBlockFound(block, nullptr);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
     return blockSuccessfullyCreated;
 }
 
-bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
+bool CoinMinter::createProofOfWorkBlock() const
 {
     bool blockSuccessfullyCreated = false;
+    CReserveKey reserveKey(wallet_);
     CPubKey pubkey;
     if (!reserveKey.GetReservedKey(pubkey, false))
         return NULL;
@@ -194,14 +199,13 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
 bool CoinMinter::createNewBlock() const
 {
     if(!mintingIsRequested_) return false;
-    CReserveKey reserveKey(wallet_);
     auto status = ComputeNextBlockType(chain_.Tip(), chainParameters_.LAST_POW_BLOCK());
     if(status != UNDEFINED_TIP)
     {
         if(status != PROOF_OF_WORK)
-            return createProofOfStakeBlock(reserveKey);
+            return createProofOfStakeBlock();
 
-        return createProofOfWorkBlock(reserveKey);
+        return createProofOfWorkBlock();
     }
     return false;
 }

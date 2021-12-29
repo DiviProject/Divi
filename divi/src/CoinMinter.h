@@ -49,8 +49,8 @@ class CoinMinter final: public I_CoinMinter
 
     bool ProcessBlockFound(CBlock* block, CReserveKey* reservekey) const;
 
-    bool createProofOfStakeBlock(CReserveKey& reserveKey) const;
-    bool createProofOfWorkBlock(CReserveKey& reserveKey) const;
+    bool createProofOfStakeBlock() const;
+    bool createProofOfWorkBlock() const;
 
 public:
     CoinMinter(

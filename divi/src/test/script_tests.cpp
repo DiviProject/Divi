@@ -9,6 +9,7 @@
 #include "key.h"
 #include "keystore.h"
 #include "main.h"
+#include <primitives/transaction.h>
 #include "script/script.h"
 #include "script/script_error.h"
 #include "script/sign.h"

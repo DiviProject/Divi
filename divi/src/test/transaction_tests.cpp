@@ -12,6 +12,7 @@
 #include "script/script.h"
 #include "script/script_error.h"
 #include "core_io.h"
+#include <defaultValues.h>
 
 #include <map>
 #include <string>

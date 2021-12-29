@@ -129,18 +129,17 @@ bool CoinMinter::mintingHasBeenRequested() const
     return mintingIsRequested_;
 }
 
-bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey, const bool isProofOfStake) const
+bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
 {
     bool shouldKeepKey = false;
     bool successfulBlock = ProcessNewBlockFoundByMe(block,shouldKeepKey);
-    if(shouldKeepKey && !isProofOfStake) reservekey.KeepKey();
+    if(shouldKeepKey && !block->IsProofOfStake()) reservekey.KeepKey();
     if(successfulBlock) peerNotifier_.notifyPeers(block->GetHash());
     return successfulBlock;
 }
 
 bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
 {
-    constexpr const bool fProofOfStake = true;
     bool blockSuccessfullyCreated = false;
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewPoSBlock());
 
@@ -158,7 +157,7 @@ bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
 
     LogPrintf("%s: proof-of-stake block was signed %s \n", __func__, block->GetHash());
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-    blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey,fProofOfStake);
+    blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
     return blockSuccessfullyCreated;
@@ -166,11 +165,9 @@ bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const
 
 bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
 {
-    constexpr const bool fProofOfStake = false;
     bool blockSuccessfullyCreated = false;
-
     CPubKey pubkey;
-    if (!fProofOfStake && !reserveKey.GetReservedKey(pubkey, false))
+    if (!reserveKey.GetReservedKey(pubkey, false))
         return NULL;
     CScript scriptPubKey = GetScriptForDestination(pubkey.GetID());
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewPoWBlock(scriptPubKey));
@@ -184,7 +181,7 @@ bool CoinMinter::createProofOfWorkBlock(CReserveKey& reserveKey) const
                 ::GetSerializeSize(*block, SER_NETWORK, PROTOCOL_VERSION));
 
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-    blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey,fProofOfStake);
+    blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     return blockSuccessfullyCreated;
 }

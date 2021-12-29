@@ -14,6 +14,7 @@
 #include "addrman.h"
 #include <alert.h>
 #include <bloom.h>
+#include <chain.h>
 #include "chainparams.h"
 #include "clientversion.h"
 #include "miner.h"

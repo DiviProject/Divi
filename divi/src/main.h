@@ -13,11 +13,13 @@
 #endif
 
 #include "amount.h"
-#include "chain.h"
-#include "uint256.h"
 #include <string>
 
 class ActiveChainManager;
+class CChain;
+class CBlock;
+struct CBlockLocator;
+class CBlockHeader;
 class CBlockIndex;
 class CBlockTreeDB;
 class CSporkDB;
@@ -29,6 +31,8 @@ class CNode;
 struct CNodeSignals;
 class CTxMemPool;
 class CCoinsViewCache;
+class CDiskBlockPos;
+class CTransaction;
 
 enum FlushStateMode {
     FLUSH_STATE_IF_NEEDED,

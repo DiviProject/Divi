@@ -15,7 +15,6 @@
 #include "amount.h"
 #include "chain.h"
 #include "uint256.h"
-#include "spentindex.h"
 #include <string>
 
 class ActiveChainManager;

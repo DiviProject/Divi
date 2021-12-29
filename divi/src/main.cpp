@@ -2110,6 +2110,9 @@ bool IsBlockValidChainExtension(CBlock* pblock)
 }
 bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey)
 {
+    LogPrintf("%s\n", *pblock);
+    LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
+
     // Found a solution
     shouldKeepKey = IsBlockValidChainExtension(pblock);
     if(!shouldKeepKey) return false;

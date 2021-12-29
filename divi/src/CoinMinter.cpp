@@ -19,7 +19,7 @@
 #include <script/standard.h>
 
 constexpr int hashingDelay = 45;
-extern bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey);
+extern bool ProcessNewBlockFoundByMe(CBlock* pblock);
 
 CoinMinter::CoinMinter(
     const CChain& chain,
@@ -131,11 +131,16 @@ bool CoinMinter::mintingHasBeenRequested() const
 
 bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
 {
-    bool shouldKeepKey = false;
-    bool successfulBlock = ProcessNewBlockFoundByMe(block,shouldKeepKey);
-    if(shouldKeepKey && !block->IsProofOfStake()) reservekey.KeepKey();
-    if(successfulBlock) peerNotifier_.notifyPeers(block->GetHash());
-    return successfulBlock;
+    if(ProcessNewBlockFoundByMe(block))
+    {
+        if(block->IsProofOfWork()) reservekey.KeepKey();
+        peerNotifier_.notifyPeers(block->GetHash());
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool CoinMinter::createProofOfStakeBlock(CReserveKey& reserveKey) const

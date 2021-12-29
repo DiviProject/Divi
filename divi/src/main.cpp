@@ -2108,18 +2108,14 @@ bool IsBlockValidChainExtension(CBlock* pblock)
     }
     return true;
 }
-bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey)
+bool ProcessNewBlockFoundByMe(CBlock* pblock)
 {
     LogPrintf("%s\n", *pblock);
     LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
 
-    // Found a solution
-    shouldKeepKey = IsBlockValidChainExtension(pblock);
-    if(!shouldKeepKey) return false;
-
     // Process this block the same as if we had received it from another node
     CValidationState state;
-    if (!ProcessNewBlock(state, NULL, pblock))
+    if (!IsBlockValidChainExtension(pblock) || !ProcessNewBlock(state, NULL, pblock))
         return error("%s : block not accepted",__func__);
 
     return true;

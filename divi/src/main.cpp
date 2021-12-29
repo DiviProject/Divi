@@ -2111,13 +2111,8 @@ bool IsBlockValidChainExtension(CBlock* pblock)
 bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey)
 {
     // Found a solution
-    shouldKeepKey = false;
-    {
-        LOCK(cs_main);
-        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            return error("%s : generated block is stale",__func__);
-    }
-    shouldKeepKey = true;
+    shouldKeepKey = IsBlockValidChainExtension(pblock);
+    if(!shouldKeepKey) return false;
 
     // Process this block the same as if we had received it from another node
     CValidationState state;

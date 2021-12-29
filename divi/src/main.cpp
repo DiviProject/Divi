@@ -2099,6 +2099,15 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
     return true;
 }
+bool IsBlockValidChainExtension(CBlock* pblock)
+{
+    {
+        LOCK(cs_main);
+        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+            return error("%s : generated block is stale",__func__);
+    }
+    return true;
+}
 bool ProcessNewBlockFoundByMe(CBlock* pblock, bool& shouldKeepKey)
 {
     // Found a solution

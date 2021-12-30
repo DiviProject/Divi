@@ -21,6 +21,7 @@
 #include <script/standard.h>
 #include <script/StakingVaultScript.h>
 #include <TransactionDiskAccessor.h>
+#include <txmempool.h>
 #include <WalletTx.h>
 #include <stdint.h>
 #include <OutputEntry.h>
@@ -52,6 +53,9 @@ extern BlockMap mapBlockIndex;
 extern CChain chainActive;
 extern CWallet* pwalletMain;
 extern Settings& settings;
+extern CTxMemPool mempool;
+
+extern void RelayTransactionToAllPeers(const CTransaction& tx);
 
 struct WalletOutputEntryParsing
 {
@@ -672,7 +676,30 @@ std::string SendMoney(
     coinSelector.SetAccountName(rpcTxRequest.accountName);
     TransactionCreationRequest request(scriptsToFund,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), &coinSelector);
     TransactionCreationResult txCreation = pwalletMain->SendMoney(request);
-    if (!txCreation.transactionCreationSucceeded)
+    if(txCreation.transactionCreationSucceeded)
+    {
+        // Broadcast
+        {
+            LOCK(cs_main);
+            if (!SubmitTransactionToMempool(mempool, *txCreation.wtxNew)) {
+                // This must not fail. The transaction has already been signed and recorded.
+                LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
+                std::string strError = "Error: Invalid transaction committed to wallet!";
+                throw JSONRPCError(RPC_WALLET_ERROR, strError);
+            }
+        }
+        if(!txCreation.wtxNew->IsCoinBase() && !txCreation.wtxNew->IsCoinStake())
+        {
+            LogPrintf("Relaying wtx %s\n", txCreation.wtxNew->ToStringShort());
+            RelayTransactionToAllPeers(static_cast<CTransaction>(*txCreation.wtxNew));
+        }
+        else
+        {
+            std::string strError = "Error: Cannot relay blockreward transaction!";
+            throw JSONRPCError(RPC_WALLET_ERROR, strError);
+        }
+    }
+    else
     {
         std::string strError = txCreation.errorMessage;
         LogPrintf("SendMoney() : %s\n", strError);

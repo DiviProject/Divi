@@ -7,6 +7,18 @@
 
 #include <amount.h>
 
+/** Flags for nSequence and nLockTime locks */
+enum {
+    /* Interpret sequence numbers as relative lock-time constraints. */
+    LOCKTIME_VERIFY_SEQUENCE = (1 << 0),
+
+    /* Use GetMedianTimePast() instead of nTime for end point timestamp. */
+    LOCKTIME_MEDIAN_TIME_PAST = (1 << 1),
+};
+
+/** Used as the flags parameter to sequence and nLocktime checks in non-consensus code. */
+constexpr unsigned int STANDARD_LOCKTIME_VERIFY_FLAGS = LOCKTIME_VERIFY_SEQUENCE | LOCKTIME_MEDIAN_TIME_PAST;
+
 /** Default control port */
 constexpr char DEFAULT_TOR_CONTROL[] = "127.0.0.1:9051";
 constexpr bool DEFAULT_LISTEN_ONION = true;

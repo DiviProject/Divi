@@ -225,7 +225,6 @@ private:
     bool IsMine(const CTransaction& tx) const;
 
     void UpdateTimeFirstKey(int64_t nCreateTime);
-    void RelayWalletTransaction(const CWalletTx& walletTransaction);
     bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
     bool IsTrusted(const CWalletTx& walletTransaction) const;
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);

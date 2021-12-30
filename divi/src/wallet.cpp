@@ -24,8 +24,8 @@
 #include <boost/filesystem/operations.hpp>
 #include "FeeAndPriorityCalculator.h"
 #include <blockmap.h>
-#include <txmempool.h>
 #include <defaultValues.h>
+#include <MemPoolEntry.h>
 #include <utiltime.h>
 #include <Logging.h>
 #include <StakableCoin.h>
@@ -44,7 +44,6 @@ extern Settings& settings;
 const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator::instance();
 
 extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight, int64_t nBlockTime)
 {
@@ -1419,16 +1418,6 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock,const
             wtx->RecomputeCachedQuantities();
     }
 }
-void CWallet::RelayWalletTransaction(const CWalletTx& walletTransaction)
-{
-    if (!walletTransaction.IsCoinBase() && !walletTransaction.IsCoinStake()) {
-        if (confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction) == 0)
-        {
-            LogPrintf("Relaying wtx %s\n", walletTransaction.ToStringShort());
-            RelayTransactionToAllPeers(static_cast<CTransaction>(walletTransaction));
-        }
-    }
-}
 
 void CWallet::UpdateBestBlockLocation()
 {
@@ -2325,15 +2314,6 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
             if (fFileBacked)
                 delete pwalletdb;
         }
-
-        // Broadcast
-        if (!SubmitTransactionToMempool(mempool,wtxNew))
-        {
-            // This must not fail. The transaction has already been signed and recorded.
-            LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
-            return false;
-        }
-        RelayWalletTransaction(wtxNew);
     }
     return true;
 }

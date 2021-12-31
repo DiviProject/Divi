@@ -4,6 +4,14 @@
 #include <functional>
 class CWalletTx;
 typedef std::function<int(const CWalletTx&,int,int)> TxConfirmationChecker;
+bool SelectCoinsMinConf(
+    const TxConfirmationChecker& txConfirmationChecker,
+    const CAmount& nTargetValue,
+    int nConfMine,
+    int nConfTheirs,
+    std::vector<COutput> vCoins,
+    std::set<COutput>& setCoinsRet,
+    CAmount& nValueRet);
 class StochasticSubsetSelectionAlgorithm: public I_CoinSelectionAlgorithm
 {
 private:

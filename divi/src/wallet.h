@@ -229,6 +229,7 @@ private:
     bool IsTrusted(const CWalletTx& walletTransaction) const;
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
 
+    bool CanSupportFeature(enum WalletFeature wf);
 protected:
 
     // CWalletDB: load from disk methods
@@ -305,7 +306,6 @@ public:
     std::set<uint256> GetConflicts(const uint256& txid) const;
 
     //! check whether we are allowed to upgrade (or already support) to the named feature
-    bool CanSupportFeature(enum WalletFeature wf);
     bool IsAvailableForSpending(
         const CWalletTx* pcoin,
         unsigned int i,

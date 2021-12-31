@@ -318,14 +318,6 @@ public:
         bool fIncludeZeroValue = false,
         AvailableCoinsType nCoinType = ALL_SPENDABLE_COINS,
         CAmount nExactValue = CAmount(0)) const;
-    static bool SelectCoinsMinConf(
-        const CWallet& wallet,
-        const CAmount& nTargetValue,
-        int nConfMine,
-        int nConfTheirs,
-        std::vector<COutput> vCoins,
-        std::set<COutput>& setCoinsRet,
-        CAmount& nValueRet);
 
     bool IsLockedCoin(const uint256& hash, unsigned int n) const;
     void LockCoin(const COutPoint& output);

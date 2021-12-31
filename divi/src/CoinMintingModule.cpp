@@ -47,7 +47,7 @@ CoinMintingModule::CoinMintingModule(
     CCriticalSection& mainCS,
     const CChainParams& chainParameters,
     const CChain& activeChain,
-    const BlockMap& blockIndexMap,
+    const BlockMap& blockIndexByHash,
     const MasternodeModule& masternodeModule,
     const CFeeRate& relayTxFeeCalculator,
     CCoinsViewCache* baseCoinsViewCache,
@@ -55,7 +55,6 @@ CoinMintingModule::CoinMintingModule(
     const I_PeerBlockNotifyService& peerNotifier,
     I_StakingWallet& wallet,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
-    BlockMap& blockIndexByHash,
     const CSporkManager& sporkManager
     ): posModule_(new ProofOfStakeModule(chainParameters,activeChain,blockIndexByHash))
     , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
@@ -68,7 +67,7 @@ CoinMintingModule::CoinMintingModule(
         settings,
         baseCoinsViewCache,
         activeChain,
-        blockIndexMap,
+        blockIndexByHash,
         mempool,
         mainCS,
         relayTxFeeCalculator))

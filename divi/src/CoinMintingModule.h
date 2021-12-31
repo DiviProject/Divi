@@ -44,7 +44,7 @@ public:
         CCriticalSection& mainCS,
         const CChainParams& chainParameters,
         const CChain& activeChain,
-        const BlockMap& blockIndexMap,
+        const BlockMap& blockIndexByHash,
         const MasternodeModule& masternodeModule,
         const CFeeRate& relayTxFeeCalculator,
         CCoinsViewCache* baseCoinsViewCache,
@@ -52,7 +52,6 @@ public:
         const I_PeerBlockNotifyService& peers,
         I_StakingWallet& wallet,
         BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
-        BlockMap& blockIndexByHash,
         const CSporkManager& sporkManager);
     ~CoinMintingModule();
 

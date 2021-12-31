@@ -116,7 +116,6 @@ Value setgenerate(const Array& params, bool fHelp)
             GetPeerBlockNotifyService(),
             *pwalletMain,
             mapHashedBlocks,
-            mapBlockIndex,
             GetSporkManager());
         I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);
@@ -193,7 +192,6 @@ Value generateblock(const Array& params, bool fHelp)
         GetPeerBlockNotifyService(),
         *pwalletMain,
         mapHashedBlocks,
-        mapBlockIndex,
         GetSporkManager());
     I_CoinMinter& minter = mintingModule.coinMinter();
     minter.setMintingRequestStatus(true);

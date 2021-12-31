@@ -123,7 +123,6 @@ void ThreadStakeMinter(I_StakingWallet* pwallet)
             GetPeerBlockNotifyService(),
             *pwallet,
             mapHashedBlocks,
-            mapBlockIndex,
             sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);
@@ -157,7 +156,6 @@ void static ThreadPoWMinter(I_StakingWallet* pwallet)
             GetPeerBlockNotifyService(),
             *pwallet,
             mapHashedBlocks,
-            mapBlockIndex,
             sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);

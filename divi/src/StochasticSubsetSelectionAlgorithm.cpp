@@ -77,7 +77,7 @@ static void ApproximateSmallestCoinSubsetForPayment(
     }
 }
 
-static bool SelectCoinsMinConf(
+bool SelectCoinsMinConf(
     const TxConfirmationChecker& txConfirmationChecker,
     const CAmount& nTargetValue,
     int nConfMine,

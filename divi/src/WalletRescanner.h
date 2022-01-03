@@ -13,6 +13,6 @@ class WalletRescanner
     CCriticalSection& mainCS_;
 public:
     WalletRescanner(const I_BlockDataReader& blockReader, const CChain& activeChain, CCriticalSection& mainCS);
-    int scanForWalletTransactions(CWallet& wallet, const CBlockIndex* pindexStart, bool fUpdate);
+    int scanForWalletTransactions(CWallet& wallet, const CBlockIndex* pindexStart);
 };
 #endif// WALLET_RESCANNER_H

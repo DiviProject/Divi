@@ -1390,7 +1390,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if(settings.GetBoolArg("-vault", false))
         {
             // Off by default in wallet
-            pwalletMain->activateVaultMode();
+            InitializeVault();
+            pwalletMain->activateVaultMode(vaultManagerDatabase,vaultManager);
         }
 
 

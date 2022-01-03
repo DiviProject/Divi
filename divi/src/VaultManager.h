@@ -6,6 +6,7 @@
 #include <memory>
 #include <sync.h>
 #include <Output.h>
+#include <NotificationInterface.h>
 
 class CScript;
 using ManagedScripts = std::set<CScript>;
@@ -31,7 +32,7 @@ enum VaultUTXOFilters
     INMATURE = 1 << 3,
     CONFIRMED_AND_MATURED = CONFIRMED | MATURED
 };
-class VaultManager
+class VaultManager final: public NotificationInterface
 {
 private:
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
@@ -47,6 +48,11 @@ private:
     bool transactionIsRelevant(const CTransaction& tx, bool checkOutputs,const CScript& outputScriptFilter) const;
     bool allInputsAreKnown(const CTransaction& tx) const;
     bool isManagedUTXO(const CWalletTx& walletTransaction,const CTxOut& output) const;
+
+    // Notification interface methods
+    void SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType) override {};
+    void SetBestChain(const CBlockLocator& loc) override {};
+    void UpdatedBlockTip(const CBlockIndex *pindex) override {};
 public:
     VaultManager(
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,

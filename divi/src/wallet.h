@@ -281,7 +281,9 @@ public:
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 
     void toggleSpendingZeroConfirmationOutputs();
-    void activateVaultMode();
+    void activateVaultMode(
+        std::shared_ptr<I_VaultManagerDatabase> vaultDB,
+        std::shared_ptr<VaultManager> vaultManager);
     int64_t getTimestampOfFistKey() const;
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 

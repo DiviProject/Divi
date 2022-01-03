@@ -38,7 +38,7 @@ extern std::map<uint256, int64_t> mapRejectedBlocks;
 
 extern bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 extern bool DisconnectBlocksAndReprocess(int blocks);
-extern bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
+extern bool ActivateBestChain(CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
 
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
 unsigned int nTransactionSizeMultiplier = 300;

@@ -141,21 +141,18 @@ void InitializeWallet(std::string strWalletFile)
 void InitializeVault()
 {
 #ifdef ENABLE_WALLET
-    if(settings.GetBoolArg("-vault", false))
+    const std::string keystring = pwalletMain->GetDefaultKey().GetID().ToString();
+    const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
+    vaultManagerDatabase.reset(new VaultManagerDatabase(vaultID,0));
+    vaultManager.reset(new VaultManager(*confirmationsCalculator,*vaultManagerDatabase));
+    for(const std::string& whitelistedVaultScript: settings.GetMultiParameter("-whitelisted_vault"))
     {
-        const std::string keystring = pwalletMain->GetDefaultKey().GetID().ToString();
-        const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
-        vaultManagerDatabase.reset(new VaultManagerDatabase(vaultID,0));
-        vaultManager.reset(new VaultManager(*confirmationsCalculator,*vaultManagerDatabase));
-        for(const std::string& whitelistedVaultScript: settings.GetMultiParameter("-whitelisted_vault"))
-        {
-            auto byteVector = ParseHex(whitelistedVaultScript);
-            CScript whitelistedScript(byteVector.begin(),byteVector.end());
-            assert(HexStr(ToByteVector(whitelistedScript)) == whitelistedVaultScript);
-            vaultManager->addWhiteListedScript(whitelistedScript);
-        }
-        if(vaultManager) RegisterValidationInterface(vaultManager.get());
+        auto byteVector = ParseHex(whitelistedVaultScript);
+        CScript whitelistedScript(byteVector.begin(),byteVector.end());
+        assert(HexStr(ToByteVector(whitelistedScript)) == whitelistedVaultScript);
+        vaultManager->addWhiteListedScript(whitelistedScript);
     }
+    if(vaultManager) RegisterValidationInterface(vaultManager.get());
 #endif
 }
 void DeallocateVault()

@@ -19,8 +19,9 @@ class CTransaction;
 class NotificationInterface;
 class CValidationState;
 class uint256;
-class TransactionVector;
+//class TransactionVector;
 
+using TransactionVector = std::vector<CTransaction>;
 enum TransactionSyncType
 {
     MEMPOOL_TX_ADD,

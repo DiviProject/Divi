@@ -1043,7 +1043,7 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     return true;
 }
 
-int ScanForWalletTransactions(CWallet& walletToRescan, CBlockIndex* scanStartIndex, bool updateWallet)
+int ScanForWalletTransactions(CWallet& walletToRescan, const CBlockIndex* scanStartIndex, bool updateWallet)
 {
     static BlockDiskDataReader blockReader;
     static WalletRescanner rescanner(blockReader,chainActive,cs_main);
@@ -1053,7 +1053,7 @@ int ScanForWalletTransactions(CWallet& walletToRescan, CBlockIndex* scanStartInd
 void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
 {
     BlockDiskDataReader blockReader;
-    CBlockIndex* pindexRescan = chainActive.Tip();
+    const CBlockIndex* pindexRescan = chainActive.Tip();
     if (settings.GetBoolArg("-rescan", false))
         pindexRescan = chainActive.Genesis();
     else {

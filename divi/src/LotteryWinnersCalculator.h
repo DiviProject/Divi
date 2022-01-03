@@ -39,7 +39,7 @@ public:
     static RankedScoreAwareCoinstakes computeRankedScoreAwareCoinstakes(
         const uint256& lastLotteryBlockHash, const LotteryCoinstakes& updatedCoinstakes);
     bool IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight) const;
-    CBlockIndex* GetLastLotteryBlockIndexBeforeHeight(int blockHeight) const;
+    const CBlockIndex* GetLastLotteryBlockIndexBeforeHeight(int blockHeight) const;
     bool UpdateCoinstakes(int nextBlockHeight, LotteryCoinstakes& updatedCoinstakes) const;
     LotteryCoinstakeData CalculateUpdatedLotteryWinners(const CTransaction& coinMintTransaction, const LotteryCoinstakeData& previousBlockLotteryCoinstakeData, int nHeight) const;
 };

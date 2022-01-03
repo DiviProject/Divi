@@ -241,7 +241,7 @@ ActiveMasternodeStatus GetActiveMasternodeStatus()
     }
 }
 
-unsigned FindLastPayeePaymentTime(CBlockIndex* chainTip, const MasternodePaymentData& paymentData, const CMasternode& masternode, const unsigned maxBlockDepth)
+unsigned FindLastPayeePaymentTime(const CBlockIndex* chainTip, const MasternodePaymentData& paymentData, const CMasternode& masternode, const unsigned maxBlockDepth)
 {
     assert(chainTip);
     CScript mnPayee = GetScriptForDestination(masternode.pubKeyCollateralAddress.GetID());
@@ -276,7 +276,7 @@ unsigned FindLastPayeePaymentTime(CBlockIndex* chainTip, const MasternodePayment
     return 0u;
 }
 
-std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter, CBlockIndex* chainTip)
+std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter, const CBlockIndex* chainTip)
 {
     const auto& mnModule = GetMasternodeModule();
     auto& networkMessageManager = mnModule.getNetworkMessageManager();

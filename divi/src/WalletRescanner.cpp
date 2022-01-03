@@ -20,14 +20,14 @@ WalletRescanner::WalletRescanner(
 {
 }
 
-int WalletRescanner::scanForWalletTransactions(CWallet& wallet, CBlockIndex* pindexStart, bool fUpdate)
+int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockIndex* pindexStart, bool fUpdate)
 {
     static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
     int ret = 0;
     int64_t nNow = GetTime();
 
-    CBlockIndex* pindex = pindexStart;
+    const CBlockIndex* pindex = pindexStart;
     {
         LOCK2(mainCS_, wallet.cs_wallet);
         // no need to read and scan block, if block was created before

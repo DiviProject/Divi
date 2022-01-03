@@ -51,7 +51,7 @@ bool CCheckpointServices::CheckBlock(int nHeight, const uint256& hash, bool fMat
 }
 
 //! Guess how far we are in the verification process at the given block index
-double CCheckpointServices::GuessVerificationProgress(CBlockIndex* pindex, bool useConservativeEstimate) const
+double CCheckpointServices::GuessVerificationProgress(const CBlockIndex* pindex, bool useConservativeEstimate) const
 {
     static const double CONSERVATIVE_VERIFICATION_FACTOR = 5.0;
     if (pindex == NULL)

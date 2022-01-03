@@ -1079,7 +1079,7 @@ int ScanForWalletTransactions(CWallet& walletToRescan, const CBlockIndex* scanSt
     return rescanner.scanForWalletTransactions(walletToRescan,scanStartIndex);
 }
 
-void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
+void ScanBlockchainForWalletUpdates()
 {
     BlockDiskDataReader blockReader;
     const CBlockIndex* pindexRescan = chainActive.Tip();
@@ -1095,7 +1095,7 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
     if (chainActive.Tip() && chainActive.Tip() != pindexRescan) {
         uiInterface.InitMessage(translate("Rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight, pindexRescan->nHeight);
-        nStart = GetTimeMillis();
+        int64_t nStart = GetTimeMillis();
         ScanForWalletTransactions(*pwalletMain,pindexRescan);
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
         pwalletMain->UpdateBestBlockLocation();
@@ -1296,7 +1296,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
     WarmUpRPCAndStartRPCThreads();
 
-    int64_t nStart;
 
     // ********************************************************* Step 5: Backup wallet and verify wallet database integrity
     BackupWallet(strDataDir, fDisableWallet);
@@ -1324,6 +1323,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // ********************************************************* Step 7: load block chain
     CreateHardlinksForBlocks();
     bool fLoaded = false;
+    int64_t nStart;
     while (!fLoaded) {
         bool fReset = fReindex;
         std::string strLoadError;
@@ -1400,7 +1400,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
         RegisterValidationInterface(pwalletMain);
 
-        ScanBlockchainForWalletUpdates(strWalletFile, nStart);
+        ScanBlockchainForWalletUpdates();
         fVerifyingBlocks = false;
 
     }  // (!fDisableWallet)

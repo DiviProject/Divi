@@ -216,7 +216,6 @@ private:
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
     // Notification interface methods
-    void SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType) override;
     void SetBestChain(const CBlockLocator& loc) override;
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
     void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override;

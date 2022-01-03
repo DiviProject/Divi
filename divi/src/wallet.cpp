@@ -1396,28 +1396,23 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
     return false;
 }
 
-void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType)
-{
-    LOCK2(cs_main, cs_wallet);
-    if (!AddToWalletIfInvolvingMe(tx, pblock, true,syncType))
-        return; // Not one of ours
-
-    // If a transaction changes 'conflicted' state, that changes the balance
-    // available of the outputs it spends. So force those to be
-    // recomputed, also:
-    BOOST_FOREACH (const CTxIn& txin, tx.vin) {
-        CWalletTx* wtx = const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
-        if (wtx != nullptr)
-            wtx->RecomputeCachedQuantities();
-    }
-}
-
 void CWallet::SyncTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType)
 {
     LOCK2(cs_main, cs_wallet);
     for(const CTransaction& tx: txs)
     {
-        SyncTransaction(tx,pblock,syncType);
+        if (!AddToWalletIfInvolvingMe(tx, pblock, true,syncType))
+            continue; // Not one of ours
+
+        // If a transaction changes 'conflicted' state, that changes the balance
+        // available of the outputs it spends. So force those to be
+        // recomputed, also:
+        BOOST_FOREACH (const CTxIn& txin, tx.vin)
+        {
+            CWalletTx* wtx = const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
+            if (wtx != nullptr)
+                wtx->RecomputeCachedQuantities();
+        }
     }
 }
 

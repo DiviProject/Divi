@@ -60,7 +60,7 @@ bool LotteryWinnersCalculator::IsCoinstakeValidForLottery(const CTransaction &tx
     return nAmount > minimumCoinstakeForTicket(nHeight); // only if stake is more than 10k
 }
 
-CBlockIndex* LotteryWinnersCalculator::GetLastLotteryBlockIndexBeforeHeight(int blockHeight) const
+const CBlockIndex* LotteryWinnersCalculator::GetLastLotteryBlockIndexBeforeHeight(int blockHeight) const
 {
     const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(blockHeight);
     const int nLastLotteryHeight = std::max(startOfLotteryBlocks_,  lotteryBlockPaymentCycle* ((blockHeight - 1) / lotteryBlockPaymentCycle) );
@@ -74,7 +74,7 @@ bool LotteryWinnersCalculator::IsPaymentScriptVetoed(const CScript& paymentScrip
     constexpr int numberOfLotteryCyclesToVetoFor = 3;
     for (int lotteryCycleCount = 0; lotteryCycleCount < numberOfLotteryCyclesToVetoFor; ++lotteryCycleCount)
     {
-        CBlockIndex* blockIndexPreceedingPriorLotteryBlock = activeChain_[ nLastLotteryHeight-lotteryBlockPaymentCycle*lotteryCycleCount-1];
+        const CBlockIndex* blockIndexPreceedingPriorLotteryBlock = activeChain_[ nLastLotteryHeight-lotteryBlockPaymentCycle*lotteryCycleCount-1];
         if(!blockIndexPreceedingPriorLotteryBlock)
         {
             return false;
@@ -153,7 +153,7 @@ RankedScoreAwareCoinstakes LotteryWinnersCalculator::computeRankedScoreAwareCoin
 
 bool LotteryWinnersCalculator::UpdateCoinstakes(int nextBlockHeight, LotteryCoinstakes& updatedCoinstakes) const
 {
-    CBlockIndex* lastLotteryBlockIndex = GetLastLotteryBlockIndexBeforeHeight(nextBlockHeight);
+    const CBlockIndex* lastLotteryBlockIndex = GetLastLotteryBlockIndexBeforeHeight(nextBlockHeight);
     ActivationState activations(lastLotteryBlockIndex);
     if(activations.IsActive(Fork::UniformLotteryWinners) &&
         IsPaymentScriptVetoed(updatedCoinstakes.back().second,nextBlockHeight))

@@ -39,7 +39,7 @@ public:
     //! Returns last CBlockIndex* in mapBlockIndex that is a checkpoint
     CBlockIndex* GetLastCheckpoint(const BlockMap& mapBlockIndex) const;
 
-    double GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks = true) const;
+    double GuessVerificationProgress(const CBlockIndex* pindex, bool fSigchecks = true) const;
 
     static bool fEnabled;
 }; //class CCheckpoints

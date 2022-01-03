@@ -58,10 +58,10 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
     LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
     CCoinsViewCache coins(coinsview);
     CBlockIndex* pindexState = activeChain_.Tip();
-    CBlockIndex* pindexFailure = NULL;
+    const CBlockIndex* pindexFailure = nullptr;
     int nGoodTransactions = 0;
     CValidationState state;
-    for (CBlockIndex* pindex = activeChain_.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
+    for (const CBlockIndex* pindex = activeChain_.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
         boost::this_thread::interruption_point();
         const double fractionOfBlocksChecked = (double)(activeChain_.Height() - pindex->nHeight) / (double)nCheckDepth;
         const int fractionAsProgressPercentage = static_cast<int>(fractionOfBlocksChecked * (nCheckLevel >= 4 ? 50 : 100));

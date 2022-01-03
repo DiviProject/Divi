@@ -51,6 +51,7 @@ private:
 
     // Notification interface methods
     void SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType) override {};
+    void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override {};
     void SetBestChain(const CBlockLocator& loc) override {};
     void UpdatedBlockTip(const CBlockIndex *pindex) override {};
 public:

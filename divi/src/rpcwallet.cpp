@@ -1015,6 +1015,8 @@ Value addvault(const Array& params, bool fHelp)
     if (!ownerAddress.IsValid() || !ownerAddress.GetKeyID(ownerKeyID))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Vault Registry Failed: Invalid owner DIVI address");
 
+    if(!pwalletMain->HaveKey(managerKeyID))
+        throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Does not have matching manager key!");
 
     uint256 txhash = uint256(params[1].get_str());
     CTransaction tx;
@@ -1039,25 +1041,17 @@ Value addvault(const Array& params, bool fHelp)
         return result;
     }
 
-    if(pwalletMain->HaveKey(managerKeyID) )
+    CScript script = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
+    CBlock block;
+    if(!ReadBlockFromDisk(block,blockSearchStart))
     {
-        CScript script = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
-        CBlock block;
-        if(!ReadBlockFromDisk(block,blockSearchStart))
-        {
-            throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: error reading block from disk");
-        }
-        if(!pwalletMain->AddVault(script,&block,tx))
-        {
-            throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Unable to sync TX!");
-        }
-        result.push_back(Pair("succeeded", true));
-        return result;
+        throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: error reading block from disk");
     }
-    else
+    if(!pwalletMain->AddVault(script,&block,tx))
     {
-        throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Do not have correct key!");
+        throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Unable to sync TX!");
     }
+    result.push_back(Pair("succeeded", true));
     return result;
 }
 

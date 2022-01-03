@@ -187,8 +187,8 @@ private:
     const BlockMap& blockIndexByHash_;
     const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator_;
     std::unique_ptr<AddressBookManager> addressBookManager_;
-    std::unique_ptr<I_VaultManagerDatabase> vaultDB_;
-    std::unique_ptr<VaultManager> vaultManager_;
+    std::shared_ptr<I_VaultManagerDatabase> vaultDB_;
+    std::shared_ptr<VaultManager> vaultManager_;
     std::unique_ptr<WalletTransactionRecord> transactionRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
     std::unique_ptr<CWalletDB> pwalletdbEncryption;

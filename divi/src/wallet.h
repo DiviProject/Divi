@@ -219,6 +219,7 @@ private:
     void SyncTransaction(const CTransaction& tx, const CBlock* pblock,const TransactionSyncType syncType) override;
     void SetBestChain(const CBlockLocator& loc) override;
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
+    void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override {}
 
     isminetype IsMine(const CScript& scriptPubKey) const;
     isminetype IsMine(const CTxIn& txin) const;

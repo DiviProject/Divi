@@ -1412,6 +1412,15 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock,const
     }
 }
 
+void CWallet::SyncTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType)
+{
+    LOCK2(cs_main, cs_wallet);
+    for(const CTransaction& tx: txs)
+    {
+        SyncTransaction(tx,pblock,syncType);
+    }
+}
+
 void CWallet::UpdateBestBlockLocation()
 {
     SetBestChain(activeChain_.GetLocator());

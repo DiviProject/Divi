@@ -20,7 +20,7 @@ WalletRescanner::WalletRescanner(
 {
 }
 
-int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockIndex* pindexStart, bool fUpdate)
+int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockIndex* pindexStart)
 {
     static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
@@ -47,7 +47,7 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
             blockReader_.ReadBlock(pindex,block);
             BOOST_FOREACH (CTransaction& tx, block.vtx)
             {
-                if (wallet.AddToWalletIfInvolvingMe(tx, &block, fUpdate,TransactionSyncType::RESCAN))
+                if (wallet.AddToWalletIfInvolvingMe(tx, &block, true,TransactionSyncType::RESCAN))
                     ret++;
             }
             pindex = activeChain_.Next(pindex);

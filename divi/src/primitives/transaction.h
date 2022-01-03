@@ -168,6 +168,12 @@ public:
     std::string ToStringShort() const;
 };
 
+class TransactionVector: public std::vector<CTransaction>
+{
+public:
+    TransactionVector() = default;
+};
+
 /** A mutable version of CTransaction. */
 struct CMutableTransaction
 {

@@ -153,3 +153,11 @@ void CZMQNotificationInterface::SyncTransaction(const CTransaction &tx, const CB
         }
     }
 }
+
+void CZMQNotificationInterface::SyncTransactions(const TransactionVector & txs, const CBlock *pblock, const TransactionSyncType syncType)
+{
+    for(const CTransaction& tx: txs)
+    {
+        SyncTransaction(tx,pblock,syncType);
+    }
+}

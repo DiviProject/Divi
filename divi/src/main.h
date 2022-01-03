@@ -145,7 +145,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** pindex, C
 bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex** ppindex = NULL);
 
 /** Find the last common block between the parameter chain and a locator. */
-CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
+const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
 
 /** Mark a block as invalid. */
 bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex);

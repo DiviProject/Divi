@@ -386,7 +386,7 @@ Value listmasternodes(const Array& params, bool fHelp)
             HelpExampleCli("masternodelist", "") + HelpExampleRpc("masternodelist", ""));
 
     Array ret;
-    CBlockIndex* pindex;
+    const CBlockIndex* pindex;
     {
         LOCK(cs_main);
         pindex = chainActive.Tip();
@@ -638,7 +638,7 @@ Value getmasternodewinners (const Array& params, bool fHelp)
             HelpExampleCli("getmasternodewinners", "") + HelpExampleRpc("getmasternodewinners", ""));
 
     int nHeight;
-    CBlockIndex* pindex = nullptr;
+    const CBlockIndex* pindex = nullptr;
     {
         LOCK(cs_main);
         pindex = chainActive.Tip();

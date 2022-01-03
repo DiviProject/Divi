@@ -32,7 +32,7 @@ uint64_t LegacyPoSStakeModifierService::GetKernelStakeModifier(const uint256& ha
     int64_t timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();
     const int64_t timeWindowForSelectingStakeModifier = GetStakeModifierSelectionInterval();
     const CBlockIndex* pindex = &stakeTransactionBlockIndex;
-    CBlockIndex* pindexNext = activeChain_[stakeTransactionBlockIndex.nHeight + 1];
+    const CBlockIndex* pindexNext = activeChain_[stakeTransactionBlockIndex.nHeight + 1];
 
     // loop to find the stake modifier later by a selection interval
     while (timeStampOfSelectedBlock < stakeTransactionBlockIndex.GetBlockTime() + timeWindowForSelectingStakeModifier) {

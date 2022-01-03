@@ -334,7 +334,7 @@ bool CMasternodePayments::IsScheduled(const CScript mnpayee, int nNotBlockHeight
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    CBlockIndex* tip = activeChain_.Tip();
+    const CBlockIndex* tip = activeChain_.Tip();
     if (tip == nullptr)
         return false;
 

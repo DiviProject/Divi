@@ -799,8 +799,8 @@ Value getaddressdeltas(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Start or end is outside chain range");
         }
 
-        CBlockIndex* startIndex = chainActive[start];
-        CBlockIndex* endIndex = chainActive[end];
+        const CBlockIndex* startIndex = chainActive[start];
+        const CBlockIndex* endIndex = chainActive[end];
 
         Object startInfo;
         Object endInfo;

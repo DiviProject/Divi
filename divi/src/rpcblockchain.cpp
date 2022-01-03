@@ -40,7 +40,7 @@ extern bool fAddressIndex;
 extern BlockMap mapBlockIndex;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern CBlockIndex* pindexBestHeader;
+extern const CBlockIndex* pindexBestHeader;
 extern CChain chainActive;
 
 double GetDifficulty(const CBlockIndex* blockindex)
@@ -104,7 +104,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
 
     if (blockindex->pprev)
         result.push_back(Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
-    CBlockIndex* pnext = chainActive.Next(blockindex);
+    const CBlockIndex* pnext = chainActive.Next(blockindex);
     if (pnext)
         result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
 
@@ -259,7 +259,7 @@ Value getblockhash(const Array& params, bool fHelp)
     if (nHeight < 0 || nHeight > chainActive.Height())
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Block height out of range");
 
-    CBlockIndex* pblockindex = chainActive[nHeight];
+    const CBlockIndex* pblockindex = chainActive[nHeight];
     return pblockindex->GetBlockHash().GetHex();
 }
 

@@ -36,7 +36,7 @@ void BlocksInFlightRegistry::MarkBlockAsReceived(const uint256& hash)
 }
 
 // Requires cs_main.
-void BlocksInFlightRegistry::MarkBlockAsInFlight(NodeId nodeId, const uint256& hash, CBlockIndex* pindex)
+void BlocksInFlightRegistry::MarkBlockAsInFlight(NodeId nodeId, const uint256& hash, const CBlockIndex* pindex)
 {
     assert(nodeSyncByNodeId_.count(nodeId)>0);
     // Make sure it's not listed somewhere already.

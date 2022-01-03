@@ -49,6 +49,8 @@
 #include <WalletRescanner.h>
 #include <StartAndShutdownSignals.h>
 #include <MerkleTxConfirmationNumberCalculator.h>
+#include <VaultManager.h>
+#include <VaultManagerDatabase.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
@@ -98,6 +100,8 @@ static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
 #ifdef ENABLE_WALLET
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
+std::shared_ptr<I_VaultManagerDatabase> vaultManagerDatabase(nullptr);
+std::shared_ptr<VaultManager> vaultManager(nullptr);
 CWallet* pwalletMain = NULL;
 constexpr int nWalletBackups = 20;
 
@@ -133,6 +137,36 @@ void InitializeWallet(std::string strWalletFile)
     pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex, *confirmationsCalculator);
 #endif
 }
+
+void InitializeVault()
+{
+#ifdef ENABLE_WALLET
+    if(settings.GetBoolArg("-vault", false))
+    {
+        const std::string keystring = pwalletMain->GetDefaultKey().GetID().ToString();
+        const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
+        vaultManagerDatabase.reset(new VaultManagerDatabase(vaultID,0));
+        vaultManager.reset(new VaultManager(*confirmationsCalculator,*vaultManagerDatabase));
+        for(const std::string& whitelistedVaultScript: settings.GetMultiParameter("-whitelisted_vault"))
+        {
+            auto byteVector = ParseHex(whitelistedVaultScript);
+            CScript whitelistedScript(byteVector.begin(),byteVector.end());
+            assert(HexStr(ToByteVector(whitelistedScript)) == whitelistedVaultScript);
+            vaultManager->addWhiteListedScript(whitelistedScript);
+        }
+        if(vaultManager) RegisterValidationInterface(vaultManager.get());
+    }
+#endif
+}
+void DeallocateVault()
+{
+#ifdef ENABLE_WALLET
+    if(vaultManager) UnregisterValidationInterface(vaultManager.get());
+    vaultManager.reset();
+    vaultManagerDatabase.reset();
+#endif
+}
+
 void DeallocateWallet()
 {
 #ifdef ENABLE_WALLET
@@ -321,6 +355,7 @@ void MainShutdown()
 
 // Shutdown part 2: delete wallet instance
 #ifdef ENABLE_WALLET
+    DeallocateVault();
     DeallocateWallet();
 #endif
     CleanupP2PConnections();

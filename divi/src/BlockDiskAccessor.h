@@ -8,7 +8,7 @@ class CBlockIndex;
 
 /** Functions for disk access for blocks */
 bool CheckDiskSpace(uint64_t nAdditionalBytes = 0);
-bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos);
+bool WriteBlockToDisk(const CBlock& block, CDiskBlockPos& pos);
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos);
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex);
 

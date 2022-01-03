@@ -1072,11 +1072,11 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     return true;
 }
 
-int ScanForWalletTransactions(CWallet& walletToRescan, const CBlockIndex* scanStartIndex, bool updateWallet)
+int ScanForWalletTransactions(CWallet& walletToRescan, const CBlockIndex* scanStartIndex)
 {
     static BlockDiskDataReader blockReader;
     static WalletRescanner rescanner(blockReader,chainActive,cs_main);
-    return rescanner.scanForWalletTransactions(walletToRescan,scanStartIndex,updateWallet);
+    return rescanner.scanForWalletTransactions(walletToRescan,scanStartIndex);
 }
 
 void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
@@ -1096,7 +1096,7 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
         uiInterface.InitMessage(translate("Rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
-        ScanForWalletTransactions(*pwalletMain,pindexRescan,true);
+        ScanForWalletTransactions(*pwalletMain,pindexRescan);
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
         pwalletMain->UpdateBestBlockLocation();
     }

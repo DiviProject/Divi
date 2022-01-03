@@ -48,11 +48,17 @@ def createVaultPoSStacks(ownerNodes,vaultNode):
       for _ in range(parts):
         funding_data.append( node.fundvault(vault_encoding,value) )
 
+    non_vault_manager_address = owner_node.getnewaddress()
+    unknown_vault_encoding = owner_node.getnewaddress() + ":" + non_vault_manager_address
+    assert_greater_than(minting_node.getbalance(),11.0)
+    bad_funding_data = minting_node.fundvault(unknown_vault_encoding,10.0)
     # Make sure to get all those transactions mined.
     sync_mempools(all_nodes)
     while len(minting_node.getrawmempool()) > 0:
       minting_node.setgenerate(True, 1)
     sync_blocks(all_nodes)
+
+    assert_raises(JSONRPCException,vaultNode.addvault,bad_funding_data["vault"],bad_funding_data["txhash"])
     for funding_datum in funding_data:
       assert vaultNode.addvault(funding_datum["vault"],funding_datum["txhash"])["succeeded"]
 

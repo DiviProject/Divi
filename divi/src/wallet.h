@@ -159,7 +159,7 @@ struct TransactionCreationResult
     TransactionCreationResult(TransactionCreationResult&& other);
 };
 
-class CWallet :
+class CWallet final:
     public CCryptoKeyStore,
     public NotificationInterface,
     public virtual I_KeypoolReserver,

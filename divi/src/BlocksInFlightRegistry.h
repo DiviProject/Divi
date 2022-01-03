@@ -43,7 +43,7 @@ public:
     void RegisterNodedId(NodeId nodeId);
     void UnregisterNodeId(NodeId nodeId);
     void MarkBlockAsReceived(const uint256& hash);
-    void MarkBlockAsInFlight(NodeId nodeId, const uint256& hash, CBlockIndex* pindex = nullptr);
+    void MarkBlockAsInFlight(NodeId nodeId, const uint256& hash, const CBlockIndex* pindex = nullptr);
     bool BlockIsInFlight(const uint256& hash);
     NodeId GetSourceOfInFlightBlock(const uint256& hash);
 

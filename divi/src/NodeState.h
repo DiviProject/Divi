@@ -37,11 +37,11 @@ public:
     //! String name of this peer (debugging/logging purposes).
     std::string name;
     //! The best known block we know this peer has announced.
-    CBlockIndex* pindexBestKnownBlock;
+    const CBlockIndex* pindexBestKnownBlock;
     //! The hash of the last unknown block this peer has announced.
     uint256 hashLastUnknownBlock;
     //! The last full block we both have.
-    CBlockIndex* pindexLastCommonBlock;
+    const CBlockIndex* pindexLastCommonBlock;
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
 

@@ -2188,7 +2188,7 @@ Value listsinceblock(const Array& params, bool fHelp)
             ParseTransactionDetails(*pwalletMain, tx, "*", 0, true, transactions, filter);
     }
 
-    CBlockIndex* pblockLast = chainActive[chainActive.Height() + 1 - target_confirms];
+    const CBlockIndex* pblockLast = chainActive[chainActive.Height() + 1 - target_confirms];
     uint256 lastblock = pblockLast ? pblockLast->GetBlockHash() : 0;
 
     Object ret;

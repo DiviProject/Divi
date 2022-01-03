@@ -95,7 +95,7 @@ BlockMap mapBlockIndex;
 std::map<uint256, uint256> mapProofOfStake;
 CChain chainActive; /** The currently-connected chain of blocks. */
 int64_t timeOfLastChainTipUpdate =0;
-CBlockIndex* pindexBestHeader = NULL;
+const CBlockIndex* pindexBestHeader = nullptr;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
 int nScriptCheckThreads = 0;
@@ -123,7 +123,7 @@ std::map<uint256, int64_t> mapRejectedBlocks;
 namespace
 {
 struct CBlockIndexWorkComparator {
-    bool operator()(CBlockIndex* pa, CBlockIndex* pb) const
+    bool operator()(const CBlockIndex* pa, const CBlockIndex* pb) const
     {
         // First sort by most total work, ...
         if (pa->nChainWork > pb->nChainWork) return false;
@@ -143,7 +143,7 @@ struct CBlockIndexWorkComparator {
     }
 };
 
-CBlockIndex* pindexBestInvalid;
+const CBlockIndex* pindexBestInvalid;
 
 /**
      * The set of all CBlockIndex entries with BLOCK_VALID_TRANSACTIONS (for itself and all ancestors) and
@@ -245,13 +245,13 @@ int GetHeight()
     }
 }
 
-CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator)
+const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator)
 {
     // Find the first block the caller has in the main chain
     for(const uint256& hash: locator.vHave) {
-        BlockMap::iterator mi = mapBlockIndex.find(hash);
+        const auto mi = mapBlockIndex.find(hash);
         if (mi != mapBlockIndex.end()) {
-            CBlockIndex* pindex = (*mi).second;
+            const CBlockIndex* pindex = (*mi).second;
             if (chain.Contains(pindex))
                 return pindex;
         }
@@ -723,9 +723,15 @@ bool IsInitialBlockDownload()	//2446
     return state;
 }
 
+namespace
+{
+
 bool fLargeWorkForkFound = false;
 bool fLargeWorkInvalidChainFound = false;
-CBlockIndex *pindexBestForkTip = NULL, *pindexBestForkBase = NULL;
+const CBlockIndex* pindexBestForkTip = nullptr;
+const CBlockIndex* pindexBestForkBase = nullptr;
+
+} // anonymous namespace
 
 void CheckForkWarningConditions()
 {
@@ -765,12 +771,12 @@ void CheckForkWarningConditions()
     }
 }
 
-void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
+static void CheckForkWarningConditionsOnNewFork(const CBlockIndex* pindexNewForkTip)
 {
     AssertLockHeld(cs_main);
     // If we are on a fork that is sufficiently large, set a warning flag
-    CBlockIndex* pfork = pindexNewForkTip;
-    CBlockIndex* plonger = chainActive.Tip();
+    const CBlockIndex* pfork = pindexNewForkTip;
+    const CBlockIndex* plonger = chainActive.Tip();
     while (pfork && pfork != plonger) {
         while (plonger && plonger->nHeight > pfork->nHeight)
             plonger = plonger->pprev;
@@ -1174,7 +1180,7 @@ void static UpdateTip(CBlockIndex* pindexNew)
 bool static DisconnectTip(CValidationState& state)
 {
     AssertLockHeld(cs_main);
-    CBlockIndex* pindexDelete = chainActive.Tip();
+    const CBlockIndex* pindexDelete = chainActive.Tip();
     assert(pindexDelete);
     mempool.check(pcoinsTip, mapBlockIndex);
     // Read block from disk.
@@ -1374,7 +1380,7 @@ static void PruneBlockIndexCandidates()
 {
     // Note that we can't delete the current block itself, as we may need to return to it later in case a
     // reorganization to a better block fails.
-    std::set<CBlockIndex*, CBlockIndexWorkComparator>::iterator it = setBlockIndexCandidates.begin();
+    auto it = setBlockIndexCandidates.begin();
     while (it != setBlockIndexCandidates.end() && setBlockIndexCandidates.value_comp()(*it, chainActive.Tip())) {
         setBlockIndexCandidates.erase(it++);
     }
@@ -1460,7 +1466,7 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
  */
 bool ActivateBestChain(CValidationState& state, const CBlock* pblock, bool fAlreadyChecked)
 {
-    CBlockIndex* pindexNewTip = NULL;
+    const CBlockIndex* pindexNewTip = NULL;
     CBlockIndex* pindexMostWork = NULL;
     do {
         boost::this_thread::interruption_point();
@@ -1520,7 +1526,7 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex)
     setBlockIndexCandidates.erase(pindex);
 
     while (chainActive.Contains(pindex)) {
-        CBlockIndex* pindexWalk = chainActive.Tip();
+        CBlockIndex* pindexWalk = mapBlockIndex.at(chainActive.Tip()->GetBlockHash());
         pindexWalk->nStatus |= BLOCK_FAILED_CHILD;
         setDirtyBlockIndex.insert(pindexWalk);
         setBlockIndexCandidates.erase(pindexWalk);
@@ -1672,9 +1678,9 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
             if (chainActive.Tip() == NULL || !setBlockIndexCandidates.value_comp()(pindex, chainActive.Tip())) {
                 setBlockIndexCandidates.insert(pindex);
             }
-            std::pair<std::multimap<CBlockIndex*, CBlockIndex*>::iterator, std::multimap<CBlockIndex*, CBlockIndex*>::iterator> range = mapBlocksUnlinked.equal_range(pindex);
+            auto range = mapBlocksUnlinked.equal_range(pindex);
             while (range.first != range.second) {
-                std::multimap<CBlockIndex*, CBlockIndex*>::iterator it = range.first;
+                auto it = range.first;
                 queue.push_back(it->second);
                 range.first++;
                 mapBlocksUnlinked.erase(it);
@@ -3135,7 +3141,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         LOCK(cs_main);
 
         // Find the last block the caller has in the main chain
-        CBlockIndex* pindex = FindForkInGlobalIndex(chainActive, locator);
+        const CBlockIndex* pindex = FindForkInGlobalIndex(chainActive, locator);
 
         // Send the rest of the chain
         if (pindex)
@@ -3176,7 +3182,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         if (IsInitialBlockDownload())
             return true;
 
-        CBlockIndex* pindex = NULL;
+        const CBlockIndex* pindex = nullptr;
         if (locator.IsNull()) {
             // If locator is null, return the hashStop block
             BlockMap::iterator mi = mapBlockIndex.find(hashStop);
@@ -3770,10 +3776,10 @@ static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto)
 static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, std::vector<CInv>& vGetData)
 {
     if (!pto->IsFlaggedForDisconnection() && !pto->fClient && GetNumberOfBlocksInFlight(pto->GetId()) < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
-        std::vector<CBlockIndex*> vToDownload;
+        std::vector<const CBlockIndex*> vToDownload;
         NodeId staller = -1;
         FindNextBlocksToDownload(mapBlockIndex,chainActive, pto->GetNodeState(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - GetNumberOfBlocksInFlight(pto->GetId()), vToDownload, staller);
-        for(CBlockIndex* pindex: vToDownload) {
+        for(const auto* pindex: vToDownload) {
             vGetData.push_back(CInv(MSG_BLOCK, pindex->GetBlockHash()));
             MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockHash(), pindex);
             LogPrintf("Requesting block %s (%d) peer=%d\n", pindex->GetBlockHash(),

@@ -66,7 +66,7 @@ static bool CheckTxReversalStatus(const TxReversalStatus status, bool& fClean)
 bool ActiveChainManager::DisconnectBlock(
     CBlock& block,
     CValidationState& state,
-    CBlockIndex* pindex,
+    const CBlockIndex* pindex,
     CCoinsViewCache& view,
     bool* pfClean) const
 {
@@ -124,7 +124,7 @@ bool ActiveChainManager::DisconnectBlock(
 void ActiveChainManager::DisconnectBlock(
     std::pair<CBlock,bool>& disconnectedBlockAndStatus,
     CValidationState& state,
-    CBlockIndex* pindex,
+    const CBlockIndex* pindex,
     CCoinsViewCache& coins) const
 {
     CBlock& block = disconnectedBlockAndStatus.first;

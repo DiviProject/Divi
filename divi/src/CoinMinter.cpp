@@ -84,7 +84,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
     const unsigned oneReorgWorthOfTimestampDrift = 60*chainParameters_.MaxReorganizationDepth();
     const unsigned minimumChainTipTimestampForMinting = GetTime() - oneReorgWorthOfTimestampDrift;
 
-    CBlockIndex* chainTip = chain_.Tip();
+    const CBlockIndex* chainTip = chain_.Tip();
     bool chainTipIsSyncedEnough = !(chainTip? chainTip->nTime < minimumChainTipTimestampForMinting: IsBlockchainSynced());
     bool stakingRequirementsAreMet =
         chainTipIsSyncedEnough &&
@@ -95,7 +95,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
 }
 bool CoinMinter::limitStakingSpeed() const
 {
-    CBlockIndex* chainTip = chain_.Tip();
+    const CBlockIndex* chainTip = chain_.Tip();
     if (chainTip && mapHashedBlocks_.count(chainTip->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
     {
         if (GetTime() - mapHashedBlocks_[chainTip->nHeight] < static_cast<int64_t>(hashingDelay)/2 )

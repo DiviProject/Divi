@@ -92,7 +92,7 @@ std::string GetWarnings(std::string strFor);
 bool DisconnectBlocksAndReprocess(int blocks);
 
 // ***TODO***
-bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
+bool ActivateBestChain(CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);

@@ -698,7 +698,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         pool.addUnchecked(hash, entry, view);
     }
 
-    g_signals.SyncTransaction(tx, NULL,TransactionSyncType::MEMPOOL_TX_ADD);
+    g_signals.SyncTransactions(std::vector<CTransaction>({tx}), NULL,TransactionSyncType::MEMPOOL_TX_ADD);
 
     return true;
 }
@@ -1212,9 +1212,7 @@ bool static DisconnectTip(CValidationState& state)
     UpdateTip(pindexDelete->pprev);
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
-    for(const CTransaction& tx: blockTransactions) {
-        g_signals.SyncTransaction(tx, NULL,TransactionSyncType::BLOCK_DISCONNECT);
-    }
+    g_signals.SyncTransactions(blockTransactions, NULL,TransactionSyncType::BLOCK_DISCONNECT);
     return true;
 }
 
@@ -1287,13 +1285,10 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, const CB
     UpdateTip(pindexNew);
     // Tell wallet about transactions that went from mempool
     // to conflicted:
-    for(const CTransaction& tx: txConflicted) {
-        g_signals.SyncTransaction(tx, NULL,TransactionSyncType::CONFLICTED_TX);
-    }
+    std::vector<CTransaction> conflictedTransactions(txConflicted.begin(),txConflicted.end());
+    g_signals.SyncTransactions(conflictedTransactions, NULL,TransactionSyncType::CONFLICTED_TX);
     // ... and about transactions that got confirmed:
-    for(const CTransaction& tx: pblock->vtx) {
-        g_signals.SyncTransaction(tx, pblock, TransactionSyncType::NEW_BLOCK);
-    }
+    g_signals.SyncTransactions(pblock->vtx, pblock, TransactionSyncType::NEW_BLOCK);
 
     int64_t nTime6 = GetTimeMicros();
     nTimePostConnect += nTime6 - nTime5;

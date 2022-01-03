@@ -26,7 +26,7 @@ protected:
 
     // NotificationInterface
     void SyncTransaction(const CTransaction &tx, const CBlock *pblock, const TransactionSyncType syncType) override;
-    void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override {};
+    void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override;
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
 
 private:

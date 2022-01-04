@@ -33,10 +33,42 @@ extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;
 
+
 LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight()
 {
     static std::map<unsigned int, unsigned int> mapHashedBlocks;
     return mapHashedBlocks;
+}
+
+std::unique_ptr<CoinMintingModule> coinMintingModule(nullptr);
+void InitializeCoinMintingModule(I_StakingWallet* pwallet)
+{
+    static const CSporkManager& sporkManager = GetSporkManager();
+    static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
+    static const CChainParams& chainParameters = Params();
+    static const MasternodeModule& masternodeModule = GetMasternodeModule();
+    static const I_PeerBlockNotifyService& peerNotification = GetPeerBlockNotifyService();
+    coinMintingModule.reset(
+        new CoinMintingModule(
+            settings,
+            cs_main,
+            chainParameters,
+            chainActive,
+            mapBlockIndex,
+            masternodeModule,
+            FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
+            pcoinsTip,
+            mempool,
+            peerNotification,
+            *pwallet,
+            getLastExtensionTimestampByBlockHeight(),
+            sporkManager));
+
+}
+const CoinMintingModule& GetCoinMintingModule()
+{
+    assert(static_cast<bool>(coinMintingModule));
+    return *coinMintingModule;
 }
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -103,95 +135,21 @@ bool HasRecentlyAttemptedToGenerateProofOfStake()
 }
 
 // ppcoin: stake minter thread
-void ThreadStakeMinter(I_StakingWallet* pwallet)
+void ThreadCoinMinter()
 {
-    static const CSporkManager& sporkManager = GetSporkManager();
-    static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
     boost::this_thread::interruption_point();
-    LogPrintf("ThreadStakeMinter started\n");
+    LogPrintf("ThreadCoinMinter started\n");
     try {
-        static CoinMintingModule mintingModule(
-            settings,
-            cs_main,Params(),
-            chainActive,
-            mapBlockIndex,
-            GetMasternodeModule(),
-            FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
-            pcoinsTip,
-            mempool,
-            GetPeerBlockNotifyService(),
-            *pwallet,
-            mapHashedBlocks,
-            sporkManager);
-        static I_CoinMinter& minter = mintingModule.coinMinter();
+        const CoinMintingModule& mintingModule = GetCoinMintingModule();
+        I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);
         MinterThread(minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
-        LogPrintf("ThreadStakeMinter() exception \n");
+        LogPrintf("ThreadCoinMinter() exception \n");
     } catch (...) {
-        LogPrintf("ThreadStakeMinter() error \n");
+        LogPrintf("ThreadCoinMinter() error \n");
     }
-    LogPrintf("ThreadStakeMinter exiting,\n");
+    LogPrintf("ThreadCoinMinter exiting,\n");
 }
-
-void static ThreadPoWMinter(I_StakingWallet* pwallet)
-{
-    static const CSporkManager& sporkManager = GetSporkManager();
-    static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
-    boost::this_thread::interruption_point();
-    try {
-        static CoinMintingModule mintingModule(
-            settings,
-            cs_main,
-            Params(),
-            chainActive,
-            mapBlockIndex,
-            GetMasternodeModule(),
-            FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
-            pcoinsTip,
-            mempool,
-            GetPeerBlockNotifyService(),
-            *pwallet,
-            mapHashedBlocks,
-            sporkManager);
-        static I_CoinMinter& minter = mintingModule.coinMinter();
-        minter.setMintingRequestStatus(true);
-        MinterThread(minter);
-        boost::this_thread::interruption_point();
-    } catch (std::exception& e) {
-        LogPrintf("ThreadPoWMinter() exception: %s\n");
-    } catch (...) {
-        LogPrintf("ThreadPoWMinter() unknown exception");
-    }
-
-    LogPrintf("ThreadPoWMinter exiting\n");
-}
-
-void SetPoWThreadPool(I_StakingWallet* pwallet, int nThreads)
-{
-    static boost::thread_group* minerThreads = NULL;
-
-    if (nThreads < 0) {
-        // In regtest threads defaults to 1
-        if (Params().DefaultMinerThreads())
-            nThreads = Params().DefaultMinerThreads();
-        else
-            nThreads = boost::thread::hardware_concurrency();
-    }
-
-    if (minerThreads != NULL) {
-        minerThreads->interrupt_all();
-        delete minerThreads;
-        minerThreads = NULL;
-    }
-
-    if (nThreads == 0 || pwallet == nullptr)
-        return;
-
-    minerThreads = new boost::thread_group();
-    for (int i = 0; i < nThreads; i++)
-        minerThreads->create_thread(boost::bind(&ThreadPoWMinter, pwallet));
-}
-
 #endif // ENABLE_WALLET

@@ -402,7 +402,6 @@ public:
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
     TransactionCreationResult SendMoney(const TransactionCreationRequest& requestedTransaction);
-    std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
 
     bool NewKeyPool();
     bool TopUpKeyPool(unsigned int kpSize = 0);

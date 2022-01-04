@@ -1533,14 +1533,16 @@ void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
 
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
+    InitializeCoinMintingModule(static_cast<I_StakingWallet*>(pwalletMain));
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
+    {
         threadGroup.create_thread(
             boost::bind(
-                &TraceThread<void (*)(I_StakingWallet*), I_StakingWallet*>,
-                "stakemint",
-                &ThreadStakeMinter,
-                static_cast<I_StakingWallet*>(pwalletMain) ));
+                &TraceThread<void (*)()>,
+                "coinmint",
+                &ThreadCoinMinter));
+    }
 
     if(pwalletMain && pwalletMain->isBackedByFile())
     {
@@ -1553,15 +1555,10 @@ void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet
     }
     else
         LogPrintf("Error: Wallet monthly backups not enabled. Wallet isn't backed by file\n");
-
-    // Generate PoW coins in the background
-    if (pwalletMain && settings.GetBoolArg("-mining", false))
-        SetPoWThreadPool(pwalletMain, settings.GetArg("-mining_threads", 1));
 }
 
 bool StopNode()
 {
-    SetPoWThreadPool(NULL, 0);
     LogPrintf("StopNode()\n");
     MapPort(false);
 

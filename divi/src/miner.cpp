@@ -49,12 +49,11 @@ LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight()
 // Internal miner
 //
 void MintCoins(
-    bool fProofOfStake,
     I_CoinMinter& minter)
 {
     while (minter.mintingHasBeenRequested())
     {
-        if (fProofOfStake && !minter.CanMintCoins())
+        if (!minter.CanMintCoins())
         {
             minter.sleep(5000);
         }
@@ -65,7 +64,7 @@ void MintCoins(
     }
 
 }
-void MinterThread(bool fProofOfStake, I_CoinMinter& minter)
+void MinterThread(I_CoinMinter& minter)
 {
     LogPrintf("DIVIMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
@@ -76,7 +75,7 @@ void MinterThread(bool fProofOfStake, I_CoinMinter& minter)
     while(true) {
 
         try {
-            MintCoins(fProofOfStake,minter);
+            MintCoins(minter);
         }
         catch (const boost::thread_interrupted&)
         {
@@ -126,8 +125,7 @@ void ThreadStakeMinter(I_StakingWallet* pwallet)
             sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);
-        constexpr bool isProofOfStake = true;
-        MinterThread(isProofOfStake,minter);
+        MinterThread(minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
         LogPrintf("ThreadStakeMinter() exception \n");
@@ -159,8 +157,7 @@ void static ThreadPoWMinter(I_StakingWallet* pwallet)
             sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);
-        constexpr bool isProofOfStake = false;
-        MinterThread(isProofOfStake, minter);
+        MinterThread(minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
         LogPrintf("ThreadPoWMinter() exception: %s\n");

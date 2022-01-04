@@ -22,10 +22,8 @@ struct CBlockTemplate;
 void SetPoWThreadPool(I_StakingWallet* pwallet, int nThreads = -1);
 void ThreadStakeMinter(I_StakingWallet* pwallet);
 
-void MintCoins(
-    bool fProofOfStake,
-    I_CoinMinter& minter);
-void MinterThread(bool fProofOfStake, I_CoinMinter& minter);
+void MintCoins(I_CoinMinter& minter);
+void MinterThread(I_CoinMinter& minter);
 bool HasRecentlyAttemptedToGenerateProofOfStake();
 
 typedef std::map<unsigned int, unsigned int> LastExtensionTimestampByBlockHeight;

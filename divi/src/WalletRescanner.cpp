@@ -20,10 +20,13 @@ WalletRescanner::WalletRescanner(
 {
 }
 
+static int computeProgress(int currentHeight,int startHeight,int endHeight)
+{
+    return std::max(1, std::min(99, (int)((currentHeight - startHeight) / (endHeight - startHeight) * 100)));
+}
+
 int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockIndex* pindexStart)
 {
-    static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
-
     int ret = 0;
     int64_t nNow = GetTime();
 
@@ -36,12 +39,16 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
         while (pindex && timestampOfFirstKey && (pindex->GetBlockTime() < (timestampOfFirstKey - 7200)))
             pindex = activeChain_.Next(pindex);
 
-        wallet.ShowProgress(translate("Rescanning..."), 0); // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
-        double dProgressStart = checkpointsVerifier.GuessVerificationProgress(pindex, false);
-        double dProgressTip = checkpointsVerifier.GuessVerificationProgress(activeChain_.Tip(), false);
-        while (pindex) {
-            if (pindex->nHeight % 100 == 0 && dProgressTip - dProgressStart > 0.0)
-                wallet.ShowProgress(translate("Rescanning..."), std::max(1, std::min(99, (int)((checkpointsVerifier.GuessVerificationProgress(pindex, false) - dProgressStart) / (dProgressTip - dProgressStart) * 100))));
+        LogPrintf("Rescanning...%d\n",0);
+        const auto endHeight = activeChain_.Tip()->nHeight;
+        const auto startHeight = pindex?pindex->nHeight:endHeight;
+        while (pindex)
+        {
+            if (pindex->nHeight % 100 == 0 && endHeight - startHeight > 0)
+            {
+                const int progress = computeProgress(pindex->nHeight,startHeight,endHeight);
+                LogPrintf("Rescanning...%d\n",progress);
+            }
 
             CBlock block;
             blockReader_.ReadBlock(pindex,block);
@@ -53,10 +60,10 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
             pindex = activeChain_.Next(pindex);
             if (GetTime() >= nNow + 60) {
                 nNow = GetTime();
-                LogPrintf("Still rescanning. At block %d. Progress=%f\n", pindex->nHeight, checkpointsVerifier.GuessVerificationProgress(pindex));
+                LogPrintf("Still rescanning. At block %d. Progress=%d\n", pindex->nHeight, computeProgress(pindex->nHeight,startHeight,endHeight));
             }
         }
-        wallet.ShowProgress(translate("Rescanning..."), 100); // hide progress dialog in GUI
+        LogPrintf("Rescanning...%d\n",100);
     }
     return ret;
 }

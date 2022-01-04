@@ -38,11 +38,11 @@ class CoinMinter final: public I_CoinMinter
     HashedBlockMap& mapHashedBlocks_;
 
     bool mintingIsRequested_;
-    bool haveMintableCoins_;
-    int64_t lastTimeCheckedMintable_;
-    int64_t timeToWait_;
+    mutable bool haveMintableCoins_;
+    mutable int64_t lastTimeCheckedMintable_;
+    mutable int64_t timeToWait_;
 
-    bool hasMintableCoinForProofOfStake();
+    bool hasMintableCoinForProofOfStake() const;
     bool satisfiesMintingRequirements() const;
     bool limitStakingSpeed() const;
     bool nextBlockIsProofOfStake() const;

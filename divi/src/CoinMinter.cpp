@@ -43,7 +43,7 @@ CoinMinter::CoinMinter(
 {
 }
 
-bool CoinMinter::hasMintableCoinForProofOfStake()
+bool CoinMinter::hasMintableCoinForProofOfStake() const
 {
     int timeWaited = GetTime() - lastTimeCheckedMintable_;
 
@@ -84,11 +84,12 @@ bool CoinMinter::satisfiesMintingRequirements() const
 
     const CBlockIndex* chainTip = chain_.Tip();
     bool chainTipIsSyncedEnough = !(chainTip? chainTip->nTime < minimumChainTipTimestampForMinting: IsBlockchainSynced());
+    NextBlockType blockType = ComputeNextBlockType(chainTip, chainParameters_.LAST_POW_BLOCK());
     bool stakingRequirementsAreMet =
         chainTipIsSyncedEnough &&
         peerNotifier_.havePeersToNotify() &&
-        wallet_.CanStakeCoins() &&
-        masternodeSync_.IsSynced();
+        (blockType == PROOF_OF_WORK ||
+            (blockType == PROOF_OF_STAKE && wallet_.CanStakeCoins() && masternodeSync_.IsSynced() && hasMintableCoinForProofOfStake() && !limitStakingSpeed() ));
     return stakingRequirementsAreMet;
 }
 bool CoinMinter::limitStakingSpeed() const
@@ -106,14 +107,7 @@ bool CoinMinter::limitStakingSpeed() const
 
 bool CoinMinter::CanMintCoins()
 {
-    if( !hasMintableCoinForProofOfStake() ||
-        !nextBlockIsProofOfStake() ||
-        !satisfiesMintingRequirements() ||
-        limitStakingSpeed())
-    {
-        return false;
-    }
-    return true;
+    return satisfiesMintingRequirements();
 }
 
 void CoinMinter::sleep(uint64_t milliseconds) const

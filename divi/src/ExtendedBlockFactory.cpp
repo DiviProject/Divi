@@ -143,3 +143,10 @@ void ExtendedBlockFactory::setIgnoreMempool(const bool val)
 {
     ignoreMempool_ = val;
 }
+
+void ExtendedBlockFactory::reset()
+{
+    extraTransactions_.clear();
+    customCoinstake_.reset();
+    ignoreMempool_ = false;
+}

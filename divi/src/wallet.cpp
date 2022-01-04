@@ -1255,6 +1255,12 @@ CWallet::TxItems CWallet::OrderedTxItems() const
 
 int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
 {
+    if(wtx.hashBlock == 0) return wtx.nTimeReceived;
+    if(blockIndexByHash_.count(wtx.hashBlock) == 0)
+    {
+        LogPrintf("%s - found %s in block %s not in index\n",__func__, wtx.ToStringShort(), wtx.hashBlock);
+        return wtx.nTimeReceived;
+    }
     int64_t latestNow = wtx.nTimeReceived;
     int64_t latestEntry = 0;
     {
@@ -1330,19 +1336,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     bool walletTransactionHasBeenUpdated = false;
     if (transactionHashIsNewToWallet)
     {
-        wtx.nTimeSmart = wtx.nTimeReceived;
-        if (wtxIn.hashBlock != 0)
-        {
-            if (blockIndexByHash_.count(wtxIn.hashBlock))
-            {
-                wtx.nTimeSmart = SmartWalletTxTimestampEstimation(wtx);
-            }
-            else
-            {
-                LogPrintf("AddToWallet() : found %s in block %s not in index\n",
-                            wtxIn.ToStringShort(), wtxIn.hashBlock);
-            }
-        }
+        wtx.nTimeSmart = SmartWalletTxTimestampEstimation(wtx);
     }
     else
     {

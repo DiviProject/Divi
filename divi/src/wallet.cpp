@@ -1325,7 +1325,6 @@ void CWallet::PruneWallet()
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
 {
-    uint256 hash = wtxIn.GetHash();
     LOCK(cs_wallet);
     // Inserts only if not already there, returns tx inserted or tx found
     std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,false);
@@ -1363,7 +1362,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     wtx.RecomputeCachedQuantities();
 
     // Notify UI of new or updated transaction
-    NotifyTransactionChanged(hash, (transactionHashIsNewToWallet) ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
+    NotifyTransactionChanged(wtxIn.GetHash(), (transactionHashIsNewToWallet) ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
     return true;
 }
 

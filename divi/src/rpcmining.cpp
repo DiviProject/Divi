@@ -89,7 +89,7 @@ Value setgenerate(const Array& params, bool fHelp)
     }
 
     // -regtest mode: don't return until nGenProcLimit blocks are generated
-    if (fGenerate && Params().MineBlocksOnDemand()) {
+    //if (fGenerate && Params().MineBlocksOnDemand()) {
         int nHeightStart = 0;
         int nHeightEnd = 0;
         int nHeight = 0;
@@ -103,20 +103,7 @@ Value setgenerate(const Array& params, bool fHelp)
         }
 
         Array blockHashes;
-        CoinMintingModule mintingModule(
-            settings,
-            cs_main,
-            Params(),
-            chainActive,
-            mapBlockIndex,
-            GetMasternodeModule(),
-            FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
-            pcoinsTip,
-            mempool,
-            GetPeerBlockNotifyService(),
-            *pwalletMain,
-            mapHashedBlocks,
-            GetSporkManager());
+        const CoinMintingModule& mintingModule = GetCoinMintingModule();
         I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);
 
@@ -134,13 +121,7 @@ Value setgenerate(const Array& params, bool fHelp)
                 blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
         }
         return blockHashes;
-    }
-    else // Not -regtest: start generate thread, return immediately
-    {
-        const int numberOfThreadsToSpawn = nGenProcLimit;
-        SetPoWThreadPool(pwalletMain, numberOfThreadsToSpawn);
-    }
-
+    //}
     return Value::null;
 }
 
@@ -179,20 +160,7 @@ Value generateblock(const Array& params, bool fHelp)
         nHeight = chainActive.Height();
     }
 
-    CoinMintingModule mintingModule(
-        settings,
-        cs_main,
-        Params(),
-        chainActive,
-        mapBlockIndex,
-        GetMasternodeModule(),
-        FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
-        pcoinsTip,
-        mempool,
-        GetPeerBlockNotifyService(),
-        *pwalletMain,
-        mapHashedBlocks,
-        GetSporkManager());
+    const CoinMintingModule& mintingModule = GetCoinMintingModule();
     I_CoinMinter& minter = mintingModule.coinMinter();
     minter.setMintingRequestStatus(true);
     ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
@@ -203,7 +171,10 @@ Value generateblock(const Array& params, bool fHelp)
         for (const Value& val : extraTx.get_array()) {
             CTransaction tx;
             if (!DecodeHexTx(tx, val.get_str()))
+            {
+                blockFactory->reset();
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+            }
             blockFactory->addExtraTransaction(tx);
         }
 
@@ -211,9 +182,15 @@ Value generateblock(const Array& params, bool fHelp)
     if (coinstake.type() != null_type) {
         CTransaction tx;
         if (!DecodeHexTx(tx, coinstake.get_str()))
+        {
+            blockFactory->reset();
             throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+        }
         if (!tx.IsCoinStake())
+        {
+            blockFactory->reset();
             throw JSONRPCError(RPC_INVALID_PARAMETER, "TX is not a coinstake");
+        }
         blockFactory->setCustomCoinstake(tx);
     }
 
@@ -227,8 +204,11 @@ Value generateblock(const Array& params, bool fHelp)
     LOCK(cs_main);
 
     if (!newBlockAdded || chainActive.Height() != nHeight + 1)
+    {
+        blockFactory->reset();
         throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
-
+    }
+    blockFactory->reset();
     return chainActive.Tip()->GetBlockHash().GetHex();
 }
 #endif
@@ -262,7 +242,6 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
     obj.push_back(Pair("mining", (int)settings.GetArg("-mining", false) ));
-    obj.push_back(Pair("mining_threads", (int)settings.GetArg("-mining_threads", Params().DefaultMinerThreads() )));
     obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
     obj.push_back(Pair("chain", Params().NetworkIDString()));

@@ -47,5 +47,6 @@ public:
     void addExtraTransaction(const CTransaction& tx);
     void setCustomCoinstake(const CTransaction& tx);
     void setIgnoreMempool(bool val);
+    void reset();
 };
 #endif// EXTENDED_BLOCK_FACTORY_H

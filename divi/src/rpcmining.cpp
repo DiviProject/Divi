@@ -56,73 +56,68 @@ LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestamp
 #ifdef ENABLE_WALLET
 Value setgenerate(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 1 || params.size() > 2)
+    if (fHelp || params.size() != 1)
         throw runtime_error(
-            "setgenerate generate ( genproclimit )\n"
-            "\nSet 'generate' true or false to turn generation on or off.\n"
-            "Generation is limited to 'genproclimit' processors, -1 is unlimited.\n"
+            "setgenerate numberofblocks\n"
+            "Generation is limited to 'numberofblocks' additional blocks. This method is regtest only\n"
+            "This method cannot be called during normal operation as it will be active by default.\n"
             "\nArguments:\n"
-            "1. generate         (boolean, required) Set to true to turn on generation, false to turn off.\n"
-            "2. genproclimit     (numeric, optional) Set the processor limit for when generation is on. Can be -1 for unlimited.\n"
-            "                    Note: in -regtest mode, genproclimit controls how many blocks are generated immediately.\n"
+            "1. numberofblocks     (numeric, required) Set the numberofblocks blocks that are generated immediately (in regtest).\n"
             "\nResult\n"
-            "[ blockhashes ]     (array, -regtest only) hashes of blocks generated\n"
+            "[ blockhashes ]     (array) hashes of blocks generated\n"
             "\nExamples:\n"
-            "\nSet the generation on with a limit of one processor\n" +
-            HelpExampleCli("setgenerate", "true 1") +
-            "\nCheck the setting\n" + HelpExampleCli("getmininginfo", "") +
-            "\nTurn off generation\n" + HelpExampleCli("setgenerate", "false") +
-            "\nUsing json rpc\n" + HelpExampleRpc("setgenerate", "true, 1"));
+            "\nSet the generation on 1 block\n"
+            "\nUsing json rpc\n" +
+            HelpExampleRpc("setgenerate", "1"));
 
-    if (pwalletMain == NULL)
-        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
-
-    bool fGenerate = true;
-    if (params.size() > 0)
-        fGenerate = params[0].get_bool();
-
-    int nGenProcLimit = -1;
-    if (params.size() > 1) {
-        nGenProcLimit = params[1].get_int();
-        if (nGenProcLimit == 0)
-            fGenerate = false;
+    if (pwalletMain == NULL || Params().NetworkID() != CBaseChainParams::REGTEST)
+    {
+        std::string preffix = ": ";
+        std::string reason = "";
+        if(pwalletMain == nullptr) reason += "Wallet is uninitialized";
+        if(Params().NetworkID() != CBaseChainParams::REGTEST) reason += ", invalid networks setting (regtest only)";
+        std::string errorMsg = std::string("Method disabled") + ((!reason.empty())? (preffix+reason): std::string(""));
+        throw JSONRPCError(RPC_METHOD_NOT_FOUND, errorMsg.c_str() );
     }
 
+    int numberOfBlocks = -1;
+    if (params.size() > 0)
+    {
+        numberOfBlocks = params[0].get_int();
+    }
+    if(numberOfBlocks < 1) return Value::null;
+
     // -regtest mode: don't return until nGenProcLimit blocks are generated
-    //if (fGenerate && Params().MineBlocksOnDemand()) {
-        int nHeightStart = 0;
-        int nHeightEnd = 0;
-        int nHeight = 0;
-        int nGenerate = (nGenProcLimit > 0 ? nGenProcLimit : 1);
+    int nHeightStart = 0;
+    int nHeightEnd = 0;
+    int nHeight = 0;
 
-        { // Don't keep cs_main locked
-            LOCK(cs_main);
-            nHeightStart = chainActive.Height();
-            nHeight = nHeightStart;
-            nHeightEnd = nHeightStart + nGenerate;
-        }
+    { // Don't keep cs_main locked
+        LOCK(cs_main);
+        nHeightStart = chainActive.Height();
+        nHeight = nHeightStart;
+        nHeightEnd = nHeightStart + numberOfBlocks;
+    }
 
-        Array blockHashes;
-        const CoinMintingModule& mintingModule = GetCoinMintingModule();
-        I_CoinMinter& minter = mintingModule.coinMinter();
-        minter.setMintingRequestStatus(true);
+    Array blockHashes;
+    const CoinMintingModule& mintingModule = GetCoinMintingModule();
+    I_CoinMinter& minter = mintingModule.coinMinter();
+    minter.setMintingRequestStatus(true);
 
-        while (nHeight < nHeightEnd)
-        {
-            const bool newBlockAdded = minter.createNewBlock();
-            nHeight +=  newBlockAdded;
+    while (nHeight < nHeightEnd)
+    {
+        const bool newBlockAdded = minter.createNewBlock();
+        nHeight +=  newBlockAdded;
 
-            if (!newBlockAdded)
-                throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
+        if (!newBlockAdded)
+            throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
 
-            // Don't keep cs_main locked
-            LOCK(cs_main);
-            if(nHeight == chainActive.Height())
-                blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
-        }
-        return blockHashes;
-    //}
-    return Value::null;
+        // Don't keep cs_main locked
+        LOCK(cs_main);
+        if(nHeight == chainActive.Height())
+            blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
+    }
+    return blockHashes;
 }
 
 Value generateblock(const Array& params, bool fHelp)
@@ -224,12 +219,8 @@ Value getmininginfo(const Array& params, bool fHelp)
             "{\n"
             "  \"blocks\": nnn,             (numeric) The current block\n"
             "  \"currentblocksize\": nnn,   (numeric) The last block size\n"
-            "  \"currentblocktx\": nnn,     (numeric) The last block transaction\n"
             "  \"difficulty\": xxx.xxxxx    (numeric) The current difficulty\n"
             "  \"errors\": \"...\"          (string) Current errors\n"
-            "  \"generate\": true|false     (boolean) If the generation is on or off (see setgenerate calls)\n"
-            "  \"genproclimit\": n          (numeric) The processor limit for generation. -1 if no generation. (see setgenerate calls)\n"
-            "  \"hashespersec\": n          (numeric) The hashes per second of the generation, or 0 if no generation.\n"
             "  \"pooledtx\": n              (numeric) The size of the mem pool\n"
             "  \"testnet\": true|false      (boolean) If using testnet or not\n"
             "  \"chain\": \"xxxx\",         (string) current network name as defined in BIP70 (main, test, regtest)\n"
@@ -241,7 +232,6 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("blocks", (int)chainActive.Height()));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
-    obj.push_back(Pair("mining", (int)settings.GetArg("-mining", false) ));
     obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
     obj.push_back(Pair("chain", Params().NetworkIDString()));

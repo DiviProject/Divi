@@ -53,9 +53,9 @@ class MnStoredBroadcastTest (MnTestFramework):
 
   def run_test (self):
     print ("Funding masternode...")
-    self.nodes[0].setgenerate(True,30)
+    self.nodes[0].setgenerate(30)
     self.setup_masternode(0,1,"mn","copper")
-    self.nodes[0].setgenerate (True, 16)
+    self.nodes[0].setgenerate ( 16)
 
     print ("Updating masternode.conf...")
     self.stop_masternode_daemons()

@@ -40,7 +40,7 @@ class ZMQTest (BitcoinTestFramework):
     def run_test(self):
         self.sync_all()
 
-        genhashes = self.nodes[0].setgenerate(True, 1)
+        genhashes = self.nodes[0].setgenerate( 1)
         self.sync_all()
 
         print ("listen...")
@@ -61,7 +61,7 @@ class ZMQTest (BitcoinTestFramework):
 
 
         n = 30
-        genhashes = self.nodes[1].setgenerate(True, n)
+        genhashes = self.nodes[1].setgenerate( n)
         self.sync_all()
 
         zmqHashes = []

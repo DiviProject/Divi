@@ -67,10 +67,10 @@ class MultiSigTest (BitcoinTestFramework):
         sharedMultisig = self.createSharedMultisigAddress(sender1,sender2)
 
         # Generate funds for sender2 and fund multisig address
-        sender2.setgenerate(True, 30)
+        sender2.setgenerate( 30)
         self.sync_all()
         multisigTXID = sender2.sendtoaddress(sharedMultisig, 5000.0)
-        sender2.setgenerate(True, 1)
+        sender2.setgenerate( 1)
         self.sync_all()
 
         # Create spending transaction paying out of the multisig and into sender1's wallet
@@ -81,7 +81,7 @@ class MultiSigTest (BitcoinTestFramework):
         assert_equal(sender1.getbalance(), 0)
         sender1.sendrawtransaction(signed_tx["hex"])
         sync_mempools(self.nodes)
-        sender2.setgenerate(True,1)
+        sender2.setgenerate(1)
         self.sync_all()
         assert_equal(sender1.getbalance(), Decimal(amountToSend)/Decimal(COIN))
 

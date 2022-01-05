@@ -61,14 +61,14 @@ class NoBlocksForLongTimeTest (MnTestFramework):
   def fund_masternodes (self):
     print ("Funding masternodes...")
 
-    self.nodes[1].setgenerate (True, 30)
+    self.nodes[1].setgenerate ( 30)
     assert_greater_than (self.nodes[1].getbalance (), 1200)
 
     sendTo = {}
     for n in range (2, self.number_of_nodes):
       sendTo[self.nodes[n].getnewaddress ()] = 200
     self.nodes[1].sendmany ("", sendTo)
-    self.nodes[1].setgenerate (True, 1)
+    self.nodes[1].setgenerate ( 1)
     sync_blocks (self.nodes)
 
     self.cfg = {}
@@ -77,9 +77,9 @@ class NoBlocksForLongTimeTest (MnTestFramework):
       self.cfg[n] = self.setup[n].cfg
 
     sync_mempools (self.nodes)
-    self.nodes[1].setgenerate (True, 15)
+    self.nodes[1].setgenerate ( 15)
     set_node_times (self.nodes, self.time)
-    self.nodes[1].setgenerate (True, 1)
+    self.nodes[1].setgenerate ( 1)
     sync_blocks (self.nodes)
 
   def start_masternodes (self):
@@ -153,7 +153,7 @@ class NoBlocksForLongTimeTest (MnTestFramework):
     print ("Running initial masternode sync...")
     self.wait_for_mnsync_on_nodes (updateMockTime=True)
     for _ in range (100):
-      self.nodes[1].setgenerate (True, 1)
+      self.nodes[1].setgenerate ( 1)
       self.advance_time (100)
     for n in self.nodes:
       assert_equal (n.getmasternodecount ()["inqueue"], 6)
@@ -166,7 +166,7 @@ class NoBlocksForLongTimeTest (MnTestFramework):
     # block is mod 2 and so the next couple of blocks are neither type
     # of special payment.
     cnt = self.nodes[1].getblockcount ()
-    self.nodes[1].setgenerate (True, 11 - (cnt % 10))
+    self.nodes[1].setgenerate ( 11 - (cnt % 10))
     assert_equal (self.nodes[1].getblockcount () % 10, 1)
     sync_blocks (self.nodes)
 
@@ -178,7 +178,7 @@ class NoBlocksForLongTimeTest (MnTestFramework):
     # with a node that is still masternode synced.
     print ("Generating block with mn synced node...")
     self.time_out_blockchain_sync ()
-    self.nodes[1].setgenerate (True, 1)
+    self.nodes[1].setgenerate ( 1)
     sync_blocks (self.nodes)
     self.wait_for_mnsync_on_nodes (updateMockTime=True)
 
@@ -188,7 +188,7 @@ class NoBlocksForLongTimeTest (MnTestFramework):
     print ("Generating block with not mn synced node...")
     self.time_out_blockchain_sync ()
     assert_greater_than (len (self.nodes[0].listmasternodes ()), 0)
-    self.nodes[0].setgenerate (True, 1)
+    self.nodes[0].setgenerate ( 1)
     sync_blocks (self.nodes)
     self.wait_for_mnsync_on_nodes (updateMockTime=True)
 
@@ -202,7 +202,7 @@ class NoBlocksForLongTimeTest (MnTestFramework):
       os.remove (os.path.join (self.options.tmpdir, "node0", "regtest", f))
     self.time_out_blockchain_sync ()
     assert_equal (self.nodes[0].listmasternodes (), [])
-    self.nodes[0].setgenerate (True, 1)
+    self.nodes[0].setgenerate ( 1)
     time.sleep (1)
     assert_equal (self.nodes[0].getblockcount (),
                   self.nodes[1].getblockcount () + 1)

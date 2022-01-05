@@ -51,13 +51,13 @@ class MnAreSafeToRestart (MnTestFramework):
     for _ in range(n):
       self.time += blocktime
       set_node_times(self.nodes,self.time)
-      self.nodes[3].setgenerate(True, 1)
+      self.nodes[3].setgenerate( 1)
       sync_blocks (self.nodes)
       time.sleep(time_window)
 
   def fund_masternodes (self):
     print ("Funding masternodes...")
-    self.nodes[0].setgenerate (True, 5)
+    self.nodes[0].setgenerate ( 5)
     sync_blocks (self.nodes)
     self.mine_blocks (25)
     assert_equal (self.nodes[0].getbalance (), 6250)

@@ -34,7 +34,7 @@ class MnCollateralTest (MnTestFramework):
     """Mines blocks with node 1.  We use node 0 for the test, so that
     this ensures that node does not get unexpected coins."""
     sync_mempools (self.nodes)
-    self.nodes[1].setgenerate(True, n)
+    self.nodes[1].setgenerate( n)
     sync_blocks (self.nodes)
 
   def check_balance (self, expected, account="*"):
@@ -49,7 +49,7 @@ class MnCollateralTest (MnTestFramework):
     # Give 1250 matured coins to node 0.  All future blocks will be mined
     # with node 1, so that we can verify the expected balance.
     node = self.nodes[0]
-    node.setgenerate (True, 1)
+    node.setgenerate ( 1)
     sync_blocks (self.nodes)
     self.mine_blocks (20)
     self.check_balance (1250)

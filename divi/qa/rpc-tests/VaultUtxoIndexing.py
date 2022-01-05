@@ -30,7 +30,7 @@ class VaultUtxoIndexing (BitcoinTestFramework):
         self.is_network_split = False
 
     def create_vault_stacks(self):
-        self.owner.setgenerate(True,50)
+        self.owner.setgenerate(50)
         self.owner_vault_addresses = []
         self.vault_data = []
         print("Creating vault utxos...")
@@ -44,7 +44,7 @@ class VaultUtxoIndexing (BitcoinTestFramework):
             self.vault_data.append(vaulting_result)
             self.owner_vault_addresses.append(owner_node_address)
 
-        self.owner.setgenerate(True,50)
+        self.owner.setgenerate(50)
         self.vault_hashes = []
         for vault_datum in self.vault_data:
             assert self.staker.addvault(vault_datum["vault"],vault_datum["txhash"])["succeeded"]
@@ -84,7 +84,7 @@ class VaultUtxoIndexing (BitcoinTestFramework):
 
     def check_vault_stakes_are_indexed(self):
         for addr in self.owner_vault_addresses:
-            self.staker.setgenerate(True,1)
+            self.staker.setgenerate(1)
 
         staking_reward = 456*COIN
         for addr in self.owner_vault_addresses:
@@ -151,7 +151,7 @@ class VaultUtxoIndexing (BitcoinTestFramework):
         self.check_non_vault_utxos_do_not_register_as_vaults()
         self.check_vault_stakes_are_indexed()
         self.check_non_vault_utxos_do_not_register_as_vaults()
-        self.owner.setgenerate(True,20)
+        self.owner.setgenerate(20)
         sync_blocks(self.nodes)
         self.check_non_vault_utxos_do_not_register_as_vaults()
         self.check_vault_stakes_are_indexed()

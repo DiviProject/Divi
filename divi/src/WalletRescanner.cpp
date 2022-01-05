@@ -22,7 +22,8 @@ WalletRescanner::WalletRescanner(
 
 static int computeProgress(int currentHeight,int startHeight,int endHeight)
 {
-    return std::max(1, std::min(99, (int)((currentHeight - startHeight) / (endHeight - startHeight) * 100)));
+    const int progress = (currentHeight - startHeight) / (endHeight - startHeight + 1) * 100;
+    return std::max(1, std::min(99, progress));
 }
 
 int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockIndex* pindexStart)

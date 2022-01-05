@@ -1069,11 +1069,11 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     return true;
 }
 
-int ScanForWalletTransactions(CWallet& walletToRescan, const CBlockIndex* scanStartIndex)
+void ScanForWalletTransactions(CWallet& walletToRescan, const CBlockIndex* scanStartIndex)
 {
     static BlockDiskDataReader blockReader;
     static WalletRescanner rescanner(blockReader,chainActive,cs_main);
-    return rescanner.scanForWalletTransactions(walletToRescan,scanStartIndex);
+    rescanner.scanForWalletTransactions(walletToRescan,scanStartIndex);
 }
 
 void ScanBlockchainForWalletUpdates()

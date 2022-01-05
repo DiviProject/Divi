@@ -40,6 +40,7 @@ void WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInd
         while (pindex && timestampOfFirstKey && (pindex->GetBlockTime() < (timestampOfFirstKey - 7200)))
             pindex = activeChain_.Next(pindex);
 
+        if(!pindex) return;
         LogPrintf("%s...%d\n",typeOfScanMessage,0);
         const auto endHeight = activeChain_.Tip()->nHeight;
         const auto startHeight = pindex?pindex->nHeight:endHeight;

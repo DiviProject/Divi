@@ -26,9 +26,9 @@ def createVaultPoSStacks(nodes):
     # Make sure all nodes have matured coins.
     mintingNode = nodes[0]
     for node in [nodes[0],nodes[2]]:
-      node.setgenerate(True, 25)
+      node.setgenerate( 25)
       sync_blocks(nodes)
-    mintingNode.setgenerate(True, 20)
+    mintingNode.setgenerate( 20)
 
     # Split those coins up into many pieces that can each be used
     # individually for staking.
@@ -40,7 +40,7 @@ def createVaultPoSStacks(nodes):
     # Make sure to get all those transactions mined.
     sync_mempools(nodes)
     while len(nodes[0].getrawmempool()) > 0:
-      nodes[0].setgenerate(True, 1)
+      nodes[0].setgenerate( 1)
     sync_blocks(nodes)
 
 class StakingVaultFunding(BitcoinTestFramework):
@@ -88,7 +88,7 @@ class StakingVaultFunding(BitcoinTestFramework):
 
         self.sync_all()
         sync_blocks(self.nodes)
-        self.nodes[2].setgenerate(True,20)
+        self.nodes[2].setgenerate(20)
         sync_blocks(self.nodes)
 
         # Send funds to vault
@@ -105,7 +105,7 @@ class StakingVaultFunding(BitcoinTestFramework):
 
         self.sync_all()
         sync_blocks(self.nodes)
-        self.nodes[2].setgenerate(True,1)
+        self.nodes[2].setgenerate(1)
         sync_blocks(self.nodes)
 
         # Miner node has funds as expected and sends to a vault node

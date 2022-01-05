@@ -23,9 +23,9 @@ def createPoSStacks(nodes, all_nodes):
 
     # Make sure all nodes have matured coins.
     for n in nodes:
-      n.setgenerate(True, 20)
+      n.setgenerate( 20)
       sync_blocks(nodes)
-    nodes[0].setgenerate(True, 20)
+    nodes[0].setgenerate( 20)
 
     # Split those coins up into many pieces that can each be used
     # individually for staking.
@@ -42,7 +42,7 @@ def createPoSStacks(nodes, all_nodes):
     # Make sure to get all those transactions mined.
     sync_mempools(nodes)
     while len(nodes[0].getrawmempool()) > 0:
-      nodes[0].setgenerate(True, 1)
+      nodes[0].setgenerate( 1)
     sync_blocks(all_nodes)
 
 def generatePoSBlocks(nodes, index, num):
@@ -66,7 +66,7 @@ def generatePoSBlocks(nodes, index, num):
 
       n = min(num, blocksPerStep)
       assert n > 0
-      node.setgenerate(True, n)
+      node.setgenerate( n)
       num -= n
 
 class PowToPosTransitionTest(BitcoinTestFramework):
@@ -88,7 +88,7 @@ class PowToPosTransitionTest(BitcoinTestFramework):
         print ("Mining remaining PoW blocks...")
         missing = posStart - node.getblockcount()
         assert missing > 0
-        node.setgenerate(True, missing)
+        node.setgenerate( missing)
         self.sync_all()
 
         print ("Trying to mine PoS blocks now...")

@@ -12,23 +12,23 @@ from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
 class InvalidateTest(BitcoinTestFramework):
-    
+
     def setup_network(self):
         self.nodes = []
-        self.is_network_split = False 
+        self.is_network_split = False
         self.nodes.append(start_node(0, self.options.tmpdir, ["-debug"]))
         self.nodes.append(start_node(1, self.options.tmpdir, ["-debug"]))
         self.nodes.append(start_node(2, self.options.tmpdir, ["-debug"]))
-        
+
     def run_test(self):
         print("Make sure we repopulate setBlockIndexCandidates after InvalidateBlock:")
         print("Mine 4 blocks on Node 0")
-        self.nodes[0].setgenerate(True, 4)
+        self.nodes[0].setgenerate( 4)
         assert(self.nodes[0].getblockcount() == 4)
         besthash = self.nodes[0].getbestblockhash()
 
         print("Mine competing 6 blocks on Node 1")
-        self.nodes[1].setgenerate(True, 6)
+        self.nodes[1].setgenerate( 6)
         assert(self.nodes[1].getblockcount() == 6)
 
         print("Connect nodes to force a reorg")
@@ -56,7 +56,7 @@ class InvalidateTest(BitcoinTestFramework):
         self.nodes[2].invalidateblock(self.nodes[2].getblockhash(3))
         assert(self.nodes[2].getblockcount() == 2)
         print("..and then mine a block")
-        self.nodes[2].setgenerate(True, 1)
+        self.nodes[2].setgenerate( 1)
         print("Verify all nodes are at the right height")
         time.sleep(5)
         for i in range(3):

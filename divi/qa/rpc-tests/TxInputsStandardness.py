@@ -57,7 +57,7 @@ class TxInputStandardnessTest (BitcoinTestFramework):
         self.node.generateblock ({"extratx": [txHex]})
 
     def run_test (self):
-        self.nodes[0].setgenerate (True, 30)
+        self.nodes[0].setgenerate ( 30)
 
         # We generate two normal P2SH outputs.
         addr = [
@@ -76,14 +76,14 @@ class TxInputStandardnessTest (BitcoinTestFramework):
             self.generateOutput (a, 1)
             for a in p2sh
         ]
-        self.node.setgenerate (True, 1)
+        self.node.setgenerate ( 1)
 
         # Also, we create a P2SH output that has an unknown form
         # but is easy to spend.
         eqScript = CScript ([42, OP_EQUAL])
         eqAddr = self.node.decodescript (eqScript.hex ())["p2sh"]
         eqOutput = self.generateOutput (eqAddr, 1)
-        self.node.setgenerate (True, 1)
+        self.node.setgenerate ( 1)
 
         # Spending a P2SH output with a non-standard script fails.
         # This script embeds lots of extra data in the scriptSig,

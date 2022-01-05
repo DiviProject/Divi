@@ -25,7 +25,7 @@ class CoinDBStats (BitcoinTestFramework):
 
     def run_test (self):
         node = self.nodes[0]
-        node.setgenerate(True,50)
+        node.setgenerate(50)
         data = node.gettxoutsetinfo()
         assert_equal(data["height"],50)
         assert_equal(data["transactions"],50)
@@ -43,7 +43,7 @@ class CoinDBStats (BitcoinTestFramework):
                 sendTo[node.getnewaddress ()] = 200
                 utxoCount+=1
             txid = node.sendmany ("", sendTo)
-            node.setgenerate(True,1)
+            node.setgenerate(1)
             data = node.gettxoutsetinfo()
             blockHeight +=1
             nonPrunableTxsBefore = nonPrunableTxsNow

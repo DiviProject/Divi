@@ -32,6 +32,7 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
     int64_t nNow = GetTime();
 
     const CBlockIndex* pindex = pindexStart? pindexStart : activeChain_.Genesis();
+    const std::string typeOfScanMessage = pindex==activeChain_.Genesis()? "Rescanning" : "Scanning";
     {
         LOCK2(mainCS_, wallet.cs_wallet);
         // no need to read and scan block, if block was created before
@@ -40,7 +41,7 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
         while (pindex && timestampOfFirstKey && (pindex->GetBlockTime() < (timestampOfFirstKey - 7200)))
             pindex = activeChain_.Next(pindex);
 
-        LogPrintf("Rescanning...%d\n",0);
+        LogPrintf("%s...%d\n",typeOfScanMessage,0);
         const auto endHeight = activeChain_.Tip()->nHeight;
         const auto startHeight = pindex?pindex->nHeight:endHeight;
         while (pindex)
@@ -48,7 +49,7 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
             if (pindex->nHeight % 100 == 0 && endHeight - startHeight > 0)
             {
                 const int progress = computeProgress(pindex->nHeight,startHeight,endHeight);
-                LogPrintf("Rescanning...%d\n",progress);
+                LogPrintf("%s...%d\n",typeOfScanMessage, progress);
             }
 
             CBlock block;
@@ -61,10 +62,10 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
             pindex = activeChain_.Next(pindex);
             if (GetTime() >= nNow + 60) {
                 nNow = GetTime();
-                LogPrintf("Still rescanning. At block %d. Progress=%d\n", pindex->nHeight, computeProgress(pindex->nHeight,startHeight,endHeight));
+                LogPrintf("%s - at block %d. Progress=%d\n",typeOfScanMessage, pindex->nHeight, computeProgress(pindex->nHeight,startHeight,endHeight));
             }
         }
-        LogPrintf("Rescanning...%d\n",100);
+        LogPrintf("%s...done\n",typeOfScanMessage);
     }
     return ret;
 }

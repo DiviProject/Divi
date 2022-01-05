@@ -26,9 +26,8 @@ static int computeProgress(int currentHeight,int startHeight,int endHeight)
     return std::max(1, std::min(99, progress));
 }
 
-int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockIndex* pindexStart)
+void WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockIndex* pindexStart)
 {
-    int ret = 0;
     int64_t nNow = GetTime();
 
     const CBlockIndex* pindex = pindexStart? pindexStart : activeChain_.Genesis();
@@ -56,8 +55,7 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
             blockReader_.ReadBlock(pindex,block);
             BOOST_FOREACH (CTransaction& tx, block.vtx)
             {
-                if (wallet.AddToWalletIfInvolvingMe(tx, &block, true,TransactionSyncType::RESCAN))
-                    ret++;
+                wallet.AddToWalletIfInvolvingMe(tx, &block, true,TransactionSyncType::RESCAN);
             }
             pindex = activeChain_.Next(pindex);
             if (GetTime() >= nNow + 60) {
@@ -67,5 +65,4 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
         }
         LogPrintf("%s...done\n",typeOfScanMessage);
     }
-    return ret;
 }

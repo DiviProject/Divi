@@ -30,7 +30,7 @@ int WalletRescanner::scanForWalletTransactions(CWallet& wallet, const CBlockInde
     int ret = 0;
     int64_t nNow = GetTime();
 
-    const CBlockIndex* pindex = pindexStart;
+    const CBlockIndex* pindex = pindexStart? pindexStart : activeChain_.Genesis();
     {
         LOCK2(mainCS_, wallet.cs_wallet);
         // no need to read and scan block, if block was created before

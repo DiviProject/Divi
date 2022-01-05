@@ -31,12 +31,12 @@ class WalletNotifications (BitcoinTestFramework):
         sender = self.nodes[0]
         receiver = self.nodes[1]
         addr = receiver.getnewaddress()
-        sender.setgenerate(True, 30)
+        sender.setgenerate( 30)
         assert_equal(self.count_unique_txs_logged(),30)
         self.sync_all()
         sender.sendtoaddress(addr, 5000.0)
         assert_equal(self.count_unique_txs_logged(),31)
-        sender.setgenerate(True, 1)
+        sender.setgenerate( 1)
         assert_equal(self.count_unique_txs_logged(),32)
         self.sync_all()
         receiver.sendtoaddress(sender.getnewaddress(),receiver.getbalance()-decimal.Decimal(0.499950) )

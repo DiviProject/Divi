@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #
-# Test -alertnotify 
+# Test -alertnotify
 #
 
 from test_framework import BitcoinTestFramework
@@ -33,16 +33,16 @@ class ForkNotifyTest(BitcoinTestFramework):
         self.sync_all()
 
     def run_test(self):
-        self.nodes[0].setgenerate(True, 10)
+        self.nodes[0].setgenerate( 10)
         self.sync_all()
 
         # Mine 51 up-version blocks
-        self.nodes[1].setgenerate(True, 51)
+        self.nodes[1].setgenerate( 51)
         self.sync_all()
         # -alertnotify should trigger on the 51'st,
         # but mine and sync another to give
         # -alertnotify time to write
-        self.nodes[1].setgenerate(True, 1)
+        self.nodes[1].setgenerate( 1)
         self.sync_all()
 
         assert_equal(self.nodes[0].getblockheader(self.nodes[0].getblockhash(5))["version"], 4)
@@ -55,9 +55,9 @@ class ForkNotifyTest(BitcoinTestFramework):
             raise AssertionError("-alertnotify did not warn of up-version blocks")
 
         # Mine more up-version blocks, should not get more alerts:
-        self.nodes[1].setgenerate(True, 1)
+        self.nodes[1].setgenerate( 1)
         self.sync_all()
-        self.nodes[1].setgenerate(True, 1)
+        self.nodes[1].setgenerate( 1)
         self.sync_all()
 
         with open(self.alert_filename, 'r') as f:

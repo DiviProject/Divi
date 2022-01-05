@@ -94,12 +94,12 @@ class TxnMallTest(BitcoinTestFramework):
         # Mine blocks to give nodes 0-2 each 1'250 coins.
         # We use node 3 to mine blocks, and don't need it to have
         # a specific balance later on.
-        self.nodes[3].setgenerate(True, 5)
+        self.nodes[3].setgenerate( 5)
         self.sync_all()
         for i in range(3):
-            self.nodes[i].setgenerate(True, 1)
+            self.nodes[i].setgenerate( 1)
             self.sync_all()
-        self.nodes[3].setgenerate(True, 20)
+        self.nodes[3].setgenerate( 20)
         self.sync_all()
 
         # All nodes should start with 1,250 BTC:
@@ -119,7 +119,7 @@ class TxnMallTest(BitcoinTestFramework):
         to[bar_address] = 29.9995
         txid0 = sender.sendmany("", to)
         self.sync_all()
-        self.nodes[1].setgenerate(True,1)
+        self.nodes[1].setgenerate(1)
         self.sync_all()
         tx0 = sender.gettransaction(txid0)
         assert_equal(tx0["confirmations"],1)
@@ -142,7 +142,7 @@ class TxnMallTest(BitcoinTestFramework):
 
         # Have node0 mine a block:
         if self.options.mine_block:
-            self.nodes[0].setgenerate(True, 1)
+            self.nodes[0].setgenerate( 1)
             self.sync_all()
 
         tx1 = self.nodes[0].gettransaction(txid1)
@@ -173,11 +173,11 @@ class TxnMallTest(BitcoinTestFramework):
         # Now give doublespend to miner:
         mutated_txid = self.nodes[2].sendrawtransaction(doublespend["hex"])
         # ... mine some blocks...
-        blks = self.nodes[2].setgenerate(True, 5)
+        blks = self.nodes[2].setgenerate( 5)
 
         # Reconnect the split network, and sync chain:
         connect_nodes(self.nodes[1], 2)
-        self.nodes[2].setgenerate(True, 1)  # Mine another block to make sure we sync
+        self.nodes[2].setgenerate( 1)  # Mine another block to make sure we sync
         sync_blocks(self.nodes)
 
         # Re-fetch transaction info:

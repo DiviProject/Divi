@@ -39,7 +39,7 @@ class Lottery (BitcoinTestFramework):
     def run_test(self):
         node = self.nodes[0]
         staking_address = self.nodes[1].getnewaddress()
-        node.setgenerate(True,21)
+        node.setgenerate(21)
         block_count = node.getblockcount()
         lottery_block_start_height = 101
         target_send = 9999.0
@@ -48,10 +48,10 @@ class Lottery (BitcoinTestFramework):
                 node.sendtoaddress(staking_address,target_send)
 
             blocks_to_mine = min(8,lottery_block_start_height-block_count)
-            node.setgenerate(True, blocks_to_mine )
+            node.setgenerate( blocks_to_mine )
             block_count = node.getblockcount()
         sync_blocks(self.nodes)
-        self.nodes[1].setgenerate(True,9)
+        self.nodes[1].setgenerate(9)
         sync_blocks(self.nodes)
         self.checkLotteryCandidates(node,staking_address,lottery_block_start_height)
 

@@ -29,7 +29,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"setmocktime", 0},
         {"getaddednodeinfo", 0},
         {"setgenerate", 0},
-        {"setgenerate", 1},
         {"generateblock", 0},
         {"sendtoaddress", 1},
         {"getcoinavailability", 0},

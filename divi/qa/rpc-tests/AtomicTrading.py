@@ -88,7 +88,7 @@ class AtomicTradingTest (BitcoinTestFramework):
     def run_test (self):
         set_node_times (self.nodes, ACTIVATION_TIME)
         connect_nodes (self.nodes[0], 1)
-        self.nodes[0].setgenerate (True, 30)
+        self.nodes[0].setgenerate ( 30)
 
         # We need two addresses from our two nodes, and mainly
         # also the raw pubkey hashes.
@@ -137,7 +137,7 @@ class AtomicTradingTest (BitcoinTestFramework):
         ]
 
         connect_nodes_bi(self.nodes,0,1)
-        self.nodes[0].setgenerate (True, 1)
+        self.nodes[0].setgenerate ( 1)
         sync_blocks (self.nodes)
 
         # addr[1] can spend the output immediately with the right secret.
@@ -145,7 +145,7 @@ class AtomicTradingTest (BitcoinTestFramework):
         self.expectInvalid (tx)
         tx = self.buildSpend (self.nodes[1], outputs[0], addr[1], secret)
         self.nodes[0].sendrawtransaction (ToHex (tx))
-        self.nodes[0].setgenerate (True, 1)
+        self.nodes[0].setgenerate ( 1)
 
         # addr[0] can't spend before the time lock runs out, independent
         # of the secret.
@@ -161,12 +161,12 @@ class AtomicTradingTest (BitcoinTestFramework):
         # spend the output (with a wrong secret, since otherwise
         # the codepath for addr[1] activates).
         numberOfBlocks = 99 - self.nodes[0].getblockcount()
-        self.nodes[0].setgenerate (True, numberOfBlocks)
+        self.nodes[0].setgenerate ( numberOfBlocks)
         sync_blocks (self.nodes)
         tx = self.buildSpend (self.nodes[0], outputs[1], addr[0], b"wrong",
                               lockTime=100)
         self.expectInvalid(tx)
-        self.nodes[0].setgenerate (True, 1)
+        self.nodes[0].setgenerate ( 1)
         self.expectValidAndMine(tx)
 
         # Both outputs should now really be spent.

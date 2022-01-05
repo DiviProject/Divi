@@ -36,10 +36,10 @@ class WalletTest (BitcoinTestFramework):
     def run_test (self):
         print ("Mining blocks...")
 
-        self.nodes[0].setgenerate(True, 2)
+        self.nodes[0].setgenerate( 2)
 
         self.sync_all()
-        self.nodes[1].setgenerate(True, 32)
+        self.nodes[1].setgenerate( 32)
         self.sync_all()
 
         assert_equal(self.nodes[0].getbalance(), 2500)
@@ -51,7 +51,7 @@ class WalletTest (BitcoinTestFramework):
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 351)
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 350)
         sync_mempools(self.nodes)
-        self.nodes[1].setgenerate(True, 1)
+        self.nodes[1].setgenerate( 1)
         sync_blocks(self.nodes)
 
         # Compare the expected balances.  Give 1 coin leeway
@@ -80,7 +80,7 @@ class WalletTest (BitcoinTestFramework):
         self.nodes[1].sendrawtransaction(txns_to_send[1]["hex"], True)
 
         # Have node1 mine a block to confirm transactions:
-        self.nodes[1].setgenerate(True, 1)
+        self.nodes[1].setgenerate( 1)
         self.sync_all()
 
         assert_equal(self.nodes[0].getbalance(), 0)

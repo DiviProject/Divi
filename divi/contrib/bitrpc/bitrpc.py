@@ -272,12 +272,8 @@ elif cmd == "setaccount":
 
 elif cmd == "setgenerate":
     try:
-        gen= raw_input("Generate? (true/false): ")
-        cpus = raw_input("Max processors/cores (-1 for unlimited, optional):")
-        try:
-            print access.setgenerate(gen, cpus)
-        except:
-            print access.setgenerate(gen)
+        blocks = raw_input("Max number of blocks:")
+        print access.setgenerate( blocks)
     except:
         print "\n---An error occurred---\n"
 

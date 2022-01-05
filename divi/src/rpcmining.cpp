@@ -158,7 +158,15 @@ Value generateblock(const Array& params, bool fHelp)
     const CoinMintingModule& mintingModule = GetCoinMintingModule();
     I_CoinMinter& minter = mintingModule.coinMinter();
     minter.setMintingRequestStatus(true);
-    ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
+
+    struct ResetExtendedFactory
+    {
+        void operator()(ExtendedBlockFactory* ptr)
+        {
+            ptr->reset();
+        }
+    };
+    std::unique_ptr<ExtendedBlockFactory, ResetExtendedFactory>blockFactory(dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory()));
     assert(blockFactory);
 
     const Value& extraTx = find_value(options, "extratx");
@@ -167,7 +175,6 @@ Value generateblock(const Array& params, bool fHelp)
             CTransaction tx;
             if (!DecodeHexTx(tx, val.get_str()))
             {
-                blockFactory->reset();
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
             }
             blockFactory->addExtraTransaction(tx);
@@ -178,12 +185,10 @@ Value generateblock(const Array& params, bool fHelp)
         CTransaction tx;
         if (!DecodeHexTx(tx, coinstake.get_str()))
         {
-            blockFactory->reset();
             throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
         }
         if (!tx.IsCoinStake())
         {
-            blockFactory->reset();
             throw JSONRPCError(RPC_INVALID_PARAMETER, "TX is not a coinstake");
         }
         blockFactory->setCustomCoinstake(tx);
@@ -200,10 +205,8 @@ Value generateblock(const Array& params, bool fHelp)
 
     if (!newBlockAdded || chainActive.Height() != nHeight + 1)
     {
-        blockFactory->reset();
         throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
     }
-    blockFactory->reset();
     return chainActive.Tip()->GetBlockHash().GetHex();
 }
 #endif

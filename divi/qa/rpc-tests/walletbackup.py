@@ -76,7 +76,7 @@ class WalletBackupTest(BitcoinTestFramework):
         # Have the miner (node3) mine a block.
         # Must sync mempools before mining.
         sync_mempools(self.nodes)
-        self.nodes[3].setgenerate(True, 1)
+        self.nodes[3].setgenerate( 1)
         assert_equal(self.nodes[3].getrawmempool(), [])
         sync_blocks(self.nodes)
 
@@ -127,13 +127,13 @@ class WalletBackupTest(BitcoinTestFramework):
 
     def run_test(self):
         logging.info("Generating initial blockchain")
-        self.nodes[0].setgenerate(True, 1)
+        self.nodes[0].setgenerate( 1)
         sync_blocks(self.nodes)
-        self.nodes[1].setgenerate(True, 1)
+        self.nodes[1].setgenerate( 1)
         sync_blocks(self.nodes)
-        self.nodes[2].setgenerate(True, 1)
+        self.nodes[2].setgenerate( 1)
         sync_blocks(self.nodes)
-        self.nodes[3].setgenerate(True, 20)
+        self.nodes[3].setgenerate( 20)
         sync_blocks(self.nodes)
 
         assert_equal(self.nodes[0].getbalance(), 1250)

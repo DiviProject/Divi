@@ -64,9 +64,9 @@ class MnPlusVaults (MnTestFramework):
   def mine_blocks (self, n):
     """Mines blocks with node 3."""
     if self.nodes[3].getblockcount() > 100:
-      self.nodes[6].setgenerate(True,n)
+      self.nodes[6].setgenerate(n)
     else:
-      self.nodes[3].setgenerate(True, n)
+      self.nodes[3].setgenerate( n)
     sync_blocks (self.nodes)
 
   def fund_vaults(self):
@@ -89,7 +89,7 @@ class MnPlusVaults (MnTestFramework):
     # with a very early timestamp.
     set_node_times (self.nodes, self.time)
 
-    self.nodes[0].setgenerate (True, 5)
+    self.nodes[0].setgenerate ( 5)
     sync_blocks (self.nodes)
     self.mine_blocks (24)
     self.fund_vaults()

@@ -30,7 +30,7 @@ class TxIndexTest (BitcoinTestFramework):
         assert_raises (JSONRPCException, node.getrawtransaction, value)
 
     def run_test (self):
-        self.nodes[0].setgenerate (True, 30)
+        self.nodes[0].setgenerate ( 30)
         sync_blocks (self.nodes)
 
         # Lookup of transactions proceeds based on three main avenues:
@@ -59,7 +59,7 @@ class TxIndexTest (BitcoinTestFramework):
           self.expect_found (n, "baretxid", bareTxid)
 
         print ("Lookup through UTXO set...")
-        self.nodes[0].setgenerate (True, 1)
+        self.nodes[0].setgenerate ( 1)
         sync_blocks (self.nodes)
         for n in self.nodes:
           assert_equal (n.getrawmempool (), [])
@@ -71,7 +71,7 @@ class TxIndexTest (BitcoinTestFramework):
         signed = self.nodes[0].signrawtransaction (tx)
         assert_equal (signed["complete"], True)
         self.nodes[0].sendrawtransaction (signed["hex"])
-        self.nodes[0].setgenerate (True, 1)
+        self.nodes[0].setgenerate ( 1)
         sync_blocks (self.nodes)
 
         print ("Lookup through tx index...")

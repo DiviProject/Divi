@@ -55,7 +55,7 @@ class WalletSends (BitcoinTestFramework):
     def ensure_complex_spends_resolve_balances_correctly(self,accountName=""):
         sender = self.sender
         receiver = self.receiver
-        sender.setgenerate(True,20)
+        sender.setgenerate(20)
         self.sync_all()
 
         starting_balance = receiver.getbalance()
@@ -82,7 +82,7 @@ class WalletSends (BitcoinTestFramework):
             receiver_utxo = (txid, i)
 
         self.sync_all()
-        sender.setgenerate(True,1)
+        sender.setgenerate(1)
         self.sync_all()
 
         reference_balance = receiver.getbalance()
@@ -114,7 +114,7 @@ class WalletSends (BitcoinTestFramework):
 
         signed = self.signAllInputs(tx.serialize().hex(),sender,receiver)
         sender.sendrawtransaction(signed["hex"], True)
-        sender.setgenerate(True, 1)
+        sender.setgenerate( 1)
         self.sync_all()
 
         reference_balance = receiver.getbalance()
@@ -127,14 +127,14 @@ class WalletSends (BitcoinTestFramework):
         sender = self.sender
         receiver = self.receiver
         addr = receiver.getnewaddress()
-        sender.setgenerate(True, 30)
+        sender.setgenerate( 30)
         self.sync_all()
         sender.sendtoaddress(addr, 5000.0)
-        sender.setgenerate(True, 1)
+        sender.setgenerate( 1)
         self.sync_all()
         receiver.sendtoaddress(sender.getnewaddress(),receiver.getbalance()-Decimal(0.499950) )
         self.sync_all()
-        sender.setgenerate(True,1)
+        sender.setgenerate(1)
         self.sync_all()
 
     def join_sends_compute_balance_correctly(self):
@@ -149,7 +149,7 @@ class WalletSends (BitcoinTestFramework):
           if tx["vout"][i]["scriptPubKey"]["addresses"] == [addr]:
             receiver_utxo = (txid, i)
 
-        sender.setgenerate(True,1)
+        sender.setgenerate(1)
         self.sync_all()
 
         sender_utxo = sender.listunspent()[0]
@@ -173,7 +173,7 @@ class WalletSends (BitcoinTestFramework):
         sig2 = receiver.signrawtransaction(sig1["hex"])
 
         sender.sendrawtransaction(sig2["hex"], True)
-        sender.setgenerate(True, 1)
+        sender.setgenerate( 1)
         self.sync_all()
         reference_balance = receiver.getbalance()
         alt_balance = receiver.getbalance("*")

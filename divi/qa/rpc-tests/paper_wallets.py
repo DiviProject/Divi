@@ -37,10 +37,10 @@ class PaperWallets (BitcoinTestFramework):
     def run_test(self):
         paper_wallet = self.create_paper_wallet()
         self.create_additional_nodes()
-        self.nodes[1].setgenerate(True,24)
+        self.nodes[1].setgenerate(24)
         sync_blocks(self.nodes)
         self.nodes[1].sendtoaddress(paper_wallet["Address"],2000.0)
-        self.nodes[1].setgenerate(True,1)
+        self.nodes[1].setgenerate(1)
         sync_blocks(self.nodes)
         import_result = self.nodes[2].bip38decrypt(paper_wallet["Encrypted Key"],"password")
         attempts_to_sync = 0

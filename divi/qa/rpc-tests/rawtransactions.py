@@ -51,13 +51,13 @@ class RawTransactionsTest (BitcoinTestFramework):
 
     def run_test (self):
         # Give both nodes some outputs valued at exactly 100 DIVI each.
-        self.nodes[0].setgenerate (True, 30)
+        self.nodes[0].setgenerate ( 30)
         outputs = {}
         for _ in range (10):
             for n in self.nodes:
                 outputs[n.getnewaddress ()] = 100
         self.nodes[0].sendmany ("", outputs)
-        self.nodes[0].setgenerate (True, 1)
+        self.nodes[0].setgenerate ( 1)
         sync_blocks (self.nodes)
 
         # Invalid calls to createrawtransaction.
@@ -129,7 +129,7 @@ class RawTransactionsTest (BitcoinTestFramework):
         signed = self.nodes[0].signrawtransaction (partial["hex"])
         assert_equal (signed["complete"], True)
         self.nodes[0].sendrawtransaction (signed["hex"])
-        self.nodes[0].setgenerate (True, 1)
+        self.nodes[0].setgenerate ( 1)
         sync_blocks (self.nodes)
         assert_equal (self.nodes[0].getbalance ("test"), 50)
         assert_equal (self.nodes[1].getbalance ("test"), 149)

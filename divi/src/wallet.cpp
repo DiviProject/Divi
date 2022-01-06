@@ -2296,6 +2296,10 @@ DBErrors CWallet::LoadWallet()
         return nLoadWalletRet;
     nLoadWalletRet = (vchDefaultKey.IsValid())? DB_LOAD_OK_RELOAD: DB_LOAD_OK_FIRST_RUN;
     uiInterface.LoadWallet(this);
+    if(nLoadWalletRet == DB_LOAD_OK_FIRST_RUN)
+    {
+        UpdateBestBlockLocation();
+    }
     return nLoadWalletRet;
 }
 

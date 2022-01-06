@@ -1012,7 +1012,6 @@ bool InitializeWalletHDAndChainState(std::ostringstream& strErrors)
         strErrors << translate("Cannot write default address") << "\n";
         return false;
     }
-    pwalletMain->UpdateBestBlockLocation();
     return true;
 }
 

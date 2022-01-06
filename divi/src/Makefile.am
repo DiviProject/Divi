@@ -159,7 +159,6 @@ BITCOIN_CORE_H = \
   Settings.h \
   hash.h \
   hdchain.h \
-  WalletRescanner.h \
   StartAndShutdownSignals.h \
   init.h \
   LicenseAndInfo.h \
@@ -392,7 +391,6 @@ libbitcoin_server_a_SOURCES = \
   checkpoints.cpp \
   FilteredBoostFileSystem.cpp \
   BlockScanner.cpp \
-  WalletRescanner.cpp \
   StartAndShutdownSignals.cpp \
   init.cpp \
   IndexDatabaseUpdates.cpp \
@@ -541,6 +539,7 @@ libbitcoin_wallet_a_SOURCES = \
   StochasticSubsetSelectionAlgorithm.cpp \
   MinimumFeeCoinSelectionAlgorithm.cpp \
   MerkleTxConfirmationNumberCalculator.cpp \
+  BlockScanner.cpp \
   wallet.cpp \
   Output.cpp \
   WalletTx.cpp \

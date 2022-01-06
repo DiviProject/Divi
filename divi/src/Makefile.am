@@ -111,6 +111,7 @@ BITCOIN_CORE_H = \
   BIP9ActivationManager.h \
   BIP9ActivationFeatureContainer.h \
   BlockIndexLotteryUpdater.h \
+  BlockScanner.h \
   CachedBIP9ActivationStateTracker.h \
   bip38.h \
   bip39.h \
@@ -390,6 +391,7 @@ libbitcoin_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   FilteredBoostFileSystem.cpp \
+  BlockScanner.cpp \
   WalletRescanner.cpp \
   StartAndShutdownSignals.cpp \
   init.cpp \

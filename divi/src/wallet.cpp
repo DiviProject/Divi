@@ -1115,11 +1115,11 @@ bool CWallet::IsSpent(const CWalletTx& wtx, unsigned int n) const
 {
     return outputTracker_->IsSpent(wtx.GetHash(), n);
 }
-bool CWallet::IsFullySpent(const CWalletTx& wtx) const
+bool CWallet::IsFullySpent(const CWalletTx& wtx,const int minimumNumberOfConfs) const
 {
     for(unsigned outputIndex = 0; outputIndex < wtx.vout.size(); ++outputIndex)
     {
-        if(!outputTracker_->IsSpent(wtx.GetHash(), outputIndex)) return false;
+        if(!outputTracker_->IsSpent(wtx.GetHash(), outputIndex,minimumNumberOfConfs)) return false;
     }
     return true;
 }
@@ -1296,8 +1296,8 @@ void CWallet::LoadWalletTransaction(const CWalletTx& wtxIn)
 void CWallet::PruneWallet()
 {
     LOCK2(cs_main,cs_wallet);
-    constexpr int64_t minimumNumberOfConfs = 20;
-    const int64_t maxNumberOfConfs = std::max(settings.GetArg("-prunewalletconfs", minimumNumberOfConfs),minimumNumberOfConfs);
+    constexpr int64_t defaultMinimumNumberOfConfs = 20;
+    const int64_t minimumNumberOfConfs = std::max(settings.GetArg("-prunewalletconfs", defaultMinimumNumberOfConfs),defaultMinimumNumberOfConfs);
     const unsigned totalTxs = transactionRecord_->size();
     std::vector<CWalletTx> transactionsToKeep;
     transactionsToKeep.reserve(1024);
@@ -1305,7 +1305,8 @@ void CWallet::PruneWallet()
     {
         const CWalletTx& walletTx = wtxByHash.second;
         const int64_t numberOfConfs = confirmationNumberCalculator_.FindConfirmedBlockIndexAndDepth(walletTx).second;
-        if( numberOfConfs > -1 && (numberOfConfs < maxNumberOfConfs || !IsFullySpent(walletTx)))
+        if(numberOfConfs < 0) continue;
+        if(numberOfConfs < minimumNumberOfConfs || !IsFullySpent(walletTx,minimumNumberOfConfs))
         {
             transactionsToKeep.push_back(walletTx);
         }

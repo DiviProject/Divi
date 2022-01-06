@@ -55,6 +55,7 @@ class I_MerkleTxConfirmationNumberCalculator;
 class I_VaultManagerDatabase;
 class VaultManager;
 class CBlockLocator;
+class I_BlockDataReader;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
@@ -283,6 +284,7 @@ public:
     bool InitializeDefaultKey();
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 
+    bool verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis = false);
     void toggleSpendingZeroConfirmationOutputs();
     void activateVaultMode(
         std::shared_ptr<I_VaultManagerDatabase> vaultDB,

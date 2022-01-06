@@ -46,7 +46,6 @@
 #include <BlockDiskAccessor.h>
 #include <TransactionInputChecker.h>
 #include <txmempool.h>
-#include <WalletRescanner.h>
 #include <StartAndShutdownSignals.h>
 #include <MerkleTxConfirmationNumberCalculator.h>
 #include <VaultManager.h>
@@ -1069,34 +1068,13 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     return true;
 }
 
-void ScanForWalletTransactions(CWallet& walletToRescan, const CBlockIndex* scanStartIndex)
-{
-    static BlockDiskDataReader blockReader;
-    static WalletRescanner rescanner(blockReader,chainActive,cs_main);
-    rescanner.scanForWalletTransactions(walletToRescan,scanStartIndex);
-}
-
 void ScanBlockchainForWalletUpdates()
 {
-    BlockDiskDataReader blockReader;
-    const CBlockIndex* pindexRescan = chainActive.Tip();
-    if (settings.GetBoolArg("-rescan", false))
-        pindexRescan = chainActive.Genesis();
-    else {
-        CBlockLocator locator;
-        if (pwalletMain->GetBlockLocator(locator))
-            pindexRescan = FindForkInGlobalIndex(chainActive, locator);
-        else
-            pindexRescan = chainActive.Genesis();
-    }
-    if (chainActive.Tip() && chainActive.Tip() != pindexRescan) {
-        uiInterface.InitMessage(translate("Rescanning..."));
-        LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight, pindexRescan->nHeight);
-        int64_t nStart = GetTimeMillis();
-        ScanForWalletTransactions(*pwalletMain,pindexRescan);
-        LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
-        pwalletMain->UpdateBestBlockLocation();
-    }
+    int64_t nStart = GetTimeMillis();
+    uiInterface.InitMessage(translate("Scanning chain for wallet updates..."));
+    BlockDiskDataReader reader;
+    pwalletMain->verifySyncToActiveChain(reader,settings.GetBoolArg("-rescan", false));
+    LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
 }
 
 void LockUpMasternodeCollateral()

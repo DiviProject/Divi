@@ -251,12 +251,6 @@ std::shared_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
     return std::shared_ptr<I_WalletDatabase>{new CWalletDB(settings,strWalletFile)};
 }
 
-bool CWallet::GetBlockLocator(CBlockLocator& blockLocator)
-{
-    CWalletDB walletdb(settings,strWalletFile);
-    return walletdb.ReadBestBlock(blockLocator);
-}
-
 void CWallet::activateVaultMode(
     std::shared_ptr<I_VaultManagerDatabase> vaultDB,
     std::shared_ptr<VaultManager> vaultManager)
@@ -336,7 +330,7 @@ static const CBlockIndex* ApproximateFork(const CChain& chain,const BlockMap& bl
 const CBlockIndex* CWallet::GetNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis)
 {
     CBlockLocator locator;
-    if(!syncFromGenesis && !GetBlockLocator(locator)) syncFromGenesis = true;
+    if(!syncFromGenesis && !CWalletDB(settings,strWalletFile).ReadBestBlock(locator)) syncFromGenesis = true;
     const CBlockIndex* pindex = syncFromGenesis? activeChain_.Genesis():ApproximateFork(activeChain_,blockIndexByHash_, locator);
     const int64_t timestampOfFirstKey = getTimestampOfFistKey();
     while (pindex && timestampOfFirstKey && (pindex->GetBlockTime() < (timestampOfFirstKey - 7200)))

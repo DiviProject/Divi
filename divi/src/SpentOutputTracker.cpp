@@ -19,7 +19,7 @@ SpentOutputTracker::SpentOutputTracker(
  * Outpoint is spent if any non-conflicted transaction
  * spends it:
  */
-bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
+bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n, const int minimumConfirmations) const
 {
     const COutPoint outpoint(hash, n);
     std::pair<TxSpends::const_iterator, TxSpends::const_iterator> range;
@@ -27,7 +27,7 @@ bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
     for (TxSpends::const_iterator it = range.first; it != range.second; ++it) {
         const uint256& wtxid = it->second;
         const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(wtxid);
-        if (transactionPtr && confirmationsCalculator_.GetNumberOfBlockConfirmations(*transactionPtr) >= 0)
+        if (transactionPtr && confirmationsCalculator_.GetNumberOfBlockConfirmations(*transactionPtr) >= minimumConfirmations)
             return true; // Spent
     }
     return false;

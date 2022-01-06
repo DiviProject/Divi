@@ -37,6 +37,7 @@
 #include <random.h>
 #include <VaultManager.h>
 #include <VaultManagerDatabase.h>
+#include <BlockScanner.h>
 
 #include "Settings.h"
 extern Settings& settings;
@@ -342,6 +343,49 @@ const CBlockIndex* CWallet::GetNextUnsycnedBlockIndexInMainChain(bool syncFromGe
         pindex = activeChain_.Next(pindex);
 
     return pindex;
+}
+
+static int computeProgress(int currentHeight,int startHeight,int endHeight)
+{
+    const int progress = (currentHeight - startHeight) / (endHeight - startHeight + 1) * 100;
+    return std::max(1, std::min(99, progress));
+}
+
+bool CWallet::verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis)
+{
+    LOCK2(cs_main,cs_wallet);
+    const CBlockIndex* const startingBlockIndex = GetNextUnsycnedBlockIndexInMainChain(startFromGenesis);
+    if(!startingBlockIndex) return true;
+
+    BlockScanner blockScanner(blockReader, activeChain_,startingBlockIndex);
+
+    const int endHeight = activeChain_.Tip()->nHeight;
+    const int startHeight = startingBlockIndex->nHeight;
+    const unsigned numberOfBlocksToScan = endHeight - startHeight +1;
+    unsigned currentHeight = startingBlockIndex->nHeight;
+    int64_t nNow = GetTime();
+
+    const std::string typeOfScanMessage = startFromGenesis? "Rescanning" : "Scanning";
+    LogPrintf("%s...%d%%\n",typeOfScanMessage, 0);
+    while(blockScanner.advanceToNextBlock() && numberOfBlocksToScan > 0u)
+    {
+        if (currentHeight % 100 == 0)
+        {
+            const int progress = computeProgress(currentHeight,startHeight,endHeight);
+            LogPrintf("%s...%d\n",typeOfScanMessage, progress);
+        }
+        SyncTransactions(blockScanner.blockTransactions(), &blockScanner.blockRef(), TransactionSyncType::RESCAN);
+        if (GetTime() >= nNow + 60)
+        {
+            nNow = GetTime();
+            LogPrintf("%s - at block %d. Progress=%d%%\n",typeOfScanMessage, currentHeight, computeProgress(currentHeight,startHeight,endHeight));
+        }
+        currentHeight += 1;
+    }
+    LogPrintf("%s...done\n",typeOfScanMessage);
+
+    SetBestChain(activeChain_.GetLocator());
+    return true;
 }
 
 bool CWallet::LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey)

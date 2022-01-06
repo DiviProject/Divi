@@ -318,6 +318,32 @@ CKeyMetadata CWallet::getKeyMetadata(const CBitcoinAddress& address) const
     return metadata;
 }
 
+static const CBlockIndex* ApproximateFork(const CChain& chain,const BlockMap& blockIndexByHash, const CBlockLocator& locator)
+{
+    // Find the first block the caller has in the main chain
+    for(const uint256& hash: locator.vHave) {
+        const auto mi = blockIndexByHash.find(hash);
+        if (mi != blockIndexByHash.end()) {
+            const CBlockIndex* pindex = (*mi).second;
+            if (chain.Contains(pindex))
+                return pindex;
+        }
+    }
+    return chain.Genesis();
+}
+
+const CBlockIndex* CWallet::GetNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis)
+{
+    CBlockLocator locator;
+    if(!syncFromGenesis && !GetBlockLocator(locator)) syncFromGenesis = true;
+    const CBlockIndex* pindex = syncFromGenesis? activeChain_.Genesis():ApproximateFork(activeChain_,blockIndexByHash_, locator);
+    const int64_t timestampOfFirstKey = getTimestampOfFistKey();
+    while (pindex && timestampOfFirstKey && (pindex->GetBlockTime() < (timestampOfFirstKey - 7200)))
+        pindex = activeChain_.Next(pindex);
+
+    return pindex;
+}
+
 bool CWallet::LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey)
 {
     if (mapMasterKeys.count(masterKeyIndex) != 0) {

@@ -232,6 +232,7 @@ private:
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
 
     bool CanSupportFeature(enum WalletFeature wf);
+    const CBlockIndex* GetNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis = false);
 protected:
 
     // CWalletDB: load from disk methods

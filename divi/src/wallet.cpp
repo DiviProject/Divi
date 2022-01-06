@@ -1390,9 +1390,10 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
     return false;
 }
 
-void CWallet::SyncTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType)
+void CWallet::AddTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType)
 {
-    LOCK2(cs_main, cs_wallet);
+    AssertLockHeld(cs_main);
+    AssertLockHeld(cs_wallet);
     for(const CTransaction& tx: txs)
     {
         if (!AddToWalletIfInvolvingMe(tx, pblock, true,syncType))
@@ -1408,6 +1409,12 @@ void CWallet::SyncTransactions(const TransactionVector& txs, const CBlock* pbloc
                 wtx->RecomputeCachedQuantities();
         }
     }
+}
+
+void CWallet::SyncTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType)
+{
+    LOCK2(cs_main, cs_wallet);
+    AddTransactions(txs,pblock,syncType);
 }
 
 void CWallet::UpdateBestBlockLocation()

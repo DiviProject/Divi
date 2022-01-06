@@ -234,6 +234,10 @@ private:
 
     bool CanSupportFeature(enum WalletFeature wf);
     const CBlockIndex* GetNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis = false);
+    bool GetBlockLocator(CBlockLocator& blockLocator);
+    int64_t getTimestampOfFistKey() const;
+    void UpdateBestBlockLocation();
+
 protected:
 
     // CWalletDB: load from disk methods
@@ -275,11 +279,9 @@ public:
     int GetVersion();
 
     const AddressBookManager& GetAddressBookManager() const;
-    bool GetBlockLocator(CBlockLocator& blockLocator);
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;
 
-    void UpdateBestBlockLocation();
     const CPubKey& GetDefaultKey() const;
     bool InitializeDefaultKey();
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
@@ -289,7 +291,6 @@ public:
     void activateVaultMode(
         std::shared_ptr<I_VaultManagerDatabase> vaultDB,
         std::shared_ptr<VaultManager> vaultManager);
-    int64_t getTimestampOfFistKey() const;
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 
     bool VerifyHDKeys() const;

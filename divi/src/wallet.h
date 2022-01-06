@@ -235,7 +235,6 @@ private:
     bool CanSupportFeature(enum WalletFeature wf);
     const CBlockIndex* GetNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis = false);
     int64_t getTimestampOfFistKey() const;
-    void UpdateBestBlockLocation();
 
 protected:
 

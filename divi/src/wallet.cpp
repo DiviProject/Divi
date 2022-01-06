@@ -1481,10 +1481,6 @@ void CWallet::SyncTransactions(const TransactionVector& txs, const CBlock* pbloc
     AddTransactions(txs,pblock,syncType);
 }
 
-void CWallet::UpdateBestBlockLocation()
-{
-    SetBestChain(activeChain_.GetLocator());
-}
 void CWallet::SetBestChain(const CBlockLocator& loc)
 {
     CWalletDB walletdb(settings,strWalletFile);
@@ -2292,7 +2288,7 @@ DBErrors CWallet::LoadWallet()
     uiInterface.LoadWallet(this);
     if(nLoadWalletRet == DB_LOAD_OK_FIRST_RUN)
     {
-        UpdateBestBlockLocation();
+        SetBestChain(activeChain_.GetLocator());
     }
     return nLoadWalletRet;
 }

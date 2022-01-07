@@ -1085,16 +1085,9 @@ bool static FlushStateToDisk(CBlockTreeDB& blockTreeDB, CValidationState& state,
             // First make sure all block and undo data is flushed to disk.
             FlushBlockFile();
             // Then update all block file information (which may refer to block and undo files).
-            bool fileschanged = false;
-            for (std::set<int>::iterator it = setDirtyFileInfo.begin(); it != setDirtyFileInfo.end();) {
-                if (!blockTreeDB.WriteBlockFileInfo(*it, vinfoBlockFile[*it])) {
-                    return state.Abort("Failed to write to block index");
-                }
-                fileschanged = true;
-                setDirtyFileInfo.erase(it++);
-            }
-            if (fileschanged && !blockTreeDB.WriteLastBlockFile(nLastBlockFile)) {
-                return state.Abort("Failed to write to block index");
+            if(!BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(nLastBlockFile,setDirtyFileInfo,vinfoBlockFile,state,blockTreeDB))
+            {
+                return false;
             }
             for (std::set<CBlockIndex*>::iterator it = setDirtyBlockIndex.begin(); it != setDirtyBlockIndex.end();) {
                 if (!blockTreeDB.WriteBlockIndex(CDiskBlockIndex(*it))) {

@@ -7,6 +7,7 @@
 class CDiskBlockPos;
 class CValidationState;
 class CBlockTreeDB;
+class CBlockIndex;
 namespace BlockFileHelpers
 {
     void FlushBlockFile(int nLastBlockFile, const std::vector<CBlockFileInfo>& vinfoBlockFile, bool fFinalize = false);
@@ -37,6 +38,7 @@ namespace BlockFileHelpers
     bool WriteBlockFileToBlockTreeDatabase(
         const int nLastBlockFile,
         std::set<int>& setDirtyFileInfo,
+        std::set<CBlockIndex*>& setDirtyBlockIndex,
         const std::vector<CBlockFileInfo>& vinfoBlockFile,
         CValidationState& state,
         CBlockTreeDB& blockTreeDB);

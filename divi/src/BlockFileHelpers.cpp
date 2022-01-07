@@ -8,8 +8,10 @@
 #include <BlockDiskAccessor.h>
 #include <ValidationState.h>
 
+CCriticalSection cs_LastBlockFile;
 void BlockFileHelpers::FlushBlockFile(int nLastBlockFile, const std::vector<CBlockFileInfo>& vinfoBlockFile, bool fFinalize)
 {
+    LOCK(cs_LastBlockFile);
     CDiskBlockPos posOld(nLastBlockFile, 0);
 
     FILE* fileOld = OpenBlockFile(posOld);
@@ -36,6 +38,7 @@ bool BlockFileHelpers::AllocateDiskSpaceForBlockUndo(
     CDiskBlockPos& pos,
     unsigned int nAddSize)
 {
+    LOCK(cs_LastBlockFile);
     pos.nFile = nFile;
 
     unsigned int nNewSize;
@@ -74,6 +77,7 @@ bool BlockFileHelpers::FindKnownBlockPos(
     unsigned int nHeight,
     uint64_t nTime)
 {
+    LOCK(cs_LastBlockFile);
     unsigned int nFile = pos.nFile;
     if (vinfoBlockFile.size() <= nFile) {
         vinfoBlockFile.resize(nFile + 1);
@@ -98,6 +102,7 @@ bool BlockFileHelpers::FindUnknownBlockPos(
     unsigned int nHeight,
     uint64_t nTime)
 {
+    LOCK(cs_LastBlockFile);
     unsigned int nFile = nLastBlockFile;
     if (vinfoBlockFile.size() <= nFile) {
         vinfoBlockFile.resize(nFile + 1);

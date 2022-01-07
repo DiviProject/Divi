@@ -155,7 +155,6 @@ std::set<CBlockIndex*, CBlockIndexWorkComparator> setBlockIndexCandidates;
 /** All pairs A->B, where A (or one if its ancestors) misses transactions, but B has transactions. */
 std::multimap<CBlockIndex*, CBlockIndex*> mapBlocksUnlinked;
 
-CCriticalSection cs_LastBlockFile;
 std::vector<CBlockFileInfo> vinfoBlockFile;
 int nLastBlockFile = 0;
 
@@ -852,25 +851,21 @@ void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
 
 void FlushBlockFile(bool fFinalize = false)
 {
-    LOCK(cs_LastBlockFile);
     BlockFileHelpers::FlushBlockFile(nLastBlockFile,vinfoBlockFile,fFinalize);
 }
 
 bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)
 {
-    LOCK(cs_LastBlockFile);
     return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,setDirtyFileInfo,vinfoBlockFile,pos,nAddSize);
 }
 
 bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
 {
-    LOCK(cs_LastBlockFile);
     return BlockFileHelpers::FindKnownBlockPos(nLastBlockFile,setDirtyFileInfo,vinfoBlockFile,state,pos,nAddSize,nHeight,nTime);
 }
 
 bool FindUnknownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
 {
-    LOCK(cs_LastBlockFile);
     return BlockFileHelpers::FindUnknownBlockPos(nLastBlockFile, setDirtyFileInfo, vinfoBlockFile, state, pos, nAddSize, nHeight, nTime);
 }
 

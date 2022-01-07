@@ -1050,14 +1050,14 @@ bool ConnectBlock(
  * The caches and indexes are flushed if either they're too large, forceWrite is set, or
  * fast is not set and it's been a while since the last write.
  */
-boost::signals2::signal<void ()> flushToDiskSyncDatabases;
+boost::signals2::signal<void ()> syncDatabasesToDisk;
 void RegisterDatabaseToSyncToDisk(CLevelDBWrapper* dbToSync)
 {
-    flushToDiskSyncDatabases.connect(boost::bind(&CLevelDBWrapper::Sync, dbToSync));
+    syncDatabasesToDisk.connect(boost::bind(&CLevelDBWrapper::Sync, dbToSync));
 }
 void UnregisterDatabaseToSyncToDisk(CLevelDBWrapper* dbToSync)
 {
-    flushToDiskSyncDatabases.disconnect(boost::bind(&CLevelDBWrapper::Sync, dbToSync));
+    syncDatabasesToDisk.disconnect(boost::bind(&CLevelDBWrapper::Sync, dbToSync));
 }
 
 bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
@@ -1085,7 +1085,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
             {
                 return false;
             }
-            flushToDiskSyncDatabases();
+            syncDatabasesToDisk();
             // Finally flush the chainstate (which may refer to block index entries).
             if (!pcoinsTip->Flush())
                 return state.Abort("Failed to write to coin database");

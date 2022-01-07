@@ -8,6 +8,7 @@
 #include <BlockDiskAccessor.h>
 #include <ValidationState.h>
 #include <txdb.h>
+#include <chain.h>
 
 CCriticalSection cs_LastBlockFile;
 void BlockFileHelpers::FlushBlockFile(int nLastBlockFile, const std::vector<CBlockFileInfo>& vinfoBlockFile, bool fFinalize)
@@ -147,6 +148,7 @@ bool BlockFileHelpers::FindUnknownBlockPos(
 bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
     const int nLastBlockFile,
     std::set<int>& setDirtyFileInfo,
+    std::set<CBlockIndex*>& setDirtyBlockIndex,
     const std::vector<CBlockFileInfo>& vinfoBlockFile,
     CValidationState& state,
     CBlockTreeDB& blockTreeDB)
@@ -164,5 +166,14 @@ bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
     {
         return state.Abort("Failed to write to block index");
     }
+
+    for (CBlockIndex* blockIndex: setDirtyBlockIndex)
+    {
+        if (!blockTreeDB.WriteBlockIndex(CDiskBlockIndex(blockIndex)))
+        {
+            return state.Abort("Failed to write to block index");
+        }
+    }
+    setDirtyBlockIndex.clear();
     return true;
 }

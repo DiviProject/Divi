@@ -1083,7 +1083,6 @@ bool static FlushStateToDisk(CBlockTreeDB& blockTreeDB, CValidationState& state,
                 return state.Abort("Disk space is low!");
             }
             // First make sure all block and undo data is flushed to disk.
-            FlushBlockFile();
             // Then update all block file information (which may refer to block and undo files).
             if(!BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(nLastBlockFile,setDirtyFileInfo,vinfoBlockFile,state,blockTreeDB))
             {

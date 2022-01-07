@@ -288,6 +288,7 @@ private:
     /** Cleans up the singleton instance.  */
     static void Cleanup()
     {
+        UnregisterDatabaseToSyncToDisk(pblocktree);
         GetSporkManager().DeallocateDatabase();
         pcoinsTip = nullptr;
         pblocktree = nullptr;
@@ -305,6 +306,7 @@ public:
         pcoinsTip = &instance->coinsTip;
         pblocktree = &instance->blocktree;
         GetSporkManager().AllocateDatabase();
+        RegisterDatabaseToSyncToDisk(pblocktree);
     }
 
     /** Flushes state caches and cleans up the singleton instance.  */

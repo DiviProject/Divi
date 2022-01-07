@@ -862,6 +862,62 @@ bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int n
     return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,setDirtyFileInfo,vinfoBlockFile,pos,nAddSize);
 }
 
+bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
+{
+    LOCK(cs_LastBlockFile);
+    return BlockFileHelpers::FindKnownBlockPos(nLastBlockFile,setDirtyFileInfo,vinfoBlockFile,state,pos,nAddSize,nHeight,nTime);
+}
+
+bool FindUnknownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
+{
+    LOCK(cs_LastBlockFile);
+
+    unsigned int nFile = nLastBlockFile;
+    if (vinfoBlockFile.size() <= nFile) {
+        vinfoBlockFile.resize(nFile + 1);
+    }
+
+    while (vinfoBlockFile[nFile].nSize + nAddSize >= MAX_BLOCKFILE_SIZE) {
+        LogPrintf("Leaving block file %i: %s\n", nFile, vinfoBlockFile[nFile]);
+        FlushBlockFile(true);
+        nFile++;
+        if (vinfoBlockFile.size() <= nFile) {
+            vinfoBlockFile.resize(nFile + 1);
+        }
+    }
+    pos.nFile = nFile;
+    pos.nPos = vinfoBlockFile[nFile].nSize;
+
+    nLastBlockFile = nFile;
+    vinfoBlockFile[nFile].AddBlock(nHeight, nTime);
+    vinfoBlockFile[nFile].nSize += nAddSize;
+
+    unsigned int nOldChunks = (pos.nPos + BLOCKFILE_CHUNK_SIZE - 1) / BLOCKFILE_CHUNK_SIZE;
+    unsigned int nNewChunks = (vinfoBlockFile[nFile].nSize + BLOCKFILE_CHUNK_SIZE - 1) / BLOCKFILE_CHUNK_SIZE;
+    if (nNewChunks > nOldChunks) {
+        if (CheckDiskSpace(nNewChunks * BLOCKFILE_CHUNK_SIZE - pos.nPos)) {
+            FILE* file = OpenBlockFile(pos);
+            if (file) {
+                LogPrintf("Pre-allocating up to position 0x%x in blk%05u.dat\n", nNewChunks * BLOCKFILE_CHUNK_SIZE, pos.nFile);
+                AllocateFileRange(file, pos.nPos, nNewChunks * BLOCKFILE_CHUNK_SIZE - pos.nPos);
+                fclose(file);
+            }
+        }
+        else
+        {
+            return state.Abort("Disk space is low!");
+        }
+    }
+    setDirtyFileInfo.insert(nFile);
+    return true;
+}
+
+bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
+{
+    if(fKnown) return FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
+    else return FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
+}
+
 int64_t nTimeTotal = 0;
 
 void VerifyBestBlockIsAtPreviousBlock(const CBlockIndex* pindex, CCoinsViewCache& view)
@@ -1658,63 +1714,6 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
     }
 
     return true;
-}
-
-bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
-{
-    LOCK(cs_LastBlockFile);
-    return BlockFileHelpers::FindKnownBlockPos(nLastBlockFile,setDirtyFileInfo,vinfoBlockFile,state,pos,nAddSize,nHeight,nTime);
-}
-
-bool FindUnknownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
-{
-    LOCK(cs_LastBlockFile);
-
-    unsigned int nFile = nLastBlockFile;
-    if (vinfoBlockFile.size() <= nFile) {
-        vinfoBlockFile.resize(nFile + 1);
-    }
-
-    while (vinfoBlockFile[nFile].nSize + nAddSize >= MAX_BLOCKFILE_SIZE) {
-        LogPrintf("Leaving block file %i: %s\n", nFile, vinfoBlockFile[nFile]);
-        FlushBlockFile(true);
-        nFile++;
-        if (vinfoBlockFile.size() <= nFile) {
-            vinfoBlockFile.resize(nFile + 1);
-        }
-    }
-    pos.nFile = nFile;
-    pos.nPos = vinfoBlockFile[nFile].nSize;
-
-    nLastBlockFile = nFile;
-    vinfoBlockFile[nFile].AddBlock(nHeight, nTime);
-    vinfoBlockFile[nFile].nSize += nAddSize;
-
-    unsigned int nOldChunks = (pos.nPos + BLOCKFILE_CHUNK_SIZE - 1) / BLOCKFILE_CHUNK_SIZE;
-    unsigned int nNewChunks = (vinfoBlockFile[nFile].nSize + BLOCKFILE_CHUNK_SIZE - 1) / BLOCKFILE_CHUNK_SIZE;
-    if (nNewChunks > nOldChunks) {
-        if (CheckDiskSpace(nNewChunks * BLOCKFILE_CHUNK_SIZE - pos.nPos)) {
-            FILE* file = OpenBlockFile(pos);
-            if (file) {
-                LogPrintf("Pre-allocating up to position 0x%x in blk%05u.dat\n", nNewChunks * BLOCKFILE_CHUNK_SIZE, pos.nFile);
-                AllocateFileRange(file, pos.nPos, nNewChunks * BLOCKFILE_CHUNK_SIZE - pos.nPos);
-                fclose(file);
-            }
-        }
-        else
-        {
-            return state.Abort("Disk space is low!");
-        }
-    }
-    setDirtyFileInfo.insert(nFile);
-    return true;
-}
-
-
-bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
-{
-    if(fKnown) return FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
-    else return FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
 }
 
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleRoot)

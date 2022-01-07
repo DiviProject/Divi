@@ -202,7 +202,7 @@ BITCOIN_CORE_H = \
   leveldbwrapper.h \
   limitedmap.h \
   defaultValues.h \
-  blockFileInfo.h \
+  BlockFileInfo.h \
   scriptCheck.h \
   verifyDb.h \
   BlockUndo.h \
@@ -399,7 +399,7 @@ libbitcoin_server_a_SOURCES = \
   ForkActivation.cpp \
   uiMessenger.cpp \
   leveldbwrapper.cpp \
-  blockFileInfo.cpp \
+  BlockFileInfo.cpp \
   scriptCheck.cpp \
   verifyDb.cpp \
   BlockUndo.cpp \

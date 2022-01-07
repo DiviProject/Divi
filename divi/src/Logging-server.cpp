@@ -1,6 +1,6 @@
 #include <Logging.h>
 
-#include "blockFileInfo.h"
+#include "BlockFileInfo.h"
 #include "BlockRewards.h"
 #include "chain.h"
 

@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <coins.h>
 #include <boost/thread.hpp>
-#include <blockFileInfo.h>
+#include <BlockFileInfo.h>
 #include <blockmap.h>
 #include <chainparams.h>
 #include <addressindex.h>

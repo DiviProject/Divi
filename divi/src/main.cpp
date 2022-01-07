@@ -157,6 +157,8 @@ std::multimap<CBlockIndex*, CBlockIndex*> mapBlocksUnlinked;
 
 std::vector<CBlockFileInfo> vinfoBlockFile;
 int nLastBlockFile = 0;
+/** Dirty block file entries. */
+std::set<int> setDirtyFileInfo;
 
 /**
      * Every received block is assigned a unique and increasing identifier, so we
@@ -176,8 +178,6 @@ std::map<uint256, NodeId> mapBlockSource;
 /** Dirty block index entries. */
 std::set<CBlockIndex*> setDirtyBlockIndex;
 
-/** Dirty block file entries. */
-std::set<int> setDirtyFileInfo;
 } // anon namespace
 
 static bool UpdateDBIndicesForNewBlock(

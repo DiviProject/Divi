@@ -121,6 +121,7 @@ BITCOIN_CORE_H = \
   BlockSubsidyProvider.h \
   BlockRewards.h \
   BlockSigning.h \
+  BlockDiskPosition.h \
   chain.h \
   chainparams.h \
   chainparamsbase.h \

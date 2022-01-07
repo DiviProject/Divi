@@ -24,5 +24,14 @@ namespace BlockFileHelpers
         unsigned int nAddSize,
         unsigned int nHeight,
         uint64_t nTime);
+    bool FindUnknownBlockPos(
+        int& nLastBlockFile,
+        std::set<int>& setDirtyFileInfo,
+        std::vector<CBlockFileInfo>& vinfoBlockFile,
+        CValidationState& state,
+        CDiskBlockPos& pos,
+        unsigned int nAddSize,
+        unsigned int nHeight,
+        uint64_t nTime);
 };
 #endif// BLOCK_FILE_HELPERS_H

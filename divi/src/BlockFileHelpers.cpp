@@ -151,6 +151,7 @@ bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
     CValidationState& state,
     CBlockTreeDB& blockTreeDB)
 {
+    BlockFileHelpers::FlushBlockFile(nLastBlockFile,vinfoBlockFile,false);
     for (int fileInfoID: setDirtyFileInfo)
     {
         if (!blockTreeDB.WriteBlockFileInfo(fileInfoID, vinfoBlockFile[fileInfoID]))

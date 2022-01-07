@@ -1085,7 +1085,6 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
             {
                 return false;
             }
-            blockTreeDB.Sync();
             flushToDiskSyncDatabases();
             // Finally flush the chainstate (which may refer to block index entries).
             if (!pcoinsTip->Flush())

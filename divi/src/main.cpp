@@ -72,6 +72,7 @@
 #include <Node.h>
 #include <TransactionSearchIndexes.h>
 #include <ProofOfStakeModule.h>
+#include <BlockFileHelpers.h>
 
 using namespace boost;
 using namespace std;
@@ -852,24 +853,7 @@ void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
 void FlushBlockFile(bool fFinalize = false)
 {
     LOCK(cs_LastBlockFile);
-
-    CDiskBlockPos posOld(nLastBlockFile, 0);
-
-    FILE* fileOld = OpenBlockFile(posOld);
-    if (fileOld) {
-        if (fFinalize)
-            TruncateFile(fileOld, vinfoBlockFile[nLastBlockFile].nSize);
-        FileCommit(fileOld);
-        fclose(fileOld);
-    }
-
-    fileOld = OpenUndoFile(posOld);
-    if (fileOld) {
-        if (fFinalize)
-            TruncateFile(fileOld, vinfoBlockFile[nLastBlockFile].nUndoSize);
-        FileCommit(fileOld);
-        fclose(fileOld);
-    }
+    BlockFileHelpers::FlushBlockFile(nLastBlockFile,vinfoBlockFile,fFinalize);
 }
 
 bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)

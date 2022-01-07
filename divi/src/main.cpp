@@ -1060,10 +1060,11 @@ void UnregisterDatabaseToSyncToDisk(CLevelDBWrapper* dbToSync)
     flushToDiskSyncDatabases.disconnect(boost::bind(&CLevelDBWrapper::Sync, dbToSync));
 }
 
-bool static FlushStateToDisk(CBlockTreeDB& blockTreeDB, CValidationState& state, FlushStateMode mode)
+bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
 {
     LOCK(cs_main);
     static int64_t nLastWrite = 0;
+    CBlockTreeDB& blockTreeDB = *pblocktree;
     try {
         if ((mode == FLUSH_STATE_ALWAYS) ||
             ((mode == FLUSH_STATE_PERIODIC || mode == FLUSH_STATE_IF_NEEDED) && pcoinsTip->GetCacheSize() > nCoinCacheSize) ||
@@ -1110,7 +1111,7 @@ bool static FlushStateToDisk(CBlockTreeDB& blockTreeDB, CValidationState& state,
 void FlushStateToDisk(FlushStateMode mode)
 {
     CValidationState state;
-    FlushStateToDisk(*pblocktree,state, mode);
+    FlushStateToDisk(state, mode);
 }
 
 /** Update chainActive and related internal data structures. */
@@ -1167,7 +1168,7 @@ bool static DisconnectTip(CValidationState& state)
     std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
 
     // Write the chain state to disk, if necessary.
-    if (!FlushStateToDisk(*pblocktree,state, FLUSH_STATE_ALWAYS))
+    if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS))
         return false;
     // Resurrect mempool transactions from the disconnected block.
     for(const CTransaction& tx: blockTransactions) {
@@ -1242,7 +1243,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, const CB
     FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
     if (pindexNew->pprev && (pindexNew->GetBlockPos().nFile != pindexNew->pprev->GetBlockPos().nFile))
         flushMode = FLUSH_STATE_ALWAYS;
-    if (!FlushStateToDisk(*pblocktree,state, flushMode))
+    if (!FlushStateToDisk(state, flushMode))
         return false;
     int64_t nTime5 = GetTimeMicros();
     nTimeChainState += nTime5 - nTime4;
@@ -1475,7 +1476,7 @@ bool ActivateBestChain(CValidationState& state, const CBlock* pblock, bool fAlre
     CheckBlockIndex();
 
     // Write changes periodically to disk, after relay.
-    if (!FlushStateToDisk(*pblocktree,state, FLUSH_STATE_PERIODIC)) {
+    if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
         return false;
     }
 
@@ -2262,7 +2263,7 @@ bool InitBlockIndex()
             if (!ActivateBestChain(state, &block))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
-            return FlushStateToDisk(*pblocktree,state, FLUSH_STATE_ALWAYS);
+            return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);
         } catch (std::runtime_error& e) {
             return error("LoadBlockIndex() : failed to initialize block database: %s", e.what());
         }

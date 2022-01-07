@@ -849,11 +849,6 @@ void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
     }
 }
 
-void FlushBlockFile(bool fFinalize = false)
-{
-    BlockFileHelpers::FlushBlockFile(nLastBlockFile,vinfoBlockFile,fFinalize);
-}
-
 bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)
 {
     return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,setDirtyFileInfo,vinfoBlockFile,pos,nAddSize);

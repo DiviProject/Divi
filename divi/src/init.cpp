@@ -97,7 +97,7 @@ static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
 #ifdef ENABLE_WALLET
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
-std::shared_ptr<I_VaultManagerDatabase> vaultManagerDatabase(nullptr);
+std::shared_ptr<VaultManagerDatabase> vaultManagerDatabase(nullptr);
 std::shared_ptr<VaultManager> vaultManager(nullptr);
 CWallet* pwalletMain = NULL;
 constexpr int nWalletBackups = 20;
@@ -143,7 +143,8 @@ void InitializeVault()
 #ifdef ENABLE_WALLET
     const std::string keystring = pwalletMain->GetDefaultKey().GetID().ToString();
     const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
-    vaultManagerDatabase.reset(new VaultManagerDatabase(vaultID,0));
+    constexpr size_t vaultDBCacheSize = 1 << 21; // 2MB
+    vaultManagerDatabase.reset(new VaultManagerDatabase(vaultID,vaultDBCacheSize));
     vaultManager.reset(new VaultManager(*confirmationsCalculator,*vaultManagerDatabase));
     for(const std::string& whitelistedVaultScript: settings.GetMultiParameter("-whitelisted_vault"))
     {
@@ -152,13 +153,21 @@ void InitializeVault()
         assert(HexStr(ToByteVector(whitelistedScript)) == whitelistedVaultScript);
         vaultManager->addWhiteListedScript(whitelistedScript);
     }
-    if(vaultManager) RegisterValidationInterface(vaultManager.get());
+    if(vaultManager)
+    {
+        RegisterValidationInterface(vaultManager.get());
+        RegisterDatabaseToSyncToDisk(vaultManagerDatabase.get());
+    }
 #endif
 }
 void DeallocateVault()
 {
 #ifdef ENABLE_WALLET
-    if(vaultManager) UnregisterValidationInterface(vaultManager.get());
+    if(vaultManager)
+    {
+        UnregisterValidationInterface(vaultManager.get());
+        UnregisterDatabaseToSyncToDisk(vaultManagerDatabase.get());
+    }
     vaultManager.reset();
     vaultManagerDatabase.reset();
 #endif

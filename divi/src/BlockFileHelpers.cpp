@@ -62,3 +62,27 @@ bool BlockFileHelpers::AllocateDiskSpaceForBlockUndo(
 
     return true;
 }
+
+bool BlockFileHelpers::FindKnownBlockPos(
+    int& nLastBlockFile,
+    std::set<int>& setDirtyFileInfo,
+    std::vector<CBlockFileInfo>& vinfoBlockFile,
+    CValidationState& state,
+    CDiskBlockPos& pos,
+    unsigned int nAddSize,
+    unsigned int nHeight,
+    uint64_t nTime)
+{
+    unsigned int nFile = pos.nFile;
+    if (vinfoBlockFile.size() <= nFile) {
+        vinfoBlockFile.resize(nFile + 1);
+    }
+
+    nLastBlockFile = nFile;
+    vinfoBlockFile[nFile].AddBlock(nHeight, nTime);
+    vinfoBlockFile[nFile].nSize = std::max(pos.nPos + nAddSize, vinfoBlockFile[nFile].nSize);
+
+    setDirtyFileInfo.insert(nFile);
+    return true;
+
+}

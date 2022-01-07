@@ -1663,18 +1663,7 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
 bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
 {
     LOCK(cs_LastBlockFile);
-
-    unsigned int nFile = pos.nFile;
-    if (vinfoBlockFile.size() <= nFile) {
-        vinfoBlockFile.resize(nFile + 1);
-    }
-
-    nLastBlockFile = nFile;
-    vinfoBlockFile[nFile].AddBlock(nHeight, nTime);
-    vinfoBlockFile[nFile].nSize = std::max(pos.nPos + nAddSize, vinfoBlockFile[nFile].nSize);
-
-    setDirtyFileInfo.insert(nFile);
-    return true;
+    return BlockFileHelpers::FindKnownBlockPos(nLastBlockFile,setDirtyFileInfo,vinfoBlockFile,state,pos,nAddSize,nHeight,nTime);
 }
 
 bool FindUnknownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)

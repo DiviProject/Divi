@@ -33,6 +33,7 @@ class CTxMemPool;
 class CCoinsViewCache;
 class CDiskBlockPos;
 class CTransaction;
+class CLevelDBWrapper;
 
 enum FlushStateMode {
     FLUSH_STATE_IF_NEEDED,
@@ -40,6 +41,8 @@ enum FlushStateMode {
     FLUSH_STATE_ALWAYS
 };
 /** Flush all state, indexes and buffers to disk. */
+void RegisterDatabaseToSyncToDisk(CLevelDBWrapper* dbToSync);
+void UnregisterDatabaseToSyncToDisk(CLevelDBWrapper* dbToSync);
 void FlushStateToDisk(FlushStateMode mode = FlushStateMode::FLUSH_STATE_ALWAYS);
 
 /** Register a wallet to receive updates from core */

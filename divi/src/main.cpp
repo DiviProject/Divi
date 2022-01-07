@@ -59,7 +59,7 @@
 #include <BlockUndo.h>
 #include <ValidationState.h>
 #include <scriptCheck.h>
-#include <blockFileInfo.h>
+#include <BlockFileInfo.h>
 #include <TransactionOpCounting.h>
 #include <OrphanTransactions.h>
 #include <MasternodeModule.h>

@@ -1183,7 +1183,7 @@ bool CWallet::IsFullySpent(const CWalletTx& wtx,const int minimumNumberOfConfs) 
 {
     for(unsigned outputIndex = 0; outputIndex < wtx.vout.size(); ++outputIndex)
     {
-        if(!outputTracker_->IsSpent(wtx.GetHash(), outputIndex,minimumNumberOfConfs)) return false;
+        if(IsMine(*this,wtx.vout[outputIndex]) && !outputTracker_->IsSpent(wtx.GetHash(), outputIndex,minimumNumberOfConfs)) return false;
     }
     return true;
 }

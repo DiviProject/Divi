@@ -819,6 +819,32 @@ void InvalidChainFound(CBlockIndex* pindexNew)
     CheckForkWarningConditions();
 }
 
+void RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord)
+{
+    BlockFileHelpers::RecordDirtyBlockIndex(setDirtyBlockIndex,blockIndexToRecord);
+}
+
+bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)
+{
+    return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,vinfoBlockFile,pos,nAddSize);
+}
+
+bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
+{
+    return BlockFileHelpers::FindKnownBlockPos(nLastBlockFile,vinfoBlockFile,state,pos,nAddSize,nHeight,nTime);
+}
+
+bool FindUnknownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
+{
+    return BlockFileHelpers::FindUnknownBlockPos(nLastBlockFile, vinfoBlockFile, state, pos, nAddSize, nHeight, nTime);
+}
+
+bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
+{
+    if(fKnown) return FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
+    else return FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
+}
+
 //! List of asynchronously-determined block rejections to notify this peer about.
 CCriticalSection cs_RejectedBlocks;
 std::map<NodeId, std::vector<CBlockReject>> rejectedBlocksByNodeId;
@@ -845,32 +871,6 @@ void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
         setBlockIndexCandidates.erase(pindex);
         InvalidChainFound(pindex);
     }
-}
-
-void RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord)
-{
-    BlockFileHelpers::RecordDirtyBlockIndex(setDirtyBlockIndex,blockIndexToRecord);
-}
-
-bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)
-{
-    return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,vinfoBlockFile,pos,nAddSize);
-}
-
-bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
-{
-    return BlockFileHelpers::FindKnownBlockPos(nLastBlockFile,vinfoBlockFile,state,pos,nAddSize,nHeight,nTime);
-}
-
-bool FindUnknownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
-{
-    return BlockFileHelpers::FindUnknownBlockPos(nLastBlockFile, vinfoBlockFile, state, pos, nAddSize, nHeight, nTime);
-}
-
-bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
-{
-    if(fKnown) return FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
-    else return FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
 }
 
 int64_t nTimeTotal = 0;

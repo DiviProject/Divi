@@ -9,8 +9,12 @@
 #include <ValidationState.h>
 #include <txdb.h>
 #include <chain.h>
+#include <set>
 
 CCriticalSection cs_LastBlockFile;
+/** Dirty block file entries. */
+std::set<int> setDirtyFileInfo;
+
 void BlockFileHelpers::FlushBlockFile(int nLastBlockFile, const std::vector<CBlockFileInfo>& vinfoBlockFile, bool fFinalize)
 {
     LOCK(cs_LastBlockFile);
@@ -35,7 +39,6 @@ void BlockFileHelpers::FlushBlockFile(int nLastBlockFile, const std::vector<CBlo
 
 bool BlockFileHelpers::AllocateDiskSpaceForBlockUndo(
     int nFile,
-    std::set<int>& setDirtyFileInfo,
     std::vector<CBlockFileInfo>& vinfoBlockFile,
     CDiskBlockPos& pos,
     unsigned int nAddSize)
@@ -71,7 +74,6 @@ bool BlockFileHelpers::AllocateDiskSpaceForBlockUndo(
 
 bool BlockFileHelpers::FindKnownBlockPos(
     int& nLastBlockFile,
-    std::set<int>& setDirtyFileInfo,
     std::vector<CBlockFileInfo>& vinfoBlockFile,
     CValidationState& state,
     CDiskBlockPos& pos,
@@ -96,7 +98,6 @@ bool BlockFileHelpers::FindKnownBlockPos(
 
 bool BlockFileHelpers::FindUnknownBlockPos(
     int& nLastBlockFile,
-    std::set<int>& setDirtyFileInfo,
     std::vector<CBlockFileInfo>& vinfoBlockFile,
     CValidationState& state,
     CDiskBlockPos& pos,
@@ -147,7 +148,6 @@ bool BlockFileHelpers::FindUnknownBlockPos(
 
 bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
     const int nLastBlockFile,
-    std::set<int>& setDirtyFileInfo,
     std::set<CBlockIndex*>& setDirtyBlockIndex,
     const std::vector<CBlockFileInfo>& vinfoBlockFile,
     CValidationState& state,

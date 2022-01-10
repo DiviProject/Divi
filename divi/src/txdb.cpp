@@ -170,7 +170,7 @@ bool CBlockTreeDB::WriteBlockFileInfo(int nFile, const CBlockFileInfo& info)
     return Write(std::make_pair(DB_BLOCKFILEINFO, nFile), info);
 }
 
-bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo& info)
+bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo& info) const
 {
     return Read(std::make_pair(DB_BLOCKFILEINFO, nFile), info);
 }
@@ -179,7 +179,7 @@ bool CBlockTreeDB::WriteLastBlockFile(int nFile)
 {
     return Write(DB_LASTBLOCKFILE, nFile);
 }
-bool CBlockTreeDB::ReadLastBlockFile(int& nFile)
+bool CBlockTreeDB::ReadLastBlockFile(int& nFile) const
 {
     return Read(DB_LASTBLOCKFILE, nFile);
 }
@@ -192,13 +192,13 @@ bool CBlockTreeDB::WriteReindexing(bool fReindexing)
         return Erase(DB_REINDEXINGFLAG);
 }
 
-bool CBlockTreeDB::ReadReindexing(bool& fReindexing)
+bool CBlockTreeDB::ReadReindexing(bool& fReindexing) const
 {
     fReindexing = Exists(DB_REINDEXINGFLAG);
     return true;
 }
 
-bool CBlockTreeDB::ReadTxIndex(const uint256& txid, CDiskTxPos& pos)
+bool CBlockTreeDB::ReadTxIndex(const uint256& txid, CDiskTxPos& pos) const
 {
     /* This method looks up by txid or bare txid.  Both are tried, and if
        one succeeds, that must be the one.  Note that it is not possible for
@@ -230,7 +230,7 @@ bool CBlockTreeDB::WriteFlag(const std::string& name, bool fValue)
     return Write(std::make_pair(DB_NAMEDFLAG, name), fValue ? '1' : '0');
 }
 
-bool CBlockTreeDB::ReadFlag(const std::string& name, bool& fValue)
+bool CBlockTreeDB::ReadFlag(const std::string& name, bool& fValue) const
 {
     char ch;
     if (!Read(std::make_pair(DB_NAMEDFLAG, name), ch))
@@ -239,9 +239,12 @@ bool CBlockTreeDB::ReadFlag(const std::string& name, bool& fValue)
     return true;
 }
 
-bool CBlockTreeDB::LoadBlockIndexGuts(BlockMap& blockIndicesByHash)
+bool CBlockTreeDB::LoadBlockIndexGuts(BlockMap& blockIndicesByHash) const
 {
-    boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
+    /* It seems that there are no "const iterators" for LevelDB.  Since we
+       only need read operations on it, use a const-cast to get around
+       that restriction.  */
+    boost::scoped_ptr<leveldb::Iterator> pcursor(const_cast<CBlockTreeDB*>(this)->NewIterator());
 
     CDataStream ssKeySet(SER_DISK, CLIENT_VERSION);
     ssKeySet << make_pair(DB_BLOCKINDEX, uint256(0));
@@ -342,9 +345,12 @@ template<typename K> bool GetKey(leveldb::Slice slKey, K& key) {
 bool CBlockTreeDB::ReadAddressUnspentIndex(
     uint160 addressHash,
     int type,
-    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &unspentOutputs)
+    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &unspentOutputs) const
 {
-    boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
+    /* It seems that there are no "const iterators" for LevelDB.  Since we
+       only need read operations on it, use a const-cast to get around
+       that restriction.  */
+    boost::scoped_ptr<leveldb::Iterator> pcursor(const_cast<CBlockTreeDB*>(this)->NewIterator());
 
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
     CAddressUnspentKey addressKey;
@@ -386,9 +392,12 @@ bool CBlockTreeDB::ReadAddressIndex(
     int type,
     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
     int start,
-    int end)
+    int end) const
 {
-    boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
+    /* It seems that there are no "const iterators" for LevelDB.  Since we
+       only need read operations on it, use a const-cast to get around
+       that restriction.  */
+    boost::scoped_ptr<leveldb::Iterator> pcursor(const_cast<CBlockTreeDB*>(this)->NewIterator());
 
     CDataStream ssKey(SER_DISK, CLIENT_VERSION);
     CAddressIndexKey addressKey;
@@ -431,7 +440,7 @@ bool CBlockTreeDB::ReadAddressIndex(
     return true;
 }
 
-bool CBlockTreeDB::ReadSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value) {
+bool CBlockTreeDB::ReadSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value) const {
     return Read(make_pair(DB_SPENTINDEX, key), value);
 }
 

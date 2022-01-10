@@ -155,9 +155,6 @@ std::set<CBlockIndex*, CBlockIndexWorkComparator> setBlockIndexCandidates;
 /** All pairs A->B, where A (or one if its ancestors) misses transactions, but B has transactions. */
 std::multimap<CBlockIndex*, CBlockIndex*> mapBlocksUnlinked;
 
-std::vector<CBlockFileInfo> vinfoBlockFile;
-int nLastBlockFile = 0;
-
 /**
      * Every received block is assigned a unique and increasing identifier, so we
      * know which one to give priority in case of a fork.
@@ -822,17 +819,17 @@ void RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord)
 
 bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)
 {
-    return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,vinfoBlockFile,pos,nAddSize);
+    return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,pos,nAddSize);
 }
 
 bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
 {
-    return BlockFileHelpers::FindKnownBlockPos(nLastBlockFile,vinfoBlockFile,state,pos,nAddSize,nHeight,nTime);
+    return BlockFileHelpers::FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
 }
 
 bool FindUnknownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
 {
-    return BlockFileHelpers::FindUnknownBlockPos(nLastBlockFile, vinfoBlockFile, state, pos, nAddSize, nHeight, nTime);
+    return BlockFileHelpers::FindUnknownBlockPos(state, pos, nAddSize, nHeight, nTime);
 }
 
 bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
@@ -1080,7 +1077,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
             }
             // First make sure all block and undo data is flushed to disk.
             // Then update all block file information (which may refer to block and undo files).
-            if(!BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(nLastBlockFile,vinfoBlockFile,state,blockTreeDB))
+            if(!BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(state,blockTreeDB))
             {
                 return false;
             }
@@ -2057,7 +2054,7 @@ bool static LoadBlockIndexDB(string& strError)
     }
 
     // Load block file info
-    BlockFileHelpers::ReadBlockFiles(*pblocktree,nLastBlockFile,vinfoBlockFile);
+    BlockFileHelpers::ReadBlockFiles(*pblocktree);
 
     // Check presence of blk files
     LogPrintf("Checking all blk files are present...\n");
@@ -2083,7 +2080,7 @@ bool static LoadBlockIndexDB(string& strError)
     //Check for inconsistency with block file info and internal state
     if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.GetBoolArg("-reindex", false))
     {
-        const unsigned int nHeightLastBlockFile = BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile(nLastBlockFile,vinfoBlockFile) + 1;
+        const unsigned int nHeightLastBlockFile = BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile() + 1;
         if (vSortedByHeight.size() > nHeightLastBlockFile && pcoinsTip->GetBestBlock() != vSortedByHeight[nHeightLastBlockFile].second->GetBlockHash()) {
             //The database is in a state where a block has been accepted and written to disk, but the
             //transaction database (pcoinsTip) was not flushed to disk, and is therefore not in sync with

@@ -10,6 +10,7 @@
 #include <txdb.h>
 #include <chain.h>
 #include <set>
+#include <Logging.h>
 
 CCriticalSection cs_LastBlockFile;
 /** Dirty block file entries. */
@@ -183,4 +184,26 @@ bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
 void BlockFileHelpers::RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord)
 {
     setDirtyBlockIndex.insert(blockIndexToRecord);
+}
+
+void BlockFileHelpers::ReadBlockFiles(
+    const CBlockTreeDB& blockTreeDB,
+    int& nLastBlockFile,
+    std::vector<CBlockFileInfo>& vinfoBlockFile)
+{
+    blockTreeDB.ReadLastBlockFile(nLastBlockFile);
+    vinfoBlockFile.resize(nLastBlockFile + 1);
+    LogPrintf("%s: last block file = %i\n", __func__, nLastBlockFile);
+    for (int nFile = 0; nFile <= nLastBlockFile; nFile++) {
+        blockTreeDB.ReadBlockFileInfo(nFile, vinfoBlockFile[nFile]);
+    }
+    LogPrintf("%s: last block file info: %s\n", __func__, vinfoBlockFile[nLastBlockFile]);
+    for (int nFile = nLastBlockFile + 1; true; nFile++) {
+        CBlockFileInfo info;
+        if (blockTreeDB.ReadBlockFileInfo(nFile, info)) {
+            vinfoBlockFile.push_back(info);
+        } else {
+            break;
+        }
+    }
 }

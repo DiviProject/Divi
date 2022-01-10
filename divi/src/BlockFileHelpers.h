@@ -38,5 +38,6 @@ namespace BlockFileHelpers
         const std::vector<CBlockFileInfo>& vinfoBlockFile,
         CValidationState& state,
         CBlockTreeDB& blockTreeDB);
+    void RecordDirtyBlockIndex(std::set<CBlockIndex*>& setDirtyBlockIndex, CBlockIndex* blockIndexToRecord);
 };
 #endif// BLOCK_FILE_HELPERS_H

@@ -812,20 +812,10 @@ void InvalidChainFound(CBlockIndex* pindexNew)
     CheckForkWarningConditions();
 }
 
-bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
-{
-    return BlockFileHelpers::FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
-}
-
-bool FindUnknownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
-{
-    return BlockFileHelpers::FindUnknownBlockPos(state, pos, nAddSize, nHeight, nTime);
-}
-
 bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
 {
-    if(fKnown) return FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
-    else return FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
+    if(fKnown) return BlockFileHelpers::FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
+    else return BlockFileHelpers::FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
 }
 
 //! List of asynchronously-determined block rejections to notify this peer about.

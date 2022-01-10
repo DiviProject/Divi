@@ -103,6 +103,7 @@ BASE_SCRIPTS = [
     'multisig.py',
     'NoBlocksForLongTime.py',
     'op_meta.py',
+    'prune_wallet.py',
     'paper_wallets.py',
     'proxy_test.py',
     'receivedby.py',

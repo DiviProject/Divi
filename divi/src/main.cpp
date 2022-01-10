@@ -2057,21 +2057,7 @@ bool static LoadBlockIndexDB(string& strError)
     }
 
     // Load block file info
-    pblocktree->ReadLastBlockFile(nLastBlockFile);
-    vinfoBlockFile.resize(nLastBlockFile + 1);
-    LogPrintf("%s: last block file = %i\n", __func__, nLastBlockFile);
-    for (int nFile = 0; nFile <= nLastBlockFile; nFile++) {
-        pblocktree->ReadBlockFileInfo(nFile, vinfoBlockFile[nFile]);
-    }
-    LogPrintf("%s: last block file info: %s\n", __func__, vinfoBlockFile[nLastBlockFile]);
-    for (int nFile = nLastBlockFile + 1; true; nFile++) {
-        CBlockFileInfo info;
-        if (pblocktree->ReadBlockFileInfo(nFile, info)) {
-            vinfoBlockFile.push_back(info);
-        } else {
-            break;
-        }
-    }
+    BlockFileHelpers::ReadBlockFiles(*pblocktree,nLastBlockFile,vinfoBlockFile);
 
     // Check presence of blk files
     LogPrintf("Checking all blk files are present...\n");

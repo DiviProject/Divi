@@ -172,10 +172,6 @@ uint32_t nBlockSequenceId = 1;
      */
 std::map<uint256, NodeId> mapBlockSource;
 
-
-/** Dirty block index entries. */
-std::set<CBlockIndex*> setDirtyBlockIndex;
-
 } // anon namespace
 
 static bool UpdateDBIndicesForNewBlock(
@@ -821,7 +817,7 @@ void InvalidChainFound(CBlockIndex* pindexNew)
 
 void RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord)
 {
-    BlockFileHelpers::RecordDirtyBlockIndex(setDirtyBlockIndex,blockIndexToRecord);
+    BlockFileHelpers::RecordDirtyBlockIndex(blockIndexToRecord);
 }
 
 bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)
@@ -1084,7 +1080,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
             }
             // First make sure all block and undo data is flushed to disk.
             // Then update all block file information (which may refer to block and undo files).
-            if(!BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(nLastBlockFile,setDirtyBlockIndex,vinfoBlockFile,state,blockTreeDB))
+            if(!BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(nLastBlockFile,vinfoBlockFile,state,blockTreeDB))
             {
                 return false;
             }

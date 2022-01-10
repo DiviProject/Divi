@@ -14,6 +14,9 @@
 CCriticalSection cs_LastBlockFile;
 /** Dirty block file entries. */
 std::set<int> setDirtyFileInfo;
+/** Dirty block index entries. */
+std::set<CBlockIndex*> setDirtyBlockIndex;
+
 
 void BlockFileHelpers::FlushBlockFile(int nLastBlockFile, const std::vector<CBlockFileInfo>& vinfoBlockFile, bool fFinalize)
 {
@@ -148,7 +151,6 @@ bool BlockFileHelpers::FindUnknownBlockPos(
 
 bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
     const int nLastBlockFile,
-    std::set<CBlockIndex*>& setDirtyBlockIndex,
     const std::vector<CBlockFileInfo>& vinfoBlockFile,
     CValidationState& state,
     CBlockTreeDB& blockTreeDB)
@@ -178,7 +180,7 @@ bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
     return true;
 }
 
-void BlockFileHelpers::RecordDirtyBlockIndex(std::set<CBlockIndex*>& setDirtyBlockIndex,CBlockIndex* blockIndexToRecord)
+void BlockFileHelpers::RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord)
 {
     setDirtyBlockIndex.insert(blockIndexToRecord);
 }

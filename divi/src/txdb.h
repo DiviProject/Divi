@@ -59,27 +59,27 @@ private:
 
 public:
     bool WriteBlockIndex(const CDiskBlockIndex& blockindex);
-    bool ReadBlockFileInfo(int nFile, CBlockFileInfo& fileinfo);
+    bool ReadBlockFileInfo(int nFile, CBlockFileInfo& fileinfo) const;
     bool WriteBlockFileInfo(int nFile, const CBlockFileInfo& fileinfo);
-    bool ReadLastBlockFile(int& nFile);
+    bool ReadLastBlockFile(int& nFile) const;
     bool WriteLastBlockFile(int nFile);
     bool WriteReindexing(bool fReindex);
-    bool ReadReindexing(bool& fReindex);
-    bool ReadTxIndex(const uint256& txid, CDiskTxPos& pos);
+    bool ReadReindexing(bool& fReindex) const;
+    bool ReadTxIndex(const uint256& txid, CDiskTxPos& pos) const;
     bool WriteTxIndex(const std::vector<TxIndexEntry>& list);
     bool WriteAddressIndex(const std::vector<std::pair<CAddressIndexKey, CAmount> > &vect);
     bool EraseAddressIndex(const std::vector<std::pair<CAddressIndexKey, CAmount> > &vect);
     bool ReadAddressIndex(uint160 addressHash, int type,
                           std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
-                          int start = 0, int end = 0);
-    bool ReadSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
+                          int start = 0, int end = 0) const;
+    bool ReadSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value) const;
     bool UpdateSpentIndex(const std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> >&vect);
     bool UpdateAddressUnspentIndex(const std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue > >&vect);
     bool ReadAddressUnspentIndex(uint160 addressHash, int type,
-                                 std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &vect);
+                                 std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &vect) const;
     bool WriteFlag(const std::string& name, bool fValue);
-    bool ReadFlag(const std::string& name, bool& fValue);
-    bool LoadBlockIndexGuts(BlockMap& blockIndicesByHash);
+    bool ReadFlag(const std::string& name, bool& fValue) const;
+    bool LoadBlockIndexGuts(BlockMap& blockIndicesByHash) const;
 };
 
 #endif // BITCOIN_TXDB_H

@@ -7,8 +7,8 @@
 #include <sync.h>
 #include <Output.h>
 #include <NotificationInterface.h>
+#include <script/script.h>
 
-class CScript;
 using ManagedScripts = std::set<CScript>;
 class COutPoint;
 using UnspentOutputs = std::vector<COutput>;
@@ -59,8 +59,7 @@ public:
         I_VaultManagerDatabase& vaultManagerDB);
     ~VaultManager();
 
-    void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit);
-    void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy);
+    void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy = CScript());
     void addManagedScript(const CScript& script);
     void addWhiteListedScript(const CScript& script);
     void removeManagedScript(const CScript& script);

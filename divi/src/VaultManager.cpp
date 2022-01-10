@@ -142,10 +142,6 @@ bool VaultManager::isManagedUTXO(const CWalletTx& walletTransaction,const CTxOut
     return output.nValue >0 && isAllowedByDepositDescription && isManagedScript(output.scriptPubKey);
 }
 
-void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit)
-{
-    addTransaction(tx, pblock, deposit,CScript());
-}
 void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy)
 {
     LOCK(cs_vaultManager_);

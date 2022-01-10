@@ -10,40 +10,29 @@ class CBlockTreeDB;
 class CBlockIndex;
 namespace BlockFileHelpers
 {
-    void FlushBlockFile(int nLastBlockFile, const std::vector<CBlockFileInfo>& vinfoBlockFile, bool fFinalize = false);
+    void FlushBlockFile(bool fFinalize = false);
     bool AllocateDiskSpaceForBlockUndo(
         int nFile,
-        std::vector<CBlockFileInfo>& vinfoBlockFile,
         CDiskBlockPos& pos,
         unsigned int nAddSize);
     bool FindKnownBlockPos(
-        int& nLastBlockFile,
-        std::vector<CBlockFileInfo>& vinfoBlockFile,
         CValidationState& state,
         CDiskBlockPos& pos,
         unsigned int nAddSize,
         unsigned int nHeight,
         uint64_t nTime);
     bool FindUnknownBlockPos(
-        int& nLastBlockFile,
-        std::vector<CBlockFileInfo>& vinfoBlockFile,
         CValidationState& state,
         CDiskBlockPos& pos,
         unsigned int nAddSize,
         unsigned int nHeight,
         uint64_t nTime);
     bool WriteBlockFileToBlockTreeDatabase(
-        const int nLastBlockFile,
-        const std::vector<CBlockFileInfo>& vinfoBlockFile,
         CValidationState& state,
         CBlockTreeDB& blockTreeDB);
     void RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord);
     void ReadBlockFiles(
-        const CBlockTreeDB& blockTreeDB,
-        int& nLastBlockFile,
-        std::vector<CBlockFileInfo>& vinfoBlockFile);
-    int GetLastBlockHeightWrittenIntoLastBlockFile(
-        const int nLastBlockFile,
-        const std::vector<CBlockFileInfo>& vinfoBlockFile);
+        const CBlockTreeDB& blockTreeDB);
+    int GetLastBlockHeightWrittenIntoLastBlockFile();
 };
 #endif// BLOCK_FILE_HELPERS_H

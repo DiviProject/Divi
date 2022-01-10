@@ -812,11 +812,6 @@ void InvalidChainFound(CBlockIndex* pindexNew)
     CheckForkWarningConditions();
 }
 
-bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)
-{
-    return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,pos,nAddSize);
-}
-
 bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
 {
     return BlockFileHelpers::FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
@@ -906,7 +901,7 @@ bool WriteUndoDataToDisk(CBlockIndex* pindex, CValidationState& state, CBlockUnd
     if (pindex->GetUndoPos().IsNull() || !pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
         if (pindex->GetUndoPos().IsNull()) {
             CDiskBlockPos pos;
-            if (!AllocateDiskSpaceForBlockUndo(pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
+            if (!BlockFileHelpers::AllocateDiskSpaceForBlockUndo(pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
             {
                 return state.Abort("Disk space is low!");
             }

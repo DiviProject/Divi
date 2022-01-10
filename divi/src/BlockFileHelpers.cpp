@@ -17,9 +17,10 @@ CCriticalSection cs_LastBlockFile;
 std::set<int> setDirtyFileInfo;
 /** Dirty block index entries. */
 std::set<CBlockIndex*> setDirtyBlockIndex;
+int nLastBlockFile = 0;
+std::vector<CBlockFileInfo> vinfoBlockFile;
 
-
-void BlockFileHelpers::FlushBlockFile(int nLastBlockFile, const std::vector<CBlockFileInfo>& vinfoBlockFile, bool fFinalize)
+void BlockFileHelpers::FlushBlockFile(bool fFinalize)
 {
     LOCK(cs_LastBlockFile);
     CDiskBlockPos posOld(nLastBlockFile, 0);
@@ -43,7 +44,6 @@ void BlockFileHelpers::FlushBlockFile(int nLastBlockFile, const std::vector<CBlo
 
 bool BlockFileHelpers::AllocateDiskSpaceForBlockUndo(
     int nFile,
-    std::vector<CBlockFileInfo>& vinfoBlockFile,
     CDiskBlockPos& pos,
     unsigned int nAddSize)
 {
@@ -77,8 +77,6 @@ bool BlockFileHelpers::AllocateDiskSpaceForBlockUndo(
 }
 
 bool BlockFileHelpers::FindKnownBlockPos(
-    int& nLastBlockFile,
-    std::vector<CBlockFileInfo>& vinfoBlockFile,
     CValidationState& state,
     CDiskBlockPos& pos,
     unsigned int nAddSize,
@@ -101,8 +99,6 @@ bool BlockFileHelpers::FindKnownBlockPos(
 }
 
 bool BlockFileHelpers::FindUnknownBlockPos(
-    int& nLastBlockFile,
-    std::vector<CBlockFileInfo>& vinfoBlockFile,
     CValidationState& state,
     CDiskBlockPos& pos,
     unsigned int nAddSize,
@@ -117,7 +113,7 @@ bool BlockFileHelpers::FindUnknownBlockPos(
 
     while (vinfoBlockFile[nFile].nSize + nAddSize >= MAX_BLOCKFILE_SIZE) {
         LogPrintf("Leaving block file %i: %s\n", nFile, vinfoBlockFile[nFile]);
-        BlockFileHelpers::FlushBlockFile(nLastBlockFile, vinfoBlockFile,true);
+        BlockFileHelpers::FlushBlockFile(true);
         nFile++;
         if (vinfoBlockFile.size() <= nFile) {
             vinfoBlockFile.resize(nFile + 1);
@@ -151,12 +147,10 @@ bool BlockFileHelpers::FindUnknownBlockPos(
 }
 
 bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
-    const int nLastBlockFile,
-    const std::vector<CBlockFileInfo>& vinfoBlockFile,
     CValidationState& state,
     CBlockTreeDB& blockTreeDB)
 {
-    BlockFileHelpers::FlushBlockFile(nLastBlockFile,vinfoBlockFile,false);
+    BlockFileHelpers::FlushBlockFile(false);
     for (int fileInfoID: setDirtyFileInfo)
     {
         if (!blockTreeDB.WriteBlockFileInfo(fileInfoID, vinfoBlockFile[fileInfoID]))
@@ -187,9 +181,7 @@ void BlockFileHelpers::RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord)
 }
 
 void BlockFileHelpers::ReadBlockFiles(
-    const CBlockTreeDB& blockTreeDB,
-    int& nLastBlockFile,
-    std::vector<CBlockFileInfo>& vinfoBlockFile)
+    const CBlockTreeDB& blockTreeDB)
 {
     blockTreeDB.ReadLastBlockFile(nLastBlockFile);
     vinfoBlockFile.resize(nLastBlockFile + 1);
@@ -208,9 +200,7 @@ void BlockFileHelpers::ReadBlockFiles(
     }
 }
 
-int BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile(
-    const int nLastBlockFile,
-    const std::vector<CBlockFileInfo>& vinfoBlockFile)
+int BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile()
 {
     return vinfoBlockFile[nLastBlockFile].nHeightLast;
 }

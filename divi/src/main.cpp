@@ -847,6 +847,11 @@ void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
     }
 }
 
+void RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord)
+{
+    BlockFileHelpers::RecordDirtyBlockIndex(setDirtyBlockIndex,blockIndexToRecord);
+}
+
 bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)
 {
     return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,vinfoBlockFile,pos,nAddSize);

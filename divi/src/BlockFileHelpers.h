@@ -34,10 +34,9 @@ namespace BlockFileHelpers
         uint64_t nTime);
     bool WriteBlockFileToBlockTreeDatabase(
         const int nLastBlockFile,
-        std::set<CBlockIndex*>& setDirtyBlockIndex,
         const std::vector<CBlockFileInfo>& vinfoBlockFile,
         CValidationState& state,
         CBlockTreeDB& blockTreeDB);
-    void RecordDirtyBlockIndex(std::set<CBlockIndex*>& setDirtyBlockIndex, CBlockIndex* blockIndexToRecord);
+    void RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord);
 };
 #endif// BLOCK_FILE_HELPERS_H

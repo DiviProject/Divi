@@ -867,7 +867,7 @@ void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
     }
     if (!state.CorruptionPossible()) {
         pindex->nStatus |= BLOCK_FAILED_VALID;
-        setDirtyBlockIndex.insert(pindex);
+        RecordDirtyBlockIndex(pindex);
         setBlockIndexCandidates.erase(pindex);
         InvalidChainFound(pindex);
     }
@@ -931,7 +931,7 @@ bool WriteUndoDataToDisk(CBlockIndex* pindex, CValidationState& state, CBlockUnd
         }
 
         pindex->RaiseValidity(BLOCK_VALID_SCRIPTS);
-        setDirtyBlockIndex.insert(pindex);
+        RecordDirtyBlockIndex(pindex);
     }
     return true;
 }
@@ -1485,13 +1485,13 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex)
 
     // Mark the block itself as invalid.
     pindex->nStatus |= BLOCK_FAILED_VALID;
-    setDirtyBlockIndex.insert(pindex);
+    RecordDirtyBlockIndex(pindex);
     setBlockIndexCandidates.erase(pindex);
 
     while (chainActive.Contains(pindex)) {
         CBlockIndex* pindexWalk = mapBlockIndex.at(chainActive.Tip()->GetBlockHash());
         pindexWalk->nStatus |= BLOCK_FAILED_CHILD;
-        setDirtyBlockIndex.insert(pindexWalk);
+        RecordDirtyBlockIndex(pindexWalk);
         setBlockIndexCandidates.erase(pindexWalk);
         // ActivateBestChain considers blocks already in chainActive
         // unconditionally valid already, so force disconnect away from it.
@@ -1525,7 +1525,7 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex)
     while (it != mapBlockIndex.end()) {
         if (!it->second->IsValid() && it->second->GetAncestor(nHeight) == pindex) {
             it->second->nStatus &= ~BLOCK_FAILED_MASK;
-            setDirtyBlockIndex.insert(it->second);
+            RecordDirtyBlockIndex(it->second);
             if (it->second->IsValid(BLOCK_VALID_TRANSACTIONS) && it->second->nChainTx && setBlockIndexCandidates.value_comp()(chainActive.Tip(), it->second)) {
                 setBlockIndexCandidates.insert(it->second);
             }
@@ -1541,7 +1541,7 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex)
     while (pindex != NULL) {
         if (pindex->nStatus & BLOCK_FAILED_MASK) {
             pindex->nStatus &= ~BLOCK_FAILED_MASK;
-            setDirtyBlockIndex.insert(pindex);
+            RecordDirtyBlockIndex(pindex);
         }
         pindex = pindex->pprev;
     }
@@ -1605,7 +1605,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
 
     lotteryUpdater.UpdateBlockIndexLotteryWinners(block,pindexNew);
 
-    setDirtyBlockIndex.insert(pindexNew);
+    RecordDirtyBlockIndex(pindexNew);
 
     return pindexNew;
 }
@@ -1622,7 +1622,7 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
     pindexNew->nUndoPos = 0;
     pindexNew->nStatus |= BLOCK_HAVE_DATA;
     pindexNew->RaiseValidity(BLOCK_VALID_TRANSACTIONS);
-    setDirtyBlockIndex.insert(pindexNew);
+    RecordDirtyBlockIndex(pindexNew);
 
     if (pindexNew->pprev == NULL || pindexNew->pprev->nChainTx) {
         // If pindexNew is the genesis block or all parents are BLOCK_VALID_TRANSACTIONS.
@@ -1919,7 +1919,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
     if ((!fAlreadyCheckedBlock && !CheckBlock(block, state)) || !ContextualCheckBlock(block, state, pindex->pprev)) {
         if (state.IsInvalid() && !state.CorruptionPossible()) {
             pindex->nStatus |= BLOCK_FAILED_VALID;
-            setDirtyBlockIndex.insert(pindex);
+            RecordDirtyBlockIndex(pindex);
         }
         return false;
     }

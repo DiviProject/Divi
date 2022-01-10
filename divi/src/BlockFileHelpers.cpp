@@ -207,3 +207,10 @@ void BlockFileHelpers::ReadBlockFiles(
         }
     }
 }
+
+int BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile(
+    const int nLastBlockFile,
+    const std::vector<CBlockFileInfo>& vinfoBlockFile)
+{
+    return vinfoBlockFile[nLastBlockFile].nHeightLast;
+}

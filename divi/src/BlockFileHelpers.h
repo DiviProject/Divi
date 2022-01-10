@@ -42,5 +42,8 @@ namespace BlockFileHelpers
         const CBlockTreeDB& blockTreeDB,
         int& nLastBlockFile,
         std::vector<CBlockFileInfo>& vinfoBlockFile);
+    int GetLastBlockHeightWrittenIntoLastBlockFile(
+        const int nLastBlockFile,
+        const std::vector<CBlockFileInfo>& vinfoBlockFile);
 };
 #endif// BLOCK_FILE_HELPERS_H

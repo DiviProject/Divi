@@ -177,3 +177,8 @@ bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
     setDirtyBlockIndex.clear();
     return true;
 }
+
+void BlockFileHelpers::RecordDirtyBlockIndex(std::set<CBlockIndex*>& setDirtyBlockIndex,CBlockIndex* blockIndexToRecord)
+{
+    setDirtyBlockIndex.insert(blockIndexToRecord);
+}

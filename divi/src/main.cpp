@@ -157,8 +157,6 @@ std::multimap<CBlockIndex*, CBlockIndex*> mapBlocksUnlinked;
 
 std::vector<CBlockFileInfo> vinfoBlockFile;
 int nLastBlockFile = 0;
-/** Dirty block file entries. */
-std::set<int> setDirtyFileInfo;
 
 /**
      * Every received block is assigned a unique and increasing identifier, so we
@@ -851,17 +849,17 @@ void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
 
 bool AllocateDiskSpaceForBlockUndo(int nFile, CDiskBlockPos& pos, unsigned int nAddSize)
 {
-    return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,setDirtyFileInfo,vinfoBlockFile,pos,nAddSize);
+    return BlockFileHelpers::AllocateDiskSpaceForBlockUndo(nFile,vinfoBlockFile,pos,nAddSize);
 }
 
 bool FindKnownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
 {
-    return BlockFileHelpers::FindKnownBlockPos(nLastBlockFile,setDirtyFileInfo,vinfoBlockFile,state,pos,nAddSize,nHeight,nTime);
+    return BlockFileHelpers::FindKnownBlockPos(nLastBlockFile,vinfoBlockFile,state,pos,nAddSize,nHeight,nTime);
 }
 
 bool FindUnknownBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime)
 {
-    return BlockFileHelpers::FindUnknownBlockPos(nLastBlockFile, setDirtyFileInfo, vinfoBlockFile, state, pos, nAddSize, nHeight, nTime);
+    return BlockFileHelpers::FindUnknownBlockPos(nLastBlockFile, vinfoBlockFile, state, pos, nAddSize, nHeight, nTime);
 }
 
 bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
@@ -1081,7 +1079,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
             }
             // First make sure all block and undo data is flushed to disk.
             // Then update all block file information (which may refer to block and undo files).
-            if(!BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(nLastBlockFile,setDirtyFileInfo,setDirtyBlockIndex,vinfoBlockFile,state,blockTreeDB))
+            if(!BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(nLastBlockFile,setDirtyBlockIndex,vinfoBlockFile,state,blockTreeDB))
             {
                 return false;
             }

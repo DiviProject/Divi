@@ -204,7 +204,7 @@ CWallet::CWallet(
     , addressBookManager_(new AddressBookManager())
     , vaultDB_()
     , vaultManager_()
-    , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
+    , transactionRecord_(new WalletTransactionRecord(cs_wallet) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
     , pwalletdbEncryption()
     , nWalletVersion(FEATURE_BASE)
@@ -1378,7 +1378,7 @@ void CWallet::PruneWallet()
     outputTracker_.reset();
     transactionRecord_.reset();
 
-    transactionRecord_.reset(new PrunedWalletTransactionRecord(cs_wallet,strWalletFile,totalTxs));
+    transactionRecord_.reset(new PrunedWalletTransactionRecord(cs_wallet,totalTxs));
     outputTracker_.reset( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) );
     for(const CWalletTx& reloadedTransaction: transactionsToKeep)
     {

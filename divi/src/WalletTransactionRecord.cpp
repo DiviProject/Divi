@@ -2,23 +2,10 @@
 #include <sync.h>
 
 WalletTransactionRecord::WalletTransactionRecord(
-    CCriticalSection& requiredWalletLock,
-    const std::string& walletFilename
-    ): cs_walletTxRecord(requiredWalletLock)
-    , walletFilename_(walletFilename)
-    , databaseWritesAreDisallowed_(false)
-    , mapWallet()
-{
-}
-
-WalletTransactionRecord::WalletTransactionRecord(
     CCriticalSection& requiredWalletLock
     ): cs_walletTxRecord(requiredWalletLock)
-    , walletFilename_("")
-    , databaseWritesAreDisallowed_(true)
     , mapWallet()
 {
-
 }
 
 const CWalletTx* WalletTransactionRecord::GetWalletTx(const uint256& hash) const
@@ -71,9 +58,8 @@ unsigned WalletTransactionRecord::size() const
 
 PrunedWalletTransactionRecord::PrunedWalletTransactionRecord(
         CCriticalSection& requiredWalletLock,
-        const std::string& walletFilename,
         const unsigned txCountOffset
-        ): WalletTransactionRecord(requiredWalletLock,walletFilename)
+        ): WalletTransactionRecord(requiredWalletLock)
         , txCountOffset_(txCountOffset)
 {
 

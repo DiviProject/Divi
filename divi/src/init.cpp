@@ -141,7 +141,7 @@ void InitializeWallet(std::string strWalletFile)
 void InitializeVault()
 {
 #ifdef ENABLE_WALLET
-    const std::string keystring = pwalletMain->GetDefaultKey().GetID().ToString();
+    const std::string keystring = pwalletMain->getWalletIdentifier();
     const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
     constexpr size_t vaultDBCacheSize = 1 << 21; // 2MB
     vaultManagerDatabase.reset(new VaultManagerDatabase(vaultID,vaultDBCacheSize));

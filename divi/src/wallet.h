@@ -280,7 +280,7 @@ public:
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;
 
-    const CPubKey& GetDefaultKey() const;
+    std::string getWalletIdentifier() const;
     bool InitializeDefaultKey();
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 

@@ -315,13 +315,11 @@ public:
     bool IsAvailableForSpending(
         const CWalletTx* pcoin,
         unsigned int i,
-        bool fIncludeZeroValue,
         bool& fIsSpendable,
         AvailableCoinsType coinType = AvailableCoinsType::ALL_SPENDABLE_COINS) const;
     void AvailableCoins(
         std::vector<COutput>& vCoins,
         bool fOnlyConfirmed = true,
-        bool fIncludeZeroValue = false,
         AvailableCoinsType nCoinType = ALL_SPENDABLE_COINS,
         CAmount nExactValue = CAmount(0)) const;
 

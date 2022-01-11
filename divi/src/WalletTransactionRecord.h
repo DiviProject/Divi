@@ -4,7 +4,7 @@
 #include <WalletTx.h>
 #include <map>
 class CCriticalSection;
-struct WalletTransactionRecord
+class WalletTransactionRecord
 {
 protected:
     CCriticalSection& cs_walletTxRecord;
@@ -26,7 +26,7 @@ public:
     virtual unsigned size() const;
 };
 
-struct PrunedWalletTransactionRecord final: public WalletTransactionRecord
+class PrunedWalletTransactionRecord final: public WalletTransactionRecord
 {
 private:
     const unsigned txCountOffset_;

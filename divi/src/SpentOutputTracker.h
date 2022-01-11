@@ -5,7 +5,7 @@
 #include <set>
 #include <uint256.h>
 
-class WalletTransactionRecord;
+class I_AppendOnlyTransactionRecord;
 class COutPoint;
 class uint256;
 class CWalletTx;
@@ -14,7 +14,7 @@ class I_MerkleTxConfirmationNumberCalculator;
 class SpentOutputTracker
 {
 private:
-    WalletTransactionRecord& transactionRecord_;
+    I_AppendOnlyTransactionRecord& transactionRecord_;
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
 
     using TxSpends = std::multimap<COutPoint, uint256>;
@@ -25,7 +25,7 @@ private:
 
 public:
     SpentOutputTracker(
-        WalletTransactionRecord& transactionRecord,
+        I_AppendOnlyTransactionRecord& transactionRecord,
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
     /**
      * Used to keep track of spent outpoints, and

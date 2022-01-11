@@ -37,7 +37,7 @@ class CScript;
 class CTransaction;
 class CBlockIndex;
 struct StakableCoin;
-class WalletTransactionRecord;
+class I_AppendOnlyTransactionRecord;
 class SpentOutputTracker;
 class BlockMap;
 class CChain;
@@ -190,7 +190,7 @@ private:
     std::unique_ptr<AddressBookManager> addressBookManager_;
     std::shared_ptr<I_VaultManagerDatabase> vaultDB_;
     std::shared_ptr<VaultManager> vaultManager_;
-    std::unique_ptr<WalletTransactionRecord> transactionRecord_;
+    std::unique_ptr<I_AppendOnlyTransactionRecord> transactionRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
     std::unique_ptr<CWalletDB> pwalletdbEncryption;
 

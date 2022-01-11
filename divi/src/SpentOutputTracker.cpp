@@ -7,7 +7,7 @@
 #include <timedata.h>
 
 SpentOutputTracker::SpentOutputTracker(
-    WalletTransactionRecord& transactionRecord,
+    I_AppendOnlyTransactionRecord& transactionRecord,
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
     ): transactionRecord_(transactionRecord)
     , confirmationsCalculator_(confirmationsCalculator)

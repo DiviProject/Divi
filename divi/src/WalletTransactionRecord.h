@@ -4,7 +4,18 @@
 #include <WalletTx.h>
 #include <map>
 class CCriticalSection;
-class WalletTransactionRecord
+
+class I_AppendOnlyTransactionRecord
+{
+public:
+    virtual ~I_AppendOnlyTransactionRecord() {}
+    virtual const CWalletTx* GetWalletTx(const uint256& hash) const = 0;
+    virtual const std::map<uint256, CWalletTx>& GetWalletTransactions() const = 0;
+    virtual std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction) = 0;
+    virtual unsigned size() const = 0;
+};
+
+class WalletTransactionRecord final: public I_AppendOnlyTransactionRecord
 {
 protected:
     CCriticalSection& cs_walletTxRecord;
@@ -15,26 +26,29 @@ protected:
     std::map<uint256, CWalletTx> mapWallet;
 
 public:
-
     WalletTransactionRecord(CCriticalSection& requiredWalletLock);
-    virtual const CWalletTx* GetWalletTx(const uint256& hash) const;
 
     /** Tries to look up a transaction in the wallet, either by hash (txid) or
      *  the bare txid that is used after segwit-light to identify outputs.  */
-    virtual const std::map<uint256, CWalletTx>& GetWalletTransactions() const;
-    virtual std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction);
-    virtual unsigned size() const;
+    const CWalletTx* GetWalletTx(const uint256& hash) const override;
+    const std::map<uint256, CWalletTx>& GetWalletTransactions() const override;
+    std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction) override;
+    unsigned size() const override;
 };
 
-class PrunedWalletTransactionRecord final: public WalletTransactionRecord
+class PrunedWalletTransactionRecord final: public I_AppendOnlyTransactionRecord
 {
 private:
     const unsigned txCountOffset_;
+    WalletTransactionRecord walletRecord_;
 public:
     PrunedWalletTransactionRecord(
         CCriticalSection& requiredWalletLock,
         const unsigned txCountOffset);
-    virtual unsigned size() const override;
+    const CWalletTx* GetWalletTx(const uint256& hash) const override;
+    const std::map<uint256, CWalletTx>& GetWalletTransactions() const override;
+    std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction) override;
+    unsigned size() const override;
 };
 
 #endif// WALLET_TRANSACTION_RECORD_H

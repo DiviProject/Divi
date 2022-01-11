@@ -27,6 +27,12 @@ const CWalletTx* WalletTransactionRecord::GetWalletTx(const uint256& hash) const
     return nullptr;
 }
 
+const std::map<uint256, CWalletTx>& WalletTransactionRecord::GetWalletTransactions() const
+{
+    AssertLockHeld(cs_walletTxRecord);
+    return mapWallet;
+}
+
 std::vector<const CWalletTx*> WalletTransactionRecord::GetWalletTransactionReferences() const
 {
     AssertLockHeld(cs_walletTxRecord);

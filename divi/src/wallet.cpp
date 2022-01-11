@@ -650,7 +650,18 @@ const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const
 std::vector<const CWalletTx*> CWallet::GetWalletTransactionReferences() const
 {
     LOCK(cs_wallet);
-    return transactionRecord_->GetWalletTransactionReferences();
+    auto oldValue = transactionRecord_->GetWalletTransactionReferences();
+
+    std::vector<const CWalletTx*> transactions;
+    const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
+    transactions.reserve(walletTransactionsByHash.size());
+    for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.cbegin(); it != walletTransactionsByHash.cend(); ++it)
+    {
+        transactions.push_back( &(it->second) );
+    }
+    assert(transactions==oldValue);
+
+    return oldValue;
 }
 
 

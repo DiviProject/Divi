@@ -1736,7 +1736,6 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 bool CWallet::IsAvailableForSpending(
     const CWalletTx* pcoin,
     unsigned int i,
-    bool fIncludeZeroValue,
     bool& fIsSpendable,
     AvailableCoinsType coinType) const
 {
@@ -1758,7 +1757,7 @@ bool CWallet::IsAvailableForSpending(
 
     if (IsLockedCoin(hash, i))
         return false;
-    if (pcoin->vout[i].nValue <= 0 && !fIncludeZeroValue)
+    if (pcoin->vout[i].nValue <= 0)
         return false;
 
     fIsSpendable = (mine == isminetype::ISMINE_SPENDABLE);
@@ -1767,7 +1766,6 @@ bool CWallet::IsAvailableForSpending(
 void CWallet::AvailableCoins(
     std::vector<COutput>& vCoins,
     bool fOnlyConfirmed,
-    bool fIncludeZeroValue,
     AvailableCoinsType nCoinType,
     CAmount nExactValue) const
 {
@@ -1791,7 +1789,7 @@ void CWallet::AvailableCoins(
                 if (!found) continue;
 
                 bool fIsSpendable = false;
-                if(!IsAvailableForSpending(pcoin,i,fIncludeZeroValue,fIsSpendable,nCoinType))
+                if(!IsAvailableForSpending(pcoin,i,fIsSpendable,nCoinType))
                 {
                     continue;
                 }
@@ -1825,7 +1823,7 @@ bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const
 {
     CAmount nTargetAmount = GetStakingBalance();
     std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true, false, STAKABLE_COINS);
+    AvailableCoins(vCoins, true,  STAKABLE_COINS);
     CAmount nAmountSelected = 0;
 
     for (const COutput& out : vCoins) {
@@ -1860,7 +1858,7 @@ bool CWallet::HasAgedCoins()
         return false;
 
     std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true, false, STAKABLE_COINS);
+    AvailableCoins(vCoins, true,  STAKABLE_COINS);
 
     for (const COutput& out : vCoins) {
         int64_t nTxTime = out.tx->GetTxTime();
@@ -2165,7 +2163,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
 
     LOCK2(cs_main, cs_wallet);
     std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true, false, coin_type);
+    AvailableCoins(vCoins, true,  coin_type);
     if(coinSelector == nullptr)
     {
         return {translate("Must provide a coin selection algorithm."),false};

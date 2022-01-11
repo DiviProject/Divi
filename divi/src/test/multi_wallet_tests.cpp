@@ -57,8 +57,9 @@ public:
     const CWalletTx& AddDefaultTxToWallet(FakeWallet& currentWallet, const CAmount amount)
     {
         CWallet& wrappedWallet = currentWallet;
-        assert(wrappedWallet.GetDefaultKey().IsValid());
-        CScript scriptToPayTo = GetScriptForDestination(wrappedWallet.GetDefaultKey().GetID());
+        CPubKey destinationPubKey;
+        assert(wrappedWallet.GetKeyFromPool(destinationPubKey,true));
+        CScript scriptToPayTo = GetScriptForDestination(destinationPubKey.GetID());
         unsigned outputIndex;
         return currentWallet.AddDefaultTx(scriptToPayTo, outputIndex, amount);
     }

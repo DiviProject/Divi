@@ -1308,7 +1308,8 @@ CWallet::TxItems CWallet::OrderedTxItems() const
 
     // Note: maintaining indices in the database of (account,time) --> txid and (account, time) --> acentry
     // would make this much faster for applications that do this a lot.
-    for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it)
+    const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
+    for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it)
     {
         const CWalletTx* wtx = &((*it).second);
         txOrdered.insert(std::make_pair(wtx->nOrderPos, wtx));
@@ -1365,7 +1366,7 @@ void CWallet::PruneWallet()
     const unsigned totalTxs = transactionRecord_->size();
     std::vector<CWalletTx> transactionsToKeep;
     transactionsToKeep.reserve(1024);
-    for(const auto& wtxByHash: transactionRecord_->mapWallet)
+    for(const auto& wtxByHash: transactionRecord_->GetWalletTransactions())
     {
         const CWalletTx& walletTx = wtxByHash.second;
         const int64_t numberOfConfs = confirmationNumberCalculator_.FindConfirmedBlockIndexAndDepth(walletTx).second;
@@ -1620,7 +1621,8 @@ CAmount CWallet::GetBalance() const
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
-        for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
+        const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
+        for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             if (IsTrusted(*pcoin))
                 nTotal += GetAvailableCredit(*pcoin);
@@ -1643,7 +1645,8 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
-        for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
+        const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
+        for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             if (IsTrusted(*pcoin))
             {
@@ -1673,7 +1676,8 @@ CAmount CWallet::GetUnconfirmedBalance() const
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
-        for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
+        const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
+        for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*pcoin) == 0))
                 nTotal += GetAvailableCredit(*pcoin);
@@ -1695,7 +1699,8 @@ CAmount CWallet::GetImmatureBalance() const
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
-        for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
+        const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
+        for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             nTotal += GetImmatureCredit(*pcoin);
         }
@@ -1773,7 +1778,7 @@ void CWallet::AvailableCoins(
 
     {
         LOCK2(cs_main, cs_wallet);
-        for (const auto& entry : transactionRecord_->mapWallet)
+        for (const auto& entry : transactionRecord_->GetWalletTransactions())
         {
             const CWalletTx* pcoin = &entry.second;
 

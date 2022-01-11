@@ -208,7 +208,7 @@ UnspentOutputs VaultManager::getManagedUTXOs(VaultUTXOFilters filter) const
     LOCK(cs_vaultManager_);
     UnspentOutputs outputs;
     auto managedScriptsLimitsCopy = managedScripts_;
-    for(const auto& hashAndTransaction: walletTxRecord_->mapWallet)
+    for(const auto& hashAndTransaction: walletTxRecord_->GetWalletTransactions())
     {
         uint256 hash = hashAndTransaction.first;
         const CWalletTx& tx = hashAndTransaction.second;

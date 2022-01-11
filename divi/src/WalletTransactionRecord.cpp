@@ -33,18 +33,6 @@ const std::map<uint256, CWalletTx>& WalletTransactionRecord::GetWalletTransactio
     return mapWallet;
 }
 
-std::vector<const CWalletTx*> WalletTransactionRecord::GetWalletTransactionReferences() const
-{
-    AssertLockHeld(cs_walletTxRecord);
-    std::vector<const CWalletTx*> transactions;
-    transactions.reserve(mapWallet.size());
-    for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.cbegin(); it != mapWallet.cend(); ++it)
-    {
-        transactions.push_back( &(it->second) );
-    }
-    return transactions;
-}
-
 std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord::AddTransaction(const CWalletTx& newlyAddedTransaction)
 {
     AssertLockHeld(cs_walletTxRecord);

@@ -1385,7 +1385,7 @@ void CWallet::PruneWallet()
         LoadWalletTransaction(reloadedTransaction);
     }
     settings.ForceRemoveArg("-prunewalletconfs");
-    LogPrintf("Prunned wallet transactions loaded to memory: Original %u vs. Current %u\n",totalTxs,transactionsToKeep.size());
+    LogPrintf("Pruned wallet transactions loaded to memory: Original %u vs. Current %u\n",totalTxs,transactionsToKeep.size());
 }
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)

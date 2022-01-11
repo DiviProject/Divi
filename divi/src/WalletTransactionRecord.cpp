@@ -53,13 +53,26 @@ unsigned WalletTransactionRecord::size() const
 PrunedWalletTransactionRecord::PrunedWalletTransactionRecord(
         CCriticalSection& requiredWalletLock,
         const unsigned txCountOffset
-        ): WalletTransactionRecord(requiredWalletLock)
+        ): walletRecord_(requiredWalletLock)
         , txCountOffset_(txCountOffset)
 {
 
 }
+
+const CWalletTx* PrunedWalletTransactionRecord::GetWalletTx(const uint256& hash) const
+{
+    return walletRecord_.GetWalletTx(hash);
+}
+const std::map<uint256, CWalletTx>& PrunedWalletTransactionRecord::GetWalletTransactions() const
+{
+    return walletRecord_.GetWalletTransactions();
+}
+std::pair<std::map<uint256, CWalletTx>::iterator, bool> PrunedWalletTransactionRecord::AddTransaction(const CWalletTx& newlyAddedTransaction)
+{
+    return walletRecord_.AddTransaction(newlyAddedTransaction);
+}
+
 unsigned PrunedWalletTransactionRecord::size() const
 {
-    AssertLockHeld(cs_walletTxRecord);
-    return txCountOffset_ + mapWallet.size();
+    return txCountOffset_ + walletRecord_.size();
 }

@@ -336,7 +336,8 @@ Value bip38paperwallet(const Array& params, bool fHelp)
         temporaryWallet->LoadWallet();
         temporaryWallet->GenerateNewHDChain();
         temporaryWallet->InitializeDefaultKey();
-        const CPubKey& tempPubKey = temporaryWallet->GetDefaultKey();
+        CPubKey tempPubKey;
+        temporaryWallet->GetKeyFromPool(tempPubKey,true);
         if(!tempPubKey.IsValid())
         {
             temporaryWallet.reset();

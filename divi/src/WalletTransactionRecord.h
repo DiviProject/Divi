@@ -21,7 +21,6 @@ public:
 
     /** Tries to look up a transaction in the wallet, either by hash (txid) or
      *  the bare txid that is used after segwit-light to identify outputs.  */
-    virtual std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
     virtual const std::map<uint256, CWalletTx>& GetWalletTransactions() const;
     virtual std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction);
     virtual unsigned size() const;

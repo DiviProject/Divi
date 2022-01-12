@@ -60,9 +60,12 @@ BITCOIN_TESTS =\
   test/mempool_tests.cpp \
   test/MockFileSystem.cpp \
   test/MockCoinMinter.h \
+  test/MockSpentOutputTracker.h \
+  test/MockMerkleTxConfirmationNumberCalculator.h \
   test/MockSuperblockHeightValidator.h \
   test/MockBlockIncentivesPopulator.h \
   test/MockBlockSubsidyProvider.h \
+  test/MockTransactionRecord.h \
   test/MockPoSStakeModifierService.h \
   test/MockVaultManagerDatabase.h \
   test/Monthlywalletbackupcreator_tests.cpp \
@@ -95,6 +98,7 @@ BITCOIN_TESTS =\
   test/versionbits_tests.cpp \
   test/googletestenabled_test.cpp \
   test/wallet_coinmanagement_tests.cpp \
+  test/WalletBalanceCalculator_tests.cpp \
   test/walletbackupcreator_tests.cpp \
   test/WalletIntegrityVerifier_tests.cpp \
   test/CoinMinting_tests.cpp \

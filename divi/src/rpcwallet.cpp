@@ -648,7 +648,7 @@ std::string SendMoney(
     if(useDefaultAccount)
     {
         availableWalletBalance = rpcTxRequest.txShouldSpendFromVaults
-            ? pwalletMain->GetBalanceByCoinType(OWNED_VAULT_COINS)
+            ? pwalletMain->GetBalanceByCoinType(AvailableCoinsType::OWNED_VAULT_COINS)
             : pwalletMain->GetSpendableBalance();
     }
     else

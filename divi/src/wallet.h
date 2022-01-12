@@ -71,7 +71,7 @@ enum WalletFeature {
     FEATURE_LATEST = 61000
 };
 
-enum AvailableCoinsType {
+enum class AvailableCoinsType {
     ALL_SPENDABLE_COINS = 0,                    // find masternode outputs including locked ones (use with caution)
     STAKABLE_COINS = 1,                          // UTXO's that are valid for staking
     OWNED_VAULT_COINS = 2
@@ -146,7 +146,7 @@ struct TransactionCreationRequest
         const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
         TransactionFeeMode txFeeMode = TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES,
         TxTextMetadata metadataToSet = TxTextMetadata(),
-        AvailableCoinsType coinTypeSelected = ALL_SPENDABLE_COINS,
+        AvailableCoinsType coinTypeSelected = AvailableCoinsType::ALL_SPENDABLE_COINS,
         const I_CoinSelectionAlgorithm* const algorithm = nullptr);
 };
 struct TransactionCreationResult
@@ -320,7 +320,7 @@ public:
     void AvailableCoins(
         std::vector<COutput>& vCoins,
         bool fOnlyConfirmed = true,
-        AvailableCoinsType nCoinType = ALL_SPENDABLE_COINS,
+        AvailableCoinsType nCoinType = AvailableCoinsType::ALL_SPENDABLE_COINS,
         CAmount nExactValue = CAmount(0)) const;
 
     bool IsLockedCoin(const uint256& hash, unsigned int n) const;
@@ -401,7 +401,7 @@ public:
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
         const I_CoinSelectionAlgorithm* coinSelector,
-        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
+        AvailableCoinsType coin_type = AvailableCoinsType::ALL_SPENDABLE_COINS);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
     TransactionCreationResult SendMoney(const TransactionCreationRequest& requestedTransaction);
 

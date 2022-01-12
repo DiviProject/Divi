@@ -2,7 +2,7 @@
 
 WalletBalanceCalculator::WalletBalanceCalculator(
     const I_AppendOnlyTransactionRecord& txRecord,
-    const SpentOutputTracker& spentOutputTracker,
+    const I_SpentOutputTracker& spentOutputTracker,
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator
     ): txRecord_(txRecord)
     , spentOutputTracker_(spentOutputTracker)

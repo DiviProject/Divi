@@ -341,6 +341,7 @@ BITCOIN_CORE_H = \
   StochasticSubsetSelectionAlgorithm.h \
   wallet.h \
   WalletTx.h \
+  WalletBalanceCalculator.h \
   I_AppendOnlyTransactionRecord.h \
   WalletTransactionRecord.h \
   StakableCoin.h \
@@ -546,6 +547,7 @@ libbitcoin_wallet_a_SOURCES = \
   MinimumFeeCoinSelectionAlgorithm.cpp \
   MerkleTxConfirmationNumberCalculator.cpp \
   BlockScanner.cpp \
+  WalletBalanceCalculator.cpp \
   wallet.cpp \
   Output.cpp \
   WalletTx.cpp \

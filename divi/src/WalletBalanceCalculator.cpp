@@ -13,3 +13,8 @@ WalletBalanceCalculator::WalletBalanceCalculator(
 WalletBalanceCalculator::~WalletBalanceCalculator()
 {
 }
+
+CAmount WalletBalanceCalculator::getBalance() const
+{
+    return CAmount(0);
+}

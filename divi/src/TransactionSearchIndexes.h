@@ -8,7 +8,7 @@ namespace TransactionSearchIndexes
 {
     bool GetAddressIndex(
         bool addresIndexEnabled,
-        CBlockTreeDB* pblocktree,
+        const CBlockTreeDB* pblocktree,
         uint160 addressHash,
         int type,
         std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
@@ -16,13 +16,13 @@ namespace TransactionSearchIndexes
         int end = 0);
     bool GetAddressUnspent(
         bool addresIndexEnabled,
-        CBlockTreeDB* pblocktree,
+        const CBlockTreeDB* pblocktree,
         uint160 addressHash,
         int type,
         std::vector<std::pair<CAddressUnspentKey,CAddressUnspentValue> > &unspentOutputs);
     bool GetSpentIndex(
         bool spentIndexEnabled,
-        CBlockTreeDB* pblocktree,
+        const CBlockTreeDB* pblocktree,
         const CSpentIndexKey &key,
         CSpentIndexValue &value);
 }

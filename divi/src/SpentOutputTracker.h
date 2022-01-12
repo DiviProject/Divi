@@ -1,9 +1,7 @@
 #ifndef SPENT_OUTPUT_TRACKER_H
 #define SPENT_OUTPUT_TRACKER_H
 #include <map>
-#include <utility>
-#include <set>
-#include <uint256.h>
+#include <I_SpentOutputTracker.h>
 
 class I_AppendOnlyTransactionRecord;
 class COutPoint;
@@ -11,7 +9,7 @@ class uint256;
 class CWalletTx;
 class I_MerkleTxConfirmationNumberCalculator;
 
-class SpentOutputTracker
+class SpentOutputTracker final: public I_SpentOutputTracker
 {
 private:
     I_AppendOnlyTransactionRecord& transactionRecord_;
@@ -32,10 +30,8 @@ public:
      * detect and report conflicts (double-spends or
      * mutated transactions where the mutant gets mined).
      */
-    std::pair<CWalletTx*,bool> UpdateSpends(
-        const CWalletTx& newlyAddedTransaction,
-        bool loadedFromDisk=false);
-    bool IsSpent(const uint256& hash, unsigned int n, const int minimumConfirmations = 0) const;
-    std::set<uint256> GetConflictingTxHashes(const CWalletTx& tx) const;
+    std::pair<CWalletTx*,bool> UpdateSpends(const CWalletTx& newlyAddedTransaction, bool loadedFromDisk) override;
+    bool IsSpent(const uint256& hash, unsigned int n, const int minimumConfirmations) const override;
+    std::set<uint256> GetConflictingTxHashes(const CWalletTx& tx) const override;
 };
 #endif// SPENT_OUTPUT_TRACKER_H

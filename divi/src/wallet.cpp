@@ -1184,7 +1184,7 @@ std::set<uint256> CWallet::GetConflicts(const uint256& txid) const
  */
 bool CWallet::IsSpent(const CWalletTx& wtx, unsigned int n) const
 {
-    return outputTracker_->IsSpent(wtx.GetHash(), n);
+    return outputTracker_->IsSpent(wtx.GetHash(), n,0);
 }
 bool CWallet::IsFullySpent(const CWalletTx& wtx,const int minimumNumberOfConfs) const
 {

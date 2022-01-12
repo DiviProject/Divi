@@ -227,7 +227,7 @@ UnspentOutputs VaultManager::getManagedUTXOs(VaultUTXOFilters filter) const
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
             const CTxOut& output = tx.vout[outputIndex];
-            if(isManagedUTXO(tx,output) && !outputTracker_->IsSpent(hash,outputIndex))
+            if(isManagedUTXO(tx,output) && !outputTracker_->IsSpent(hash,outputIndex,0))
             {
                 outputs.emplace_back(&tx, outputIndex,depth,true);
             }

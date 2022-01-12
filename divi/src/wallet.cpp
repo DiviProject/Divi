@@ -104,15 +104,15 @@ bool CheckFinalTx(const CTransaction& tx, const CChain& activeChain, int flags =
 bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine,VaultType& vaultType)
 {
     mine = ::IsMine(keystore, scriptPubKey, vaultType);
-    if( coinType == STAKABLE_COINS && vaultType == OWNED_VAULT)
+    if( coinType == AvailableCoinsType::STAKABLE_COINS && vaultType == OWNED_VAULT)
     {
         return false;
     }
-    else if( coinType == ALL_SPENDABLE_COINS && vaultType != NON_VAULT)
+    else if( coinType == AvailableCoinsType::ALL_SPENDABLE_COINS && vaultType != NON_VAULT)
     {
         return false;
     }
-    else if( coinType == OWNED_VAULT_COINS && vaultType != OWNED_VAULT)
+    else if( coinType == AvailableCoinsType::OWNED_VAULT_COINS && vaultType != OWNED_VAULT)
     {
         return false;
     }
@@ -1615,12 +1615,12 @@ CAmount CWallet::GetChange(const CWalletTx& walletTransaction) const
 
 CAmount CWallet::GetStakingBalance() const
 {
-    return GetBalanceByCoinType(STAKABLE_COINS);
+    return GetBalanceByCoinType(AvailableCoinsType::STAKABLE_COINS);
 }
 
 CAmount CWallet::GetSpendableBalance() const
 {
-    return GetBalanceByCoinType(ALL_SPENDABLE_COINS);
+    return GetBalanceByCoinType(AvailableCoinsType::ALL_SPENDABLE_COINS);
 }
 
 CAmount CWallet::GetBalance() const
@@ -1659,13 +1659,13 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
             {
                 int coinTypeEncoding = static_cast<int>(coinType) << 4;
                 int additionalFilterFlags = REQUIRE_UNSPENT | REQUIRE_AVAILABLE_TYPE | coinTypeEncoding;
-                if(coinType==STAKABLE_COINS) additionalFilterFlags |= REQUIRE_UNLOCKED;
+                if(coinType==AvailableCoinsType::STAKABLE_COINS) additionalFilterFlags |= REQUIRE_UNLOCKED;
                 nTotal += ComputeCredit(*pcoin,isminetype::ISMINE_SPENDABLE, additionalFilterFlags);
             }
 
         }
 
-        if(coinType == STAKABLE_COINS && vaultManager_)
+        if(coinType == AvailableCoinsType::STAKABLE_COINS && vaultManager_)
         {
             auto utxos = vaultManager_->getManagedUTXOs();
             for(const auto& utxo: utxos)
@@ -1835,7 +1835,7 @@ bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const
 {
     CAmount nTargetAmount = GetStakingBalance();
     std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true,  STAKABLE_COINS);
+    AvailableCoins(vCoins, true,  AvailableCoinsType::STAKABLE_COINS);
     CAmount nAmountSelected = 0;
 
     for (const COutput& out : vCoins) {
@@ -1870,7 +1870,7 @@ bool CWallet::HasAgedCoins()
         return false;
 
     std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true,  STAKABLE_COINS);
+    AvailableCoins(vCoins, true,  AvailableCoinsType::STAKABLE_COINS);
 
     for (const COutput& out : vCoins) {
         int64_t nTxTime = out.tx->GetTxTime();

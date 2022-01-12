@@ -5,7 +5,7 @@
 
 bool TransactionSearchIndexes::GetAddressIndex(
     bool addresIndexEnabled,
-    CBlockTreeDB* pblocktree,
+    const CBlockTreeDB* pblocktree,
     uint160 addressHash,
     int type,
     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
@@ -23,7 +23,7 @@ bool TransactionSearchIndexes::GetAddressIndex(
 
 bool TransactionSearchIndexes::GetAddressUnspent(
     bool addresIndexEnabled,
-    CBlockTreeDB* pblocktree,
+    const CBlockTreeDB* pblocktree,
     uint160 addressHash,
     int type,
     std::vector<std::pair<CAddressUnspentKey,CAddressUnspentValue> > &unspentOutputs)
@@ -39,7 +39,7 @@ bool TransactionSearchIndexes::GetAddressUnspent(
 
 bool TransactionSearchIndexes::GetSpentIndex(
     bool spentIndexEnabled,
-    CBlockTreeDB* pblocktree,
+    const CBlockTreeDB* pblocktree,
     const CSpentIndexKey &key,
     CSpentIndexValue &value)
 {

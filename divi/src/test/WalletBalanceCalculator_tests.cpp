@@ -3,6 +3,7 @@
 #include <MockTransactionRecord.h>
 #include <MockSpentOutputTracker.h>
 #include <MockMerkleTxConfirmationNumberCalculator.h>
+#include <amount.h>
 class WalletBalanceCalculatorTestFixture
 {
 public:
@@ -21,9 +22,9 @@ public:
 
 BOOST_FIXTURE_TEST_SUITE(WalletBalanceCalculatorTests, WalletBalanceCalculatorTestFixture)
 
-BOOST_AUTO_TEST_CASE(EmptyTest)
+BOOST_AUTO_TEST_CASE(theBalanceOfAnEmptyWalletIzZero)
 {
-
+    BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -306,6 +306,7 @@ BITCOIN_CORE_H = \
   StoredMasternodeBroadcasts.h \
   streams.h \
   sync.h \
+  I_SpentOutputTracker.h \
   SpentOutputTracker.h \
   ThresholdConditionCache.h \
   threadsafety.h \

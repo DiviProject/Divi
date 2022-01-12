@@ -352,6 +352,7 @@ BITCOIN_CORE_H = \
   WalletBackupCreator.h \
   WalletBackupFeatureContainer.h \
   WalletIntegrityVerifier.h \
+  IsMineType.h \
   wallet_ismine.h \
   walletdb.h \
   zmq/zmqabstractnotifier.h \

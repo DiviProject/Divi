@@ -86,6 +86,40 @@ BOOST_AUTO_TEST_CASE(onlyUnspentUTXOsAddToTheTotalOfBalance)
     BOOST_CHECK_EQUAL(calculator.getBalance(),expectedBalance);
 }
 
+BOOST_AUTO_TEST_CASE(onlyUnspentAndOwnedUTXOsAddToTheTotalOfBalance)
+{
+    CTransaction tx = RandomTransactionGenerator()();
+    const unsigned spentIndex = GetRandInt(tx.vout.size());
+    const unsigned notOwnedIndex = GetRandInt(tx.vout.size());
+
+    const uint256 txid = tx.GetHash();
+    CAmount expectedBalance = 0;
+    for(unsigned outputIndex = 0u; outputIndex < tx.vout.size(); ++outputIndex)
+    {
+        const bool countsTowardBalance = (outputIndex != spentIndex) && (outputIndex != notOwnedIndex);
+        if(outputIndex != spentIndex)
+        {
+            ON_CALL(spentOutputTracker,IsSpent(txid,outputIndex,_)).WillByDefault(Return(false));
+        }
+        else
+        {
+            ON_CALL(spentOutputTracker,IsSpent(txid,outputIndex,_)).WillByDefault(Return(true));
+        }
+
+        if(outputIndex != notOwnedIndex)
+        {
+            ON_CALL(utxoOwnershipDetector,isMine(tx.vout[outputIndex])).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+        }
+        else
+        {
+            ON_CALL(utxoOwnershipDetector,isMine(tx.vout[outputIndex])).WillByDefault(Return(isminetype::ISMINE_NO));
+        }
+        if(countsTowardBalance) expectedBalance += tx.vout[outputIndex].nValue;
+    }
+    addTransactionToMockWalletRecord(tx);
+    BOOST_CHECK_EQUAL(calculator.getBalance(),expectedBalance);
+}
+
 BOOST_AUTO_TEST_CASE(conflictedSpendsDontAffectTheBalance)
 {
     CTransaction tx = RandomTransactionGenerator()(1*COIN,1u,1u);

@@ -1,10 +1,12 @@
 #include <WalletBalanceCalculator.h>
 
 WalletBalanceCalculator::WalletBalanceCalculator(
+    const I_UtxoOwnershipDetector& ownershipDetector,
     const I_AppendOnlyTransactionRecord& txRecord,
     const I_SpentOutputTracker& spentOutputTracker,
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator
-    ): txRecord_(txRecord)
+    ): ownershipDetector_(ownershipDetector)
+    , txRecord_(txRecord)
     , spentOutputTracker_(spentOutputTracker)
     , confsCalculator_(confsCalculator)
 {

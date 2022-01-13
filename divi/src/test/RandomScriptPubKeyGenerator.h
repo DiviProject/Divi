@@ -18,16 +18,12 @@ public:
         switch (type)
         {
         case P2PKH:
-            script << OP_DUP << OP_HASH160 << 0x14;
-            script += scriptGenerator(0x14);
-            script << OP_EQUALVERIFY << OP_CHECKSIG;
+            script << OP_DUP << OP_HASH160 << ToByteVector(scriptGenerator(0x14)) << OP_EQUALVERIFY << OP_CHECKSIG;
             assert(script.IsPayToPublicKeyHash());
             return script;
             break;
         case P2SH:
-            script << OP_HASH160 << 0x14;
-            script += scriptGenerator(0x14);
-            script << OP_EQUAL;
+            script << OP_HASH160 << ToByteVector(scriptGenerator(0x14)) << OP_EQUAL;
             assert(script.IsPayToScriptHash());
             return script;
             break;

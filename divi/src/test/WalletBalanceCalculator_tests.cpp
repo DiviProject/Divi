@@ -7,6 +7,8 @@
 #include <amount.h>
 class WalletBalanceCalculatorTestFixture
 {
+private:
+    MockTransactionRecord::TransactionsByHash transactionsHeldInRecord_;
 public:
     MockUtxoOwnershipDetector utxoOwnershipDetector;
     MockTransactionRecord transactionRecord;
@@ -14,7 +16,8 @@ public:
     MockMerkleTxConfirmationNumberCalculator confsCalculator;
     WalletBalanceCalculator calculator;
     WalletBalanceCalculatorTestFixture(
-        ): utxoOwnershipDetector()
+        ): transactionsHeldInRecord_()
+        , utxoOwnershipDetector()
         , transactionRecord()
         , spentOutputTracker()
         , confsCalculator()

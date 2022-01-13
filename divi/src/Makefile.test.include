@@ -89,6 +89,8 @@ BITCOIN_TESTS =\
   test/SuperblockHelper_tests.cpp \
   test/RandomCScriptGenerator.h \
   test/RandomCScriptGenerator.cpp \
+  test/RandomScriptPubKeyGenerator.h \
+  test/RandomTransactionGenerator.h \
   test/test_divi.cpp \
   test/timedata_tests.cpp \
   test/torcontrol_tests.cpp \

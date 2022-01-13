@@ -42,4 +42,10 @@ BOOST_AUTO_TEST_CASE(theBalanceOfAnEmptyWalletIzZero)
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
 }
 
+BOOST_AUTO_TEST_CASE(theBalanceOfAWalletMustAccessTheTransactionrecord)
+{
+    EXPECT_CALL(transactionRecord,GetWalletTransactions()).Times(1);
+    BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

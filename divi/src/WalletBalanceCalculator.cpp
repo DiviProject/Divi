@@ -1,5 +1,6 @@
 #include <WalletBalanceCalculator.h>
 
+#include <I_AppendOnlyTransactionRecord.h>
 WalletBalanceCalculator::WalletBalanceCalculator(
     const I_UtxoOwnershipDetector& ownershipDetector,
     const I_AppendOnlyTransactionRecord& txRecord,
@@ -18,5 +19,6 @@ WalletBalanceCalculator::~WalletBalanceCalculator()
 
 CAmount WalletBalanceCalculator::getBalance() const
 {
+    const auto& transactionsByHash = txRecord_.GetWalletTransactions();
     return CAmount(0);
 }

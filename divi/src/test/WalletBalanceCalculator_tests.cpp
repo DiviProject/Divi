@@ -33,6 +33,10 @@ public:
     {
         ON_CALL(transactionRecord,GetWalletTransactions()).WillByDefault(ReturnRef(transactionsHeldInRecord_));
     }
+    void addTransactionToMockWalletRecord(const CTransaction& tx)
+    {
+        transactionsHeldInRecord_[tx.GetHash()] = tx;
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(WalletBalanceCalculatorTests, WalletBalanceCalculatorTestFixture)
@@ -46,6 +50,16 @@ BOOST_AUTO_TEST_CASE(theBalanceOfAWalletMustAccessTheTransactionrecord)
 {
     EXPECT_CALL(transactionRecord,GetWalletTransactions()).Times(1);
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
+}
+
+
+BOOST_AUTO_TEST_CASE(theBalanceOfAWalletWhoOwnsAllUtxosIsTheTotalOfOutputs)
+{
+    CTransaction tx = RandomTransactionGenerator()();
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
+    addTransactionToMockWalletRecord(tx);
+    BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(tx.GetValueOut()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

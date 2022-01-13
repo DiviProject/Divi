@@ -7,10 +7,12 @@
 class RandomTransactionGenerator
 {
 public:
-    CTransaction operator()(CAmount maxAmount = 1*COIN, const unsigned inputCount = GetRandInt(15), const unsigned outputCount = GetRandInt(15)) const
+    CTransaction operator()(CAmount maxAmount = 1*COIN, unsigned inputCount = GetRandInt(15), unsigned outputCount = GetRandInt(15)) const
     {
         RandomScriptPubKeyGenerator scriptGenerator;
         CMutableTransaction tx;
+        inputCount = std::max(inputCount,1u);
+        outputCount = std::max(outputCount,1u);
         for(unsigned inputIndex = 0u; inputIndex < inputCount; ++inputIndex)
         {
             tx.vin.emplace_back(GetRandHash(), inputIndex);

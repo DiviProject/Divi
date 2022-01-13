@@ -5,15 +5,23 @@
 #include <MockMerkleTxConfirmationNumberCalculator.h>
 #include <MockUtxoOwnershipDetector.h>
 #include <amount.h>
+#include <RandomTransactionGenerator.h>
+
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::ReturnRef;
+using ::testing::_;
+using ::testing::Ref;
+
 class WalletBalanceCalculatorTestFixture
 {
 private:
     MockTransactionRecord::TransactionsByHash transactionsHeldInRecord_;
 public:
-    MockUtxoOwnershipDetector utxoOwnershipDetector;
-    MockTransactionRecord transactionRecord;
-    MockSpentOutputTracker spentOutputTracker;
-    MockMerkleTxConfirmationNumberCalculator confsCalculator;
+    NiceMock<MockUtxoOwnershipDetector> utxoOwnershipDetector;
+    NiceMock<MockTransactionRecord> transactionRecord;
+    NiceMock<MockSpentOutputTracker> spentOutputTracker;
+    NiceMock<MockMerkleTxConfirmationNumberCalculator> confsCalculator;
     WalletBalanceCalculator calculator;
     WalletBalanceCalculatorTestFixture(
         ): transactionsHeldInRecord_()
@@ -23,6 +31,7 @@ public:
         , confsCalculator()
         , calculator(utxoOwnershipDetector,transactionRecord,spentOutputTracker,confsCalculator)
     {
+        ON_CALL(transactionRecord,GetWalletTransactions()).WillByDefault(ReturnRef(transactionsHeldInRecord_));
     }
 };
 

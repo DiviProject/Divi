@@ -14,7 +14,8 @@ public:
     MockMerkleTxConfirmationNumberCalculator confsCalculator;
     WalletBalanceCalculator calculator;
     WalletBalanceCalculatorTestFixture(
-        ): transactionRecord()
+        ): utxoOwnershipDetector()
+        , transactionRecord()
         , spentOutputTracker()
         , confsCalculator()
         , calculator(utxoOwnershipDetector,transactionRecord,spentOutputTracker,confsCalculator)

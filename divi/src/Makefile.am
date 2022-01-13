@@ -342,6 +342,7 @@ BITCOIN_CORE_H = \
   StochasticSubsetSelectionAlgorithm.h \
   wallet.h \
   WalletTx.h \
+  I_UtxoOwnershipDetector.h \
   WalletBalanceCalculator.h \
   I_AppendOnlyTransactionRecord.h \
   WalletTransactionRecord.h \

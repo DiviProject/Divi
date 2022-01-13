@@ -8,6 +8,7 @@
 #include <RandomTransactionGenerator.h>
 
 using ::testing::NiceMock;
+using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::_;
@@ -83,6 +84,22 @@ BOOST_AUTO_TEST_CASE(onlyUnspentUTXOsAddToTheTotalOfBalance)
     }
     addTransactionToMockWalletRecord(tx);
     BOOST_CHECK_EQUAL(calculator.getBalance(),expectedBalance);
+}
+
+BOOST_AUTO_TEST_CASE(conflictedSpendsDontAffectTheBalance)
+{
+    CTransaction tx = RandomTransactionGenerator()(1*COIN,1u,1u);
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(
+        Invoke(
+            [](const uint256& hash, unsigned int n, const int minimumConfirmations) -> bool
+            {
+                return minimumConfirmations < 0;
+            }
+        )
+    );
+    addTransactionToMockWalletRecord(tx);
+    BOOST_CHECK_EQUAL(calculator.getBalance(),tx.GetValueOut());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

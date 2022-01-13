@@ -1,6 +1,9 @@
 #include <WalletBalanceCalculator.h>
 
+#include <WalletTx.h>
 #include <I_AppendOnlyTransactionRecord.h>
+#include <I_SpentOutputTracker.h>
+
 WalletBalanceCalculator::WalletBalanceCalculator(
     const I_UtxoOwnershipDetector& ownershipDetector,
     const I_AppendOnlyTransactionRecord& txRecord,
@@ -23,7 +26,15 @@ CAmount WalletBalanceCalculator::getBalance() const
     const auto& transactionsByHash = txRecord_.GetWalletTransactions();
     for(const auto& txidAndTransaction: transactionsByHash)
     {
-        totalBalance += txidAndTransaction.second.GetValueOut();
+        const uint256& txid = txidAndTransaction.first;
+        const CWalletTx& tx = txidAndTransaction.second;
+        for(unsigned outputIndex=0u; outputIndex < tx.vout.size(); ++outputIndex)
+        {
+            if(!spentOutputTracker_.IsSpent(txid,outputIndex,0))
+            {
+                totalBalance += tx.vout[outputIndex].nValue;
+            }
+        }
     }
     return totalBalance;
 }

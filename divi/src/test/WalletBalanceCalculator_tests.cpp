@@ -3,10 +3,12 @@
 #include <MockTransactionRecord.h>
 #include <MockSpentOutputTracker.h>
 #include <MockMerkleTxConfirmationNumberCalculator.h>
+#include <MockUtxoOwnershipDetector.h>
 #include <amount.h>
 class WalletBalanceCalculatorTestFixture
 {
 public:
+    MockUtxoOwnershipDetector utxoOwnershipDetector;
     MockTransactionRecord transactionRecord;
     MockSpentOutputTracker spentOutputTracker;
     MockMerkleTxConfirmationNumberCalculator confsCalculator;
@@ -15,7 +17,7 @@ public:
         ): transactionRecord()
         , spentOutputTracker()
         , confsCalculator()
-        , calculator(transactionRecord,spentOutputTracker,confsCalculator)
+        , calculator(utxoOwnershipDetector,transactionRecord,spentOutputTracker,confsCalculator)
     {
     }
 };

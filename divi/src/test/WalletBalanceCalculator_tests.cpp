@@ -62,4 +62,27 @@ BOOST_AUTO_TEST_CASE(theBalanceOfAWalletWhoOwnsAllUtxosIsTheTotalOfOutputs)
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(tx.GetValueOut()));
 }
 
+BOOST_AUTO_TEST_CASE(onlyUnspentUTXOsAddToTheTotalOfBalance)
+{
+    CTransaction tx = RandomTransactionGenerator()();
+    const unsigned spentIndex = GetRandInt(tx.vout.size());
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    const uint256 txid = tx.GetHash();
+    CAmount expectedBalance = 0;
+    for(unsigned outputIndex = 0u; outputIndex < tx.vout.size(); ++outputIndex)
+    {
+        if(outputIndex != spentIndex)
+        {
+            ON_CALL(spentOutputTracker,IsSpent(txid,outputIndex,_)).WillByDefault(Return(false));
+            expectedBalance += tx.vout[outputIndex].nValue;
+        }
+        else
+        {
+            ON_CALL(spentOutputTracker,IsSpent(txid,outputIndex,_)).WillByDefault(Return(true));
+        }
+    }
+    addTransactionToMockWalletRecord(tx);
+    BOOST_CHECK_EQUAL(calculator.getBalance(),expectedBalance);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

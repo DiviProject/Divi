@@ -19,6 +19,11 @@ WalletBalanceCalculator::~WalletBalanceCalculator()
 
 CAmount WalletBalanceCalculator::getBalance() const
 {
+    CAmount totalBalance = 0;
     const auto& transactionsByHash = txRecord_.GetWalletTransactions();
-    return CAmount(0);
+    for(const auto& txidAndTransaction: transactionsByHash)
+    {
+        totalBalance += txidAndTransaction.second.GetValueOut();
+    }
+    return totalBalance;
 }

@@ -102,4 +102,13 @@ BOOST_AUTO_TEST_CASE(conflictedSpendsDontAffectTheBalance)
     BOOST_CHECK_EQUAL(calculator.getBalance(),tx.GetValueOut());
 }
 
+BOOST_AUTO_TEST_CASE(unspentUTXOsThatArentOwnedAreIgnored)
+{
+    CTransaction tx = RandomTransactionGenerator()();
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_NO));
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
+    addTransactionToMockWalletRecord(tx);
+    BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

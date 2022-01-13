@@ -3,6 +3,7 @@
 #include <WalletTx.h>
 #include <I_AppendOnlyTransactionRecord.h>
 #include <I_SpentOutputTracker.h>
+#include <I_UtxoOwnershipDetector.h>
 
 WalletBalanceCalculator::WalletBalanceCalculator(
     const I_UtxoOwnershipDetector& ownershipDetector,
@@ -30,7 +31,8 @@ CAmount WalletBalanceCalculator::getBalance() const
         const CWalletTx& tx = txidAndTransaction.second;
         for(unsigned outputIndex=0u; outputIndex < tx.vout.size(); ++outputIndex)
         {
-            if(!spentOutputTracker_.IsSpent(txid,outputIndex,0))
+            if(ownershipDetector_.isMine(tx.vout[outputIndex]) == isminetype::ISMINE_SPENDABLE &&
+               !spentOutputTracker_.IsSpent(txid,outputIndex,0))
             {
                 totalBalance += tx.vout[outputIndex].nValue;
             }

@@ -62,17 +62,20 @@ BOOST_AUTO_TEST_CASE(theBalanceOfAWalletMustAccessTheTransactionrecord)
 BOOST_AUTO_TEST_CASE(theBalanceOfAWalletWhoOwnsAllUtxosIsTheTotalOfOutputs)
 {
     CTransaction tx = RandomTransactionGenerator()();
+    addTransactionToMockWalletRecord(tx);
     ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
     ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
-    addTransactionToMockWalletRecord(tx);
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(tx.GetValueOut()));
 }
 
 BOOST_AUTO_TEST_CASE(onlyUnspentUTXOsAddToTheTotalOfBalance)
 {
     CTransaction tx = RandomTransactionGenerator()();
+    addTransactionToMockWalletRecord(tx);
     const unsigned spentIndex = GetRandInt(tx.vout.size());
     ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
     const uint256 txid = tx.GetHash();
     CAmount expectedBalance = 0;
     for(unsigned outputIndex = 0u; outputIndex < tx.vout.size(); ++outputIndex)
@@ -87,13 +90,14 @@ BOOST_AUTO_TEST_CASE(onlyUnspentUTXOsAddToTheTotalOfBalance)
             ON_CALL(spentOutputTracker,IsSpent(txid,outputIndex,_)).WillByDefault(Return(true));
         }
     }
-    addTransactionToMockWalletRecord(tx);
     BOOST_CHECK_EQUAL(calculator.getBalance(),expectedBalance);
 }
 
 BOOST_AUTO_TEST_CASE(onlyUnspentAndOwnedUTXOsAddToTheTotalOfBalance)
 {
     CTransaction tx = RandomTransactionGenerator()();
+    addTransactionToMockWalletRecord(tx);
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
     const unsigned spentIndex = GetRandInt(tx.vout.size());
     const unsigned notOwnedIndex = GetRandInt(tx.vout.size());
 
@@ -121,13 +125,14 @@ BOOST_AUTO_TEST_CASE(onlyUnspentAndOwnedUTXOsAddToTheTotalOfBalance)
         }
         if(countsTowardBalance) expectedBalance += tx.vout[outputIndex].nValue;
     }
-    addTransactionToMockWalletRecord(tx);
     BOOST_CHECK_EQUAL(calculator.getBalance(),expectedBalance);
 }
 
 BOOST_AUTO_TEST_CASE(conflictedSpendsDontAffectTheBalance)
 {
     CTransaction tx = RandomTransactionGenerator()(1*COIN,1u,1u);
+    addTransactionToMockWalletRecord(tx);
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
     ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
     ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(
         Invoke(
@@ -137,7 +142,6 @@ BOOST_AUTO_TEST_CASE(conflictedSpendsDontAffectTheBalance)
             }
         )
     );
-    addTransactionToMockWalletRecord(tx);
     BOOST_CHECK_EQUAL(calculator.getBalance(),tx.GetValueOut());
 }
 
@@ -145,6 +149,7 @@ BOOST_AUTO_TEST_CASE(conflictedTransactionsDontAffectTheBalance)
 {
     CTransaction tx = RandomTransactionGenerator()(1*COIN,1u,1u);
     addTransactionToMockWalletRecord(tx);
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
     ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()) ))
         .WillByDefault(Return(-1));
 
@@ -158,9 +163,10 @@ BOOST_AUTO_TEST_CASE(conflictedTransactionsDontAffectTheBalance)
 BOOST_AUTO_TEST_CASE(unspentUTXOsThatArentOwnedAreIgnored)
 {
     CTransaction tx = RandomTransactionGenerator()();
+    addTransactionToMockWalletRecord(tx);
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
     ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_NO));
     ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
-    addTransactionToMockWalletRecord(tx);
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
 }
 

@@ -38,6 +38,11 @@ public:
     {
         transactionsHeldInRecord_[tx.GetHash()] = tx;
     }
+    const CWalletTx& getWalletTx(const uint256 txid)
+    {
+        assert(transactionsHeldInRecord_.count(txid) > 0);
+        return transactionsHeldInRecord_[txid];
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(WalletBalanceCalculatorTests, WalletBalanceCalculatorTestFixture)
@@ -134,6 +139,20 @@ BOOST_AUTO_TEST_CASE(conflictedSpendsDontAffectTheBalance)
     );
     addTransactionToMockWalletRecord(tx);
     BOOST_CHECK_EQUAL(calculator.getBalance(),tx.GetValueOut());
+}
+
+BOOST_AUTO_TEST_CASE(conflictedTransactionsDontAffectTheBalance)
+{
+    CTransaction tx = RandomTransactionGenerator()(1*COIN,1u,1u);
+    addTransactionToMockWalletRecord(tx);
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()) ))
+        .WillByDefault(Return(-1));
+
+    const CAmount expectedBalance = 0;
+
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault( Return(false) );
+    BOOST_CHECK_EQUAL(calculator.getBalance(),expectedBalance);
 }
 
 BOOST_AUTO_TEST_CASE(unspentUTXOsThatArentOwnedAreIgnored)

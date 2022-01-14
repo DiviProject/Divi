@@ -58,6 +58,17 @@ BOOST_AUTO_TEST_CASE(theBalanceOfAWalletMustAccessTheTransactionrecord)
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
 }
 
+BOOST_AUTO_TEST_CASE(willIgnoreUnconfirmedTransactionsNonDebitingTransaction)
+{
+    CTransaction tx = RandomTransactionGenerator()(1*COIN,1u);
+    addTransactionToMockWalletRecord(tx);
+
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(0));
+
+    BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
+}
 
 BOOST_AUTO_TEST_CASE(theBalanceOfAWalletWhoOwnsAllUtxosIsTheTotalOfOutputs)
 {

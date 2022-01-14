@@ -31,7 +31,7 @@ CAmount WalletBalanceCalculator::getBalance() const
         const uint256& txid = txidAndTransaction.first;
         const CWalletTx& tx = txidAndTransaction.second;
         const int depth = confsCalculator_.GetNumberOfBlockConfirmations(tx);
-        if(depth < 0) continue;
+        if(depth < 1) continue;
         for(unsigned outputIndex=0u; outputIndex < tx.vout.size(); ++outputIndex)
         {
             if(ownershipDetector_.isMine(tx.vout[outputIndex]) == isminetype::ISMINE_SPENDABLE &&

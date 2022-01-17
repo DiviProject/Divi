@@ -138,9 +138,20 @@ void InitializeWallet(std::string strWalletFile)
 #endif
 }
 
+static CCriticalSection vaultAllocationLock;
+void ThreadSyncVaultDatabase()
+{
+#ifdef ENABLE_WALLET
+    TRY_LOCK(vaultAllocationLock,lockAcquired);
+    boost::this_thread::interruption_point();
+    if(lockAcquired && vaultManager) vaultManager->Sync();
+#endif
+}
+
 void InitializeVault()
 {
 #ifdef ENABLE_WALLET
+    LOCK(vaultAllocationLock);
     const std::string keystring = pwalletMain->getWalletIdentifier();
     const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
     constexpr size_t vaultDBCacheSize = 1 << 21; // 2MB
@@ -162,6 +173,7 @@ void InitializeVault()
 void DeallocateVault()
 {
 #ifdef ENABLE_WALLET
+    LOCK(vaultAllocationLock);
     if(vaultManager)
     {
         UnregisterValidationInterface(vaultManager.get());
@@ -1492,6 +1504,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if (settings.GetBoolArg("-flushwallet", true))
         {
             threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, pwalletMain->dbFilename() ));
+            threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "vaultsync", &ThreadSyncVaultDatabase, 500));
         }
     }
 #endif

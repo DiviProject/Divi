@@ -21,7 +21,6 @@ VaultManagerDatabase::VaultManagerDatabase(
     bool fWipe
     ):  CLevelDBWrapper(GetDataDir() / vaultID, nCacheSize, fMemory, fWipe)
     , txCount(0u)
-    , txidLookup()
     , scriptIDLookup()
 {
 }

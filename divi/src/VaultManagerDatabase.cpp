@@ -6,6 +6,7 @@
 #include <sync.h>
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/thread.hpp>
 namespace
 {
 
@@ -71,9 +72,13 @@ bool VaultManagerDatabase::Sync(CCriticalSection& mutexToLock)
 {
     if(lastUpdateCount_ != updateCount_)
     {
-        LOCK(mutexToLock);
-        lastUpdateCount_ = updateCount_;
-        return CLevelDBWrapper::Sync();
+        TRY_LOCK(mutexToLock,lockWasAcquired);
+        if(lockWasAcquired)
+        {
+            boost::this_thread::interruption_point();
+            lastUpdateCount_ = updateCount_;
+            return CLevelDBWrapper::Sync();
+        }
     }
     return true;
 }

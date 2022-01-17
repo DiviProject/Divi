@@ -10,7 +10,6 @@ class VaultManagerDatabase final: public I_VaultManagerDatabase, public CLevelDB
 private:
     uint64_t txCount;
     uint64_t scriptCount;
-    std::map<CScriptID,uint64_t> scriptIDLookup;
 
 public:
     VaultManagerDatabase(std::string vaultID, size_t nCacheSize, bool fMemory = false, bool fWipe = false);

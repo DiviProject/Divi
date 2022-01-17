@@ -970,7 +970,7 @@ bool CWallet::AddVault(
         LOCK(cs_wallet);
         vaultManager_->addManagedScript(vaultScript);
         vaultManager_->addTransaction(tx, pblock, true,vaultScript);
-        return vaultDB_->Sync();
+        return vaultManager_->Sync();
     }
     return false;
 }

@@ -67,5 +67,6 @@ public:
 
     const CWalletTx& getTransaction(const uint256&) const;
     const ManagedScripts& getManagedScriptLimits() const;
+    bool Sync();
 };
 #endif// VAULT_MANAGER_H

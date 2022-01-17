@@ -10,6 +10,6 @@ public:
     MOCK_METHOD1(WriteManagedScript,bool(const CScript& managedScript));
     MOCK_METHOD1(EraseManagedScript,bool(const CScript& managedScript));
     MOCK_METHOD1(ReadManagedScripts, bool(ManagedScripts& managedScripts));
-    MOCK_METHOD0(Sync, bool());
+    MOCK_METHOD1(Sync, bool(CCriticalSection& mutexToLock));
 };
 #endif// MOCK_VAULT_MANAGER_DATABASE_H

@@ -57,18 +57,26 @@ bool VaultManagerDatabase::ReadTx(CWalletTx& walletTransaction)
 
 bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)
 {
-    const CScriptID id(managedScript);
-    if(scriptIDLookup.count(id) == 0u)
+    if(Write(MakeScriptIndex(scriptCount),managedScript))
     {
-        uint64_t nextIndex = scriptIDLookup.size();
-        if(Write(MakeScriptIndex(nextIndex),managedScript))
-        {
-            scriptIDLookup[id] =  nextIndex;
-            return true;
-        }
-        return false;
+        ++scriptCount;
+        return true;
     }
     return false;
+}
+
+bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
+{
+    while(Read(MakeScriptIndex(scriptCount),managedScripts))
+    {
+        ++scriptCount;
+    }
+    return true;
+}
+
+bool VaultManagerDatabase::Sync()
+{
+    return CLevelDBWrapper::Sync();
 }
 
 template<typename K> bool GetKey(leveldb::Slice slKey, K& key) {
@@ -126,25 +134,4 @@ bool VaultManagerDatabase::EraseManagedScript(const CScript& managedScript)
         }
     }
     return foundKey? Erase(key):false;
-}
-
-bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
-{
-    uint64_t dummyScriptIndex = 0u;
-    CScript managedScript;
-    while(Read(MakeScriptIndex(dummyScriptIndex),managedScript))
-    {
-        CScriptID id(managedScript);
-        scriptIDLookup[id] = dummyScriptIndex;
-
-        managedScripts.insert(managedScript);
-        managedScript.clear();
-        ++dummyScriptIndex;
-    }
-    return true;
-}
-
-bool VaultManagerDatabase::Sync()
-{
-    return CLevelDBWrapper::Sync();
 }

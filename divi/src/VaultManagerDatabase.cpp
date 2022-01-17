@@ -51,19 +51,62 @@ bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)
     return false;
 }
 
-bool VaultManagerDatabase::EraseManagedScript(const CScript& managedScript)
-{
-    const CScriptID id(managedScript);
-    if(scriptIDLookup.count(id) > 0)
-    {
-        if(Erase(MakeScriptIndex(scriptIDLookup[id])))
-        {
-            scriptIDLookup.erase(id);
-            return true;
-        }
+template<typename K> bool GetKey(leveldb::Slice slKey, K& key) {
+    try {
+        CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
+        ssKey >> key;
+    } catch (const std::exception&) {
         return false;
     }
-    return false;
+    return true;
+}
+
+bool VaultManagerDatabase::EraseManagedScript(const CScript& managedScript)
+{
+    bool foundKey = false;
+    std::pair<std::string,uint64_t> key;
+    {
+        boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
+
+        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+        auto indexKey = MakeScriptIndex(0);
+        ssKey.reserve(ssKey.GetSerializeSize(indexKey));
+        ssKey << indexKey;
+
+        leveldb::Slice slKey(&ssKey[0], ssKey.size());
+        pcursor->Seek(slKey);
+
+        while (pcursor->Valid() && !foundKey)
+        {
+            boost::this_thread::interruption_point();
+            key = std::pair<std::string,uint64_t>();
+            if (GetKey(pcursor->key(), key) && key.first == indexKey.first)
+            {
+                try
+                {
+                    leveldb::Slice slValue = pcursor->value();
+                    CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
+                    CScript script;
+                    ssValue >> script;
+                    if(script ==managedScript)
+                    {
+                        foundKey = true;
+                        break;
+                    }
+                    pcursor->Next();
+                }
+                catch (const std::exception&)
+                {
+                    return error("failed to get address unspent value");
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    return foundKey? Erase(key):false;
 }
 
 bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)

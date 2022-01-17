@@ -31,6 +31,7 @@ VaultManagerDatabase::VaultManagerDatabase(
     ):  CLevelDBWrapper(GetDataDir() / vaultID, nCacheSize, fMemory, fWipe)
     , txCount(0u)
     , scriptCount(0u)
+    , updateCount_(0u)
 {
 }
 
@@ -38,6 +39,7 @@ bool VaultManagerDatabase::WriteTx(const CWalletTx& walletTransaction)
 {
     if(Write(MakeTxIndex(txCount),walletTransaction))
     {
+        ++updateCount_;
         ++txCount;
         return true;
     }
@@ -58,6 +60,7 @@ bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)
 {
     if(Write(MakeScriptIndex(scriptCount),managedScript))
     {
+        ++updateCount_;
         ++scriptCount;
         return true;
     }
@@ -66,7 +69,12 @@ bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)
 
 bool VaultManagerDatabase::Sync()
 {
-    return CLevelDBWrapper::Sync();
+    if(lastUpdateCount_ != updateCount_)
+    {
+        lastUpdateCount_ = updateCount_;
+        return CLevelDBWrapper::Sync();
+    }
+    return true;
 }
 
 template<typename K> bool GetKey(leveldb::Slice slKey, K& key) {
@@ -149,6 +157,7 @@ bool VaultManagerDatabase::EraseManagedScript(const CScript& managedScript)
                     ssValue >> script;
                     if(script ==managedScript)
                     {
+                        ++updateCount_;
                         foundKey = true;
                         break;
                     }

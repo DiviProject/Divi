@@ -37,12 +37,22 @@ VaultManagerDatabase::VaultManagerDatabase(
 
 bool VaultManagerDatabase::WriteTx(const CWalletTx& walletTransaction)
 {
-    return Write(MakeTxIndex(txCount++),walletTransaction);
+    if(Write(MakeTxIndex(txCount),walletTransaction))
+    {
+        ++txCount;
+        return true;
+    }
+    return false;
 }
 
 bool VaultManagerDatabase::ReadTx(CWalletTx& walletTransaction)
 {
-    return Read(MakeTxIndex(txCount++),walletTransaction);
+    if(Read(MakeTxIndex(txCount),walletTransaction))
+    {
+        ++txCount;
+        return true;
+    }
+    return false;
 }
 
 bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)

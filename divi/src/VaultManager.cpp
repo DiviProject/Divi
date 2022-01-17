@@ -253,3 +253,8 @@ const ManagedScripts& VaultManager::getManagedScriptLimits() const
 {
     return managedScripts_;
 }
+
+bool VaultManager::Sync()
+{
+    return vaultManagerDB_.Sync(cs_vaultManager_);
+}

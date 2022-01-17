@@ -10,6 +10,8 @@ class VaultManagerDatabase final: public I_VaultManagerDatabase, public CLevelDB
 private:
     uint64_t txCount;
     uint64_t scriptCount;
+    uint64_t updateCount_;
+    uint64_t lastUpdateCount_;
 
 public:
     VaultManagerDatabase(std::string vaultID, size_t nCacheSize, bool fMemory = false, bool fWipe = false);

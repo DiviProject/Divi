@@ -11,6 +11,7 @@ class WalletBalanceCalculator
     const I_AppendOnlyTransactionRecord& txRecord_;
     const I_SpentOutputTracker& spentOutputTracker_;
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator_;
+
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,

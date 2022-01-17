@@ -28,32 +28,12 @@ VaultManagerDatabase::VaultManagerDatabase(
 
 bool VaultManagerDatabase::WriteTx(const CWalletTx& walletTransaction)
 {
-    const uint256 id = walletTransaction.GetHash();
-    if(txidLookup.count(id) == 0u)
-    {
-        uint64_t nextIndex = txidLookup.size();
-        if(Write(MakeTxIndex(nextIndex),walletTransaction))
-        {
-            txidLookup[id] =  nextIndex;
-            return true;
-        }
-        return false;
-    }
-    else
-    {
-        return Write(MakeTxIndex(txidLookup[id]),walletTransaction);
-    }
+    return Write(MakeTxIndex(txCount++),walletTransaction);
 }
 
 bool VaultManagerDatabase::ReadTx(CWalletTx& walletTransaction)
 {
-    uint64_t nextIndex = txidLookup.size();
-    const bool success = Read(MakeTxIndex(nextIndex),walletTransaction);
-    if(success)
-    {
-        txidLookup[walletTransaction.GetHash()] = nextIndex;
-    }
-    return success;
+    return Read(MakeTxIndex(txCount++),walletTransaction);
 }
 
 bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)

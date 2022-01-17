@@ -110,7 +110,7 @@ bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
             }
             catch (const std::exception&)
             {
-                return error("failed to get address unspent value");
+                return error("Failed to read managed scripts");
             }
         }
         else
@@ -156,7 +156,7 @@ bool VaultManagerDatabase::EraseManagedScript(const CScript& managedScript)
                 }
                 catch (const std::exception&)
                 {
-                    return error("failed to get address unspent value");
+                    return error("Failed to access vault db to erase managed scripts");
                 }
             }
             else
@@ -165,5 +165,5 @@ bool VaultManagerDatabase::EraseManagedScript(const CScript& managedScript)
             }
         }
     }
-    return foundKey? Erase(key):false;
+    return foundKey? Erase(key): error("Failed to find managed script to erase");
 }

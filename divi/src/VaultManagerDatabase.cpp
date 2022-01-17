@@ -5,13 +5,22 @@
 #include <DataDirectory.h>
 #include <sync.h>
 
-static std::pair<std::string,uint64_t> MakeTxIndex(uint64_t txIndex)
+#include <boost/scoped_ptr.hpp>
+namespace
 {
-    return std::make_pair("tx",txIndex);
+
+constexpr char DB_TX = 't';
+constexpr char DB_SCRIPT = 's';
+
+} // anonymous namespace
+
+static std::pair<char,uint64_t> MakeTxIndex(uint64_t txIndex)
+{
+    return std::make_pair(DB_TX,txIndex);
 }
-static std::pair<std::string,uint64_t> MakeScriptIndex(uint64_t scriptIndex)
+static std::pair<char,uint64_t> MakeScriptIndex(uint64_t scriptIndex)
 {
-    return std::make_pair("script",scriptIndex);
+    return std::make_pair(DB_SCRIPT,scriptIndex);
 }
 
 VaultManagerDatabase::VaultManagerDatabase(
@@ -64,7 +73,7 @@ template<typename K> bool GetKey(leveldb::Slice slKey, K& key) {
 bool VaultManagerDatabase::EraseManagedScript(const CScript& managedScript)
 {
     bool foundKey = false;
-    std::pair<std::string,uint64_t> key;
+    std::pair<char,uint64_t> key;
     {
         boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
 
@@ -79,7 +88,6 @@ bool VaultManagerDatabase::EraseManagedScript(const CScript& managedScript)
         while (pcursor->Valid() && !foundKey)
         {
             boost::this_thread::interruption_point();
-            key = std::pair<std::string,uint64_t>();
             if (GetKey(pcursor->key(), key) && key.first == indexKey.first)
             {
                 try

@@ -967,4 +967,10 @@ BOOST_AUTO_TEST_CASE(willNotEraseManagedScriptToBackendOnRemovalMoreThanOnce)
     manager->removeManagedScript(managedScript);
 }
 
+BOOST_AUTO_TEST_CASE(willInvokeDatabaseSyncWhenManagerSyncIsRequested)
+{
+    EXPECT_CALL(*mockPtr,Sync(_)).Times(1);
+    manager->Sync();
+}
+
 BOOST_AUTO_TEST_SUITE_END()

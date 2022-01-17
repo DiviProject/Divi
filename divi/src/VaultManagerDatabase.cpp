@@ -67,10 +67,11 @@ bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)
     return false;
 }
 
-bool VaultManagerDatabase::Sync()
+bool VaultManagerDatabase::Sync(CCriticalSection& mutexToLock)
 {
     if(lastUpdateCount_ != updateCount_)
     {
+        LOCK(mutexToLock);
         lastUpdateCount_ = updateCount_;
         return CLevelDBWrapper::Sync();
     }

@@ -43,6 +43,26 @@ public:
         assert(transactionsHeldInRecord_.count(txid) > 0);
         return transactionsHeldInRecord_[txid];
     }
+    CTransaction createRandomSpendingTransaction(const CTransaction& txToSpendFrom)
+    {
+        assert(txToSpendFrom.vout.size() > 0u);
+        const unsigned maxUtxoCountToSpendFrom = GetRandInt(txToSpendFrom.vout.size()) + 1;
+        CMutableTransaction spendingTxTemplate = RandomTransactionGenerator()(0*COIN, maxUtxoCountToSpendFrom);
+        CAmount totalInputSpent = 0;
+        for(CTxIn& input: spendingTxTemplate.vin)
+        {
+            input.prevout.hash = txToSpendFrom.GetHash();
+            totalInputSpent += txToSpendFrom.vout[input.prevout.n].nValue;
+        }
+        for(CTxOut& output: spendingTxTemplate.vout)
+        {
+            output.nValue = GetRand(std::max(totalInputSpent,CAmount(0) ));
+            totalInputSpent -= output.nValue;
+            assert(output.nValue >=0);
+        }
+        CTransaction spendingTransaction = spendingTxTemplate;
+        return spendingTransaction;
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(WalletBalanceCalculatorTests, WalletBalanceCalculatorTestFixture)
@@ -68,6 +88,37 @@ BOOST_AUTO_TEST_CASE(willIgnoreUnconfirmedTransactionsNonDebitingTransaction)
     ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(0));
 
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
+}
+
+BOOST_AUTO_TEST_CASE(willNotIgnoreUnconfirmedTransactionsDebitingFunds)
+{
+    CTransaction tx = RandomTransactionGenerator()(1*COIN,1u);
+    addTransactionToMockWalletRecord(tx);
+    CTransaction spendingTx = createRandomSpendingTransaction(tx);
+    addTransactionToMockWalletRecord(spendingTx);
+
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(spendingTx.GetHash()))).WillByDefault(Return(0));
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+
+    CAmount spentFunds = 0;
+    std::set<unsigned> spentOutputIndices = {};
+    for(const auto& input: spendingTx.vin)
+    {
+        spentOutputIndices.insert(input.prevout.n);
+        spentFunds+= tx.vout[input.prevout.n].nValue;
+    }
+    const uint256 txidOfPartiallySpentTx = tx.GetHash();
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(
+        Invoke(
+            [txidOfPartiallySpentTx,spentOutputIndices](const uint256& hash, unsigned int n, const int minimumConfirmations) -> bool
+            {
+                return hash == txidOfPartiallySpentTx && spentOutputIndices.count(n) > 0;
+            }
+        )
+    );
+
+    BOOST_CHECK_EQUAL(calculator.getBalance(), tx.GetValueOut() + spendingTx.GetValueOut() - spentFunds );
 }
 
 BOOST_AUTO_TEST_CASE(theBalanceOfAWalletWhoOwnsAllUtxosIsTheTotalOfOutputs)

@@ -89,7 +89,7 @@ public:
 
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     const Settings& settings,
-    CCoinsViewCache* baseCoinsViewCache,
+    const CCoinsViewCache* baseCoinsViewCache,
     const CChain& activeChain,
     const BlockMap& blockIndexMap,
     CTxMemPool& mempool,
@@ -193,7 +193,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionToBlock(
 std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTransactionPriorities(
     const int& nHeight,
     DependingTransactionsMap& dependentTransactions,
-    CCoinsViewCache& view) const
+    const CCoinsViewCache& view) const
 {
     std::vector<TxPriority> vecPriority;
     vecPriority.reserve(mempool_.mapTx.size());

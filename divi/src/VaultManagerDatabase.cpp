@@ -64,15 +64,6 @@ bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)
     return false;
 }
 
-bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
-{
-    while(Read(MakeScriptIndex(scriptCount),managedScripts))
-    {
-        ++scriptCount;
-    }
-    return true;
-}
-
 bool VaultManagerDatabase::Sync()
 {
     return CLevelDBWrapper::Sync();
@@ -84,6 +75,48 @@ template<typename K> bool GetKey(leveldb::Slice slKey, K& key) {
         ssKey >> key;
     } catch (const std::exception&) {
         return false;
+    }
+    return true;
+}
+
+bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
+{
+    boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
+    bool foundKey = false;
+    std::pair<char,uint64_t> key;
+
+    CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+    auto indexKey = MakeScriptIndex(0);
+    ssKey.reserve(ssKey.GetSerializeSize(indexKey));
+    ssKey << indexKey;
+
+    leveldb::Slice slKey(&ssKey[0], ssKey.size());
+    pcursor->Seek(slKey);
+
+    while (pcursor->Valid() && !foundKey)
+    {
+        boost::this_thread::interruption_point();
+        if (GetKey(pcursor->key(), key) && key.first == indexKey.first)
+        {
+            try
+            {
+                leveldb::Slice slValue = pcursor->value();
+                CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
+                CScript script;
+                ssValue >> script;
+                managedScripts.insert(script);
+                scriptCount = std::max(scriptCount+1, key.second);
+                pcursor->Next();
+            }
+            catch (const std::exception&)
+            {
+                return error("failed to get address unspent value");
+            }
+        }
+        else
+        {
+            break;
+        }
     }
     return true;
 }

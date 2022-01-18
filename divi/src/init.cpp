@@ -104,7 +104,7 @@ struct VaultDatabseSyncOnDestruction
         delete obj;
     }
 };
-std::shared_ptr<VaultManagerDatabase,VaultDatabseSyncOnDestruction> vaultManagerDatabase(nullptr);
+std::unique_ptr<VaultManagerDatabase,VaultDatabseSyncOnDestruction> vaultManagerDatabase(nullptr);
 std::shared_ptr<VaultManager> vaultManager(nullptr);
 CWallet* pwalletMain = NULL;
 constexpr int nWalletBackups = 20;

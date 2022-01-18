@@ -45,7 +45,8 @@ CAmount WalletBalanceCalculator::getBalance() const
         const uint256& txid = txidAndTransaction.first;
         const CWalletTx& tx = txidAndTransaction.second;
         const int depth = confsCalculator_.GetNumberOfBlockConfirmations(tx);
-        const bool needsAtLeastOneConfirmation = !debitsFunds(transactionsByHash,tx) || tx.IsCoinStake();
+        const bool txIsBlockReward = tx.IsCoinStake() || tx.IsCoinBase();
+        const bool needsAtLeastOneConfirmation = txIsBlockReward || !debitsFunds(transactionsByHash,tx);
         if( depth < (needsAtLeastOneConfirmation? 1: 0)) continue;
         if( (tx.IsCoinBase() || tx.IsCoinStake()) && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
         for(unsigned outputIndex=0u; outputIndex < tx.vout.size(); ++outputIndex)

@@ -337,7 +337,9 @@ const CBlockIndex* CWallet::GetNextUnsycnedBlockIndexInMainChain(bool syncFromGe
 
 static int computeProgress(int currentHeight,int startHeight,int endHeight)
 {
-    const int progress = (currentHeight - startHeight) / (endHeight - startHeight + 1) * 100;
+    const int numerator = (currentHeight - startHeight) * 100;
+    const int denominator = (endHeight - startHeight + 1) ;
+    const int progress = numerator / denominator;
     return std::max(1, std::min(99, progress));
 }
 
@@ -356,13 +358,13 @@ bool CWallet::verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool
     int64_t nNow = GetTime();
 
     const std::string typeOfScanMessage = startFromGenesis? "Rescanning" : "Scanning";
-    LogPrintf("%s...%d%%\n",typeOfScanMessage, 0);
+    LogPrintf("%s... from height %d to %d\n",typeOfScanMessage, startHeight,endHeight);
     while(blockScanner.advanceToNextBlock() && numberOfBlocksToScan > 0u)
     {
         if (currentHeight % 100 == 0)
         {
             const int progress = computeProgress(currentHeight,startHeight,endHeight);
-            LogPrintf("%s...%d\n",typeOfScanMessage, progress);
+            LogPrintf("%s...%d%%\n",typeOfScanMessage, progress);
         }
         SyncTransactions(blockScanner.blockTransactions(), &blockScanner.blockRef(), TransactionSyncType::RESCAN);
         if (GetTime() >= nNow + 60)

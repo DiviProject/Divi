@@ -119,6 +119,7 @@ bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
     leveldb::Slice slKey(&ssKey[0], ssKey.size());
     pcursor->Seek(slKey);
 
+    uint64_t scriptCountNominal = 0;
     while (pcursor->Valid() && !foundKey)
     {
         boost::this_thread::interruption_point();
@@ -131,7 +132,7 @@ bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
                 CScript script;
                 ssValue >> script;
                 managedScripts.insert(script);
-                scriptCount = std::max(scriptCount+1, key.second);
+                scriptCountNominal = std::max(scriptCountNominal, key.second);
                 pcursor->Next();
             }
             catch (const std::exception&)
@@ -144,6 +145,7 @@ bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
             break;
         }
     }
+    scriptCount = ++scriptCountNominal;
     return true;
 }
 

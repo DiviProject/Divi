@@ -339,4 +339,34 @@ BOOST_AUTO_TEST_CASE(willCountConfirmedAndMatureCoinstakeTransactionsInBalance)
     BOOST_CHECK_EQUAL(calculator.getBalance(), tx.GetValueOut() + coinstakeTx.GetValueOut() - debitedAmount );
 }
 
+BOOST_AUTO_TEST_CASE(willEnsureThatATransactionSpendingOnlyUnownedFundsStillNeedsOneConfirmation)
+{
+    CTransaction tx = RandomTransactionGenerator()(1*COIN);
+    for(const CTxOut& output: tx.vout)
+    {
+            ON_CALL(utxoOwnershipDetector,isMine(output)).WillByDefault(Return(isminetype::ISMINE_NO));
+    }
+    addTransactionToMockWalletRecord(tx);
+
+    CTransaction spendingTx = createRandomSpendingTransaction(tx,2u);
+    for(const CTxOut& output: spendingTx.vout)
+    {
+            ON_CALL(utxoOwnershipDetector,isMine(output)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    }
+    addTransactionToMockWalletRecord(spendingTx);
+
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(spendingTx.GetHash()))).WillByDefault(Return(0));
+
+    CAmount debitedAmount =0;
+    for(const CTxIn& input: spendingTx.vin)
+    {
+        ON_CALL(spentOutputTracker,IsSpent(input.prevout.hash,input.prevout.n,_))
+            .WillByDefault( Return(true) );
+        debitedAmount +=tx.vout[input.prevout.n].nValue;
+    }
+
+    BOOST_CHECK_EQUAL(calculator.getBalance(), CAmount(0) );
+}
+
 BOOST_AUTO_TEST_SUITE_END()

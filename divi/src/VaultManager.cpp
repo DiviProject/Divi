@@ -256,5 +256,6 @@ const ManagedScripts& VaultManager::getManagedScriptLimits() const
 
 bool VaultManager::Sync()
 {
-    return vaultManagerDB_.Sync(cs_vaultManager_);
+    // Force database sync
+    return vaultManagerDB_.Sync(true);
 }

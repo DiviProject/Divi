@@ -46,13 +46,14 @@ CAmount WalletBalanceCalculator::getBalance() const
     const auto& transactionsByHash = txRecord_.GetWalletTransactions();
     for(const auto& txidAndTransaction: transactionsByHash)
     {
-        const uint256& txid = txidAndTransaction.first;
         const CWalletTx& tx = txidAndTransaction.second;
         const int depth = confsCalculator_.GetNumberOfBlockConfirmations(tx);
         const bool txIsBlockReward = tx.IsCoinStake() || tx.IsCoinBase();
         const bool needsAtLeastOneConfirmation = txIsBlockReward || !debitsFunds(ownershipDetector_,transactionsByHash,tx);
         if( depth < (needsAtLeastOneConfirmation? 1: 0)) continue;
         if( txIsBlockReward && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
+
+        const uint256& txid = txidAndTransaction.first;
         for(unsigned outputIndex=0u; outputIndex < tx.vout.size(); ++outputIndex)
         {
             if(ownershipDetector_.isMine(tx.vout[outputIndex]) == isminetype::ISMINE_SPENDABLE &&

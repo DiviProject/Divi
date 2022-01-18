@@ -188,7 +188,6 @@ private:
     const BlockMap& blockIndexByHash_;
     const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator_;
     std::unique_ptr<AddressBookManager> addressBookManager_;
-    std::shared_ptr<I_VaultManagerDatabase> vaultDB_;
     std::shared_ptr<VaultManager> vaultManager_;
     std::unique_ptr<I_AppendOnlyTransactionRecord> transactionRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
@@ -287,7 +286,6 @@ public:
     bool verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis = false);
     void toggleSpendingZeroConfirmationOutputs();
     void activateVaultMode(
-        std::shared_ptr<I_VaultManagerDatabase> vaultDB,
         std::shared_ptr<VaultManager> vaultManager);
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 

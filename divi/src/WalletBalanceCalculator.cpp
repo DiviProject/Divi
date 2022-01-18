@@ -22,7 +22,7 @@ WalletBalanceCalculator::~WalletBalanceCalculator()
 {
 }
 
-bool debitsFunds(const std::map<uint256, CWalletTx>& transactionsByHash,const CTransaction& tx)
+bool debitsFunds(const I_UtxoOwnershipDetector& ownershipDetector, const std::map<uint256, CWalletTx>& transactionsByHash,const CTransaction& tx)
 {
     for(const auto& input: tx.vin)
     {
@@ -30,7 +30,11 @@ bool debitsFunds(const std::map<uint256, CWalletTx>& transactionsByHash,const CT
         if(it != transactionsByHash.end())
         {
             const auto& outputsToBeSpent = it->second.vout;
-            if(outputsToBeSpent[input.prevout.n].nValue > 0) return true;
+            if(ownershipDetector.isMine(outputsToBeSpent[input.prevout.n]) == isminetype::ISMINE_SPENDABLE
+                && outputsToBeSpent[input.prevout.n].nValue > 0)
+            {
+                return true;
+            }
         }
     }
     return false;
@@ -46,7 +50,7 @@ CAmount WalletBalanceCalculator::getBalance() const
         const CWalletTx& tx = txidAndTransaction.second;
         const int depth = confsCalculator_.GetNumberOfBlockConfirmations(tx);
         const bool txIsBlockReward = tx.IsCoinStake() || tx.IsCoinBase();
-        const bool needsAtLeastOneConfirmation = txIsBlockReward || !debitsFunds(transactionsByHash,tx);
+        const bool needsAtLeastOneConfirmation = txIsBlockReward || !debitsFunds(ownershipDetector_,transactionsByHash,tx);
         if( depth < (needsAtLeastOneConfirmation? 1: 0)) continue;
         if( txIsBlockReward && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
         for(unsigned outputIndex=0u; outputIndex < tx.vout.size(); ++outputIndex)

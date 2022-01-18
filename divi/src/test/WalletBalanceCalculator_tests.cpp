@@ -279,4 +279,23 @@ BOOST_AUTO_TEST_CASE(willIgnoreUnconfirmedCoinstakeTransactions)
     BOOST_CHECK_EQUAL(calculator.getBalance(), tx.GetValueOut() );
 }
 
+BOOST_AUTO_TEST_CASE(willIgnoreConfirmedButImmatureCoinstakeTransactions)
+{
+    CTransaction tx = RandomTransactionGenerator()(1*COIN,1u);
+    addTransactionToMockWalletRecord(tx);
+    CMutableTransaction coinstakeTxTemplate = createRandomSpendingTransaction(tx,2u);
+    coinstakeTxTemplate.vout[0].SetEmpty();
+    CTransaction coinstakeTx = coinstakeTxTemplate;
+    assert(coinstakeTx.IsCoinStake());
+    addTransactionToMockWalletRecord(coinstakeTx);
+
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(coinstakeTx.GetHash()))).WillByDefault(Return(1));
+    ON_CALL(confsCalculator,GetBlocksToMaturity(getWalletTx(coinstakeTx.GetHash()))).WillByDefault(Return(1));
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault( Return(false) );
+    BOOST_CHECK_EQUAL(calculator.getBalance(), tx.GetValueOut() );
+}
+
 BOOST_AUTO_TEST_SUITE_END()

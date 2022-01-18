@@ -202,7 +202,6 @@ CWallet::CWallet(
     , blockIndexByHash_(blockMap)
     , confirmationNumberCalculator_(confirmationNumberCalculator)
     , addressBookManager_(new AddressBookManager())
-    , vaultDB_()
     , vaultManager_()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
@@ -243,7 +242,6 @@ CWallet::~CWallet()
     outputTracker_.reset();
     transactionRecord_.reset();
     vaultManager_.reset();
-    vaultDB_.reset();
 }
 
 std::shared_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
@@ -252,12 +250,10 @@ std::shared_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
 }
 
 void CWallet::activateVaultMode(
-    std::shared_ptr<I_VaultManagerDatabase> vaultDB,
     std::shared_ptr<VaultManager> vaultManager)
 {
     if(!vaultManager_)
     {
-        vaultDB_ = vaultDB;
         vaultManager_ = vaultManager;
     }
 }

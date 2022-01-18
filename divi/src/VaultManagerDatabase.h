@@ -6,7 +6,7 @@
 #include <uint256.h>
 #include <sync.h>
 
-class VaultManagerDatabase final: public I_VaultManagerDatabase, public CLevelDBWrapper
+class VaultManagerDatabase final: public I_VaultManagerDatabase, private CLevelDBWrapper
 {
 private:
     CCriticalSection cs_database;

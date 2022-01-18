@@ -232,4 +232,18 @@ BOOST_AUTO_TEST_CASE(unspentUTXOsThatArentOwnedAreIgnored)
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
 }
 
+BOOST_AUTO_TEST_CASE(unconfirmedCoinbaseTransactionsDoNotContributeToBalance)
+{
+    CMutableTransaction txTemplate = RandomTransactionGenerator()();
+    txTemplate.vin.resize(1);
+    txTemplate.vin[0].prevout.SetNull();
+    CTransaction tx = txTemplate;
+    assert(tx.IsCoinBase());
+    addTransactionToMockWalletRecord(tx);
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
+    BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

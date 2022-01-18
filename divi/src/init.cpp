@@ -95,7 +95,16 @@ static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
 #ifdef ENABLE_WALLET
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
-std::shared_ptr<VaultManagerDatabase> vaultManagerDatabase(nullptr);
+
+struct VaultDatabseSyncOnDestruction
+{
+    void operator()(VaultManagerDatabase* obj) const
+    {
+        if(obj) obj->Sync(true);
+        delete obj;
+    }
+};
+std::shared_ptr<VaultManagerDatabase,VaultDatabseSyncOnDestruction> vaultManagerDatabase(nullptr);
 std::shared_ptr<VaultManager> vaultManager(nullptr);
 CWallet* pwalletMain = NULL;
 constexpr int nWalletBackups = 20;
@@ -179,8 +188,6 @@ void DeallocateVault()
         UnregisterValidationInterface(vaultManager.get());
     }
     vaultManager.reset();
-
-    vaultManagerDatabase->Sync(true);
     vaultManagerDatabase.reset();
 #endif
 }

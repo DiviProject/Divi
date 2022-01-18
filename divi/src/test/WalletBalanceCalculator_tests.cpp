@@ -298,4 +298,45 @@ BOOST_AUTO_TEST_CASE(willIgnoreConfirmedButImmatureCoinstakeTransactions)
     BOOST_CHECK_EQUAL(calculator.getBalance(), tx.GetValueOut() );
 }
 
+BOOST_AUTO_TEST_CASE(willCountConfirmedAndMatureCoinbaseTransactionsInBalance)
+{
+    CMutableTransaction txTemplate = RandomTransactionGenerator()();
+    txTemplate.vin.resize(1);
+    txTemplate.vin[0].prevout.SetNull();
+    CTransaction tx = txTemplate;
+    assert(tx.IsCoinBase());
+    addTransactionToMockWalletRecord(tx);
+    ON_CALL(confsCalculator,GetBlocksToMaturity(_)).WillByDefault(Return(0));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(_)).WillByDefault(Return(1));
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
+    BOOST_CHECK_EQUAL(calculator.getBalance(),tx.GetValueOut());
+}
+
+BOOST_AUTO_TEST_CASE(willCountConfirmedAndMatureCoinstakeTransactionsInBalance)
+{
+    CTransaction tx = RandomTransactionGenerator()(1*COIN,1u);
+    addTransactionToMockWalletRecord(tx);
+    CMutableTransaction coinstakeTxTemplate = createRandomSpendingTransaction(tx,2u);
+    coinstakeTxTemplate.vout[0].SetEmpty();
+    CTransaction coinstakeTx = coinstakeTxTemplate;
+    assert(coinstakeTx.IsCoinStake());
+    addTransactionToMockWalletRecord(coinstakeTx);
+
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(coinstakeTx.GetHash()))).WillByDefault(Return(1));
+    ON_CALL(confsCalculator,GetBlocksToMaturity(getWalletTx(coinstakeTx.GetHash()))).WillByDefault(Return(0));
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+
+    CAmount debitedAmount =0;
+    for(const CTxIn& input: coinstakeTx.vin)
+    {
+        ON_CALL(spentOutputTracker,IsSpent(input.prevout.hash,input.prevout.n,_))
+            .WillByDefault( Return(true) );
+        debitedAmount +=tx.vout[input.prevout.n].nValue;
+    }
+
+    BOOST_CHECK_EQUAL(calculator.getBalance(), tx.GetValueOut() + coinstakeTx.GetValueOut() - debitedAmount );
+}
+
 BOOST_AUTO_TEST_SUITE_END()

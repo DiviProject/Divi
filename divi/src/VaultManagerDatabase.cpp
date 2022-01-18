@@ -30,6 +30,7 @@ VaultManagerDatabase::VaultManagerDatabase(
     bool fMemory,
     bool fWipe
     ):  CLevelDBWrapper(GetDataDir() / vaultID, nCacheSize, fMemory, fWipe)
+    , cs_database()
     , txCount(0u)
     , scriptCount(0u)
     , updateCount_(0u)
@@ -38,6 +39,7 @@ VaultManagerDatabase::VaultManagerDatabase(
 
 bool VaultManagerDatabase::WriteTx(const CWalletTx& walletTransaction)
 {
+    LOCK(cs_database);
     if(Write(MakeTxIndex(txCount),walletTransaction))
     {
         ++updateCount_;
@@ -49,6 +51,7 @@ bool VaultManagerDatabase::WriteTx(const CWalletTx& walletTransaction)
 
 bool VaultManagerDatabase::ReadTx(CWalletTx& walletTransaction)
 {
+    LOCK(cs_database);
     if(Read(MakeTxIndex(txCount),walletTransaction))
     {
         ++txCount;
@@ -59,6 +62,7 @@ bool VaultManagerDatabase::ReadTx(CWalletTx& walletTransaction)
 
 bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)
 {
+    LOCK(cs_database);
     if(Write(MakeScriptIndex(scriptCount),managedScript))
     {
         ++updateCount_;
@@ -68,13 +72,20 @@ bool VaultManagerDatabase::WriteManagedScript(const CScript& managedScript)
     return false;
 }
 
-bool VaultManagerDatabase::Sync(CCriticalSection& mutexToLock)
+bool VaultManagerDatabase::Sync(bool forceSync)
 {
     if(lastUpdateCount_ != updateCount_)
     {
-        TRY_LOCK(mutexToLock,lockWasAcquired);
+        TRY_LOCK(cs_database,lockWasAcquired);
         if(lockWasAcquired)
         {
+            boost::this_thread::interruption_point();
+            lastUpdateCount_ = updateCount_;
+            return CLevelDBWrapper::Sync();
+        }
+        else if(forceSync)
+        {
+            LOCK(cs_database);
             boost::this_thread::interruption_point();
             lastUpdateCount_ = updateCount_;
             return CLevelDBWrapper::Sync();
@@ -95,6 +106,7 @@ template<typename K> bool GetKey(leveldb::Slice slKey, K& key) {
 
 bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
 {
+    LOCK(cs_database);
     boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
     bool foundKey = false;
     std::pair<char,uint64_t> key;
@@ -137,6 +149,7 @@ bool VaultManagerDatabase::ReadManagedScripts(ManagedScripts& managedScripts)
 
 bool VaultManagerDatabase::EraseManagedScript(const CScript& managedScript)
 {
+    LOCK(cs_database);
     bool foundKey = false;
     std::pair<char,uint64_t> key;
     {

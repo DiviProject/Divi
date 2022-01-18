@@ -1,7 +1,6 @@
 #ifndef I_VAULT_MANAGER_DATABASE_H
 #define I_VAULT_MANAGER_DATABASE_H
 #include <set>
-class CCriticalSection;
 class CWalletTx;
 class CScript;
 using ManagedScripts = std::set<CScript>;
@@ -14,6 +13,6 @@ public:
     virtual bool WriteManagedScript(const CScript& managedScript) = 0;
     virtual bool EraseManagedScript(const CScript& managedScript) = 0;
     virtual bool ReadManagedScripts(ManagedScripts& managedScripts) = 0;
-    virtual bool Sync(CCriticalSection& mutexToLock) = 0;
+    virtual bool Sync(bool forceSync) = 0;
 };
 #endif// I_VAULT_MANAGER_DATABASE_H

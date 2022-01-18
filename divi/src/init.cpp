@@ -144,7 +144,7 @@ void ThreadSyncVaultDatabase()
 #ifdef ENABLE_WALLET
     TRY_LOCK(vaultAllocationLock,lockAcquired);
     boost::this_thread::interruption_point();
-    if(lockAcquired && vaultManager) vaultManager->Sync();
+    if(lockAcquired && vaultManager) vaultManagerDatabase->Sync(false);
 #endif
 }
 

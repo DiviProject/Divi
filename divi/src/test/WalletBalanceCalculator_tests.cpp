@@ -43,11 +43,11 @@ public:
         assert(transactionsHeldInRecord_.count(txid) > 0);
         return transactionsHeldInRecord_[txid];
     }
-    CTransaction createRandomSpendingTransaction(const CTransaction& txToSpendFrom)
+    CTransaction createRandomSpendingTransaction(const CTransaction& txToSpendFrom, unsigned minimumNumberOfOutputs=1u)
     {
         assert(txToSpendFrom.vout.size() > 0u);
         const unsigned maxUtxoCountToSpendFrom = GetRandInt(txToSpendFrom.vout.size()) + 1;
-        CMutableTransaction spendingTxTemplate = RandomTransactionGenerator()(0*COIN, maxUtxoCountToSpendFrom);
+        CMutableTransaction spendingTxTemplate = RandomTransactionGenerator()(0*COIN, maxUtxoCountToSpendFrom,minimumNumberOfOutputs);
         CAmount totalInputSpent = 0;
         for(CTxIn& input: spendingTxTemplate.vin)
         {
@@ -259,6 +259,24 @@ BOOST_AUTO_TEST_CASE(confirmedButImmatureCoinbaseTransactionsDoNotContributeToBa
     ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
     ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
+}
+
+BOOST_AUTO_TEST_CASE(willIgnoreUnconfirmedCoinstakeTransactions)
+{
+    CTransaction tx = RandomTransactionGenerator()(1*COIN,1u);
+    addTransactionToMockWalletRecord(tx);
+    CMutableTransaction coinstakeTxTemplate = createRandomSpendingTransaction(tx,2u);
+    coinstakeTxTemplate.vout[0].SetEmpty();
+    CTransaction coinstakeTx = coinstakeTxTemplate;
+    assert(coinstakeTx.IsCoinStake());
+    addTransactionToMockWalletRecord(coinstakeTx);
+
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(coinstakeTx.GetHash()))).WillByDefault(Return(0));
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault( Return(false) );
+    BOOST_CHECK_EQUAL(calculator.getBalance(), tx.GetValueOut() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

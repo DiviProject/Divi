@@ -2167,10 +2167,12 @@ bool static LoadBlockIndexState(string& strError)
             //get the index associated with the point in the chain that pcoinsTip is synced to
             CBlockIndex *pindexLastMeta = heightSortedBlockIndices[nHeightLastBlockFile].second;
             CBlockIndex *pindex = heightSortedBlockIndices[0].second;
-            unsigned int nSortedPos = 0;
-            for (unsigned int i = 0; i < heightSortedBlockIndices.size(); i++) {
-                nSortedPos = i;
-                if (heightSortedBlockIndices[i].first == coinsHeight + 1) {
+            unsigned int nSortedPos = heightSortedBlockIndices.size();
+            for (unsigned int i = 0; i < heightSortedBlockIndices.size(); i++)
+            {
+                if (heightSortedBlockIndices[i].first == coinsHeight + 1)
+                {
+                    nSortedPos = i;
                     pindex = heightSortedBlockIndices[i].second;
                     break;
                 }

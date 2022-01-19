@@ -1511,6 +1511,15 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (pwalletMain) {
         // Add wallet transactions that aren't already in a block to mapTransactions
         SubmitUnconfirmedWalletTransactionsToMempool(*pwalletMain);
+        if(settings.ParameterIsSet("-prunewalletconfs"))
+        {
+            if(!pwalletMain->PruneWallet())
+            {
+                StartShutdown();
+                LogPrintf("Failed to prune wallet correctly!");
+                return false;
+            }
+        }
         // Run a thread to flush wallet periodically
         if (settings.GetBoolArg("-flushwallet", true))
         {

@@ -39,6 +39,8 @@
 #include <VaultManagerDatabase.h>
 #include <BlockScanner.h>
 
+#include <stack>
+
 #include "Settings.h"
 extern Settings& settings;
 
@@ -1184,11 +1186,24 @@ bool CWallet::IsSpent(const CWalletTx& wtx, unsigned int n) const
 {
     return outputTracker_->IsSpent(wtx.GetHash(), n,0);
 }
-bool CWallet::IsFullySpent(const CWalletTx& wtx,const int minimumNumberOfConfs) const
+bool CWallet::CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const
 {
     for(unsigned outputIndex = 0; outputIndex < wtx.vout.size(); ++outputIndex)
     {
-        if(IsMine(wtx.vout[outputIndex]) != isminetype::ISMINE_NO && !outputTracker_->IsSpent(wtx.GetHash(), outputIndex,minimumNumberOfConfs)) return false;
+        if(IsMine(wtx.vout[outputIndex]) != isminetype::ISMINE_NO)
+        {
+            if(!outputTracker_->IsSpent(wtx.GetHash(), outputIndex,minimumNumberOfConfs)) return false;
+        }
+    }
+    for(const CTxIn& input: wtx.vin)
+    {
+        const CWalletTx* previousTx = transactionRecord_->GetWalletTx(input.prevout.hash);
+        if(previousTx != nullptr &&
+            IsMine(previousTx->vout[input.prevout.n]) != isminetype::ISMINE_NO &&
+            unprunedTransactionIds.count(input.prevout.hash) > 0)
+        {
+            return false;
+        }
     }
     return true;
 }
@@ -1363,6 +1378,76 @@ void CWallet::LoadWalletTransaction(const CWalletTx& wtxIn)
     outputTracker_->UpdateSpends(wtxIn, true).first->RecomputeCachedQuantities();
 }
 
+static bool topologicallySortTransactions(
+    std::vector<CWalletTx>& allTransactions,
+    std::map<uint256,std::set<uint256>>& spentTxidsBySpendingTxid,
+    std::map<uint256,std::stack<CWalletTx>>& spendingTxBySpentTxid)
+{
+    std::vector<CWalletTx> sortedTransactions;
+    sortedTransactions.reserve(allTransactions.size());
+    std::stack<CWalletTx> coinbaseTransactions;
+    for(const CWalletTx& walletTx: allTransactions)
+    {
+        if(walletTx.IsCoinBase()) coinbaseTransactions.push(walletTx);
+    }
+    while(!coinbaseTransactions.empty())
+    {
+        CWalletTx coinbaseTx = coinbaseTransactions.top();
+        coinbaseTransactions.pop();
+        sortedTransactions.push_back(coinbaseTx);
+        if(spendingTxBySpentTxid.count(coinbaseTx.GetHash()) > 0)
+        {//Has spending txs
+            auto& spendingTransactions = spendingTxBySpentTxid[coinbaseTx.GetHash()];
+            while(!spendingTransactions.empty())
+            {
+                CWalletTx spendingTx = spendingTransactions.top();
+                spendingTransactions.pop();
+
+                auto& spentTxids = spentTxidsBySpendingTxid[spendingTx.GetHash()];
+                spentTxids.erase(coinbaseTx.GetHash());
+                if(spentTxids.empty())
+                {
+                    spentTxidsBySpendingTxid.erase(spendingTx.GetHash());
+                    coinbaseTransactions.push(spendingTx);
+                }
+            }
+            spendingTxBySpentTxid.erase(coinbaseTx.GetHash());
+        }
+    }
+    //Verify topological sort
+    if(allTransactions.size() != sortedTransactions.size())
+    {
+        LogPrintf("Wrong tx count!");
+        return false;
+    }
+    std::set<uint256> allTxids;
+    for(const CWalletTx& walletTx: allTransactions)
+    {
+        allTxids.insert(walletTx.GetHash());
+    }
+    for(unsigned transactionIndex = 0; transactionIndex < sortedTransactions.size(); ++transactionIndex)
+    {
+        const CWalletTx& tx = sortedTransactions[transactionIndex];
+        if(tx.IsCoinBase()) continue;
+
+        auto startOfLookup = sortedTransactions.begin();
+        auto endOfLookup = sortedTransactions.begin() + transactionIndex;
+        for(const CTxIn& input: tx.vin)
+        {
+            const uint256 hashToLookup = input.prevout.hash;
+            if(allTxids.count(hashToLookup)==0) continue;
+            auto it = std::find_if(startOfLookup,endOfLookup,[hashToLookup](const CWalletTx& walletTx)->bool{ return walletTx.GetHash()==hashToLookup;});
+            if(it==endOfLookup)
+            {
+                LogPrintf("tx not found!");
+                return false;
+            }
+        }
+    }
+    allTransactions = sortedTransactions;
+    return true;
+}
+
 void CWallet::PruneWallet()
 {
     LOCK2(cs_main,cs_wallet);
@@ -1371,14 +1456,30 @@ void CWallet::PruneWallet()
     const unsigned totalTxs = transactionRecord_->size();
     std::vector<CWalletTx> transactionsToKeep;
     transactionsToKeep.reserve(1024);
+
+    std::map<uint256,std::stack<CWalletTx>> spendingTxBySpentTxid;
+    std::map<uint256,std::set<uint256>> spentTxidsBySpendingTxid;
+    std::vector<CWalletTx> allTransactions;
+    allTransactions.reserve(totalTxs);
     for(const auto& wtxByHash: transactionRecord_->GetWalletTransactions())
     {
         const CWalletTx& walletTx = wtxByHash.second;
-        const int64_t numberOfConfs = confirmationNumberCalculator_.FindConfirmedBlockIndexAndDepth(walletTx).second;
-        if(numberOfConfs < 0) continue;
-        if(numberOfConfs < minimumNumberOfConfs || !IsFullySpent(walletTx,minimumNumberOfConfs))
+        for(const CTxIn& input: walletTx.vin)
+        {
+            spendingTxBySpentTxid[input.prevout.hash].push(walletTx);
+            spentTxidsBySpendingTxid[wtxByHash.first].insert(input.prevout.hash);
+        }
+        allTransactions.push_back(walletTx);
+    }
+    topologicallySortTransactions(allTransactions,spentTxidsBySpendingTxid,spendingTxBySpentTxid);
+
+    std::set<uint256> notFullySpent;
+    for(const auto& walletTx: allTransactions)
+    {
+        if(!CanBePruned(walletTx,notFullySpent,minimumNumberOfConfs))
         {
             transactionsToKeep.push_back(walletTx);
+            notFullySpent.insert(walletTx.GetHash());
         }
     }
     outputTracker_.reset();

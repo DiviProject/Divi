@@ -1448,7 +1448,7 @@ static bool topologicallySortTransactions(
     return true;
 }
 
-void CWallet::PruneWallet()
+bool CWallet::PruneWallet()
 {
     LOCK2(cs_main,cs_wallet);
     constexpr int64_t defaultMinimumNumberOfConfs = 20;
@@ -1471,7 +1471,10 @@ void CWallet::PruneWallet()
         }
         allTransactions.push_back(walletTx);
     }
-    topologicallySortTransactions(allTransactions,spentTxidsBySpendingTxid,spendingTxBySpentTxid);
+    if(!topologicallySortTransactions(allTransactions,spentTxidsBySpendingTxid,spendingTxBySpentTxid))
+    {
+        LogPrintf("Failed to sort topologically!");
+    }
 
     std::set<uint256> notFullySpent;
     for(const auto& walletTx: allTransactions)
@@ -1493,6 +1496,7 @@ void CWallet::PruneWallet()
     }
     settings.ForceRemoveArg("-prunewalletconfs");
     LogPrintf("Pruned wallet transactions loaded to memory: Original %u vs. Current %u\n",totalTxs,transactionsToKeep.size());
+    return true;
 }
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)

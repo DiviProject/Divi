@@ -298,7 +298,7 @@ public:
     bool CanStakeCoins() const override;
 
     bool IsSpent(const CWalletTx& wtx, unsigned int n) const;
-    void PruneWallet();
+    bool PruneWallet();
 
     bool IsUnlockedForStakingOnly() const;
     bool IsFullyUnlocked() const;

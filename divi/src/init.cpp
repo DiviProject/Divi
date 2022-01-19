@@ -1449,6 +1449,12 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     CValidationState state;
     if (!ActivateBestChain(state))
         strErrors << "Failed to connect best block";
+#ifdef ENABLE_WALLET
+    if(settings.ParameterIsSet("-prunewalletconfs"))
+    {
+        pwalletMain->PruneWallet();
+    }
+#endif
 
     threadGroup.create_thread(boost::bind(&ReindexAndImportBlockFiles, settings));
 
@@ -1505,10 +1511,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (pwalletMain) {
         // Add wallet transactions that aren't already in a block to mapTransactions
         SubmitUnconfirmedWalletTransactionsToMempool(*pwalletMain);
-        if(settings.ParameterIsSet("-prunewalletconfs"))
-        {
-            pwalletMain->PruneWallet();
-        }
         // Run a thread to flush wallet periodically
         if (settings.GetBoolArg("-flushwallet", true))
         {

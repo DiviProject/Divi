@@ -234,6 +234,7 @@ private:
     bool CanSupportFeature(enum WalletFeature wf);
     const CBlockIndex* GetNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis = false);
     int64_t getTimestampOfFistKey() const;
+    bool CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const;
 
 protected:
 
@@ -297,7 +298,6 @@ public:
     bool CanStakeCoins() const override;
 
     bool IsSpent(const CWalletTx& wtx, unsigned int n) const;
-    bool IsFullySpent(const CWalletTx& wtx,const int minimumNumberOfConfs) const;
     void PruneWallet();
 
     bool IsUnlockedForStakingOnly() const;

@@ -2154,68 +2154,68 @@ bool static LoadBlockIndexState(string& strError)
         {
             if(coinsTip.GetBestBlock() != heightSortedBlockIndices[nHeightLastBlockFile].second->GetBlockHash())
             {
-            //The database is in a state where a block has been accepted and written to disk, but the
-            //transaction database (pcoinsTip) was not flushed to disk, and is therefore not in sync with
-            //the block index database.
+                //The database is in a state where a block has been accepted and written to disk, but the
+                //transaction database (pcoinsTip) was not flushed to disk, and is therefore not in sync with
+                //the block index database.
 
-            const auto mit = blockMap.find(coinsTip.GetBestBlock());
-            if (mit == blockMap.end()) {
-                strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database";
-                return false;
-            }
-            const int64_t coinsHeight = mit->second->nHeight;
-            LogPrintf("%s : pcoinstip synced to block height %d, block index height %d\n", __func__,
-                      coinsHeight, heightSortedBlockIndices.size());
-
-            //get the index associated with the point in the chain that pcoinsTip is synced to
-            CBlockIndex *pindexLastMeta = heightSortedBlockIndices[nHeightLastBlockFile].second;
-            CBlockIndex *pindex = heightSortedBlockIndices[0].second;
-            unsigned int nSortedPos = heightSortedBlockIndices.size();
-            for (unsigned int i = 0; i < heightSortedBlockIndices.size(); i++)
-            {
-                if (heightSortedBlockIndices[i].first == coinsHeight + 1)
-                {
-                    nSortedPos = i;
-                    pindex = heightSortedBlockIndices[i].second;
-                    break;
-                }
-            }
-
-            // Start at the last block that was successfully added to the txdb (pcoinsTip) and manually add all transactions that occurred for each block up until
-            // the best known block from the block index db.
-            CCoinsViewCache view(&coinsTip);
-            while (nSortedPos < heightSortedBlockIndices.size()) {
-                CBlock block;
-                if (!ReadBlockFromDisk(block, pindex)) {
-                    strError = "The wallet has been not been closed gracefully and has caused corruption of blocks stored to disk. Data directory is in an unusable state";
+                const auto mit = blockMap.find(coinsTip.GetBestBlock());
+                if (mit == blockMap.end()) {
+                    strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database";
                     return false;
                 }
+                const int64_t coinsHeight = mit->second->nHeight;
+                LogPrintf("%s : pcoinstip synced to block height %d, block index height %d\n", __func__,
+                        coinsHeight, heightSortedBlockIndices.size());
 
-                std::vector<CTxUndo> vtxundo;
-                vtxundo.reserve(block.vtx.size() - 1);
-                uint256 hashBlock = block.GetHash();
-                for (unsigned int i = 0; i < block.vtx.size(); i++) {
-                    CValidationState state;
-                    CTxUndo undoDummy;
-                    if (i > 0)
-                        vtxundo.push_back(CTxUndo());
-                    UpdateCoinsWithTransaction(block.vtx[i], view, i == 0 ? undoDummy : vtxundo.back(), pindex->nHeight);
-                    view.SetBestBlock(hashBlock);
+                //get the index associated with the point in the chain that pcoinsTip is synced to
+                CBlockIndex *pindexLastMeta = heightSortedBlockIndices[nHeightLastBlockFile].second;
+                CBlockIndex *pindex = heightSortedBlockIndices[0].second;
+                unsigned int nSortedPos = heightSortedBlockIndices.size();
+                for (unsigned int i = 0; i < heightSortedBlockIndices.size(); i++)
+                {
+                    if (heightSortedBlockIndices[i].first == coinsHeight + 1)
+                    {
+                        nSortedPos = i;
+                        pindex = heightSortedBlockIndices[i].second;
+                        break;
+                    }
                 }
 
-                if(pindex->nHeight >= pindexLastMeta->nHeight)
-                    break;
+                // Start at the last block that was successfully added to the txdb (pcoinsTip) and manually add all transactions that occurred for each block up until
+                // the best known block from the block index db.
+                CCoinsViewCache view(&coinsTip);
+                while (nSortedPos < heightSortedBlockIndices.size()) {
+                    CBlock block;
+                    if (!ReadBlockFromDisk(block, pindex)) {
+                        strError = "The wallet has been not been closed gracefully and has caused corruption of blocks stored to disk. Data directory is in an unusable state";
+                        return false;
+                    }
 
-                pindex = heightSortedBlockIndices[++nSortedPos].second;
-            }
+                    std::vector<CTxUndo> vtxundo;
+                    vtxundo.reserve(block.vtx.size() - 1);
+                    uint256 hashBlock = block.GetHash();
+                    for (unsigned int i = 0; i < block.vtx.size(); i++) {
+                        CValidationState state;
+                        CTxUndo undoDummy;
+                        if (i > 0)
+                            vtxundo.push_back(CTxUndo());
+                        UpdateCoinsWithTransaction(block.vtx[i], view, i == 0 ? undoDummy : vtxundo.back(), pindex->nHeight);
+                        view.SetBestBlock(hashBlock);
+                    }
 
-            // Save the updates to disk
-            if (!view.Flush() || !coinsTip.Flush())
-                LogPrintf("%s : failed to flush view\n", __func__);
+                    if(pindex->nHeight >= pindexLastMeta->nHeight)
+                        break;
 
-            LogPrintf("%s: Last block properly recorded: #%d %s\n", __func__, pindexLastMeta->nHeight,
-                      pindexLastMeta->GetBlockHash());
-            LogPrintf("%s : pcoinstip=%d %s\n", __func__, coinsHeight, coinsTip.GetBestBlock());
+                    pindex = heightSortedBlockIndices[++nSortedPos].second;
+                }
+
+                // Save the updates to disk
+                if (!view.Flush() || !coinsTip.Flush())
+                    LogPrintf("%s : failed to flush view\n", __func__);
+
+                LogPrintf("%s: Last block properly recorded: #%d %s\n", __func__, pindexLastMeta->nHeight,
+                        pindexLastMeta->GetBlockHash());
+                LogPrintf("%s : pcoinstip=%d %s\n", __func__, coinsHeight, coinsTip.GetBestBlock());
             }
         }
     }

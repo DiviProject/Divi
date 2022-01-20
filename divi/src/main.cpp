@@ -2139,7 +2139,7 @@ bool static LoadBlockIndexDB(string& strError)
     BlockFileHelpers::ReadBlockFiles(blockTree);
 
     // Check presence of blk files
-    if(!VerifyAllBlockFilesArePresent(blockMap)) return false;
+    if(!VerifyAllBlockFilesArePresent(blockMap)) return error("Some block files that were expected to be found are missing!");
 
     //Check if the shutdown procedure was followed on last client exit
     bool fLastShutdownWasPrepared = true;

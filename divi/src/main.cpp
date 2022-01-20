@@ -2149,10 +2149,10 @@ bool static LoadBlockIndexState(string& strError)
     //Check for inconsistency with block file info and internal state
     if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.GetBoolArg("-reindex", false))
     {
-        const unsigned int nHeightLastBlockFile = BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile() + 1;
-        if (heightSortedBlockIndices.size() > nHeightLastBlockFile)
+        const unsigned int expectedNumberOfBlockIndices = BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile() + 1;
+        if (heightSortedBlockIndices.size() > expectedNumberOfBlockIndices)
         {
-            if(coinsTip.GetBestBlock() != heightSortedBlockIndices[nHeightLastBlockFile].second->GetBlockHash())
+            if(coinsTip.GetBestBlock() != heightSortedBlockIndices[expectedNumberOfBlockIndices].second->GetBlockHash())
             {
                 //The database is in a state where a block has been accepted and written to disk, but the
                 //transaction database (pcoinsTip) was not flushed to disk, and is therefore not in sync with
@@ -2168,7 +2168,7 @@ bool static LoadBlockIndexState(string& strError)
                         coinsHeight, heightSortedBlockIndices.size());
 
                 //get the index associated with the point in the chain that pcoinsTip is synced to
-                CBlockIndex *pindexLastMeta = heightSortedBlockIndices[nHeightLastBlockFile].second;
+                CBlockIndex *pindexLastMeta = heightSortedBlockIndices[expectedNumberOfBlockIndices].second;
                 CBlockIndex *pindex = heightSortedBlockIndices[0].second;
                 unsigned int nSortedPos = heightSortedBlockIndices.size();
                 for (unsigned int i = 0; i < heightSortedBlockIndices.size(); i++)

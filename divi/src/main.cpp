@@ -2069,14 +2069,14 @@ bool static LoadBlockIndexDB(string& strError)
     boost::this_thread::interruption_point();
 
     // Calculate nChainWork
-    std::vector<std::pair<int, CBlockIndex*> > vSortedByHeight;
-    vSortedByHeight.reserve(blockMap.size());
+    std::vector<std::pair<int, CBlockIndex*> > heightSortedBlockIndices;
+    heightSortedBlockIndices.reserve(blockMap.size());
     for (const auto& item : blockMap) {
         CBlockIndex* pindex = item.second;
-        vSortedByHeight.push_back(make_pair(pindex->nHeight, pindex));
+        heightSortedBlockIndices.push_back(make_pair(pindex->nHeight, pindex));
     }
-    sort(vSortedByHeight.begin(), vSortedByHeight.end());
-    for(const PAIRTYPE(int, CBlockIndex*) & item: vSortedByHeight) {
+    std::sort(heightSortedBlockIndices.begin(), heightSortedBlockIndices.end());
+    for(const PAIRTYPE(int, CBlockIndex*) & item: heightSortedBlockIndices) {
         CBlockIndex* pindex = item.second;
         pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
         if (pindex->nStatus & BLOCK_HAVE_DATA) {
@@ -2133,7 +2133,7 @@ bool static LoadBlockIndexDB(string& strError)
     if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.GetBoolArg("-reindex", false))
     {
         const unsigned int nHeightLastBlockFile = BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile() + 1;
-        if (vSortedByHeight.size() > nHeightLastBlockFile && coinsTip.GetBestBlock() != vSortedByHeight[nHeightLastBlockFile].second->GetBlockHash()) {
+        if (heightSortedBlockIndices.size() > nHeightLastBlockFile && coinsTip.GetBestBlock() != heightSortedBlockIndices[nHeightLastBlockFile].second->GetBlockHash()) {
             //The database is in a state where a block has been accepted and written to disk, but the
             //transaction database (pcoinsTip) was not flushed to disk, and is therefore not in sync with
             //the block index database.
@@ -2145,16 +2145,16 @@ bool static LoadBlockIndexDB(string& strError)
             }
             const int64_t coinsHeight = mit->second->nHeight;
             LogPrintf("%s : pcoinstip synced to block height %d, block index height %d\n", __func__,
-                      coinsHeight, vSortedByHeight.size());
+                      coinsHeight, heightSortedBlockIndices.size());
 
             //get the index associated with the point in the chain that pcoinsTip is synced to
-            CBlockIndex *pindexLastMeta = vSortedByHeight[nHeightLastBlockFile].second;
-            CBlockIndex *pindex = vSortedByHeight[0].second;
+            CBlockIndex *pindexLastMeta = heightSortedBlockIndices[nHeightLastBlockFile].second;
+            CBlockIndex *pindex = heightSortedBlockIndices[0].second;
             unsigned int nSortedPos = 0;
-            for (unsigned int i = 0; i < vSortedByHeight.size(); i++) {
+            for (unsigned int i = 0; i < heightSortedBlockIndices.size(); i++) {
                 nSortedPos = i;
-                if (vSortedByHeight[i].first == coinsHeight + 1) {
-                    pindex = vSortedByHeight[i].second;
+                if (heightSortedBlockIndices[i].first == coinsHeight + 1) {
+                    pindex = heightSortedBlockIndices[i].second;
                     break;
                 }
             }
@@ -2162,7 +2162,7 @@ bool static LoadBlockIndexDB(string& strError)
             // Start at the last block that was successfully added to the txdb (pcoinsTip) and manually add all transactions that occurred for each block up until
             // the best known block from the block index db.
             CCoinsViewCache view(&coinsTip);
-            while (nSortedPos < vSortedByHeight.size()) {
+            while (nSortedPos < heightSortedBlockIndices.size()) {
                 CBlock block;
                 if (!ReadBlockFromDisk(block, pindex)) {
                     strError = "The wallet has been not been closed gracefully and has caused corruption of blocks stored to disk. Data directory is in an unusable state";
@@ -2184,7 +2184,7 @@ bool static LoadBlockIndexDB(string& strError)
                 if(pindex->nHeight >= pindexLastMeta->nHeight)
                     break;
 
-                pindex = vSortedByHeight[++nSortedPos].second;
+                pindex = heightSortedBlockIndices[++nSortedPos].second;
             }
 
             // Save the updates to disk

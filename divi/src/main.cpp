@@ -2150,7 +2150,10 @@ bool static LoadBlockIndexState(string& strError)
     if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.GetBoolArg("-reindex", false))
     {
         const unsigned int nHeightLastBlockFile = BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile() + 1;
-        if (heightSortedBlockIndices.size() > nHeightLastBlockFile && coinsTip.GetBestBlock() != heightSortedBlockIndices[nHeightLastBlockFile].second->GetBlockHash()) {
+        if (heightSortedBlockIndices.size() > nHeightLastBlockFile)
+        {
+            if(coinsTip.GetBestBlock() != heightSortedBlockIndices[nHeightLastBlockFile].second->GetBlockHash())
+            {
             //The database is in a state where a block has been accepted and written to disk, but the
             //transaction database (pcoinsTip) was not flushed to disk, and is therefore not in sync with
             //the block index database.
@@ -2213,6 +2216,7 @@ bool static LoadBlockIndexState(string& strError)
             LogPrintf("%s: Last block properly recorded: #%d %s\n", __func__, pindexLastMeta->nHeight,
                       pindexLastMeta->GetBlockHash());
             LogPrintf("%s : pcoinstip=%d %s\n", __func__, coinsHeight, coinsTip.GetBestBlock());
+            }
         }
     }
 

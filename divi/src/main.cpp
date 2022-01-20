@@ -2118,7 +2118,7 @@ static bool VerifyAllBlockFilesArePresent(const BlockMap& blockIndicesByHash)
     return true;
 }
 
-bool static LoadBlockIndexDB(string& strError)
+bool static LoadBlockIndexState(string& strError)
 {
     ChainstateManager chainstate;
     auto& chain = chainstate.ActiveChain();
@@ -2221,7 +2221,7 @@ bool static LoadBlockIndexDB(string& strError)
 
     // Check whether we have a transaction index
     blockTree.ReadFlag("txindex", fTxIndex);
-    LogPrintf("LoadBlockIndexDB(): transaction index %s\n", fTxIndex ? "enabled" : "disabled");
+    LogPrintf("%s: transaction index %s\n",__func__, fTxIndex ? "enabled" : "disabled");
 
     // Check whether we have an address index
     blockTree.ReadFlag("addressindex", fAddressIndex);
@@ -2242,10 +2242,11 @@ bool static LoadBlockIndexDB(string& strError)
 
     PruneBlockIndexCandidates();
 
-    LogPrintf("LoadBlockIndexDB(): hashBestChain=%s height=%d date=%s progress=%f\n",
-              chain.Tip()->GetBlockHash(), chain.Height(),
-              DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chain.Tip()->GetBlockTime()),
-              checkpointsVerifier.GuessVerificationProgress(chain.Tip()));
+    LogPrintf("%s: hashBestChain=%s height=%d date=%s progress=%f\n",
+            __func__,
+            chain.Tip()->GetBlockHash(), chain.Height(),
+            DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chain.Tip()->GetBlockTime()),
+            checkpointsVerifier.GuessVerificationProgress(chain.Tip()));
 
     return true;
 }
@@ -2268,7 +2269,7 @@ void UnloadBlockIndex()
 bool LoadBlockIndex(string& strError)
 {
     // Load block index from databases
-    if (!fReindex && !LoadBlockIndexDB(strError))
+    if (!fReindex && !LoadBlockIndexState(strError))
         return false;
     return true;
 }

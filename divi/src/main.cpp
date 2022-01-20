@@ -2152,17 +2152,17 @@ bool static LoadBlockIndexState(string& strError)
         const unsigned int expectedNumberOfBlockIndices = BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile() + 1;
         if (heightSortedBlockIndices.size() > expectedNumberOfBlockIndices)
         {
+            const auto mit = blockMap.find(coinsTip.GetBestBlock());
+            if (mit == blockMap.end())
+            {
+                strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database";
+                return false;
+            }
             if(coinsTip.GetBestBlock() != heightSortedBlockIndices[expectedNumberOfBlockIndices].second->GetBlockHash())
             {
                 //The database is in a state where a block has been accepted and written to disk, but the
                 //transaction database (pcoinsTip) was not flushed to disk, and is therefore not in sync with
                 //the block index database.
-
-                const auto mit = blockMap.find(coinsTip.GetBestBlock());
-                if (mit == blockMap.end()) {
-                    strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database";
-                    return false;
-                }
                 const int64_t coinsHeight = mit->second->nHeight;
                 LogPrintf("%s : pcoinstip synced to block height %d, block index height %d\n", __func__,
                         coinsHeight, heightSortedBlockIndices.size());

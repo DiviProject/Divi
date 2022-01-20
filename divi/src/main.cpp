@@ -2158,9 +2158,11 @@ bool static LoadBlockIndexState(string& strError)
                 strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database";
                 return false;
             }
-            const int64_t coinsHeight = mit->second->nHeight;
-            LogPrintf("%s : pcoinstip synced to block height %d, block index height %d\n", __func__, coinsHeight, heightSortedBlockIndices.size());
-            if(coinsTip.GetBestBlock() != heightSortedBlockIndices[expectedNumberOfBlockIndices].second->GetBlockHash())
+            const int coinsHeight = mit->second->nHeight;
+            const int blockIndexHeight = (heightSortedBlockIndices.size()>0)? heightSortedBlockIndices.back().first: 0;
+            LogPrintf("%s : pcoinstip synced to block height %d, block index height %d\n", __func__, coinsHeight, blockIndexHeight);
+            assert(coinsHeight <= blockIndexHeight);
+            if(coinsHeight < blockIndexHeight)
             {
                 //The database is in a state where a block has been accepted and written to disk, but the
                 //transaction database (pcoinsTip) was not flushed to disk, and is therefore not in sync with

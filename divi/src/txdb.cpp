@@ -239,7 +239,7 @@ bool CBlockTreeDB::ReadFlag(const std::string& name, bool& fValue) const
     return true;
 }
 
-bool CBlockTreeDB::LoadBlockIndexGuts(BlockMap& blockIndicesByHash) const
+bool CBlockTreeDB::LoadBlockIndices(BlockMap& blockIndicesByHash) const
 {
     /* It seems that there are no "const iterators" for LevelDB.  Since we
        only need read operations on it, use a const-cast to get around

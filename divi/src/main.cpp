@@ -2055,6 +2055,18 @@ bool ProcessNewBlockFoundByMe(CBlock* pblock)
     return true;
 }
 
+static std::vector<std::pair<int, CBlockIndex*> > ComputeHeightSortedBlockIndices(BlockMap& blockIndicesByHash)
+{
+    std::vector<std::pair<int, CBlockIndex*> > heightSortedBlockIndices;
+    heightSortedBlockIndices.reserve(blockIndicesByHash.size());
+    for (const auto& item : blockIndicesByHash) {
+        CBlockIndex* pindex = item.second;
+        heightSortedBlockIndices.push_back(make_pair(pindex->nHeight, pindex));
+    }
+    std::sort(heightSortedBlockIndices.begin(), heightSortedBlockIndices.end());
+    return heightSortedBlockIndices;
+}
+
 bool static LoadBlockIndexDB(string& strError)
 {
     ChainstateManager chainstate;
@@ -2069,13 +2081,7 @@ bool static LoadBlockIndexDB(string& strError)
     boost::this_thread::interruption_point();
 
     // Calculate nChainWork
-    std::vector<std::pair<int, CBlockIndex*> > heightSortedBlockIndices;
-    heightSortedBlockIndices.reserve(blockMap.size());
-    for (const auto& item : blockMap) {
-        CBlockIndex* pindex = item.second;
-        heightSortedBlockIndices.push_back(make_pair(pindex->nHeight, pindex));
-    }
-    std::sort(heightSortedBlockIndices.begin(), heightSortedBlockIndices.end());
+    std::vector<std::pair<int, CBlockIndex*> > heightSortedBlockIndices = ComputeHeightSortedBlockIndices(blockMap);
     for(const PAIRTYPE(int, CBlockIndex*) & item: heightSortedBlockIndices) {
         CBlockIndex* pindex = item.second;
         pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);

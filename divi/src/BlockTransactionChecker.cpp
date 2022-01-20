@@ -51,7 +51,7 @@ BlockTransactionChecker::BlockTransactionChecker(
     , state_(state)
     , pindex_(pindex)
     , view_(view)
-    , txInputChecker_(true,view_,blockIndexMap,state_)
+    , txInputChecker_(view_,blockIndexMap,state_)
     , txLocationRecorder_(pindex_,block_)
 {
 }

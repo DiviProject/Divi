@@ -14,7 +14,6 @@ class TransactionInputChecker
 {
 private:
     unsigned nSigOps;
-    const bool fScriptChecks;
     std::vector<CScriptCheck> vChecks;
     CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker;
     const CCoinsViewCache& view_;
@@ -24,7 +23,6 @@ private:
 public:
     static void ThreadScriptCheck();
     TransactionInputChecker(
-        bool checkScripts,
         const CCoinsViewCache& view,
         const BlockMap& blockIndexMap,
         CValidationState& state);

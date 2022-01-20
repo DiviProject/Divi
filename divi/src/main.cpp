@@ -2178,10 +2178,15 @@ bool static LoadBlockIndexState(string& strError)
                 // Start at the last block that was successfully added to the txdb (pcoinsTip) and manually add all transactions that occurred for each block up until
                 // the best known block from the block index db.
                 CCoinsViewCache view(&coinsTip);
-                int lastProcessedHeight = 0;
+                int lastProcessedHeight = -1;
                 while (nextBlockCandidate != endNextBlockCandidate)
                 {
                     const CBlockIndex* pindex = nextBlockCandidate->second;
+                    if(pindex->pprev && view.GetBestBlock() != pindex->pprev->GetBlockHash())
+                    {
+                        ++nextBlockCandidate;
+                        continue;
+                    }
                     if(lastProcessedHeight==pindex->nHeight)
                     {
                         // Duplicate blocks at the same height let the rest sort themselves out?

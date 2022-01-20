@@ -2063,7 +2063,7 @@ bool static LoadBlockIndexDB(string& strError)
     auto& blockMap = chainstate.GetBlockMap();
     auto& blockTree = chainstate.BlockTree();
 
-    if (!blockTree.LoadBlockIndexGuts(blockMap))
+    if (!blockTree.LoadBlockIndices(blockMap))
         return false;
 
     boost::this_thread::interruption_point();

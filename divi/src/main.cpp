@@ -2098,6 +2098,25 @@ static void InitializeBlockIndexGlobalData(const std::vector<std::pair<int, CBlo
             pindexBestHeader = pindex;
     }
 }
+static bool VerifyAllBlockFilesArePresent(const BlockMap& blockIndicesByHash)
+{
+    LogPrintf("Checking all blk files are present...\n");
+    std::set<int> setBlkDataFiles;
+    for (const auto& item : blockIndicesByHash) {
+        CBlockIndex* pindex = item.second;
+        if (pindex->nStatus & BLOCK_HAVE_DATA) {
+            setBlkDataFiles.insert(pindex->nFile);
+        }
+    }
+    for (int blockFileNumber: setBlkDataFiles)
+    {
+        CDiskBlockPos pos(blockFileNumber, 0);
+        if (CAutoFile(OpenBlockFile(pos, true), SER_DISK, CLIENT_VERSION).IsNull()) {
+            return false;
+        }
+    }
+    return true;
+}
 
 bool static LoadBlockIndexDB(string& strError)
 {

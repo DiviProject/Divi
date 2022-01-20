@@ -2064,7 +2064,7 @@ bool static LoadBlockIndexDB(string& strError)
     auto& blockTree = chainstate.BlockTree();
 
     if (!blockTree.LoadBlockIndices(blockMap))
-        return false;
+        return error("Failed to load block indices from database");
 
     boost::this_thread::interruption_point();
 

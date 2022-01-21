@@ -173,21 +173,21 @@ static bool UpdateDBIndicesForNewBlock(
 {
     if (fTxIndex)
         if (!blockTreeDatabase.WriteTxIndex(indexDatabaseUpdates.txLocationData))
-            return state.Abort("Failed to write transaction index");
+            return state.Abort("ConnectingBlock: Failed to write transaction index");
 
     if (fAddressIndex) {
         if (!blockTreeDatabase.WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
-            return state.Abort("Failed to write address index");
+            return state.Abort("ConnectingBlock: Failed to write address index");
         }
 
         if (!blockTreeDatabase.UpdateAddressUnspentIndex(indexDatabaseUpdates.addressUnspentIndex)) {
-            return state.Abort("Failed to write address unspent index");
+            return state.Abort("ConnectingBlock: Failed to write address unspent index");
         }
     }
 
     if (fSpentIndex)
         if (!blockTreeDatabase.UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
-            return state.Abort("Failed to write transaction index");
+            return state.Abort("ConnectingBlock: Failed to write update spent index");
 
     return true;
 }

@@ -61,15 +61,36 @@ class AddressAndSpentIndicesAreOperational (BitcoinTestFramework):
         assert_equal(recovered_utxo_count, expected_utxo_count)
         self.restart_single_node_to_verify_index_database()
 
-    def run_test (self):
+    def verify_reversal_of_spent_index_under_reorg(self):
+        staker_node = self.nodes[0]
+        hash = staker_node.setgenerate(1)[0]
+        transactions = staker_node.getblock(hash)['tx']
+        assert_equal(len(transactions),2)
+        coinstake_tx_hash = transactions[1]
+        coinstake_tx = staker_node.getrawtransaction(coinstake_tx_hash,1)
+        inputs_spent = coinstake_tx['vin']
+
+        parsed_inputs = [ {"txid": input["txid"], "index": input["vout"]} for input in inputs_spent]
+        for input in parsed_inputs:
+            assert_equal(staker_node.getspentinfo(input)["txid"],coinstake_tx_hash)
+
+        staker_node.invalidateblock(hash)
+        for input in parsed_inputs:
+            assert_raises(JSONRPCException,staker_node.getspentinfo,input)
+
+        staker_node.reconsiderblock(hash)
+        for input in parsed_inputs:
+            assert_equal(staker_node.getspentinfo(input)["txid"],coinstake_tx_hash)
+
+    def setup_test(self):
         createPoSStacks ([self.node], self.nodes)
         generatePoSBlocks (self.nodes, 0, 125)
         sync_blocks(self.nodes)
 
+    def run_verify_chain_checks(self):
         self.nodes.append(start_node(1, self.options.tmpdir, extra_args=self.config_args))
         connect_nodes_bi(self.nodes,0,1)
         sync_blocks(self.nodes)
-
         staker_node = self.nodes[0]
         auditor_node = self.nodes[1]
         print("Verifying chain...")
@@ -87,6 +108,11 @@ class AddressAndSpentIndicesAreOperational (BitcoinTestFramework):
         auditor_node.reconsiderblock(hash)
         auditor_node.verifychain()
         print("Chain verified")
+
+    def run_test (self):
+        self.setup_test()
+        self.verify_reversal_of_spent_index_under_reorg()
+        self.run_verify_chain_checks()
 
 
 if __name__ == '__main__':

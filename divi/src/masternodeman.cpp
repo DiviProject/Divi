@@ -427,7 +427,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     if(!CheckMasternodeBroadcastContext(mnb,nDoS))
     {
         if (nDoS > 0 && pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS,"Bad masternode broadcast context");
         return false;
     }
     if (UpdateMasternodeFromBroadcast(mnb) == MnUpdateStatus::MN_UPDATE_INVALID)
@@ -440,7 +440,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     if (!IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<MasternodeTier>(mnb.nTier))) {
         LogPrintf("%s : mnb - Got mismatched pubkey and vin\n", __func__);
         if (pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), 33);
+            Misbehaving(pfrom->GetNodeState(), 33,"Mismatched pubkey and vin for masternode");
         return false;
     }
 
@@ -450,7 +450,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash);
         if (nDoS > 0 && pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS,"Rejected masternode addition to list");
         return false;
     }
 
@@ -461,7 +461,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     {
         LogPrintf("%s : mnb - attached ping is invalid\n", __func__);
         if (pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS, "Invalid masternode ping");
         return false;
     }
 
@@ -518,7 +518,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, const CMasternodePing& mnp)
     if (nDoS > 0) {
         // if anything significant failed, mark that node
         if (pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS,"Ping update failed");
     } else {
         // if the masternode is known, don't ask for the mnb, just return
         if (pmn != nullptr) return false;

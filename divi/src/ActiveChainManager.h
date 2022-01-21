@@ -20,6 +20,7 @@ class ActiveChainManager
 {
 private:
     const bool& addressIndexingIsEnabled_;
+    const bool& spentIndexingIsEnabled_;
     CBlockTreeDB* blocktree_;
     const I_BlockDataReader& blockDataReader_;
 
@@ -29,6 +30,7 @@ private:
 public:
     ActiveChainManager(
         const bool& addressIndexingIsEnabled,
+        const bool& spentIndexingIsEnabled,
         CBlockTreeDB* blocktree,
         const I_BlockDataReader& blockDataReader);
     bool DisconnectBlock(

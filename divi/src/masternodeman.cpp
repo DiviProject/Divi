@@ -192,7 +192,7 @@ bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMa
     }
     return false;
 }
-bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS)
+bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb)
 {
     // search existing Masternode list
     // nothing to do here if we already know about this masternode and it's enabled
@@ -446,10 +446,10 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
 
     // make sure collateral is still unspent
     const bool isOurBroadcast = localActiveMasternode_.IsOurBroadcast(mnb,true);
-    if (!isOurBroadcast && !CheckInputsForMasternode(mnb,nDoS))
+    if (!isOurBroadcast && !CheckInputsForMasternode(mnb))
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash);
-        if (nDoS > 0 && pfrom != nullptr)
+        if (pfrom != nullptr)
             Misbehaving(pfrom->GetNodeState(), nDoS,"Rejected masternode addition to list");
         return false;
     }

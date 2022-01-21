@@ -260,7 +260,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         if(!spork.CheckSignature(sporkPubKey))
         {
             LogPrintf("CSporkManager::ProcessSpork -- ERROR: invalid signature\n");
-            Misbehaving(pfrom->GetNodeState(), 100);
+            Misbehaving(pfrom->GetNodeState(), 100, "Invalid spork signature");
             return;
         }
         if(!pSporkDB_)

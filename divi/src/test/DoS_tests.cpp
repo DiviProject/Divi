@@ -58,6 +58,10 @@ struct DoSTestFixture
     {
         PeerBanningService::SetDefaultBanDuration(0);
     }
+    bool Misbehaving(CNodeState* state, int penaltyAmount)
+    {
+        return ::Misbehaving(state,penaltyAmount,"");
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(DoS_tests,DoSTestFixture)

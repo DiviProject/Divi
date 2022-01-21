@@ -845,7 +845,7 @@ void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
     if (state.IsInvalid(nDoS)) {
         std::map<uint256, NodeId>::iterator it = mapBlockSource.find(pindex->GetBlockHash());
         if (it != mapBlockSource.end()) {
-            if(Misbehaving(it->second,nDoS))
+            if(Misbehaving(it->second,nDoS,"Invalid block sourced from peer"))
             {
                 LOCK(cs_RejectedBlocks);
                 std::vector<CBlockReject>& rejectedBlocks = rejectedBlocksByNodeId[it->second];
@@ -2856,7 +2856,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
     static const std::string lastCommand = std::string(NetworkMessageType_VERSION);
     if (pfrom->nVersion != 0) {
         pfrom->PushMessage("reject", lastCommand, REJECT_DUPLICATE, string("Duplicate version message"));
-        Misbehaving(pfrom->GetNodeState(), 1);
+        Misbehaving(pfrom->GetNodeState(), 1,"Duplicated version message");
         return false;
     }
 
@@ -2987,7 +2987,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
     else if (pfrom->nVersion == 0)
     {
         // Must have a version message before anything else
-        Misbehaving(pfrom->GetNodeState(), 1);
+        Misbehaving(pfrom->GetNodeState(), 1,"Version message has not arrived before other handshake steps");
         return false;
     }
     else if (strCommand == "verack")
@@ -3022,7 +3022,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         if (pfrom->nVersion < CADDR_TIME_VERSION && addrman.size() > 1000)
             return true;
         if (vAddr.size() > 1000) {
-            Misbehaving(pfrom->GetNodeState(), 20);
+            Misbehaving(pfrom->GetNodeState(), 20,"Requested too many addresses");
             return error("message addr size() = %u", vAddr.size());
         }
 
@@ -3056,7 +3056,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         std::vector<CInv> vInv;
         vRecv >> vInv;
         if (vInv.size() > MAX_INV_SZ) {
-            Misbehaving(pfrom->GetNodeState(), 20);
+            Misbehaving(pfrom->GetNodeState(), 20, "Asked for too large an inventory of data items");
             return error("message inv size() = %u", vInv.size());
         }
 
@@ -3085,7 +3085,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             }
 
             if (pfrom->GetSendBufferStatus()==NodeBufferStatus::IS_OVERFLOWED) {
-                Misbehaving(pfrom->GetNodeState(), 50);
+                Misbehaving(pfrom->GetNodeState(), 50,"Overflowed message buffer");
                 return error("Peer %d has exceeded send buffer size", pfrom->GetId());
             }
         }
@@ -3109,7 +3109,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         std::vector<CInv> vInv;
         vRecv >> vInv;
         if (vInv.size() > MAX_INV_SZ) {
-            Misbehaving(pfrom->GetNodeState(), 20);
+            Misbehaving(pfrom->GetNodeState(), 20, "Getdata request too large");
             return error("message getdata size() = %u", vInv.size());
         }
 
@@ -3261,7 +3261,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                         int nDos = 0;
                         if(stateDummy.IsInvalid(nDos) && nDos > 0) {
                             // Punish peer that gave us an invalid orphan tx
-                            Misbehaving(fromPeer, nDos);
+                            Misbehaving(fromPeer, nDos, "Invalid orphan transaction required by mempool transaction");
                             setMisbehaving.insert(fromPeer);
                             LogPrint("mempool", "   invalid orphan tx %s\n", orphanHash);
                         }
@@ -3302,7 +3302,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),
                                state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.GetHash());
             if (nDoS > 0)
-                Misbehaving(pfrom->GetNodeState(), nDoS);
+                Misbehaving(pfrom->GetNodeState(), nDoS, "Transaction from peer rejected by memory pool");
         }
     }
     else if (strCommand == "headers" && Params().HeadersFirstSyncingActive() && !fImporting && !fReindex) // Ignore headers received while importing
@@ -3312,7 +3312,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         // Bypass the normal CBlock deserialization, as we don't want to risk deserializing 2000 full blocks.
         unsigned int nCount = ReadCompactSize(vRecv);
         if (nCount > MAX_HEADERS_RESULTS) {
-            Misbehaving(pfrom->GetNodeState(), 20);
+            Misbehaving(pfrom->GetNodeState(), 20, "Maximum number of headers exceeded");
             return error("headers message size = %u", nCount);
         }
         headers.resize(nCount);
@@ -3331,7 +3331,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         for(const CBlockHeader& header: headers) {
             CValidationState state;
             if (pindexLast != NULL && header.hashPrevBlock != pindexLast->GetBlockHash()) {
-                Misbehaving(pfrom->GetNodeState(), 20);
+                Misbehaving(pfrom->GetNodeState(), 20, "Non-contiguous headers submitted by peer");
                 return error("non-continuous headers sequence");
             }
 
@@ -3342,7 +3342,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 int nDoS;
                 if (state.IsInvalid(nDoS)) {
                     if (nDoS > 0)
-                        Misbehaving(pfrom->GetNodeState(), nDoS);
+                        Misbehaving(pfrom->GetNodeState(), nDoS, "Invalid block header received");
                     std::string strError = "invalid header received " + header.GetHash().ToString();
                     return error(strError.c_str());
                 }
@@ -3393,7 +3393,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                                        state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.GetHash());
                     if(nDoS > 0) {
                         TRY_LOCK(cs_main, lockMain);
-                        if(lockMain) Misbehaving(pfrom->GetNodeState(), nDoS);
+                        if(lockMain) Misbehaving(pfrom->GetNodeState(), nDoS, "Bad block processed");
                     }
                 }
                 //disconnect this node if its old protocol version
@@ -3436,7 +3436,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 // This isn't a Misbehaving(100) (immediate ban) because the
                 // peer might be an older or different implementation with
                 // a different signature key, etc.
-                Misbehaving(pfrom->GetNodeState(), 10);
+                Misbehaving(pfrom->GetNodeState(), 10, "Unable to process alert message");
             }
         }
     }
@@ -3446,7 +3446,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
               strCommand == "filterclear"))
     {
         LogPrintf("bloom message=%s\n", strCommand);
-        Misbehaving(pfrom->GetNodeState(), 100);
+        Misbehaving(pfrom->GetNodeState(), 100, "Sent bloom filter msg but they are disabled");
     }
     else if (strCommand == "filterload")
     {
@@ -3455,7 +3455,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
         if (!filter.IsWithinSizeConstraints())
             // There is no excuse for sending a too-large filter
-            Misbehaving(pfrom->GetNodeState(), 100);
+            Misbehaving(pfrom->GetNodeState(), 100,"Sent too large a bloom filter message");
         else {
             LOCK(pfrom->cs_filter);
             delete pfrom->pfilter;
@@ -3472,13 +3472,13 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         // Nodes must NEVER send a data item > 520 bytes (the max size for a script data object,
         // and thus, the maximum size any matched object can have) in a filteradd message
         if (vData.size() > MAX_SCRIPT_ELEMENT_SIZE) {
-            Misbehaving(pfrom->GetNodeState(), 100);
+            Misbehaving(pfrom->GetNodeState(), 100, "Exceeded maximum size of script element to be added to filter");
         } else {
             LOCK(pfrom->cs_filter);
             if (pfrom->pfilter)
                 pfrom->pfilter->insert(vData);
             else
-                Misbehaving(pfrom->GetNodeState(), 100);
+                Misbehaving(pfrom->GetNodeState(), 100, "Attempted to load filter before enabling it");
         }
     }
     else if (strCommand == "filterclear")

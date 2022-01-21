@@ -34,16 +34,16 @@ bool ActiveChainManager::ApplyDisconnectionUpdateIndexToDBs(
 {
     if (addressIndexingIsEnabled_) {
         if (!blocktree_->EraseAddressIndex(indexDBUpdates.addressIndex)) {
-            return state.Abort("Failed to delete address index");
+            return state.Abort("Disconnecting block: Failed to delete address index");
         }
         if (!blocktree_->UpdateAddressUnspentIndex(indexDBUpdates.addressUnspentIndex)) {
-            return state.Abort("Failed to write address unspent index");
+            return state.Abort("Disconnecting block: Failed to write address unspent index");
         }
     }
     if(spentIndexingIsEnabled_)
     {
         if (!blocktree_->UpdateSpentIndex(indexDBUpdates.spentIndex)) {
-            return state.Abort("Failed to delete address index");
+            return state.Abort("Disconnecting block: Failed to write update spent index");
         }
     }
     return true;

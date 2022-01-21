@@ -36,6 +36,6 @@ std::vector<int> GetBlockHeightsInFlight(NodeId nodeId);
 int GetNumberOfBlocksInFlight(NodeId nodeId);
 // Requires cs_main.
 /** Increase a node's misbehavior score. */
-bool Misbehaving(NodeId nodeId, int howmuch);
-bool Misbehaving(CNodeState* state, int howmuch);
+bool Misbehaving(NodeId nodeId, int howmuch, std::string cause);
+bool Misbehaving(CNodeState* state, int howmuch, std::string cause);
 #endif// NODE_STATE_REGISTRY_H

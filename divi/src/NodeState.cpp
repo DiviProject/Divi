@@ -65,15 +65,15 @@ bool CNodeState::HavePreferredDownloadPeers()
 {
     return numberOfPreferredDownloadSources > 0;
 }
-void CNodeState::ApplyMisbehavingPenalty(int penaltyAmount)
+void CNodeState::ApplyMisbehavingPenalty(int penaltyAmount,std::string cause)
 {
     int previousMisbehavior = nMisbehavior;
     nMisbehavior += penaltyAmount;
     if (nMisbehavior >= banThreshold_ && previousMisbehavior < banThreshold_) {
-        LogPrintf("Misbehaving: %s (%d -> %d) BAN THRESHOLD EXCEEDED\n", name, previousMisbehavior, nMisbehavior);
+        LogPrintf("Misbehaving: %s (%d -> %d) BAN THRESHOLD EXCEEDED| %s\n", name, previousMisbehavior, nMisbehavior,cause);
         fShouldBan = true;
     } else
-        LogPrintf("Misbehaving: %s (%d -> %d)\n", name, previousMisbehavior, nMisbehavior);
+        LogPrintf("Misbehaving: %s (%d -> %d) | %s\n", name, previousMisbehavior, nMisbehavior,cause);
 }
 int CNodeState::GetMisbehaviourPenalty() const
 {

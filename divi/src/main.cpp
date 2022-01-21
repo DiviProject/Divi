@@ -958,7 +958,7 @@ const ActiveChainManager& GetActiveChainManager()
 {
     static const BlockDiskDataReader blockDiskReader;
     static ChainstateManager chainstate;
-    static ActiveChainManager chainManager(fAddressIndex, &chainstate.BlockTree(), blockDiskReader);
+    static ActiveChainManager chainManager(fAddressIndex,fSpentIndex, &chainstate.BlockTree(), blockDiskReader);
     return chainManager;
 }
 

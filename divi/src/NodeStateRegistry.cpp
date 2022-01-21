@@ -44,7 +44,7 @@ void FinalizeNode(NodeId nodeId)
     mapNodeState.erase(nodeId);
 }
 
-bool Misbehaving(CNodeState* state, int howmuch)
+bool Misbehaving(CNodeState* state, int howmuch, std::string cause)
 {
     if (state == NULL)
         return false;
@@ -52,15 +52,15 @@ bool Misbehaving(CNodeState* state, int howmuch)
     if (howmuch == 0)
         return true;
 
-    state->ApplyMisbehavingPenalty(howmuch);
+    state->ApplyMisbehavingPenalty(howmuch,cause);
     return true;
 }
 
-bool Misbehaving(NodeId nodeId, int howmuch)
+bool Misbehaving(NodeId nodeId, int howmuch, std::string cause)
 {
     AssertLockHeld(cs_main);
     CNodeState* state = State(nodeId);
-    return Misbehaving(state,howmuch);
+    return Misbehaving(state,howmuch,cause);
 }
 
 // Requires cs_main.

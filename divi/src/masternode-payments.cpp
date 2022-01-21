@@ -240,7 +240,7 @@ bool CMasternodePayments::CheckMasternodeWinnerCandidate(CNode* pfrom, CMasterno
 
     if (!CheckMasternodeWinnerSignature(winner,mn.pubKeyMasternode)) {
         LogPrintf("%s : - invalid signature\n", __func__);
-        if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetNodeState(), 20);
+        if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetNodeState(), 20,"Invalid signature for mnwinner.");
         // it could just be a non-synced masternode
         masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
         return false;

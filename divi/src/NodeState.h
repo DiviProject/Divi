@@ -53,7 +53,7 @@ public:
     static bool NodeSyncStarted();
     static bool HavePreferredDownloadPeers();
     void Finalize();
-    void ApplyMisbehavingPenalty(int penaltyAmount);
+    void ApplyMisbehavingPenalty(int penaltyAmount,std::string cause);
     int GetMisbehaviourPenalty() const;
     void SetBanScoreThreshold(int banThreshold);
 };

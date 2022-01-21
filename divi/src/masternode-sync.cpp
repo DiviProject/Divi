@@ -118,7 +118,7 @@ bool CMasternodeSync::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
         if(networkMessageManager_.peerHasRequestedMasternodeListTooOften(pfrom->addr))
         {
             constexpr int penaltyForAskingTooManyTimes = 34;
-            pfrom->GetNodeState()->ApplyMisbehavingPenalty(penaltyForAskingTooManyTimes);
+            pfrom->GetNodeState()->ApplyMisbehavingPenalty(penaltyForAskingTooManyTimes,"Asked mn peer list too often");
             return true;
         }
     }
@@ -161,7 +161,7 @@ void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strComma
         if (networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr, "mnget"))
         {
             LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
-            pfrom->GetNodeState()->ApplyMisbehavingPenalty(20);
+            pfrom->GetNodeState()->ApplyMisbehavingPenalty(20,"Too recently asked for mn peer list");
             return;
         }
 

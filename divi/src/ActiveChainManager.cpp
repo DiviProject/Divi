@@ -18,9 +18,11 @@
 
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
+    const bool& spentIndexingIsEnabled,
     CBlockTreeDB* blocktree,
     const I_BlockDataReader& blockDataReader
     ): addressIndexingIsEnabled_(addressIndexingIsEnabled)
+    , spentIndexingIsEnabled_(spentIndexingIsEnabled)
     , blocktree_(blocktree)
     , blockDataReader_(blockDataReader)
 {
@@ -36,6 +38,12 @@ bool ActiveChainManager::ApplyDisconnectionUpdateIndexToDBs(
         }
         if (!blocktree_->UpdateAddressUnspentIndex(indexDBUpdates.addressUnspentIndex)) {
             return state.Abort("Failed to write address unspent index");
+        }
+    }
+    if(spentIndexingIsEnabled_)
+    {
+        if (!blocktree_->UpdateSpentIndex(indexDBUpdates.spentIndex)) {
+            return state.Abort("Failed to delete address index");
         }
     }
     return true;

@@ -418,6 +418,8 @@ public:
 
     const CTxOut& GetOutputFor(const CTxIn& input) const;
 
+    void UpdateWithConfirmedTransaction(const CTransaction& confirmedTx, const int blockHeight, CTxUndo& txundo);
+
     friend class CCoinsModifier;
 
 private:

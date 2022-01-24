@@ -2199,7 +2199,7 @@ bool static LoadBlockIndexState(string& strError)
                         CTxUndo undoDummy;
                         if (i > 0)
                             vtxundo.push_back(CTxUndo());
-                        UpdateCoinsWithTransaction(block.vtx[i], view, i == 0 ? undoDummy : vtxundo.back(), pindex->nHeight);
+                        view.UpdateWithConfirmedTransaction(block.vtx[i], pindex->nHeight,i == 0 ? undoDummy: vtxundo.back());
                         view.SetBestBlock(hashBlock);
                     }
                     ++nextBlockCandidate;

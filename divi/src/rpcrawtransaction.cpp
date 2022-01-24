@@ -712,13 +712,14 @@ Value signrawtransaction(const Array& params, bool fHelp)
     bool fComplete = true;
 
     // Fetch previous transactions (inputs):
-    CCoinsViewCache view;
+    CCoinsViewBacked temporaryBacking;
+    CCoinsViewCache view(&temporaryBacking);
     {
         LOCK(mempool.cs);
         const ChainstateManager::Reference chainstate;
         const CCoinsViewCache& viewChain = chainstate->CoinsTip();
         const CCoinsViewMemPool viewMempool(&viewChain, mempool);
-        view.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
+        temporaryBacking.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
 
         BOOST_FOREACH (const CTxIn& txin, mergedTx.vin) {
             const uint256& prevHash = txin.prevout.hash;
@@ -726,7 +727,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
             view.AccessCoins(prevHash); // this is certainly allowed to fail
         }
 
-        view.DettachBackend(); // switch back to avoid locking mempool for too long
+        temporaryBacking.DettachBackend(); // switch back to avoid locking mempool for too long
     }
 
     bool fGivenKeys = false;

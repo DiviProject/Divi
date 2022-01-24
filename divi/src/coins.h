@@ -359,9 +359,10 @@ public:
 };
 
 /** CCoinsView that adds a memory cache for transactions to another CCoinsView */
-class CCoinsViewCache : public CCoinsViewBacked
+class CCoinsViewCache : public CCoinsView
 {
 protected:
+    CCoinsViewBacked backed_;
     /* Whether this cache has an active modifier. */
     bool hasModifier;
 
@@ -371,7 +372,6 @@ protected:
      */
     mutable uint256 hashBlock;
     mutable CCoinsMap cacheCoins;
-
 public:
     CCoinsViewCache();
     explicit CCoinsViewCache(CCoinsView* baseIn);
@@ -384,6 +384,7 @@ public:
     uint256 GetBestBlock() const override;
     void SetBestBlock(const uint256& hashBlock);
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override;
+    bool GetStats(CCoinsStats& stats) const override;
 
     /**
      * Return a pointer to CCoins in the cache, or NULL if not found. This is

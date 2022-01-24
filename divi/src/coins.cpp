@@ -457,7 +457,7 @@ static void UpdateCoinsForRestoredInputs(
     coins->vout[out.n] = undo.txout;
 }
 
-TxReversalStatus CCoinsViewCache::UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo)
+TxReversalStatus CCoinsViewCache::UpdateWithReversedTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo)
 {
     bool fClean = true;
     fClean = fClean && RemoveTxOutputsFromCache(tx, txLocationReference, *this);

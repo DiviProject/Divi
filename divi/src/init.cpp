@@ -351,9 +351,6 @@ void PrepareShutdown()
     /// module was initialized.
     RenameThread("divi-shutoff");
     StopRPCThreads();
-#ifdef ENABLE_WALLET
-    FlushWallet(true);
-#endif
     StopNode();
     InterruptTorControl();
     StopTorControl();

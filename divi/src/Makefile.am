@@ -163,6 +163,7 @@ BITCOIN_CORE_H = \
   StartAndShutdownSignals.h \
   init.h \
   LicenseAndInfo.h \
+  TransactionLocationReference.h \
   IndexDatabaseUpdates.h \
   BlockTransactionChecker.h \
   FeeAndPriorityCalculator.h \
@@ -401,6 +402,7 @@ libbitcoin_server_a_SOURCES = \
   BlockScanner.cpp \
   StartAndShutdownSignals.cpp \
   init.cpp \
+  TransactionLocationReference.cpp \
   IndexDatabaseUpdates.cpp \
   BlockTransactionChecker.cpp \
   FeeAndPriorityCalculator.cpp \

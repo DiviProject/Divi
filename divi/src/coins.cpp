@@ -380,6 +380,22 @@ double CCoinsViewCache::ComputeInputCoinAge(const CTransaction& tx, int nHeight)
     return dResult;
 }
 
+void CCoinsViewCache::UpdateWithConfirmedTransaction(const CTransaction& confirmedTx, const int blockHeight, CTxUndo& txundo)
+{
+    // mark inputs spent
+    if (!confirmedTx.IsCoinBase() ) {
+        txundo.vprevout.reserve(confirmedTx.vin.size());
+        BOOST_FOREACH (const CTxIn& txin, confirmedTx.vin) {
+            txundo.vprevout.push_back(CTxInUndo());
+            bool ret = ModifyCoins(txin.prevout.hash)->Spend(txin.prevout.n, txundo.vprevout.back());
+            assert(ret);
+        }
+    }
+
+    // add outputs
+    ModifyCoins(confirmedTx.GetHash())->FromTx(confirmedTx, blockHeight);
+}
+
 CCoinsModifier::CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_) : cache(cache_), it(it_)
 {
     assert(!cache.hasModifier);

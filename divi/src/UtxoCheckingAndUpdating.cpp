@@ -14,18 +14,7 @@
 
 void UpdateCoinsWithTransaction(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight)
 {
-    // mark inputs spent
-    if (!tx.IsCoinBase() ) {
-        txundo.vprevout.reserve(tx.vin.size());
-        BOOST_FOREACH (const CTxIn& txin, tx.vin) {
-            txundo.vprevout.push_back(CTxInUndo());
-            bool ret = inputs.ModifyCoins(txin.prevout.hash)->Spend(txin.prevout.n, txundo.vprevout.back());
-            assert(ret);
-        }
-    }
-
-    // add outputs
-    inputs.ModifyCoins(tx.GetHash())->FromTx(tx, nHeight);
+    inputs.UpdateWithConfirmedTransaction(tx,nHeight,txundo);
 }
 
 static bool RemoveTxOutputsFromCache(

@@ -12,11 +12,6 @@
 #include <chainparams.h>
 #include <defaultValues.h>
 
-void UpdateCoinsWithTransaction(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight)
-{
-    inputs.UpdateWithConfirmedTransaction(tx,nHeight,txundo);
-}
-
 static bool RemoveTxOutputsFromCache(
     const CTransaction& tx,
     const TransactionLocationReference& txLocationReference,

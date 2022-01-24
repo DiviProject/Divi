@@ -18,7 +18,6 @@ enum class TxReversalStatus
     CONTINUE_WITH_ERRORS,
     OK,
 };
-void UpdateCoinsWithTransaction(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
 TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, CCoinsViewCache& inputs, const CTxUndo* txundo);
 bool CheckInputs(
     const CTransaction& tx,

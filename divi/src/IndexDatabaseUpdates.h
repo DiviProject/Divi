@@ -5,6 +5,7 @@
 #include <addressindex.h>
 #include <spentindex.h>
 #include <uint256.h>
+#include <TransactionLocationReference.h>
 
 class CTransaction;
 
@@ -29,17 +30,5 @@ struct IndexDatabaseUpdates
     std::vector<TxIndexEntry> txLocationData;
 
     IndexDatabaseUpdates();
-};
-
-struct TransactionLocationReference
-{
-    uint256 hash;
-    unsigned blockHeight;
-    int transactionIndex;
-
-    TransactionLocationReference(
-        const CTransaction& tx,
-        unsigned blockheightValue,
-        int transactionIndexValue);
 };
 #endif// INDEX_DATABASE_UPDATES_H

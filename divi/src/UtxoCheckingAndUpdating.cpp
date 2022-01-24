@@ -73,24 +73,12 @@ static void UpdateCoinsForRestoredInputs(
 
 TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, CCoinsViewCache& inputs, const CTxUndo* txundo)
 {
-    bool fClean = true;
-    fClean = fClean && RemoveTxOutputsFromCache(tx, txLocationReference, inputs);
-    if(tx.IsCoinBase()) return fClean? TxReversalStatus::OK : TxReversalStatus::CONTINUE_WITH_ERRORS;
-    assert(txundo != nullptr);
-    if (txundo->vprevout.size() != tx.vin.size())
-    {
-        error("%s : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d",__func__, txundo->vprevout.size(), tx.vin.size());
-        return fClean?TxReversalStatus::ABORT_NO_OTHER_ERRORS:TxReversalStatus::ABORT_WITH_OTHER_ERRORS;
-    }
-
-    for (unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
-    {
-        const COutPoint& out = tx.vin[txInputIndex].prevout;
-        const CTxInUndo& undo = txundo->vprevout[txInputIndex];
-        CCoinsModifier coins = inputs.ModifyCoins(out.hash);
-        UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
-    }
-    return fClean? TxReversalStatus::OK : TxReversalStatus::CONTINUE_WITH_ERRORS;
+    TempTxReversalStatus result = inputs.UpdateCoinsReversingTransaction(tx,txLocationReference,txundo);
+    if(result == TempTxReversalStatus::ABORT_NO_OTHER_ERRORS) return TxReversalStatus::ABORT_NO_OTHER_ERRORS;
+    if(result == TempTxReversalStatus::ABORT_WITH_OTHER_ERRORS) return TxReversalStatus::ABORT_WITH_OTHER_ERRORS;
+    if(result == TempTxReversalStatus::CONTINUE_WITH_ERRORS) return TxReversalStatus::CONTINUE_WITH_ERRORS;
+    if(result == TempTxReversalStatus::OK) return TxReversalStatus::OK;
+    assert(false);
 }
 
 bool CheckInputs(

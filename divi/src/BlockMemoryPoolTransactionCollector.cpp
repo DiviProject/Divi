@@ -332,7 +332,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         currentBlockSigOps += transactionSigOpCount;
 
         CTxUndo txundo;
-        UpdateCoinsWithTransaction(tx, view, txundo, nHeight);
+        view.UpdateWithConfirmedTransaction(tx,nHeight,txundo);
 
         // Add transactions that depend on this one to the priority queue
         AddDependingTransactionsToPriorityQueue(dependentTransactions, hash, vecPriority, comparer);

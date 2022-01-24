@@ -336,7 +336,7 @@ class CCoinsViewCache;
  *  concurrent modifications.
  */
 
-enum class TempTxReversalStatus
+enum class TxReversalStatus
 {
     ABORT_NO_OTHER_ERRORS,
     ABORT_WITH_OTHER_ERRORS,
@@ -428,7 +428,7 @@ public:
     const CTxOut& GetOutputFor(const CTxIn& input) const;
 
     void UpdateWithConfirmedTransaction(const CTransaction& confirmedTx, const int blockHeight, CTxUndo& txundo);
-    TempTxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo);
+    TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo);
 
     friend class CCoinsModifier;
 

@@ -335,6 +335,15 @@ class CCoinsViewCache;
  *  cleanup code after the modification is finished, and keeping track of
  *  concurrent modifications.
  */
+
+enum class TempTxReversalStatus
+{
+    ABORT_NO_OTHER_ERRORS,
+    ABORT_WITH_OTHER_ERRORS,
+    CONTINUE_WITH_ERRORS,
+    OK,
+};
+class TransactionLocationReference;
 class CCoinsModifier
 {
 private:
@@ -419,6 +428,7 @@ public:
     const CTxOut& GetOutputFor(const CTxIn& input) const;
 
     void UpdateWithConfirmedTransaction(const CTransaction& confirmedTx, const int blockHeight, CTxUndo& txundo);
+    TempTxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo);
 
     friend class CCoinsModifier;
 

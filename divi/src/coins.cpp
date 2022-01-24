@@ -457,16 +457,16 @@ static void UpdateCoinsForRestoredInputs(
     coins->vout[out.n] = undo.txout;
 }
 
-TempTxReversalStatus CCoinsViewCache::UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo)
+TxReversalStatus CCoinsViewCache::UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo)
 {
     bool fClean = true;
     fClean = fClean && RemoveTxOutputsFromCache(tx, txLocationReference, *this);
-    if(tx.IsCoinBase()) return fClean? TempTxReversalStatus::OK : TempTxReversalStatus::CONTINUE_WITH_ERRORS;
+    if(tx.IsCoinBase()) return fClean? TxReversalStatus::OK : TxReversalStatus::CONTINUE_WITH_ERRORS;
     assert(txundo != nullptr);
     if (txundo->vprevout.size() != tx.vin.size())
     {
         error("%s : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d",__func__, txundo->vprevout.size(), tx.vin.size());
-        return fClean?TempTxReversalStatus::ABORT_NO_OTHER_ERRORS:TempTxReversalStatus::ABORT_WITH_OTHER_ERRORS;
+        return fClean?TxReversalStatus::ABORT_NO_OTHER_ERRORS:TxReversalStatus::ABORT_WITH_OTHER_ERRORS;
     }
 
     for (unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
@@ -476,7 +476,7 @@ TempTxReversalStatus CCoinsViewCache::UpdateCoinsReversingTransaction(const CTra
         CCoinsModifier coins = ModifyCoins(out.hash);
         UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
     }
-    return fClean? TempTxReversalStatus::OK : TempTxReversalStatus::CONTINUE_WITH_ERRORS;
+    return fClean? TxReversalStatus::OK : TxReversalStatus::CONTINUE_WITH_ERRORS;
 }
 
 CCoinsModifier::CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_) : cache(cache_), it(it_)

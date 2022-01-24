@@ -11,14 +11,6 @@ class CCoinsViewCache;
 class CTxUndo;
 class TransactionLocationReference;
 
-enum class TxReversalStatus
-{
-    ABORT_NO_OTHER_ERRORS,
-    ABORT_WITH_OTHER_ERRORS,
-    CONTINUE_WITH_ERRORS,
-    OK,
-};
-TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, CCoinsViewCache& inputs, const CTxUndo* txundo);
 bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,

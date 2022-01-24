@@ -428,7 +428,7 @@ public:
     const CTxOut& GetOutputFor(const CTxIn& input) const;
 
     void UpdateWithConfirmedTransaction(const CTransaction& confirmedTx, const int blockHeight, CTxUndo& txundo);
-    TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo);
+    TxReversalStatus UpdateWithReversedTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo);
 
     friend class CCoinsModifier;
 

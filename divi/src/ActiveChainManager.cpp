@@ -94,7 +94,7 @@ bool ActiveChainManager::DisconnectBlock(
         const CTransaction& tx = block.vtx[transactionIndex];
         const TransactionLocationReference txLocationReference(tx, pindex->nHeight, transactionIndex);
         const auto* undo = (transactionIndex > 0 ? &blockUndo.vtxundo[transactionIndex - 1] : nullptr);
-        const TxReversalStatus status = view.UpdateCoinsReversingTransaction(tx,txLocationReference,undo);
+        const TxReversalStatus status = view.UpdateWithReversedTransaction(tx,txLocationReference,undo);
 
         bool fClean;
         if (!CheckTxReversalStatus(status, fClean))

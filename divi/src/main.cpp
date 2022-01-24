@@ -595,13 +595,14 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
     {
         const ChainstateManager::Reference chainstate;
-        CCoinsViewCache view;
 
+        CCoinsViewBacked temporaryBacking;
+        CCoinsViewCache view(&temporaryBacking);
         CAmount nValueIn = 0;
         {
             LOCK(pool.cs);
             const CCoinsViewMemPool viewMemPool(&chainstate->CoinsTip(), pool);
-            view.SetBackend(viewMemPool);
+            temporaryBacking.SetBackend(viewMemPool);
 
             // do we already have it?
             if (view.HaveCoins(hash))
@@ -634,7 +635,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             nValueIn = view.GetValueIn(tx);
 
             // we have all inputs cached now, so switch back to dummy, so we don't need to keep lock on mempool
-            view.DettachBackend();
+            temporaryBacking.DettachBackend();
         }
 
         // Check for non-standard pay-to-script-hash in inputs

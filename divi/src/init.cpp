@@ -344,6 +344,11 @@ public:
         assert(instance != nullptr);
         return instance->coinsdbview;
     }
+    static bool GetCoinDatabaseStats(CCoinsStats& stats)
+    {
+        assert(instance != nullptr);
+        return instance->coinsdbview.GetStats(stats);
+    }
 
 };
 
@@ -444,6 +449,12 @@ bool UnitTestShutdownRequested()
 StartAndShutdownSignals& startAndShutdownSignals = StartAndShutdownSignals::instance();
 
 } // anonymous namespace
+
+bool GetCoinDatabaseStats(CCoinsStats& stats)
+{
+    AssertLockHeld(cs_main);
+    return ShallowDatabases::GetCoinDatabaseStats(stats);
+}
 
 void EnableMainSignals()
 {

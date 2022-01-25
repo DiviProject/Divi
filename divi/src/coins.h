@@ -282,9 +282,6 @@ public:
     //! The passed mapCoins can be modified.
     virtual bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) = 0;
 
-    //! Calculate statistics about the unspent transaction output set
-    virtual bool GetStats(CCoinsStats& stats) const = 0;
-
     //! As we use CCoinsViews polymorphically, have a virtual destructor
     virtual ~CCoinsView() {}
 };
@@ -312,7 +309,6 @@ public:
     void SetBackend(const CCoinsView& viewIn);
     void DettachBackend();
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override;
-    bool GetStats(CCoinsStats& stats) const override;
 };
 
 class CCoinsViewCache;
@@ -370,7 +366,6 @@ public:
     bool HaveCoins(const uint256& txid) const override;
     uint256 GetBestBlock() const override;
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override;
-    bool GetStats(CCoinsStats& stats) const override;
 
     // Caches the best block to write to the backed coinsview on flush
     void SetBestBlock(const uint256& hashBlock);

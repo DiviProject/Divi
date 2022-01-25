@@ -39,6 +39,7 @@ extern bool fAddressIndex;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern const CBlockIndex* pindexBestHeader;
+extern bool GetCoinDatabaseStats(CCoinsStats& stats);
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
@@ -409,7 +410,7 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
 
     CCoinsStats stats;
     FlushStateToDisk();
-    if (chainstate.CoinsTip().GetStats(stats)) {
+    if (GetCoinDatabaseStats(stats)) {
         ret.push_back(Pair("height", (int64_t)stats.nHeight));
         ret.push_back(Pair("bestblock", stats.hashBlock.GetHex()));
         ret.push_back(Pair("transactions", (int64_t)stats.nTransactions));

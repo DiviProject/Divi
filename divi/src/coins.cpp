@@ -192,7 +192,6 @@ bool CCoinsViewBacked::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)
   return writeBase? writeBase->BatchWrite(mapCoins, hashBlock):false;
 }
 
-bool CCoinsViewBacked::GetStats(CCoinsStats& stats) const { return roBase? roBase->GetStats(stats):false; }
 
 CCoinsKeyHasher::CCoinsKeyHasher() : salt(GetRandHash()) {}
 
@@ -203,11 +202,6 @@ CCoinsViewCache::CCoinsViewCache(const CCoinsView* baseIn) : backed_(baseIn), ha
 CCoinsViewCache::~CCoinsViewCache()
 {
     assert(!hasModifier);
-}
-
-bool CCoinsViewCache::GetStats(CCoinsStats& stats) const
-{
-    return backed_.GetStats(stats);
 }
 
 CCoinsMap::const_iterator CCoinsViewCache::FetchCoins(const uint256& txid) const

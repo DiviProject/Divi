@@ -408,10 +408,9 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
     Object ret;
 
     const ChainstateManager::Reference chainstate;
-
     CCoinsStats stats;
     FlushStateToDisk();
-    if (chainstate->CoinsTip().GetStats(stats)) {
+    if (chainstate->GetNonCatchingCoinsView().GetStats(stats)) {
         ret.push_back(Pair("height", (int64_t)stats.nHeight));
         ret.push_back(Pair("bestblock", stats.hashBlock.GetHex()));
         ret.push_back(Pair("transactions", (int64_t)stats.nTransactions));

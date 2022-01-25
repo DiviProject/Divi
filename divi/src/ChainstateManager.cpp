@@ -74,6 +74,11 @@ ChainstateManager::~ChainstateManager ()
   blockMap.reset ();
 }
 
+const CCoinsViewDB& ChainstateManager::GetNonCatchingCoinsView () const
+{
+  return *coinsDbView;
+}
+
 ChainstateManager& ChainstateManager::Get ()
 {
   LOCK (instanceLock);

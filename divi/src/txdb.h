@@ -56,7 +56,7 @@ public:
     bool HaveCoins(const uint256& txid) const override;
     uint256 GetBestBlock() const override;
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override;
-    bool GetStats(CCoinsStats& stats) const override;
+    bool GetStats(CCoinsStats& stats) const;
 };
 
 /** Access to the block database (blocks/index/) */

@@ -59,7 +59,6 @@ public:
         return true;
     }
 
-    bool GetStats(CCoinsStats& stats) const override { return false; }
 };
 }
 

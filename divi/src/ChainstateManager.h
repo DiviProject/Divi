@@ -8,7 +8,9 @@ class BlockMap;
 class CBlockTreeDB;
 class CChain;
 class CCoinsView;
+class CCoinsViewDB;
 class CCoinsViewCache;
+class CCoinsStats;
 
 /** The main class that encapsulates the blockchain state (including active
  *  chain and the block-index map).  All code that modifies or reads the
@@ -22,7 +24,7 @@ private:
   std::unique_ptr<CChain> activeChain;
   std::unique_ptr<CBlockTreeDB> blockTree;
 
-  std::unique_ptr<CCoinsView> coinsDbView;
+  std::unique_ptr<CCoinsViewDB> coinsDbView;
   std::unique_ptr<CCoinsView> coinsCatcher;
   std::unique_ptr<CCoinsViewCache> coinsTip;
 
@@ -89,11 +91,7 @@ public:
 
   /** Returns a coins view that is not catching errors in GetCoins.  This is
    *  used during initialisation for verifying the DB.  */
-  inline const CCoinsView&
-  GetNonCatchingCoinsView () const
-  {
-    return *coinsDbView;
-  }
+  const CCoinsViewDB& GetNonCatchingCoinsView () const;
 
   /** Returns the singleton instance of the ChainstateManager that exists
    *  at the moment.  It must be constructed at the moment.  */

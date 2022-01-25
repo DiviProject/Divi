@@ -382,9 +382,11 @@ public:
     bool GetCoins(const uint256& txid, CCoins& coins) const override;
     bool HaveCoins(const uint256& txid) const override;
     uint256 GetBestBlock() const override;
-    void SetBestBlock(const uint256& hashBlock);
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override;
     bool GetStats(CCoinsStats& stats) const override;
+
+    // Caches the best block to write to the backed coinsview on flush
+    void SetBestBlock(const uint256& hashBlock);
 
     /**
      * Return a pointer to CCoins in the cache, or NULL if not found. This is

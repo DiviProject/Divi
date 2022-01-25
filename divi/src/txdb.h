@@ -32,6 +32,18 @@ struct TxIndexEntry;
 struct BlockMap;
 
 /** CCoinsView backed by the LevelDB coin database (chainstate/) */
+struct CCoinsStats {
+    int nHeight;
+    uint256 hashBlock;
+    uint64_t nTransactions;
+    uint64_t nTransactionOutputs;
+    uint64_t nSerializedSize;
+    uint256 hashSerialized;
+    CAmount nTotalAmount;
+
+    CCoinsStats() : nHeight(0), hashBlock(0), nTransactions(0), nTransactionOutputs(0), nSerializedSize(0), hashSerialized(0), nTotalAmount(0) {}
+};
+
 class CCoinsViewDB : public CCoinsView
 {
 protected:

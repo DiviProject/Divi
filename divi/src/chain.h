@@ -207,6 +207,7 @@ public:
         vLotteryWinnersCoinstakes.clear();
     }
 
+    CBlockIndex (const CBlockIndex& index) = default;
 
     CDiskBlockPos GetBlockPos() const
     {

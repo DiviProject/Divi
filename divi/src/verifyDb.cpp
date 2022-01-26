@@ -57,7 +57,7 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
     nCheckLevel = std::max(0, std::min(4, nCheckLevel));
     LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
     CCoinsViewCache coins(coinsview);
-    CBlockIndex* pindexState = activeChain_.Tip();
+    const CBlockIndex* pindexState = activeChain_.Tip();
     int nGoodTransactions = 0;
     CValidationState state;
     for (const CBlockIndex* pindex = activeChain_.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
@@ -101,7 +101,7 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
 
     // check level 4: try reconnecting blocks
     if (nCheckLevel >= 4) {
-        CBlockIndex* pindex = pindexState;
+        const CBlockIndex* pindex = pindexState;
         while (pindex != activeChain_.Tip()) {
             boost::this_thread::interruption_point();
 
@@ -114,8 +114,25 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
             CBlock block;
             if (!ReadBlockFromDisk(block, pindex))
                 return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
-            if (!ConnectBlock(block, state, pindex, coins, true))
+
+            /* ConnectBlock may modify some fields in pindex as the block's
+               status is updated.  In particular:
+
+                  nUndoPos, nStatus, nMint and nMoneySupply
+
+               In the current situation, we do not want to have the CBlockIndex
+               that is already part of the active chain modified.  Thus we
+               apply ConnectBlock to a temporary copy, and verify later on
+               that the fields computed match the ones we have already.  */
+            CBlockIndex indexCopy(*pindex);
+            if (!ConnectBlock(block, state, &indexCopy, coins, true))
                 return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
+            if (indexCopy.nUndoPos != pindex->nUndoPos
+                  || indexCopy.nStatus != pindex->nStatus
+                  || indexCopy.nMint != pindex->nMint
+                  || indexCopy.nMoneySupply != pindex->nMoneySupply)
+                return error("%s: *** attached block index differs from stored data at %d, hash=%s",
+                             __func__, pindex->nHeight, pindex->GetBlockHash());
         }
     }
 

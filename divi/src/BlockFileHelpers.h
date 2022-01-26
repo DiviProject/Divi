@@ -30,7 +30,7 @@ namespace BlockFileHelpers
     bool WriteBlockFileToBlockTreeDatabase(
         CValidationState& state,
         CBlockTreeDB& blockTreeDB);
-    void RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord);
+    void RecordDirtyBlockIndex(const CBlockIndex* blockIndexToRecord);
     void ReadBlockFiles(
         const CBlockTreeDB& blockTreeDB);
     int GetLastBlockHeightWrittenIntoLastBlockFile();

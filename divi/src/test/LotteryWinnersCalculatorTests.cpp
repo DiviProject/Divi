@@ -89,7 +89,7 @@ public:
     {
         CMutableTransaction tx;
 
-        CBlockIndex* currentBlockIndex = fakeBlockIndexWithHashes_->activeChain->operator[](blockHeight);
+        CBlockIndex* currentBlockIndex = const_cast<CBlockIndex*>(fakeBlockIndexWithHashes_->activeChain->operator[](blockHeight));
         LotteryCoinstakeData previousCoinstakesData;
 
 

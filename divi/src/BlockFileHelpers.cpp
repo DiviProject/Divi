@@ -16,7 +16,7 @@ CCriticalSection cs_LastBlockFile;
 /** Dirty block file entries. */
 std::set<int> setDirtyFileInfo;
 /** Dirty block index entries. */
-std::set<CBlockIndex*> setDirtyBlockIndex;
+std::set<const CBlockIndex*> setDirtyBlockIndex;
 int nLastBlockFile = 0;
 std::vector<CBlockFileInfo> vinfoBlockFile;
 
@@ -164,7 +164,7 @@ bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
         return state.Abort("Failed to write to block index");
     }
 
-    for (CBlockIndex* blockIndex: setDirtyBlockIndex)
+    for (const auto* blockIndex: setDirtyBlockIndex)
     {
         if (!blockTreeDB.WriteBlockIndex(CDiskBlockIndex(blockIndex)))
         {
@@ -175,7 +175,7 @@ bool BlockFileHelpers::WriteBlockFileToBlockTreeDatabase(
     return true;
 }
 
-void BlockFileHelpers::RecordDirtyBlockIndex(CBlockIndex* blockIndexToRecord)
+void BlockFileHelpers::RecordDirtyBlockIndex(const CBlockIndex* blockIndexToRecord)
 {
     setDirtyBlockIndex.insert(blockIndexToRecord);
 }

@@ -16,7 +16,7 @@ ChainstateManager* instance = nullptr;
 /** Lock for accessing the instance global.  */
 CCriticalSection instanceLock;
 
-class CCoinsViewErrorCatcher : public CCoinsView
+class CCoinsViewErrorCatcher final: public CCoinsView
 {
 private:
     CCoinsViewBacked backingView_;

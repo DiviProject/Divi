@@ -288,7 +288,7 @@ public:
 
 
 /** CCoinsView backed by another CCoinsView */
-class CCoinsViewBacked : public CCoinsView
+class CCoinsViewBacked final: public CCoinsView
 {
 private:
     /** The base view used for read-only operations.  */
@@ -342,7 +342,7 @@ public:
 };
 
 /** CCoinsView that adds a memory cache for transactions to another CCoinsView */
-class CCoinsViewCache : public CCoinsView
+class CCoinsViewCache final: public CCoinsView
 {
 protected:
     CCoinsViewBacked backed_;

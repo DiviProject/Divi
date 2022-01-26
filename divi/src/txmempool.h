@@ -136,7 +136,7 @@ public:
  * CCoinsView that brings transactions from a memorypool into view.
  * It does not check for spendings by memory pool transactions.
  */
-class CCoinsViewMemPool : public CCoinsView
+class CCoinsViewMemPool final: public CCoinsView
 {
 protected:
     CCoinsViewBacked backingView_;

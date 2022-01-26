@@ -268,14 +268,16 @@ bool MainShutdownRequested()
     return fRequestShutdown || fRestartRequested;
 }
 
-class CCoinsViewErrorCatcher : public CCoinsViewBacked
+class CCoinsViewErrorCatcher : public CCoinsView
 {
+private:
+    CCoinsViewBacked backingView_;
 public:
-    CCoinsViewErrorCatcher(CCoinsView* view) : CCoinsViewBacked(view) {}
+    CCoinsViewErrorCatcher(CCoinsView* view) : backingView_(view) {}
     bool GetCoins(const uint256& txid, CCoins& coins) const override
     {
         try {
-            return CCoinsViewBacked::GetCoins(txid, coins);
+            return backingView_.GetCoins(txid, coins);
         } catch (const std::runtime_error& e) {
             uiInterface.ThreadSafeMessageBox(translate("Error reading from database, shutting down."), "", CClientUIInterface::MSG_ERROR);
             LogPrintf("Error reading from database: %s\n", e.what());
@@ -286,6 +288,19 @@ public:
             abort();
         }
     }
+    bool HaveCoins(const uint256& txid) const override
+    {
+        return backingView_.HaveCoins(txid);
+    }
+    uint256 GetBestBlock() const override
+    {
+        return backingView_.GetBestBlock();
+    }
+    bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override
+    {
+        return backingView_.BatchWrite(mapCoins,hashBlock);
+    }
+
     // Writes do not need similar protection, as failure to write is handled by the caller.
 };
 

@@ -268,7 +268,7 @@ bool MainShutdownRequested()
     return fRequestShutdown || fRestartRequested;
 }
 
-class CCoinsViewErrorCatcher : public CCoinsView
+class CCoinsViewErrorCatcher final: public CCoinsView
 {
 private:
     CCoinsViewBacked backingView_;

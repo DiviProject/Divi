@@ -39,7 +39,7 @@ public:
   MempoolTestFixture()
     : fakeChain(1, 1500000000, 1),
       testPool(CFeeRate(0)),
-      coinsMemPool(nullptr, testPool), coins(&coinsMemPool)
+      coinsMemPool(testPool), coins(&coinsMemPool)
   {
     CMutableTransaction mtx;
     mtx.vout.emplace_back(2 * COIN, CScript () << OP_TRUE);

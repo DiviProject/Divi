@@ -16,7 +16,7 @@ auto insecure_rand = []() -> uint32_t { return random_source.rand32();};
 
 namespace
 {
-class CCoinsViewTest : public CCoinsView
+class CCoinsViewTest final: public CCoinsView
 {
     uint256 hashBestBlock_;
     std::map<uint256, CCoins> map_;

@@ -136,15 +136,25 @@ public:
  * CCoinsView that brings transactions from a memorypool into view.
  * It does not check for spendings by memory pool transactions.
  */
-class CCoinsViewMemPool : public CCoinsViewBacked
+class CCoinsViewMemPool : public CCoinsView
 {
 protected:
+    CCoinsViewBacked backingView_;
     const CTxMemPool& mempool;
-
 public:
+    CCoinsViewMemPool(const CTxMemPool& mempoolIn);
     CCoinsViewMemPool(const CCoinsView* baseIn, const CTxMemPool& mempoolIn);
     bool GetCoins(const uint256& txid, CCoins& coins) const override;
     bool HaveCoins(const uint256& txid) const override;
+    uint256 GetBestBlock() const override
+    {
+        return backingView_.GetBestBlock();
+    }
+    bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override
+    {
+        return backingView_.BatchWrite(mapCoins,hashBlock);
+    }
+
     bool GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const;
 };
 class CValidationState;

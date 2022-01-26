@@ -354,7 +354,20 @@ void CTxMemPool::ClearPrioritisation(const uint256 hash)
 }
 
 
-CCoinsViewMemPool::CCoinsViewMemPool(const CCoinsView* baseIn, const CTxMemPool& mempoolIn) : CCoinsViewBacked(baseIn), mempool(mempoolIn) {}
+CCoinsViewMemPool::CCoinsViewMemPool(
+    const CTxMemPool& mempoolIn
+    ) : backingView_()
+    , mempool(mempoolIn)
+{
+}
+
+CCoinsViewMemPool::CCoinsViewMemPool(
+    const CCoinsView* baseIn,
+    const CTxMemPool& mempoolIn
+    ) : backingView_(baseIn)
+    , mempool(mempoolIn)
+{
+}
 
 bool CCoinsViewMemPool::GetCoins(const uint256& txid, CCoins& coins) const
 {
@@ -366,7 +379,7 @@ bool CCoinsViewMemPool::GetCoins(const uint256& txid, CCoins& coins) const
         coins = CCoins(tx, CTxMemPoolEntry::MEMPOOL_HEIGHT);
         return true;
     }
-    return (CCoinsViewBacked::GetCoins(txid, coins) && !coins.IsPruned());
+    return (backingView_.GetCoins(txid, coins) && !coins.IsPruned());
 }
 
 bool CCoinsViewMemPool::HaveCoins(const uint256& txid) const
@@ -375,7 +388,7 @@ bool CCoinsViewMemPool::HaveCoins(const uint256& txid) const
     if (mempool.lookupOutpoint(txid, dummy))
         return true;
 
-    return CCoinsViewBacked::HaveCoins(txid);
+    return backingView_.HaveCoins(txid);
 }
 bool CCoinsViewMemPool::GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const
 {

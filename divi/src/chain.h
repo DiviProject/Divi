@@ -72,7 +72,7 @@ public:
     CBlockIndex* pprev;
 
     //! pointer to the index of the next block
-    CBlockIndex* pnext;
+    const CBlockIndex* pnext;
 
     //! pointer to the index of some further predecessor of this block
     CBlockIndex* pskip;
@@ -441,22 +441,22 @@ public:
 class CChain
 {
 private:
-    std::vector<CBlockIndex*> vChain;
+    std::vector<const CBlockIndex*> vChain;
 
 public:
     /** Returns the index entry for the genesis block of this chain, or NULL if none. */
-    CBlockIndex* Genesis() const
+    const CBlockIndex* Genesis() const
     {
         return vChain.size() > 0 ? vChain[0] : NULL;
     }
 
     /** Returns the index entry for the tip of this chain, or NULL if none. */
-    CBlockIndex* Tip(bool fProofOfStake = false) const
+    const CBlockIndex* Tip(bool fProofOfStake = false) const
     {
         if (vChain.size() < 1)
             return NULL;
 
-        CBlockIndex* pindex = vChain[vChain.size() - 1];
+        const CBlockIndex* pindex = vChain[vChain.size() - 1];
 
         if (fProofOfStake) {
             while (pindex && pindex->pprev && !pindex->IsProofOfStake())
@@ -466,7 +466,7 @@ public:
     }
 
     /** Returns the index entry at a particular height in this chain, or NULL if no such height exists. */
-    CBlockIndex* operator[](int nHeight) const
+    const CBlockIndex* operator[](int nHeight) const
     {
         if (nHeight < 0 || nHeight >= (int)vChain.size())
             return NULL;
@@ -487,7 +487,7 @@ public:
     }
 
     /** Find the successor of a block in this chain, or NULL if the given index is not found or is the tip. */
-    CBlockIndex* Next(const CBlockIndex* pindex) const
+    const CBlockIndex* Next(const CBlockIndex* pindex) const
     {
         if (Contains(pindex))
             return (*this)[pindex->nHeight + 1];
@@ -502,7 +502,7 @@ public:
     }
 
     /** Set/initialize a chain with a given tip. */
-    void SetTip(CBlockIndex* pindex);
+    void SetTip(const CBlockIndex* pindex);
 
     /** Return a CBlockLocator that refers to a block in this chain (by default the tip). */
     CBlockLocator GetLocator(const CBlockIndex* pindex = NULL) const;

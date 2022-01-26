@@ -42,7 +42,7 @@ private:
     uint256 randomBlockHashSeed_;
 
     void extendChainBlocks(
-        CBlockIndex* chainToExtend,
+        const CBlockIndex* chainToExtend,
         unsigned numberOfBlocks,
         unsigned versionNumber,
         unsigned blockStartTime);

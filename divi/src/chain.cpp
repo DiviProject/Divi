@@ -11,7 +11,7 @@ using namespace std;
 /**
  * CChain implementation
  */
-void CChain::SetTip(CBlockIndex* pindex)
+void CChain::SetTip(const CBlockIndex* pindex)
 {
     if (pindex == NULL) {
         vChain.clear();

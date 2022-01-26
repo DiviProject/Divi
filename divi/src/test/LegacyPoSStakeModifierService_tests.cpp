@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(willFailToGetValidStakeModifierForAnUnknownHash)
 BOOST_AUTO_TEST_CASE(willReturnStakeModifierOfZeroWhenAskedForTheChainTipsStakeModifierIfNotSet)
 {
     Init(200); // Initialize to 200 blocks;
-    CBlockIndex* chainTip = getActiveChain().Tip();
+    const CBlockIndex* chainTip = getActiveChain().Tip();
     assert(chainTip);
     {
         std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(chainTip->GetBlockHash()));
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(willReturnStakeModifierOfZeroWhenAskedForTheChainTipsStakeM
 BOOST_AUTO_TEST_CASE(willReturnStakeModifierForTheChainTipsStakeModifierWhenItsSet)
 {
     Init(200); // Initialize to 200 blocks;
-    CBlockIndex* chainTip = getActiveChain().Tip();
+    CBlockIndex* chainTip = const_cast<CBlockIndex*>(getActiveChain().Tip());
     assert(chainTip);
     {
         uint64_t stakeModifier = 0x26929c2;
@@ -100,10 +100,10 @@ BOOST_AUTO_TEST_CASE(willVerifyLengthOfSearchIntervalIs2087seconds)
 BOOST_AUTO_TEST_CASE(willReturnStakeModifierForLastStakeModifierSetOrDefaultToZero)
 {
     Init(200); // Initialize to 200 blocks;
-    CBlockIndex* chainTip = getActiveChain().Tip();
-    CBlockIndex* blockIndexOnePastStakeModifierSet = chainTip->GetAncestor(151);
+    const CBlockIndex* chainTip = getActiveChain().Tip();
+    const CBlockIndex* blockIndexOnePastStakeModifierSet = chainTip->GetAncestor(151);
     CBlockIndex* blockIndexWithStakeModifierSet = blockIndexOnePastStakeModifierSet->pprev;
-    CBlockIndex* oldBlockIndex = blockIndexWithStakeModifierSet->GetAncestor(101);
+    const CBlockIndex* oldBlockIndex = blockIndexWithStakeModifierSet->GetAncestor(101);
     assert(chainTip);
     assert(blockIndexOnePastStakeModifierSet);
     assert(blockIndexWithStakeModifierSet);
@@ -125,8 +125,8 @@ BOOST_AUTO_TEST_CASE(willReturnStakeModifierForLastStakeModifierSetOrDefaultToZe
 BOOST_AUTO_TEST_CASE(willGetEarliestStakeModifierSetThatIsOutsideTheSelectionIntervalOrDefaultToTheChainTipIfSetAndZeroOtherwise)
 {
     Init(200); // Initialize to 200 blocks;
-    CBlockIndex* chainTip = getActiveChain().Tip();
-    CBlockIndex* blockIndexWithStakeModifierSet = chainTip->GetAncestor(185);
+    CBlockIndex* chainTip = const_cast<CBlockIndex*>(getActiveChain().Tip());
+    CBlockIndex* blockIndexWithStakeModifierSet = const_cast<CBlockIndex*>(chainTip->GetAncestor(185));
     blockIndexWithStakeModifierSet->SetStakeModifier(blockIndexWithStakeModifierSet->nHeight,true);
     CBlockIndex* predecesor = blockIndexWithStakeModifierSet->pprev;
     while(blockIndexWithStakeModifierSet->GetBlockTime() -  predecesor->GetBlockTime() < GetStakeModifierSelectionInterval())
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(willGetEarliestStakeModifierSetThatIsOutsideTheSelectionInt
     assert(chainTip);
     assert(blockIndexWithStakeModifierSet);
     assert(predecesor);
-    CBlockIndex* onePastPredecesor = chainTip->GetAncestor(predecesor->nHeight+1);
+    const CBlockIndex* onePastPredecesor = chainTip->GetAncestor(predecesor->nHeight+1);
 
     {
         std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(predecesor->GetBlockHash()));

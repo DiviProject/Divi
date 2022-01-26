@@ -1093,7 +1093,7 @@ void FlushStateToDisk(FlushStateMode mode)
 }
 
 /** Update chainActive and related internal data structures. */
-void static UpdateTip(CBlockIndex* pindexNew)
+void static UpdateTip(const CBlockIndex* pindexNew)
 {
     ChainstateManager chainstate;
     auto& chain = chainstate.ActiveChain();

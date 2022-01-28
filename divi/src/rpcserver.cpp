@@ -261,9 +261,7 @@ uint256 ParseHashO(const Object& o, string strKey)
 }
 std::vector<unsigned char> ParseHexV(const Value& v, string strName)
 {
-    string strHex;
-    if (v.type() == str_type)
-        strHex = v.get_str();
+    string strHex = (v.type() == str_type)? v.get_str(): "";
     if (!IsHex(strHex))
         throw JSONRPCError(RPC_INVALID_PARAMETER, strName + " must be hexadecimal string (not '" + strHex + "')");
     return ParseHex(strHex);

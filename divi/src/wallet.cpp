@@ -1588,15 +1588,15 @@ void CWallet::AddTransactions(const TransactionVector& txs, const CBlock* pblock
 
 void CWallet::SyncTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType)
 {
+    AssertLockHeld(cs_main);
     if(syncType == TransactionSyncType::RESCAN)
     {
-        AssertLockHeld(cs_main);
         AssertLockHeld(cs_wallet);
         AddTransactions(txs,pblock,syncType);
     }
     else
     {
-        LOCK2(cs_main, cs_wallet);
+        LOCK(cs_wallet);
         AddTransactions(txs,pblock,syncType);
     }
 }

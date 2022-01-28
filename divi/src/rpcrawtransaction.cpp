@@ -923,7 +923,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_TRANSACTION_REJECTED, "Fees being paid are in excess of maximum fee, but fee override is not provided");
         }
         CValidationState state;
-        if (!SubmitTransactionToMempool(mempool, state, tx))
+        if (!SubmitTransactionToMempool(mempool, tx, state))
         {
             if (state.IsInvalid())
                 throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));

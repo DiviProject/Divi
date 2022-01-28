@@ -399,7 +399,7 @@ bool CCoinsViewMemPool::GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins)
     return true;
 }
 
-bool SubmitTransactionToMempool(CTxMemPool& mempool, CValidationState& state, const CTransaction& tx)
+bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx, CValidationState& state)
 {
     constexpr const bool limitFreeTxProcessing = false;
     bool fAccepted = ::AcceptToMemoryPool(mempool, state, tx, limitFreeTxProcessing);
@@ -410,5 +410,5 @@ bool SubmitTransactionToMempool(CTxMemPool& mempool, CValidationState& state, co
 bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx)
 {
     CValidationState state;
-    return SubmitTransactionToMempool(mempool,state,tx);
+    return SubmitTransactionToMempool(mempool,tx,state);
 }

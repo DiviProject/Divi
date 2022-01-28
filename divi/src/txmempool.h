@@ -159,5 +159,5 @@ public:
 };
 class CValidationState;
 bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx);
-bool SubmitTransactionToMempool(CTxMemPool& mempool, CValidationState& state, const CTransaction& tx);
+bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx, CValidationState& state);
 #endif // BITCOIN_TXMEMPOOL_H

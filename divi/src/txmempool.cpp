@@ -390,6 +390,12 @@ bool CCoinsViewMemPool::HaveCoins(const uint256& txid) const
 
     return backingView_.HaveCoins(txid);
 }
+
+uint256 CCoinsViewMemPool::GetBestBlock() const
+{
+    return backingView_.GetBestBlock();
+}
+
 bool CCoinsViewMemPool::GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const
 {
     LOCK(mempool.cs);

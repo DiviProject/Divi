@@ -139,7 +139,7 @@ public:
 class CCoinsViewMemPool final: public CCoinsView
 {
 protected:
-    CCoinsViewBacked backingView_;
+    const CCoinsViewBacked backingView_;
     const CTxMemPool& mempool;
 public:
     CCoinsViewMemPool(const CTxMemPool& mempoolIn);
@@ -152,7 +152,7 @@ public:
     }
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override
     {
-        return backingView_.BatchWrite(mapCoins,hashBlock);
+        return false;
     }
 
     bool GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const;

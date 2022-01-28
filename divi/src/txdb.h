@@ -77,6 +77,10 @@ public:
     bool WriteLastBlockFile(int nFile);
     bool WriteReindexing(bool fReindex);
     bool ReadReindexing(bool& fReindex) const;
+    bool WriteFlag(const std::string& name, bool fValue);
+    bool ReadFlag(const std::string& name, bool& fValue) const;
+    bool LoadBlockIndices(BlockMap& blockIndicesByHash) const;
+
     bool ReadTxIndex(const uint256& txid, CDiskTxPos& pos) const;
     bool WriteTxIndex(const std::vector<TxIndexEntry>& list);
     bool WriteAddressIndex(const std::vector<std::pair<CAddressIndexKey, CAmount> > &vect);
@@ -89,9 +93,6 @@ public:
     bool UpdateAddressUnspentIndex(const std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue > >&vect);
     bool ReadAddressUnspentIndex(uint160 addressHash, int type,
                                  std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &vect) const;
-    bool WriteFlag(const std::string& name, bool fValue);
-    bool ReadFlag(const std::string& name, bool& fValue) const;
-    bool LoadBlockIndices(BlockMap& blockIndicesByHash) const;
 };
 
 #endif // BITCOIN_TXDB_H

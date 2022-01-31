@@ -86,14 +86,13 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)
     CLevelDBBatch batch;
     size_t count = 0;
     size_t changed = 0;
-    for (auto it = mapCoins.begin(); it != mapCoins.end();) {
+    for (auto it = mapCoins.begin(); it != mapCoins.end(); mapCoins.erase(it++))
+    {
         if (it->second.flags & CCoinsCacheEntry::DIRTY) {
             BatchWriteCoins(batch, it->first, it->second.coins);
             changed++;
         }
         count++;
-        CCoinsMap::iterator itOld = it++;
-        mapCoins.erase(itOld);
     }
     if (hashBlock != uint256(0))
         BatchWriteHashBestChain(batch, hashBlock);

@@ -292,7 +292,8 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBloc
         { // Ignore non-dirty entries (optimization).
             CCoinsMap::iterator matchingCachedCoin = cacheCoins.find(coinUpdate->first);
             const bool coinUpdateIsPruned = coinUpdate->second.coins.IsPruned();
-            if (matchingCachedCoin == cacheCoins.end())
+            const bool matchingCoinExistInCache = matchingCachedCoin != cacheCoins.end();
+            if (!matchingCoinExistInCache)
             { // Add unknown entry to local cache with not-prunned coin from incoming updates
                 if (!coinUpdateIsPruned)
                 {

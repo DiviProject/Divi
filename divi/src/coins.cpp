@@ -292,13 +292,9 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBloc
         { // Ignore non-dirty entries (optimization).
             CCoinsMap::iterator matchingCachedCoin = cacheCoins.find(coinUpdate->first);
             if (matchingCachedCoin == cacheCoins.end())
-            {
+            { // Add unknown entry to local cache with not-prunned coin from incoming updates
                 if (!coinUpdate->second.coins.IsPruned())
                 {
-                    // The parent cache does not have an entry, while the child
-                    // cache does have (a non-pruned) one. Move the data up, and
-                    // mark it as fresh (if the grandparent did have it, we
-                    // would have pulled it in at first GetCoins).
                     assert(coinUpdate->second.flags & CCoinsCacheEntry::FRESH);
                     CCoinsCacheEntry& entry = cacheCoins[coinUpdate->first];
                     entry.coins.swap(coinUpdate->second.coins);

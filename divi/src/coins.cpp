@@ -283,10 +283,10 @@ void CCoinsViewCache::SetBestBlock(const uint256& hashBlockIn)
     hashBlock = hashBlockIn;
 }
 
-bool CCoinsViewCache::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlockIn)
+bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBlockIn)
 {
     assert(!hasModifier);
-    for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();)
+    for (CCoinsMap::iterator it = coinUpdates.begin(); it != coinUpdates.end();)
     {
         if (it->second.flags & CCoinsCacheEntry::DIRTY)
         { // Ignore non-dirty entries (optimization).
@@ -323,7 +323,7 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlockIn
             }
         }
         CCoinsMap::iterator itOld = it++;
-        mapCoins.erase(itOld);
+        coinUpdates.erase(itOld);
     }
     hashBlock = hashBlockIn;
     return true;

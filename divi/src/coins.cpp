@@ -293,15 +293,12 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBloc
             CCoinsMap::iterator matchingCachedCoin = cacheCoins.find(coinUpdate->first);
             const bool coinUpdateIsPruned = coinUpdate->second.coins.IsPruned();
             const bool matchingCoinExistInCache = matchingCachedCoin != cacheCoins.end();
-            if (!matchingCoinExistInCache)
+            if (!matchingCoinExistInCache && !coinUpdateIsPruned)
             { // Add unknown entry to local cache with not-prunned coin from incoming updates
-                if (!coinUpdateIsPruned)
-                {
-                    assert(coinUpdate->second.flags & CCoinsCacheEntry::FRESH);
-                    CCoinsCacheEntry& entry = cacheCoins[coinUpdate->first];
-                    entry.coins.swap(coinUpdate->second.coins);
-                    entry.flags = CCoinsCacheEntry::DIRTY | CCoinsCacheEntry::FRESH;
-                }
+                assert(coinUpdate->second.flags & CCoinsCacheEntry::FRESH);
+                CCoinsCacheEntry& entry = cacheCoins[coinUpdate->first];
+                entry.coins.swap(coinUpdate->second.coins);
+                entry.flags = CCoinsCacheEntry::DIRTY | CCoinsCacheEntry::FRESH;
             }
             else if(matchingCoinExistInCache)
             {

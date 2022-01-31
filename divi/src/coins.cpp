@@ -303,10 +303,7 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBloc
             else if(matchingCoinExistInCache)
             {
                 if ((matchingCachedCoin->second.flags & CCoinsCacheEntry::FRESH) && coinUpdateIsPruned)
-                {
-                    // The grandparent does not have an entry, and the child is
-                    // modified and being pruned. This means we can just delete
-                    // it from the parent.
+                { // coinUpdate is a pruned coin, so remove the matching entry from the local cache
                     cacheCoins.erase(matchingCachedCoin);
                 }
                 else

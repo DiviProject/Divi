@@ -291,9 +291,10 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBloc
         if (coinUpdate->second.flags & CCoinsCacheEntry::DIRTY)
         { // Ignore non-dirty entries (optimization).
             CCoinsMap::iterator matchingCachedCoin = cacheCoins.find(coinUpdate->first);
+            const bool coinUpdateIsPruned = coinUpdate->second.coins.IsPruned();
             if (matchingCachedCoin == cacheCoins.end())
             { // Add unknown entry to local cache with not-prunned coin from incoming updates
-                if (!coinUpdate->second.coins.IsPruned())
+                if (!coinUpdateIsPruned)
                 {
                     assert(coinUpdate->second.flags & CCoinsCacheEntry::FRESH);
                     CCoinsCacheEntry& entry = cacheCoins[coinUpdate->first];
@@ -303,7 +304,7 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBloc
             }
             else
             {
-                if ((matchingCachedCoin->second.flags & CCoinsCacheEntry::FRESH) && coinUpdate->second.coins.IsPruned())
+                if ((matchingCachedCoin->second.flags & CCoinsCacheEntry::FRESH) && coinUpdateIsPruned)
                 {
                     // The grandparent does not have an entry, and the child is
                     // modified and being pruned. This means we can just delete

@@ -271,9 +271,9 @@ bool MainShutdownRequested()
 class CCoinsViewErrorCatcher final: public CCoinsView
 {
 private:
-    CCoinsViewBacked backingView_;
+    CCoinsViewDB& backingView_;
 public:
-    CCoinsViewErrorCatcher(CCoinsView* view) : backingView_(view) {}
+    CCoinsViewErrorCatcher(CCoinsViewDB& view) : backingView_(view) {}
     bool GetCoins(const uint256& txid, CCoins& coins) const override
     {
         try {
@@ -329,7 +329,7 @@ private:
     explicit ShallowDatabases(const std::pair<size_t, size_t>& blockTreeAndCoinDBCacheSizes)
       : blocktree(blockTreeAndCoinDBCacheSizes.first, false, fReindex),
         coinsdbview(mapBlockIndex, blockTreeAndCoinDBCacheSizes.second, false, fReindex),
-        coinscatcher(&coinsdbview),
+        coinscatcher(coinsdbview),
         coinsTip(&coinscatcher)
     {}
 

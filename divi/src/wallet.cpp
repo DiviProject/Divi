@@ -328,10 +328,11 @@ static const CBlockIndex* ApproximateFork(const CChain& chain,const BlockMap& bl
 const CBlockIndex* CWallet::GetNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis)
 {
     CBlockLocator locator;
-    if(!syncFromGenesis && !CWalletDB(settings,strWalletFile).ReadBestBlock(locator)) syncFromGenesis = true;
+    const bool forceSyncFromGenesis = settings.GetBoolArg("-force_rescan",false);
+    if( forceSyncFromGenesis || (!syncFromGenesis && !CWalletDB(settings,strWalletFile).ReadBestBlock(locator)) ) syncFromGenesis = true;
     const CBlockIndex* pindex = syncFromGenesis? activeChain_.Genesis():ApproximateFork(activeChain_,blockIndexByHash_, locator);
     const int64_t timestampOfFirstKey = getTimestampOfFistKey();
-    while (pindex && timestampOfFirstKey && (pindex->GetBlockTime() < (timestampOfFirstKey - 7200)))
+    while (!forceSyncFromGenesis && pindex && timestampOfFirstKey && (pindex->GetBlockTime() < (timestampOfFirstKey - 7200)))
         pindex = activeChain_.Next(pindex);
 
     return pindex;

@@ -303,7 +303,7 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBloc
                     entry.flags = CCoinsCacheEntry::DIRTY | CCoinsCacheEntry::FRESH;
                 }
             }
-            else
+            else if(matchingCoinExistInCache)
             {
                 if ((matchingCachedCoin->second.flags & CCoinsCacheEntry::FRESH) && coinUpdateIsPruned)
                 {

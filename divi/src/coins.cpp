@@ -286,28 +286,28 @@ void CCoinsViewCache::SetBestBlock(const uint256& hashBlockIn)
 bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBlockIn)
 {
     assert(!hasModifier);
-    for (CCoinsMap::iterator it = coinUpdates.begin(); it != coinUpdates.end();)
+    for (CCoinsMap::iterator coinUpdate = coinUpdates.begin(); coinUpdate != coinUpdates.end();)
     {
-        if (it->second.flags & CCoinsCacheEntry::DIRTY)
+        if (coinUpdate->second.flags & CCoinsCacheEntry::DIRTY)
         { // Ignore non-dirty entries (optimization).
-            CCoinsMap::iterator matchingCachedCoin = cacheCoins.find(it->first);
+            CCoinsMap::iterator matchingCachedCoin = cacheCoins.find(coinUpdate->first);
             if (matchingCachedCoin == cacheCoins.end())
             {
-                if (!it->second.coins.IsPruned())
+                if (!coinUpdate->second.coins.IsPruned())
                 {
                     // The parent cache does not have an entry, while the child
                     // cache does have (a non-pruned) one. Move the data up, and
                     // mark it as fresh (if the grandparent did have it, we
                     // would have pulled it in at first GetCoins).
-                    assert(it->second.flags & CCoinsCacheEntry::FRESH);
-                    CCoinsCacheEntry& entry = cacheCoins[it->first];
-                    entry.coins.swap(it->second.coins);
+                    assert(coinUpdate->second.flags & CCoinsCacheEntry::FRESH);
+                    CCoinsCacheEntry& entry = cacheCoins[coinUpdate->first];
+                    entry.coins.swap(coinUpdate->second.coins);
                     entry.flags = CCoinsCacheEntry::DIRTY | CCoinsCacheEntry::FRESH;
                 }
             }
             else
             {
-                if ((matchingCachedCoin->second.flags & CCoinsCacheEntry::FRESH) && it->second.coins.IsPruned())
+                if ((matchingCachedCoin->second.flags & CCoinsCacheEntry::FRESH) && coinUpdate->second.coins.IsPruned())
                 {
                     // The grandparent does not have an entry, and the child is
                     // modified and being pruned. This means we can just delete
@@ -317,13 +317,12 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBloc
                 else
                 {
                     // A normal modification.
-                    matchingCachedCoin->second.coins.swap(it->second.coins);
+                    matchingCachedCoin->second.coins.swap(coinUpdate->second.coins);
                     matchingCachedCoin->second.flags |= CCoinsCacheEntry::DIRTY;
                 }
             }
         }
-        CCoinsMap::iterator itOld = it++;
-        coinUpdates.erase(itOld);
+        coinUpdates.erase(coinUpdate++);
     }
     hashBlock = hashBlockIn;
     return true;

@@ -66,7 +66,6 @@ public:
 
     bool Check(
         const CBlockRewards& nExpectedMint,
-        bool fJustCheck,
         IndexDatabaseUpdates& indexDatabaseUpdates);
     bool WaitForScriptsToBeChecked();
     CBlockUndo& getBlockUndoData();

@@ -673,7 +673,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
-        if (!CheckInputs(tx, state, view, chainstate.GetBlockMap(), true, STANDARD_SCRIPT_VERIFY_FLAGS, true)) {
+        if (!CheckInputs(tx, state, view, chainstate.GetBlockMap(), true, STANDARD_SCRIPT_VERIFY_FLAGS)) {
             return error("%s: : ConnectInputs failed %s",__func__, hash);
         }
 
@@ -686,7 +686,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         // There is a similar check in CreateNewBlock() to prevent creating
         // invalid blocks, however allowing such transactions into the mempool
         // can be exploited as a DoS attack.
-        if (!CheckInputs(tx, state, view, chainstate.GetBlockMap(), true, MANDATORY_SCRIPT_VERIFY_FLAGS, true)) {
+        if (!CheckInputs(tx, state, view, chainstate.GetBlockMap(), true, MANDATORY_SCRIPT_VERIFY_FLAGS)) {
             return error("%s: : BUG! PLEASE REPORT THIS! ConnectInputs failed against MANDATORY but not STANDARD flags %s",__func__, hash);
         }
 
@@ -974,7 +974,7 @@ bool ConnectBlock(
     ChainstateManager chainstate;
 
     // Check it again in case a previous version let a bad block in
-    if (!fAlreadyChecked && !CheckBlock(block, state, !fJustCheck))
+    if (!fAlreadyChecked && !CheckBlock(block, state))
         return false;
 
     static const CChainParams& chainParameters = Params();
@@ -1007,7 +1007,7 @@ bool ConnectBlock(
     }
     BlockTransactionChecker blockTxChecker(block, state, pindex, view, chainstate.GetBlockMap(), blocksToSkipChecksFor);
 
-    if(!blockTxChecker.Check(nExpectedMint,fJustCheck,indexDatabaseUpdates))
+    if(!blockTxChecker.Check(nExpectedMint, indexDatabaseUpdates))
     {
         return false;
     }
@@ -1682,7 +1682,7 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
     return true;
 }
 
-bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleRoot)
+bool CheckBlock(const CBlock& block, CValidationState& state)
 {
     // These are checks that are independent of context.
 
@@ -1701,20 +1701,18 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleR
                              REJECT_INVALID, "time-too-new");
 
     // Check the merkle root.
-    if (fCheckMerkleRoot) {
-        bool mutated;
-        uint256 hashMerkleRoot2 = block.BuildMerkleTree(&mutated);
-        if (block.hashMerkleRoot != hashMerkleRoot2)
-            return state.DoS(100, error("%s : hashMerkleRoot mismatch",__func__),
-                             REJECT_INVALID, "bad-txnmrklroot", true);
+    bool mutated;
+    uint256 hashMerkleRoot2 = block.BuildMerkleTree(&mutated);
+    if (block.hashMerkleRoot != hashMerkleRoot2)
+        return state.DoS(100, error("%s : hashMerkleRoot mismatch",__func__),
+                         REJECT_INVALID, "bad-txnmrklroot", true);
 
-        // Check for merkle tree malleability (CVE-2012-2459): repeating sequences
-        // of transactions in a block without affecting the merkle root of a block,
-        // while still invalidating it.
-        if (mutated)
-            return state.DoS(100, error("%s : duplicate transaction",__func__),
-                             REJECT_INVALID, "bad-txns-duplicate", true);
-    }
+    // Check for merkle tree malleability (CVE-2012-2459): repeating sequences
+    // of transactions in a block without affecting the merkle root of a block,
+    // while still invalidating it.
+    if (mutated)
+        return state.DoS(100, error("%s : duplicate transaction",__func__),
+                         REJECT_INVALID, "bad-txns-duplicate", true);
 
     // All potential-corruption validation must be done before we do any
     // transaction validation, as otherwise we may mark the header as invalid

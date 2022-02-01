@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(May15)
 
         // After May 15'th, big blocks are OK:
         forkingBlock.nTime = tMay15; // Invalidates PoW
-        BOOST_CHECK(CheckBlock(forkingBlock, state, false));
+        BOOST_CHECK(CheckBlock(forkingBlock, state));
     }
 
     SetMockTime(0);

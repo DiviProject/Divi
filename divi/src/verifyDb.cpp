@@ -122,7 +122,7 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
             CBlock block;
             if (!ReadBlockFromDisk(block, pindex))
                 return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
-            if (!ConnectBlock(block, state, pindex, coins, false))
+            if (!ConnectBlock(block, state, pindex, coins, true))
                 return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
         }
     }

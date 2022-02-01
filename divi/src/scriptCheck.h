@@ -23,13 +23,12 @@ private:
     const CTransaction* ptxTo;
     unsigned int nIn;
     unsigned int nFlags;
-    bool cacheStore;
     ScriptError error;
 
 public:
     CScriptCheck();
 
-    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, bool cacheIn);
+    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn);
 
 
     bool operator()();

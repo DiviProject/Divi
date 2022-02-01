@@ -216,7 +216,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins, const BlockMap& blockIndex
 
     uint64_t checkTotal = 0;
 
-    CCoinsViewCache mempoolDuplicate(const_cast<CCoinsViewCache*>(pcoins));
+    CCoinsViewCache mempoolDuplicate(pcoins);
 
     LOCK(cs);
     list<const CTxMemPoolEntry*> waitingOnDependants;
@@ -232,7 +232,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins, const BlockMap& blockIndex
                 assert(tx2.vout.size() > txin.prevout.n && !tx2.vout[txin.prevout.n].IsNull());
                 fDependsWait = true;
             } else {
-                const CCoins* coins = pcoins->AccessCoins(txin.prevout.hash);
+                const CCoins* coins = mempoolDuplicate.AccessCoins(txin.prevout.hash);
                 assert(coins && coins->IsAvailable(txin.prevout.n));
             }
             // Check whether its inputs are marked in mapNextTx.

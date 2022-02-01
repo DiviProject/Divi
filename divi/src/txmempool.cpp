@@ -247,7 +247,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins, const BlockMap& blockIndex
         else {
             CValidationState state;
             CTxUndo undo;
-            assert(CheckInputs(tx, state, mempoolDuplicate, blockIndexMap, false, 0, false, NULL));
+            assert(CheckInputs(tx, state, mempoolDuplicate, blockIndexMap, false, 0, nullptr));
             UpdateCoinsWithTransaction(tx, mempoolDuplicate, undo, 1000000);
         }
     }
@@ -261,7 +261,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins, const BlockMap& blockIndex
             stepsSinceLastRemove++;
             assert(stepsSinceLastRemove < waitingOnDependants.size());
         } else {
-            assert(CheckInputs(entry->GetTx(), state, mempoolDuplicate, blockIndexMap, false, 0, false, NULL));
+            assert(CheckInputs(entry->GetTx(), state, mempoolDuplicate, blockIndexMap, false, 0, nullptr));
             CTxUndo undo;
             UpdateCoinsWithTransaction(entry->GetTx(), mempoolDuplicate, undo, 1000000);
             stepsSinceLastRemove = 0;

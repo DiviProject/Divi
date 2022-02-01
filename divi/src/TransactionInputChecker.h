@@ -31,7 +31,6 @@ public:
     bool CheckInputsAndUpdateCoinSupplyRecords(
         const CTransaction& tx,
         unsigned flags,
-        const bool fJustCheck,
         CBlockIndex* pindex);
 
     bool InputsAreValid(const CTransaction& tx) const;

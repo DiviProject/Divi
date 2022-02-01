@@ -85,7 +85,6 @@ bool CachingTransactionSignatureChecker::VerifySignature(const std::vector<unsig
     if (!TransactionSignatureChecker::VerifySignature(vchSig, pubkey, sighash))
         return false;
 
-    if (store)
-        signatureCache.Set(sighash, vchSig, pubkey);
+    signatureCache.Set(sighash, vchSig, pubkey);
     return true;
 }

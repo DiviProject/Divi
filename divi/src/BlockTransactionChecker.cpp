@@ -110,7 +110,7 @@ bool BlockTransactionChecker::CheckCoinstakeForVaults(
     return true;
 }
 
-bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJustCheck, IndexDatabaseUpdates& indexDatabaseUpdates)
+bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint, IndexDatabaseUpdates& indexDatabaseUpdates)
 {
     const CAmount nMoneySupplyPrev = pindex_->pprev ? pindex_->pprev->nMoneySupply : 0;
     pindex_->nMoneySupply = nMoneySupplyPrev;
@@ -133,7 +133,7 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
         {
             return false;
         }
-        if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx, flags, fJustCheck, pindex_))
+        if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx, flags, pindex_))
         {
             return false;
         }

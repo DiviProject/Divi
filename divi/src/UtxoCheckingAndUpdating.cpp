@@ -116,12 +116,11 @@ bool CheckInputs(
     const BlockMap& blockIndexMap,
     bool fScriptChecks,
     unsigned int flags,
-    bool cacheStore,
     std::vector<CScriptCheck>* pvChecks)
 {
     CAmount nFees = 0;
     CAmount nValueIn = 0;
-    return CheckInputs(tx,state,inputs,blockIndexMap,nFees,nValueIn,fScriptChecks,flags,cacheStore,pvChecks);
+    return CheckInputs(tx, state, inputs, blockIndexMap, nFees, nValueIn, fScriptChecks, flags, pvChecks);
 }
 
 
@@ -134,7 +133,6 @@ bool CheckInputs(
     CAmount& nValueIn,
     bool fScriptChecks,
     unsigned int flags,
-    bool cacheStore,
     std::vector<CScriptCheck>* pvChecks,
     bool connectBlockDoS)
 {
@@ -214,7 +212,7 @@ bool CheckInputs(
                 assert(coins);
 
                 // Verify signature
-                CScriptCheck check(*coins, tx, i, flags, cacheStore);
+                CScriptCheck check(*coins, tx, i, flags);
                 if (pvChecks) {
                     pvChecks->push_back(CScriptCheck());
                     check.swap(pvChecks->back());
@@ -227,7 +225,7 @@ bool CheckInputs(
                         // avoid splitting the network between upgraded and
                         // non-upgraded nodes.
                         CScriptCheck check(*coins, tx, i,
-                                           flags & ~STANDARD_NOT_MANDATORY_VERIFY_FLAGS, cacheStore);
+                                           flags & ~STANDARD_NOT_MANDATORY_VERIFY_FLAGS);
                         if (check())
                             return state.Invalid(false, REJECT_NONSTANDARD, strprintf("non-mandatory-script-verify-flag (%s)", ScriptErrorString(check.GetScriptError())));
                     }

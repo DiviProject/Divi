@@ -981,8 +981,7 @@ bool ConnectBlock(
     VerifyBestBlockIsAtPreviousBlock(pindex,view);
     if (block.GetHash() == Params().HashGenesisBlock())
     {
-        if(!fJustCheck)
-            view.SetBestBlock(pindex->GetBlockHash());
+        view.SetBestBlock(pindex->GetBlockHash());
         return true;
     }
     if(!CheckEnforcedPoSBlocksAndBIP30(chainParameters,block,state,pindex,view))
@@ -1023,21 +1022,16 @@ bool ConnectBlock(
     if (!blockTxChecker.WaitForScriptsToBeChecked())
         return state.DoS(100, false);
 
-    if (fJustCheck)
-        return true;
-
-    if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
-       !UpdateDBIndicesForNewBlock(indexDatabaseUpdates, chainstate.BlockTree(), state))
-    {
-        return false;
+    if (!fJustCheck) {
+        if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
+           !UpdateDBIndicesForNewBlock(indexDatabaseUpdates, chainstate.BlockTree(), state))
+        {
+            return false;
+        }
     }
 
     // add this block to the view's block chain
     view.SetBestBlock(pindex->GetBlockHash());
-
-    // Watch for changes to the previous coinbase transaction.
-    static uint256 hashPrevBestCoinBase;
-    hashPrevBestCoinBase = block.vtx[0].GetHash();
 
     return true;
 }

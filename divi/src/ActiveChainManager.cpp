@@ -68,34 +68,26 @@ static bool CheckTxReversalStatus(const TxReversalStatus status, bool& fClean)
     return true;
 }
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
- *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
- *  will be true if no problems were found. Otherwise, the return value will be false in case
- *  of problems. Note that in any case, coins may be modified. */
+ *  If fJustCheck is false, then updates to the address and spent indices are written
+ *  to disk.  The coins view is always updated.
+ *  Returns true on success and false if some error or inconsistency was discovered.  */
 bool ActiveChainManager::DisconnectBlock(
-    CBlock& block,
+    const CBlock& block,
     CValidationState& state,
     const CBlockIndex* pindex,
     CCoinsViewCache& view,
-    bool* pfClean) const
+    const bool fJustCheck) const
 {
     if (pindex->GetBlockHash() != view.GetBestBlock())
         LogPrintf("%s : pindex=%s view=%s\n", __func__, pindex->GetBlockHash(), view.GetBestBlock());
     assert(pindex->GetBlockHash() == view.GetBestBlock());
 
-    if (pfClean)
-        *pfClean = false;
-
     CBlockUndo blockUndo;
     if(!blockDataReader_.ReadBlockUndo(pindex,blockUndo))
-    {
-        return false;
-    }
-    else if(blockUndo.vtxundo.size() + 1 != block.vtx.size())
-    {
-        return error("DisconnectBlock() : block and undo data inconsistent");
-    }
+        return error("%s: failed to read block undo for %s", __func__, block.GetHash());
+    if(blockUndo.vtxundo.size() + 1 != block.vtx.size())
+        return error("%s: block and undo data inconsistent", __func__);
 
-    bool fClean = true;
     IndexDatabaseUpdates indexDBUpdates;
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
@@ -103,30 +95,25 @@ bool ActiveChainManager::DisconnectBlock(
         const TransactionLocationReference txLocationReference(tx, pindex->nHeight, transactionIndex);
         const auto* undo = (transactionIndex > 0 ? &blockUndo.vtxundo[transactionIndex - 1] : nullptr);
         const TxReversalStatus status = UpdateCoinsReversingTransaction(tx, txLocationReference, view, undo);
-        if(!CheckTxReversalStatus(status,fClean))
-        {
-            return false;
-        }
-        if(!pfClean)
-        {
+
+        bool fClean;
+        if (!CheckTxReversalStatus(status, fClean))
+            return error("%s: error reverting transaction %s in block %s at height %d",
+                         __func__, tx.GetHash(), block.GetHash(), pindex->nHeight);
+
+        if(!fJustCheck)
             IndexDatabaseUpdateCollector::ReverseTransaction(tx,txLocationReference,view,indexDBUpdates);
-        }
     }
+
     // undo transactions in reverse order
     view.SetBestBlock(pindex->pprev->GetBlockHash());
-    if(!pfClean)
+    if(!fJustCheck)
     {
         if(!ApplyDisconnectionUpdateIndexToDBs(indexDBUpdates,state))
-        {
-            return false;
-        }
-        return fClean;
+            return error("%s: failed to apply index updates for block %s", __func__, block.GetHash());
     }
-    else
-    {
-        *pfClean = fClean;
-        return true;
-    }
+
+    return true;
 }
 
 void ActiveChainManager::DisconnectBlock(
@@ -143,6 +130,6 @@ void ActiveChainManager::DisconnectBlock(
         return;
     }
     int64_t nStart = GetTimeMicros();
-    status = DisconnectBlock(block,state,pindex,coins);
+    status = DisconnectBlock(block, state, pindex, coins, false);
     LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
 }

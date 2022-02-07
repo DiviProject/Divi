@@ -58,7 +58,6 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
     LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
     CCoinsViewCache coins(coinsview);
     CBlockIndex* pindexState = activeChain_.Tip();
-    const CBlockIndex* pindexFailure = nullptr;
     int nGoodTransactions = 0;
     CValidationState state;
     for (const CBlockIndex* pindex = activeChain_.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
@@ -91,21 +90,14 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
             pindex == pindexState &&
             (coinCacheSize + coinsTipCacheSize) <= coinsCacheSize_)
         {
-            bool fClean = true;
-            if (!chainManager_.DisconnectBlock(block, state, pindex, coins, &fClean))
-                return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
+            if (!chainManager_.DisconnectBlock(block, state, pindex, coins, true))
+                return error("VerifyDB() : *** inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             pindexState = pindex->pprev;
-            if (!fClean) {
-                nGoodTransactions = 0;
-                pindexFailure = pindex;
-            } else
-                nGoodTransactions += block.vtx.size();
+            nGoodTransactions += block.vtx.size();
         }
         if (shutdownListener_())
             return true;
     }
-    if (pindexFailure)
-        return error("VerifyDB() : *** coin database inconsistencies found (last %i blocks, %i good transactions before that)\n", activeChain_.Height() - pindexFailure->nHeight + 1, nGoodTransactions);
 
     // check level 4: try reconnecting blocks
     if (nCheckLevel >= 4) {

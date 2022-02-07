@@ -34,11 +34,14 @@ public:
         CBlockTreeDB* blocktree,
         const I_BlockDataReader& blockDataReader);
     bool DisconnectBlock(
-        CBlock& block,
+        const CBlock& block,
         CValidationState& state,
         const CBlockIndex* pindex,
         CCoinsViewCache& coins,
-        bool* pfClean = nullptr) const;
+        bool fJustCheck) const;
+    /** Disconnects a block given by pindex, which is also first loaded from
+     *  disk and returned as part of disconnectedBlockAndStatus.
+     *  This method always fully disconnects (i.e. fJustCheck=false).  */
     void DisconnectBlock(
         std::pair<CBlock,bool>& disconnectedBlockAndStatus,
         CValidationState& state,

@@ -120,12 +120,18 @@ BlockMap mapBlockIndex;
 CBlockTreeDB* pblocktree = nullptr;
 CCoinsViewCache* pcoinsTip = nullptr;
 
+namespace
+{
+
 //! -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
-static const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
+const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
 //! -maxtxfee will warn if called with a higher fee than this amount (in satoshis)
-static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
+const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
 
 constexpr char FEE_ESTIMATES_FILENAME[] = "fee_estimates.dat";
+
+} // anonymous namespace
+
 CClientUIInterface uiInterface;
 
 bool fAddressIndex = false;
@@ -147,7 +153,10 @@ void InitializeWallet(std::string strWalletFile)
 #endif
 }
 
-static CCriticalSection vaultAllocationLock;
+namespace
+{
+
+CCriticalSection vaultAllocationLock;
 void ThreadSyncVaultDatabase()
 {
 #ifdef ENABLE_WALLET
@@ -192,6 +201,20 @@ void DeallocateVault()
 #endif
 }
 
+bool InitError(const std::string& str)
+{
+    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
+    return false;
+}
+
+bool InitWarning(const std::string& str)
+{
+    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_WARNING);
+    return true;
+}
+
+} // anonymous namespace
+
 void DeallocateWallet()
 {
 #ifdef ENABLE_WALLET
@@ -199,18 +222,6 @@ void DeallocateWallet()
     pwalletMain = nullptr;
     confirmationsCalculator.reset();
 #endif
-}
-
-bool static InitError(const std::string& str)
-{
-    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
-    return false;
-}
-
-bool static InitWarning(const std::string& str)
-{
-    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_WARNING);
-    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -243,6 +254,8 @@ bool static InitWarning(const std::string& str)
 // shutdown thing.
 //
 
+namespace
+{
 
 volatile bool fRequestShutdown = false;
 volatile bool fRestartRequested = false; // if true then restart, else shutdown
@@ -279,9 +292,6 @@ public:
 #ifdef ENABLE_WALLET
 inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWrapper().Flush(shutdown);}
 #endif
-
-namespace
-{
 
 /** Helper class for constructing and destructing the shallow databases.  */
 class ShallowDatabases
@@ -348,8 +358,6 @@ public:
 };
 
 std::unique_ptr<ShallowDatabases> ShallowDatabases::instance;
-
-} // anonymous namespace
 
 /** Preparing steps before shutting down or restarting the wallet */
 void PrepareShutdown()
@@ -432,7 +440,9 @@ bool UnitTestShutdownRequested()
   return false;
 }
 
-static StartAndShutdownSignals& startAndShutdownSignals = StartAndShutdownSignals::instance();
+StartAndShutdownSignals& startAndShutdownSignals = StartAndShutdownSignals::instance();
+
+} // anonymous namespace
 
 void EnableMainSignals()
 {
@@ -472,6 +482,8 @@ void Shutdown()
     UnloadBlockIndex();
 }
 
+namespace
+{
 
 /**
  * Signal handlers are very limited in what they are allowed to do, so:
@@ -486,7 +498,7 @@ void HandleSIGHUP(int)
     fReopenDebugLog = true;
 }
 
-static void BlockNotifyCallback(const uint256& hashNewTip)
+void BlockNotifyCallback(const uint256& hashNewTip)
 {
     std::string strCmd = settings.GetArg("-blocknotify", "");
 
@@ -1192,6 +1204,8 @@ void SubmitUnconfirmedWalletTransactionsToMempool(const CWallet& wallet)
         }
     }
 }
+
+} // anonymous namespace
 
 bool InitializeDivi(boost::thread_group& threadGroup)
 {

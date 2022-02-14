@@ -41,7 +41,6 @@ extern bool ActivateBestChain(CValidationState& state, const CBlock* pblock = nu
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
 unsigned int nTransactionSizeMultiplier = 300;
 std::map<uint256, CSporkMessage> mapSporks;
-CSporkManager sporkManager;
 
 bool ShareSporkDataWithPeer(CNode* peer, const uint256& inventoryHash)
 {
@@ -60,10 +59,11 @@ bool SporkDataIsKnown(const uint256& inventoryHash)
 }
 void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
-    sporkManager.ProcessSpork(pfrom, strCommand, vRecv);
+    GetSporkManager().ProcessSpork(pfrom, strCommand, vRecv);
 }
 CSporkManager& GetSporkManager()
 {
+    static CSporkManager sporkManager;
     return sporkManager;
 }
 

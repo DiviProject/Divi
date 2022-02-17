@@ -76,7 +76,7 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
                       int nHeight = 0, int nConfirmations = 0, int nBlockTime = 0)
 {
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockTree = chainstate.BlockTree();
 
     uint256 txid = tx.GetHash();
@@ -199,7 +199,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)
     entry.push_back(Pair("vout", vout));
 
     if (hashBlock != 0) {
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const auto& chain = chainstate.ActiveChain();
         const auto& blockMap = chainstate.GetBlockMap();
 
@@ -298,7 +298,7 @@ Value getrawtransaction(const Array& params, bool fHelp)
         if (!GetTransaction(hash, tx, hashBlock, true))
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available about transaction");
 
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const auto& chain = chainstate.ActiveChain();
         const auto& blockMap = chainstate.GetBlockMap();
 
@@ -716,7 +716,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
     CCoinsViewCache view;
     {
         LOCK(mempool.cs);
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const CCoinsViewCache& viewChain = chainstate.CoinsTip();
         const CCoinsViewMemPool viewMempool(&viewChain, mempool);
         view.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
@@ -851,7 +851,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
 static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransaction& tx)
 {
     LOCK(mempool.cs);
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const CCoinsViewMemPool viewMemPool(&chainstate.CoinsTip(), mempool);
     const CCoinsViewCache view(&viewMemPool);
 
@@ -896,7 +896,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     if (params.size() > 1)
         fOverrideFees = params[1].get_bool();
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& view = chainstate.CoinsTip();
     const bool fHaveMempool = mempool.exists(hashTx);
 

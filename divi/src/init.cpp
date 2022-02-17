@@ -907,8 +907,7 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
 {
     if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
-        ChainstateManager chainstate;
-        UnloadBlockIndex(&chainstate);
+        UnloadBlockIndex(&ChainstateManager::Get());
 
         if (fReindex)
             pblocktree->WriteReindexing(true);

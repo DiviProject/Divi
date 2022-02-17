@@ -248,7 +248,7 @@ void WalletTxToJSON(const CWallet& wallet, const CWalletTx& wtx, Object& entry)
     if (wtx.IsCoinBase() || wtx.IsCoinStake())
         entry.push_back(Pair("generated", true));
     if (confirms > 0) {
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         entry.push_back(Pair("blockhash", wtx.hashBlock.GetHex()));
         entry.push_back(Pair("blockindex", wtx.merkleBranchIndex));
         entry.push_back(Pair("blocktime", chainstate.GetBlockMap().at(wtx.hashBlock)->GetBlockTime()));
@@ -381,7 +381,7 @@ CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForc
 
 CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     CAmount nBalance = 0;
@@ -1031,7 +1031,7 @@ Value addvault(const Array& params, bool fHelp)
         return result;
     }
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const CBlockIndex* blockSearchStart = chainstate.ActiveChain().Tip();
     while (blockSearchStart->pprev)
     {
@@ -1215,7 +1215,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
     if (params.size() > 1)
         nMinDepth = params[1].get_int();
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     // Tally
@@ -1281,7 +1281,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
         setAddress = GetAccountAddresses(pwalletMain->GetAddressBookManager().GetAddressBook(),strAccount);
     }
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     // Tally
@@ -1548,7 +1548,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
         if (params[2].get_bool())
             filter.addOwnershipType(isminetype::ISMINE_WATCH_ONLY);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     // Tally
@@ -1733,7 +1733,7 @@ static std::string GetAccountAddressName(const CWallet& wallet, const CTxDestina
 static int ComputeBlockHeightOfFirstConfirmation(const uint256 blockHash)
 {
     LOCK(cs_main);
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockMap = chainstate.GetBlockMap();
     const auto it = blockMap.find(blockHash);
     return (it==blockMap.end() || it->second==nullptr)? 0 : it->second->nHeight;
@@ -2163,7 +2163,7 @@ Value listsinceblock(const Array& params, bool fHelp)
     UtxoOwnershipFilter filter;
     filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
     const auto& blockMap = chainstate.GetBlockMap();
 

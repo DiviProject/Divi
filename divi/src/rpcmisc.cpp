@@ -137,7 +137,7 @@ Value getinfo(const Array& params, bool fHelp)
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     Object obj;
@@ -663,7 +663,7 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockTree = chainstate.BlockTree();
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
@@ -764,7 +764,7 @@ Value getaddressdeltas(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockTree = chainstate.BlockTree();
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
@@ -802,7 +802,7 @@ Value getaddressdeltas(const Array& params, bool fHelp)
     if (includeChainInfo && start > 0 && end > 0) {
         LOCK(cs_main);
 
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const auto& chain = chainstate.ActiveChain();
 
         if (start > chain.Height() || end > chain.Height()) {
@@ -861,7 +861,7 @@ Value getaddressbalance(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &chainstate.BlockTree(), (*it).first, (*it).second, addressIndex)) {
@@ -933,7 +933,7 @@ Value getspentinfo(const Array& params, bool fHelp)
     const CSpentIndexKey key(txid, outputIndex);
     CSpentIndexValue value;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     if (!TransactionSearchIndexes::GetSpentIndex(fSpentIndex, &chainstate.BlockTree(), key, value)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unable to get spent info");
@@ -990,7 +990,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue>> unspentOutputs;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (!TransactionSearchIndexes::GetAddressUnspent(fAddressIndex, &chainstate.BlockTree(), (*it).first, (*it).second, unspentOutputs)) {
@@ -1023,7 +1023,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
         result.push_back(Pair("utxos", utxos));
 
         LOCK(cs_main);
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const auto& chain = chainstate.ActiveChain();
         result.push_back(Pair("hash", chain.Tip()->GetBlockHash().GetHex()));
         result.push_back(Pair("height", (int)chain.Height()));
@@ -1077,7 +1077,7 @@ Value getstakingstatus(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getstakingstatus", "") + HelpExampleRpc("getstakingstatus", ""));
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     Object obj;
     obj.push_back(Pair("validtime", chainstate.ActiveChain().Tip()->nTime > 1471482000));

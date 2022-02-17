@@ -293,6 +293,10 @@ public:
 inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWrapper().Flush(shutdown);}
 #endif
 
+/** Global instance of the ChainstateManager.  The lifetime is managed through
+ *  the startup/shutdown cycle.  */
+std::unique_ptr<ChainstateManager> chainstateInstance;
+
 /** Helper class for constructing and destructing the shallow databases.  */
 class ShallowDatabases
 {
@@ -375,6 +379,7 @@ void PrepareShutdown()
             //record that client took the proper shutdown procedure
             pblocktree->WriteFlag("shutdown", true);
         }
+        chainstateInstance.reset ();
         GetSporkManager().DeallocateDatabase();
         ShallowDatabases::Cleanup();
     }
@@ -1364,6 +1369,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(translate("Preparing databases..."));
     ShallowDatabases::Setup(CalculateDBCacheSizes());
+    chainstateInstance.reset(new ChainstateManager ());
     GetSporkManager().AllocateDatabase();
 
     if(!SetSporkKey())

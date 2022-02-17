@@ -166,7 +166,7 @@ struct TxFeeSporkValue : public SporkMultiValue {
 class CSporkManager
 {
 private:
-    const ChainstateManager chainstate_;
+    const ChainstateManager& chainstate_;
     std::unique_ptr<CSporkDB> pSporkDB_;
     std::vector<unsigned char> vchSig;
     // Some sporks require to have history, we will use sorted vector for this approach.
@@ -183,7 +183,7 @@ private:
 
 public:
 
-    CSporkManager();
+    CSporkManager(const ChainstateManager& c);
     ~CSporkManager();
 
     void AllocateDatabase();

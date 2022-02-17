@@ -34,7 +34,7 @@ public:
         , lastUpdatedLotteryCoinstakesHeight_(0)
         , heightValidator_(new NiceMock<MockSuperblockHeightValidator>)
         , fakeBlockIndexWithHashes_()
-        , sporkManager_()
+        , sporkManager_(ChainstateManager::Get())
         , nextLockTime_(0)
         , lotteryStartBlock(100)
         , calculator_()

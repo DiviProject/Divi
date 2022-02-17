@@ -149,8 +149,7 @@ namespace
 MasternodeModule& GetMutableModule()
 {
   static LocalClock localClock;
-  static ChainstateManager localChainstate;
-  static MasternodeModule mnModule(localClock, GetPeerSyncQueryService(), localChainstate, GetNetworkAddressManager());
+  static MasternodeModule mnModule(localClock, GetPeerSyncQueryService(), ChainstateManager::Get(), GetNetworkAddressManager());
   return mnModule;
 }
 

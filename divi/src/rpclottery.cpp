@@ -42,7 +42,7 @@ Value getlotteryblockwinners(const Array& params, bool fHelp)
 
     static const CChainParams& chainParameters = Params();
     static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
-    static const ChainstateManager chainstate;
+    static const auto& chainstate = ChainstateManager::Get();
     static LotteryWinnersCalculator calculator(
         chainParameters.GetLotteryBlockStartBlock(), chainstate.ActiveChain(), GetSporkManager(),subsidyCointainer.superblockHeightValidator());
     const CBlockIndex* chainTip = nullptr;

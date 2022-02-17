@@ -49,7 +49,7 @@ bool IsBlockchainSynced()
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain) return false;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const CBlockIndex* pindex = chainstate.ActiveChain().Tip();
     if (pindex == NULL) return false;
 
@@ -65,7 +65,7 @@ bool IsBlockchainSynced()
 
 bool GetBlockHashForScoring(uint256& hash, int nBlockHeight)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto* tip = chainstate.ActiveChain().Tip();
     if (tip == nullptr)
         return false;
@@ -88,7 +88,7 @@ bool GetBlockHashForScoring(uint256& hash, const CBlockIndex* pindex, const int 
 const CBlockIndex* ComputeCollateralBlockIndex(const CMasternode& masternode)
 {
     static std::map<COutPoint,const CBlockIndex*> cachedCollateralBlockIndices;
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     const CBlockIndex* collateralBlockIndex = cachedCollateralBlockIndices[masternode.vin.prevout];
     if (collateralBlockIndex)
@@ -126,7 +126,7 @@ const CBlockIndex* ComputeMasternodeConfirmationBlockIndex(const CMasternode& ma
     const CBlockIndex* pindexConf = nullptr;
     {
         LOCK(cs_main);
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const auto* pindexCollateral = ComputeCollateralBlockIndex(masternode);
         if (pindexCollateral == nullptr)
             pindexConf = nullptr;
@@ -142,7 +142,7 @@ const CBlockIndex* ComputeMasternodeConfirmationBlockIndex(const CMasternode& ma
 int ComputeMasternodeInputAge(const CMasternode& masternode)
 {
     LOCK(cs_main);
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     const auto* pindex = ComputeCollateralBlockIndex(masternode);
     if (pindex == nullptr)
@@ -158,7 +158,7 @@ int ComputeMasternodeInputAge(const CMasternode& masternode)
 
 CMasternodePing createCurrentPing(const CTxIn& newVin)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& activeChain = chainstate.ActiveChain();
 
     CMasternodePing ping;
@@ -194,7 +194,7 @@ bool ReindexingOrImportingIsActive()
 }
 CMasternodePing createDelayedMasternodePing(const CMasternode& mn)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& activeChain = chainstate.ActiveChain();
 
     CMasternodePing ping;

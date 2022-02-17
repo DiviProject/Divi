@@ -46,7 +46,7 @@ void InitializeCoinMintingModule(I_StakingWallet* pwallet)
     static const CChainParams& chainParameters = Params();
     static const MasternodeModule& masternodeModule = GetMasternodeModule();
     static const I_PeerBlockNotifyService& peerNotification = GetPeerBlockNotifyService();
-    static const ChainstateManager chainstate;
+    static const auto& chainstate = ChainstateManager::Get();
     coinMintingModule.reset(
         new CoinMintingModule(
             settings,
@@ -122,7 +122,7 @@ void MinterThread(I_CoinMinter& minter)
 bool HasRecentlyAttemptedToGenerateProofOfStake()
 {
     static const LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     bool recentlyAttemptedPoS = false;
     if (mapHashedBlocks.count(chainstate.ActiveChain().Tip()->nHeight))
         recentlyAttemptedPoS = true;

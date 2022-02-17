@@ -222,7 +222,7 @@ void UnregisterAllValidationInterfaces()
 //
 int GetHeight()
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     while (true) {
         TRY_LOCK(cs_main, lockMain);
         if (!lockMain) {
@@ -235,7 +235,7 @@ int GetHeight()
 
 const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockMap = chainstate.GetBlockMap();
 
     // Find the first block the caller has in the main chain
@@ -262,7 +262,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
         return false;
     }
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     // Treat non-final transactions as non-standard to prevent a specific type
@@ -594,7 +594,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
 
     {
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         CCoinsViewCache view;
 
         CAmount nValueIn = 0;
@@ -708,7 +708,7 @@ bool IsInitialBlockDownload()	//2446
 {
     LOCK(cs_main);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const int64_t height = chainstate.ActiveChain().Height();
 
     if (fImporting || fReindex || fVerifyingBlocks || height < checkpointsVerifier.GetTotalBlocksEstimate())
@@ -741,7 +741,7 @@ void CheckForkWarningConditions()
     if (IsInitialBlockDownload())
         return;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     // If our best fork is no longer within 72 blocks (+/- 3 hours if no one mines it)
@@ -778,7 +778,7 @@ static void CheckForkWarningConditionsOnNewFork(const CBlockIndex* pindexNewFork
 {
     AssertLockHeld(cs_main);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     // If we are on a fork that is sufficiently large, set a warning flag
@@ -817,7 +817,7 @@ void InvalidChainFound(CBlockIndex* pindexNew)
     if (!pindexBestInvalid || pindexNew->nChainWork > pindexBestInvalid->nChainWork)
         pindexBestInvalid = pindexNew;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     LogPrintf("InvalidChainFound: invalid block=%s  height=%d  log2_work=%.8g  date=%s\n",
@@ -957,7 +957,7 @@ bool CheckMintTotalsAndBlockPayees(
 const ActiveChainManager& GetActiveChainManager()
 {
     static const BlockDiskDataReader blockDiskReader;
-    static ChainstateManager chainstate;
+    static auto& chainstate = ChainstateManager::Get();
     static ActiveChainManager chainManager(fAddressIndex,fSpentIndex, &chainstate.BlockTree(), blockDiskReader);
     return chainManager;
 }
@@ -971,7 +971,7 @@ bool ConnectBlock(
     bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
 
     // Check it again in case a previous version let a bad block in
     if (!fAlreadyChecked && !CheckBlock(block, state))
@@ -1045,7 +1045,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
 {
     LOCK(cs_main);
 
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
     auto& coinsTip = chainstate.CoinsTip();
     auto& blockTreeDB = chainstate.BlockTree();
 
@@ -1095,7 +1095,7 @@ void FlushStateToDisk(FlushStateMode mode)
 /** Update chainActive and related internal data structures. */
 void static UpdateTip(const CBlockIndex* pindexNew)
 {
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
     auto& chain = chainstate.ActiveChain();
     chain.SetTip(pindexNew);
 
@@ -1133,7 +1133,7 @@ bool static DisconnectTip(CValidationState& state)
 {
     AssertLockHeld(cs_main);
 
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
     auto& coinsTip = chainstate.CoinsTip();
     const auto& blockMap = chainstate.GetBlockMap();
     const auto& chain = chainstate.ActiveChain();
@@ -1188,7 +1188,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, const CB
 {
     AssertLockHeld(cs_main);
 
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
     auto& coinsTip = chainstate.CoinsTip();
     const auto& blockMap = chainstate.GetBlockMap();
 
@@ -1280,7 +1280,7 @@ bool DisconnectBlocksAndReprocess(int blocks)
  */
 static CBlockIndex* FindMostWorkChain()
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     do {
@@ -1339,7 +1339,7 @@ static CBlockIndex* FindMostWorkChain()
 /** Delete all entries in setBlockIndexCandidates that are worse than the current tip. */
 static void PruneBlockIndexCandidates()
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     // Note that we can't delete the current block itself, as we may need to return to it later in case a
@@ -1360,7 +1360,7 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
 {
     AssertLockHeld(cs_main);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     if (pblock == NULL)
@@ -1434,7 +1434,7 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
  */
 bool ActivateBestChain(CValidationState& state, const CBlock* pblock, bool fAlreadyChecked)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     const CBlockIndex* pindexNewTip = NULL;
@@ -1491,7 +1491,7 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex)
 {
     AssertLockHeld(cs_main);
 
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
     auto& blockMap = chainstate.GetBlockMap();
 
@@ -1528,7 +1528,7 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex)
 {
     AssertLockHeld(cs_main);
 
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     int nHeight = pindex->nHeight;
@@ -1562,7 +1562,7 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex)
 
 CBlockIndex* AddToBlockIndex(const CBlock& block)
 {
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
     auto& blockMap = chainstate.GetBlockMap();
 
     static const CSporkManager& sporkManager = GetSporkManager();
@@ -1640,7 +1640,7 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
     BlockFileHelpers::RecordDirtyBlockIndex(pindexNew);
 
     if (pindexNew->pprev == NULL || pindexNew->pprev->nChainTx) {
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const auto& chain = chainstate.ActiveChain();
 
         // If pindexNew is the genesis block or all parents are BLOCK_VALID_TRANSACTIONS.
@@ -1768,7 +1768,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 
     assert(pindexPrev);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     int nHeight = pindexPrev->nHeight + 1;
 
     //If this is a reorg, check that it is not too deep
@@ -1805,7 +1805,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIndex* const pindexPrev)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     const int nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
@@ -1833,7 +1833,7 @@ bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex
 {
     AssertLockHeld(cs_main);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockMap = chainstate.GetBlockMap();
 
     // Check for duplicate
@@ -1893,7 +1893,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 {
     AssertLockHeld(cs_main);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockMap = chainstate.GetBlockMap();
 
     CBlockIndex*& pindex = *ppindex;
@@ -1983,7 +1983,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     if (!CheckBlockSignature(*pblock))
         return error("%s : bad proof-of-stake block signature",__func__);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockMap = chainstate.GetBlockMap();
 
     if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
@@ -2028,7 +2028,7 @@ bool IsBlockValidChainExtension(CBlock* pblock)
 {
     {
         LOCK(cs_main);
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         if (pblock->hashPrevBlock != chainstate.ActiveChain().Tip()->GetBlockHash())
             return error("%s : generated block is stale",__func__);
     }
@@ -2112,7 +2112,7 @@ static bool VerifyAllBlockFilesArePresent(const BlockMap& blockIndicesByHash)
 
 bool static LoadBlockIndexState(string& strError)
 {
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
     auto& chain = chainstate.ActiveChain();
     auto& coinsTip = chainstate.CoinsTip();
     auto& blockMap = chainstate.GetBlockMap();
@@ -2286,7 +2286,7 @@ bool InitBlockIndex()
 {
     LOCK(cs_main);
 
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
     auto& blockTree = chainstate.BlockTree();
 
     // Check whether we're already initialized
@@ -2339,7 +2339,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp)
     static std::multimap<uint256, CDiskBlockPos> mapBlocksUnknownParent;
     int64_t nStart = GetTimeMillis();
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockMap = chainstate.GetBlockMap();
 
     int nLoaded = 0;
@@ -2444,7 +2444,7 @@ void static CheckBlockIndex()
 
     LOCK(cs_main);
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockMap = chainstate.GetBlockMap();
     const auto& chain = chainstate.ActiveChain();
 
@@ -2642,7 +2642,7 @@ bool static AlreadyHave(const CInv& inv)
     }
 
     case MSG_BLOCK: {
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         return chainstate.GetBlockMap().count(inv.GetHash()) > 0;
     }
     case MSG_TXLOCK_REQUEST:
@@ -2714,7 +2714,7 @@ static std::pair<const CBlockIndex*, bool> GetBlockIndexOfRequestedBlock(NodeId 
     {
         LOCK(cs_main);
 
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const auto& blockMap = chainstate.GetBlockMap();
         const auto& chain = chainstate.ActiveChain();
 
@@ -2775,7 +2775,7 @@ static void PushCorrespondingBlockToPeer(CNode* pfrom, const CBlockIndex* blockT
 
 void static ProcessGetData(CNode* pfrom, std::deque<CInv>& requestsForData)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     auto it = requestsForData.begin();
 
@@ -2966,7 +2966,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         return true;
     }
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& coinsTip = chainstate.CoinsTip();
     const auto& blockMap = chainstate.GetBlockMap();
     const auto& chain = chainstate.ActiveChain();
@@ -3690,7 +3690,7 @@ static void BeginSyncingWithPeer(CNode* pto)
 {
     CNodeState* state = pto->GetNodeState();
     if (!state->Syncing() && !pto->fClient && !fReindex) {
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const auto& chain = chainstate.ActiveChain();
 
         // Only actively request headers from a single peer, unless we're close to end of initial download.
@@ -3763,7 +3763,7 @@ static void RequestDisconnectionFromNodeIfStalling(int64_t nNow, CNode* pto)
 }
 static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, std::vector<CInv>& vGetData)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
     const auto& blockMap = chainstate.GetBlockMap();
 
@@ -3852,7 +3852,7 @@ void PeriodicallyRebroadcastMempoolTxs()
 
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     {
         if (fSendTrickle) {

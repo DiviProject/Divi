@@ -24,8 +24,11 @@ public:
   /** Constructs a fresh instance that refers to the globals.
    *
    *  TODO: Remove the globals and instead make the instances held
-   *  by the ChainstateManager instance.  */
+   *  by the ChainstateManager instance.  Until then, the ChainstateManager
+   *  is a singleton, and only one instance must be created at a time.  */
   ChainstateManager ();
+
+  ~ChainstateManager ();
 
   inline BlockMap&
   GetBlockMap ()
@@ -74,6 +77,10 @@ public:
   {
     return coinsTip;
   }
+
+  /** Returns the singleton instance of the ChainstateManager that exists
+   *  at the moment.  It must be constructed at the moment.  */
+  static ChainstateManager& Get ();
 
 };
 

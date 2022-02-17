@@ -114,7 +114,7 @@ static bool rest_block(AcceptedConnection* conn,
     CBlockIndex* pblockindex = NULL;
     {
         LOCK(cs_main);
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         const auto& blockMap = chainstate.GetBlockMap();
 
         const auto mit = blockMap.find(hash);

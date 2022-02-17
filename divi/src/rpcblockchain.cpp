@@ -42,7 +42,7 @@ extern const CBlockIndex* pindexBestHeader;
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     // Floating point number that is a multiple of the minimum difficulty,
     // minimum difficulty = 1.0.
@@ -72,7 +72,7 @@ double GetDifficulty(const CBlockIndex* blockindex)
 
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     Object result;
     result.push_back(Pair("hash", block.GetHash().GetHex()));
@@ -139,7 +139,7 @@ Value getblockcount(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getblockcount", "") + HelpExampleRpc("getblockcount", ""));
 
-    return ChainstateManager().ActiveChain().Height();
+    return ChainstateManager::Get().ActiveChain().Height();
 }
 
 Value getbestblockhash(const Array& params, bool fHelp)
@@ -153,7 +153,7 @@ Value getbestblockhash(const Array& params, bool fHelp)
             "\nExamples\n" +
             HelpExampleCli("getbestblockhash", "") + HelpExampleRpc("getbestblockhash", ""));
 
-    return ChainstateManager().ActiveChain().Tip()->GetBlockHash().GetHex();
+    return ChainstateManager::Get().ActiveChain().Tip()->GetBlockHash().GetHex();
 }
 
 Value getdifficulty(const Array& params, bool fHelp)
@@ -206,7 +206,7 @@ Value getrawmempool(const Array& params, bool fHelp)
         fVerbose = params[0].get_bool();
 
     if (fVerbose) {
-        const ChainstateManager chainstate;
+        const auto& chainstate = ChainstateManager::Get();
         LOCK(mempool.cs);
         Object o;
         BOOST_FOREACH (const PAIRTYPE(uint256, CTxMemPoolEntry) & entry, mempool.mapTx) {
@@ -256,7 +256,7 @@ Value getblockhash(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getblockhash", "1000") + HelpExampleRpc("getblockhash", "1000"));
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     int nHeight = params[0].get_int();
     if (nHeight < 0 || nHeight > chainstate.ActiveChain().Height())
@@ -308,7 +308,7 @@ Value getblock(const Array& params, bool fHelp)
     if (params.size() > 1)
         fVerbose = params[1].get_bool();
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockMap = chainstate.GetBlockMap();
     const auto mit = blockMap.find(hash);
     if (mit == blockMap.end())
@@ -361,7 +361,7 @@ Value getblockheader(const Array& params, bool fHelp)
     if (params.size() > 1)
         fVerbose = params[1].get_bool();
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& blockMap = chainstate.GetBlockMap();
     const auto mit = blockMap.find(hash);
     if (mit == blockMap.end())
@@ -405,7 +405,7 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
 
     Object ret;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     CCoinsStats stats;
     FlushStateToDisk();
@@ -466,7 +466,7 @@ Value gettxout(const Array& params, bool fHelp)
         fMempool = params[2].get_bool();
 
     /* FIXME: mark const */
-    ChainstateManager chainstate;
+    auto& chainstate = ChainstateManager::Get();
 
     CCoins coins;
     if (fMempool) {
@@ -516,7 +516,7 @@ Value verifychain(const Array& params, bool fHelp)
 
     LOCK(cs_main);
     const ActiveChainManager& chainManager = GetActiveChainManager();
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const CVerifyDB dbVerifier(
         chainManager,
         chainstate.ActiveChain(),
@@ -546,7 +546,7 @@ Value getblockchaininfo(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getblockchaininfo", "") + HelpExampleRpc("getblockchaininfo", ""));
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     Object obj;
     obj.push_back(Pair("chain", Params().NetworkIDString()));
@@ -604,7 +604,7 @@ Value getchaintips(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getchaintips", "") + HelpExampleRpc("getchaintips", ""));
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     /* Build up a list of chain tips.  We start with the list of all
        known blocks, and successively remove blocks that appear as pprev
@@ -697,7 +697,7 @@ Value invalidateblock(const Array& params, bool fHelp)
     CValidationState state;
 
     {
-        ChainstateManager chainstate;
+        auto& chainstate = ChainstateManager::Get();
         LOCK(cs_main);
         auto& blockMap = chainstate.GetBlockMap();
         const auto mit = blockMap.find(hash);
@@ -737,7 +737,7 @@ Value reconsiderblock(const Array& params, bool fHelp)
     CValidationState state;
 
     {
-        ChainstateManager chainstate;
+        auto& chainstate = ChainstateManager::Get();
         LOCK(cs_main);
         auto& blockMap = chainstate.GetBlockMap();
         const auto mit = blockMap.find(hash);

@@ -18,7 +18,7 @@ extern bool fTxIndex;
 /** Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock */
 bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow)
 {
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     const CBlockIndex* pindexSlow = NULL;
     {
@@ -86,7 +86,7 @@ bool CollateralIsExpectedAmount(const COutPoint &outpoint, int64_t expectedAmoun
 {
     CCoins coins;
     LOCK(cs_main);
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     if (!chainstate.CoinsTip().GetCoins(outpoint.hash, coins))
         return false;
 

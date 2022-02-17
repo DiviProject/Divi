@@ -90,7 +90,7 @@ Value setgenerate(const Array& params, bool fHelp)
     int nHeightEnd = 0;
     int nHeight = 0;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     { // Don't keep cs_main locked
@@ -151,7 +151,7 @@ Value generateblock(const Array& params, bool fHelp)
 
     int nHeight = 0;
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
     const auto& chain = chainstate.ActiveChain();
 
     { // Don't keep cs_main locked
@@ -235,7 +235,7 @@ Value getmininginfo(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmininginfo", "") + HelpExampleRpc("getmininginfo", ""));
 
-    const ChainstateManager chainstate;
+    const auto& chainstate = ChainstateManager::Get();
 
     Object obj;
     obj.push_back(Pair("blocks", (int)chainstate.ActiveChain().Height()));

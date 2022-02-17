@@ -63,7 +63,7 @@ void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRec
 }
 CSporkManager& GetSporkManager()
 {
-    static CSporkManager sporkManager;
+    static CSporkManager sporkManager(ChainstateManager::Get());
     return sporkManager;
 }
 
@@ -188,8 +188,8 @@ bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
     return true;
 }
 
-CSporkManager::CSporkManager(
-    ): pSporkDB_()
+CSporkManager::CSporkManager(const ChainstateManager& c
+    ): chainstate_(c), pSporkDB_()
 {
 }
 

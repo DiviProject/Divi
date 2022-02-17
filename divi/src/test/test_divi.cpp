@@ -6,6 +6,7 @@
 
 #include <dbenv.h>
 #include <chain.h>
+#include <ChainstateManager.h>
 #include <init.h>
 #include "main.h"
 #include "net.h"
@@ -41,6 +42,8 @@ struct TestingSetup {
     boost::thread_group threadGroup;
     CDBEnv& bitdb_;
 
+    std::unique_ptr<ChainstateManager> chainstateInstance;
+
     TestingSetup(): pcoinsdbview(nullptr), pathTemp(), threadGroup(), bitdb_(BerkleyDBEnvWrapper())
     {
         SetupEnvironment();
@@ -57,6 +60,7 @@ struct TestingSetup {
         pblocktree = new CBlockTreeDB(1 << 20, true);
         pcoinsdbview = new CCoinsViewDB(mapBlockIndex, 1 << 23, true);
         pcoinsTip = new CCoinsViewCache(pcoinsdbview);
+        chainstateInstance.reset(new ChainstateManager());
         InitBlockIndex();
 #ifdef ENABLE_WALLET
         InitializeWallet("wallet.dat");
@@ -77,6 +81,7 @@ struct TestingSetup {
 #ifdef ENABLE_WALLET
         DeallocateWallet();
 #endif
+        chainstateInstance.reset();
         delete pcoinsTip;
         delete pcoinsdbview;
         delete pblocktree;

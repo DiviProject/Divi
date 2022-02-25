@@ -114,12 +114,6 @@ constexpr int nWalletBackups = 20;
  */
 #endif
 
-
-CChain chainActive;
-BlockMap mapBlockIndex;
-CBlockTreeDB* pblocktree = nullptr;
-CCoinsViewCache* pcoinsTip = nullptr;
-
 namespace
 {
 
@@ -271,26 +265,6 @@ bool MainShutdownRequested()
     return fRequestShutdown || fRestartRequested;
 }
 
-class CCoinsViewErrorCatcher : public CCoinsViewBacked
-{
-public:
-    CCoinsViewErrorCatcher(CCoinsView* view) : CCoinsViewBacked(view) {}
-    bool GetCoins(const uint256& txid, CCoins& coins) const override
-    {
-        try {
-            return CCoinsViewBacked::GetCoins(txid, coins);
-        } catch (const std::runtime_error& e) {
-            uiInterface.ThreadSafeMessageBox(translate("Error reading from database, shutting down."), "", CClientUIInterface::MSG_ERROR);
-            LogPrintf("Error reading from database: %s\n", e.what());
-            // Starting the shutdown sequence and returning false to the caller would be
-            // interpreted as 'entry not found' (as opposed to unable to read data), and
-            // could lead to invalid interpration. Just exit immediately, as we can't
-            // continue anyway, and all writes should be atomic.
-            abort();
-        }
-    }
-    // Writes do not need similar protection, as failure to write is handled by the caller.
-};
 
 #ifdef ENABLE_WALLET
 inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWrapper().Flush(shutdown);}
@@ -299,58 +273,6 @@ inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWra
 /** Global instance of the ChainstateManager.  The lifetime is managed through
  *  the startup/shutdown cycle.  */
 std::unique_ptr<ChainstateManager> chainstateInstance;
-
-/** Helper class for constructing and destructing the shallow databases.  */
-class ShallowDatabases
-{
-
-private:
-
-    CBlockTreeDB blocktree;
-    CCoinsViewDB coinsdbview;
-    CCoinsViewErrorCatcher coinscatcher;
-    CCoinsViewCache coinsTip;
-
-    /** Singleton instance of this class, if it is constructed yet.  */
-    static std::unique_ptr<ShallowDatabases> instance;
-
-    explicit ShallowDatabases(const std::pair<size_t, size_t>& blockTreeAndCoinDBCacheSizes)
-      : blocktree(blockTreeAndCoinDBCacheSizes.first, false, fReindex),
-        coinsdbview(mapBlockIndex, blockTreeAndCoinDBCacheSizes.second, false, fReindex),
-        coinscatcher(&coinsdbview),
-        coinsTip(&coinscatcher)
-    {}
-
-public:
-
-    /** (Re-)allocates the singleton instance and sets globals up.  */
-    static void Setup(const std::pair<size_t, size_t>& blockTreeAndCoinDBCacheSizes)
-    {
-        if (instance != nullptr)
-            Cleanup();
-        instance.reset(new ShallowDatabases(blockTreeAndCoinDBCacheSizes));
-        pcoinsTip = &instance->coinsTip;
-        pblocktree = &instance->blocktree;
-    }
-
-    /** Cleans up the singleton instance.  */
-    static void Cleanup()
-    {
-        pcoinsTip = nullptr;
-        pblocktree = nullptr;
-        instance.reset();
-    }
-
-    /** Returns the non-catching coins view of the singleton instance.  */
-    static const CCoinsView& GetNonCatchingCoinsView()
-    {
-        assert(instance != nullptr);
-        return instance->coinsdbview;
-    }
-
-};
-
-std::unique_ptr<ShallowDatabases> ShallowDatabases::instance;
 
 /** Preparing steps before shutting down or restarting the wallet */
 void PrepareShutdown()
@@ -377,14 +299,11 @@ void PrepareShutdown()
 
     {
         LOCK(cs_main);
-        if (chainstateInstance != nullptr) {
-            FlushStateToDisk();
-            //record that client took the proper shutdown procedure
-            chainstateInstance->BlockTree().WriteFlag("shutdown", true);
-        }
-        chainstateInstance.reset ();
+        FlushStateToDisk();
+        //record that client took the proper shutdown procedure
+        chainstateInstance->BlockTree().WriteFlag("shutdown", true);
         GetSporkManager().DeallocateDatabase();
-        ShallowDatabases::Cleanup();
+        chainstateInstance.reset ();
     }
 
 #ifdef ENABLE_WALLET
@@ -967,7 +886,7 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
                 uiInterface,
                 nCoinCacheSize,
                 &ShutdownRequested);
-            if (!dbVerifier.VerifyDB(&ShallowDatabases::GetNonCatchingCoinsView(), chainstate.CoinsTip().GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
+            if (!dbVerifier.VerifyDB(&chainstate.GetNonCatchingCoinsView(), chainstate.CoinsTip().GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
             {
                 strLoadError = translate("Corrupted block database detected");
                 fVerifyingBlocks = false;
@@ -1373,8 +1292,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     CreateHardlinksForBlocks();
 
     uiInterface.InitMessage(translate("Preparing databases..."));
-    ShallowDatabases::Setup(CalculateDBCacheSizes());
-    chainstateInstance.reset(new ChainstateManager ());
+    const auto cacheSizes = CalculateDBCacheSizes();
+    chainstateInstance.reset(new ChainstateManager (cacheSizes.first, cacheSizes.second, false, fReindex));
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
     GetSporkManager().AllocateDatabase();

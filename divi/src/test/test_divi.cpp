@@ -30,21 +30,17 @@ extern CClientUIInterface uiInterface;
 extern CWallet* pwalletMain;
 extern Settings& settings;
 extern void noui_connect();
-extern CBlockTreeDB* pblocktree;
-extern CCoinsViewCache* pcoinsTip;
 extern bool fCheckBlockIndex;
-extern BlockMap mapBlockIndex;
 extern int nScriptCheckThreads;
 
 struct TestingSetup {
-    CCoinsViewDB *pcoinsdbview;
     boost::filesystem::path pathTemp;
     boost::thread_group threadGroup;
     CDBEnv& bitdb_;
 
     std::unique_ptr<ChainstateManager> chainstateInstance;
 
-    TestingSetup(): pcoinsdbview(nullptr), pathTemp(), threadGroup(), bitdb_(BerkleyDBEnvWrapper())
+    TestingSetup(): pathTemp(), threadGroup(), bitdb_(BerkleyDBEnvWrapper())
     {
         SetupEnvironment();
         fPrintToDebugLog = false; // don't want to write to debug.log file
@@ -57,10 +53,7 @@ struct TestingSetup {
         pathTemp = GetTempPath() / strprintf("test_divi_%lu_%i", (unsigned long)GetTime(), (int)(GetRand(100000)));
         boost::filesystem::create_directories(pathTemp);
         settings.SetParameter("-datadir", pathTemp.string());
-        pblocktree = new CBlockTreeDB(1 << 20, true);
-        pcoinsdbview = new CCoinsViewDB(mapBlockIndex, 1 << 23, true);
-        pcoinsTip = new CCoinsViewCache(pcoinsdbview);
-        chainstateInstance.reset(new ChainstateManager());
+        chainstateInstance.reset(new ChainstateManager(1 << 20, 1 << 23, true, false));
         InitBlockIndex();
 #ifdef ENABLE_WALLET
         InitializeWallet("wallet.dat");
@@ -82,9 +75,6 @@ struct TestingSetup {
         DeallocateWallet();
 #endif
         chainstateInstance.reset();
-        delete pcoinsTip;
-        delete pcoinsdbview;
-        delete pblocktree;
 #ifdef ENABLE_WALLET
         bitdb_.Flush(true);
 #endif

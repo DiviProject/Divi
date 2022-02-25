@@ -1,9 +1,12 @@
 #ifndef CHAINSTATE_MANAGER_H
 #define CHAINSTATE_MANAGER_H
 
+#include <memory>
+
 class BlockMap;
 class CBlockTreeDB;
 class CChain;
+class CCoinsView;
 class CCoinsViewCache;
 
 /** The main class that encapsulates the blockchain state (including active
@@ -14,68 +17,74 @@ class ChainstateManager
 
 private:
 
-  BlockMap& blockMap;
-  CChain& activeChain;
-  CBlockTreeDB& blockTree;
-  CCoinsViewCache& coinsTip;
+  std::unique_ptr<BlockMap> blockMap;
+  std::unique_ptr<CChain> activeChain;
+  std::unique_ptr<CBlockTreeDB> blockTree;
+
+  std::unique_ptr<CCoinsView> coinsDbView;
+  std::unique_ptr<CCoinsView> coinsCatcher;
+  std::unique_ptr<CCoinsViewCache> coinsTip;
 
 public:
 
-  /** Constructs a fresh instance that refers to the globals.
-   *
-   *  TODO: Remove the globals and instead make the instances held
-   *  by the ChainstateManager instance.  Until then, the ChainstateManager
-   *  is a singleton, and only one instance must be created at a time.  */
-  ChainstateManager ();
-
+  explicit ChainstateManager (size_t blockTreeCache, size_t coinDbCache,
+                              bool fMemory, bool fWipe);
   ~ChainstateManager ();
 
   inline BlockMap&
   GetBlockMap ()
   {
-    return blockMap;
+    return *blockMap;
   }
 
   inline const BlockMap&
   GetBlockMap () const
   {
-    return blockMap;
+    return *blockMap;
   }
 
   inline CChain&
   ActiveChain ()
   {
-    return activeChain;
+    return *activeChain;
   }
 
   inline const CChain&
   ActiveChain () const
   {
-    return activeChain;
+    return *activeChain;
   }
 
   inline CBlockTreeDB&
   BlockTree ()
   {
-    return blockTree;
+    return *blockTree;
   }
 
   inline const CBlockTreeDB&
   BlockTree () const
   {
-    return blockTree;
+    return *blockTree;
   }
 
   inline CCoinsViewCache&
   CoinsTip ()
   {
-    return coinsTip;
+    return *coinsTip;
   }
 
   inline const CCoinsViewCache&
   CoinsTip () const
   {
-    return coinsTip;
+    return *coinsTip;
+  }
+
+  /** Returns a coins view that is not catching errors in GetCoins.  This is
+   *  used during initialisation for verifying the DB.  */
+  inline const CCoinsView&
+  GetNonCatchingCoinsView () const
+  {
+    return *coinsDbView;
   }
 
   /** Returns the singleton instance of the ChainstateManager that exists

@@ -2192,15 +2192,10 @@ bool static LoadBlockIndexState(string& strError)
                         return false;
                     }
 
-                    std::vector<CTxUndo> vtxundo;
-                    vtxundo.reserve(block.vtx.size() - 1);
                     uint256 hashBlock = block.GetHash();
                     for (unsigned int i = 0; i < block.vtx.size(); i++) {
-                        CValidationState state;
                         CTxUndo undoDummy;
-                        if (i > 0)
-                            vtxundo.push_back(CTxUndo());
-                        view.UpdateWithConfirmedTransaction(block.vtx[i], pindex->nHeight,i == 0 ? undoDummy: vtxundo.back());
+                        view.UpdateWithConfirmedTransaction(block.vtx[i], pindex->nHeight, undoDummy);
                         view.SetBestBlock(hashBlock);
                     }
                     ++nextBlockCandidate;

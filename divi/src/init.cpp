@@ -902,11 +902,8 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
 {
     if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
-        uiInterface.InitMessage(translate("Preparing databases..."));
         ChainstateManager chainstate;
         UnloadBlockIndex(&chainstate);
-        ShallowDatabases::Setup(CalculateDBCacheSizes());
-        GetSporkManager().AllocateDatabase();
 
         if (fReindex)
             pblocktree->WriteReindexing(true);
@@ -1336,10 +1333,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     PrintInitialLogHeader(fDisableWallet,numberOfFileDescriptors,strDataDir);
     StartScriptVerificationThreads(threadGroup);
 
-    if(!SetSporkKey())
-    {
-        return false;
-    }
     WarmUpRPCAndStartRPCThreads();
 
 
@@ -1368,6 +1361,14 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 7: load block chain
     CreateHardlinksForBlocks();
+
+    uiInterface.InitMessage(translate("Preparing databases..."));
+    ShallowDatabases::Setup(CalculateDBCacheSizes());
+    GetSporkManager().AllocateDatabase();
+
+    if(!SetSporkKey())
+        return false;
+
     bool fLoaded = false;
     int64_t nStart;
     while (!fLoaded) {

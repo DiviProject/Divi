@@ -475,7 +475,9 @@ void Shutdown()
 {
     assert(!startAndShutdownSignals.shutdown.empty());
     startAndShutdownSignals.shutdown();
-    UnloadBlockIndex();
+    /* At this point, the ChainstateManager doesn't exist anymore (and thus
+       there is also no need to free any of its contents).  */
+    UnloadBlockIndex(nullptr);
 }
 
 namespace
@@ -901,7 +903,8 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
     if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
         uiInterface.InitMessage(translate("Preparing databases..."));
-        UnloadBlockIndex();
+        ChainstateManager chainstate;
+        UnloadBlockIndex(&chainstate);
         ShallowDatabases::Setup(CalculateDBCacheSizes());
         GetSporkManager().AllocateDatabase();
 

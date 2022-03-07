@@ -314,15 +314,6 @@ private:
         coinsTip(&coinscatcher)
     {}
 
-    /** Cleans up the singleton instance.  */
-    static void Cleanup()
-    {
-        GetSporkManager().DeallocateDatabase();
-        pcoinsTip = nullptr;
-        pblocktree = nullptr;
-        instance.reset();
-    }
-
 public:
 
     /** (Re-)allocates the singleton instance and sets globals up.  */
@@ -333,19 +324,14 @@ public:
         instance.reset(new ShallowDatabases(blockTreeAndCoinDBCacheSizes));
         pcoinsTip = &instance->coinsTip;
         pblocktree = &instance->blocktree;
-        GetSporkManager().AllocateDatabase();
     }
 
-    /** Flushes state caches and cleans up the singleton instance.  */
-    static void FlushStateAndCleanup()
+    /** Cleans up the singleton instance.  */
+    static void Cleanup()
     {
-        LOCK(cs_main);
-        if (pcoinsTip != NULL) {
-            FlushStateToDisk();
-            //record that client took the proper shutdown procedure
-            pblocktree->WriteFlag("shutdown", true);
-        }
-        Cleanup();
+        pcoinsTip = nullptr;
+        pblocktree = nullptr;
+        instance.reset();
     }
 
     /** Returns the non-catching coins view of the singleton instance.  */
@@ -381,7 +367,17 @@ void PrepareShutdown()
     StopTorControl();
     SaveMasternodeDataToDisk();
     UnregisterNodeSignals(GetNodeSignals());
-    ShallowDatabases::FlushStateAndCleanup();
+
+    {
+        LOCK(cs_main);
+        if (pcoinsTip != NULL) {
+            FlushStateToDisk();
+            //record that client took the proper shutdown procedure
+            pblocktree->WriteFlag("shutdown", true);
+        }
+        GetSporkManager().DeallocateDatabase();
+        ShallowDatabases::Cleanup();
+    }
 
 #ifdef ENABLE_WALLET
     FlushWallet(true);
@@ -907,6 +903,7 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
         uiInterface.InitMessage(translate("Preparing databases..."));
         UnloadBlockIndex();
         ShallowDatabases::Setup(CalculateDBCacheSizes());
+        GetSporkManager().AllocateDatabase();
 
         if (fReindex)
             pblocktree->WriteReindexing(true);

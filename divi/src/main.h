@@ -22,6 +22,7 @@ struct CBlockLocator;
 class CBlockHeader;
 class CBlockIndex;
 class CBlockTreeDB;
+class ChainstateManager;
 class CSporkDB;
 class CInv;
 class CScriptCheck;
@@ -73,8 +74,11 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp = NULL);
 bool InitBlockIndex();
 /** Load the block tree and coins database from disk */
 bool LoadBlockIndex(std::string& strError);
-/** Unload database information */
-void UnloadBlockIndex();
+/** Unload database information.  If a ChainstateManager is present,
+ *  the block map inside (and all other in-memory information) is unloaded.
+ *  Otherwise just local data (e.g. validated but not yet attached
+ *  CBlockIndex instances) is removed.  */
+void UnloadBlockIndex(ChainstateManager* chainstate);
 /** Process protocol messages received from a given node */
 bool ProcessReceivedMessages(CNode* pfrom);
 /**

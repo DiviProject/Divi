@@ -2255,19 +2255,22 @@ bool static LoadBlockIndexState(string& strError)
     return true;
 }
 
-void UnloadBlockIndex()
+void UnloadBlockIndex(ChainstateManager* chainstate)
 {
-    ChainstateManager chainstate;
-    auto& blockMap = chainstate.GetBlockMap();
-
-    for(auto& blockHashAndBlockIndex: blockMap)
-    {
-        delete blockHashAndBlockIndex.second;
-    }
-    blockMap.clear();
     setBlockIndexCandidates.clear();
-    chainstate.ActiveChain().SetTip(nullptr);
-    pindexBestInvalid = NULL;
+    pindexBestInvalid = nullptr;
+
+    if (chainstate != nullptr)
+    {
+        auto& blockMap = chainstate->GetBlockMap();
+
+        for(auto& blockHashAndBlockIndex: blockMap)
+        {
+            delete blockHashAndBlockIndex.second;
+        }
+        blockMap.clear();
+        chainstate->ActiveChain().SetTip(nullptr);
+    }
 }
 
 bool LoadBlockIndex(string& strError)

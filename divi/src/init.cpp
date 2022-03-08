@@ -142,14 +142,17 @@ CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate());
 void InitializeWallet(std::string strWalletFile)
 {
 #ifdef ENABLE_WALLET
+    const auto& chainstate = ChainstateManager::Get();
+    const auto& chain = chainstate.ActiveChain();
+    const auto& blockMap = chainstate.GetBlockMap();
     confirmationsCalculator.reset(
         new MerkleTxConfirmationNumberCalculator(
-            chainActive,
-            mapBlockIndex,
+            chain,
+            blockMap,
             Params().COINBASE_MATURITY(),
             mempool,
             cs_main));
-    pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex, *confirmationsCalculator);
+    pwalletMain = new CWallet(strWalletFile, chain, blockMap, *confirmationsCalculator);
 #endif
 }
 
@@ -374,10 +377,10 @@ void PrepareShutdown()
 
     {
         LOCK(cs_main);
-        if (pcoinsTip != NULL) {
+        if (chainstateInstance != nullptr) {
             FlushStateToDisk();
             //record that client took the proper shutdown procedure
-            pblocktree->WriteFlag("shutdown", true);
+            chainstateInstance->BlockTree().WriteFlag("shutdown", true);
         }
         chainstateInstance.reset ();
         GetSporkManager().DeallocateDatabase();
@@ -539,7 +542,7 @@ void ReconstructBlockIndex()
         LoadExternalBlockFile(file, &pos);
         nFile++;
     }
-    pblocktree->WriteReindexing(false);
+    ChainstateManager::Get().BlockTree().WriteReindexing(false);
     fReindex = false;
     LogPrintf("Reindexing finished\n");
     // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
@@ -907,10 +910,13 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
 {
     if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
-        UnloadBlockIndex(&ChainstateManager::Get());
+        auto& chainstate = ChainstateManager::Get();
+        auto& blockMap = chainstate.GetBlockMap();
+
+        UnloadBlockIndex(&chainstate);
 
         if (fReindex)
-            pblocktree->WriteReindexing(true);
+            chainstate.BlockTree().WriteReindexing(true);
 
         // DIVI: load previous sessions sporks if we have them.
         uiInterface.InitMessage(translate("Loading sporks..."));
@@ -927,7 +933,7 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
         // If the loaded chain has a wrong genesis, bail out immediately
         // (we're likely using a testnet datadir, or the other way around).
         uiInterface.InitMessage(translate("Checking genesis block..."));
-        if (!mapBlockIndex.empty() && mapBlockIndex.count(Params().HashGenesisBlock()) == 0)
+        if (!blockMap.empty() && blockMap.count(Params().HashGenesisBlock()) == 0)
         {
             InitError(translate("Incorrect or no genesis block found. Wrong datadir for network?"));
             return BlockLoadingStatus::FAILED_LOADING;
@@ -957,11 +963,11 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
             const ActiveChainManager& chainManager = GetActiveChainManager();
             const CVerifyDB dbVerifier(
                 chainManager,
-                chainActive,
+                chainstate.ActiveChain(),
                 uiInterface,
                 nCoinCacheSize,
                 &ShutdownRequested);
-            if (!dbVerifier.VerifyDB(&ShallowDatabases::GetNonCatchingCoinsView(), pcoinsTip->GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
+            if (!dbVerifier.VerifyDB(&ShallowDatabases::GetNonCatchingCoinsView(), chainstate.CoinsTip().GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
             {
                 strLoadError = translate("Corrupted block database detected");
                 fVerifyingBlocks = false;
@@ -1369,6 +1375,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     uiInterface.InitMessage(translate("Preparing databases..."));
     ShallowDatabases::Setup(CalculateDBCacheSizes());
     chainstateInstance.reset(new ChainstateManager ());
+    const auto& chainActive = chainstateInstance->ActiveChain();
+    const auto& blockMap = chainstateInstance->GetBlockMap();
     GetSporkManager().AllocateDatabase();
 
     if(!SetSporkKey())
@@ -1509,7 +1517,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return InitError(strErrors.str());
 
     //// debug print
-    LogPrintf("mapBlockIndex.size() = %u\n", mapBlockIndex.size());
+    LogPrintf("mapBlockIndex.size() = %u\n", blockMap.size());
     LogPrintf("chainActive.Height() = %d\n", chainActive.Height());
 #ifdef ENABLE_WALLET
     LogPrintf("Key Pool size = %u\n", pwalletMain ? pwalletMain->GetKeyPoolSize() : 0);

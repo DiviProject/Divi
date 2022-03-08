@@ -341,7 +341,6 @@ public:
     bool AddVault(const CScript& vaultScript, const CBlock* pblock,const CTransaction& tx);
     bool RemoveVault(const CScript& vaultScript);
 
-    bool AddCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) override;
     bool Unlock(const SecureString& strWalletPassphrase, bool stakingOnly = false);
     bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
     bool EncryptWallet(const SecureString& strWalletPassphrase);

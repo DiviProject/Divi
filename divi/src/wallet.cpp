@@ -865,25 +865,6 @@ bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey &pubkey)
     return true;
 }
 
-bool CWallet::AddCryptedKey(const CPubKey& vchPubKey,
-                            const std::vector<unsigned char>& vchCryptedSecret)
-{
-    if (!CCryptoKeyStore::AddCryptedKey(vchPubKey, vchCryptedSecret))
-        return false;
-    if (!fFileBacked)
-        return true;
-    {
-        LOCK(cs_wallet);
-        if (pwalletdbEncryption)
-            return pwalletdbEncryption->WriteCryptedKey(vchPubKey,
-                                                        vchCryptedSecret,
-                                                        mapKeyMetadata[vchPubKey.GetID()]);
-        else
-            return CWalletDB(settings,strWalletFile).WriteCryptedKey(vchPubKey, vchCryptedSecret, mapKeyMetadata[vchPubKey.GetID()]);
-    }
-    return false;
-}
-
 void CWallet::ReserializeTransactions(const std::vector<uint256>& transactionIDs)
 {
     CWalletDB walletDB(settings,strWalletFile);

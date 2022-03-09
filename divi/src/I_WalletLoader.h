@@ -36,7 +36,7 @@ public:
     virtual bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey) = 0;
     virtual bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) = 0;
     virtual bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp) = 0;
-    virtual bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) = 0;
+    virtual bool LoadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) = 0;
     virtual void LoadKeyPool(int nIndex, const CKeyPool &keypool) = 0;
     virtual bool LoadCScript(const CScript& redeemScript) = 0;
     virtual bool LoadHDChain(const CHDChain& chain, bool memonly) = 0;

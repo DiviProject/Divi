@@ -422,7 +422,7 @@ std::string CWallet::getWalletIdentifier() const
     return vchDefaultKey.GetID().ToString();
 }
 
-bool CWallet::SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
+bool CWallet::LoadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
 {
     if (fFileBacked && updateDatabase) {
         if (!CWalletDB(settings,strWalletFile).WriteDefaultKey(vchPubKey))
@@ -437,7 +437,7 @@ bool CWallet::InitializeDefaultKey()
     CPubKey newDefaultKey;
     if (GetKeyFromPool(newDefaultKey, false))
     {
-        SetDefaultKey(newDefaultKey,true);
+        LoadDefaultKey(newDefaultKey,true);
         if (!SetAddressLabel(vchDefaultKey.GetID(), "")) {
             return false;
         }

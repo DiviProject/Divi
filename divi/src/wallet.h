@@ -247,7 +247,7 @@ protected:
     bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey) override;
     bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) override;
     bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp) override;
-    bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) override;
+    bool LoadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) override;
     void LoadKeyPool(int nIndex, const CKeyPool &keypool) override;
     bool LoadCScript(const CScript& redeemScript) override;
     bool LoadCryptedHDChain(const CHDChain& chain, bool memonly) override;

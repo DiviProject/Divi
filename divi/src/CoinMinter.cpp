@@ -17,6 +17,7 @@
 #include <ThreadManagementHelpers.h>
 #include <reservekey.h>
 #include <script/standard.h>
+#include <ForkActivation.h>
 
 constexpr int hashingDelay = 45;
 extern bool ProcessNewBlockFoundByMe(CBlock* pblock);
@@ -89,7 +90,11 @@ bool CoinMinter::satisfiesMintingRequirements() const
         chainTipIsSyncedEnough &&
         peerNotifier_.havePeersToNotify() &&
         (blockType == PROOF_OF_WORK ||
-            (blockType == PROOF_OF_STAKE && wallet_.CanStakeCoins() && masternodeSync_.IsSynced() && hasMintableCoinForProofOfStake() && !limitStakingSpeed() ));
+            (blockType == PROOF_OF_STAKE &&
+             wallet_.CanStakeCoins() &&
+             (ActivationState(chainTip).IsActive(Fork::DeprecateMasternodes)? true: masternodeSync_.IsSynced()) &&
+             hasMintableCoinForProofOfStake() &&
+             !limitStakingSpeed() ));
     return stakingRequirementsAreMet;
 }
 bool CoinMinter::limitStakingSpeed() const

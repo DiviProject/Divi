@@ -250,7 +250,7 @@ protected:
     bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) override;
     void LoadKeyPool(int nIndex, const CKeyPool &keypool) override;
     bool LoadCScript(const CScript& redeemScript) override;
-    bool SetCryptedHDChain(const CHDChain& chain, bool memonly) override;
+    bool LoadCryptedHDChain(const CHDChain& chain, bool memonly) override;
     bool LoadHDPubKey(const CHDPubKey &hdPubKey) override;
     void ReserializeTransactions(const std::vector<uint256>& transactionIDs) override;
     void LoadAddressLabel(const CTxDestination& address, const std::string newLabel) override;

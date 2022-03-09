@@ -747,8 +747,8 @@ void CWallet::DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, u
         throw std::runtime_error(std::string(__func__) + ": SetAccount failed");
 
     if (IsCrypted()) {
-        if (!SetCryptedHDChain(hdChainCurrent, false))
-            throw std::runtime_error(std::string(__func__) + ": SetCryptedHDChain failed");
+        if (!LoadCryptedHDChain(hdChainCurrent, false))
+            throw std::runtime_error(std::string(__func__) + ": LoadCryptedHDChain failed");
     }
     else {
         if (!SetHDChain(hdChainCurrent, false))
@@ -1262,7 +1262,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             assert(hdChainCurrent.GetID() == hdChainCrypted.GetID());
             assert(hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash());
 
-            assert(SetCryptedHDChain(hdChainCrypted, false));
+            assert(LoadCryptedHDChain(hdChainCrypted, false));
         }
 
         // Encryption was introduced in version 0.4.0
@@ -2740,7 +2740,7 @@ bool CWallet::SetHDChain(const CHDChain& chain, bool memonly)
     return true;
 }
 
-bool CWallet::SetCryptedHDChain(const CHDChain& chain, bool memonly)
+bool CWallet::LoadCryptedHDChain(const CHDChain& chain, bool memonly)
 {
     LOCK(cs_wallet);
 

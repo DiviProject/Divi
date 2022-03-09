@@ -254,7 +254,7 @@ protected:
     bool LoadHDPubKey(const CHDPubKey &hdPubKey) override;
     void ReserializeTransactions(const std::vector<uint256>& transactionIDs) override;
     void LoadAddressLabel(const CTxDestination& address, const std::string newLabel) override;
-    bool SetHDChain(const CHDChain& chain, bool memonly) override;
+    bool LoadHDChain(const CHDChain& chain, bool memonly) override;
 
 public:
     explicit CWallet(

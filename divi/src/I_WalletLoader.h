@@ -39,7 +39,7 @@ public:
     virtual bool SetDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) = 0;
     virtual void LoadKeyPool(int nIndex, const CKeyPool &keypool) = 0;
     virtual bool LoadCScript(const CScript& redeemScript) = 0;
-    virtual bool SetHDChain(const CHDChain& chain, bool memonly) = 0;
+    virtual bool LoadHDChain(const CHDChain& chain, bool memonly) = 0;
     virtual bool LoadCryptedHDChain(const CHDChain& chain, bool memonly) = 0;
     virtual bool LoadHDPubKey(const CHDPubKey &hdPubKey) = 0;
     virtual void ReserializeTransactions(const std::vector<uint256>& transactionIDs) = 0;

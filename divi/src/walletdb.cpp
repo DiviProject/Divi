@@ -408,9 +408,9 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
         {
             CHDChain chain;
             ssValue >> chain;
-            if (pwallet && !pwallet->SetHDChain(chain, true))
+            if (pwallet && !pwallet->LoadHDChain(chain, true))
             {
-                strErr = "Error reading wallet database: SetHDChain failed";
+                strErr = "Error reading wallet database: LoadHDChain failed";
                 return false;
             }
         }

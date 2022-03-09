@@ -383,7 +383,7 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             ssValue >> pubkey;
             if(pwallet)
             {
-                pwallet->SetDefaultKey(pubkey,false);
+                pwallet->LoadDefaultKey(pubkey,false);
             }
         } else if (strType == "pool") {
             int64_t nIndex;
@@ -458,7 +458,7 @@ static bool IsKeyType(string strType)
 DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
 {
     I_WalletLoader* pwallet = &wallet;
-    pwallet->SetDefaultKey(CPubKey(),false);
+    pwallet->LoadDefaultKey(CPubKey(),false);
     CWalletScanState wss;
     bool fNoncriticalErrors = false;
     DBErrors result = DB_LOAD_OK;

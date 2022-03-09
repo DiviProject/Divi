@@ -751,8 +751,8 @@ void CWallet::DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, u
             throw std::runtime_error(std::string(__func__) + ": LoadCryptedHDChain failed");
     }
     else {
-        if (!SetHDChain(hdChainCurrent, false))
-            throw std::runtime_error(std::string(__func__) + ": SetHDChain failed");
+        if (!LoadHDChain(hdChainCurrent, false))
+            throw std::runtime_error(std::string(__func__) + ": LoadHDChain failed");
     }
 
     if (!AddHDPubKey(childKey.Neuter(), fInternal))
@@ -2718,8 +2718,8 @@ void CWallet::GenerateNewHDChain()
             throw std::runtime_error(std::string(__func__) + ": SetMnemonic failed");
     }
 
-    if (!SetHDChain(newHdChain, false))
-        throw std::runtime_error(std::string(__func__) + ": SetHDChain failed");
+    if (!LoadHDChain(newHdChain, false))
+        throw std::runtime_error(std::string(__func__) + ": LoadHDChain failed");
 
     // clean up
     settings.ForceRemoveArg("-hdseed");
@@ -2727,7 +2727,7 @@ void CWallet::GenerateNewHDChain()
     settings.ForceRemoveArg("-mnemonicpassphrase");
 }
 
-bool CWallet::SetHDChain(const CHDChain& chain, bool memonly)
+bool CWallet::LoadHDChain(const CHDChain& chain, bool memonly)
 {
     LOCK(cs_wallet);
 

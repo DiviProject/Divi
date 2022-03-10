@@ -168,6 +168,7 @@ std::map<uint256, NodeId> mapBlockSource;
 
 static bool UpdateDBIndicesForNewBlock(
     const IndexDatabaseUpdates& indexDatabaseUpdates,
+    const uint256& bestBlockHash,
     CBlockTreeDB& blockTreeDatabase,
     CValidationState& state)
 {
@@ -189,7 +190,7 @@ static bool UpdateDBIndicesForNewBlock(
         if (!blockTreeDatabase.UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
             return state.Abort("ConnectingBlock: Failed to write update spent index");
 
-    return true;
+    return blockTreeDatabase.WriteBestBlockHash(bestBlockHash);
 }
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1025,7 +1026,7 @@ bool ConnectBlock(
 
     if (!fJustCheck) {
         if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
-           !UpdateDBIndicesForNewBlock(indexDatabaseUpdates, chainstate->BlockTree(), state))
+           !UpdateDBIndicesForNewBlock(indexDatabaseUpdates, pindex->GetBlockHash(), chainstate->BlockTree(), state))
         {
             return false;
         }

@@ -25,6 +25,7 @@ private:
     const I_BlockDataReader& blockDataReader_;
 
     bool ApplyDisconnectionUpdateIndexToDBs(
+        const uint256& bestBlockHash,
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
 public:

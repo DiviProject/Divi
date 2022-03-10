@@ -29,6 +29,7 @@ ActiveChainManager::ActiveChainManager(
 }
 
 bool ActiveChainManager::ApplyDisconnectionUpdateIndexToDBs(
+    const uint256& bestBlockHash,
     IndexDatabaseUpdates& indexDBUpdates,
     CValidationState& state) const
 {
@@ -46,7 +47,7 @@ bool ActiveChainManager::ApplyDisconnectionUpdateIndexToDBs(
             return state.Abort("Disconnecting block: Failed to write update spent index");
         }
     }
-    return true;
+    return blocktree_->WriteBestBlockHash(bestBlockHash);
 }
 
 
@@ -109,7 +110,7 @@ bool ActiveChainManager::DisconnectBlock(
     view.SetBestBlock(pindex->pprev->GetBlockHash());
     if(!fJustCheck)
     {
-        if(!ApplyDisconnectionUpdateIndexToDBs(indexDBUpdates,state))
+        if(!ApplyDisconnectionUpdateIndexToDBs(pindex->pprev->GetBlockHash(), indexDBUpdates,state))
             return error("%s: failed to apply index updates for block %s", __func__, block.GetHash());
     }
 

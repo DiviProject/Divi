@@ -305,6 +305,15 @@ bool CBlockTreeDB::LoadBlockIndices(BlockMap& blockIndicesByHash) const
     return true;
 }
 
+bool CBlockTreeDB::ReadBestBlockHash(uint256& bestBlockHash) const
+{
+    return Read(DB_BESTBLOCKHASH, bestBlockHash);
+}
+bool CBlockTreeDB::WriteBestBlockHash(const uint256 bestBlockHash)
+{
+    return Write(DB_BESTBLOCKHASH, bestBlockHash);
+}
+
 bool CBlockTreeDB::UpdateAddressUnspentIndex(const std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue > >&vect) {
     CLevelDBBatch batch;
     for (std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >::const_iterator it=vect.begin(); it!=vect.end(); it++) {

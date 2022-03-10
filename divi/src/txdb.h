@@ -81,6 +81,9 @@ public:
     bool ReadFlag(const std::string& name, bool& fValue) const;
     bool LoadBlockIndices(BlockMap& blockIndicesByHash) const;
 
+    bool ReadBestBlockHash(uint256& bestBlockHash) const;
+    bool WriteBestBlockHash(const uint256 bestBlockHash);
+
     bool ReadTxIndex(const uint256& txid, CDiskTxPos& pos) const;
     bool WriteTxIndex(const std::vector<TxIndexEntry>& list);
     bool WriteAddressIndex(const std::vector<std::pair<CAddressIndexKey, CAmount> > &vect);

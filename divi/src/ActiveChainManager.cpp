@@ -121,7 +121,8 @@ void ActiveChainManager::DisconnectBlock(
     std::pair<CBlock,bool>& disconnectedBlockAndStatus,
     CValidationState& state,
     const CBlockIndex* pindex,
-    CCoinsViewCache& coins) const
+    CCoinsViewCache& coins,
+    const bool updateCoinsCacheOnly) const
 {
     CBlock& block = disconnectedBlockAndStatus.first;
     bool& status = disconnectedBlockAndStatus.second;
@@ -131,6 +132,6 @@ void ActiveChainManager::DisconnectBlock(
         return;
     }
     int64_t nStart = GetTimeMicros();
-    status = DisconnectBlock(block, state, pindex, coins, false);
+    status = DisconnectBlock(block, state, pindex, coins, updateCoinsCacheOnly);
     LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
 }

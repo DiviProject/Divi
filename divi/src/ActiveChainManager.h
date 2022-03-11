@@ -47,6 +47,7 @@ public:
         std::pair<CBlock,bool>& disconnectedBlockAndStatus,
         CValidationState& state,
         const CBlockIndex* pindex,
-        CCoinsViewCache& coins) const;
+        CCoinsViewCache& coins,
+        const bool updateCoinsCacheOnly = false) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

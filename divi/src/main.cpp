@@ -2115,6 +2115,7 @@ static bool VerifyAllBlockFilesArePresent(const BlockMap& blockIndicesByHash)
 bool static ResolveConflictsBetweenCoinDBAndBlockDB(
     const std::vector<std::pair<int, CBlockIndex*> >& heightSortedBlockIndices,
     const BlockMap& blockMap,
+    const uint256& bestBlockHashInBlockDB,
     CCoinsViewCache& coinsTip,
     std::string& strError)
 {
@@ -2223,7 +2224,7 @@ bool static LoadBlockIndexState(string& strError)
         blockTree.ReadBestBlockHash(expectedBestBlockHash);
         if (coinsTip.GetBestBlock() != expectedBestBlockHash)
         {
-            if(!ResolveConflictsBetweenCoinDBAndBlockDB(heightSortedBlockIndices,blockMap,coinsTip,strError))
+            if(!ResolveConflictsBetweenCoinDBAndBlockDB(heightSortedBlockIndices,blockMap,expectedBestBlockHash,coinsTip,strError))
             {
                 return false;
             }

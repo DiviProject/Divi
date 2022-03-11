@@ -2135,10 +2135,12 @@ bool static ResolveConflictsBetweenCoinDBAndBlockDB(
         }
         const CBlockIndex* coinDBBestBlockIndex = mit->second;
         const CBlockIndex* blockDBBestBlockIndex = iteratorToBestBlock->second;
+        const CBlockIndex* const lastCommonSyncedBlockIndex = LastCommonAncestor(coinDBBestBlockIndex,blockDBBestBlockIndex);
 
         const int coinsHeight = coinDBBestBlockIndex->nHeight;
         const int blockIndexHeight = blockDBBestBlockIndex->nHeight;
-        LogPrintf("%s : pcoinstip synced to block height %d, block index height %d\n", __func__, coinsHeight, blockIndexHeight);
+        LogPrintf("%s : pcoinstip synced to block height %d, block index height %d, last common synced height: %d\n",
+             __func__, coinsHeight, blockIndexHeight, lastCommonSyncedBlockIndex->nHeight);
         assert(coinsHeight <= blockIndexHeight);
         if(coinsHeight < blockIndexHeight)
         {

@@ -157,7 +157,7 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
 const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
 
 /** Mark a block as invalid. */
-bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex);
+bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly = false);
 
 /** Remove invalidity status from a block and its descendants. */
 bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);

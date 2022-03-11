@@ -2213,9 +2213,6 @@ bool static LoadBlockIndexState(string& strError)
                     LogPrintf("%s : failed to flush view\n", __func__);
 
                 //get the index associated with the point in the chain that pcoinsTip is synced to
-                const CBlockIndex* const pindexLastMeta = heightSortedBlockIndices[expectedNumberOfBlockIndices].second;
-                LogPrintf("%s: Last block properly recorded: #%d %s\n", __func__, pindexLastMeta->nHeight,
-                        pindexLastMeta->GetBlockHash());
                 LogPrintf("%s : pcoinstip=%d %s\n", __func__, coinsHeight, coinsTip.GetBestBlock());
             }
         }

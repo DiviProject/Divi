@@ -2221,8 +2221,7 @@ bool static LoadBlockIndexState(string& strError)
     {
         uint256 expectedBestBlockHash;
         blockTree.ReadBestBlockHash(expectedBestBlockHash);
-        const unsigned int expectedNumberOfBlockIndices = BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile() + 1;
-        if (heightSortedBlockIndices.size() > expectedNumberOfBlockIndices)
+        if (coinsTip.GetBestBlock() != expectedBestBlockHash)
         {
             if(!ResolveConflictsBetweenCoinDBAndBlockDB(heightSortedBlockIndices,blockMap,coinsTip,strError))
             {

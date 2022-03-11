@@ -1131,7 +1131,7 @@ void static UpdateTip(const CBlockIndex* pindexNew)
 }
 
 /** Disconnect chainActive's tip. */
-bool static DisconnectTip(CValidationState& state)
+bool static DisconnectTip(CValidationState& state, const bool updateCoinDatabaseOnly = false)
 {
     AssertLockHeld(cs_main);
 
@@ -1148,7 +1148,7 @@ bool static DisconnectTip(CValidationState& state)
     std::pair<CBlock,bool> disconnectedBlock;
     {
          CCoinsViewCache view(&coinsTip);
-         chainManager.DisconnectBlock(disconnectedBlock,state, pindexDelete, view);
+         chainManager.DisconnectBlock(disconnectedBlock,state, pindexDelete, view, updateCoinDatabaseOnly);
          if(!disconnectedBlock.second)
             return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash());
          assert(view.Flush());
@@ -1489,7 +1489,7 @@ bool ActivateBestChain(CValidationState& state, const CBlock* pblock, bool fAlre
     return true;
 }
 
-bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex)
+bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)
 {
     AssertLockHeld(cs_main);
 
@@ -1509,7 +1509,7 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex)
         setBlockIndexCandidates.erase(pindexWalk);
         // ActivateBestChain considers blocks already in chainActive
         // unconditionally valid already, so force disconnect away from it.
-        if (!DisconnectTip(state)) {
+        if (!DisconnectTip(state,updateCoinDatabaseOnly)) {
             return false;
         }
     }

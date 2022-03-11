@@ -2178,7 +2178,9 @@ bool static ResolveConflictsBetweenCoinDBAndBlockDB(
             }
 
             // Save the updates to disk
-            if (!view.Flush() || !coinsTip.Flush())
+            if(!view.Flush())
+                return error("%s: unable to flush coin db ammendments to coinsTip\n",__func__);
+            if (!coinsTip.Flush())
                 LogPrintf("%s : failed to flush view\n", __func__);
 
             //get the index associated with the point in the chain that pcoinsTip is synced to

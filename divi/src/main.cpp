@@ -2112,6 +2112,40 @@ static bool VerifyAllBlockFilesArePresent(const BlockMap& blockIndicesByHash)
     return true;
 }
 
+bool static RollbackCoinDB(
+    const CBlockIndex* const finalBlockIndex,
+    const CBlockIndex* currentBlockIndex,
+    CCoinsViewCache& view)
+{
+    BlockDiskDataReader blockDataReader;
+    while(currentBlockIndex && finalBlockIndex->nHeight < currentBlockIndex->nHeight)
+    {
+        CBlock block;
+        if (!blockDataReader.ReadBlock(currentBlockIndex,block))
+            return error("%s: Unable to read block",__func__);
+
+        CBlockUndo blockUndo;
+        if(!blockDataReader.ReadBlockUndo(currentBlockIndex,blockUndo))
+            return error("%s: failed to read block undo for %s", __func__, block.GetHash());
+
+        for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--)
+        {
+            const CTransaction& tx = block.vtx[transactionIndex];
+            const TransactionLocationReference txLocationReference(tx, currentBlockIndex->nHeight, transactionIndex);
+            const auto* undo = (transactionIndex > 0 ? &blockUndo.vtxundo[transactionIndex - 1] : nullptr);
+            const TxReversalStatus status = view.UpdateWithReversedTransaction(tx,txLocationReference,undo);
+            if(status != TxReversalStatus::OK)
+            {
+                return error("%s: unable to reverse transaction\n",__func__);
+            }
+        }
+        view.SetBestBlock(currentBlockIndex->GetBlockHash());
+        currentBlockIndex = currentBlockIndex->pprev;
+    }
+    assert(currentBlockIndex->GetBlockHash() == finalBlockIndex->GetBlockHash());
+    return true;
+}
+
 bool static ResolveConflictsBetweenCoinDBAndBlockDB(
     const std::vector<std::pair<int, CBlockIndex*> >& heightSortedBlockIndices,
     const BlockMap& blockMap,

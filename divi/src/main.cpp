@@ -2239,12 +2239,9 @@ bool static LoadBlockIndexState(string& strError)
     {
         uint256 expectedBestBlockHash;
         blockTree.ReadBestBlockHash(expectedBestBlockHash);
-        if (coinsTip.GetBestBlock() != expectedBestBlockHash)
+        if(!ResolveConflictsBetweenCoinDBAndBlockDBTemp(heightSortedBlockIndices,blockMap,expectedBestBlockHash,coinsTip,strError))
         {
-            if(!ResolveConflictsBetweenCoinDBAndBlockDB(heightSortedBlockIndices,blockMap,expectedBestBlockHash,coinsTip,strError))
-            {
-                return false;
-            }
+            return false;
         }
         if(settings.ParameterIsSet("-safe_shutdown"))
             assert(coinsTip.GetBestBlock() == expectedBestBlockHash && "Coin database and block database have inconsistent best block");

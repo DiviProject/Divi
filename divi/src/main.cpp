@@ -2185,6 +2185,23 @@ bool static ResolveConflictsBetweenCoinDBAndBlockDB(
     return true;
 }
 
+bool static ResolveConflictsBetweenCoinDBAndBlockDBTemp(
+    const std::vector<std::pair<int, CBlockIndex*> >& heightSortedBlockIndices,
+    const BlockMap& blockMap,
+    const uint256& bestBlockHashInBlockDB,
+    CCoinsViewCache& coinsTip,
+    std::string& strError)
+{
+    if (coinsTip.GetBestBlock() != bestBlockHashInBlockDB)
+    {
+        if(!ResolveConflictsBetweenCoinDBAndBlockDB(heightSortedBlockIndices,blockMap,expectedBestBlockHash,coinsTip,strError))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool static LoadBlockIndexState(string& strError)
 {
     ChainstateManager::Reference chainstate;

@@ -2124,11 +2124,20 @@ bool static ResolveConflictsBetweenCoinDBAndBlockDB(
         const auto mit = blockMap.find(coinsTip.GetBestBlock());
         if (mit == blockMap.end())
         {
-            strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database";
+            strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database. Coin db best block unknown";;
             return false;
         }
-        const int coinsHeight = mit->second->nHeight;
-        const int blockIndexHeight = (heightSortedBlockIndices.size()>0)? heightSortedBlockIndices.back().first: 0;
+        const auto iteratorToBestBlock = blockMap.find(bestBlockHashInBlockDB);
+        if (iteratorToBestBlock == blockMap.end())
+        {
+            strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database. Block db best block unknown";
+            return false;
+        }
+        const CBlockIndex* coinDBBestBlockIndex = mit->second;
+        const CBlockIndex* blockDBBestBlockIndex = iteratorToBestBlock->second;
+
+        const int coinsHeight = coinDBBestBlockIndex->nHeight;
+        const int blockIndexHeight = blockDBBestBlockIndex->nHeight;
         LogPrintf("%s : pcoinstip synced to block height %d, block index height %d\n", __func__, coinsHeight, blockIndexHeight);
         assert(coinsHeight <= blockIndexHeight);
         if(coinsHeight < blockIndexHeight)

@@ -48,6 +48,6 @@ public:
         CValidationState& state,
         const CBlockIndex* pindex,
         CCoinsViewCache& coins,
-        const bool updateCoinsCacheOnly = false) const;
+        const bool updateCoinsCacheOnly) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

@@ -2146,6 +2146,43 @@ bool static RollbackCoinDB(
     return true;
 }
 
+bool static RollforwardkCoinDB(
+    const CBlockIndex* const finalBlockIndex,
+    const CBlockIndex* currentBlockIndex,
+    CCoinsViewCache& view)
+{
+    std::vector<const CBlockIndex*> blocksToRollForward;
+    int numberOfBlocksToRollforward = finalBlockIndex->nHeight - currentBlockIndex->nHeight;
+    assert(numberOfBlocksToRollforward>=0);
+    if(numberOfBlocksToRollforward < 1) return true;
+
+    blocksToRollForward.resize(numberOfBlocksToRollforward);
+    for(const CBlockIndex* rollbackBlock = finalBlockIndex;
+        rollbackBlock && currentBlockIndex != rollbackBlock;
+        rollbackBlock = rollbackBlock->pprev)
+    {
+        blocksToRollForward[--numberOfBlocksToRollforward] = rollbackBlock;
+    }
+
+    BlockDiskDataReader blockDataReader;
+    for(const CBlockIndex* nextBlockIndex: blocksToRollForward)
+    {
+        CBlock block;
+        if (!blockDataReader.ReadBlock(nextBlockIndex,block))
+            return error("%s: Unable to read block",__func__);
+
+        for(const CTransaction& tx: block.vtx)
+        {
+            if(!view.HaveInputs(tx)) return error("%s: unable to apply transction\n",__func__);
+            CTxUndo undoDummy;
+            view.UpdateWithConfirmedTransaction(tx, nextBlockIndex->nHeight, undoDummy);
+        }
+        view.SetBestBlock(nextBlockIndex->GetBlockHash());
+    }
+    assert(view.GetBestBlock() == finalBlockIndex->GetBlockHash());
+    return true;
+}
+
 bool static ResolveConflictsBetweenCoinDBAndBlockDB(
     const std::vector<std::pair<int, CBlockIndex*> >& heightSortedBlockIndices,
     const BlockMap& blockMap,

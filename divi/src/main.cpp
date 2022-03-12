@@ -2212,62 +2212,24 @@ bool static ResolveConflictsBetweenCoinDBAndBlockDB(
         const int blockIndexHeight = blockDBBestBlockIndex->nHeight;
         LogPrintf("%s : pcoinstip synced to block height %d, block index height %d, last common synced height: %d\n",
              __func__, coinsHeight, blockIndexHeight, lastCommonSyncedBlockIndex->nHeight);
-        assert(coinsHeight <= blockIndexHeight);
-        if(coinsHeight < blockIndexHeight)
+
+        CCoinsViewCache view(&coinsTip);
+        if(!RollbackCoinDB(lastCommonSyncedBlockIndex,coinDBBestBlockIndex,view))
         {
-            //The database is in a state where a block has been accepted and written to disk, but the
-            //transaction database (pcoinsTip) was not flushed to disk, and is therefore not in sync with
-            //the block index database.
-            auto nextBlockCandidate =
-                std::find_if(heightSortedBlockIndices.begin(),heightSortedBlockIndices.end(),
-                    [coinsHeight](const std::pair<int,CBlockIndex*>& heightAndBlockIndex) -> bool
-                    {
-                        return heightAndBlockIndex.first > coinsHeight;
-                    });
-            auto endNextBlockCandidate = heightSortedBlockIndices.end();
-
-            // Start at the last block that was successfully added to the txdb (pcoinsTip) and manually add all transactions that occurred for each block up until
-            // the best known block from the block index db.
-            CCoinsViewCache view(&coinsTip);
-            int lastProcessedHeight = -1;
-            while (nextBlockCandidate != endNextBlockCandidate)
-            {
-                const CBlockIndex* pindex = nextBlockCandidate->second;
-                if(pindex->pprev && view.GetBestBlock() != pindex->pprev->GetBlockHash())
-                {
-                    ++nextBlockCandidate;
-                    continue;
-                }
-                if(lastProcessedHeight==pindex->nHeight)
-                {
-                    // Duplicate blocks at the same height let the rest sort themselves out?
-                    break;
-                }
-                lastProcessedHeight = pindex->nHeight;
-                CBlock block;
-                if (!ReadBlockFromDisk(block, pindex)) {
-                    strError = "The wallet has been not been closed gracefully and has caused corruption of blocks stored to disk. Data directory is in an unusable state";
-                    return false;
-                }
-
-                uint256 hashBlock = block.GetHash();
-                for (unsigned int i = 0; i < block.vtx.size(); i++) {
-                    CTxUndo undoDummy;
-                    view.UpdateWithConfirmedTransaction(block.vtx[i], pindex->nHeight, undoDummy);
-                    view.SetBestBlock(hashBlock);
-                }
-                ++nextBlockCandidate;
-            }
-
-            // Save the updates to disk
-            if(!view.Flush())
-                return error("%s: unable to flush coin db ammendments to coinsTip\n",__func__);
-            if (!coinsTip.Flush())
-                LogPrintf("%s : failed to flush view\n", __func__);
-
-            //get the index associated with the point in the chain that pcoinsTip is synced to
-            LogPrintf("%s : pcoinstip=%d %s\n", __func__, coinsHeight, coinsTip.GetBestBlock());
+            return error("%s: unable to roll back coin db\n",__func__);
         }
+        if(!RollforwardkCoinDB(blockDBBestBlockIndex,lastCommonSyncedBlockIndex,view))
+        {
+            return error("%s: unable to roll forward coin db\n",__func__);
+        }
+        // Save the updates to disk
+        if(!view.Flush())
+            return error("%s: unable to flush coin db ammendments to coinsTip\n",__func__);
+        if (!coinsTip.Flush())
+            LogPrintf("%s : unable to flush coinTip to disk\n", __func__);
+
+        //get the index associated with the point in the chain that pcoinsTip is synced to
+        LogPrintf("%s : pcoinstip=%d %s\n", __func__, coinsHeight, coinsTip.GetBestBlock());
     }
     return true;
 }

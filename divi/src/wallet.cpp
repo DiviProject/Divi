@@ -747,8 +747,8 @@ void CWallet::DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, u
         throw std::runtime_error(std::string(__func__) + ": SetAccount failed");
 
     if (IsCrypted()) {
-        if (!UpdateCryptedHDChain(hdChainCurrent))
-            throw std::runtime_error(std::string(__func__) + ": UpdateCryptedHDChain failed");
+        if (!LoadCryptedHDChain(hdChainCurrent,false))
+            throw std::runtime_error(std::string(__func__) + ": LoadCryptedHDChain failed");
     }
     else {
         if (!LoadHDChain(hdChainCurrent, false))
@@ -2755,12 +2755,6 @@ bool CWallet::LoadCryptedHDChain(const CHDChain& chain, bool memonly)
     }
 
     return true;
-}
-
-bool CWallet::UpdateCryptedHDChain(const CHDChain& chain)
-{
-    AssertLockHeld(cs_wallet);
-    return LoadCryptedHDChain(chain,false);
 }
 
 bool CWallet::GetDecryptedHDChain(CHDChain& hdChainRet)

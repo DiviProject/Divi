@@ -2748,16 +2748,10 @@ bool CWallet::LoadCryptedHDChain(const CHDChain& chain, bool memonly)
         return false;
 
     if (!memonly) {
-        assert(false && "Deprecate write-to-database on load");
         if (!fFileBacked)
             return false;
-        if (pwalletdbEncryption) {
-            if (!pwalletdbEncryption->WriteCryptedHDChain(chain))
-                throw std::runtime_error(std::string(__func__) + ": WriteCryptedHDChain failed");
-        } else {
-            if (!CWalletDB(settings,strWalletFile).WriteCryptedHDChain(chain))
-                throw std::runtime_error(std::string(__func__) + ": WriteCryptedHDChain failed");
-        }
+        if (!CWalletDB(settings,strWalletFile).WriteCryptedHDChain(chain))
+            throw std::runtime_error(std::string(__func__) + ": WriteCryptedHDChain failed");
     }
 
     return true;

@@ -49,7 +49,8 @@ ChainstateManager::ChainstateManager (const size_t blockTreeCache, const size_t 
     blockTree(new CBlockTreeDB (blockTreeCache, fMemory, fWipe)),
     coinsDbView(new CCoinsViewDB (*blockMap, coinDbCache, fMemory, fWipe)),
     coinsCatcher(new CCoinsViewErrorCatcher (coinsDbView.get ())),
-    coinsTip(new CCoinsViewCache (coinsCatcher.get ()))
+    coinsTip(new CCoinsViewCache (coinsCatcher.get ())),
+    refs(0)
 {
   LOCK (instanceLock);
   assert (instance == nullptr);
@@ -61,6 +62,8 @@ ChainstateManager::~ChainstateManager ()
   LOCK (instanceLock);
   assert (instance == this);
   instance = nullptr;
+
+  assert (refs == 0);
 
   coinsTip.reset ();
   coinsCatcher.reset ();
@@ -76,4 +79,16 @@ ChainstateManager& ChainstateManager::Get ()
   LOCK (instanceLock);
   assert (instance != nullptr);
   return *instance;
+}
+
+ChainstateManager::Reference::Reference ()
+  : instance(ChainstateManager::Get ())
+{
+  ++instance.refs;
+}
+
+ChainstateManager::Reference::~Reference ()
+{
+  const int prev = instance.refs.fetch_sub (1);
+  assert (prev > 0);
 }

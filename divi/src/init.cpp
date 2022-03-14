@@ -136,9 +136,9 @@ CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate());
 void InitializeWallet(std::string strWalletFile)
 {
 #ifdef ENABLE_WALLET
-    const auto& chainstate = ChainstateManager::Get();
-    const auto& chain = chainstate.ActiveChain();
-    const auto& blockMap = chainstate.GetBlockMap();
+    const ChainstateManager::Reference chainstate;
+    const auto& chain = chainstate->ActiveChain();
+    const auto& blockMap = chainstate->GetBlockMap();
     confirmationsCalculator.reset(
         new MerkleTxConfirmationNumberCalculator(
             chain,
@@ -461,7 +461,8 @@ void ReconstructBlockIndex()
         LoadExternalBlockFile(file, &pos);
         nFile++;
     }
-    ChainstateManager::Get().BlockTree().WriteReindexing(false);
+    ChainstateManager::Reference chainstate;
+    chainstate->BlockTree().WriteReindexing(false);
     fReindex = false;
     LogPrintf("Reindexing finished\n");
     // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
@@ -829,13 +830,13 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
 {
     if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
-        auto& chainstate = ChainstateManager::Get();
-        auto& blockMap = chainstate.GetBlockMap();
+        ChainstateManager::Reference chainstate;
+        auto& blockMap = chainstate->GetBlockMap();
 
-        UnloadBlockIndex(&chainstate);
+        UnloadBlockIndex(&*chainstate);
 
         if (fReindex)
-            chainstate.BlockTree().WriteReindexing(true);
+            chainstate->BlockTree().WriteReindexing(true);
 
         // DIVI: load previous sessions sporks if we have them.
         uiInterface.InitMessage(translate("Loading sporks..."));
@@ -882,11 +883,11 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
             const ActiveChainManager& chainManager = GetActiveChainManager();
             const CVerifyDB dbVerifier(
                 chainManager,
-                chainstate.ActiveChain(),
+                chainstate->ActiveChain(),
                 uiInterface,
                 nCoinCacheSize,
                 &ShutdownRequested);
-            if (!dbVerifier.VerifyDB(&chainstate.GetNonCatchingCoinsView(), chainstate.CoinsTip().GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
+            if (!dbVerifier.VerifyDB(&chainstate->GetNonCatchingCoinsView(), chainstate->CoinsTip().GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
             {
                 strLoadError = translate("Corrupted block database detected");
                 fVerifyingBlocks = false;

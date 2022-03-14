@@ -18,7 +18,7 @@ extern bool fTxIndex;
 /** Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock */
 bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow)
 {
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
 
     const CBlockIndex* pindexSlow = NULL;
     {
@@ -31,7 +31,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
 
         if (fTxIndex) {
             CDiskTxPos postx;
-            if (chainstate.BlockTree().ReadTxIndex(hash, postx)) {
+            if (chainstate->BlockTree().ReadTxIndex(hash, postx)) {
                 CAutoFile file(OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
                 if (file.IsNull())
                     return error("%s: OpenBlockFile failed", __func__);
@@ -57,12 +57,12 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
         if (fAllowSlow) { // use coin database to locate block that contains transaction, and scan it
             int nHeight = -1;
             {
-                const CCoins* coins = chainstate.CoinsTip().AccessCoins(hash);
+                const CCoins* coins = chainstate->CoinsTip().AccessCoins(hash);
                 if (coins)
                     nHeight = coins->nHeight;
             }
             if (nHeight > 0)
-                pindexSlow = chainstate.ActiveChain()[nHeight];
+                pindexSlow = chainstate->ActiveChain()[nHeight];
         }
     }
 
@@ -86,8 +86,8 @@ bool CollateralIsExpectedAmount(const COutPoint &outpoint, int64_t expectedAmoun
 {
     CCoins coins;
     LOCK(cs_main);
-    const auto& chainstate = ChainstateManager::Get();
-    if (!chainstate.CoinsTip().GetCoins(outpoint.hash, coins))
+    const ChainstateManager::Reference chainstate;
+    if (!chainstate->CoinsTip().GetCoins(outpoint.hash, coins))
         return false;
 
     int n = outpoint.n;

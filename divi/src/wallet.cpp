@@ -2762,6 +2762,23 @@ bool CWallet::LoadCryptedHDChain(const CHDChain& chain, bool memonly)
     return true;
 }
 
+bool CWallet::UpdateCryptedHDChain(const CHDChain& chain)
+{
+    AssertLockHeld(cs_wallet);
+    if (!CCryptoKeyStore::SetCryptedHDChain(chain))
+        return false;
+
+    if(!fFileBacked)
+    {
+        return false;
+    }
+    else if (!CWalletDB(settings,strWalletFile).WriteCryptedHDChain(chain))
+    {
+        throw std::runtime_error(std::string(__func__) + ": UpdateCryptedHDChain failed");
+    }
+    return true;
+}
+
 bool CWallet::GetDecryptedHDChain(CHDChain& hdChainRet)
 {
     LOCK(cs_wallet);

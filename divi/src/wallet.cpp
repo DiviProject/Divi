@@ -747,8 +747,8 @@ void CWallet::DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, u
         throw std::runtime_error(std::string(__func__) + ": SetAccount failed");
 
     if (IsCrypted()) {
-        if (!LoadCryptedHDChain(hdChainCurrent, false))
-            throw std::runtime_error(std::string(__func__) + ": LoadCryptedHDChain failed");
+        if (!UpdateCryptedHDChain(hdChainCurrent))
+            throw std::runtime_error(std::string(__func__) + ": UpdateCryptedHDChain failed");
     }
     else {
         if (!LoadHDChain(hdChainCurrent, false))
@@ -1262,7 +1262,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             assert(hdChainCurrent.GetID() == hdChainCrypted.GetID());
             assert(hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash());
 
-            assert(LoadCryptedHDChain(hdChainCrypted, false));
+            assert(LoadCryptedHDChain(hdChainCrypted, true) && fFileBacked && pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted) );
         }
 
         // Encryption was introduced in version 0.4.0
@@ -2748,6 +2748,7 @@ bool CWallet::LoadCryptedHDChain(const CHDChain& chain, bool memonly)
         return false;
 
     if (!memonly) {
+        assert(false && "Deprecate write-to-database on load");
         if (!fFileBacked)
             return false;
         if (pwalletdbEncryption) {

@@ -122,11 +122,11 @@ void MinterThread(I_CoinMinter& minter)
 bool HasRecentlyAttemptedToGenerateProofOfStake()
 {
     static const LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
     bool recentlyAttemptedPoS = false;
-    if (mapHashedBlocks.count(chainstate.ActiveChain().Tip()->nHeight))
+    if (mapHashedBlocks.count(chainstate->ActiveChain().Tip()->nHeight))
         recentlyAttemptedPoS = true;
-    else if (mapHashedBlocks.count(chainstate.ActiveChain().Tip()->nHeight - 1))
+    else if (mapHashedBlocks.count(chainstate->ActiveChain().Tip()->nHeight - 1))
         recentlyAttemptedPoS = true;
 
     return recentlyAttemptedPoS;

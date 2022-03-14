@@ -42,12 +42,12 @@ extern const CBlockIndex* pindexBestHeader;
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
 
     // Floating point number that is a multiple of the minimum difficulty,
     // minimum difficulty = 1.0.
     if (blockindex == nullptr) {
-        blockindex = chainstate.ActiveChain().Tip();
+        blockindex = chainstate->ActiveChain().Tip();
         if (blockindex == nullptr)
             return 1.0;
     }
@@ -72,14 +72,14 @@ double GetDifficulty(const CBlockIndex* blockindex)
 
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false)
 {
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
 
     Object result;
     result.push_back(Pair("hash", block.GetHash().GetHex()));
     int confirmations = -1;
     // Only report confirmations if the block is on the main chain
-    if (chainstate.ActiveChain().Contains(blockindex))
-        confirmations = chainstate.ActiveChain().Height() - blockindex->nHeight + 1;
+    if (chainstate->ActiveChain().Contains(blockindex))
+        confirmations = chainstate->ActiveChain().Height() - blockindex->nHeight + 1;
     result.push_back(Pair("confirmations", confirmations));
     result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)));
     result.push_back(Pair("height", blockindex->nHeight));
@@ -104,7 +104,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
 
     if (blockindex->pprev)
         result.push_back(Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
-    const CBlockIndex* pnext = chainstate.ActiveChain().Next(blockindex);
+    const CBlockIndex* pnext = chainstate->ActiveChain().Next(blockindex);
     if (pnext)
         result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
 
@@ -139,7 +139,8 @@ Value getblockcount(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getblockcount", "") + HelpExampleRpc("getblockcount", ""));
 
-    return ChainstateManager::Get().ActiveChain().Height();
+    const ChainstateManager::Reference chainstate;
+    return chainstate->ActiveChain().Height();
 }
 
 Value getbestblockhash(const Array& params, bool fHelp)
@@ -153,7 +154,8 @@ Value getbestblockhash(const Array& params, bool fHelp)
             "\nExamples\n" +
             HelpExampleCli("getbestblockhash", "") + HelpExampleRpc("getbestblockhash", ""));
 
-    return ChainstateManager::Get().ActiveChain().Tip()->GetBlockHash().GetHex();
+    const ChainstateManager::Reference chainstate;
+    return chainstate->ActiveChain().Tip()->GetBlockHash().GetHex();
 }
 
 Value getdifficulty(const Array& params, bool fHelp)
@@ -206,7 +208,7 @@ Value getrawmempool(const Array& params, bool fHelp)
         fVerbose = params[0].get_bool();
 
     if (fVerbose) {
-        const auto& chainstate = ChainstateManager::Get();
+        const ChainstateManager::Reference chainstate;
         LOCK(mempool.cs);
         Object o;
         BOOST_FOREACH (const PAIRTYPE(uint256, CTxMemPoolEntry) & entry, mempool.mapTx) {
@@ -218,7 +220,7 @@ Value getrawmempool(const Array& params, bool fHelp)
             info.push_back(Pair("time", e.GetTime()));
             info.push_back(Pair("height", (int)e.GetHeight()));
             info.push_back(Pair("startingpriority", e.ComputeInputCoinAgePerByte(e.GetHeight())));
-            info.push_back(Pair("currentpriority", e.ComputeInputCoinAgePerByte(chainstate.ActiveChain().Height())));
+            info.push_back(Pair("currentpriority", e.ComputeInputCoinAgePerByte(chainstate->ActiveChain().Height())));
             const CTransaction& tx = e.GetTx();
             set<string> setDepends;
             for (const CTxIn& txin : tx.vin) {
@@ -256,13 +258,13 @@ Value getblockhash(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getblockhash", "1000") + HelpExampleRpc("getblockhash", "1000"));
 
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
 
     int nHeight = params[0].get_int();
-    if (nHeight < 0 || nHeight > chainstate.ActiveChain().Height())
+    if (nHeight < 0 || nHeight > chainstate->ActiveChain().Height())
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Block height out of range");
 
-    const CBlockIndex* pblockindex = chainstate.ActiveChain()[nHeight];
+    const CBlockIndex* pblockindex = chainstate->ActiveChain()[nHeight];
     return pblockindex->GetBlockHash().GetHex();
 }
 
@@ -308,8 +310,8 @@ Value getblock(const Array& params, bool fHelp)
     if (params.size() > 1)
         fVerbose = params[1].get_bool();
 
-    const auto& chainstate = ChainstateManager::Get();
-    const auto& blockMap = chainstate.GetBlockMap();
+    const ChainstateManager::Reference chainstate;
+    const auto& blockMap = chainstate->GetBlockMap();
     const auto mit = blockMap.find(hash);
     if (mit == blockMap.end())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
@@ -361,8 +363,8 @@ Value getblockheader(const Array& params, bool fHelp)
     if (params.size() > 1)
         fVerbose = params[1].get_bool();
 
-    const auto& chainstate = ChainstateManager::Get();
-    const auto& blockMap = chainstate.GetBlockMap();
+    const ChainstateManager::Reference chainstate;
+    const auto& blockMap = chainstate->GetBlockMap();
     const auto mit = blockMap.find(hash);
     if (mit == blockMap.end())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
@@ -405,11 +407,11 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
 
     Object ret;
 
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
 
     CCoinsStats stats;
     FlushStateToDisk();
-    if (chainstate.CoinsTip().GetStats(stats)) {
+    if (chainstate->CoinsTip().GetStats(stats)) {
         ret.push_back(Pair("height", (int64_t)stats.nHeight));
         ret.push_back(Pair("bestblock", stats.hashBlock.GetHex()));
         ret.push_back(Pair("transactions", (int64_t)stats.nTransactions));
@@ -465,21 +467,20 @@ Value gettxout(const Array& params, bool fHelp)
     if (params.size() > 2)
         fMempool = params[2].get_bool();
 
-    /* FIXME: mark const */
-    auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
 
     CCoins coins;
     if (fMempool) {
-        CCoinsViewMemPool(&chainstate.CoinsTip(), mempool).GetCoinsAndPruneSpent(hash,coins);
+        CCoinsViewMemPool(&chainstate->CoinsTip(), mempool).GetCoinsAndPruneSpent(hash,coins);
     } else {
-        if (!chainstate.CoinsTip().GetCoins(hash, coins))
+        if (!chainstate->CoinsTip().GetCoins(hash, coins))
             return Value::null;
     }
     if (n < 0 || (unsigned int)n >= coins.vout.size() || coins.vout[n].IsNull())
         return Value::null;
 
-    const auto& blockMap = chainstate.GetBlockMap();
-    const auto mit = blockMap.find(chainstate.CoinsTip().GetBestBlock());
+    const auto& blockMap = chainstate->GetBlockMap();
+    const auto mit = blockMap.find(chainstate->CoinsTip().GetBestBlock());
     const CBlockIndex* pindex = mit->second;
     ret.push_back(Pair("bestblock", pindex->GetBlockHash().GetHex()));
     if (IsMemPoolHeight(static_cast<unsigned>(coins.nHeight)))
@@ -516,14 +517,14 @@ Value verifychain(const Array& params, bool fHelp)
 
     LOCK(cs_main);
     const ActiveChainManager& chainManager = GetActiveChainManager();
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
     const CVerifyDB dbVerifier(
         chainManager,
-        chainstate.ActiveChain(),
+        chainstate->ActiveChain(),
         uiInterface,
         nCoinCacheSize,
         &ShutdownRequested);
-    return dbVerifier.VerifyDB(&chainstate.CoinsTip(), chainstate.CoinsTip().GetCacheSize(), nCheckLevel, nCheckDepth);
+    return dbVerifier.VerifyDB(&chainstate->CoinsTip(), chainstate->CoinsTip().GetCacheSize(), nCheckLevel, nCheckDepth);
 }
 
 Value getblockchaininfo(const Array& params, bool fHelp)
@@ -546,16 +547,16 @@ Value getblockchaininfo(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getblockchaininfo", "") + HelpExampleRpc("getblockchaininfo", ""));
 
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
 
     Object obj;
     obj.push_back(Pair("chain", Params().NetworkIDString()));
-    obj.push_back(Pair("blocks", (int)chainstate.ActiveChain().Height()));
+    obj.push_back(Pair("blocks", (int)chainstate->ActiveChain().Height()));
     obj.push_back(Pair("headers", pindexBestHeader ? pindexBestHeader->nHeight : -1));
-    obj.push_back(Pair("bestblockhash", chainstate.ActiveChain().Tip()->GetBlockHash().GetHex()));
+    obj.push_back(Pair("bestblockhash", chainstate->ActiveChain().Tip()->GetBlockHash().GetHex()));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
-    obj.push_back(Pair("verificationprogress", checkpointsVerifier.GuessVerificationProgress(chainstate.ActiveChain().Tip())));
-    obj.push_back(Pair("chainwork", chainstate.ActiveChain().Tip()->nChainWork.GetHex()));
+    obj.push_back(Pair("verificationprogress", checkpointsVerifier.GuessVerificationProgress(chainstate->ActiveChain().Tip())));
+    obj.push_back(Pair("chainwork", chainstate->ActiveChain().Tip()->nChainWork.GetHex()));
     return obj;
 }
 
@@ -604,22 +605,22 @@ Value getchaintips(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getchaintips", "") + HelpExampleRpc("getchaintips", ""));
 
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
 
     /* Build up a list of chain tips.  We start with the list of all
        known blocks, and successively remove blocks that appear as pprev
        of another block.  */
     std::set<const CBlockIndex*, CompareBlocksByHeight> setTips;
-    for (const auto& item : chainstate.GetBlockMap())
+    for (const auto& item : chainstate->GetBlockMap())
         setTips.insert(item.second);
-    for (const auto& item : chainstate.GetBlockMap()) {
+    for (const auto& item : chainstate->GetBlockMap()) {
         const CBlockIndex* pprev = item.second->pprev;
         if (pprev)
             setTips.erase(pprev);
     }
 
     // Always report the currently active tip.
-    setTips.insert(chainstate.ActiveChain().Tip());
+    setTips.insert(chainstate->ActiveChain().Tip());
 
     /* Construct the output array.  */
     Array res;
@@ -628,11 +629,11 @@ Value getchaintips(const Array& params, bool fHelp)
         obj.push_back(Pair("height", block->nHeight));
         obj.push_back(Pair("hash", block->phashBlock->GetHex()));
 
-        const int branchLen = block->nHeight - chainstate.ActiveChain().FindFork(block)->nHeight;
+        const int branchLen = block->nHeight - chainstate->ActiveChain().FindFork(block)->nHeight;
         obj.push_back(Pair("branchlen", branchLen));
 
         string status;
-        if (chainstate.ActiveChain().Contains(block)) {
+        if (chainstate->ActiveChain().Contains(block)) {
             // This block is part of the currently active chain.
             status = "active";
         } else if (block->nStatus & BLOCK_FAILED_MASK) {
@@ -697,9 +698,9 @@ Value invalidateblock(const Array& params, bool fHelp)
     CValidationState state;
 
     {
-        auto& chainstate = ChainstateManager::Get();
+        ChainstateManager::Reference chainstate;
         LOCK(cs_main);
-        auto& blockMap = chainstate.GetBlockMap();
+        auto& blockMap = chainstate->GetBlockMap();
         const auto mit = blockMap.find(hash);
         if (mit == blockMap.end())
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
@@ -737,9 +738,9 @@ Value reconsiderblock(const Array& params, bool fHelp)
     CValidationState state;
 
     {
-        auto& chainstate = ChainstateManager::Get();
+        ChainstateManager::Reference chainstate;
         LOCK(cs_main);
-        auto& blockMap = chainstate.GetBlockMap();
+        auto& blockMap = chainstate->GetBlockMap();
         const auto mit = blockMap.find(hash);
         if (mit == blockMap.end())
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");

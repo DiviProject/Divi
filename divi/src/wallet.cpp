@@ -2742,7 +2742,7 @@ bool CWallet::LoadHDChain(const CHDChain& chain, bool memonly)
 
 bool CWallet::LoadCryptedHDChain(const CHDChain& chain, bool memonly)
 {
-    LOCK(cs_wallet);
+    AssertLockHeld(cs_wallet);
 
     if (!CCryptoKeyStore::SetCryptedHDChain(chain))
         return false;

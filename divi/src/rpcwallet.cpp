@@ -42,6 +42,8 @@
 #include <obfuscation.h>
 #include <Settings.h>
 
+#include <walletdb.h>
+
 using namespace std;
 using namespace boost;
 using namespace boost::assign;

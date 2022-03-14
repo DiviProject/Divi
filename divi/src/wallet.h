@@ -14,7 +14,6 @@
 #include <uint256.h>
 #include <crypter.h>
 #include <wallet_ismine.h>
-#include <walletdb.h>
 #include <ui_interface.h>
 #include <FeeRate.h>
 #include <boost/foreach.hpp>
@@ -28,6 +27,7 @@
 #include <Output.h>
 #include <I_StakingCoinSelector.h>
 #include <I_WalletLoader.h>
+#include <I_WalletDatabase.h>
 
 class I_CoinSelectionAlgorithm;
 class CKeyMetadata;
@@ -48,7 +48,6 @@ class CScript;
 class CWalletTx;
 class CHDChain;
 class CTxMemPool;
-class CWalletDB;
 class COutPoint;
 class CTxIn;
 class I_MerkleTxConfirmationNumberCalculator;
@@ -270,7 +269,7 @@ public:
 
     DBErrors LoadWallet();
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
-    bool SetMinVersion(enum WalletFeature, CWalletDB* pwalletdbIn = NULL, bool fExplicit = false);
+    bool SetMinVersion(enum WalletFeature, I_WalletDatabase* pwalletdbIn = NULL, bool fExplicit = false);
     //! change which version we're allowed to upgrade to (note that this does not immediately imply upgrading to that format)
     bool SetMaxVersion(int nVersion);
     //! get the current wallet format (the oldest client version guaranteed to understand this wallet)

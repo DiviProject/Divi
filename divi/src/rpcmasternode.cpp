@@ -388,9 +388,9 @@ Value listmasternodes(const Array& params, bool fHelp)
     Array ret;
     const CBlockIndex* pindex;
     {
-        const auto& chainstate = ChainstateManager::Get();
+        const ChainstateManager::Reference chainstate;
         LOCK(cs_main);
-        pindex = chainstate.ActiveChain().Tip();
+        pindex = chainstate->ActiveChain().Tip();
         if(!pindex) return 0;
     }
 
@@ -435,8 +435,8 @@ Value getmasternodecount (const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmasternodecount", "") + HelpExampleRpc("getmasternodecount", ""));
 
-    const auto& chainstate = ChainstateManager::Get();
-    const CBlockIndex* tip = chainstate.ActiveChain().Tip();
+    const ChainstateManager::Reference chainstate;
+    const CBlockIndex* tip = chainstate->ActiveChain().Tip();
     MasternodeCountData data = GetMasternodeCounts(tip);
 
     Object obj;
@@ -642,9 +642,9 @@ Value getmasternodewinners (const Array& params, bool fHelp)
     int nHeight;
     const CBlockIndex* pindex = nullptr;
     {
-        const auto& chainstate = ChainstateManager::Get();
+        const ChainstateManager::Reference chainstate;
         LOCK(cs_main);
-        pindex = chainstate.ActiveChain().Tip();
+        pindex = chainstate->ActiveChain().Tip();
         if(!pindex) return 0;
         nHeight = pindex->nHeight;
     }

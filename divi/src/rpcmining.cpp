@@ -90,8 +90,8 @@ Value setgenerate(const Array& params, bool fHelp)
     int nHeightEnd = 0;
     int nHeight = 0;
 
-    const auto& chainstate = ChainstateManager::Get();
-    const auto& chain = chainstate.ActiveChain();
+    const ChainstateManager::Reference chainstate;
+    const auto& chain = chainstate->ActiveChain();
 
     { // Don't keep cs_main locked
         LOCK(cs_main);
@@ -151,8 +151,8 @@ Value generateblock(const Array& params, bool fHelp)
 
     int nHeight = 0;
 
-    const auto& chainstate = ChainstateManager::Get();
-    const auto& chain = chainstate.ActiveChain();
+    const ChainstateManager::Reference chainstate;
+    const auto& chain = chainstate->ActiveChain();
 
     { // Don't keep cs_main locked
         LOCK(cs_main);
@@ -235,10 +235,10 @@ Value getmininginfo(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmininginfo", "") + HelpExampleRpc("getmininginfo", ""));
 
-    const auto& chainstate = ChainstateManager::Get();
+    const ChainstateManager::Reference chainstate;
 
     Object obj;
-    obj.push_back(Pair("blocks", (int)chainstate.ActiveChain().Height()));
+    obj.push_back(Pair("blocks", (int)chainstate->ActiveChain().Height()));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
     obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));

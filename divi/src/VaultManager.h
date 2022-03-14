@@ -20,7 +20,7 @@ class CTxOut;
 
 class I_VaultManagerDatabase;
 class WalletTransactionRecord;
-class SpentOutputTracker;
+class I_SpentOutputTracker;
 class I_MerkleTxConfirmationNumberCalculator;
 
 enum VaultUTXOFilters
@@ -39,7 +39,7 @@ private:
     I_VaultManagerDatabase& vaultManagerDB_;
     mutable CCriticalSection cs_vaultManager_;
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;
-    std::unique_ptr<SpentOutputTracker> outputTracker_;
+    std::unique_ptr<I_SpentOutputTracker> outputTracker_;
     ManagedScripts managedScripts_;
     ManagedScripts whiteListedScripts_;
 

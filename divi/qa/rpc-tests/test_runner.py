@@ -79,6 +79,7 @@ BASE_SCRIPTS = [
     'BadBlockTests.py',
     'CheckLockTimeVerify.py',
     'CoinDBStats.py',
+    'CorruptedCoinDb.py',
     'StakingVaultFunding.py',
     'StakingVaultStaking.py',
     'StakingVaultDeactivation.py',

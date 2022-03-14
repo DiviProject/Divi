@@ -2364,6 +2364,12 @@ TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& r
     return std::move(result);
 }
 
+void CWallet::InitializeDatabaseBackend()
+{
+    AssertLockHeld(cs_wallet);
+    CWalletDB(settings,strWalletFile,"cr+");
+}
+
 DBErrors CWallet::LoadWallet()
 {
     if (!fFileBacked)
@@ -2371,7 +2377,8 @@ DBErrors CWallet::LoadWallet()
     DBErrors nLoadWalletRet;
     {
         LOCK(cs_wallet);
-        nLoadWalletRet = CWalletDB(settings,strWalletFile,"cr+").LoadWallet(*static_cast<I_WalletLoader*>(this));
+        InitializeDatabaseBackend();
+        nLoadWalletRet = GetDatabaseBackend()->LoadWallet(*static_cast<I_WalletLoader*>(this));
     }
     if (nLoadWalletRet == DB_REWRITTEN)
     {

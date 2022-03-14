@@ -207,7 +207,6 @@ CWallet::CWallet(
     , vaultManager_()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
-    , pwalletdbEncryption()
     , nWalletVersion(FEATURE_BASE)
     , nWalletMaxVersion(FEATURE_BASE)
     , mapKeyMetadata()
@@ -240,7 +239,6 @@ CWallet::CWallet(
 
 CWallet::~CWallet()
 {
-    pwalletdbEncryption.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
     vaultManager_.reset();
@@ -271,7 +269,6 @@ void CWallet::SetNull()
     nWalletMaxVersion = FEATURE_BASE;
     fFileBacked = false;
     nMasterKeyMaxID = 0;
-    pwalletdbEncryption.reset();
     nTimeFirstKey = 0;
     walletStakingOnly = false;
 
@@ -1224,6 +1221,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     if (!crypter.Encrypt(vMasterKey, kMasterKey.vchCryptedKey))
         return false;
 
+    std::unique_ptr<CWalletDB> pwalletdbEncryption;
     {
         LOCK(cs_wallet);
         mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;

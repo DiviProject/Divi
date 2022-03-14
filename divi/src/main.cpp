@@ -2136,6 +2136,10 @@ bool static LoadBlockIndexState(string& strError)
     if(!VerifyAllBlockFilesArePresent(blockMap)) return error("Some block files that were expected to be found are missing!");
 
     //Check if the shutdown procedure was followed on last client exit
+    if(settings.ParameterIsSet("-safe_shutdown"))
+    {
+        blockTree.WriteFlag("shutdown", settings.GetBoolArg("-safe_shutdown",true));
+    }
     bool fLastShutdownWasPrepared = true;
     blockTree.ReadFlag("shutdown", fLastShutdownWasPrepared);
     LogPrintf("%s: Last shutdown was prepared: %s\n", __func__, fLastShutdownWasPrepared);
@@ -2143,6 +2147,8 @@ bool static LoadBlockIndexState(string& strError)
     //Check for inconsistency with block file info and internal state
     if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.GetBoolArg("-reindex", false))
     {
+        uint256 expectedBestBlockHash;
+        blockTree.ReadBestBlockHash(expectedBestBlockHash);
         const unsigned int expectedNumberOfBlockIndices = BlockFileHelpers::GetLastBlockHeightWrittenIntoLastBlockFile() + 1;
         if (heightSortedBlockIndices.size() > expectedNumberOfBlockIndices)
         {
@@ -2213,6 +2219,8 @@ bool static LoadBlockIndexState(string& strError)
                 LogPrintf("%s : pcoinstip=%d %s\n", __func__, coinsHeight, coinsTip.GetBestBlock());
             }
         }
+        if(settings.ParameterIsSet("-safe_shutdown"))
+            assert(coinsTip.GetBestBlock() == expectedBestBlockHash && "Coin database and block database have inconsistent best block");
     }
 
     // Check whether we need to continue reindexing

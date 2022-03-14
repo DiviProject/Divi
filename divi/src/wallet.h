@@ -256,7 +256,6 @@ protected:
     void LoadAddressLabel(const CTxDestination& address, const std::string newLabel) override;
     bool LoadHDChain(const CHDChain& chain, bool memonly) override;
 
-    bool UpdateCryptedHDChain(const CHDChain& chain);
 
 public:
     explicit CWallet(

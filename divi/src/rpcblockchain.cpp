@@ -680,6 +680,41 @@ Value getmempoolinfo(const Array& params, bool fHelp)
     return ret;
 }
 
+Value reverseblocktransactions(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "reverseblocktransactions \"hash\"\n"
+            "\nReverse the transactions in a block to mimic coin database corruption.\n"
+            "\nArguments:\n"
+            "1. hash   (string, required) the hash of the block to mark as invalid\n"
+            "\nResult:\n"
+            "\nExamples:\n" +
+            HelpExampleCli("reverseblocktransactions", "\"blockhash\"") + HelpExampleRpc("reverseblocktransactions", "\"blockhash\""));
+
+    uint256 hash = uint256S(params[0].get_str());
+    CValidationState state;
+
+    {
+        auto& chainstate = ChainstateManager::Get();
+        LOCK(cs_main);
+        auto& blockMap = chainstate.GetBlockMap();
+        const auto mit = blockMap.find(hash);
+        if (mit == blockMap.end())
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+
+        CBlockIndex* pblockindex = mit->second;
+        InvalidateBlock(state,pblockindex,true);
+        ReconsiderBlock(state, pblockindex);
+    }
+
+    if (!state.IsValid()) {
+        throw JSONRPCError(RPC_DATABASE_ERROR, state.GetRejectReason());
+    }
+
+    return Value::null;
+}
+
 Value invalidateblock(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)

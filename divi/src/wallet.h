@@ -191,7 +191,6 @@ private:
     std::shared_ptr<VaultManager> vaultManager_;
     std::unique_ptr<I_AppendOnlyTransactionRecord> transactionRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
-    std::unique_ptr<CWalletDB> pwalletdbEncryption;
 
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded

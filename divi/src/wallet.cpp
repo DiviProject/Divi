@@ -245,6 +245,10 @@ CWallet::~CWallet()
     vaultManager_.reset();
 }
 
+std::unique_ptr<I_AtomicWalletDatabase> CWallet::GetAtomicDatabaseBackend() const
+{
+    return std::unique_ptr<I_AtomicWalletDatabase>{fFileBacked? new CWalletDB(settings,strWalletFile): nullptr};
+}
 std::shared_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
 {
     return std::shared_ptr<I_WalletDatabase>{new CWalletDB(settings,strWalletFile)};

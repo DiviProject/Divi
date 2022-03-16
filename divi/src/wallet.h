@@ -255,6 +255,7 @@ protected:
     bool LoadHDChain(const CHDChain& chain, bool memonly) override;
 
     void InitializeDatabaseBackend();
+    std::unique_ptr<I_AtomicWalletDatabase> GetAtomicDatabaseBackend() const;
 public:
     explicit CWallet(
         const CChain& chain,

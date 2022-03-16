@@ -104,7 +104,7 @@ protected:
     bool SetCrypted();
 
     //! will encrypt previously unencrypted keys
-    bool EncryptKeys(CKeyingMaterial& vMasterKeyIn);
+    bool EncryptKeys(const CKeyingMaterial& vMasterKeyIn);
 
     bool EncryptHDChain(const CKeyingMaterial& vMasterKeyIn);
     bool DecryptHDChain(CHDChain& hdChainRet) const;

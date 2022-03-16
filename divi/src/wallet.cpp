@@ -1267,57 +1267,11 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
 
     {
         LOCK(cs_wallet);
-        std::unique_ptr<I_AtomicWalletDatabase> pwalletdbEncryption = GetAtomicDatabaseBackend();
         mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
-        if (fFileBacked) {
-            if (!pwalletdbEncryption->TxnBegin()) {
-                pwalletdbEncryption.reset();
-                return false;
-            }
-            pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey);
-        }
-
-        // must get current HD chain before EncryptKeys
-        CHDChain hdChainCurrent;
-        GetHDChain(hdChainCurrent);
-
-        if (!EncryptKeys(vMasterKey))
         {
-            if (fFileBacked) {
-                pwalletdbEncryption->TxnAbort();
-                pwalletdbEncryption.reset();
-            }
-            // We now probably have half of our keys encrypted in memory, and half not...
-            // die and let the user reload the unencrypted wallet.
-            assert(false);
-        }
-
-        if (!hdChainCurrent.IsNull()) {
-            assert(EncryptHDChain(vMasterKey));
-
-            CHDChain hdChainCrypted;
-            assert(GetHDChain(hdChainCrypted));
-
-            // ids should match, seed hashes should not
-            assert(hdChainCurrent.GetID() == hdChainCrypted.GetID());
-            assert(hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash());
-
-            assert(LoadCryptedHDChain(hdChainCrypted, true) && fFileBacked && pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted) );
-        }
-
-        // Encryption was introduced in version 0.4.0
-        SetMinVersion(FEATURE_WALLETCRYPT, pwalletdbEncryption.get(), true);
-
-        if (fFileBacked)
-        {
-            if (!pwalletdbEncryption->TxnCommit()) {
-                pwalletdbEncryption.reset();
-                // We now have keys encrypted in memory, but not on disk...
-                // die to avoid confusion and let the user reload the unencrypted wallet.
-                assert(false);
-            }
-
+            std::unique_ptr<I_AtomicWalletDatabase,std::function<void(I_AtomicWalletDatabase*)>> pwalletdbEncryption(GetAtomicDatabaseBackend().release(), encryptAndWrite);
             pwalletdbEncryption.reset();
+            assert(encryptionComplete);
         }
 
         Lock();

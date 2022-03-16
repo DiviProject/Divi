@@ -251,7 +251,7 @@ std::unique_ptr<I_AtomicWalletDatabase> CWallet::GetAtomicDatabaseBackend() cons
 }
 std::shared_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
 {
-    return std::shared_ptr<I_WalletDatabase>{new CWalletDB(settings,strWalletFile)};
+    return std::shared_ptr<I_WalletDatabase>{GetAtomicDatabaseBackend().release()};
 }
 
 void CWallet::activateVaultMode(

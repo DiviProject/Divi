@@ -214,7 +214,6 @@ bool CCryptoKeyStore::Lock(bool fAllowMixing)
     }
 
     fOnlyMixingAllowed = fAllowMixing;
-    NotifyStatusChanged(this);
     return true;
 }
 
@@ -268,7 +267,6 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial& vMasterKeyIn, bool fForMixin
         fDecryptionThoroughlyChecked = true;
     }
     fOnlyMixingAllowed = fForMixingOnly;
-    NotifyStatusChanged(this);
     return true;
 }
 

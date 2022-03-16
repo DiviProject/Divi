@@ -26,19 +26,6 @@
 class CDB;
 class CDBEnv;
 class Settings;
-class I_AtomicWriteDatabase;
-
-class I_AtomicWriteDatabase
-{
-public:
-    virtual bool TxnBegin() = 0;
-    virtual bool TxnCommit() = 0;
-    virtual bool TxnAbort() = 0;
-};
-
-class I_AtomicWalletDatabase: public I_WalletDatabase, public I_AtomicWriteDatabase
-{
-};
 
 class CWalletDB final: public I_AtomicWalletDatabase
 {

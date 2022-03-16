@@ -1228,6 +1228,43 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     if (!crypter.Encrypt(vMasterKey, kMasterKey.vchCryptedKey))
         return false;
 
+
+    bool encryptionComplete  =true;
+    std::function<void(I_AtomicWalletDatabase*)> encryptAndWrite =
+        [this,&kMasterKey,&vMasterKey,&encryptionComplete](I_AtomicWalletDatabase* obj)
+    {
+        CHDChain hdChainCurrent;
+        CHDChain hdChainCrypted;
+        bool& shouldCommitInsteadOfAbort = encryptionComplete;
+        try
+        {
+            shouldCommitInsteadOfAbort = obj &&
+                (!fFileBacked || obj->TxnBegin()) &&
+                (!fFileBacked ||obj->WriteMasterKey(nMasterKeyMaxID, kMasterKey)) &&
+                (GetHDChain(hdChainCurrent) || true) &&
+                EncryptKeys(vMasterKey) &&
+                (hdChainCurrent.IsNull() ||
+                    (EncryptHDChain(vMasterKey) &&
+                    GetHDChain(hdChainCrypted) &&
+                    hdChainCurrent.GetID() == hdChainCrypted.GetID() &&
+                    hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash() &&
+                    SetCryptedHDChain(hdChainCrypted) &&
+                    (!fFileBacked || obj->WriteCryptedHDChain(hdChainCrypted)))
+                    ) &&
+                (SetMinVersion(FEATURE_WALLETCRYPT, obj, true) || true);
+        }
+        catch(...)
+        {
+            shouldCommitInsteadOfAbort = false;
+        }
+        if(fFileBacked && obj)
+        {
+            if(shouldCommitInsteadOfAbort){ obj->TxnCommit(); }
+            else { obj->TxnAbort();}
+        }
+        delete obj;
+    };
+
     {
         LOCK(cs_wallet);
         std::unique_ptr<I_AtomicWalletDatabase> pwalletdbEncryption = GetAtomicDatabaseBackend();

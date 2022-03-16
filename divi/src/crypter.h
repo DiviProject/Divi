@@ -185,12 +185,6 @@ public:
     }
 
     virtual bool GetHDChain(CHDChain& hdChainRet) const override;
-
-    /**
-     * Wallet status (encrypted, locked) changed.
-     * Note: Called without locks held.
-     */
-    boost::signals2::signal<void (CCryptoKeyStore* wallet)> NotifyStatusChanged;
 };
 
 #endif // BITCOIN_CRYPTER_H

@@ -1224,7 +1224,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     if (!crypter.Encrypt(vMasterKey, kMasterKey.vchCryptedKey))
         return false;
 
-    std::unique_ptr<CWalletDB> pwalletdbEncryption;
+    std::unique_ptr<I_AtomicWalletDatabase> pwalletdbEncryption;
     {
         LOCK(cs_wallet);
         mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;

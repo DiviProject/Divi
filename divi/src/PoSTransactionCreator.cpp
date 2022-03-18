@@ -147,10 +147,10 @@ bool IsSupportedScript(
         LogPrintf("CreateCoinStake : failed to parse kernel\n");
         return false;
     }
-    LogPrint("staking","%s : parsed kernel type=%d\n",__func__, whichType);
+    LogPrint("minting","%s : parsed kernel type=%d\n",__func__, whichType);
     if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH && whichType != TX_VAULT)
     {
-        LogPrint("staking","%s : no support for kernel type=%d\n",__func__, whichType);
+        LogPrint("minting","%s : no support for kernel type=%d\n",__func__, whichType);
         return false; // only support pay to public key and pay to address
     }
     isVaultScript =whichType == TX_VAULT;
@@ -216,7 +216,7 @@ bool PoSTransactionCreator::FindHashproof(
     BlockMap::const_iterator it = blockIndexByHash_.find(stakeData.blockHashOfFirstConfirmation);
     if (it == blockIndexByHash_.end())
     {
-        LogPrint("staking","%s failed to find block index for %s\n",__func__,stakeData.blockHashOfFirstConfirmation);
+        LogPrint("minting","%s failed to find block index for %s\n",__func__,stakeData.blockHashOfFirstConfirmation);
         return false;
     }
 
@@ -237,10 +237,10 @@ bool PoSTransactionCreator::FindHashproof(
     {
         if (hashproofResult.timestamp() <= chainTip->GetMedianTimePast())
         {
-            LogPrintf("%s : kernel found, but it is too far in the past \n",__func__);
+            LogPrint("minting","%s : kernel found, but it is too far in the past \n",__func__);
             return false;
         }
-        LogPrint("staking","%s : kernel found for %s\n",__func__, stakeData.tx->ToStringShort());
+        LogPrint("minting","%s : kernel found for %s\n",__func__, stakeData.tx->ToStringShort());
 
         SetSuportedStakingScript(stakeData,txNew);
         nTxNewTime = hashproofResult.timestamp();

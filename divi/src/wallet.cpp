@@ -1241,10 +1241,15 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
                             hdChainCurrent.GetID() == hdChainCrypted.GetID() &&
                             hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash() &&
                             SetCryptedHDChain(hdChainCrypted)) ) &&
-                        SetMinVersion(FEATURE_WALLETCRYPT, true) &&
-                        (!fFileBacked || pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey)) &&
-                        (hdChainCurrent.IsNull() || !fFileBacked || pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted)) &&
-                        (!fFileBacked || pwalletdbEncryption->WriteMinVersion(nWalletVersion));
+                        SetMinVersion(FEATURE_WALLETCRYPT, true);
+
+                    if(encryptionComplete && fFileBacked && pwalletdbEncryption)
+                    {
+                        encryptionComplete =
+                            pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey) &&
+                            (hdChainCurrent.IsNull() || pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted)) &&
+                            pwalletdbEncryption->WriteMinVersion(nWalletVersion);
+                    }
                 }
 
             }

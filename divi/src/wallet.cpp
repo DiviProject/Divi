@@ -1113,7 +1113,7 @@ bool CWallet::ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase,
     return false;
 }
 
-bool CWallet::SetMinVersion(enum WalletFeature nVersion, I_WalletDatabase* pwalletdbIn, bool fExplicit)
+bool CWallet::SetMinVersion(enum WalletFeature nVersion, bool fExplicit)
 {
     LOCK(cs_wallet); // nWalletVersion
     if (nWalletVersion >= nVersion)
@@ -1129,12 +1129,9 @@ bool CWallet::SetMinVersion(enum WalletFeature nVersion, I_WalletDatabase* pwall
         nWalletMaxVersion = nVersion;
 
     if (fFileBacked) {
-        if (nWalletVersion > 40000)
+        if (nWalletVersion > 40000 && !fExplicit)
         {
-            if(pwalletdbIn)
-                pwalletdbIn->WriteMinVersion(nWalletVersion);
-            else
-                GetDatabaseBackend()->WriteMinVersion(nWalletVersion);
+            GetDatabaseBackend()->WriteMinVersion(nWalletVersion);
         }
     }
 
@@ -1251,7 +1248,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
                     SetCryptedHDChain(hdChainCrypted) &&
                     (!fFileBacked || obj->WriteCryptedHDChain(hdChainCrypted)))
                     ) &&
-                (SetMinVersion(FEATURE_WALLETCRYPT, obj, true) || true);
+                (SetMinVersion(FEATURE_WALLETCRYPT, true) || !fFileBacked || obj->WriteMinVersion(nWalletVersion) || true);
         }
         catch(...)
         {

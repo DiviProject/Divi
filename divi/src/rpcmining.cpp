@@ -50,7 +50,6 @@ extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 
-LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
 #ifdef ENABLE_WALLET
 Value setgenerate(const Array& params, bool fHelp)
 {

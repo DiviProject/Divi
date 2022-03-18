@@ -1232,18 +1232,18 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             try{
                 if(encryptionComplete)
                 {
+                    GetHDChain(hdChainCurrent);
                     encryptionComplete =
-                        (!fFileBacked || pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey)) &&
-                        (GetHDChain(hdChainCurrent) || true) &&
                         EncryptKeys(vMasterKey) &&
                         (hdChainCurrent.IsNull() ||
                             (EncryptHDChain(vMasterKey) &&
                             GetHDChain(hdChainCrypted) &&
                             hdChainCurrent.GetID() == hdChainCrypted.GetID() &&
                             hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash() &&
-                            SetCryptedHDChain(hdChainCrypted) &&
-                            (!fFileBacked || pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted))) ) &&
+                            SetCryptedHDChain(hdChainCrypted)) ) &&
                         SetMinVersion(FEATURE_WALLETCRYPT, true) &&
+                        (!fFileBacked || pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey)) &&
+                        (hdChainCurrent.IsNull() || !fFileBacked || pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted)) &&
                         (!fFileBacked || pwalletdbEncryption->WriteMinVersion(nWalletVersion));
                 }
 

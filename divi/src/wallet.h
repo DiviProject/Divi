@@ -14,7 +14,6 @@
 #include <uint256.h>
 #include <crypter.h>
 #include <wallet_ismine.h>
-#include <ui_interface.h>
 #include <FeeRate.h>
 #include <boost/foreach.hpp>
 #include <utilstrencodings.h>
@@ -104,7 +103,7 @@ class I_WalletGuiNotifications
 {
 public:
     virtual ~I_WalletGuiNotifications(){}
-    boost::signals2::signal<void(const CTxDestination& address, const std::string& label, bool isMine, ChangeType status)> NotifyAddressBookChanged;
+    boost::signals2::signal<void(const CTxDestination& address, const std::string& label, bool isMine, std::string status)> NotifyAddressBookChanged;
     boost::signals2::signal<void(const uint256& hashTx, int status)> NotifyTransactionChanged;
     boost::signals2::signal<void(const std::string& title, int nProgress)> ShowProgress;
     boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;

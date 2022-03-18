@@ -338,7 +338,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         AddDependingTransactionsToPriorityQueue(dependentTransactions, hash, vecPriority, comparer);
     }
 
-    LogPrintf("%s: total size %u\n",__func__, currentBlockSize);
+    LogPrint("minting","%s: total size %u\n",__func__, currentBlockSize);
     return prioritizedTransactions;
 }
 
@@ -380,6 +380,6 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock(
 
     AddTransactionsToBlockIfPossible(nHeight, view, block);
 
-    LogPrintf("%s: block tostring %s\n",__func__, block);
+    LogPrint("minting","%s: block tostring %s\n",__func__, block);
     return true;
 }

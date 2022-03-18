@@ -139,7 +139,7 @@ bool BlockFactory::AppendProofOfWorkToBlock(
             if (hash <= hashTarget)
             {
                 // Found a solution
-                LogPrintf("%s: proof-of-work found  \n  hash: %s  \ntarget: %s\n",__func__, hash, hashTarget);
+                LogPrint("minting","%s: proof-of-work found  \n  hash: %s  \ntarget: %s\n",__func__, hash, hashTarget);
                 return true;
             }
             block.nNonce += 1;
@@ -227,7 +227,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
             return NULL;
     }
 
-    LogPrintf("%s: releasing template\n", __func__);
+    LogPrint("minting","%s: releasing template\n", __func__);
     return pblocktemplate.release();
 }
 

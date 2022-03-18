@@ -186,9 +186,6 @@ bool CoinMinter::createProofOfWorkBlock() const
 
     CBlock* block = &pblocktemplate->block;
 
-    LogPrintf("Running DIVIMiner with %u transactions in block (%u bytes)\n", block->vtx.size(),
-                ::GetSerializeSize(*block, SER_NETWORK, PROTOCOL_VERSION));
-
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
     blockSuccessfullyCreated = ProcessBlockFound(block, &reserveKey);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);

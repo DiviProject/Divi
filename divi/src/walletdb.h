@@ -27,7 +27,7 @@ class CDB;
 class CDBEnv;
 class Settings;
 
-class CWalletDB final: public I_AtomicWalletDatabase
+class CWalletDB final: public I_WalletDatabase
 {
 private:
     Settings& settings_;
@@ -47,9 +47,8 @@ public:
     CWalletDB(Settings& settings,const std::string& dbFilename, const char* pszMode = "r+");
     ~CWalletDB();
 
-    bool TxnBegin() override;
-    bool TxnCommit() override;
-    bool TxnAbort() override;
+    bool AtomicWriteBegin() override;
+    bool AtomicWriteEnd(bool) override;
 
     //I_WalletDatabase
     bool WriteName(const std::string& strAddress, const std::string& strName) override;

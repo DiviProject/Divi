@@ -1221,19 +1221,18 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     if (!crypter.Encrypt(vMasterKey, kMasterKey.vchCryptedKey))
         return false;
 
-
-    bool encryptionComplete  =true;
-    std::function<void(I_WalletDatabase*)> encryptAndWrite =
-        [this,&kMasterKey,&vMasterKey,&encryptionComplete](I_WalletDatabase* obj)
     {
-        CHDChain hdChainCurrent;
-        CHDChain hdChainCrypted;
-        bool& shouldCommitInsteadOfAbort = encryptionComplete;
-        try
+        LOCK(cs_wallet);
+        mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
         {
-            shouldCommitInsteadOfAbort = obj &&
-                (!fFileBacked || obj->AtomicWriteBegin()) &&
-                (!fFileBacked ||obj->WriteMasterKey(nMasterKeyMaxID, kMasterKey)) &&
+            std::unique_ptr<I_WalletDatabase> pwalletdbEncryption = GetDatabaseBackend();
+            CHDChain hdChainCurrent;
+            CHDChain hdChainCrypted;
+            bool encryptionComplete = true;
+            try{
+                encryptionComplete =
+                (!fFileBacked || pwalletdbEncryption->AtomicWriteBegin()) &&
+                (!fFileBacked || pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey)) &&
                 (GetHDChain(hdChainCurrent) || true) &&
                 EncryptKeys(vMasterKey) &&
                 (hdChainCurrent.IsNull() ||
@@ -1242,26 +1241,15 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
                     hdChainCurrent.GetID() == hdChainCrypted.GetID() &&
                     hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash() &&
                     SetCryptedHDChain(hdChainCrypted) &&
-                    (!fFileBacked || obj->WriteCryptedHDChain(hdChainCrypted)))
-                    ) &&
-                (SetMinVersion(FEATURE_WALLETCRYPT, true) || !fFileBacked || obj->WriteMinVersion(nWalletVersion) || true);
-        }
-        catch(...)
-        {
-            shouldCommitInsteadOfAbort = false;
-        }
-        if(fFileBacked && obj)
-        {
-            obj->AtomicWriteEnd(shouldCommitInsteadOfAbort);
-        }
-        delete obj;
-    };
-
-    {
-        LOCK(cs_wallet);
-        mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
-        {
-            std::unique_ptr<I_WalletDatabase,std::function<void(I_WalletDatabase*)>> pwalletdbEncryption(GetDatabaseBackend().release(), encryptAndWrite);
+                    (!fFileBacked || pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted))) ) &&
+                SetMinVersion(FEATURE_WALLETCRYPT, true) &&
+                (!fFileBacked || pwalletdbEncryption->WriteMinVersion(nWalletVersion));
+            }
+            catch(...)
+            {
+                encryptionComplete = false;
+            }
+            pwalletdbEncryption->AtomicWriteEnd(encryptionComplete);
             pwalletdbEncryption.reset();
             assert(encryptionComplete);
         }

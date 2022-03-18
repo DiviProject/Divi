@@ -1228,22 +1228,25 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             std::unique_ptr<I_WalletDatabase> pwalletdbEncryption = GetDatabaseBackend();
             CHDChain hdChainCurrent;
             CHDChain hdChainCrypted;
-            bool encryptionComplete = true;
+            bool encryptionComplete = !fFileBacked || pwalletdbEncryption->AtomicWriteBegin();
             try{
-                encryptionComplete =
-                (!fFileBacked || pwalletdbEncryption->AtomicWriteBegin()) &&
-                (!fFileBacked || pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey)) &&
-                (GetHDChain(hdChainCurrent) || true) &&
-                EncryptKeys(vMasterKey) &&
-                (hdChainCurrent.IsNull() ||
-                    (EncryptHDChain(vMasterKey) &&
-                    GetHDChain(hdChainCrypted) &&
-                    hdChainCurrent.GetID() == hdChainCrypted.GetID() &&
-                    hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash() &&
-                    SetCryptedHDChain(hdChainCrypted) &&
-                    (!fFileBacked || pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted))) ) &&
-                SetMinVersion(FEATURE_WALLETCRYPT, true) &&
-                (!fFileBacked || pwalletdbEncryption->WriteMinVersion(nWalletVersion));
+                if(encryptionComplete)
+                {
+                    encryptionComplete =
+                        (!fFileBacked || pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey)) &&
+                        (GetHDChain(hdChainCurrent) || true) &&
+                        EncryptKeys(vMasterKey) &&
+                        (hdChainCurrent.IsNull() ||
+                            (EncryptHDChain(vMasterKey) &&
+                            GetHDChain(hdChainCrypted) &&
+                            hdChainCurrent.GetID() == hdChainCrypted.GetID() &&
+                            hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash() &&
+                            SetCryptedHDChain(hdChainCrypted) &&
+                            (!fFileBacked || pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted))) ) &&
+                        SetMinVersion(FEATURE_WALLETCRYPT, true) &&
+                        (!fFileBacked || pwalletdbEncryption->WriteMinVersion(nWalletVersion));
+                }
+
             }
             catch(...)
             {

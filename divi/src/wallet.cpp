@@ -245,13 +245,9 @@ CWallet::~CWallet()
     vaultManager_.reset();
 }
 
-std::unique_ptr<I_AtomicWalletDatabase> CWallet::GetAtomicDatabaseBackend() const
+std::unique_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
 {
-    return std::unique_ptr<I_AtomicWalletDatabase>{fFileBacked? new CWalletDB(settings,strWalletFile): nullptr};
-}
-std::shared_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
-{
-    return std::shared_ptr<I_WalletDatabase>{GetAtomicDatabaseBackend().release()};
+    return std::unique_ptr<I_WalletDatabase>{fFileBacked? new CWalletDB(settings,strWalletFile): nullptr};
 }
 
 void CWallet::activateVaultMode(
@@ -1227,8 +1223,8 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
 
 
     bool encryptionComplete  =true;
-    std::function<void(I_AtomicWalletDatabase*)> encryptAndWrite =
-        [this,&kMasterKey,&vMasterKey,&encryptionComplete](I_AtomicWalletDatabase* obj)
+    std::function<void(I_WalletDatabase*)> encryptAndWrite =
+        [this,&kMasterKey,&vMasterKey,&encryptionComplete](I_WalletDatabase* obj)
     {
         CHDChain hdChainCurrent;
         CHDChain hdChainCrypted;
@@ -1236,7 +1232,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
         try
         {
             shouldCommitInsteadOfAbort = obj &&
-                (!fFileBacked || obj->TxnBegin()) &&
+                (!fFileBacked || obj->AtomicWriteBegin()) &&
                 (!fFileBacked ||obj->WriteMasterKey(nMasterKeyMaxID, kMasterKey)) &&
                 (GetHDChain(hdChainCurrent) || true) &&
                 EncryptKeys(vMasterKey) &&
@@ -1256,8 +1252,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
         }
         if(fFileBacked && obj)
         {
-            if(shouldCommitInsteadOfAbort){ obj->TxnCommit(); }
-            else { obj->TxnAbort();}
+            obj->AtomicWriteEnd(shouldCommitInsteadOfAbort);
         }
         delete obj;
     };
@@ -1266,7 +1261,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
         LOCK(cs_wallet);
         mapMasterKeys[++nMasterKeyMaxID] = kMasterKey;
         {
-            std::unique_ptr<I_AtomicWalletDatabase,std::function<void(I_AtomicWalletDatabase*)>> pwalletdbEncryption(GetAtomicDatabaseBackend().release(), encryptAndWrite);
+            std::unique_ptr<I_WalletDatabase,std::function<void(I_WalletDatabase*)>> pwalletdbEncryption(GetDatabaseBackend().release(), encryptAndWrite);
             pwalletdbEncryption.reset();
             assert(encryptionComplete);
         }

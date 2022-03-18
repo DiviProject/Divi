@@ -760,17 +760,13 @@ bool CWalletDB::WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& key
     return berkleyDB_->Write(std::make_pair(std::string("hdpubkey"), hdPubKey.extPubKey.pubkey), hdPubKey, false);
 }
 
-bool CWalletDB::TxnBegin()
+bool CWalletDB::AtomicWriteBegin()
 {
     return berkleyDB_->TxnBegin();
 }
-bool CWalletDB::TxnCommit()
+bool CWalletDB::AtomicWriteEnd(bool commitChanges)
 {
-    return berkleyDB_->TxnCommit();
-}
-bool CWalletDB::TxnAbort()
-{
-    return berkleyDB_->TxnAbort();
+    return commitChanges? berkleyDB_->TxnCommit() : berkleyDB_->TxnAbort();
 }
 bool CWalletDB::RewriteWallet()
 {

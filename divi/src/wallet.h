@@ -255,7 +255,6 @@ protected:
     bool LoadHDChain(const CHDChain& chain, bool memonly) override;
 
     void InitializeDatabaseBackend();
-    std::unique_ptr<I_AtomicWalletDatabase> GetAtomicDatabaseBackend() const;
 public:
     explicit CWallet(
         const CChain& chain,
@@ -278,7 +277,7 @@ public:
 
     const AddressBookManager& GetAddressBookManager() const;
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
-    std::shared_ptr<I_WalletDatabase> GetDatabaseBackend() const;
+    std::unique_ptr<I_WalletDatabase> GetDatabaseBackend() const;
 
     std::string getWalletIdentifier() const;
     bool InitializeDefaultKey();

@@ -39,6 +39,9 @@ class I_WalletDatabase
 public:
     virtual ~I_WalletDatabase(){};
 
+    virtual bool AtomicWriteBegin() = 0;
+    virtual bool AtomicWriteEnd(bool commitChanges) = 0;
+
     virtual bool WriteName(const std::string& strAddress, const std::string& strName) = 0;
     virtual bool EraseName(const std::string& strAddress) = 0;
     virtual bool WriteTx(uint256 hash, const CWalletTx& wtx) = 0;
@@ -63,20 +66,5 @@ public:
     virtual bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta) = 0;
     virtual DBErrors LoadWallet(I_WalletLoader& pwallet) = 0;
     virtual bool RewriteWallet() = 0;
-};
-
-class I_AtomicWriteDatabase
-{
-public:
-    virtual ~I_AtomicWriteDatabase(){};
-    virtual bool TxnBegin() = 0;
-    virtual bool TxnCommit() = 0;
-    virtual bool TxnAbort() = 0;
-};
-
-class I_AtomicWalletDatabase: public I_WalletDatabase, public I_AtomicWriteDatabase
-{
-public:
-    virtual ~I_AtomicWalletDatabase(){};
 };
 #endif // I_WALLET_DATABASE_H

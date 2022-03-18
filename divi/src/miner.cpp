@@ -31,7 +31,7 @@ extern Settings& settings;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 
-
+typedef std::map<unsigned int, unsigned int> LastExtensionTimestampByBlockHeight;
 LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight()
 {
     static std::map<unsigned int, unsigned int> mapHashedBlocks;
@@ -123,13 +123,7 @@ bool HasRecentlyAttemptedToGenerateProofOfStake()
 {
     static const LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
     const ChainstateManager::Reference chainstate;
-    bool recentlyAttemptedPoS = false;
-    if (mapHashedBlocks.count(chainstate->ActiveChain().Tip()->nHeight))
-        recentlyAttemptedPoS = true;
-    else if (mapHashedBlocks.count(chainstate->ActiveChain().Tip()->nHeight - 1))
-        recentlyAttemptedPoS = true;
-
-    return recentlyAttemptedPoS;
+    return mapHashedBlocks.count(chainstate->ActiveChain().Tip()->nHeight) > 0 || mapHashedBlocks.count(chainstate->ActiveChain().Tip()->nHeight - 1) > 0;
 }
 
 // ppcoin: stake minter thread

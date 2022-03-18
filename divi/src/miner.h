@@ -28,7 +28,5 @@ void ThreadCoinMinter();
 void MintCoins(I_CoinMinter& minter);
 bool HasRecentlyAttemptedToGenerateProofOfStake();
 
-typedef std::map<unsigned int, unsigned int> LastExtensionTimestampByBlockHeight;
-LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight();
 
 #endif // BITCOIN_MINER_H

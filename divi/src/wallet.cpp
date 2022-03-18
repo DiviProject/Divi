@@ -39,6 +39,7 @@
 #include <VaultManager.h>
 #include <VaultManagerDatabase.h>
 #include <BlockScanner.h>
+#include <ui_interface.h>
 
 #include <stack>
 
@@ -2373,7 +2374,7 @@ bool CWallet::SetAddressLabel(const CTxDestination& address, const std::string& 
         LOCK(cs_wallet);
         fUpdated = addressBookManager_->SetAddressLabel(address,strName);
     }
-    NotifyAddressBookChanged(address, strName, ::IsMine(*this, address) != isminetype::ISMINE_NO, (fUpdated ? CT_UPDATED : CT_NEW));
+    NotifyAddressBookChanged(address, strName, ::IsMine(*this, address) != isminetype::ISMINE_NO, (fUpdated ? "updated address label" : "new address label"));
 
     return !fFileBacked || GetDatabaseBackend()->WriteName(CBitcoinAddress(address).ToString(), strName);
 }

@@ -1228,7 +1228,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             std::unique_ptr<I_WalletDatabase> pwalletdbEncryption = GetDatabaseBackend();
             CHDChain hdChainCurrent;
             CHDChain hdChainCrypted;
-            bool encryptionComplete = !fFileBacked || pwalletdbEncryption->AtomicWriteBegin();
+            bool encryptionComplete = !pwalletdbEncryption || pwalletdbEncryption->AtomicWriteBegin();
             try{
                 if(encryptionComplete)
                 {
@@ -1243,7 +1243,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
                             SetCryptedHDChain(hdChainCrypted)) ) &&
                         SetMinVersion(FEATURE_WALLETCRYPT, true);
 
-                    if(encryptionComplete && fFileBacked && pwalletdbEncryption)
+                    if(encryptionComplete && pwalletdbEncryption)
                     {
                         encryptionComplete =
                             pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey) &&
@@ -1257,7 +1257,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             {
                 encryptionComplete = false;
             }
-            pwalletdbEncryption->AtomicWriteEnd(encryptionComplete);
+            if(pwalletdbEncryption) pwalletdbEncryption->AtomicWriteEnd(encryptionComplete);
             pwalletdbEncryption.reset();
             assert(encryptionComplete);
         }

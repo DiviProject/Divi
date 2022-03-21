@@ -599,7 +599,7 @@ bool CWalletDB::Flush()
 
 CWalletDB::BackupStatus CWalletDB::BackupWallet(const std::string& destination)
 {
-    AssertLockHeld(berkleyDbEnvWrapper_.cs_db);
+    LOCK(berkleyDbEnvWrapper_.cs_db);
     if(!Flush()) return BackupStatus::FAILED_DB_IN_USE;
     // Copy wallet.dat
     filesystem::path pathSrc = GetDataDir() / dbFilename_;
@@ -658,21 +658,17 @@ void ThreadFlushWalletDB(Settings& settings, const string& strFile)
 
 bool BackupWallet(Settings& settings, const std::string& walletDBFilename, const string& strDest)
 {
-    static CDBEnv& bitdb_ = BerkleyDBEnvWrapper();
     while (true) {
         {
-            LOCK(bitdb_.cs_db);
+            CWalletDB walletDb(settings,walletDBFilename,"flush");
+            const CWalletDB::BackupStatus status = walletDb.BackupWallet(strDest);
+            if(status == CWalletDB::BackupStatus::FAILED_FILESYSTEM_ERROR)
             {
-                CWalletDB walletDb(settings,walletDBFilename,"flush");
-                const CWalletDB::BackupStatus status = walletDb.BackupWallet(strDest);
-                if(status == CWalletDB::BackupStatus::FAILED_FILESYSTEM_ERROR)
-                {
-                    return false;
-                }
-                else if (status == CWalletDB::BackupStatus::SUCCEEDED)
-                {
-                    return true;
-                }
+                return false;
+            }
+            else if (status == CWalletDB::BackupStatus::SUCCEEDED)
+            {
+                return true;
             }
         }
         MilliSleep(100);

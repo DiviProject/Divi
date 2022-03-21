@@ -634,7 +634,8 @@ void ThreadFlushWalletDB(Settings& settings, const string& strFile)
         return;
     fOneThread = true;
 
-    const unsigned& walletDbUpdated = lockedDBUpdateMapping(strFile);
+    CWalletDB walletDbToFlush(settings,strFile,"flush");
+    const unsigned& walletDbUpdated = walletDbToFlush.numberOfWalletUpdates();
     unsigned int nLastSeen =  walletDbUpdated;
     unsigned int nLastFlushed = walletDbUpdated;
     int64_t nLastWalletUpdate = GetTime();
@@ -647,7 +648,7 @@ void ThreadFlushWalletDB(Settings& settings, const string& strFile)
         }
 
         if (nLastFlushed != walletDbUpdated && GetTime() - nLastWalletUpdate >= 2) {
-            if (CWalletDB(settings,strFile,"flush").Flush())
+            if (walletDbToFlush.Flush())
             {
                 nLastFlushed = walletDbUpdated;
             }
@@ -657,9 +658,9 @@ void ThreadFlushWalletDB(Settings& settings, const string& strFile)
 
 bool BackupWallet(Settings& settings, const std::string& walletDBFilename, const string& strDest)
 {
+    CWalletDB walletDb(settings,walletDBFilename,"flush");
     while (true) {
         {
-            CWalletDB walletDb(settings,walletDBFilename,"flush");
             const CWalletDB::BackupStatus status = walletDb.Backup(strDest);
             if(status == CWalletDB::BackupStatus::FAILED_FILESYSTEM_ERROR)
             {

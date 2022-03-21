@@ -583,14 +583,18 @@ void ThreadFlushWalletDB(const string& strFile)
             TRY_LOCK(bitdb_.cs_db, lockDb);
             if (lockDb) {
                 // Don't do this if any databases are in use
-                int nRefCount = 0;
-                map<string, int>::iterator mi = bitdb_.mapFileUseCount.begin();
-                while (mi != bitdb_.mapFileUseCount.end()) {
-                    nRefCount += (*mi).second;
-                    mi++;
+                bool thereIsNoDatabaseInUse = true;
+                for(const std::pair<std::string,int>& fileRefCounts: bitdb_.mapFileUseCount)
+                {
+                    if(fileRefCounts.second > 0)
+                    {
+                        thereIsNoDatabaseInUse = false;
+                        break;
+                    }
                 }
 
-                if (nRefCount == 0) {
+                if (thereIsNoDatabaseInUse)
+                {
                     boost::this_thread::interruption_point();
                     map<string, int>::iterator mi = bitdb_.mapFileUseCount.find(strFile);
                     if (mi != bitdb_.mapFileUseCount.end()) {

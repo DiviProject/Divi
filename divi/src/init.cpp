@@ -1471,7 +1471,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         // Run a thread to flush wallet periodically
         if (settings.GetBoolArg("-flushwallet", true))
         {
-            threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, pwalletMain->dbFilename() ));
+            threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, settings, pwalletMain->dbFilename() ));
             threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "vaultsync", &ThreadSyncVaultDatabase, 500));
         }
     }

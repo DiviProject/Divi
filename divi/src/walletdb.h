@@ -85,7 +85,7 @@ public:
         FAILED_FILESYSTEM_ERROR,
         SUCCEEDED,
     };
-    BackupStatus BackupWallet(const std::string& destination);
+    BackupStatus Backup(const std::string& destination);
 
 private:
     CWalletDB(const CWalletDB&) = delete;

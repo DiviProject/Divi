@@ -246,6 +246,12 @@ CWallet::~CWallet()
     vaultManager_.reset();
 }
 
+void CWallet::InitializeDatabaseBackend()
+{
+    AssertLockHeld(cs_wallet);
+    CWalletDB(settings,strWalletFile,"cr+");
+}
+
 std::unique_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
 {
     assert(fFileBacked);
@@ -2328,12 +2334,6 @@ TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& r
         return std::move(result);
     }
     return std::move(result);
-}
-
-void CWallet::InitializeDatabaseBackend()
-{
-    AssertLockHeld(cs_wallet);
-    CWalletDB(settings,strWalletFile,"cr+");
 }
 
 DBErrors CWallet::LoadWallet()

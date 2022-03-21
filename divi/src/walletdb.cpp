@@ -597,7 +597,7 @@ bool CWalletDB::Flush()
     return false;
 }
 
-CWalletDB::BackupStatus CWalletDB::BackupWallet(const std::string& destination)
+CWalletDB::BackupStatus CWalletDB::Backup(const std::string& destination)
 {
     LOCK(berkleyDbEnvWrapper_.cs_db);
     if(!Flush()) return BackupStatus::FAILED_DB_IN_USE;
@@ -661,7 +661,7 @@ bool BackupWallet(Settings& settings, const std::string& walletDBFilename, const
     while (true) {
         {
             CWalletDB walletDb(settings,walletDBFilename,"flush");
-            const CWalletDB::BackupStatus status = walletDb.BackupWallet(strDest);
+            const CWalletDB::BackupStatus status = walletDb.Backup(strDest);
             if(status == CWalletDB::BackupStatus::FAILED_FILESYSTEM_ERROR)
             {
                 return false;

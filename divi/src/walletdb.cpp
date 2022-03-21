@@ -566,7 +566,8 @@ const unsigned& CWalletDB::numberOfWalletUpdates() const
 bool CWalletDB::Flush()
 {
     assert(!berkleyDB_);
-    AssertLockHeld(berkleyDbEnvWrapper_.cs_db);
+    TRY_LOCK(berkleyDbEnvWrapper_.cs_db,lockedDB);
+    if(lockedDB)
     {
         // Don't do this if any databases are in use
         bool thereIsNoDatabaseInUse = true;
@@ -637,7 +638,6 @@ void ThreadFlushWalletDB(Settings& settings, const string& strFile)
     unsigned int nLastSeen =  walletDbUpdated;
     unsigned int nLastFlushed = walletDbUpdated;
     int64_t nLastWalletUpdate = GetTime();
-    static CDBEnv& bitdb_ = BerkleyDBEnvWrapper();
     while (true) {
         MilliSleep(500);
 
@@ -647,8 +647,7 @@ void ThreadFlushWalletDB(Settings& settings, const string& strFile)
         }
 
         if (nLastFlushed != walletDbUpdated && GetTime() - nLastWalletUpdate >= 2) {
-            TRY_LOCK(bitdb_.cs_db, lockDb);
-            if (lockDb && CWalletDB(settings,strFile,"flush").Flush())
+            if (CWalletDB(settings,strFile,"flush").Flush())
             {
                 nLastFlushed = walletDbUpdated;
             }

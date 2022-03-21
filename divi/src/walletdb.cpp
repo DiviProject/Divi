@@ -61,7 +61,7 @@ CWalletDB::CWalletDB(
     , dbFilename_(dbFilename)
     , walletDbUpdated_(lockedDBUpdateMapping(dbFilename))
     , berkleyDbEnvWrapper_(BerkleyDBEnvWrapper())
-    , berkleyDB_(pszMode != "flush"? new CDB(berkleyDbEnvWrapper_,dbFilename) : nullptr)
+    , berkleyDB_((std::string(pszMode) != std::string("flush"))? new CDB(berkleyDbEnvWrapper_,dbFilename) : nullptr)
 {
     if(berkleyDB_)
         berkleyDB_->Open(settings,pszMode);
@@ -558,7 +558,41 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
     return result;
 }
 
-void ThreadFlushWalletDB(const string& strFile)
+bool CWalletDB::Flush()
+{
+    assert(!berkleyDB_);
+    AssertLockHeld(berkleyDbEnvWrapper_.cs_db);
+    {
+        // Don't do this if any databases are in use
+        bool thereIsNoDatabaseInUse = true;
+        for(const std::pair<std::string,int>& fileRefCounts: berkleyDbEnvWrapper_.mapFileUseCount)
+        {
+            if(fileRefCounts.second > 0)
+            {
+                thereIsNoDatabaseInUse = false;
+                break;
+            }
+        }
+
+        if (thereIsNoDatabaseInUse)
+        {
+            boost::this_thread::interruption_point();
+            std::map<std::string, int>::iterator mi = berkleyDbEnvWrapper_.mapFileUseCount.find(dbFilename_);
+            if (mi != berkleyDbEnvWrapper_.mapFileUseCount.end()) {
+                LogPrint("db", "Flushing wallet.dat\n");
+
+                // Flush wallet.dat so it's self contained
+                berkleyDbEnvWrapper_.CloseDb(dbFilename_);
+                berkleyDbEnvWrapper_.CheckpointLSN(dbFilename_);
+                berkleyDbEnvWrapper_.mapFileUseCount.erase(mi++);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void ThreadFlushWalletDB(Settings& settings, const string& strFile)
 {
     // Make this thread recognisable as the wallet flushing thread
     RenameThread("divi-wallet");
@@ -583,52 +617,21 @@ void ThreadFlushWalletDB(const string& strFile)
 
         if (nLastFlushed != walletDbUpdated && GetTime() - nLastWalletUpdate >= 2) {
             TRY_LOCK(bitdb_.cs_db, lockDb);
-            if (lockDb) {
-                // Don't do this if any databases are in use
-                bool thereIsNoDatabaseInUse = true;
-                for(const std::pair<std::string,int>& fileRefCounts: bitdb_.mapFileUseCount)
-                {
-                    if(fileRefCounts.second > 0)
-                    {
-                        thereIsNoDatabaseInUse = false;
-                        break;
-                    }
-                }
-
-                if (thereIsNoDatabaseInUse)
-                {
-                    boost::this_thread::interruption_point();
-                    map<string, int>::iterator mi = bitdb_.mapFileUseCount.find(strFile);
-                    if (mi != bitdb_.mapFileUseCount.end()) {
-                        LogPrint("db", "Flushing wallet.dat\n");
-                        nLastFlushed = walletDbUpdated;
-                        int64_t nStart = GetTimeMillis();
-
-                        // Flush wallet.dat so it's self contained
-                        bitdb_.CloseDb(strFile);
-                        bitdb_.CheckpointLSN(strFile);
-
-                        bitdb_.mapFileUseCount.erase(mi++);
-                        LogPrint("db", "Flushed wallet.dat %dms\n", GetTimeMillis() - nStart);
-                    }
-                }
+            if (lockDb && CWalletDB(settings,strFile,"flush").Flush())
+            {
+                nLastFlushed = walletDbUpdated;
             }
         }
     }
 }
 
-bool BackupWallet(const std::string& walletDBFilename, const string& strDest)
+bool BackupWallet(Settings& settings, const std::string& walletDBFilename, const string& strDest)
 {
     static CDBEnv& bitdb_ = BerkleyDBEnvWrapper();
     while (true) {
         {
             LOCK(bitdb_.cs_db);
-            if (!bitdb_.mapFileUseCount.count(walletDBFilename) || bitdb_.mapFileUseCount[walletDBFilename] == 0) {
-                // Flush log data to the dat file
-                bitdb_.CloseDb(walletDBFilename);
-                bitdb_.CheckpointLSN(walletDBFilename);
-                bitdb_.mapFileUseCount.erase(walletDBFilename);
-
+            if (CWalletDB(settings,walletDBFilename,"flush").Flush()) {
                 // Copy wallet.dat
                 filesystem::path pathSrc = GetDataDir() / walletDBFilename;
                 filesystem::path pathDest(strDest);

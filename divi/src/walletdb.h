@@ -77,12 +77,14 @@ public:
     DBErrors LoadWallet(I_WalletLoader& pwallet) override;
     bool RewriteWallet() override;
 
+    bool Flush();
+
 private:
     CWalletDB(const CWalletDB&) = delete;
     void operator=(const CWalletDB&) = delete;
 };
 
-void ThreadFlushWalletDB(const std::string& strWalletFile);
-bool BackupWallet(const std::string& walletDBFilename, const std::string& strDest);
+void ThreadFlushWalletDB(Settings& settings, const std::string& strWalletFile);
+bool BackupWallet(Settings& settings, const std::string& walletDBFilename, const std::string& strDest);
 
 #endif // BITCOIN_WALLETDB_H

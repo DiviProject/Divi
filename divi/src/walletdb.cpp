@@ -607,7 +607,7 @@ void ThreadFlushWalletDB(Settings& settings, const string& strFile)
         return;
     fOneThread = true;
 
-    unsigned& walletDbUpdated = lockedDBUpdateMapping(strFile);
+    const unsigned& walletDbUpdated = lockedDBUpdateMapping(strFile);
     unsigned int nLastSeen =  walletDbUpdated;
     unsigned int nLastFlushed = walletDbUpdated;
     int64_t nLastWalletUpdate = GetTime();

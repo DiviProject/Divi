@@ -597,9 +597,10 @@ bool CWalletDB::Flush()
     return false;
 }
 
-bool CWalletDB::BackupWallet(const std::string& destination)
+CWalletDB::BackupStatus CWalletDB::BackupWallet(const std::string& destination)
 {
     AssertLockHeld(berkleyDbEnvWrapper_.cs_db);
+    if(!Flush()) return BackupStatus::FAILED_DB_IN_USE;
     // Copy wallet.dat
     filesystem::path pathSrc = GetDataDir() / dbFilename_;
     filesystem::path pathDest(destination);
@@ -615,10 +616,10 @@ bool CWalletDB::BackupWallet(const std::string& destination)
         dst << src.rdbuf();
 #endif
         LogPrintf("copied wallet.dat to %s\n", pathDest.string());
-        return true;
+        return BackupStatus::SUCCEEDED;
     } catch (const filesystem::filesystem_error& e) {
         LogPrintf("error copying wallet.dat to %s - %s\n", pathDest.string(), e.what());
-        return false;
+        return BackupStatus::FAILED_FILESYSTEM_ERROR;
     }
 }
 
@@ -663,9 +664,14 @@ bool BackupWallet(Settings& settings, const std::string& walletDBFilename, const
             LOCK(bitdb_.cs_db);
             {
                 CWalletDB walletDb(settings,walletDBFilename,"flush");
-                if (walletDb.Flush())
+                const CWalletDB::BackupStatus status = walletDb.BackupWallet(strDest);
+                if(status == CWalletDB::BackupStatus::FAILED_FILESYSTEM_ERROR)
                 {
-                    return walletDb.BackupWallet(strDest);
+                    return false;
+                }
+                else if (status == CWalletDB::BackupStatus::SUCCEEDED)
+                {
+                    return true;
                 }
             }
         }

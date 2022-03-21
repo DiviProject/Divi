@@ -61,9 +61,10 @@ CWalletDB::CWalletDB(
     , dbFilename_(dbFilename)
     , walletDbUpdated_(lockedDBUpdateMapping(dbFilename))
     , berkleyDbEnvWrapper_(BerkleyDBEnvWrapper())
-    , berkleyDB_(new CDB(berkleyDbEnvWrapper_,dbFilename))
+    , berkleyDB_(pszMode != "flush"? new CDB(berkleyDbEnvWrapper_,dbFilename) : nullptr)
 {
-    berkleyDB_->Open(settings,pszMode);
+    if(berkleyDB_)
+        berkleyDB_->Open(settings,pszMode);
 }
 
 CWalletDB::~CWalletDB()

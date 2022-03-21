@@ -77,6 +77,7 @@ public:
     DBErrors LoadWallet(I_WalletLoader& pwallet) override;
     bool RewriteWallet() override;
 
+    const unsigned& numberOfWalletUpdates() const;
     bool Flush();
 
 private:

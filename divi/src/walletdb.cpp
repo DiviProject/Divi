@@ -558,6 +558,11 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
     return result;
 }
 
+const unsigned& CWalletDB::numberOfWalletUpdates() const
+{
+    return walletDbUpdated_;
+}
+
 bool CWalletDB::Flush()
 {
     assert(!berkleyDB_);

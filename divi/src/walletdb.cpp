@@ -597,6 +597,31 @@ bool CWalletDB::Flush()
     return false;
 }
 
+bool CWalletDB::BackupWallet(const std::string& destination)
+{
+    AssertLockHeld(berkleyDbEnvWrapper_.cs_db);
+    // Copy wallet.dat
+    filesystem::path pathSrc = GetDataDir() / dbFilename_;
+    filesystem::path pathDest(destination);
+    if (filesystem::is_directory(pathDest))
+        pathDest /= dbFilename_;
+
+    try {
+#if BOOST_VERSION >= 158000
+        filesystem::copy_file(pathSrc, pathDest, filesystem::copy_option::overwrite_if_exists);
+#else
+        std::ifstream src(pathSrc.string(), std::ios::binary);
+        std::ofstream dst(pathDest.string(), std::ios::binary);
+        dst << src.rdbuf();
+#endif
+        LogPrintf("copied wallet.dat to %s\n", pathDest.string());
+        return true;
+    } catch (const filesystem::filesystem_error& e) {
+        LogPrintf("error copying wallet.dat to %s - %s\n", pathDest.string(), e.what());
+        return false;
+    }
+}
+
 void ThreadFlushWalletDB(Settings& settings, const string& strFile)
 {
     // Make this thread recognisable as the wallet flushing thread
@@ -636,26 +661,11 @@ bool BackupWallet(Settings& settings, const std::string& walletDBFilename, const
     while (true) {
         {
             LOCK(bitdb_.cs_db);
-            if (CWalletDB(settings,walletDBFilename,"flush").Flush()) {
-                // Copy wallet.dat
-                filesystem::path pathSrc = GetDataDir() / walletDBFilename;
-                filesystem::path pathDest(strDest);
-                if (filesystem::is_directory(pathDest))
-                    pathDest /= walletDBFilename;
-
-                try {
-#if BOOST_VERSION >= 158000
-                    filesystem::copy_file(pathSrc, pathDest, filesystem::copy_option::overwrite_if_exists);
-#else
-                    std::ifstream src(pathSrc.string(), std::ios::binary);
-                    std::ofstream dst(pathDest.string(), std::ios::binary);
-                    dst << src.rdbuf();
-#endif
-                    LogPrintf("copied wallet.dat to %s\n", pathDest.string());
-                    return true;
-                } catch (const filesystem::filesystem_error& e) {
-                    LogPrintf("error copying wallet.dat to %s - %s\n", pathDest.string(), e.what());
-                    return false;
+            {
+                CWalletDB walletDb(settings,walletDBFilename,"flush");
+                if (walletDb.Flush())
+                {
+                    return walletDb.BackupWallet(strDest);
                 }
             }
         }

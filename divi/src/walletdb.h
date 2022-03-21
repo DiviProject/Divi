@@ -79,6 +79,7 @@ public:
 
     const unsigned& numberOfWalletUpdates() const;
     bool Flush();
+    bool BackupWallet(const std::string& destination);
 
 private:
     CWalletDB(const CWalletDB&) = delete;

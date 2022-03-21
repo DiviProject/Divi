@@ -33,6 +33,7 @@ private:
     Settings& settings_;
     const std::string dbFilename_;
     unsigned& walletDbUpdated_;
+    CDBEnv& berkleyDbEnvWrapper_;
     std::unique_ptr<CDB> berkleyDB_;
 
     static bool Recover(

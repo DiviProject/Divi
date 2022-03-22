@@ -13,7 +13,7 @@ WalletBackupFeatureContainer::WalletBackupFeatureContainer (
     , walletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/backups"))
     , monthlyWalletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/monthlyBackups"))
     , monthlyWalletBackupDecorator_(new MonthlyWalletBackupCreator(*monthlyWalletBackupCreator_, *fileSystem_))
-    , database_(new DatabaseWrapper())
+    , database_(new DatabaseWrapper(dataDirectory))
     , walletIntegrityVerifier_(new WalletIntegrityVerifier(*fileSystem_, *database_))
     , dataDirectory_(dataDirectory)
     , walletFileName_(walletFileName)

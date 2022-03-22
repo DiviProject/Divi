@@ -22,7 +22,6 @@
 #include "primitives/transaction.h"
 #include "ui_interface.h"
 #include <timeIntervalConstants.h>
-#include <WalletBackupFeatureContainer.h>
 #include "wallet.h"
 #include "Settings.h"
 #include <main.h>
@@ -1327,37 +1326,6 @@ bool OpenNetworkConnection(const CAddress& addrConnect, const char* pszDest, boo
     return true;
 }
 
-void ThreadBackupWallet(const CWallet* wallet)
-{
-    const std::string& walletFileName = wallet->dbFilename();
-    static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(settings.GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
-    while (true)
-    {
-        if(!wallet->isBackedByFile()) return;
-
-        {
-            LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
-            if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName))
-            {
-                // Flush log data to the dat file
-                walletBackupFeatureContainer.GetDatabase().Dettach(walletFileName);
-                LogPrintf("backing up wallet\n");
-                if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(GetDataDir().string(), walletFileName))
-                {
-                    walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
-                    return;
-                }
-                else
-                {
-                    LogPrintf("Error: Wallet integrity check failed.");
-                    return;
-                }
-            }
-        }
-        MilliSleep(100);
-    }
-}
-
 bool BindListenPort(const CService& addrBind, string& strError, bool fWhitelisted)
 {
     strError = "";
@@ -1543,18 +1511,6 @@ void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet
                 "coinmint",
                 &ThreadCoinMinter));
     }
-
-    if(pwalletMain && pwalletMain->isBackedByFile())
-    {
-        int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
-        threadGroup.create_thread(
-            (!underRegressionTesting)?
-            boost::bind(&LoopForever<void (*)(const CWallet*), const CWallet*>, "monthly_backup", &ThreadBackupWallet, pwalletMain, millisecondDelay):
-            boost::bind(&MockLoopForever<void (*)(const CWallet*), const CWallet*>, "monthly_backup", &ThreadBackupWallet, pwalletMain, millisecondDelay)
-            );
-    }
-    else
-        LogPrintf("Error: Wallet monthly backups not enabled. Wallet isn't backed by file\n");
 }
 
 bool StopNode()

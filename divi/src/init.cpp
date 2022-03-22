@@ -44,6 +44,7 @@
 #include <uiMessenger.h>
 #include <ActiveChainManager.h>
 #include <BlockDiskAccessor.h>
+#include <timeIntervalConstants.h>
 #include <TransactionInputChecker.h>
 #include <txmempool.h>
 #include <StartAndShutdownSignals.h>
@@ -702,6 +703,34 @@ void ClearFoldersForResync()
 
     } catch (boost::filesystem::filesystem_error& error) {
         LogPrintf("Failed to delete blockchain folders %s\n", error.what());
+    }
+}
+
+void ThreadBackupWallet(const std::string& walletFileName)
+{
+    static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(settings.GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
+    while (true)
+    {
+        {
+            LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
+            if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName))
+            {
+                // Flush log data to the dat file
+                walletBackupFeatureContainer.GetDatabase().Dettach(walletFileName);
+                LogPrintf("backing up wallet\n");
+                if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(GetDataDir().string(), walletFileName))
+                {
+                    walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
+                    return;
+                }
+                else
+                {
+                    LogPrintf("Error: Wallet integrity check failed.");
+                    return;
+                }
+            }
+        }
+        MilliSleep(100);
     }
 }
 
@@ -1473,6 +1502,20 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         {
             threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, settings, pwalletMain->dbFilename() ));
             threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "vaultsync", &ThreadSyncVaultDatabase, 500));
+        }
+        if(pwalletMain && pwalletMain->isBackedByFile())
+        {
+            const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
+            int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
+            threadGroup.create_thread(
+                (!underRegressionTesting)?
+                boost::bind(&LoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay):
+                boost::bind(&MockLoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay)
+                );
+        }
+        else
+        {
+            LogPrintf("Error: Wallet monthly backups not enabled. Wallet isn't backed by file\n");
         }
     }
 #endif

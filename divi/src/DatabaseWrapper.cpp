@@ -24,7 +24,7 @@ DatabaseWrapper::DatabaseStatus DatabaseWrapper::Verify(const std::string& walle
     return conversionTable.at(berkleyEnvironment_.Verify(walletFilename,NULL));
 }
 
-void DatabaseWrapper::Dettach(const std::string& walletFilename)
+void DatabaseWrapper::FlushToDisk(const std::string& walletFilename)
 {
     berkleyEnvironment_.CloseDb(walletFilename);
     berkleyEnvironment_.CheckpointLSN(walletFilename);

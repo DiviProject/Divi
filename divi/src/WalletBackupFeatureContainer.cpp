@@ -34,7 +34,7 @@ bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
     if (!database_->FilenameIsInUse(walletFileName_))
     {
         // Flush log data to the dat file
-        database_->Dettach(walletFileName_);
+        database_->FlushToDisk(walletFileName_);
         LogPrintf("backing up wallet\n");
         if(walletIntegrityVerifier_->CheckWalletIntegrity(dataDirectory_, walletFileName_))
         {

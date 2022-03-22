@@ -29,12 +29,6 @@ public:
 
     bool createMonthlyBackup();
     bool createCurrentBackup();
-
-    I_FileSystem& GetFileSystem();
-    I_WalletBackupCreator& GetBackupCreator ();
-    I_WalletBackupCreator& GetMonthlyBackupCreator ();
-    I_DatabaseWrapper& GetDatabase ();
-    WalletIntegrityVerifier& GetWalletIntegrityVerifier ();
 };
 
 #endif //WALLET_BACKUP_FEATURE_CONTAINER_H

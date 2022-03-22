@@ -735,21 +735,18 @@ void ThreadBackupWallet(const std::string& walletFileName)
 }
 
 #endif
-bool BackupWallet(const std::string strDataDir, bool fDisableWallet)
+bool BackupWallet(const std::string strDataDir)
 {
 #ifdef ENABLE_WALLET
     const std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     boost::filesystem::path walletPath = boost::filesystem::path(strDataDir) / strWalletFile;
-    if (!fDisableWallet)
+    WalletBackupFeatureContainer walletBackupFeatureContainer(
+        settings.GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
+    LogPrintf("backing up wallet\n");
+    if(walletBackupFeatureContainer.GetFileSystem().exists(walletPath.string()))
     {
-        WalletBackupFeatureContainer walletBackupFeatureContainer(
-            settings.GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
-        LogPrintf("backing up wallet\n");
-        if(walletBackupFeatureContainer.GetFileSystem().exists(walletPath.string()))
-        {
-            return walletBackupFeatureContainer.GetBackupCreator().BackupWallet() &&
-                walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
-        }
+        return walletBackupFeatureContainer.GetBackupCreator().BackupWallet() &&
+            walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
     }
 #endif // ENABLE_WALLET
     return true;
@@ -1296,7 +1293,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
 
     // ********************************************************* Step 5: Backup wallet and verify wallet database integrity
-    BackupWallet(strDataDir, fDisableWallet);
+    if(!fDisableWallet) BackupWallet(strDataDir);
     if (settings.GetBoolArg("-resync", false))
     {
         ClearFoldersForResync();

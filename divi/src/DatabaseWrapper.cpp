@@ -9,33 +9,38 @@ const VerificationCodeMapping conversionTable = {
     {CDBEnv::VerifyResult::RECOVER_FAIL, I_DatabaseWrapper::RECOVERY_FAIL}
 };
 
+DatabaseWrapper::DatabaseWrapper(const std::string& directory): berkleyEnvironment_(BerkleyDBEnvWrapper())
+{
+    Open(directory);
+}
+
 bool DatabaseWrapper::Open(const std::string& directory)
 {
-    return BerkleyDBEnvWrapper().Open(directory);
+    return berkleyEnvironment_.Open(directory);
 }
 
 DatabaseWrapper::DatabaseStatus DatabaseWrapper::Verify(const std::string& walletFilename)
 {
-    return conversionTable.at(BerkleyDBEnvWrapper().Verify(walletFilename,NULL));
+    return conversionTable.at(berkleyEnvironment_.Verify(walletFilename,NULL));
 }
 
 void DatabaseWrapper::Dettach(const std::string& walletFilename)
 {
-    BerkleyDBEnvWrapper().CloseDb(walletFilename);
-    BerkleyDBEnvWrapper().CheckpointLSN(walletFilename);
-    BerkleyDBEnvWrapper().mapFileUseCount.erase(walletFilename);
+    berkleyEnvironment_.CloseDb(walletFilename);
+    berkleyEnvironment_.CheckpointLSN(walletFilename);
+    berkleyEnvironment_.mapFileUseCount.erase(walletFilename);
 }
 
 bool DatabaseWrapper::FilenameIsInUse(const std::string& walletFilename)
 {
-    auto it = BerkleyDBEnvWrapper().mapFileUseCount.find( walletFilename );
+    auto it = berkleyEnvironment_.mapFileUseCount.find( walletFilename );
     return (
-        BerkleyDBEnvWrapper().mapFileUseCount.count(walletFilename) > 0 &&
-        ((it != BerkleyDBEnvWrapper().mapFileUseCount.end())?  (it->second > 0)  :  false)
+        berkleyEnvironment_.mapFileUseCount.count(walletFilename) > 0 &&
+        ((it != berkleyEnvironment_.mapFileUseCount.end())?  (it->second > 0)  :  false)
     );
 }
 
 CCriticalSection& DatabaseWrapper::GetDatabaseLock()
 {
-    return BerkleyDBEnvWrapper().cs_db;
+    return berkleyEnvironment_.cs_db;
 }

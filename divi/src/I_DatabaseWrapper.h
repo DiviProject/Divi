@@ -15,7 +15,7 @@ public:
     virtual ~I_DatabaseWrapper(){}
     virtual bool Open(const std::string& directory) = 0;
     virtual DatabaseStatus Verify(const std::string& walletFilename) = 0;
-    virtual void Dettach(const std::string& walletFilename) = 0;
+    virtual void FlushToDisk(const std::string& walletFilename) = 0;
     virtual bool FilenameIsInUse(const std::string& walletFilename) = 0;
     virtual CCriticalSection& GetDatabaseLock() = 0;
 };

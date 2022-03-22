@@ -8,7 +8,7 @@ public:
     virtual ~MockDatabaseWrapper(){}
     MOCK_METHOD1(Open, bool(const std::string& directory));
     MOCK_METHOD1(Verify, DatabaseStatus(const std::string& walletFilename));
-    MOCK_METHOD1(Dettach, void(const std::string& walletFilename));
+    MOCK_METHOD1(FlushToDisk, void(const std::string& walletFilename));
     MOCK_METHOD1(FilenameIsInUse, bool(const std::string& walletFilename));
     MOCK_METHOD0(GetDatabaseLock, CCriticalSection&());
 };

@@ -19,12 +19,16 @@ private:
     std::unique_ptr<WalletIntegrityVerifier> walletIntegrityVerifier_;
     std::string dataDirectory_;
     std::string walletFileName_;
+
+    bool backupWallet (bool monthlyBackupOnly);
 public:
     WalletBackupFeatureContainer (
         int numberOfBackups,
         std::string walletFileName,
         std::string dataDirectory);
-    bool backupWallet ();
+
+    bool createMonthlyBackup();
+    bool createCurrentBackup();
 
     I_FileSystem& GetFileSystem();
     I_WalletBackupCreator& GetBackupCreator ();

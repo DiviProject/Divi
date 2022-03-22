@@ -716,21 +716,16 @@ void ThreadBackupWallet(const std::string& walletFileName)
 }
 
 #endif
-bool BackupWallet(const std::string strDataDir)
+void BackupWallet(const std::string strDataDir)
 {
 #ifdef ENABLE_WALLET
     const std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
-    boost::filesystem::path walletPath = boost::filesystem::path(strDataDir) / strWalletFile;
     WalletBackupFeatureContainer walletBackupFeatureContainer(
         settings.GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
     LogPrintf("backing up wallet\n");
-    if(walletBackupFeatureContainer.GetFileSystem().exists(walletPath.string()))
-    {
-        return walletBackupFeatureContainer.GetBackupCreator().BackupWallet() &&
-            walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
-    }
+    walletBackupFeatureContainer.GetBackupCreator().BackupWallet();
+    walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
 #endif // ENABLE_WALLET
-    return true;
 }
 
 void PruneHDSeedParameterInteraction()

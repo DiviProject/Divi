@@ -9,14 +9,14 @@ const VerificationCodeMapping conversionTable = {
     {CDBEnv::VerifyResult::RECOVER_FAIL, I_DatabaseWrapper::RECOVERY_FAIL}
 };
 
-DatabaseWrapper::DatabaseWrapper(const std::string& directory): berkleyEnvironment_(BerkleyDBEnvWrapper())
+DatabaseWrapper::DatabaseWrapper(const std::string& dataDirectory): berkleyEnvironment_(BerkleyDBEnvWrapper()), dataDirectory_(dataDirectory)
 {
-    Open(directory);
+    Open();
 }
 
-bool DatabaseWrapper::Open(const std::string& directory)
+bool DatabaseWrapper::Open()
 {
-    return berkleyEnvironment_.Open(directory);
+    return berkleyEnvironment_.Open(dataDirectory_);
 }
 
 DatabaseWrapper::DatabaseStatus DatabaseWrapper::Verify(const std::string& walletFilename)

@@ -16,7 +16,7 @@ WalletIntegrityVerifier::WalletIntegrityVerifier(
 bool WalletIntegrityVerifier::backupDatabaseIfUnavailable(
     const std::string& dataDirectory)
 {
-    if(!dbInterface_.Open(dataDirectory))
+    if(!dbInterface_.Open())
     {
         try
         {
@@ -30,7 +30,7 @@ bool WalletIntegrityVerifier::backupDatabaseIfUnavailable(
         {
         }
 
-        if(!dbInterface_.Open(dataDirectory))
+        if(!dbInterface_.Open())
         {
             return false;
         }

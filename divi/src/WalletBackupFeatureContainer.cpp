@@ -58,28 +58,3 @@ bool WalletBackupFeatureContainer::createCurrentBackup()
 {
     return backupWallet(false);
 }
-
-I_FileSystem& WalletBackupFeatureContainer::GetFileSystem()
-{
-    return *fileSystem_;
-}
-
-I_WalletBackupCreator& WalletBackupFeatureContainer::GetBackupCreator ()
-{
-    return *walletBackupCreator_;
-}
-
-I_DatabaseWrapper& WalletBackupFeatureContainer::GetDatabase ()
-{
-    return *database_;
-}
-
-I_WalletBackupCreator& WalletBackupFeatureContainer::GetMonthlyBackupCreator ()
-{
-    return *monthlyWalletBackupDecorator_;
-}
-
-WalletIntegrityVerifier& WalletBackupFeatureContainer::GetWalletIntegrityVerifier ()
-{
-    return *walletIntegrityVerifier_;
-}

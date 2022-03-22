@@ -723,8 +723,8 @@ void BackupWallet(const std::string strDataDir)
     WalletBackupFeatureContainer walletBackupFeatureContainer(
         settings.GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
     LogPrintf("backing up wallet\n");
-    walletBackupFeatureContainer.GetBackupCreator().BackupWallet();
-    walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
+    walletBackupFeatureContainer.createCurrentBackup();
+    walletBackupFeatureContainer.createMonthlyBackup();
 #endif // ENABLE_WALLET
 }
 

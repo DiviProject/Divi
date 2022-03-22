@@ -13,7 +13,7 @@ public:
         RECOVERY_FAIL=2
     };
     virtual ~I_DatabaseWrapper(){}
-    virtual bool Open(const std::string& directory) = 0;
+    virtual bool Open() = 0;
     virtual DatabaseStatus Verify(const std::string& walletFilename) = 0;
     virtual void FlushToDisk(const std::string& walletFilename) = 0;
     virtual bool FilenameIsInUse(const std::string& walletFilename) = 0;

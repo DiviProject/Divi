@@ -6,10 +6,11 @@ class DatabaseWrapper final: public I_DatabaseWrapper
 {
 private:
     CDBEnv& berkleyEnvironment_;
+    const std::string dataDirectory_;
 public:
     DatabaseWrapper(const std::string& directory);
     virtual ~DatabaseWrapper(){}
-    bool Open(const std::string& directory) override;
+    bool Open() override;
     DatabaseStatus Verify(const std::string& walletFilename) override;
     void FlushToDisk(const std::string& walletFilename) override;
     bool FilenameIsInUse(const std::string& walletFilename) override;

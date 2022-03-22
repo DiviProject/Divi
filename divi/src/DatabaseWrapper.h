@@ -2,17 +2,17 @@
 #define DATABASE_WRAPPER_H
 #include <I_DatabaseWrapper.h>
 class CDBEnv;
-class DatabaseWrapper: public I_DatabaseWrapper
+class DatabaseWrapper final: public I_DatabaseWrapper
 {
 private:
     CDBEnv& berkleyEnvironment_;
 public:
     DatabaseWrapper(const std::string& directory);
     virtual ~DatabaseWrapper(){}
-    virtual bool Open(const std::string& directory);
-    virtual DatabaseStatus Verify(const std::string& walletFilename);
-    virtual void FlushToDisk(const std::string& walletFilename);
-    virtual bool FilenameIsInUse(const std::string& walletFilename);
-    virtual CCriticalSection& GetDatabaseLock();
+    bool Open(const std::string& directory) override;
+    DatabaseStatus Verify(const std::string& walletFilename) override;
+    void FlushToDisk(const std::string& walletFilename) override;
+    bool FilenameIsInUse(const std::string& walletFilename) override;
+    CCriticalSection& GetDatabaseLock() override;
 };
 #endif //DATABASE_WRAPPER_H

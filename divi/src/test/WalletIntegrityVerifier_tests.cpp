@@ -37,10 +37,10 @@ BOOST_AUTO_TEST_CASE(willCheckDatabaseEnvironmentIsAvailable)
     std::string walletFilename = "randomWalletFilename.dat";
 
 
-    ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(true));
+    ON_CALL(dbWrapper, Open()).WillByDefault(Return(true));
     {
         ::testing::InSequence seq;
-        EXPECT_CALL(dbWrapper, Open(dataDirectory)).Times(1);
+        EXPECT_CALL(dbWrapper, Open()).Times(1);
     }
 
     EXPECT_EQ(integrityVerifier.CheckWalletIntegrity(dataDirectory,walletFilename),true);
@@ -56,12 +56,12 @@ BOOST_AUTO_TEST_CASE(willBackupDatabaseIfEnvironmentIsUnavailable)
     std::string walletFilename = "randomWalletFilename.dat";
     std::string dbFolderPath =  dataDirectory + "/database";
 
-    ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
+    ON_CALL(dbWrapper, Open()).WillByDefault(Return(false));
     {
         ::testing::InSequence seq;
-        EXPECT_CALL(dbWrapper, Open(dataDirectory)).Times(1);
+        EXPECT_CALL(dbWrapper, Open()).Times(1);
         EXPECT_CALL(fileSystem, rename(dbFolderPath,_));
-        EXPECT_CALL(dbWrapper,Open(_)).Times(::testing::AnyNumber());
+        EXPECT_CALL(dbWrapper,Open()).Times(::testing::AnyNumber());
     }
 
     integrityVerifier.CheckWalletIntegrity(
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(willGracefullyFailOnFilesystemError)
     std::string walletFilename = "randomWalletFilename.dat";
 
 
-    ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
+    ON_CALL(dbWrapper, Open()).WillByDefault(Return(false));
     ON_CALL(fileSystem, rename(_,_))
         .WillByDefault(::testing::Throw(std::runtime_error("Failed to copy folder")));
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(willBackupToADifferentFolderEachTime)
 
 
     std::set<std::string> usedDbBackupFolderPath;
-    ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
+    ON_CALL(dbWrapper, Open()).WillByDefault(Return(false));
     ON_CALL(fileSystem, rename(_,_))
         .WillByDefault(
             Invoke( [&usedDbBackupFolderPath](const PathType& a, const PathType b)
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
         std::string walletFilename = "randomWalletFilename.dat";
 
 
-        ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
+        ON_CALL(dbWrapper, Open()).WillByDefault(Return(false));
         ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
             .WillByDefault(Return(true));
         EXPECT_CALL(dbWrapper, Verify(_)).Times(0);
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
         std::string walletFilename = "randomWalletFilename.dat";
 
 
-        ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(true));
+        ON_CALL(dbWrapper, Open()).WillByDefault(Return(true));
         ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
             .WillByDefault(Return(true));
         EXPECT_CALL(dbWrapper, Verify(_)).Times(1);
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(willOnlyAttemptToVerifyWalletIfFileExists)
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
 
-        ON_CALL(dbWrapper, Open(dataDirectory))
+        ON_CALL(dbWrapper, Open())
             .WillByDefault(Return(true));
         ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
             .WillByDefault(Return(false));
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(willOnlyAttemptToVerifyWalletIfFileExists)
         std::string walletFilename = "randomWalletFilename.dat";
 
 
-        ON_CALL(dbWrapper, Open(dataDirectory))
+        ON_CALL(dbWrapper, Open())
             .WillByDefault(Return(true));
         ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
             .WillByDefault(Return(true));
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(willVerifyWalletDatabaseIntegrityIsOK)
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
 
-        ON_CALL(dbWrapper, Open(dataDirectory))
+        ON_CALL(dbWrapper, Open())
             .WillByDefault(Return(true));
         ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
             .WillByDefault(Return(true));
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE(willVerifyWalletDatabaseIntegrityIsOK)
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
 
-        ON_CALL(dbWrapper, Open(dataDirectory))
+        ON_CALL(dbWrapper, Open())
             .WillByDefault(Return(true));
         ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
             .WillByDefault(Return(true));
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE(willVerifyWalletDatabaseIntegrityIsOK)
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
 
-        ON_CALL(dbWrapper, Open(dataDirectory))
+        ON_CALL(dbWrapper, Open())
             .WillByDefault(Return(true));
         ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
             .WillByDefault(Return(true));
@@ -261,9 +261,9 @@ BOOST_AUTO_TEST_CASE(willRetryCheckingDatabaseAvailabilityAfterBackup)
     std::string walletFilename = "randomWalletFilename.dat";
 
     bool databaseAvailable = false;
-    ON_CALL(dbWrapper, Open(dataDirectory))
+    ON_CALL(dbWrapper, Open())
         .WillByDefault(Invoke(
-            [&databaseAvailable](const std::string& a)->bool
+            [&databaseAvailable]()->bool
             {
                 bool oldValue = databaseAvailable;
                 databaseAvailable = !databaseAvailable;
@@ -273,9 +273,9 @@ BOOST_AUTO_TEST_CASE(willRetryCheckingDatabaseAvailabilityAfterBackup)
 
     {
         ::testing::InSequence seq;
-        EXPECT_CALL(dbWrapper,Open(_))
+        EXPECT_CALL(dbWrapper,Open())
             .WillOnce(Return(false));
-        EXPECT_CALL(dbWrapper,Open(_))
+        EXPECT_CALL(dbWrapper,Open())
             .WillOnce(Return(true));
     }
 

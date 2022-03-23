@@ -21,6 +21,7 @@ private:
     std::unique_ptr<WalletIntegrityVerifier> walletIntegrityVerifier_;
 
     bool fileToBackUpExists();
+    bool backupWalletWithLockedDB(bool monthlyBackupOnly);
     bool backupWallet (bool monthlyBackupOnly);
 public:
     WalletBackupFeatureContainer (

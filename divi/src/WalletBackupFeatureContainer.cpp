@@ -32,7 +32,7 @@ bool WalletBackupFeatureContainer::fileToBackUpExists()
     return true;
 }
 
-bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
+bool WalletBackupFeatureContainer::backupWalletWithLockedDB(bool monthlyBackupOnly)
 {
     database_->Lock();
     if (!database_->FilenameIsInUse(walletFileName_))
@@ -55,11 +55,25 @@ bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
     database_->Unlock();
     return false; // Keep trying
 }
+
+bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
+{
+    if(fileToBackUpExists())
+    {
+        const bool result = backupWalletWithLockedDB(monthlyBackupOnly);
+        return result;
+    }
+    else
+    {
+        return true;
+    }
+}
+
 bool WalletBackupFeatureContainer::createMonthlyBackup()
 {
-    return !fileToBackUpExists() || backupWallet(true);
+    return backupWallet(true);
 }
 bool WalletBackupFeatureContainer::createCurrentBackup()
 {
-    return !fileToBackUpExists() || backupWallet(false);
+    return backupWallet(false);
 }

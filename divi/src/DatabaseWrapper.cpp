@@ -40,7 +40,11 @@ bool DatabaseWrapper::FilenameIsInUse(const std::string& walletFilename)
     );
 }
 
-CCriticalSection& DatabaseWrapper::GetDatabaseLock()
+void DatabaseWrapper::Lock()
 {
-    return berkleyEnvironment_.cs_db;
+    ENTER_CRITICAL_SECTION(berkleyEnvironment_.cs_db);
+}
+void DatabaseWrapper::Unlock()
+{
+    LEAVE_CRITICAL_SECTION(berkleyEnvironment_.cs_db);
 }

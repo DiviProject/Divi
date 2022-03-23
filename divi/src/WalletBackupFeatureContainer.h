@@ -20,6 +20,7 @@ private:
     std::unique_ptr<I_DatabaseWrapper> database_;
     std::unique_ptr<WalletIntegrityVerifier> walletIntegrityVerifier_;
 
+    bool fileToBackUpExists();
     bool backupWallet (bool monthlyBackupOnly);
 public:
     WalletBackupFeatureContainer (

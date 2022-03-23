@@ -21,6 +21,17 @@ WalletBackupFeatureContainer::WalletBackupFeatureContainer (
 
 }
 
+bool WalletBackupFeatureContainer::fileToBackUpExists()
+{
+    boost::filesystem::path walletPath = boost::filesystem::path(dataDirectory_) / walletFileName_;
+    if(!fileSystem_->exists(walletPath.string()))
+    {
+        LogPrintf("Wallet file not found at %s. Skipping backup...\n",walletPath.string());
+        return false;
+    }
+    return true;
+}
+
 bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
 {
     boost::filesystem::path walletPath = boost::filesystem::path(dataDirectory_) / walletFileName_;

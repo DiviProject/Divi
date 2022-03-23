@@ -11,11 +11,11 @@ WalletBackupFeatureContainer::WalletBackupFeatureContainer (
         std::string dataDirectory
     ): dataDirectory_(dataDirectory)
     , walletFileName_(walletFileName)
-    , fileSystem_(new FilteredBoostFileSystem(walletFileName))
-    , walletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/backups"))
-    , monthlyWalletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/monthlyBackups"))
+    , fileSystem_(new FilteredBoostFileSystem(walletFileName_))
+    , walletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory_, walletFileName_, "/backups"))
+    , monthlyWalletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory_, walletFileName_, "/monthlyBackups"))
     , monthlyWalletBackupDecorator_(new MonthlyWalletBackupCreator(*monthlyWalletBackupCreator_, *fileSystem_))
-    , database_(new DatabaseWrapper(dataDirectory))
+    , database_(new DatabaseWrapper(dataDirectory_))
     , walletIntegrityVerifier_(new WalletIntegrityVerifier(dataDirectory_,*fileSystem_, *database_))
 {
 

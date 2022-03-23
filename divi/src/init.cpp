@@ -709,9 +709,15 @@ void ClearFoldersForResync()
 void ThreadBackupWallet(const std::string& walletFileName)
 {
     static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(settings.GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
-    while (!walletBackupFeatureContainer.createMonthlyBackup())
+    WalletBackupFeatureContainer::BackupStatus status = walletBackupFeatureContainer.createMonthlyBackup();
+    while (
+        status != WalletBackupFeatureContainer::BackupStatus::BACKUP_ATTEMPTED &&
+        status != WalletBackupFeatureContainer::BackupStatus::BACKUP_CREATED &&
+        status != WalletBackupFeatureContainer::BackupStatus::INTEGRITY_CHECK_FAILED &&
+        status != WalletBackupFeatureContainer::BackupStatus::NO_FILE_TO_BACKUP)
     {
         MilliSleep(100);
+        status = walletBackupFeatureContainer.createMonthlyBackup();
     }
 }
 

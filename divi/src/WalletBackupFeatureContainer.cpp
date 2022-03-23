@@ -32,7 +32,7 @@ bool WalletBackupFeatureContainer::fileToBackUpExists()
     return true;
 }
 
-bool WalletBackupFeatureContainer::backupWalletWithLockedDB(bool monthlyBackupOnly)
+WalletBackupFeatureContainer::BackupStatus WalletBackupFeatureContainer::backupWalletWithLockedDB(bool monthlyBackupOnly)
 {
     if (!database_->FilenameIsInUse(walletFileName_))
     {
@@ -41,38 +41,39 @@ bool WalletBackupFeatureContainer::backupWalletWithLockedDB(bool monthlyBackupOn
         LogPrintf("backing up wallet\n");
         if(walletIntegrityVerifier_->CheckWalletIntegrity(walletFileName_))
         {
-            if(monthlyBackupOnly) monthlyWalletBackupDecorator_->BackupWallet();
-            if(!monthlyBackupOnly) walletBackupCreator_->BackupWallet();
+            if(monthlyBackupOnly && monthlyWalletBackupDecorator_->BackupWallet()) return BackupStatus::BACKUP_CREATED;
+            if(!monthlyBackupOnly && walletBackupCreator_->BackupWallet()) return BackupStatus::BACKUP_CREATED;
+            return BackupStatus::BACKUP_ATTEMPTED;
         }
         else
         {
             LogPrintf("Error: Wallet integrity check failed.");
+            return BackupStatus::INTEGRITY_CHECK_FAILED;
         }
-        return true;
     }
-    return false; // Keep trying
+    return BackupStatus::FILE_IN_USE;
 }
 
-bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
+WalletBackupFeatureContainer::BackupStatus WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
 {
     if(fileToBackUpExists())
     {
         database_->Lock();
-        const bool result = backupWalletWithLockedDB(monthlyBackupOnly);
+        const BackupStatus result = backupWalletWithLockedDB(monthlyBackupOnly);
         database_->Unlock();
         return result;
     }
     else
     {
-        return true;
+        return BackupStatus::NO_FILE_TO_BACKUP;
     }
 }
 
-bool WalletBackupFeatureContainer::createMonthlyBackup()
+WalletBackupFeatureContainer::BackupStatus WalletBackupFeatureContainer::createMonthlyBackup()
 {
     return backupWallet(true);
 }
-bool WalletBackupFeatureContainer::createCurrentBackup()
+WalletBackupFeatureContainer::BackupStatus WalletBackupFeatureContainer::createCurrentBackup()
 {
     return backupWallet(false);
 }

@@ -11,14 +11,14 @@ class WalletBackupFeatureContainer
 {
 
 private:
+    std::string dataDirectory_;
+    std::string walletFileName_;
     std::unique_ptr<I_FileSystem> fileSystem_;
     std::unique_ptr<I_WalletBackupCreator> walletBackupCreator_;
     std::unique_ptr<I_WalletBackupCreator> monthlyWalletBackupCreator_;
     std::unique_ptr<I_WalletBackupCreator> monthlyWalletBackupDecorator_;
     std::unique_ptr<I_DatabaseWrapper> database_;
     std::unique_ptr<WalletIntegrityVerifier> walletIntegrityVerifier_;
-    std::string dataDirectory_;
-    std::string walletFileName_;
 
     bool backupWallet (bool monthlyBackupOnly);
 public:

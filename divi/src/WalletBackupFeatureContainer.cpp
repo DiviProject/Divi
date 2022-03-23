@@ -9,7 +9,9 @@ WalletBackupFeatureContainer::WalletBackupFeatureContainer (
         int numberOfBackups,
         std::string walletFileName,
         std::string dataDirectory
-    ): fileSystem_(new FilteredBoostFileSystem(walletFileName))
+    ): dataDirectory_(dataDirectory)
+    , walletFileName_(walletFileName)
+    , fileSystem_(new FilteredBoostFileSystem(walletFileName))
     , walletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/backups"))
     , monthlyWalletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/monthlyBackups"))
     , monthlyWalletBackupDecorator_(new MonthlyWalletBackupCreator(*monthlyWalletBackupCreator_, *fileSystem_))

@@ -34,7 +34,6 @@ bool WalletBackupFeatureContainer::fileToBackUpExists()
 
 bool WalletBackupFeatureContainer::backupWalletWithLockedDB(bool monthlyBackupOnly)
 {
-    database_->Lock();
     if (!database_->FilenameIsInUse(walletFileName_))
     {
         // Flush log data to the dat file
@@ -49,10 +48,8 @@ bool WalletBackupFeatureContainer::backupWalletWithLockedDB(bool monthlyBackupOn
         {
             LogPrintf("Error: Wallet integrity check failed.");
         }
-        database_->Unlock();
         return true;
     }
-    database_->Unlock();
     return false; // Keep trying
 }
 
@@ -60,7 +57,9 @@ bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
 {
     if(fileToBackUpExists())
     {
+        database_->Lock();
         const bool result = backupWalletWithLockedDB(monthlyBackupOnly);
+        database_->Unlock();
         return result;
     }
     else

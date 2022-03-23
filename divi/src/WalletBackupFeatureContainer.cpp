@@ -16,9 +16,7 @@ WalletBackupFeatureContainer::WalletBackupFeatureContainer (
     , monthlyWalletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/monthlyBackups"))
     , monthlyWalletBackupDecorator_(new MonthlyWalletBackupCreator(*monthlyWalletBackupCreator_, *fileSystem_))
     , database_(new DatabaseWrapper(dataDirectory))
-    , walletIntegrityVerifier_(new WalletIntegrityVerifier(*fileSystem_, *database_))
-    , dataDirectory_(dataDirectory)
-    , walletFileName_(walletFileName)
+    , walletIntegrityVerifier_(new WalletIntegrityVerifier(dataDirectory_,*fileSystem_, *database_))
 {
 
 }
@@ -38,7 +36,7 @@ bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
         // Flush log data to the dat file
         database_->FlushToDisk(walletFileName_);
         LogPrintf("backing up wallet\n");
-        if(walletIntegrityVerifier_->CheckWalletIntegrity(dataDirectory_, walletFileName_))
+        if(walletIntegrityVerifier_->CheckWalletIntegrity(walletFileName_))
         {
             if(monthlyBackupOnly) monthlyWalletBackupDecorator_->BackupWallet();
             if(!monthlyBackupOnly) walletBackupCreator_->BackupWallet();

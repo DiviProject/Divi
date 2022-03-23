@@ -5,24 +5,25 @@
 #include "utiltime.h"
 
 WalletIntegrityVerifier::WalletIntegrityVerifier(
+    const std::string& dataDirectory,
     I_FileSystem& fileSystem,
     I_DatabaseWrapper& database
-    ): fileSystem_(fileSystem)
+    ): dataDirectory_(dataDirectory)
+    , fileSystem_(fileSystem)
     , dbInterface_(database)
     , backupCount_(0u)
 {
 }
 
-bool WalletIntegrityVerifier::backupDatabaseIfUnavailable(
-    const std::string& dataDirectory)
+bool WalletIntegrityVerifier::backupDatabaseIfUnavailable()
 {
     if(!dbInterface_.Open())
     {
         try
         {
             fileSystem_.rename(
-            dataDirectory + "/database",
-            dataDirectory + "/database."+
+            dataDirectory_ + "/database",
+            dataDirectory_ + "/database."+
                 std::to_string(backupCount_++)+"_"+
                 std::to_string(GetTime())+".bak");
         }
@@ -39,12 +40,10 @@ bool WalletIntegrityVerifier::backupDatabaseIfUnavailable(
 }
 
 
-bool WalletIntegrityVerifier::CheckWalletIntegrity(
-    const std::string& dataDirectory,
-    const std::string& walletFilename)
+bool WalletIntegrityVerifier::CheckWalletIntegrity(const std::string& walletFilename)
 {
-    if(!backupDatabaseIfUnavailable(dataDirectory)) return false;
-    if(fileSystem_.exists(dataDirectory+"/"+walletFilename))
+    if(!backupDatabaseIfUnavailable()) return false;
+    if(fileSystem_.exists(dataDirectory_+"/"+walletFilename))
     {
         if(dbInterface_.Verify(walletFilename) == I_DatabaseWrapper::RECOVERY_FAIL)
         {

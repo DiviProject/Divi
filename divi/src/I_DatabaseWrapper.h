@@ -17,6 +17,7 @@ public:
     virtual DatabaseStatus Verify(const std::string& walletFilename) = 0;
     virtual void FlushToDisk(const std::string& walletFilename) = 0;
     virtual bool FilenameIsInUse(const std::string& walletFilename) = 0;
-    virtual CCriticalSection& GetDatabaseLock() = 0;
+    virtual void Lock() = 0;
+    virtual void Unlock() = 0;
 };
 #endif //I_DATABASE_WRAPPER_H

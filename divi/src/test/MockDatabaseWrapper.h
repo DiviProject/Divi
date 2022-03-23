@@ -10,6 +10,7 @@ public:
     MOCK_METHOD1(Verify, DatabaseStatus(const std::string& walletFilename));
     MOCK_METHOD1(FlushToDisk, void(const std::string& walletFilename));
     MOCK_METHOD1(FilenameIsInUse, bool(const std::string& walletFilename));
-    MOCK_METHOD0(GetDatabaseLock, CCriticalSection&());
+    MOCK_METHOD0(Lock, void());
+    MOCK_METHOD0(Unlock, void());
 };
 #endif //MOCK_DATABASE_WRAPPER_H

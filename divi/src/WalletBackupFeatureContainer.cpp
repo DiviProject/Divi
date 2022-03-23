@@ -30,7 +30,7 @@ bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
         return true;
     }
 
-    LOCK(database_->GetDatabaseLock());
+    database_->Lock();
     if (!database_->FilenameIsInUse(walletFileName_))
     {
         // Flush log data to the dat file
@@ -45,9 +45,10 @@ bool WalletBackupFeatureContainer::backupWallet(bool monthlyBackupOnly)
         {
             LogPrintf("Error: Wallet integrity check failed.");
         }
+        database_->Unlock();
         return true;
     }
-
+    database_->Unlock();
     return false; // Keep trying
 }
 bool WalletBackupFeatureContainer::createMonthlyBackup()

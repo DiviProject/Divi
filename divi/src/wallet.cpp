@@ -2188,7 +2188,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
             return {translate("Cannot subtract needed fees from outputs."),false};
         }
         break;
-    case TransactionFeeMode::SEND_TO_SELF:
+    case TransactionFeeMode::SWEEP_FUNDS:
         if(!RollChangeIntoOutputs(changeOutput,txNew))
         {
             return {translate("Cannot roll change amounts into outputs."),false};

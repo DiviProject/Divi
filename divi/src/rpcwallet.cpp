@@ -927,9 +927,9 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
         {
             rpcRequest.txFeeMode = TransactionFeeMode::RECEIVER_PAYS_FOR_TX_FEES;
         }
-        else if(feeMode == std::string("send_to_self"))
+        else if(feeMode == std::string("sweep_funds"))
         {
-            rpcRequest.txFeeMode = TransactionFeeMode::SEND_TO_SELF;
+            rpcRequest.txFeeMode = TransactionFeeMode::SWEEP_FUNDS;
         }
         else if(feeMode == std::string("metadata"))
         {
@@ -1102,9 +1102,9 @@ Value sendtoaddress(const Array& params, bool fHelp)
         {
             rpcRequest.txFeeMode = TransactionFeeMode::RECEIVER_PAYS_FOR_TX_FEES;
         }
-        else if(feeMode == std::string("send_to_self"))
+        else if(feeMode == std::string("sweep_funds"))
         {
-            rpcRequest.txFeeMode = TransactionFeeMode::SEND_TO_SELF;
+            rpcRequest.txFeeMode = TransactionFeeMode::SWEEP_FUNDS;
         }
         else if(feeMode == std::string("metadata"))
         {

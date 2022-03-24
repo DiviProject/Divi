@@ -417,6 +417,10 @@ protected:
     virtual std::vector<COutput> FilterCoinsByAccountName(const std::vector<COutput>& vCoins) const = 0;
 public:
     virtual ~I_AccountCoinSelector(){}
+    bool isSelectable(const COutput& coin) const final
+    {
+        return coinSelector_ && coinSelector_->isSelectable(coin) && !(FilterCoinsByAccountName({coin}).empty());
+    }
     std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
         const std::vector<COutput>& vCoins,

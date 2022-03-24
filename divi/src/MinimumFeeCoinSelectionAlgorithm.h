@@ -15,9 +15,10 @@ public:
         const CKeyStore& keyStore,
         const I_SignatureSizeEstimator& estimator,
         const CFeeRate& minRelayTxFee);
-    virtual std::set<COutput> SelectCoins(
+    bool isSelectable(const COutput& coin) const override { return true; };
+    std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
         const std::vector<COutput>& vCoins,
-        CAmount& fees) const;
+        CAmount& fees) const override;
 };
 #endif// MINIMUM_FEE_COIN_SELECTION_ALGORITHM_H

@@ -8,6 +8,11 @@ CoinControlSelectionAlgorithm::CoinControlSelectionAlgorithm(
 {
 }
 
+bool CoinControlSelectionAlgorithm::isSelectable(const COutput& coin) const
+{
+    return coin.fSpendable && (coinControl_->fAllowOtherInputs || coinControl_->IsSelected(coin.tx->GetHash(),coin.i));
+}
+
 std::set<COutput> CoinControlSelectionAlgorithm::SelectCoins(
     const CMutableTransaction& transactionToSelectCoinsFor,
     const std::vector<COutput>& vCoins,
@@ -19,8 +24,7 @@ std::set<COutput> CoinControlSelectionAlgorithm::SelectCoins(
     {
         for(const COutput& out: vCoins)
         {
-            if (!out.fSpendable ||
-                (!coinControl_->fAllowOtherInputs && !coinControl_->IsSelected(out.tx->GetHash(),out.i)))
+            if (!isSelectable(out))
             {
                 continue;
             }

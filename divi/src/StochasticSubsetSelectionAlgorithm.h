@@ -21,7 +21,8 @@ public:
     StochasticSubsetSelectionAlgorithm(
         TxConfirmationChecker txConfirmationChecker,
         const bool& allowSpendingZeroConfirmationOutputs);
-    virtual std::set<COutput> SelectCoins(
+    bool isSelectable(const COutput& coin) const override { return true;}
+    std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
         const std::vector<COutput>& vCoins,
         CAmount& fees) const;

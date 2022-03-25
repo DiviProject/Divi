@@ -91,6 +91,7 @@ BITCOIN_TESTS =\
   test/RandomCScriptGenerator.cpp \
   test/RandomScriptPubKeyGenerator.h \
   test/RandomTransactionGenerator.h \
+  test/RandomUtxoGenerator.h \
   test/test_divi.cpp \
   test/timedata_tests.cpp \
   test/torcontrol_tests.cpp \

@@ -12,6 +12,8 @@
 #include <chainparams.h>
 #include <test/MockSignatureSizeEstimator.h>
 #include <FeeRate.h>
+#include <test/RandomUtxoGenerator.h>
+#include <iostream>
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -294,4 +296,30 @@ BOOST_AUTO_TEST_CASE(willNotPayMoreInFeesThanMaximumSet)
     BOOST_CHECK_MESSAGE(selectedUTXOsWithFeeRestrictions.empty(),"Paid in excess of maximum fees!");
 }
 
+BOOST_AUTO_TEST_CASE(willEstimateFeesPaidByExistingInputs)
+{
+    unsigned numberOfUtxos = GetRandInt(10)+1;
+    for(unsigned numberOfUtxosToAdd = numberOfUtxos; numberOfUtxosToAdd > 0; --numberOfUtxosToAdd)
+    {
+        CTxOut utxo = RandomUtxoGenerator()(100);
+        addSingleUtxo(utxo.nValue+1,utxo.scriptPubKey);
+    }
+    CMutableTransaction nextTransaction;
+    const auto utxos = getSpendableOutputs();
+    for(const COutput& output: utxos)
+    {
+        nextTransaction.vin.emplace_back(output.tx->GetHash(),output.i);
+    }
+    CAmount toSpend = 1*COIN;
+    nextTransaction.vout.emplace_back(toSpend,RandomCScriptGenerator()(25u));
+    CTransaction finalizedTransaction(nextTransaction);
+    unsigned totalSigSizes = utxos.size()*40; // 32-bytes for hash, 8 bytes for output index
+    unsigned txSize = ::GetSerializeSize(finalizedTransaction, SER_NETWORK, PROTOCOL_VERSION) + totalSigSizes;
+
+    CAmount feesPaidEstimate = 0*COIN;
+    std::set<COutput> selectedUTXOsWithoutFeeRestrictions = algorithm.SelectCoins(nextTransaction,utxos,feesPaidEstimate);
+    std::cout << "This is a test: " << numberOfUtxos << ", " << utxos.size() << std::endl;
+    BOOST_CHECK_EQUAL_MESSAGE(feesPaidEstimate, feeRate.GetFee(txSize), "Fee estimated and fee rate mismatched");
+
+}
 BOOST_AUTO_TEST_SUITE_END()

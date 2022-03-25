@@ -53,12 +53,26 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     CAmount maximumAmountAvailable = 0;
     std::vector<InputToSpendAndSigSize> inputsToSpendAndSignatureSizeEstimates;
     inputsToSpendAndSignatureSizeEstimates.reserve(vCoins.size());
+    std::set<COutPoint> outputsUsed;
+    for(const CTxIn& txInput: initialTransaction.vin)
+    {
+        outputsUsed.insert(txInput.prevout);
+    }
+    CAmount amountAlreadyCovered = 0;
+    fees += minRelayTxFee_.GetFee(initialByteSize);
     for(const COutput& input: vCoins)
     {
+        if(outputsUsed.count(COutPoint(input.tx->GetHash(),input.i))>0)
+        {
+            InputToSpendAndSigSize inputWithSigSize(input,keyStore_,estimator_);
+            amountAlreadyCovered += inputWithSigSize.outputRef->Value();
+            fees += minRelayTxFee_.GetFee(inputWithSigSize.sigSize);
+            continue;
+        }
         inputsToSpendAndSignatureSizeEstimates.emplace_back(input,keyStore_,estimator_);
         maximumAmountAvailable+= input.Value();
     }
-    const CAmount nTargetValue = transactionToSelectCoinsFor.GetValueOut();
+    const CAmount nTargetValue = transactionToSelectCoinsFor.GetValueOut() - amountAlreadyCovered;
 
     std::set<COutput> inputsSelected;
     inputsSelected.clear();
@@ -80,7 +94,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
             return gapA > gapB || (gapA == gapB && inputA.sigSize < inputB.sigSize);
         });
     CAmount amountCovered =0;
-    unsigned cummulativeByteSize = initialByteSize + nominalChangeOutputSize;
+    unsigned cummulativeByteSize = nominalChangeOutputSize;
     for(const InputToSpendAndSigSize& inputAndSigSize: inputsToSpendAndSignatureSizeEstimates)
     {
         inputsSelected.insert(*inputAndSigSize.outputRef);

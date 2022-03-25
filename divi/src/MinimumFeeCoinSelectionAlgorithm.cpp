@@ -46,10 +46,9 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     const std::vector<COutput>& vCoins,
     CAmount& fees) const
 {
+    constexpr unsigned nominalChangeOutputSize = 34u; // P2PKH change address
     CTransaction initialTransaction = CTransaction(transactionToSelectCoinsFor);
     const unsigned initialByteSize = ::GetSerializeSize(initialTransaction, SER_NETWORK, PROTOCOL_VERSION);
-    const CAmount nTargetValue = transactionToSelectCoinsFor.GetValueOut();
-    constexpr unsigned nominalChangeOutputSize = 34u; // P2PKH change address
 
     CAmount maximumAmountAvailable = 0;
     std::vector<InputToSpendAndSigSize> inputsToSpendAndSignatureSizeEstimates;
@@ -59,6 +58,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         inputsToSpendAndSignatureSizeEstimates.emplace_back(input,keyStore_,estimator_);
         maximumAmountAvailable+= input.Value();
     }
+    const CAmount nTargetValue = transactionToSelectCoinsFor.GetValueOut();
 
     std::set<COutput> inputsSelected;
     inputsSelected.clear();

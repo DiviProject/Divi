@@ -187,5 +187,6 @@ std::set<COutput> StochasticSubsetSelectionAlgorithm::SelectCoins(
     {
         setCoinsRet.clear();
     }
+    fees = nValueRet - transactionToSelectCoinsFor.GetValueOut();
     return setCoinsRet;
 }

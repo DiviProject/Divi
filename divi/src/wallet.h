@@ -282,7 +282,7 @@ public:
     bool InitializeDefaultKey();
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 
-    void verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis = false);
+    void verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis);
     void toggleSpendingZeroConfirmationOutputs();
     void activateVaultMode(
         std::shared_ptr<VaultManager> vaultManager);

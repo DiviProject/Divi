@@ -19,7 +19,7 @@ class SendMoneyOptions (BitcoinTestFramework):
     def setup_network(self):
         #self.nodes = start_nodes(2, self.options.tmpdir)
         self.nodes = []
-        args = ["-debug"]
+        args = ["-debug","-spendzeroconfchange"]
         self.nodes.append (start_node(0, self.options.tmpdir, extra_args=args))
         self.nodes.append (start_node(1, self.options.tmpdir, extra_args=args))
         self.nodes.append (start_node(2, self.options.tmpdir, extra_args=args))
@@ -34,7 +34,7 @@ class SendMoneyOptions (BitcoinTestFramework):
     def run_test(self):
         self.sender.setgenerate(5)
         self.sync_all()
-        self.minter.setgenerate(21)
+        self.minter.setgenerate(25)
         self.sync_all()
         balance_before = self.sender.getbalance()
         initial_balance = balance_before
@@ -60,6 +60,16 @@ class SendMoneyOptions (BitcoinTestFramework):
         print("SWEEP_FUNDS mode:\n\tStarted with {}, sent {}, remaining with {}".format(sender_remaining_balance, send_less_than_all, remaining_balance_after_sweep_funds))
         assert_equal(self.sender.getbalance(),0)
         assert_greater_than(self.receiver.getbalance()+Decimal(1.0), amount_to_send + sender_remaining_balance)
+        self.minter.sendtoaddress(self.sender.getnewaddress(),1000.0)
+        sync_mempools(self.nodes)
+        self.minter.setgenerate(1)
+        self.sync_all()
+        receiver_address = self.receiver.getnewaddress()
+        assert_raises(JSONRPCException,self.sender.sendtoaddress,receiver_address,1000.0,"receiver_pays")
+        self.sender.sendtoaddress(receiver_address, 1000.0, "sweep_funds")
+        sync_mempools(self.nodes)
+        self.minter.setgenerate(1)
+        self.sync_all()
 
 
 

@@ -2163,7 +2163,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     CReserveKey& reservekey,
     CWalletTx& wtxNew)
 {
-    const CAmount totalValueToSend = txNew.GetValueOut();
+    CAmount totalValueToSend = txNew.GetValueOut();
     CAmount nFeeRet = 0;
     if(!(totalValueToSend > 0))
     {
@@ -2171,8 +2171,37 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     }
     txNew.vin.clear();
     // Choose coins to use
-    std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
-    CAmount nValueIn = AttachInputs(setCoins,txNew);
+    std::set<COutput> setCoins;
+    CAmount nValueIn = 0;
+    if(sendMode != TransactionFeeMode::SWEEP_FUNDS)
+    {
+        setCoins = coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
+        nValueIn = AttachInputs(setCoins,txNew);
+    }
+    else
+    {
+        std::copy_if(
+            vCoins.begin(),vCoins.end(),
+            std::inserter(setCoins,setCoins.begin()),
+            [coinSelector](const COutput coin){ return coinSelector->isSelectable(coin);});
+        nValueIn = AttachInputs(setCoins,txNew);
+        txNew.vout[0].nValue = nValueIn;
+        coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
+        CAmount discardedChangeValueAsFees = priorityFeeCalculator.MinimumValueForNonDust();
+
+        if(!SubtractFeesFromOutputs(nFeeRet,discardedChangeValueAsFees,txNew))
+        {
+            return {translate("Cannot subtract needed fees from outputs."),false};
+        }
+        nFeeRet = discardedChangeValueAsFees - priorityFeeCalculator.MinimumValueForNonDust();
+        totalValueToSend = txNew.GetValueOut();
+
+        if((totalValueToSend + nFeeRet) != nValueIn)
+        {
+            return {translate("Error in constructing subtracting fees for sweep-type transaction."),false};
+        }
+    }
+
     CAmount totalValueToSendPlusFees = totalValueToSend + nFeeRet;
     if (setCoins.empty() || nValueIn < totalValueToSendPlusFees)
     {
@@ -2186,12 +2215,6 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
         if(!SubtractFeesFromOutputs(nFeeRet,changeOutput.nValue,txNew))
         {
             return {translate("Cannot subtract needed fees from outputs."),false};
-        }
-        break;
-    case TransactionFeeMode::SWEEP_FUNDS:
-        if(!RollChangeIntoOutputs(changeOutput,txNew))
-        {
-            return {translate("Cannot roll change amounts into outputs."),false};
         }
         break;
     default:

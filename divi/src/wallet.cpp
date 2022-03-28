@@ -2116,6 +2116,16 @@ static bool SubtractFeesFromOutputs(
     CAmount discardedChangeValueAsFees = priorityFeeCalculator.MinimumValueForNonDust();
     return SubtractFeesFromOutputs(feesToBePaid,txNew,discardedChangeValueAsFees);
 }
+static bool SweepInputsAndTakeFeesFromOutputs(
+    const CAmount feesToBePaid,
+    const CAmount totalInputs,
+    CMutableTransaction& txNew)
+{
+    if(txNew.vout.size() != 1u) return false;
+    txNew.vout[0].nValue = totalInputs;
+    CAmount discardedChangeValueAsFees = priorityFeeCalculator.MinimumValueForNonDust();
+    return SubtractFeesFromOutputs(feesToBePaid,txNew,discardedChangeValueAsFees);
+}
 
 enum ChangeUseStatus
 {
@@ -2161,6 +2171,39 @@ static bool RollChangeIntoOutputs(
     return false;
 }
 
+class SweepFundsCoinSelectionAlgorithm final: public I_CoinSelectionAlgorithm
+{
+private:
+    const I_CoinSelectionAlgorithm& wrappedAlgorithm_;
+public:
+    SweepFundsCoinSelectionAlgorithm(
+        const I_CoinSelectionAlgorithm& wrappedAlgorithm
+        ): wrappedAlgorithm_(wrappedAlgorithm)
+    {
+    }
+    bool isSelectable(const COutput& coin) const override
+    {
+        return wrappedAlgorithm_.isSelectable(coin);
+    }
+
+    std::set<COutput> SelectCoins(
+        const CMutableTransaction& transactionToSelectCoinsFor,
+        const std::vector<COutput>& vCoins,
+        CAmount& fees) const override
+    {
+        CMutableTransaction txCopy = transactionToSelectCoinsFor;
+        std::set<COutput> selectedCoins;
+        std::copy_if(
+            vCoins.begin(),vCoins.end(),
+            std::inserter(selectedCoins,selectedCoins.begin()),
+            [this](const COutput coin){ return wrappedAlgorithm_.isSelectable(coin);});
+        CAmount nValueIn = AttachInputs(selectedCoins,txCopy);
+        txCopy.vout[0].nValue = nValueIn;
+        wrappedAlgorithm_.SelectCoins(txCopy,vCoins,fees);
+        return selectedCoins;
+    }
+};
+
 static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     const CKeyStore& walletKeyStore,
     const I_CoinSelectionAlgorithm* coinSelector,
@@ -2178,36 +2221,14 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     }
     txNew.vin.clear();
     // Choose coins to use
-    std::set<COutput> setCoins;
-    CAmount nValueIn = 0;
-    if(sendMode != TransactionFeeMode::SWEEP_FUNDS)
-    {
-        setCoins = coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
-        nValueIn = AttachInputs(setCoins,txNew);
-    }
-    else
-    {
-        std::copy_if(
-            vCoins.begin(),vCoins.end(),
-            std::inserter(setCoins,setCoins.begin()),
-            [coinSelector](const COutput coin){ return coinSelector->isSelectable(coin);});
-        nValueIn = AttachInputs(setCoins,txNew);
-        txNew.vout[0].nValue = nValueIn;
-        coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
+    const bool sweepMode = sendMode == TransactionFeeMode::SWEEP_FUNDS;
+    std::set<COutput> setCoins =
+        (sweepMode)
+        ? SweepFundsCoinSelectionAlgorithm(*coinSelector).SelectCoins(txNew,vCoins,nFeeRet)
+        : coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
+    CAmount nValueIn = AttachInputs(setCoins,txNew);
 
-        if(!SubtractFeesFromOutputs(nFeeRet,txNew))
-        {
-            return {translate("Cannot subtract needed fees from outputs."),false};
-        }
-        totalValueToSend = txNew.GetValueOut();
-
-        if((totalValueToSend + nFeeRet) != nValueIn)
-        {
-            return {translate("Error in constructing subtracting fees for sweep-type transaction."),false};
-        }
-    }
-
-    CAmount totalValueToSendPlusFees = totalValueToSend + nFeeRet;
+    CAmount totalValueToSendPlusFees = (!sweepMode)? totalValueToSend + nFeeRet: nValueIn;
     if (setCoins.empty() || nValueIn < totalValueToSendPlusFees)
     {
         return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};
@@ -2218,6 +2239,12 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     {
     case TransactionFeeMode::RECEIVER_PAYS_FOR_TX_FEES:
         if(!SubtractFeesFromOutputs(nFeeRet,txNew,changeOutput.nValue))
+        {
+            return {translate("Cannot subtract needed fees from outputs."),false};
+        }
+        break;
+    case TransactionFeeMode::SWEEP_FUNDS:
+        if(!SweepInputsAndTakeFeesFromOutputs(nFeeRet,nValueIn,txNew))
         {
             return {translate("Cannot subtract needed fees from outputs."),false};
         }

@@ -2172,7 +2172,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
 {
     CAmount totalValueToSend = txNew.GetValueOut();
     CAmount nFeeRet = 0;
-    if(sendMode != TransactionFeeMode::SWEEP_FUNDS && !(totalValueToSend > 0))
+    if(sendMode != TransactionFeeMode::SWEEP_FUNDS && !(txNew.GetValueOut() > 0))
     {
         return {translate("Transaction amounts must be positive. Total output may not exceed limits."),false};
     }

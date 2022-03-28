@@ -2109,6 +2109,13 @@ static bool SubtractFeesFromOutputs(
     }
     return changeAmountTotal >= minimumValueForNonDust && txNew.GetValueOut() == (totalValueSentInitially - feesToBePaid);
 }
+static bool SubtractFeesFromOutputs(
+    const CAmount feesToBePaid,
+    CMutableTransaction& txNew)
+{
+    CAmount discardedChangeValueAsFees = priorityFeeCalculator.MinimumValueForNonDust();
+    return SubtractFeesFromOutputs(feesToBePaid,txNew,discardedChangeValueAsFees);
+}
 
 enum ChangeUseStatus
 {
@@ -2187,13 +2194,11 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
         nValueIn = AttachInputs(setCoins,txNew);
         txNew.vout[0].nValue = nValueIn;
         coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
-        CAmount discardedChangeValueAsFees = priorityFeeCalculator.MinimumValueForNonDust();
 
-        if(!SubtractFeesFromOutputs(nFeeRet,txNew,discardedChangeValueAsFees))
+        if(!SubtractFeesFromOutputs(nFeeRet,txNew))
         {
             return {translate("Cannot subtract needed fees from outputs."),false};
         }
-        nFeeRet = discardedChangeValueAsFees - priorityFeeCalculator.MinimumValueForNonDust();
         totalValueToSend = txNew.GetValueOut();
 
         if((totalValueToSend + nFeeRet) != nValueIn)

@@ -2109,13 +2109,7 @@ static bool SubtractFeesFromOutputs(
     }
     return changeAmountTotal >= minimumValueForNonDust && txNew.GetValueOut() == (totalValueSentInitially - feesToBePaid);
 }
-static bool SubtractFeesFromOutputs(
-    const CAmount feesToBePaid,
-    CMutableTransaction& txNew)
-{
-    CAmount discardedChangeValueAsFees = priorityFeeCalculator.MinimumValueForNonDust();
-    return SubtractFeesFromOutputs(feesToBePaid,txNew,discardedChangeValueAsFees);
-}
+
 static bool SweepInputsAndTakeFeesFromOutputs(
     const CAmount feesToBePaid,
     const CAmount totalInputs,
@@ -2150,25 +2144,6 @@ static ChangeUseStatus SetChangeOutput(
         AttachChangeOutput(changeOutput,txNew);
     }
     return changeOutputShouldBeUsed? ChangeUseStatus::USE_CHANGE_OUTPUT: ChangeUseStatus::ROLLED_CHANGE_INTO_FEES;
-}
-
-static bool RollChangeIntoOutputs(
-    CTxOut& changeOutput,
-    CMutableTransaction& txNew)
-{
-    for(CTxOut& output: txNew.vout)
-    {
-        if(!output.scriptPubKey.empty())
-        {
-            if(output.nValue + changeOutput.nValue >= priorityFeeCalculator.MinimumValueForNonDust(output))
-            {
-                output.nValue += changeOutput.nValue;
-                changeOutput.nValue = 0;
-                return true;
-            }
-        }
-    }
-    return false;
 }
 
 class SweepFundsCoinSelectionAlgorithm final: public I_CoinSelectionAlgorithm

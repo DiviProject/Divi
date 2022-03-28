@@ -352,11 +352,11 @@ static int computeProgress(int currentHeight,int startHeight,int endHeight)
     return std::max(1, std::min(99, progress));
 }
 
-bool CWallet::verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis)
+void CWallet::verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis)
 {
     LOCK2(cs_main,cs_wallet);
     const CBlockIndex* const startingBlockIndex = GetNextUnsycnedBlockIndexInMainChain(startFromGenesis);
-    if(!startingBlockIndex) return true;
+    if(!startingBlockIndex) return;
 
     BlockScanner blockScanner(blockReader, activeChain_,startingBlockIndex);
 
@@ -386,7 +386,6 @@ bool CWallet::verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool
     LogPrintf("%s...done\n",typeOfScanMessage);
 
     SetBestChain(activeChain_.GetLocator());
-    return true;
 }
 
 bool CWallet::LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey)

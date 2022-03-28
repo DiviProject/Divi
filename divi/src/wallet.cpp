@@ -2225,7 +2225,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     case TransactionFeeMode::SWEEP_FUNDS:
         if(!SweepInputsAndTakeFeesFromOutputs(nFeeRet,nValueIn,txNew))
         {
-            return {translate("Cannot subtract needed fees from outputs."),false};
+            return {translate("Cannot sweep inputs."),false};
         }
         break;
     default:

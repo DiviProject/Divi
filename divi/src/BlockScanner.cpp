@@ -33,7 +33,7 @@ bool BlockScanner::advanceToNextBlock()
     }
     else
     {
-        currentBlockIndex_ = activeChain_.Next(currentBlockIndex_);
+        currentBlockIndex_ = currentBlockIndex_? activeChain_.Next(currentBlockIndex_) : nullptr;
     }
     return readCurrentBlock();
 }

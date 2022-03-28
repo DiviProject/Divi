@@ -2208,6 +2208,10 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     {
         return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};
     }
+    else if(sweepMode && nValueIn < nFeeRet)
+    {
+        return {translate("Insufficient funds to to pay for tx fee for the requested coin selection algorithm."),false};
+    }
 
     CTxOut changeOutput = CreateChangeOutput(nValueIn,totalValueToSendPlusFees,reservekey);
     switch (sendMode)

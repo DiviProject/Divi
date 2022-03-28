@@ -2077,8 +2077,8 @@ static CAmount AttachInputs(
 
 static bool SubtractFeesFromOutputs(
     const CAmount feesToBePaid,
-    CAmount& changeAmountTotal,
-    CMutableTransaction& txNew)
+    CMutableTransaction& txNew,
+    CAmount& changeAmountTotal)
 {
     if(feesToBePaid < 1) return true;
     const CAmount totalValueSentInitially = txNew.GetValueOut();
@@ -2189,7 +2189,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
         coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
         CAmount discardedChangeValueAsFees = priorityFeeCalculator.MinimumValueForNonDust();
 
-        if(!SubtractFeesFromOutputs(nFeeRet,discardedChangeValueAsFees,txNew))
+        if(!SubtractFeesFromOutputs(nFeeRet,txNew,discardedChangeValueAsFees))
         {
             return {translate("Cannot subtract needed fees from outputs."),false};
         }
@@ -2212,7 +2212,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     switch (sendMode)
     {
     case TransactionFeeMode::RECEIVER_PAYS_FOR_TX_FEES:
-        if(!SubtractFeesFromOutputs(nFeeRet,changeOutput.nValue,txNew))
+        if(!SubtractFeesFromOutputs(nFeeRet,txNew,changeOutput.nValue))
         {
             return {translate("Cannot subtract needed fees from outputs."),false};
         }

@@ -2188,22 +2188,22 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     CReserveKey& reservekey,
     CWalletTx& wtxNew)
 {
-    CAmount totalValueToSend = txNew.GetValueOut();
+    const CAmount totalValueToSend = txNew.GetValueOut();
     CAmount nFeeRet = 0;
-    if(sendMode != TransactionFeeMode::SWEEP_FUNDS && !(txNew.GetValueOut() > 0))
+    if(sendMode != TransactionFeeMode::SWEEP_FUNDS && !(totalValueToSend > 0))
     {
         return {translate("Transaction amounts must be positive. Total output may not exceed limits."),false};
     }
     txNew.vin.clear();
     // Choose coins to use
     const bool sweepMode = sendMode == TransactionFeeMode::SWEEP_FUNDS;
-    std::set<COutput> setCoins =
+    const std::set<COutput> setCoins =
         (sweepMode)
         ? SweepFundsCoinSelectionAlgorithm(*coinSelector).SelectCoins(txNew,vCoins,nFeeRet)
         : coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
-    CAmount nValueIn = AttachInputs(setCoins,txNew);
+    const CAmount nValueIn = AttachInputs(setCoins,txNew);
 
-    CAmount totalValueToSendPlusFees = (!sweepMode)? totalValueToSend + nFeeRet: nValueIn;
+    const CAmount totalValueToSendPlusFees = (!sweepMode)? totalValueToSend + nFeeRet: nValueIn;
     if (setCoins.empty() || nValueIn < totalValueToSendPlusFees)
     {
         return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};

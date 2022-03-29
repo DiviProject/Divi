@@ -53,6 +53,8 @@ private:
     void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override {};
     void SetBestChain(const CBlockLocator& loc) override {};
     void UpdatedBlockTip(const CBlockIndex *pindex) override {};
+
+    void addSingleTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy);
 public:
     VaultManager(
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,

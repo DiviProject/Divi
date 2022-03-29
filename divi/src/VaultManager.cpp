@@ -142,9 +142,9 @@ bool VaultManager::isManagedUTXO(const CWalletTx& walletTransaction,const CTxOut
     return output.nValue >0 && isAllowedByDepositDescription && isManagedScript(output.scriptPubKey);
 }
 
-void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy)
+void VaultManager::addSingleTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy)
 {
-    LOCK(cs_vaultManager_);
+    AssertLockHeld(cs_vaultManager_);
     const bool blockIsNull = pblock==nullptr;
     const bool txIsWhiteListed = transactionIsWhitelisted(tx);
     const bool checkOutputs = txIsWhiteListed? false: (deposit || tx.IsCoinStake());
@@ -173,6 +173,12 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
             vaultManagerDB_.WriteTx(*walletTxAndRecordStatus.first);
         }
     }
+}
+
+void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy)
+{
+    LOCK(cs_vaultManager_);
+    addSingleTransaction(tx,pblock,deposit,scriptToFilterBy);
 }
 
 void VaultManager::addManagedScript(const CScript& script)

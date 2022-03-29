@@ -61,6 +61,7 @@ public:
         I_VaultManagerDatabase& vaultManagerDB);
     ~VaultManager();
 
+    void syncTransactions(const TransactionVector &tx, const CBlock *pblock);
     void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy = CScript());
     void addManagedScript(const CScript& script);
     void addWhiteListedScript(const CScript& script);

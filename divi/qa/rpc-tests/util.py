@@ -97,6 +97,9 @@ def initialize_datadir(dirname, n):
         f.write("rpcport="+str(rpc_port(n))+"\n")
     return datadir
 
+def drop_wallet(tmpdir,n):
+    os.remove(tmpdir + "/node"+str(n)+"/regtest/wallet.dat")
+
 def prune_datadir(tmpdir,n):
     os.remove(tmpdir + "/node"+str(n)+"/regtest/mncache.dat")
     os.remove(tmpdir + "/node"+str(n)+"/regtest/mnpayments.dat")

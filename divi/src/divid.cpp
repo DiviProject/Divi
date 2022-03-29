@@ -136,6 +136,10 @@ bool AppInit(int argc, char* argv[])
         }
 #endif
         settings.SoftSetBoolArg("-server", true);
+        if(settings.ParameterIsSet("-mocktime"))
+        {
+            SetMockTime(settings.GetArg("-mocktime",GetTime()));
+        }
 
         detectShutdownThread = new boost::thread(boost::bind(&DetectShutdownThread, &threadGroup));
         fRet = InitializeDivi(threadGroup);

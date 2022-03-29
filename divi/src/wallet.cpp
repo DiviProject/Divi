@@ -2697,11 +2697,13 @@ void CWallet::GenerateNewHDChain()
     CHDChain newHdChain;
 
     std::string strSeed = settings.GetArg("-hdseed", "not hex");
-
+    bool hdchainIsFromSeedRestore = false;
     if(settings.ParameterIsSet("-hdseed") && IsHex(strSeed)) {
         std::vector<unsigned char> vchSeed = ParseHex(strSeed);
         if (!newHdChain.SetSeed(SecureVector(vchSeed.begin(), vchSeed.end()), true))
             throw std::runtime_error(std::string(__func__) + ": SetSeed failed");
+
+        hdchainIsFromSeedRestore = true;
     }
     else {
         if (settings.ParameterIsSet("-hdseed") && !IsHex(strSeed))
@@ -2717,6 +2719,8 @@ void CWallet::GenerateNewHDChain()
 
         if (!newHdChain.SetMnemonic(vchMnemonic, vchMnemonicPassphrase, true))
             throw std::runtime_error(std::string(__func__) + ": SetMnemonic failed");
+
+        hdchainIsFromSeedRestore = !strMnemonic.empty();
     }
 
     if (!LoadHDChain(newHdChain, false))
@@ -2726,6 +2730,15 @@ void CWallet::GenerateNewHDChain()
     settings.ForceRemoveArg("-hdseed");
     settings.ForceRemoveArg("-mnemonic");
     settings.ForceRemoveArg("-mnemonicpassphrase");
+
+    if(hdchainIsFromSeedRestore)
+    {
+        LogPrintf("Requesting rescan due to seed restore...\n");
+        settings.SetParameter("-force_rescan","1");
+        assert(settings.GetBoolArg("-force_rescan",false));
+        settings.SetParameter("-rescan","1");
+        assert(settings.GetBoolArg("-rescan",false));
+    }
 }
 
 bool CWallet::LoadHDChain(const CHDChain& chain, bool memonly)

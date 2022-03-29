@@ -1505,7 +1505,6 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
 {
     {
         AssertLockHeld(cs_wallet);
-        if(vaultManager_) vaultManager_->addTransaction(tx,pblock,false);
         bool fExisted = GetWalletTx(tx.GetHash()) != nullptr;
         if (fExisted && !fUpdate) return false;
         if (fExisted || IsMine(tx) || DebitsFunds(tx)) {
@@ -1523,6 +1522,7 @@ void CWallet::AddTransactions(const TransactionVector& txs, const CBlock* pblock
 {
     AssertLockHeld(cs_main);
     AssertLockHeld(cs_wallet);
+    if(vaultManager_) vaultManager_->syncTransactions(txs,pblock);
     for(const CTransaction& tx: txs)
     {
         if (!AddToWalletIfInvolvingMe(tx, pblock, true,syncType))

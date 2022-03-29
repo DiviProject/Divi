@@ -2711,6 +2711,7 @@ void CWallet::GenerateNewHDChain()
 
         // NOTE: empty mnemonic means "generate a new one for me"
         std::string strMnemonic = settings.GetArg("-mnemonic", "");
+        if(strMnemonic.empty()) LogPrintf("Generating new seed for wallet...!\n");
         // NOTE: default mnemonic passphrase is an empty string
         std::string strMnemonicPassphrase = settings.GetArg("-mnemonicpassphrase", "");
 

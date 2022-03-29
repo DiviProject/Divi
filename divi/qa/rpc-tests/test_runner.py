@@ -109,6 +109,7 @@ BASE_SCRIPTS = [
     'proxy_test.py',
     'receivedby.py',
     'reindex.py',
+    'rescan.py',
     'PowToPosTransition.py',
     'rawtransactions.py',
     'rest.py',

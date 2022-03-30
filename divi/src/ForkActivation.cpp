@@ -17,7 +17,7 @@ extern Settings& settings;
 namespace
 {
 constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
-const std::set<Fork> manualOverrides = {Fork::CheckLockTimeVerify};
+const std::set<Fork> manualOverrides = {Fork::CheckLockTimeVerify,Fork::DeprecateMasternodes};
 /**
  * For forks that get activated at a certain block time, the associated
  * activation times.

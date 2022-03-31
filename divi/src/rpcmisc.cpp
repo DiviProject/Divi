@@ -1091,7 +1091,7 @@ Value getstakingstatus(const Array& params, bool fHelp)
     obj.push_back(Pair("staking status", nStaking));
 
     constexpr char stakeSplitSettingLookup[] = "-stakesplitthreshold";
-    CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,100000)* COIN);
+    CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,20000)* COIN);
     obj.push_back(Pair("stake split threshold",ValueFromAmount(stakeSplit) ));
     return obj;
 }

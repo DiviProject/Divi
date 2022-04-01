@@ -80,6 +80,7 @@ BASE_SCRIPTS = [
     'CheckLockTimeVerify.py',
     'CoinDBStats.py',
     'CorruptedCoinDb.py',
+    'StakingStatus.py',
     'StakingVaultFunding.py',
     'StakingVaultStaking.py',
     'StakingVaultDeactivation.py',

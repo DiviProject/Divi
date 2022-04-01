@@ -129,9 +129,13 @@ bool CheckHeightForRecentProofOfStakeGeneration(const int blockHeight)
 bool HasRecentlyAttemptedToGenerateProofOfStake()
 {
     const ChainstateManager::Reference chainstate;
-    const int currentChainHeight = chainstate->ActiveChain().Tip()->nHeight;
-    return CheckHeightForRecentProofOfStakeGeneration(currentChainHeight) ||
-        CheckHeightForRecentProofOfStakeGeneration(currentChainHeight - 1);
+    int currentChainHeight = chainstate->ActiveChain().Tip()->nHeight;
+    for(int offset =0 ; offset < 4; offset++ )
+    {
+        if(currentChainHeight - offset < 0) break;
+        if(CheckHeightForRecentProofOfStakeGeneration(currentChainHeight-offset)) return true;
+    }
+    return false;
 }
 
 // ppcoin: stake minter thread

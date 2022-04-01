@@ -43,7 +43,6 @@ class CoinMinter final: public I_CoinMinter
     mutable int64_t timeToWait_;
 
     bool hasMintableCoinForProofOfStake() const;
-    bool satisfiesMintingRequirements() const;
     bool limitStakingSpeed() const;
     bool nextBlockIsProofOfStake() const;
 

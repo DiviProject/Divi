@@ -61,7 +61,7 @@ public:
         I_StakingWallet& wallet,
         HashedBlockMap& mapHashedBlocks);
 
-    virtual bool CanMintCoins() override;
+    virtual bool canMintCoins() override;
     virtual void sleep(uint64_t milliseconds) const override;
     virtual void setMintingRequestStatus(bool newStatus) override;
     virtual bool mintingHasBeenRequested() const override;

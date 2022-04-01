@@ -13,7 +13,6 @@
 #include <BlockSigning.h>
 #include <I_BlockSubsidyProvider.h>
 #include <Logging.h>
-#include <MasternodeHelpers.h>
 #include <ThreadManagementHelpers.h>
 #include <reservekey.h>
 #include <script/standard.h>
@@ -84,7 +83,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
     const unsigned minimumChainTipTimestampForMinting = GetTime() - oneReorgWorthOfTimestampDrift;
 
     const CBlockIndex* chainTip = chain_.Tip();
-    bool chainTipIsSyncedEnough = chainTip? chainTip->nTime >= minimumChainTipTimestampForMinting: IsBlockchainSynced();
+    bool chainTipIsSyncedEnough = (chainTip && chainTip->nTime >= minimumChainTipTimestampForMinting) || mapHashedBlocks_.size() > 0u;
     NextBlockType blockType = ComputeNextBlockType(chainTip, chainParameters_.LAST_POW_BLOCK());
     bool stakingRequirementsAreMet =
         chainTipIsSyncedEnough &&

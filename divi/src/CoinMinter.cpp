@@ -77,7 +77,7 @@ bool CoinMinter::nextBlockIsProofOfStake() const
     return ComputeNextBlockType(chain_.Tip(), chainParameters_.LAST_POW_BLOCK()) == PROOF_OF_STAKE;
 }
 
-bool CoinMinter::CanMintCoins()
+bool CoinMinter::canMintCoins()
 {
     const unsigned oneReorgWorthOfTimestampDrift = 60*chainParameters_.MaxReorganizationDepth();
     const unsigned minimumChainTipTimestampForMinting = GetTime() - oneReorgWorthOfTimestampDrift;

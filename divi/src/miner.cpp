@@ -119,11 +119,20 @@ void MinterThread(I_CoinMinter& minter)
     }
 }
 
-bool HasRecentlyAttemptedToGenerateProofOfStake()
+bool CheckHeightForRecentProofOfStakeGeneration(const int blockHeight)
 {
     static const LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
+    constexpr int64_t fiveMinutes = 5*60;
+    const auto it = mapHashedBlocks.find(blockHeight);
+    return it != mapHashedBlocks.end() && GetTime() - it->second < fiveMinutes;
+}
+
+bool HasRecentlyAttemptedToGenerateProofOfStake()
+{
     const ChainstateManager::Reference chainstate;
-    return mapHashedBlocks.count(chainstate->ActiveChain().Tip()->nHeight) > 0 || mapHashedBlocks.count(chainstate->ActiveChain().Tip()->nHeight - 1) > 0;
+    const int currentChainHeight = chainstate->ActiveChain().Tip()->nHeight;
+    return CheckHeightForRecentProofOfStakeGeneration(currentChainHeight) ||
+        CheckHeightForRecentProofOfStakeGeneration(currentChainHeight - 1);
 }
 
 // ppcoin: stake minter thread

@@ -6,7 +6,7 @@
 class MockCoinMinter: public I_CoinMinter
 {
 public:
-    MOCK_METHOD0(CanMintCoins, bool());
+    MOCK_METHOD0(canMintCoins, bool());
     MOCK_CONST_METHOD1(sleep, void(uint64_t));
     MOCK_METHOD1(setMintingRequestStatus,void(bool newStatus));
     MOCK_CONST_METHOD0(mintingHasBeenRequested, bool());

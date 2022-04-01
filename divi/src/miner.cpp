@@ -81,7 +81,7 @@ void MintCoins(
 {
     while (minter.mintingHasBeenRequested())
     {
-        if (!minter.CanMintCoins())
+        if (!minter.canMintCoins())
         {
             minter.sleep(5000);
         }

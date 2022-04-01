@@ -42,7 +42,6 @@ std::unique_ptr<CoinMintingModule> coinMintingModule(nullptr);
 void InitializeCoinMintingModule(I_StakingWallet* pwallet)
 {
     static const CSporkManager& sporkManager = GetSporkManager();
-    static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
     static const CChainParams& chainParameters = Params();
     static const MasternodeModule& masternodeModule = GetMasternodeModule();
     static const I_PeerBlockNotifyService& peerNotification = GetPeerBlockNotifyService();

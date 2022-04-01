@@ -84,7 +84,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
     const unsigned minimumChainTipTimestampForMinting = GetTime() - oneReorgWorthOfTimestampDrift;
 
     const CBlockIndex* chainTip = chain_.Tip();
-    bool chainTipIsSyncedEnough = !(chainTip? chainTip->nTime < minimumChainTipTimestampForMinting: IsBlockchainSynced());
+    bool chainTipIsSyncedEnough = chainTip? chainTip->nTime >= minimumChainTipTimestampForMinting: IsBlockchainSynced();
     NextBlockType blockType = ComputeNextBlockType(chainTip, chainParameters_.LAST_POW_BLOCK());
     bool stakingRequirementsAreMet =
         chainTipIsSyncedEnough &&

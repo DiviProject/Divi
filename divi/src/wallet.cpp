@@ -335,7 +335,7 @@ const CBlockIndex* CWallet::GetNextUnsycnedBlockIndexInMainChain(bool syncFromGe
 {
     CBlockLocator locator;
     const bool forceSyncFromGenesis = settings.GetBoolArg("-force_rescan",false);
-    if( forceSyncFromGenesis || (!syncFromGenesis && (!fFileBacked || GetDatabaseBackend()->ReadBestBlock(locator)) ) ) syncFromGenesis = true;
+    if( forceSyncFromGenesis || (!syncFromGenesis && !(fFileBacked && GetDatabaseBackend()->ReadBestBlock(locator)) ) ) syncFromGenesis = true;
     const CBlockIndex* pindex = syncFromGenesis? activeChain_.Genesis():ApproximateFork(activeChain_,blockIndexByHash_, locator);
     const int64_t timestampOfFirstKey = getTimestampOfFistKey();
     while (!forceSyncFromGenesis && pindex && timestampOfFirstKey && (pindex->GetBlockTime() < (timestampOfFirstKey - 7200)))
@@ -2395,6 +2395,7 @@ DBErrors CWallet::LoadWallet()
     uiInterface.LoadWallet(this);
     if(nLoadWalletRet == DB_LOAD_OK_FIRST_RUN)
     {
+        LogPrintf("%s -- Setting the best chain for wallet to the active chain...\n",__func__);
         SetBestChain(activeChain_.GetLocator());
     }
     return nLoadWalletRet;

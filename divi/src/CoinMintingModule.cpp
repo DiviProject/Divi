@@ -12,6 +12,9 @@
 #include <ProofOfStakeModule.h>
 #include <MasternodeModule.h>
 
+namespace
+{
+
 I_BlockFactory* BlockFactorySelector(
     const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockTransactionCollector& blockTransactionCollector,
@@ -43,19 +46,28 @@ I_BlockFactory* BlockFactorySelector(
     assert(false);
 }
 
+} // anonymous namespace
+
+/** This is a simple wrapper around ChainstateManager::Reference, which allows
+ *  us to hold such a reference (with RAII life cycle) inside the
+ *  CoinMintingModule without having to include ChainstateManager.h
+ *  directly in CoinMintingModule.h.  */
+class CoinMintingModule::ChainstateManagerReference : public ChainstateManager::Reference
+{};
+
 CoinMintingModule::CoinMintingModule(
     const Settings& settings,
     CCriticalSection& mainCS,
     const CChainParams& chainParameters,
-    const ChainstateManager& chainstate,
     const MasternodeModule& masternodeModule,
     const CFeeRate& relayTxFeeCalculator,
     CTxMemPool& mempool,
     const I_PeerBlockNotifyService& peerNotifier,
     I_StakingWallet& wallet,
-    BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
     const CSporkManager& sporkManager
-    ): posModule_(new ProofOfStakeModule(chainParameters, chainstate.ActiveChain(), chainstate.GetBlockMap()))
+    ): mapHashedBlocks_()
+    , chainstate_(new ChainstateManagerReference())
+    , posModule_(new ProofOfStakeModule(chainParameters, (*chainstate_)->ActiveChain(), (*chainstate_)->GetBlockMap()))
     , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
         chainParameters,
@@ -64,38 +76,38 @@ CoinMintingModule::CoinMintingModule(
         blockSubsidyContainer_->blockSubsidiesProvider()))
     , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(
         settings,
-        &chainstate.CoinsTip(),
-        chainstate.ActiveChain(),
-        chainstate.GetBlockMap(),
+        &(*chainstate_)->CoinsTip(),
+        (*chainstate_)->ActiveChain(),
+        (*chainstate_)->GetBlockMap(),
         mempool,
         mainCS,
         relayTxFeeCalculator))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(
         settings,
         chainParameters,
-        chainstate.ActiveChain(),
-        chainstate.GetBlockMap(),
+        (*chainstate_)->ActiveChain(),
+        (*chainstate_)->GetBlockMap(),
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockIncentivesPopulator_,
         posModule_->proofOfStakeGenerator(),
         wallet,
-        hashedBlockTimestampsByHeight))
+        mapHashedBlocks_))
     , blockFactory_(
         BlockFactorySelector(
             blockSubsidyContainer_->blockSubsidiesProvider(),
             *blockTransactionCollector_,
             *coinstakeTransactionCreator_,
             settings,
-            chainstate.ActiveChain(),
+            (*chainstate_)->ActiveChain(),
             chainParameters))
     , coinMinter_( new CoinMinter(
-        chainstate.ActiveChain(),
+        (*chainstate_)->ActiveChain(),
         chainParameters,
         peerNotifier,
         masternodeModule.getMasternodeSynchronization(),
         *blockFactory_,
         wallet,
-        hashedBlockTimestampsByHeight))
+        mapHashedBlocks_))
 {
 }
 
@@ -118,4 +130,9 @@ I_BlockFactory& CoinMintingModule::blockFactory() const
 I_CoinMinter& CoinMintingModule::coinMinter() const
 {
     return *coinMinter_;
+}
+
+const CoinMintingModule::LastExtensionTimestampByBlockHeight& CoinMintingModule::GetBlockTimestampsByHeight() const
+{
+    return mapHashedBlocks_;
 }

@@ -21,8 +21,8 @@
 #include <ThreadManagementHelpers.h>
 #include <net.h>
 #include <chain.h>
-#include <map>
 #include <FeeAndPriorityCalculator.h>
+#include <sync.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -31,39 +31,42 @@ extern Settings& settings;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 
-typedef std::map<unsigned int, unsigned int> LastExtensionTimestampByBlockHeight;
-LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight()
+namespace
 {
-    static std::map<unsigned int, unsigned int> mapHashedBlocks;
-    return mapHashedBlocks;
-}
 
-std::unique_ptr<CoinMintingModule> coinMintingModule(nullptr);
+CCriticalSection cs_coinMintingModule;
+std::unique_ptr<CoinMintingModule> coinMintingModule;
+
+} // anonymous namespace
+
 void InitializeCoinMintingModule(I_StakingWallet* pwallet)
 {
-    static const CSporkManager& sporkManager = GetSporkManager();
-    static const CChainParams& chainParameters = Params();
-    static const MasternodeModule& masternodeModule = GetMasternodeModule();
-    static const I_PeerBlockNotifyService& peerNotification = GetPeerBlockNotifyService();
-    static const auto& chainstate = ChainstateManager::Get();
+    LOCK(cs_coinMintingModule);
+    assert(coinMintingModule == nullptr);
     coinMintingModule.reset(
         new CoinMintingModule(
             settings,
             cs_main,
-            chainParameters,
-            chainstate,
-            masternodeModule,
+            Params(),
+            GetMasternodeModule(),
             FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
             mempool,
-            peerNotification,
+            GetPeerBlockNotifyService(),
             *pwallet,
-            getLastExtensionTimestampByBlockHeight(),
-            sporkManager));
+            GetSporkManager()));
 
 }
+
+void DestructCoinMintingModule()
+{
+    LOCK(cs_coinMintingModule);
+    assert(coinMintingModule != nullptr);
+    coinMintingModule.reset();
+}
+
 const CoinMintingModule& GetCoinMintingModule()
 {
-    assert(static_cast<bool>(coinMintingModule));
+    assert(coinMintingModule != nullptr);
     return *coinMintingModule;
 }
 //////////////////////////////////////////////////////////////////////////////
@@ -120,7 +123,7 @@ void MinterThread(I_CoinMinter& minter)
 
 bool CheckHeightForRecentProofOfStakeGeneration(const int blockHeight)
 {
-    static const LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
+    const auto& mapHashedBlocks = GetCoinMintingModule().GetBlockTimestampsByHeight();
     constexpr int64_t fiveMinutes = 5*60;
     const auto it = mapHashedBlocks.find(blockHeight);
     return it != mapHashedBlocks.end() && GetTime() - it->second < fiveMinutes;
@@ -144,6 +147,9 @@ void ThreadCoinMinter()
     boost::this_thread::interruption_point();
     LogPrintf("ThreadCoinMinter started\n");
     try {
+        /* While the thread is running, we keep the mutex locked; this ensures
+           that the module will not be reset or destructed while in use.  */
+        LOCK(cs_coinMintingModule);
         const CoinMintingModule& mintingModule = GetCoinMintingModule();
         I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);

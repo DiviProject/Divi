@@ -6,10 +6,8 @@
 #include <boost/thread/recursive_mutex.hpp>
 class I_StakingWallet;
 class CChainParams;
-class ChainstateManager;
 class CNode;
 class CMasternodeSync;
-typedef std::map<unsigned int, unsigned int> BlockTimestampsByHeight;
 class I_BlockFactory;
 class CTxMemPool;
 class CCriticalSection;
@@ -29,6 +27,13 @@ class I_PeerBlockNotifyService;
 
 class CoinMintingModule
 {
+public:
+    using LastExtensionTimestampByBlockHeight = std::map<unsigned int, unsigned int>;
+
+private:
+    class ChainstateManagerReference;
+    LastExtensionTimestampByBlockHeight mapHashedBlocks_;
+    std::unique_ptr<const ChainstateManagerReference> chainstate_;
     std::unique_ptr<ProofOfStakeModule> posModule_;
     std::unique_ptr<SuperblockSubsidyContainer> blockSubsidyContainer_;
     std::unique_ptr<BlockIncentivesPopulator> blockIncentivesPopulator_;
@@ -41,18 +46,17 @@ public:
         const Settings& settings,
         CCriticalSection& mainCS,
         const CChainParams& chainParameters,
-        const ChainstateManager& chainstate,
         const MasternodeModule& masternodeModule,
         const CFeeRate& relayTxFeeCalculator,
         CTxMemPool& mempool,
         const I_PeerBlockNotifyService& peers,
         I_StakingWallet& wallet,
-        BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
         const CSporkManager& sporkManager);
     ~CoinMintingModule();
 
     I_BlockFactory& blockFactory() const;
     I_CoinMinter& coinMinter() const;
+    const LastExtensionTimestampByBlockHeight& GetBlockTimestampsByHeight() const;
 };
 
 #endif// COIN_MINTING_MODULE_H

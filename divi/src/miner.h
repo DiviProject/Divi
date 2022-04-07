@@ -20,6 +20,7 @@ class CoinMintingModule;
 struct CBlockTemplate;
 
 void InitializeCoinMintingModule(I_StakingWallet* pwallet);
+void DestructCoinMintingModule();
 const CoinMintingModule& GetCoinMintingModule();
 
 /** Run the miner threads */

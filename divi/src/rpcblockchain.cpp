@@ -696,9 +696,9 @@ Value reverseblocktransactions(const Array& params, bool fHelp)
     CValidationState state;
 
     {
-        auto& chainstate = ChainstateManager::Get();
+        ChainstateManager::Reference chainstate;
         LOCK(cs_main);
-        auto& blockMap = chainstate.GetBlockMap();
+        auto& blockMap = chainstate->GetBlockMap();
         const auto mit = blockMap.find(hash);
         if (mit == blockMap.end())
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");

@@ -1564,11 +1564,11 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex)
 
 CBlockIndex* AddToBlockIndex(const CBlock& block)
 {
-    auto& chainstate = ChainstateManager::Get();
-    auto& blockMap = chainstate.GetBlockMap();
+    ChainstateManager::Reference chainstate;
+    auto& blockMap = chainstate->GetBlockMap();
 
-    static const CSporkManager& sporkManager = GetSporkManager();
-    static BlockIndexLotteryUpdater lotteryUpdater(Params(), chainstate.ActiveChain(), sporkManager);
+    const auto& sporkManager = GetSporkManager();
+    const BlockIndexLotteryUpdater lotteryUpdater(Params(), chainstate->ActiveChain(), sporkManager);
     // Check for duplicate
     const uint256 hash = block.GetHash();
     const auto it = blockMap.find(hash);
@@ -1895,8 +1895,8 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 {
     AssertLockHeld(cs_main);
 
-    const auto& chainstate = ChainstateManager::Get();
-    const auto& blockMap = chainstate.GetBlockMap();
+    const ChainstateManager::Reference chainstate;
+    const auto& blockMap = chainstate->GetBlockMap();
 
     CBlockIndex*& pindex = *ppindex;
 
@@ -1923,8 +1923,8 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         }
     }
 
-    static ProofOfStakeModule posModule(Params(), chainstate.ActiveChain(), blockMap);
-    static const I_ProofOfStakeGenerator& posGenerator = posModule.proofOfStakeGenerator();
+    const ProofOfStakeModule posModule(Params(), chainstate->ActiveChain(), blockMap);
+    const I_ProofOfStakeGenerator& posGenerator = posModule.proofOfStakeGenerator();
 
     const uint256 blockHash = block.GetHash();
     if (blockHash != Params().HashGenesisBlock())

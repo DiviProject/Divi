@@ -40,15 +40,15 @@ Value getlotteryblockwinners(const Array& params, bool fHelp)
 
 
 
-    static const CChainParams& chainParameters = Params();
-    static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
-    static const auto& chainstate = ChainstateManager::Get();
-    static LotteryWinnersCalculator calculator(
-        chainParameters.GetLotteryBlockStartBlock(), chainstate.ActiveChain(), GetSporkManager(),subsidyCointainer.superblockHeightValidator());
+    const auto& chainParameters = Params();
+    const SuperblockSubsidyContainer subsidyCointainer(chainParameters);
+    const ChainstateManager::Reference chainstate;
+    const LotteryWinnersCalculator calculator(
+        chainParameters.GetLotteryBlockStartBlock(), chainstate->ActiveChain(), GetSporkManager(),subsidyCointainer.superblockHeightValidator());
     const CBlockIndex* chainTip = nullptr;
     {
         LOCK(cs_main);
-        chainTip = chainstate.ActiveChain().Tip();
+        chainTip = chainstate->ActiveChain().Tip();
         if(!chainTip) throw JSONRPCError(RPC_MISC_ERROR,"Could not acquire lock on chain tip.");
     }
     int blockHeight = (params.size()>0)? std::min(params[0].get_int(),chainTip->nHeight): chainTip->nHeight;

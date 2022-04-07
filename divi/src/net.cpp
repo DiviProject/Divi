@@ -1523,6 +1523,8 @@ bool StopNode()
         fAddressesInitialized = false;
     }
 
+    DestructCoinMintingModule();
+
     return true;
 }
 

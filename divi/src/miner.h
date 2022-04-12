@@ -13,8 +13,18 @@ class I_StakingWallet;
 class I_CoinMinter;
 class CoinMintingModule;
 class I_PeerBlockNotifyService;
+class CTxMemPool;
+class CCriticalSection;
+class Settings;
+class CFeeRate;
 
-void InitializeCoinMintingModule(const I_PeerBlockNotifyService& peerNotificationService, I_StakingWallet* pwallet);
+void InitializeCoinMintingModule(
+    const Settings& settings,
+    const I_PeerBlockNotifyService& peerNotificationService,
+    const CFeeRate& minimumRelayFeeRate,
+    CCriticalSection& mainCS,
+    CTxMemPool& mempool,
+    I_StakingWallet* pwallet);
 void DestructCoinMintingModule();
 const CoinMintingModule& GetCoinMintingModule();
 

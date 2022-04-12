@@ -16,20 +16,15 @@
 #include <I_CoinMinter.h>
 #include <Logging.h>
 #include <spork.h>
-#include <Settings.h>
 #include <coins.h>
 #include <ThreadManagementHelpers.h>
 #include <I_PeerBlockNotifyService.h>
 #include <chain.h>
-#include <FeeAndPriorityCalculator.h>
+#include <FeeRate.h>
 #include <sync.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
-
-extern Settings& settings;
-extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
 
 namespace
 {
@@ -39,7 +34,13 @@ std::unique_ptr<CoinMintingModule> coinMintingModule;
 
 } // anonymous namespace
 
-void InitializeCoinMintingModule(const I_PeerBlockNotifyService& peerNotificationService, I_StakingWallet* pwallet)
+void InitializeCoinMintingModule(
+    const Settings& settings,
+    const I_PeerBlockNotifyService& peerNotificationService,
+    const CFeeRate& minimumRelayFeeRate,
+    CCriticalSection& mainCS,
+    CTxMemPool& mempool,
+    I_StakingWallet* pwallet)
 {
     LOCK(cs_coinMintingModule);
     assert(coinMintingModule == nullptr);
@@ -48,13 +49,12 @@ void InitializeCoinMintingModule(const I_PeerBlockNotifyService& peerNotificatio
             settings,
             Params(),
             GetMasternodeModule(),
-            FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
+            minimumRelayFeeRate,
             peerNotificationService,
             GetSporkManager(),
-            cs_main,
+            mainCS,
             mempool,
             *pwallet));
-
 }
 
 void DestructCoinMintingModule()

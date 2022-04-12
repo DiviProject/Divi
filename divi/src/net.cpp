@@ -22,7 +22,6 @@
 #include "primitives/transaction.h"
 #include "ui_interface.h"
 #include <timeIntervalConstants.h>
-#include "wallet.h"
 #include "Settings.h"
 #include <main.h>
 #include <Logging.h>
@@ -1456,7 +1455,7 @@ void static Discover(boost::thread_group& threadGroup)
 #endif
 }
 
-void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet* pwalletMain)
+void StartNode(boost::thread_group& threadGroup, I_StakingWallet* pwalletMain)
 {
     uiInterface.InitMessage(translate("Loading addresses..."));
     // Load addresses for peers.dat
@@ -1501,7 +1500,7 @@ void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
 
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
-    InitializeCoinMintingModule(GetPeerBlockNotifyService(), static_cast<I_StakingWallet*>(pwalletMain));
+    InitializeCoinMintingModule(GetPeerBlockNotifyService(), pwalletMain);
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
     {

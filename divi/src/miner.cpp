@@ -46,14 +46,14 @@ void InitializeCoinMintingModule(const I_PeerBlockNotifyService& peerNotificatio
     coinMintingModule.reset(
         new CoinMintingModule(
             settings,
-            cs_main,
             Params(),
             GetMasternodeModule(),
             FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
-            mempool,
             peerNotificationService,
-            *pwallet,
-            GetSporkManager()));
+            GetSporkManager(),
+            cs_main,
+            mempool,
+            *pwallet));
 
 }
 

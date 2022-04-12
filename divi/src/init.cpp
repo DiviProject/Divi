@@ -1456,7 +1456,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         StartTorControl(threadGroup);
 
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
-    StartNode(threadGroup,fReindex,pwalletMain);
+    StartNode(threadGroup,pwalletMain);
 
     // ********************************************************* Step 12: finished
 

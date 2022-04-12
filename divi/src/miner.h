@@ -9,17 +9,12 @@
 #include <stdint.h>
 #include <map>
 
-class CBlock;
-class CBlockHeader;
-class CBlockIndex;
-class CScript;
 class I_StakingWallet;
 class I_CoinMinter;
 class CoinMintingModule;
+class I_PeerBlockNotifyService;
 
-struct CBlockTemplate;
-
-void InitializeCoinMintingModule(I_StakingWallet* pwallet);
+void InitializeCoinMintingModule(const I_PeerBlockNotifyService& peerNotificationService, I_StakingWallet* pwallet);
 void DestructCoinMintingModule();
 const CoinMintingModule& GetCoinMintingModule();
 

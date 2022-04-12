@@ -29,7 +29,6 @@
 #include <spentindex.h>
 #include <net.h>
 #include <obfuscation.h>
-#include <txmempool.h>
 #include <MasternodeModule.h>
 #include <masternode-sync.h>
 #include <MasternodeHelpers.h>
@@ -62,7 +61,6 @@ using namespace std;
 extern int64_t nLastCoinStakeSearchInterval;
 extern bool fAddressIndex;
 extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
 extern CWallet* pwalletMain;
 extern bool fSpentIndex;
 

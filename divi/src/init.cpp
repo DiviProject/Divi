@@ -26,6 +26,7 @@
 #include "main.h"
 #include "obfuscation.h"
 #include <WalletBackupFeatureContainer.h>
+#include <miner.h>
 #include "net.h"
 #include "rpcserver.h"
 #include "script/standard.h"
@@ -149,6 +150,21 @@ void InitializeWallet(std::string strWalletFile)
             cs_main));
     pwalletMain = new CWallet(strWalletFile, chain, blockMap, *confirmationsCalculator);
 #endif
+}
+
+void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* pwalletMain)
+{
+    // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
+    InitializeCoinMintingModule(settings,GetPeerBlockNotifyService(), feeAndPriorityCalculator.getMinimumRelayFeeRate(), cs_main, mempool, pwalletMain);
+    const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
+    if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
+    {
+        threadGroup.create_thread(
+            boost::bind(
+                &TraceThread<void (*)()>,
+                "coinmint",
+                &ThreadCoinMinter));
+    }
 }
 
 namespace
@@ -293,6 +309,7 @@ void PrepareShutdown()
     RenameThread("divi-shutoff");
     StopRPCThreads();
     StopNode();
+    DestructCoinMintingModule();
     InterruptTorControl();
     StopTorControl();
     SaveMasternodeDataToDisk();
@@ -1457,6 +1474,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
     StartNode(threadGroup,pwalletMain);
+    StartCoinMintingModule(threadGroup,pwalletMain);
 
     // ********************************************************* Step 12: finished
 

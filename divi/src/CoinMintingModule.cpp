@@ -57,14 +57,14 @@ class CoinMintingModule::ChainstateManagerReference : public ChainstateManager::
 
 CoinMintingModule::CoinMintingModule(
     const Settings& settings,
-    CCriticalSection& mainCS,
     const CChainParams& chainParameters,
     const MasternodeModule& masternodeModule,
     const CFeeRate& relayTxFeeCalculator,
-    CTxMemPool& mempool,
     const I_PeerBlockNotifyService& peerNotifier,
-    I_StakingWallet& wallet,
-    const CSporkManager& sporkManager
+    const CSporkManager& sporkManager,
+    CCriticalSection& mainCS,
+    CTxMemPool& mempool,
+    I_StakingWallet& wallet
     ): mapHashedBlocks_()
     , chainstate_(new ChainstateManagerReference())
     , posModule_(new ProofOfStakeModule(chainParameters, (*chainstate_)->ActiveChain(), (*chainstate_)->GetBlockMap()))

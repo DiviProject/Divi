@@ -44,14 +44,14 @@ private:
 public:
     CoinMintingModule(
         const Settings& settings,
-        CCriticalSection& mainCS,
         const CChainParams& chainParameters,
         const MasternodeModule& masternodeModule,
         const CFeeRate& relayTxFeeCalculator,
-        CTxMemPool& mempool,
         const I_PeerBlockNotifyService& peers,
-        I_StakingWallet& wallet,
-        const CSporkManager& sporkManager);
+        const CSporkManager& sporkManager,
+        CCriticalSection& mainCS,
+        CTxMemPool& mempool,
+        I_StakingWallet& wallet);
     ~CoinMintingModule();
 
     I_BlockFactory& blockFactory() const;

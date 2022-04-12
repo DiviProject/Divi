@@ -19,7 +19,7 @@
 #include <Settings.h>
 #include <coins.h>
 #include <ThreadManagementHelpers.h>
-#include <net.h>
+#include <I_PeerBlockNotifyService.h>
 #include <chain.h>
 #include <FeeAndPriorityCalculator.h>
 #include <sync.h>
@@ -39,7 +39,7 @@ std::unique_ptr<CoinMintingModule> coinMintingModule;
 
 } // anonymous namespace
 
-void InitializeCoinMintingModule(I_StakingWallet* pwallet)
+void InitializeCoinMintingModule(const I_PeerBlockNotifyService& peerNotificationService, I_StakingWallet* pwallet)
 {
     LOCK(cs_coinMintingModule);
     assert(coinMintingModule == nullptr);
@@ -51,7 +51,7 @@ void InitializeCoinMintingModule(I_StakingWallet* pwallet)
             GetMasternodeModule(),
             FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
             mempool,
-            GetPeerBlockNotifyService(),
+            peerNotificationService,
             *pwallet,
             GetSporkManager()));
 

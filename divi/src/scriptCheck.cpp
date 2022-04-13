@@ -11,14 +11,24 @@
 
 CScriptCheck::CScriptCheck() : ptxTo(0), nIn(0), nFlags(0), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
 
-CScriptCheck::CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn) : scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey),
-                                                                                                                                ptxTo(&txToIn), nIn(nInIn), nFlags(nFlagsIn), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
+CScriptCheck::CScriptCheck(
+    const CCoins& txFromIn,
+    const CTransaction& txToIn,
+    unsigned int nInIn,
+    unsigned int nFlagsIn
+    ) : scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey)
+    , amountHeld(txFromIn.vout[txToIn.vin[nInIn].prevout.n].nValue)
+    , ptxTo(&txToIn)
+    , nIn(nInIn)
+    , nFlags(nFlagsIn)
+    , error(SCRIPT_ERR_UNKNOWN_ERROR)
+{}
 
-    
 bool CScriptCheck::operator()()
 {
     const CScript& scriptSig = ptxTo->vin[nIn].scriptSig;
-    if (!VerifyScript(scriptSig, scriptPubKey, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn), &error)) {
+    const CTxOut previousOutput(amountHeld,scriptPubKey);
+    if (!VerifyScript(scriptSig, previousOutput, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn), &error)) {
         return ::error("CScriptCheck(): %s:%d VerifySignature failed: %s", ptxTo->ToStringShort(), nIn, ScriptErrorString(error));
     }
     return true;

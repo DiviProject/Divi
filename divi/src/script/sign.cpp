@@ -230,7 +230,7 @@ bool SignForOutput(const CKeyStore& keystore, const CTxOut& outputToSpend, CMuta
     }
 
     // Test solution
-    return VerifyScript(txin.scriptSig, fromPubKey, STANDARD_SCRIPT_VERIFY_FLAGS,
+    return VerifyScript(txin.scriptSig, outputToSpend, STANDARD_SCRIPT_VERIFY_FLAGS,
                         MutableTransactionSignatureChecker(&txTo, nIn));
 }
 

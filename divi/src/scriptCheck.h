@@ -8,6 +8,7 @@
 
 #include <script/script_error.h>
 #include <script/script.h>
+#include <amount.h>
 
 class CTransaction;
 class CCoins;
@@ -20,6 +21,7 @@ class CScriptCheck
 {
 private:
     CScript scriptPubKey;
+    CAmount amountHeld;
     const CTransaction* ptxTo;
     unsigned int nIn;
     unsigned int nFlags;

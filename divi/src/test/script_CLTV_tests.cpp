@@ -42,12 +42,12 @@ protected:
     const MutableTransactionSignatureChecker checker(&tx, 0);
 
     ScriptError err;
-    BOOST_CHECK_MESSAGE(VerifyScript(CScript(), script, flags, checker, &err),
+    BOOST_CHECK_MESSAGE(VerifyScript(CScript(), {0, script}, flags, checker, &err),
                         "Script failed without CLTV enabled");
     BOOST_CHECK_EQUAL(err, SCRIPT_ERR_OK);
 
     flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
-    BOOST_CHECK_MESSAGE(!VerifyScript(CScript(), script, flags, checker, &err),
+    BOOST_CHECK_MESSAGE(!VerifyScript(CScript(), {0, script}, flags, checker, &err),
                         "Script did not fail with CLTV enabled");
     BOOST_CHECK_EQUAL(err, expectedErr);
   }
@@ -60,12 +60,12 @@ protected:
     const MutableTransactionSignatureChecker checker(&tx, 0);
 
     ScriptError err;
-    BOOST_CHECK_MESSAGE(VerifyScript(CScript(), script, flags, checker, &err),
+    BOOST_CHECK_MESSAGE(VerifyScript(CScript(), {0, script}, flags, checker, &err),
                         "Valid script failed without CLTV enabled");
     BOOST_CHECK_EQUAL(err, SCRIPT_ERR_OK);
 
     flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
-    BOOST_CHECK_MESSAGE(VerifyScript(CScript(), script, flags, checker, &err),
+    BOOST_CHECK_MESSAGE(VerifyScript(CScript(), {0, script}, flags, checker, &err),
                         "Valid script failed with CLTV enabled");
     BOOST_CHECK_EQUAL(err, SCRIPT_ERR_OK);
   }

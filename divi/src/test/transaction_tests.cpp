@@ -164,7 +164,8 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                 BOOST_CHECK_MESSAGE(
                     VerifyScript(
                         tx.vin[i].scriptSig,
-                        mapprevOutScriptPubKeys[tx.vin[i].prevout],verify_flags,
+                        {0,mapprevOutScriptPubKeys[tx.vin[i].prevout]},
+                        verify_flags,
                         TransactionSignatureChecker(&tx, i),
                         &err
                     ),
@@ -247,8 +248,12 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
                 }
 
                 unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
-                fValid = VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
-                                      verify_flags, TransactionSignatureChecker(&tx, i), &err);
+                fValid = VerifyScript(
+                    tx.vin[i].scriptSig,
+                    {0,mapprevOutScriptPubKeys[tx.vin[i].prevout]},
+                    verify_flags,
+                    TransactionSignatureChecker(&tx, i),
+                    &err);
             }
 
             BOOST_CHECK_MESSAGE(!fValid, strTest);

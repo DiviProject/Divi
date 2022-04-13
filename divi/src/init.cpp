@@ -1114,13 +1114,13 @@ void LockUpMasternodeCollateral()
     }
 }
 
-void LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& errorMessage)
+bool LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& errorMessage)
 {
     settings.ForceRemoveArg("-masternodeprivkey");
     if(settings.ParameterIsSet("-masternode"))
     {
         std::string alias = settings.GetArg("-masternode","");
-        if(alias.empty()) return;
+        if(alias.empty()) return false;
         // Pull up keyID by alias and pass it downstream with keystore for lookup of the private key
         // Potential issues may arise in the event that a person reuses the same alias for a differnt
         // MN - should assert here that if duplicate potential addresses are found that it will pick
@@ -1137,9 +1137,12 @@ void LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& erro
                     LogPrintf("%s - Unable to find masternode key\n",__func__);
                 }
                 settings.SetParameter("-masternodeprivkey",CBitcoinSecret(mnkey).ToString());
+                return true;
             }
         }
+        return false;
     }
+    return true;
 }
 
 void SubmitUnconfirmedWalletTransactionsToMempool(const CWallet& wallet)
@@ -1444,7 +1447,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return false;
     }
     uiInterface.InitMessage(translate("Checking for active masternode..."));
-    LookupMasternodeKey(settings,pwalletMain,errorMessage);
+    if(!LookupMasternodeKey(settings,pwalletMain,errorMessage))
+    {
+        return InitError("Unknown key or missing label for masternode=<alias>. masternode=<alias> may be missing from configuration.");
+    }
     if(!InitializeMasternodeIfRequested(settings,fTxIndex,errorMessage))
     {
         return InitError(errorMessage);

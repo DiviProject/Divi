@@ -180,7 +180,7 @@ bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
     }
     else
     {
-        errorMessage = translate("You must specify a masternodeprivkey in the configuration. Please see documentation for help.");
+        errorMessage = translate("Unknown masternode key for masternode=<alias>.");
         return false;
     }
     return true;

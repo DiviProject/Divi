@@ -2177,7 +2177,6 @@ bool static RollforwardkCoinDB(
 }
 
 bool static ResolveConflictsBetweenCoinDBAndBlockDB(
-    const std::vector<std::pair<int, CBlockIndex*> >& heightSortedBlockIndices,
     const BlockMap& blockMap,
     const uint256& bestBlockHashInBlockDB,
     CCoinsViewCache& coinsTip,
@@ -2263,7 +2262,7 @@ bool static LoadBlockIndexState(string& strError)
     if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.GetBoolArg("-reindex", false))
     {
         uint256 expectedBestBlockHash;
-        if(!blockTree.ReadBestBlockHash(expectedBestBlockHash) || !ResolveConflictsBetweenCoinDBAndBlockDB(heightSortedBlockIndices,blockMap,expectedBestBlockHash,coinsTip,strError))
+        if(!blockTree.ReadBestBlockHash(expectedBestBlockHash) || !ResolveConflictsBetweenCoinDBAndBlockDB(blockMap,expectedBestBlockHash,coinsTip,strError))
         {
             return false;
         }

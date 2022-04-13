@@ -830,7 +830,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
         txin.scriptSig.clear();
         // Only sign SIGHASH_SINGLE if there's a corresponding output:
         if (!fHashSingle || (i < mergedTx.vout.size()))
-            SignForScripPubKey(keystore, prevPubKey, mergedTx, i, nHashType);
+            SignForOutput(keystore, coins->vout[txin.prevout.n], mergedTx, i, nHashType);
 
         // ... and merge in other signatures:
         BOOST_FOREACH (const CMutableTransaction& txv, txVariants) {

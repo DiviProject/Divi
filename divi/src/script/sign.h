@@ -13,13 +13,14 @@
 
 class CKeyStore;
 class CScript;
+class CTxOut;
 class CTransaction;
 
 struct CMutableTransaction;
 
 bool Sign1(const CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet);
 bool SignVaultSpend(const CKeyStore &keystore, const CScript& fromPubKey, CMutableTransaction& txTo, unsigned int nIn, bool spendAsOwner = false);
-bool SignForScripPubKey(const CKeyStore& keystore, const CScript& fromPubKey, CMutableTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
+bool SignForOutput(const CKeyStore& keystore, const CTxOut& outputToSpend, CMutableTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
 bool SignSignature(const CKeyStore& keystore, const CTransaction& txFrom, CMutableTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
 
 /**

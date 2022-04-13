@@ -195,10 +195,11 @@ static bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, c
     return false;
 }
 
-bool SignForScripPubKey(const CKeyStore &keystore, const CScript& fromPubKey, CMutableTransaction& txTo, unsigned int nIn, int nHashType)
+bool SignForOutput(const CKeyStore& keystore, const CTxOut& outputToSpend, CMutableTransaction& txTo, unsigned int nIn, int nHashType)
 {
     assert(nIn < txTo.vin.size());
     CTxIn& txin = txTo.vin[nIn];
+    const CScript& fromPubKey = outputToSpend.scriptPubKey;
 
     // Leave out the signature from the hash, since a signature can't sign itself.
     // The checksig op will also drop the signatures from its hash.
@@ -240,7 +241,7 @@ bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CMutab
     assert(txin.prevout.n < txFrom.vout.size());
     const CTxOut& txout = txFrom.vout[txin.prevout.n];
 
-    return SignForScripPubKey(keystore, txout.scriptPubKey, txTo, nIn, nHashType);
+    return SignForOutput(keystore, txout, txTo, nIn, nHashType);
 }
 
 static CScript PushAll(const std::vector<valtype>& values)

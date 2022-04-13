@@ -124,10 +124,11 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKHScriptsWhenKeyIsKnow
         CPubKey knownPubKey = knownKey.GetPubKey();
         CScript knownScript = GetScriptForDestination(knownPubKey.GetID());
         CMutableTransaction sampleTransaction = getSampleTransaction();
+        const CTxOut knownOutput(0,knownScript);
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForOutput(getKeyStore(), knownOutput, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
@@ -152,10 +153,11 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKScriptsWhenKeyIsKnown
         CPubKey knownPubKey = knownKey.GetPubKey();
         CScript knownScript = CScript() << ToByteVector(knownPubKey) << OP_CHECKSIG;
         CMutableTransaction sampleTransaction = getSampleTransaction();
+        const CTxOut knownOutput(0,knownScript);
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForOutput(getKeyStore(), knownOutput, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
@@ -177,10 +179,11 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForMultiSigScriptsWhenKeysAr
         addKeyToStoreByIndex(addedKeyIndex++);
         CScript knownScript = getMultisigScriptFromKeys(requiredKeys);
         CMutableTransaction sampleTransaction = getSampleTransaction();
+        const CTxOut knownOutput(0,knownScript);
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForOutput(getKeyStore(), knownOutput, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
@@ -202,10 +205,11 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForVaultScriptsWhenKeysAreKn
     {
         addKeyToStoreByIndex(keyIndex);
         CMutableTransaction sampleTransaction = getSampleTransaction();
+        const CTxOut knownOutput(0,knownScript);
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForOutput(getKeyStore(), knownOutput, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
@@ -238,10 +242,11 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2SHScriptsWhenScriptsAre
         addScriptToKeyStore(scriptAndP2SHScript.first);
         const CScript& knownP2SHScript = scriptAndP2SHScript.second;
         CMutableTransaction sampleTransaction = getSampleTransaction();
+        const CTxOut knownOutput(0,knownP2SHScript);
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownP2SHScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownP2SHScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForOutput(getKeyStore(), knownOutput, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
         BOOST_CHECK_MESSAGE(

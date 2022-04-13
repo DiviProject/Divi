@@ -42,6 +42,7 @@ static const unsigned int POS_SCRIPT_VERIFY_FLAGS = MANDATORY_SCRIPT_VERIFY_FLAG
  */
 static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS = POS_SCRIPT_VERIFY_FLAGS |
                                                          SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY |
+                                                         SCRIPT_VERIFY_LIMIT_TRANSFER |
                                                          SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS;
 
 /** For convenience, standard but not mandatory verify flags. */

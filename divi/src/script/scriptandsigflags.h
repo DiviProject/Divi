@@ -61,5 +61,10 @@ enum
     // OP_CHECKLOCKTIMEVERIFY, which compares a value in the script to
     // the transaction's nLockTime field.
     SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY = (1U << 9),
+
+    // Enables limits to spending to be placed on scripts: NOP8 gets replaced by
+    // OP__LIMIT_TRANSFER, which specifies a P2SH script at the matching index
+    // to retain a specific portion of funds (e.g. one-time allowances)
+    SCRIPT_VERIFY_LIMIT_TRANSFER = (1U << 10),
 };
 #endif //SCRIPT_AND_SIG_FLAGS_H

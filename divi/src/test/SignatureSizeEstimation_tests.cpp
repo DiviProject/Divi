@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKHScriptsWhenKeyIsKnow
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKScriptsWhenKeyIsKnown
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForMultiSigScriptsWhenKeysAr
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForVaultScriptsWhenKeysAreKn
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2SHScriptsWhenScriptsAre
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator().MaxBytesNeededForSigning(getKeyStore(),knownP2SHScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-        BOOST_CHECK(SignSignature(getKeyStore(), knownP2SHScript, sampleTransaction, 0, SIGHASH_ALL));
+        BOOST_CHECK(SignForScripPubKey(getKeyStore(), knownP2SHScript, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
         BOOST_CHECK_MESSAGE(

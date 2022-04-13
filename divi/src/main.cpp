@@ -2054,8 +2054,9 @@ static std::vector<std::pair<int, CBlockIndex*> > ComputeHeightSortedBlockIndice
     return heightSortedBlockIndices;
 }
 
-static void InitializeBlockIndexGlobalData(const std::vector<std::pair<int, CBlockIndex*> >& heightSortedBlockIndices)
+static void InitializeBlockIndexGlobalData(BlockMap& blockIndicesByHash)
 {
+    const std::vector<std::pair<int, CBlockIndex*> > heightSortedBlockIndices = ComputeHeightSortedBlockIndices(blockIndicesByHash);
     for(const PAIRTYPE(int, CBlockIndex*) & item: heightSortedBlockIndices)
     {
         CBlockIndex* pindex = item.second;
@@ -2240,8 +2241,7 @@ bool static LoadBlockIndexState(string& strError)
     boost::this_thread::interruption_point();
 
     // Calculate nChainWork
-    std::vector<std::pair<int, CBlockIndex*> > heightSortedBlockIndices = ComputeHeightSortedBlockIndices(blockMap);
-    InitializeBlockIndexGlobalData(heightSortedBlockIndices);
+    InitializeBlockIndexGlobalData(blockMap);
 
     // Load block file info
     BlockFileHelpers::ReadBlockFiles(blockTree);

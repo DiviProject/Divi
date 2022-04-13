@@ -46,6 +46,8 @@ CScript ParseScript(std::string s)
         mapOpNames["NOP2"] = opcodetype::OP_CHECKLOCKTIMEVERIFY;
         mapOpNames["OP_NOP10"] = opcodetype::OP_REQUIRE_COINSTAKE;
         mapOpNames["NOP10"] = opcodetype::OP_REQUIRE_COINSTAKE;
+        mapOpNames["OP_NOP9"] = opcodetype::OP_LIMIT_TRANSFER;
+        mapOpNames["NOP9"] = opcodetype::OP_LIMIT_TRANSFER;
 
         for (int op = 0; op <= OP_NOP10; op++) {
             // Allow OP_RESERVED to get into mapOpNames

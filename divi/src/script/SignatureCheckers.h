@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <amount.h>
 
 class CPubKey;
 class CScript;
@@ -35,6 +36,11 @@ public:
     {
         return false;
     }
+    /** Checks if the transaction satisfies amount transfer limits  */
+    virtual bool CheckTransferLimit(const CAmount& minimumChangeAmount, const CScript& changeScript) const
+    {
+        return false;
+    }
 
     virtual ~BaseSignatureChecker() {}
 
@@ -56,6 +62,7 @@ public:
     bool CheckSig(const std::vector<unsigned char>& scriptSig, const std::vector<unsigned char>& vchPubKey, const CScript& scriptCode) const override;
     bool CheckCoinstake() const override;
     bool CheckLockTime(const CScriptNum& nLockTime) const override;
+    bool CheckTransferLimit(const CAmount& minimumChangeAmount, const CScript& changeScript) const override;
 };
 
 class MutableTransactionSignatureChecker : public TransactionSignatureChecker

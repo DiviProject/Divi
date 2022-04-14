@@ -354,3 +354,11 @@ bool TransactionSignatureChecker::CheckLockTime(const CScriptNum& nLockTime) con
 
     return true;
 }
+
+bool TransactionSignatureChecker::CheckTransferLimit(const CAmount& minimumChangeAmount, const CScript& changeScript) const
+{
+    if(minimumChangeAmount < CAmount(1)) return true;
+    if(nIn >= txTo->vout.size()) return false;
+    const CTxOut& actualChangeOutput = txTo->vout[nIn];
+    return actualChangeOutput.scriptPubKey == changeScript && minimumChangeAmount <= actualChangeOutput.nValue;
+}

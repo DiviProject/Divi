@@ -907,6 +907,9 @@ const std::set<opcodetype> checkSigOpcodes =
 #define ApplyOperation(opname) \
     opname(stack,altstack,flags,conditionalManager)(opcode,serror)\
 
+#define ApplyOperationWithChecker(opname) \
+    opname(stack,altstack,flags,conditionalManager,checker)(opcode,serror)\
+
     static bool ApplyOpcode(
         StackType& stack,
         StackType& altstack,
@@ -918,11 +921,11 @@ const std::set<opcodetype> checkSigOpcodes =
     {
         if(flags & SCRIPT_REQUIRE_COINSTAKE && opcode == OP_REQUIRE_COINSTAKE)
         {
-            return CoinstakeCheckOp(stack,altstack,flags,conditionalManager,checker)(opcode,serror);
+            return ApplyOperationWithChecker(CoinstakeCheckOp);
         }
         if(flags & SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY && opcode == OP_CHECKLOCKTIMEVERIFY)
         {
-            return LockTimeCheckOp(stack, altstack, flags, conditionalManager, checker)(opcode, serror);
+            return ApplyOperationWithChecker(LockTimeCheckOp);
         }
         if(opcode == OP_META)
         {

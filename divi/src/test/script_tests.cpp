@@ -68,7 +68,7 @@ read_json(const std::string& jsondata)
 
 BOOST_AUTO_TEST_SUITE(script_tests)
 
-CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey)
+CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey, CAmount value = 0)
 {
     CMutableTransaction txCredit;
     txCredit.nVersion = 1;
@@ -79,7 +79,7 @@ CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey)
     txCredit.vin[0].scriptSig = CScript() << CScriptNum(0) << CScriptNum(0);
     txCredit.vin[0].nSequence = std::numeric_limits<unsigned int>::max();
     txCredit.vout[0].scriptPubKey = scriptPubKey;
-    txCredit.vout[0].nValue = 0;
+    txCredit.vout[0].nValue = value;
 
     return txCredit;
 }
@@ -105,6 +105,14 @@ CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMu
 
     return txSpend;
 }
+CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMutableTransaction& txCredit, const CScript& scriptToSendTo, const CAmount& amountToSend)
+{
+    CMutableTransaction txSpend = BuildSpendingTransaction(scriptSig,txCredit,false);
+    txSpend.vout[0] = CTxOut(amountToSend,scriptToSendTo);
+    return txSpend;
+}
+
+
 
 void DoTest(const CScript& scriptPubKey, const CScript& scriptSig, int flags, bool expect, const std::string& message, bool requireCoinStakeSpend = false)
 {
@@ -1274,6 +1282,57 @@ BOOST_AUTO_TEST_CASE(script_IsPushOnly_on_invalid_scripts)
     // the invalid push. Still, it doesn't hurt to test it explicitly.
     static const unsigned char direct[] = { 1 };
     BOOST_CHECK(!CScript(direct, direct+sizeof(direct)).IsPushOnly());
+}
+
+BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsWhenFlagIsEnabled)
+{
+    CKey key;
+    key.MakeNewKey(true);
+    CScript destinationScript =  CScript() << ToByteVector(key.GetPubKey()) << OP_CHECKSIG;
+    valtype serializedDestinationScript = ToByteVector(destinationScript); // Redeem
+    valtype destinationScriptHashBytes = ToByteVector(CScriptID(destinationScript));
+
+    CScript expectedP2shScript = CScript() << OP_HASH160 << destinationScriptHashBytes << OP_EQUAL;
+    CScript transferLimitedScript = CScript() << CAmount(100*COIN) << destinationScriptHashBytes << OP_LIMIT_TRANSFER;
+    CMutableTransaction txToSpendFrom = BuildCreditingTransaction(transferLimitedScript,150*COIN);
+
+    std::vector<std::pair<CMutableTransaction,bool>> txExpectations;
+    txExpectations.reserve(6);
+    // Incorrect change address
+    CMutableTransaction txWithinLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, CScript() << OP_TRUE, 50*COIN);
+    txExpectations.emplace_back(txWithinLimitButWrongChange,false);
+    CMutableTransaction txUnderLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, CScript() << OP_TRUE, 50*COIN + 1 );
+    txExpectations.emplace_back(txUnderLimitButWrongChange,false);
+    CMutableTransaction txOverLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, CScript() << OP_TRUE, 50*COIN - 1 );
+    txExpectations.emplace_back(txOverLimitButWrongChange,false);
+
+    // Correct change address but wrong amount
+    CMutableTransaction txWithinLimitButRightChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, expectedP2shScript, 50*COIN );
+    txExpectations.emplace_back(txWithinLimitButRightChange,true);
+    CMutableTransaction txUnderLimitButRightChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, expectedP2shScript, 50*COIN + 1 );
+    txExpectations.emplace_back(txUnderLimitButRightChange,true);
+    CMutableTransaction txOverLimitButRightChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, expectedP2shScript, 50*COIN - 1 );
+    txExpectations.emplace_back(txOverLimitButRightChange,false);
+
+    ScriptError err;
+    for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
+    {
+        std::vector<valtype> stack;
+        const CMutableTransaction& tx = expectation.first;
+        BOOST_CHECK_EQUAL_MESSAGE(
+            EvalScript(
+                stack,
+                txToSpendFrom.vout[0],
+                SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_LIMIT_TRANSFER,
+                MutableTransactionSignatureChecker(&tx, 0),
+                &err),
+            expectation.second,
+            "Failed to limit transfers as expected");
+        if(expectation.second)
+        {
+            BOOST_CHECK_EQUAL_MESSAGE(err,SCRIPT_ERR_OK,"Script evaluation terminated with errors!");
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

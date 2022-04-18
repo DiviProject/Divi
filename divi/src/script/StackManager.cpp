@@ -880,6 +880,54 @@ public:
 };
 
 
+struct LimitTransferCheckOp: public StackOperator
+{
+private:
+    const BaseSignatureChecker& checker_;
+    const CAmount& amountBeingSpent_;
+
+    inline CAmount computeChangeAmountMinimum(const valtype& transferLimitSerialized) const
+    {
+        constexpr CAmount zeroValue = CAmount(0);
+        return std::max(zeroValue, amountBeingSpent_ - std::max(zeroValue,CScriptNum(transferLimitSerialized,false,8u).getint64()));
+    }
+
+    inline CScript computeChangeScript(const valtype& p2sh20ByteHashSerialized) const
+    {
+        return CScript() << OP_HASH160 << p2sh20ByteHashSerialized << OP_EQUAL;
+    }
+public:
+    LimitTransferCheckOp(
+        StackType& stack,
+        StackType& altstack,
+        const unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager,
+        const BaseSignatureChecker& checker,
+        const CAmount& amountBeingSpent
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+        , checker_(checker)
+        , amountBeingSpent_(amountBeingSpent)
+    {}
+
+    bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        if (stack_.empty() || stack_.size() < 2)
+            return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+        const valtype& transferLimitSerialized = stackTop(1);
+        const valtype& p2sh20ByteHashSerialized = stackTop(0);
+        // Check for 8-byte limit transfer
+        if(transferLimitSerialized.size() > 8u) return Helpers::set_error(serror,SCRIPT_ERR_LIMIT_TRANSFER);
+        // Check for 20-byte address hash
+        if(p2sh20ByteHashSerialized.size() != 20u) return Helpers::set_error(serror,SCRIPT_ERR_LIMIT_TRANSFER);
+
+        return checker_.CheckTransferLimit(
+            computeChangeAmountMinimum(transferLimitSerialized),
+            computeChangeScript(p2sh20ByteHashSerialized)
+            );
+    }
+};
+
 namespace
 {
 const std::set<opcodetype> upgradableOpCodes =
@@ -916,9 +964,14 @@ const std::set<opcodetype> checkSigOpcodes =
         const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager,
         const BaseSignatureChecker& checker,
+        const CAmount& amountBeingSPent,
         opcodetype opcode,
         ScriptError* serror)
     {
+        if(flags & SCRIPT_VERIFY_LIMIT_TRANSFER && opcode == OP_LIMIT_TRANSFER)
+        {
+            return LimitTransferCheckOp(stack,altstack,flags,conditionalManager,checker,amountBeingSPent)(opcode,serror);
+        }
         if(flags & SCRIPT_REQUIRE_COINSTAKE && opcode == OP_REQUIRE_COINSTAKE)
         {
             return ApplyOperationWithChecker(CoinstakeCheckOp);
@@ -994,19 +1047,21 @@ const std::set<opcodetype> checkSigOpcodes =
 StackOperationManager::StackOperationManager(
     StackType& stack,
     const BaseSignatureChecker& checker,
+    const CAmount amountBeingSpent,
     unsigned flags
     ): stack_(stack)
     , altstack_()
     , flags_(flags)
     , conditionalManager_()
     , checker_(checker)
+    , amountBeingSpent_(amountBeingSpent)
     , opCount_(0u)
 {
 }
 
 bool StackOperationManager::ApplyOp(opcodetype opcode,ScriptError* serror)
 {
-    return ApplyOpcode(stack_,altstack_,flags_,conditionalManager_,checker_,opcode,serror);
+    return ApplyOpcode(stack_,altstack_,flags_,conditionalManager_,checker_,amountBeingSpent_, opcode,serror);
 }
 bool StackOperationManager::ApplyOp(opcodetype opcode,const CScript& scriptCode,ScriptError* serror)
 {

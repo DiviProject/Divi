@@ -72,8 +72,9 @@ bool static CheckMinimalPush(const valtype& data, opcodetype opcode) {
     return true;
 }
 
-bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& script, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror)
+bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CTxOut& amountAndScript, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror)
 {
+    const CScript& script = amountAndScript.scriptPubKey;
     CScript::const_iterator pc = script.begin();
     CScript::const_iterator pend = script.end();
     CScript::const_iterator pbegincodehash = script.begin();
@@ -152,6 +153,11 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
         return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
 
     return set_success(serror);
+}
+bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& script, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* error)
+{
+    const CTxOut previousOutputDummy(0,script);
+    return EvalScript(stack,previousOutputDummy,flags,checker,error);
 }
 
 bool VerifyScript(const CScript& scriptSig, const CTxOut& previousOutput, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror)

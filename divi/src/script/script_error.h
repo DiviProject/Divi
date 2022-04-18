@@ -47,6 +47,9 @@ typedef enum ScriptError_t
     /* BIP65 */
     SCRIPT_ERR_CLTV,
 
+    /* Transfer Limits */
+    SCRIPT_ERR_LIMIT_TRANSFER,
+
     /* softfork safeness */
     SCRIPT_ERR_DISCOURAGE_UPGRADABLE_NOPS,
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <map>
+#include <amount.h>
 
 
 class BaseSignatureChecker;
@@ -74,12 +75,14 @@ private:
     unsigned flags_;
     ConditionalScopeStackManager conditionalManager_;
     const BaseSignatureChecker& checker_;
+    const CAmount amountBeingSpent_;
     unsigned opCount_;
 
 public:
     StackOperationManager(
         StackType& stack,
         const BaseSignatureChecker& checker,
+        const CAmount amountBeingSpent,
         unsigned flags
         );
 

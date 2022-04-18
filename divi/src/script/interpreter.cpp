@@ -88,7 +88,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CTxOut& a
     }
 
     bool fRequireMinimal = (flags & SCRIPT_VERIFY_MINIMALDATA) != 0;
-    StackOperationManager stackManager(stack,checker,flags);
+    StackOperationManager stackManager(stack,checker,amountAndScript.nValue,flags);
 
     try
     {
@@ -175,7 +175,7 @@ bool VerifyScript(const CScript& scriptSig, const CTxOut& previousOutput, unsign
         return false;
     if (flags & SCRIPT_VERIFY_P2SH)
         stackCopy = stack;
-    if (!EvalScript(stack, scriptPubKey, flags, checker, serror))
+    if (!EvalScript(stack, previousOutput, flags, checker, serror))
         // serror is set
         return false;
     if (stack.empty())
@@ -199,8 +199,8 @@ bool VerifyScript(const CScript& scriptSig, const CTxOut& previousOutput, unsign
         const valtype& pubKeySerialized = stackCopy.back();
         CScript pubKey2(pubKeySerialized.begin(), pubKeySerialized.end());
         popstack(stackCopy);
-
-        if (!EvalScript(stackCopy, pubKey2, flags, checker, serror))
+        const CTxOut nestedP2SHPreviousOutput(previousOutput.nValue,pubKey2);
+        if (!EvalScript(stackCopy, nestedP2SHPreviousOutput, flags, checker, serror))
             // serror is set
             return false;
         if (stackCopy.empty())

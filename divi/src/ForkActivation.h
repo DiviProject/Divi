@@ -24,6 +24,7 @@ enum Fork
   UniformLotteryWinners,
   CheckLockTimeVerify,
   DeprecateMasternodes,
+  LimitTransferVerify,
 };
 
 /**

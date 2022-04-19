@@ -515,11 +515,9 @@ Value verifychain(const Array& params, bool fHelp)
         nCheckDepth = params[1].get_int();
 
     LOCK(cs_main);
-    const ActiveChainManager& chainManager = GetActiveChainManager();
-    const ChainstateManager::Reference chainstate;
+    ChainstateManager::Reference chainstate;
     const CVerifyDB dbVerifier(
-        chainManager,
-        chainstate->ActiveChain(),
+        *chainstate,
         uiInterface,
         nCoinCacheSize,
         &ShutdownRequested);

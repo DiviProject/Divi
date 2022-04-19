@@ -15,7 +15,6 @@
 #include "amount.h"
 #include <string>
 
-class ActiveChainManager;
 class CChain;
 class CBlock;
 struct CBlockLocator;
@@ -162,5 +161,4 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex, const bool up
 /** Remove invalidity status from a block and its descendants. */
 bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 
-const ActiveChainManager& GetActiveChainManager();
 #endif // BITCOIN_MAIN_H

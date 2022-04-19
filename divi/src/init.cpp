@@ -905,10 +905,8 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
         {
 
             LOCK(cs_main);
-            const ActiveChainManager& chainManager = GetActiveChainManager();
             const CVerifyDB dbVerifier(
-                chainManager,
-                chainstate->ActiveChain(),
+                *chainstate,
                 uiInterface,
                 nCoinCacheSize,
                 &ShutdownRequested);

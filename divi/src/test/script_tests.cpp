@@ -1288,8 +1288,7 @@ BOOST_AUTO_TEST_CASE(script_IsPushOnly_on_invalid_scripts)
 BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsOnlyWhenFlagIsEnabled)
 {
     CScript unexpectedChangeScript = RandomCScriptGenerator()(25);
-    CScript destinationScript =  RandomCScriptGenerator()(25);
-    valtype destinationScriptHashBytes = ToByteVector(CScriptID(destinationScript));
+    valtype destinationScriptHashBytes = ToByteVector(CScriptID(RandomCScriptGenerator()(25)));
 
     CScript expectedP2shScript = CScript() << OP_HASH160 << destinationScriptHashBytes << OP_EQUAL;
     CScript transferLimitedScript = CScript() << CAmount(100*COIN) << destinationScriptHashBytes << OP_LIMIT_TRANSFER;

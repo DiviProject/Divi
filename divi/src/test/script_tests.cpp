@@ -1355,4 +1355,75 @@ BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsOnlyWhenFlagIsEnabled)
     }
 }
 
+BOOST_AUTO_TEST_CASE(willLimitTransferOfFundsForP2SHScriptOnlyWhenFlagIsEnabled)
+{
+    CScript unexpectedChangeScript = RandomCScriptGenerator()(25);
+    valtype destinationScriptHashBytes = ToByteVector(CScriptID(RandomCScriptGenerator()(25)));
+
+    CScript expectedP2shScript = CScript() << OP_HASH160 << destinationScriptHashBytes << OP_EQUAL;
+    CScript transferLimitedScript = CScript() << CAmount(100*COIN) << destinationScriptHashBytes << OP_LIMIT_TRANSFER;
+
+    CScript transferLimitedP2SH = CScript() << OP_HASH160 << ToByteVector(CScriptID(transferLimitedScript)) << OP_EQUAL;
+    CMutableTransaction txToSpendFrom = BuildCreditingTransaction(transferLimitedP2SH, 150*COIN);
+
+    BOOST_CHECK_EQUAL_MESSAGE(expectedP2shScript == unexpectedChangeScript,false, "Test precondition not met. Unexpected script and expected script are equal");
+    std::vector<std::pair<CMutableTransaction,bool>> txExpectations;
+    txExpectations.reserve(6);
+    // Incorrect change address
+    CMutableTransaction txWithinLimitButWrongChange = BuildSpendingTransaction(CScript(), txToSpendFrom, unexpectedChangeScript, 50*COIN);
+    txExpectations.emplace_back(txWithinLimitButWrongChange,false);
+    CMutableTransaction txUnderLimitButWrongChange = BuildSpendingTransaction(CScript(), txToSpendFrom, unexpectedChangeScript, 50*COIN + 1 );
+    txExpectations.emplace_back(txUnderLimitButWrongChange,false);
+    CMutableTransaction txOverLimitButWrongChange = BuildSpendingTransaction(CScript(), txToSpendFrom, unexpectedChangeScript, 50*COIN - 1 );
+    txExpectations.emplace_back(txOverLimitButWrongChange,false);
+
+    // Correct change address but wrong amount
+    CMutableTransaction txWithinLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN );
+    txExpectations.emplace_back(txWithinLimitButRightChange,true);
+    CMutableTransaction txUnderLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN + 1 );
+    txExpectations.emplace_back(txUnderLimitButRightChange,true);
+    CMutableTransaction txOverLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN - 1 );
+    txExpectations.emplace_back(txOverLimitButRightChange,false);
+
+    const CScript scriptSig = CScript() << ToByteVector(transferLimitedScript);
+    {
+        ScriptError err;
+        for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
+        {
+            const CMutableTransaction& tx = expectation.first;
+            BOOST_CHECK_EQUAL_MESSAGE(
+                VerifyScript(
+                    scriptSig,
+                    txToSpendFrom.vout[0],
+                    SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_LIMIT_TRANSFER,
+                    MutableTransactionSignatureChecker(&tx, 0),
+                    &err),
+                expectation.second,
+                "Failed to limit transfers as expected");
+            if(expectation.second)
+            {
+                BOOST_CHECK_EQUAL_MESSAGE(err,SCRIPT_ERR_OK,"Script evaluation terminated with errors!");
+            }
+        }
+    }
+    {
+        // Without the flag there are no constraints
+        ScriptError err;
+        for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
+        {
+            const CMutableTransaction& tx = expectation.first;
+            BOOST_CHECK_EQUAL_MESSAGE(
+                VerifyScript(
+                    scriptSig,
+                    txToSpendFrom.vout[0],
+                    SCRIPT_VERIFY_P2SH,
+                    MutableTransactionSignatureChecker(&tx, 0),
+                    &err),
+                true,
+                "Failed to limit transfers as expected");
+            BOOST_CHECK(err==SCRIPT_ERR_OK);
+        }
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

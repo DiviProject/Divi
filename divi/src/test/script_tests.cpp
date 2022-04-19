@@ -1313,15 +1313,15 @@ BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsOnlyWhenFlagIsEnabled)
     CMutableTransaction txOverLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN - 1 );
     txExpectations.emplace_back(txOverLimitButRightChange,false);
 
+    const CScript scriptSig;
     {
         ScriptError err;
         for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
         {
-            std::vector<valtype> stack;
             const CMutableTransaction& tx = expectation.first;
             BOOST_CHECK_EQUAL_MESSAGE(
-                EvalScript(
-                    stack,
+                VerifyScript(
+                    scriptSig,
                     txToSpendFrom.vout[0],
                     SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_LIMIT_TRANSFER,
                     MutableTransactionSignatureChecker(&tx, 0),
@@ -1339,11 +1339,10 @@ BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsOnlyWhenFlagIsEnabled)
         ScriptError err;
         for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
         {
-            std::vector<valtype> stack;
             const CMutableTransaction& tx = expectation.first;
             BOOST_CHECK_EQUAL_MESSAGE(
-                EvalScript(
-                    stack,
+                VerifyScript(
+                    scriptSig,
                     txToSpendFrom.vout[0],
                     SCRIPT_VERIFY_P2SH,
                     MutableTransactionSignatureChecker(&tx, 0),

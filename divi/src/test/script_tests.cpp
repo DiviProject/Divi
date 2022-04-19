@@ -1285,7 +1285,7 @@ BOOST_AUTO_TEST_CASE(script_IsPushOnly_on_invalid_scripts)
     BOOST_CHECK(!CScript(direct, direct+sizeof(direct)).IsPushOnly());
 }
 
-BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsWhenFlagIsEnabled)
+BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsOnlyWhenFlagIsEnabled)
 {
     CScript unexpectedChangeScript = RandomCScriptGenerator()(25);
     CScript destinationScript =  RandomCScriptGenerator()(25);
@@ -1315,23 +1315,44 @@ BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsWhenFlagIsEnabled)
     CMutableTransaction txOverLimitButRightChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, expectedP2shScript, 50*COIN - 1 );
     txExpectations.emplace_back(txOverLimitButRightChange,false);
 
-    ScriptError err;
-    for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
     {
-        std::vector<valtype> stack;
-        const CMutableTransaction& tx = expectation.first;
-        BOOST_CHECK_EQUAL_MESSAGE(
-            EvalScript(
-                stack,
-                txToSpendFrom.vout[0],
-                SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_LIMIT_TRANSFER,
-                MutableTransactionSignatureChecker(&tx, 0),
-                &err),
-            expectation.second,
-            "Failed to limit transfers as expected");
-        if(expectation.second)
+        ScriptError err;
+        for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
         {
-            BOOST_CHECK_EQUAL_MESSAGE(err,SCRIPT_ERR_OK,"Script evaluation terminated with errors!");
+            std::vector<valtype> stack;
+            const CMutableTransaction& tx = expectation.first;
+            BOOST_CHECK_EQUAL_MESSAGE(
+                EvalScript(
+                    stack,
+                    txToSpendFrom.vout[0],
+                    SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_LIMIT_TRANSFER,
+                    MutableTransactionSignatureChecker(&tx, 0),
+                    &err),
+                expectation.second,
+                "Failed to limit transfers as expected");
+            if(expectation.second)
+            {
+                BOOST_CHECK_EQUAL_MESSAGE(err,SCRIPT_ERR_OK,"Script evaluation terminated with errors!");
+            }
+        }
+    }
+    {
+        // Without the flag there are no constraints
+        ScriptError err;
+        for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
+        {
+            std::vector<valtype> stack;
+            const CMutableTransaction& tx = expectation.first;
+            BOOST_CHECK_EQUAL_MESSAGE(
+                EvalScript(
+                    stack,
+                    txToSpendFrom.vout[0],
+                    SCRIPT_VERIFY_P2SH,
+                    MutableTransactionSignatureChecker(&tx, 0),
+                    &err),
+                true,
+                "Failed to limit transfers as expected");
+            BOOST_CHECK(err==SCRIPT_ERR_OK);
         }
     }
 }

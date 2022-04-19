@@ -27,6 +27,7 @@
 #include <utilstrencodings.h>
 #include <random.h>
 #include <script/SignatureCheckers.h>
+#include <RandomCScriptGenerator.h>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -1286,9 +1287,8 @@ BOOST_AUTO_TEST_CASE(script_IsPushOnly_on_invalid_scripts)
 
 BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsWhenFlagIsEnabled)
 {
-    CKey key;
-    key.MakeNewKey(true);
-    CScript destinationScript =  CScript() << ToByteVector(key.GetPubKey()) << OP_CHECKSIG;
+    CScript unexpectedChangeScript = RandomCScriptGenerator()(25);
+    CScript destinationScript =  RandomCScriptGenerator()(25);
     valtype serializedDestinationScript = ToByteVector(destinationScript); // Redeem
     valtype destinationScriptHashBytes = ToByteVector(CScriptID(destinationScript));
 
@@ -1296,14 +1296,15 @@ BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsWhenFlagIsEnabled)
     CScript transferLimitedScript = CScript() << CAmount(100*COIN) << destinationScriptHashBytes << OP_LIMIT_TRANSFER;
     CMutableTransaction txToSpendFrom = BuildCreditingTransaction(transferLimitedScript,150*COIN);
 
+    BOOST_CHECK_EQUAL_MESSAGE(expectedP2shScript == unexpectedChangeScript,false, "Test precondition not met. Unexpected script and expected script are equal");
     std::vector<std::pair<CMutableTransaction,bool>> txExpectations;
     txExpectations.reserve(6);
     // Incorrect change address
-    CMutableTransaction txWithinLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, CScript() << OP_TRUE, 50*COIN);
+    CMutableTransaction txWithinLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, unexpectedChangeScript, 50*COIN);
     txExpectations.emplace_back(txWithinLimitButWrongChange,false);
-    CMutableTransaction txUnderLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, CScript() << OP_TRUE, 50*COIN + 1 );
+    CMutableTransaction txUnderLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, unexpectedChangeScript, 50*COIN + 1 );
     txExpectations.emplace_back(txUnderLimitButWrongChange,false);
-    CMutableTransaction txOverLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, CScript() << OP_TRUE, 50*COIN - 1 );
+    CMutableTransaction txOverLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, unexpectedChangeScript, 50*COIN - 1 );
     txExpectations.emplace_back(txOverLimitButWrongChange,false);
 
     // Correct change address but wrong amount
@@ -1337,9 +1338,8 @@ BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsWhenFlagIsEnabled)
 
 BOOST_AUTO_TEST_CASE(scriptWillNotLimitTransferOfFundsWhenFlagIsDisabled)
 {
-    CKey key;
-    key.MakeNewKey(true);
-    CScript destinationScript =  CScript() << ToByteVector(key.GetPubKey()) << OP_CHECKSIG;
+    CScript unexpectedChangeScript = RandomCScriptGenerator()(25);
+    CScript destinationScript =  RandomCScriptGenerator()(25);
     valtype serializedDestinationScript = ToByteVector(destinationScript); // Redeem
     valtype destinationScriptHashBytes = ToByteVector(CScriptID(destinationScript));
 
@@ -1347,14 +1347,15 @@ BOOST_AUTO_TEST_CASE(scriptWillNotLimitTransferOfFundsWhenFlagIsDisabled)
     CScript transferLimitedScript = CScript() << CAmount(100*COIN) << destinationScriptHashBytes << OP_LIMIT_TRANSFER;
     CMutableTransaction txToSpendFrom = BuildCreditingTransaction(transferLimitedScript,150*COIN);
 
+    BOOST_CHECK_EQUAL_MESSAGE(expectedP2shScript == unexpectedChangeScript,false, "Test precondition not met. Unexpected script and expected script are equal");
     std::vector<std::pair<CMutableTransaction,bool>> txExpectations;
     txExpectations.reserve(6);
     // Incorrect change address
-    CMutableTransaction txWithinLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, CScript() << OP_TRUE, 50*COIN);
+    CMutableTransaction txWithinLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, unexpectedChangeScript, 50*COIN);
     txExpectations.emplace_back(txWithinLimitButWrongChange, true);
-    CMutableTransaction txUnderLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, CScript() << OP_TRUE, 50*COIN + 1 );
+    CMutableTransaction txUnderLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, unexpectedChangeScript, 50*COIN + 1 );
     txExpectations.emplace_back(txUnderLimitButWrongChange, true);
-    CMutableTransaction txOverLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, CScript() << OP_TRUE, 50*COIN - 1 );
+    CMutableTransaction txOverLimitButWrongChange = BuildSpendingTransaction(CScript(serializedDestinationScript), txToSpendFrom, unexpectedChangeScript, 50*COIN - 1 );
     txExpectations.emplace_back(txOverLimitButWrongChange, true);
 
     // Correct change address but wrong amount

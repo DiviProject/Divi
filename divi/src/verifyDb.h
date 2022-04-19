@@ -7,27 +7,33 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_VERIFYDB_H
 #define BITCOIN_VERIFYDB_H
+
+#include <memory>
+
 class CCoinsView;
 class CChain;
 class CClientUIInterface;
 class CCoinsViewCache;
 class CBlockTreeDB;
 class ActiveChainManager;
+class BlockDiskDataReader;
+class ChainstateManager;
+
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB
 {
 public:
     typedef bool (*ShutdownListener)();
 private:
-    const ActiveChainManager& chainManager_;
+    std::unique_ptr<const BlockDiskDataReader> blockDiskReader_;
+    std::unique_ptr<const ActiveChainManager> chainManager_;
     const CChain& activeChain_;
     CClientUIInterface& clientInterface_;
     const unsigned coinsCacheSize_;
     ShutdownListener shutdownListener_;
 public:
     CVerifyDB(
-        const ActiveChainManager& chainManager,
-        const CChain& activeChain,
+        ChainstateManager& chainstate,
         CClientUIInterface& clientInterface,
         const unsigned& coinsCacheSize,
         ShutdownListener shutdownListener);

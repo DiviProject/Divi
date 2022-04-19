@@ -19,19 +19,24 @@
 #include <ui_interface.h>
 #include <boost/thread.hpp>
 #include <ActiveChainManager.h>
+#include <BlockDiskAccessor.h>
+#include <ChainstateManager.h>
+
+extern bool fAddressIndex;
+extern bool fSpentIndex;
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
 bool CheckBlock(const CBlock& block, CValidationState& state);
 
 CVerifyDB::CVerifyDB(
-    const ActiveChainManager& chainManager,
-    const CChain& activeChain,
+    ChainstateManager& chainstate,
     CClientUIInterface& clientInterface,
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
-    ): chainManager_(chainManager)
-    , activeChain_(activeChain)
+    ): blockDiskReader_(new BlockDiskDataReader())
+    , chainManager_(new ActiveChainManager(fAddressIndex, fSpentIndex, &chainstate.BlockTree(), *blockDiskReader_))
+    , activeChain_(chainstate.ActiveChain())
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)
     , shutdownListener_(shutdownListener)
@@ -90,7 +95,7 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
             pindex == pindexState &&
             (coinCacheSize + coinsTipCacheSize) <= coinsCacheSize_)
         {
-            if (!chainManager_.DisconnectBlock(block, state, pindex, coins, true))
+            if (!chainManager_->DisconnectBlock(block, state, pindex, coins, true))
                 return error("VerifyDB() : *** inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             pindexState = pindex->pprev;
             nGoodTransactions += block.vtx.size();

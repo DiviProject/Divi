@@ -135,6 +135,9 @@ bool fSpentIndex = false;
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
 CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate());
 
+/** Global instance of the SporkManager, managed through startup/shutdown.  */
+std::unique_ptr<CSporkManager> sporkManagerInstance;
+
 void InitializeWallet(std::string strWalletFile)
 {
 #ifdef ENABLE_WALLET
@@ -320,7 +323,7 @@ void PrepareShutdown()
         FlushStateToDisk();
         //record that client took the proper shutdown procedure
         chainstateInstance->BlockTree().WriteFlag("shutdown", true);
-        GetSporkManager().DeallocateDatabase();
+        sporkManagerInstance.reset();
         chainstateInstance.reset ();
     }
 
@@ -1320,7 +1323,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     chainstateInstance.reset(new ChainstateManager (cacheSizes.first, cacheSizes.second, false, fReindex));
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
-    GetSporkManager().AllocateDatabase();
+    sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
 
     if(!SetSporkKey())
         return false;

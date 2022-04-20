@@ -10,6 +10,7 @@
 #include <init.h>
 #include "main.h"
 #include "net.h"
+#include "spork.h"
 #include "random.h"
 #include "txdb.h"
 #include "ui_interface.h"
@@ -33,6 +34,16 @@ extern void noui_connect();
 extern bool fCheckBlockIndex;
 extern int nScriptCheckThreads;
 
+/* The global spork-manager instance is normally managed by init.cpp (where it
+   is also defined).  For unit tests, we override the init sequence, and
+   manually construct / destruct the instance.  Since code depends on
+   GetSporkManager() to retrieve the global instance, need to actually use
+   that one rather than e.g. an instance in the test fixture.
+
+   FIXME: Get rid of GetSporkManager(), pass the instance everywhere, and then
+   make the instance part of the test class.  */
+extern std::unique_ptr<CSporkManager> sporkManagerInstance;
+
 struct TestingSetup {
     boost::filesystem::path pathTemp;
     boost::thread_group threadGroup;
@@ -54,6 +65,7 @@ struct TestingSetup {
         boost::filesystem::create_directories(pathTemp);
         settings.SetParameter("-datadir", pathTemp.string());
         chainstateInstance.reset(new ChainstateManager(1 << 20, 1 << 23, true, false));
+        sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
         InitBlockIndex();
 #ifdef ENABLE_WALLET
         InitializeWallet("wallet.dat");
@@ -74,6 +86,7 @@ struct TestingSetup {
 #ifdef ENABLE_WALLET
         DeallocateWallet();
 #endif
+        sporkManagerInstance.reset();
         chainstateInstance.reset();
 #ifdef ENABLE_WALLET
         bitdb_.Flush(true);

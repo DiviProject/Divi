@@ -61,15 +61,6 @@ static MasternodeTier GetMasternodeTierFromString(std::string str)
     return MasternodeTier::INVALID;
 }
 
-Value debug(const Array& params, bool fHelp)
-{
-	Object obj;
-
-	// obj.push_back(Pair("pubKey", pubkey.GetHash().GetHex()));
-
-	return obj;
-}
-
 Value allocatefunds(const Array& params, bool fHelp)
 {
 	if (fHelp || params.size() != 3)
@@ -332,16 +323,6 @@ Value setupmasternode(const Array& params, bool fHelp)
     return result;
 }
 
-Value getpoolinfo(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("Obfuscation, in general, and getpoolinfo, in particular, are deprecated!");
-}
-
-Value masternode(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("masternode is deprecated!  Use one of the newer, clearer commands.");
-}
-
 std::string nodeHelp(std::string indent = "")
 {
 	std::string ret = indent + "\"address\": \"address\",    (string) Masternode DIVI address\n";
@@ -451,11 +432,6 @@ Value getmasternodecount (const Array& params, bool fHelp)
     return obj;
 }
 
-Value masternodecurrent(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("masternodecurrent is deprecated!  masternode payments always rely upon votes");
-}
-
 Value broadcaststartmasternode(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 2 || params.size() < 1)
@@ -520,21 +496,6 @@ Value startmasternode(const Array& params, bool fHelp)
         return result;
     }
     return result;
-}
-
-Value createmasternodekey(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("createmasternodekey is deprecated!  A masternodekey is no longer necessary for setup.");
-}
-
-Value getmasternodeoutputs(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("getmasternodeoutputs is deprecated!  It has been replaced by fundmasternode for setup.");
-}
-
-Value listmasternodeconf(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("listmasternodeconf is deprecated!  It is not necessary for setup.");
 }
 
 Value getmasternodestatus (const Array& params, bool fHelp)
@@ -703,10 +664,6 @@ Value getmasternodewinners (const Array& params, bool fHelp)
     }
 
     return ret;
-}
-Value getmasternodescores(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("getmasternodescores is deprecated!  masternode payments always rely upon votes not current scores");
 }
 
 Value importmnbroadcast(const Array& params, bool fHelp)

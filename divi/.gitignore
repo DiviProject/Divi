@@ -1,6 +1,7 @@
 divi_testforknetdata
 divi_testnetdata
 divi_mainnetdata
+prior_binaries
 *.sublime-project
 *.sublime-workspace
 todo.txt

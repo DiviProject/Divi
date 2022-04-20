@@ -128,7 +128,7 @@ def _rpchost_to_args(rpchost):
         rv += ['-rpcport=' + rpcport]
     return rv
 
-def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
+def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None, daemon_name = None):
     """
     Start a divid and return RPC connection to it
     """
@@ -147,7 +147,8 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
         print("Using flags: '{}'".format(flags))
         for flag in flags:
             binary.append(flag)
-    binary.append(os.getenv("BITCOIND", "divid"))
+    divid_env_name = os.getenv("BITCOIND", "divid") if daemon_name is None else daemon_name
+    binary.append(divid_env_name)
     # By default, Divi checks if Tor is running on the system and if it is,
     # then the real Tor instance will be used as proxy for .onion
     # connections even if -proxy is set otherwise, and it will try to set up

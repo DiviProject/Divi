@@ -88,6 +88,8 @@ class BitcoinTestFramework(object):
                           help="Leave bitcoinds and test.* datadir on exit or error")
         parser.add_option("--srcdir", dest="srcdir", default="../../src",
                           help="Source directory containing bitcoind/bitcoin-cli (default: %default%)")
+        parser.add_option("--prior_binaries", dest="prior_binaries", default="../../prior_binaries",
+                    help="Source directory containing bitcoind/bitcoin-cli (default: %default%)")
         parser.add_option("--tmpdir", dest="tmpdir", default="",
                           help="Root directory for datadirs")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
@@ -111,7 +113,7 @@ class BitcoinTestFramework(object):
         import util
         util.portseed = self.options.port_seed
 
-        os.environ['PATH'] = self.options.srcdir+":"+os.environ['PATH']
+        os.environ['PATH'] = self.options.prior_binaries+":"+self.options.srcdir+":"+os.environ['PATH']
 
         check_json_precision()
 

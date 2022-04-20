@@ -237,46 +237,6 @@ Value dumphdinfo(const Array& params, bool fHelp)
     return obj;
 }
 
-Value bip38encrypt(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() != 2)
-        throw runtime_error(
-            "bip38encrypt \"diviaddress\"\n"
-            "\nEncrypts a private key corresponding to 'diviaddress'.\n"
-            "\nArguments:\n"
-            "1. \"diviaddress\"   (string, required) The divi address for the private key (you must hold the key already)\n"
-            "2. \"passphrase\"   (string, required) The passphrase you want the private key to be encrypted with - Valid special chars: !#$%&'()*+,-./:;<=>?`{|}~ \n"
-            "\nResult:\n"
-            "\"key\"                (string) The encrypted private key\n"
-            "\nExamples:\n");
-
-    EnsureWalletIsUnlocked();
-
-    string strAddress = params[0].get_str();
-    string strPassphrase = params[1].get_str();
-
-    CBitcoinAddress address;
-    if (!address.SetString(strAddress))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
-    CKeyID keyID;
-    if (!address.GetKeyID(keyID))
-        throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
-    CKey vchSecret;
-    if (!pwalletMain->GetKey(keyID, vchSecret))
-        throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + strAddress + " is not known");
-
-#if 0 // TODO: check this
-#endif
-    uint256 privKey;// = vchSecret.GetPrivKey_256();
-    string encryptedOut = BIP38_Encrypt(strAddress, strPassphrase, privKey, vchSecret.IsCompressed());
-
-    Object result;
-    result.push_back(Pair("Addess", strAddress));
-    result.push_back(Pair("Encrypted Key", encryptedOut));
-
-    return result;
-}
-
 static bool CheckIntegrity(const std::string strAddress,const std::string strKey,const std::string strPassphrase)
 {
     uint256 privKey;

@@ -274,8 +274,3 @@ Value prioritisetransaction(const Array& params, bool fHelp)
     mempool.PrioritiseTransaction(hash, nAmount);
     return true;
 }
-
-Value getblocktemplate(const Array& params, bool fHelp)
-{
-    throw std::runtime_error("getblocktemplate has been removed, use divid for staking");
-}

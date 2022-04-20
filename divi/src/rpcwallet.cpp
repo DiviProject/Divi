@@ -1363,13 +1363,6 @@ Value getunconfirmedbalance(const Array& params, bool fHelp)
     return ValueFromAmount(pwalletMain->GetUnconfirmedBalance());
 }
 
-
-Value movecmd(const Array& params, bool fHelp)
-{
-      throw std::runtime_error("move is deprecated!");
-}
-
-
 Value sendfrom(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 3 || params.size() > 5)

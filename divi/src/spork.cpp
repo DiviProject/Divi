@@ -38,6 +38,9 @@ extern bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 extern bool DisconnectBlocksAndReprocess(int blocks);
 extern bool ActivateBestChain(CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
 
+/* The spork manager global is defined in init.cpp.  */
+extern std::unique_ptr<CSporkManager> sporkManagerInstance;
+
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
 unsigned int nTransactionSizeMultiplier = 300;
 std::map<uint256, CSporkMessage> mapSporks;
@@ -63,8 +66,8 @@ void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRec
 }
 CSporkManager& GetSporkManager()
 {
-    static CSporkManager sporkManager(ChainstateManager::Get());
-    return sporkManager;
+    assert(sporkManagerInstance != nullptr);
+    return *sporkManagerInstance;
 }
 
 static std::map<int, std::string> mapSporkDefaults = {
@@ -188,26 +191,13 @@ bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
     return true;
 }
 
-CSporkManager::CSporkManager(const ChainstateManager& c
-    ): chainstate_(c), pSporkDB_()
-{
-}
+CSporkManager::CSporkManager(const ChainstateManager& chainstate)
+    : chainstate_(chainstate),
+      pSporkDB_(new CSporkDB(0, false, false))
+{}
 
-CSporkManager::~CSporkManager()
-{
-    pSporkDB_.reset();
-}
+CSporkManager::~CSporkManager() = default;
 
-
-void CSporkManager::AllocateDatabase()
-{
-    pSporkDB_.reset(new CSporkDB(0, false, false));
-}
-
-void CSporkManager::DeallocateDatabase()
-{
-    pSporkDB_.reset();
-}
 
 // DIVI: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::LoadSporksFromDB()

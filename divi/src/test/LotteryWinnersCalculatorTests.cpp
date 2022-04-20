@@ -25,7 +25,7 @@ private:
     std::unique_ptr<NiceMock<MockSuperblockHeightValidator>> heightValidator_;
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashes_;
     const ChainstateManager::Reference chainstate_;
-    CSporkManager sporkManager_;
+    const CSporkManager& sporkManager_;
     int nextLockTime_;
 public:
     const int lotteryStartBlock;
@@ -35,7 +35,7 @@ public:
         , lastUpdatedLotteryCoinstakesHeight_(0)
         , heightValidator_(new NiceMock<MockSuperblockHeightValidator>)
         , fakeBlockIndexWithHashes_()
-        , sporkManager_(*chainstate_)
+        , sporkManager_(GetSporkManager())
         , nextLockTime_(0)
         , lotteryStartBlock(100)
         , calculator_()

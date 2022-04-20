@@ -183,11 +183,9 @@ private:
 
 public:
 
-    CSporkManager(const ChainstateManager& c);
+    explicit CSporkManager(const ChainstateManager& chainstate);
     ~CSporkManager();
 
-    void AllocateDatabase();
-    void DeallocateDatabase();
     void LoadSporksFromDB();
     void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     bool UpdateSpork(int nSporkID, std::string strValue);

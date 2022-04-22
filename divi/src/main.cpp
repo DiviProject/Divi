@@ -3936,3 +3936,8 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
     }
     return true;
 }
+
+int GetBestHeaderBlockHeight()
+{
+    return pindexBestHeader? pindexBestHeader->nHeight: -1;
+}

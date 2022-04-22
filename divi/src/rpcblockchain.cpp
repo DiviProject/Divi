@@ -34,7 +34,6 @@ extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& en
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 extern bool ShutdownRequested();
 extern CTxMemPool mempool;
-extern const CBlockIndex* pindexBestHeader;
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
@@ -544,7 +543,7 @@ Value getblockchaininfo(const Array& params, bool fHelp)
     Object obj;
     obj.push_back(Pair("chain", Params().NetworkIDString()));
     obj.push_back(Pair("blocks", (int)chainstate->ActiveChain().Height()));
-    obj.push_back(Pair("headers", pindexBestHeader ? pindexBestHeader->nHeight : -1));
+    obj.push_back(Pair("headers", GetBestHeaderBlockHeight()));
     obj.push_back(Pair("bestblockhash", chainstate->ActiveChain().Tip()->GetBlockHash().GetHex()));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("verificationprogress", checkpointsVerifier.GuessVerificationProgress(chainstate->ActiveChain().Tip())));

@@ -405,9 +405,9 @@ static const CRPCCommand vRPCCommands[] =
         {"blockchain", "gettxout", &gettxout, true, false, false},
         {"blockchain", "gettxoutsetinfo", &gettxoutsetinfo, true, false, false},
         {"blockchain", "verifychain", &verifychain, true, false, false},
-        {"blockchain", "reverseblocktransactions", &reverseblocktransactions, true, true, false},
-        {"blockchain", "invalidateblock", &invalidateblock, true, true, false},
-        {"blockchain", "reconsiderblock", &reconsiderblock, true, true, false},
+        {"blockchain", "reverseblocktransactions", &reverseblocktransactions, true, false, false},
+        {"blockchain", "invalidateblock", &invalidateblock, true, false, false},
+        {"blockchain", "reconsiderblock", &reconsiderblock, true, false, false},
         {"getinvalid", "getinvalid", &getinvalid, true, true, false},
 
         /* Mining */
@@ -434,8 +434,8 @@ static const CRPCCommand vRPCCommands[] =
         {"util", "verifymessage", &verifymessage, true, false, false},
 
         /* Not shown in help */
-        {"hidden", "invalidateblock", &invalidateblock, true, true, false},
-        {"hidden", "reconsiderblock", &reconsiderblock, true, true, false},
+        {"hidden", "invalidateblock", &invalidateblock, true, false, false},
+        {"hidden", "reconsiderblock", &reconsiderblock, true, false, false},
         {"hidden", "setmocktime", &setmocktime, true, false, false},
 
         /* Divi features */
@@ -1106,26 +1106,40 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
         Value result;
         {
             if (pcmd->threadSafe)
+            {
                 result = pcmd->actor(params, false);
+            }
 #ifdef ENABLE_WALLET
-            else if (!pwalletMain) {
+            else if (!pwalletMain)
+            {
+                assert(!pcmd->reqWallet); // Implied by above condition failing on wallet
                 LOCK(cs_main);
                 result = pcmd->actor(params, false);
             } else {
+                // Not threadsafe and may or may not require
                 while (true) {
                     TRY_LOCK(cs_main, lockMain);
                     if (!lockMain) {
                         MilliSleep(50);
                         continue;
                     }
-                    while (true) {
-                        TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
-                        if (!lockMain) {
-                            MilliSleep(50);
-                            continue;
-                        }
+                    else if(!pcmd->reqWallet)
+                    {
                         result = pcmd->actor(params, false);
                         break;
+                    }
+                    else
+                    {
+                        while (true)
+                        {
+                            TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
+                            if (!lockMain) {
+                                MilliSleep(50);
+                                continue;
+                            }
+                            result = pcmd->actor(params, false);
+                            break;
+                        }
                     }
                     break;
                 }

@@ -352,7 +352,7 @@ Value help(const Array& params, bool fHelp)
     if (params.size() > 0)
         strCommand = params[0].get_str();
 
-    return tableRPC.help(strCommand);
+    return CRPCTable::getRPCTable().help(strCommand);
 }
 
 
@@ -963,7 +963,7 @@ static Object JSONRPCExecOne(const Value& req)
     try {
         jreq.parse(req);
 
-        Value result = tableRPC.execute(jreq.strMethod, jreq.params);
+        Value result = CRPCTable::getRPCTable().execute(jreq.strMethod, jreq.params);
         rpc_result = JSONRPCReplyObj(result, Value::null, jreq.id);
     } catch (Object& objError) {
         rpc_result = JSONRPCReplyObj(Value::null, objError, jreq.id);
@@ -1026,7 +1026,7 @@ static bool HTTPReq_JSONRPC(AcceptedConnection* conn,
         if (valRequest.type() == obj_type) {
             jreq.parse(valRequest);
 
-            Value result = tableRPC.execute(jreq.strMethod, jreq.params);
+            Value result = CRPCTable::getRPCTable().execute(jreq.strMethod, jreq.params);
 
             // Send reply
             strReply = JSONRPCReply(result, Value::null, jreq.id);
@@ -1087,7 +1087,7 @@ void ServiceConnection(AcceptedConnection* conn)
 json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_spirit::Array& params) const
 {
     // Find method
-    const CRPCCommand* pcmd = tableRPC[strMethod];
+    const CRPCCommand* pcmd = CRPCTable::getRPCTable()[strMethod];
     if (!pcmd)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found");
 #ifdef ENABLE_WALLET
@@ -1165,8 +1165,6 @@ std::string HelpExampleRpc(string methodname, string args)
            "\"method\": \"" +
            methodname + "\", \"params\": [" + args + "] }' -H 'content-type: text/plain;' http://127.0.0.1:51473/\n";
 }
-
-const CRPCTable tableRPC;
 
 void RPCDiscardRunLater(const string &name)
 {

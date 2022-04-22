@@ -7,8 +7,8 @@
 #ifndef BITCOIN_RPCSERVER_H
 #define BITCOIN_RPCSERVER_H
 
+#include <boost/asio.hpp>
 #include <amount.h>
-#include "rpcprotocol.h"
 #include "uint256.h"
 
 #include <list>
@@ -82,7 +82,7 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
 void RPCDiscardRunLater(const std::string &name);
 
 //! Convert boost::asio address to CNetAddr
-extern CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address);
+CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address);
 
 typedef json_spirit::Value (*rpcfn_type)(const json_spirit::Array& params, bool fHelp);
 

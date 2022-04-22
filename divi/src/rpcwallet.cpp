@@ -11,6 +11,7 @@
 #include <chain.h>
 #include <ChainstateManager.h>
 #include "init.h"
+#include <rpcprotocol.h>
 #include "rpcserver.h"
 #include "timedata.h"
 #include "Logging.h"

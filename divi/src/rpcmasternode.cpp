@@ -12,6 +12,7 @@
 #include "activemasternode.h"
 #include "masternodeman.h"
 #include "obfuscation.h"
+#include <rpcprotocol.h>
 #include "rpcserver.h"
 #include "utilmoneystr.h"
 #include "script/standard.h"

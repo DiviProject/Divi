@@ -8,6 +8,7 @@
 #include "base58.h"
 #include "clientversion.h"
 #include "init.h"
+#include <rpcprotocol.h>
 #include "rpcserver.h"
 #include "spork.h"
 #include "timedata.h"

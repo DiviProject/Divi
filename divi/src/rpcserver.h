@@ -104,9 +104,9 @@ class CRPCTable
 {
 private:
     std::map<std::string, const CRPCCommand*> mapCommands;
+    CRPCTable();
 
 public:
-    CRPCTable();
     const CRPCCommand* operator[](std::string name) const;
     std::string help(std::string name) const;
 
@@ -124,9 +124,12 @@ public:
     * @returns List of registered commands.
     */
     std::vector<std::string> listCommands() const;
+    inline static const CRPCTable& getRPCTable()
+    {
+        static const CRPCTable rpcTable;
+        return rpcTable;
+    }
 };
-
-extern const CRPCTable tableRPC;
 
 /**
  * Utilities: convert hex-encoded Values

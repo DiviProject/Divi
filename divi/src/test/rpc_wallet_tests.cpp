@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(rpc_addmultisig)
 {
     LOCK(pwalletMain->cs_wallet);
 
-    rpcfn_type addmultisig = tableRPC["addmultisigaddress"]->actor;
+    rpcfn_type addmultisig = CRPCTable::getRPCTable()["addmultisigaddress"]->actor;
 
     // old, 65-byte-long:
     const char address1Hex[] = "041431A18C7039660CD9E3612A2A47DC53B69CB38EA4AD743B7DF8245FD0438F8E7270415F1085B9DC4D7DA367C69F1245E27EE5552A481D6854184C80F0BB8456";

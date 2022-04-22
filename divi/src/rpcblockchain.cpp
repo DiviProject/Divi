@@ -33,7 +33,6 @@ using namespace std;
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 extern bool ShutdownRequested();
-extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern const CBlockIndex* pindexBestHeader;
 
@@ -511,7 +510,6 @@ Value verifychain(const Array& params, bool fHelp)
     if (params.size() > 0)
         nCheckDepth = params[1].get_int();
 
-    LOCK(cs_main);
     ChainstateManager::Reference chainstate;
     const CVerifyDB dbVerifier(
         *chainstate,
@@ -692,7 +690,6 @@ Value reverseblocktransactions(const Array& params, bool fHelp)
 
     {
         ChainstateManager::Reference chainstate;
-        LOCK(cs_main);
         auto& blockMap = chainstate->GetBlockMap();
         const auto mit = blockMap.find(hash);
         if (mit == blockMap.end())
@@ -728,7 +725,6 @@ Value invalidateblock(const Array& params, bool fHelp)
 
     {
         ChainstateManager::Reference chainstate;
-        LOCK(cs_main);
         auto& blockMap = chainstate->GetBlockMap();
         const auto mit = blockMap.find(hash);
         if (mit == blockMap.end())
@@ -768,7 +764,6 @@ Value reconsiderblock(const Array& params, bool fHelp)
 
     {
         ChainstateManager::Reference chainstate;
-        LOCK(cs_main);
         auto& blockMap = chainstate->GetBlockMap();
         const auto mit = blockMap.find(hash);
         if (mit == blockMap.end())

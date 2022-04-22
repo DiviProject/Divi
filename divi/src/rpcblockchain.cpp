@@ -33,7 +33,6 @@ using namespace std;
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 extern bool ShutdownRequested();
-extern bool fAddressIndex;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern const CBlockIndex* pindexBestHeader;

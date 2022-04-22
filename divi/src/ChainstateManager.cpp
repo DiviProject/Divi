@@ -57,7 +57,7 @@ bool CCoinsViewErrorCatcher::GetCoins(const uint256& txid, CCoins& coins) const
 
 } // anonymous namespace
 
-ChainstateManager::ChainstateManager (const size_t blockTreeCache, const size_t coinDbCache,
+ChainstateManager::ChainstateManager (const size_t blockTreeCache, const size_t coinDbCache,size_t viewCacheSize,
                                       const bool fMemory, const bool fWipe)
   : blockMap(new BlockMap ()),
     activeChain(new CChain ()),
@@ -65,6 +65,7 @@ ChainstateManager::ChainstateManager (const size_t blockTreeCache, const size_t 
     coinsDbView(new CCoinsViewDB (*blockMap, coinDbCache, fMemory, fWipe)),
     coinsCatcher(new CCoinsViewErrorCatcher (coinsDbView.get ())),
     coinsTip(new CCoinsViewCache (coinsCatcher.get ())),
+    viewCacheSize_(viewCacheSize),
     refs(0)
 {
   LOCK (instanceLock);

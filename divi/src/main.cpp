@@ -103,7 +103,6 @@ bool fReindex = false;
 bool fTxIndex = true;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
-unsigned int nCoinCacheSize = 5000;
 
 extern bool fAddressIndex;
 extern bool fSpentIndex;
@@ -1046,7 +1045,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
     static int64_t nLastWrite = 0;
     try {
         if ((mode == FLUSH_STATE_ALWAYS) ||
-            ((mode == FLUSH_STATE_PERIODIC || mode == FLUSH_STATE_IF_NEEDED) && coinsTip.GetCacheSize() > nCoinCacheSize) ||
+            ((mode == FLUSH_STATE_PERIODIC || mode == FLUSH_STATE_IF_NEEDED) && coinsTip.GetCacheSize() > chainstate->GetNominalViewCacheSize() ) ||
             (mode == FLUSH_STATE_PERIODIC && GetTimeMicros() > nLastWrite + DATABASE_WRITE_INTERVAL * 1000000))
         {
             // Typical CCoins structures on disk are around 100 bytes in size.

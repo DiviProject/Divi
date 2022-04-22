@@ -87,7 +87,6 @@ extern bool fReindex;
 extern bool fImporting;
 extern bool fCheckBlockIndex;
 extern int nScriptCheckThreads;
-extern int nCoinCacheSize;
 extern bool fTxIndex;
 extern bool fVerifyingBlocks;
 extern bool fLiteMode;
@@ -831,11 +830,29 @@ void CreateHardlinksForBlocks()
     }
 }
 
-std::pair<size_t,size_t> CalculateDBCacheSizes()
+struct CoinCacheSizes
 {
-    size_t nTotalCache = (settings.GetArg("-dbcache", DEFAULT_DB_CACHE_SIZE) << 20);
-    size_t nBlockTreeDBCache = 0;
-    size_t nCoinDBCache = 0;
+    size_t nTotalCache;
+    size_t nBlockTreeDBCache;
+    size_t nCoinDBCache;
+    unsigned int nCoinCacheSize;
+    CoinCacheSizes(
+        ): nTotalCache(settings.GetArg("-dbcache", DEFAULT_DB_CACHE_SIZE) << 20)
+        , nBlockTreeDBCache(0)
+        , nCoinDBCache(0)
+        , nCoinCacheSize(5000)
+    {
+    }
+};
+
+CoinCacheSizes CalculateDBCacheSizes()
+{
+    CoinCacheSizes cacheSizes;
+    size_t& nTotalCache = cacheSizes.nTotalCache;
+    size_t& nBlockTreeDBCache = cacheSizes.nBlockTreeDBCache;
+    size_t& nCoinDBCache = cacheSizes.nCoinDBCache;
+    unsigned int& nCoinCacheSize = cacheSizes.nCoinCacheSize;
+
     if (nTotalCache < (MIN_DB_CACHE_SIZE << 20))
         nTotalCache = (MIN_DB_CACHE_SIZE << 20); // total cache cannot be less than MIN_DB_CACHE_SIZE
     else if (nTotalCache > (MAX_DB_CACHE_SIZE << 20))
@@ -848,7 +865,7 @@ std::pair<size_t,size_t> CalculateDBCacheSizes()
     nTotalCache -= nCoinDBCache;
     nCoinCacheSize = nTotalCache / 300; // coins in memory require around 300 bytes
 
-    return std::make_pair(nBlockTreeDBCache,nCoinDBCache);
+    return cacheSizes;
 }
 
 enum class BlockLoadingStatus {RETRY_LOADING,FAILED_LOADING,SUCCESS_LOADING};
@@ -910,7 +927,7 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
             const CVerifyDB dbVerifier(
                 *chainstate,
                 uiInterface,
-                nCoinCacheSize,
+                chainstate->GetNominalViewCacheSize(),
                 &ShutdownRequested);
             if (!dbVerifier.VerifyDB(&chainstate->GetNonCatchingCoinsView(), chainstate->CoinsTip().GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
             {
@@ -1322,7 +1339,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(translate("Preparing databases..."));
     const auto cacheSizes = CalculateDBCacheSizes();
-    chainstateInstance.reset(new ChainstateManager (cacheSizes.first, cacheSizes.second, false, fReindex));
+    chainstateInstance.reset(new ChainstateManager (cacheSizes.nBlockTreeDBCache, cacheSizes.nCoinDBCache,cacheSizes.nCoinCacheSize, false, fReindex));
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
     sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));

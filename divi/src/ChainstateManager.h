@@ -27,6 +27,7 @@ private:
   std::unique_ptr<CCoinsViewDB> coinsDbView;
   std::unique_ptr<CCoinsView> coinsCatcher;
   std::unique_ptr<CCoinsViewCache> coinsTip;
+  const size_t viewCacheSize_;
 
   /** A refcount for the instance.  We use it to enforce that the
    *  singleton instance is no longer referenced by anything when it
@@ -37,9 +38,14 @@ public:
 
   class Reference;
 
-  explicit ChainstateManager (size_t blockTreeCache, size_t coinDbCache,
+  explicit ChainstateManager (size_t blockTreeCache, size_t coinDbCache,size_t viewCacheSize,
                               bool fMemory, bool fWipe);
   ~ChainstateManager ();
+
+  inline const size_t& GetNominalViewCacheSize() const
+  {
+    return viewCacheSize_;
+  }
 
   inline BlockMap&
   GetBlockMap ()

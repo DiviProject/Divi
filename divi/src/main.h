@@ -161,4 +161,6 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex, const bool up
 /** Remove invalidity status from a block and its descendants. */
 bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 
+/** Best header block height */
+int GetBestHeaderBlockHeight();
 #endif // BITCOIN_MAIN_H

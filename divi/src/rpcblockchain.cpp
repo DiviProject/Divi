@@ -30,7 +30,6 @@
 using namespace json_spirit;
 using namespace std;
 
-extern unsigned int nCoinCacheSize;
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 extern bool ShutdownRequested();
@@ -518,7 +517,7 @@ Value verifychain(const Array& params, bool fHelp)
     const CVerifyDB dbVerifier(
         *chainstate,
         uiInterface,
-        nCoinCacheSize,
+        chainstate->GetNominalViewCacheSize(),
         &ShutdownRequested);
     return dbVerifier.VerifyDB(&chainstate->CoinsTip(), chainstate->CoinsTip().GetCacheSize(), nCheckLevel, nCheckDepth);
 }

@@ -64,7 +64,7 @@ struct TestingSetup {
         pathTemp = GetTempPath() / strprintf("test_divi_%lu_%i", (unsigned long)GetTime(), (int)(GetRand(100000)));
         boost::filesystem::create_directories(pathTemp);
         settings.SetParameter("-datadir", pathTemp.string());
-        chainstateInstance.reset(new ChainstateManager(1 << 20, 1 << 23, true, false));
+        chainstateInstance.reset(new ChainstateManager(1 << 20, 1 << 23, 5000, true, false));
         sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
         InitBlockIndex();
 #ifdef ENABLE_WALLET

@@ -17,6 +17,7 @@
 #include "main.h"
 #include "net.h"
 #include "primitives/transaction.h"
+#include <rpcprotocol.h>
 #include "rpcserver.h"
 #include "script/script.h"
 #include "script/sign.h"

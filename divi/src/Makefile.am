@@ -287,6 +287,7 @@ BITCOIN_CORE_H = \
   reverse_iterate.h \
   rpcclient.h \
   rpcprotocol.h \
+  JsonTxHelpers.h \
   rpcserver.h \
   script/interpreter.h \
   script/SignatureCheckers.h \
@@ -463,6 +464,7 @@ libbitcoin_server_a_SOURCES = \
   noui.cpp \
   pow.cpp \
   rest.cpp \
+  JsonTxHelpers.cpp \
   rpcblockchain.cpp \
   rpclottery.cpp \
   rpcmasternode.cpp \

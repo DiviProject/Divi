@@ -18,6 +18,8 @@
 #include <blockmap.h>
 #include <sync.h>
 
+#include <JsonTxHelpers.h>
+
 #include <boost/algorithm/string.hpp>
 
 using namespace std;
@@ -49,7 +51,6 @@ public:
     string message;
 };
 
-extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 extern Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false);
 
 static RestErr RESTERR(enum HTTPStatusCode status, string message)

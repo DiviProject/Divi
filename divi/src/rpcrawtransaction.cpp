@@ -39,6 +39,8 @@
 #include <ValidationState.h>
 #include <script/SignatureCheckers.h>
 
+#include <JsonTxHelpers.h>
+
 using namespace boost;
 using namespace boost::assign;
 using namespace json_spirit;
@@ -160,61 +162,6 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
 
     entry.push_back(Pair("size", static_cast<int64_t>(tx.GetSerializeSize(SER_NETWORK, CTransaction::CURRENT_VERSION))));
 
-}
-
-void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)
-{
-    entry.push_back(Pair("txid", tx.GetHash().GetHex()));
-    entry.push_back(Pair("baretxid", tx.GetBareTxid().GetHex()));
-    entry.push_back(Pair("version", tx.nVersion));
-    entry.push_back(Pair("locktime", (int64_t)tx.nLockTime));
-    Array vin;
-    BOOST_FOREACH (const CTxIn& txin, tx.vin) {
-        Object in;
-        if (tx.IsCoinBase())
-            in.push_back(Pair("coinbase", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
-        else {
-            in.push_back(Pair("txid", txin.prevout.hash.GetHex()));
-            in.push_back(Pair("vout", (int64_t)txin.prevout.n));
-            Object o;
-            o.push_back(Pair("asm", txin.scriptSig.ToString()));
-            o.push_back(Pair("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
-            in.push_back(Pair("scriptSig", o));
-        }
-        in.push_back(Pair("sequence", (int64_t)txin.nSequence));
-        vin.push_back(in);
-    }
-    entry.push_back(Pair("vin", vin));
-    Array vout;
-    for (unsigned int i = 0; i < tx.vout.size(); i++) {
-        const CTxOut& txout = tx.vout[i];
-        Object out;
-        out.push_back(Pair("value", ValueFromAmount(txout.nValue)));
-        out.push_back(Pair("n", (int64_t)i));
-        Object o;
-        ScriptPubKeyToJSON(txout.scriptPubKey, o, true);
-        out.push_back(Pair("scriptPubKey", o));
-        vout.push_back(out);
-    }
-    entry.push_back(Pair("vout", vout));
-
-    if (hashBlock != 0) {
-        const ChainstateManager::Reference chainstate;
-        const auto& chain = chainstate->ActiveChain();
-        const auto& blockMap = chainstate->GetBlockMap();
-
-        entry.push_back(Pair("blockhash", hashBlock.GetHex()));
-        const auto mi = blockMap.find(hashBlock);
-        if (mi != blockMap.end() && (*mi).second) {
-            CBlockIndex* pindex = (*mi).second;
-            if (chain.Contains(pindex)) {
-                entry.push_back(Pair("confirmations", 1 + chain.Height() - pindex->nHeight));
-                entry.push_back(Pair("time", pindex->GetBlockTime()));
-                entry.push_back(Pair("blocktime", pindex->GetBlockTime()));
-            } else
-                entry.push_back(Pair("confirmations", 0));
-        }
-    }
 }
 
 Value getrawtransaction(const Array& params, bool fHelp)

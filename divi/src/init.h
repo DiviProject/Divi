@@ -26,4 +26,5 @@ void EnableUnitTestSignals();
 bool InitializeDivi(boost::thread_group& threadGroup);
 void InitializeWallet(std::string strWalletFile);
 void DeallocateWallet();
+bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
 #endif // BITCOIN_INIT_H

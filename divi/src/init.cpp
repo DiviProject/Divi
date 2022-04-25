@@ -387,6 +387,22 @@ StartAndShutdownSignals& startAndShutdownSignals = StartAndShutdownSignals::inst
 
 } // anonymous namespace
 
+bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip)
+{
+    AssertLockHeld(cs_main);
+    ChainstateManager::Reference chainstate;
+    const CVerifyDB dbVerifier(
+        *chainstate,
+        uiInterface,
+        chainstate->GetNominalViewCacheSize(),
+        &ShutdownRequested);
+    const CCoinsView& coinView =
+        useCoinTip
+        ? static_cast<const CCoinsView&>(chainstate->CoinsTip())
+        : static_cast<const CCoinsView&>(chainstate->GetNonCatchingCoinsView());
+    return dbVerifier.VerifyDB(&coinView, chainstate->CoinsTip().GetCacheSize(), nCheckLevel, nCheckDepth);
+}
+
 void EnableMainSignals()
 {
     assert(startAndShutdownSignals.shutdown.empty());
@@ -924,12 +940,7 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
         {
 
             LOCK(cs_main);
-            const CVerifyDB dbVerifier(
-                *chainstate,
-                uiInterface,
-                chainstate->GetNominalViewCacheSize(),
-                &ShutdownRequested);
-            if (!dbVerifier.VerifyDB(&chainstate->GetNonCatchingCoinsView(), chainstate->CoinsTip().GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
+            if (!VerifyChain(4, settings.GetArg("-checkblocks", 100),false))
             {
                 strLoadError = translate("Corrupted block database detected");
                 fVerifyingBlocks = false;

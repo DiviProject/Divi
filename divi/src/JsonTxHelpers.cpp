@@ -8,8 +8,6 @@
 #include <blockmap.h>
 #include <chain.h>
 
-namespace Temporary
-{
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, json_spirit::Object& out, bool fIncludeHex)
 {
     txnouttype type;
@@ -33,8 +31,6 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, json_spirit::Object& out, b
         a.push_back(CBitcoinAddress(addr).ToString());
     out.push_back(json_spirit::Pair("addresses", a));
 }
-}
-
 
 void TxToJSON(const CTransaction& tx, const uint256 hashBlock, json_spirit::Object& entry)
 {
@@ -66,7 +62,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, json_spirit::Obje
         out.push_back(json_spirit::Pair("value", ValueFromAmount(txout.nValue)));
         out.push_back(json_spirit::Pair("n", (int64_t)i));
         json_spirit::Object o;
-        Temporary::ScriptPubKeyToJSON(txout.scriptPubKey, o, true);
+        ScriptPubKeyToJSON(txout.scriptPubKey, o, true);
         out.push_back(json_spirit::Pair("scriptPubKey", o));
         vout.push_back(out);
     }

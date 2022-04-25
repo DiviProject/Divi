@@ -31,7 +31,6 @@
 using namespace json_spirit;
 using namespace std;
 
-void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 extern bool ShutdownRequested();
 extern CTxMemPool mempool;
 

@@ -18,8 +18,6 @@
 #include "utilmoneystr.h"
 #include "base58.h"
 #include <ValidationState.h>
-#include <verifyDb.h>
-#include <ui_interface.h>
 #include <txdb.h>
 #include <ActiveChainManager.h>
 #include <boost/foreach.hpp>

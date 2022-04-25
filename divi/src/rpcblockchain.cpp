@@ -32,7 +32,6 @@
 using namespace json_spirit;
 using namespace std;
 
-extern CTxMemPool mempool;
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
@@ -201,6 +200,7 @@ Value getrawmempool(const Array& params, bool fHelp)
     if (params.size() > 0)
         fVerbose = params[0].get_bool();
 
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     if (fVerbose) {
         const ChainstateManager::Reference chainstate;
         LOCK(mempool.cs);
@@ -464,7 +464,7 @@ Value gettxout(const Array& params, bool fHelp)
 
     CCoins coins;
     if (fMempool) {
-        CCoinsViewMemPool(&chainstate->CoinsTip(), mempool).GetCoinsAndPruneSpent(hash,coins);
+        CCoinsViewMemPool(&chainstate->CoinsTip(), GetTransactionMemoryPool()).GetCoinsAndPruneSpent(hash,coins);
     } else {
         if (!chainstate->CoinsTip().GetCoins(hash, coins))
             return Value::null;
@@ -659,6 +659,7 @@ Value getmempoolinfo(const Array& params, bool fHelp)
             HelpExampleCli("getmempoolinfo", "") + HelpExampleRpc("getmempoolinfo", ""));
 
     Object ret;
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     ret.push_back(Pair("size", (int64_t)mempool.size()));
     ret.push_back(Pair("bytes", (int64_t)mempool.GetTotalTxSize()));
 

@@ -12,9 +12,9 @@
 #include <Logging.h>
 
 extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
 extern bool fTxIndex;
 
+extern CTxMemPool& GetTransactionMemoryPool();
 /** Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock */
 bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow)
 {
@@ -24,6 +24,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
     {
         LOCK(cs_main);
         {
+            CTxMemPool& mempool = GetTransactionMemoryPool();
             if (mempool.lookup(hash, txOut) || mempool.lookupBareTxid(hash, txOut)) {
                 return true;
             }

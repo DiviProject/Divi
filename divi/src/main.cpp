@@ -106,7 +106,6 @@ bool fVerifyingBlocks = false;
 
 extern bool fAddressIndex;
 extern bool fSpentIndex;
-extern CTxMemPool mempool;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
@@ -1133,6 +1132,7 @@ bool static DisconnectTip(CValidationState& state, const bool updateCoinDatabase
 
     const CBlockIndex* pindexDelete = chain.Tip();
     assert(pindexDelete);
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     mempool.check(&coinsTip, blockMap);
     // Read block from disk.
     const BlockDiskDataReader blockDiskReader;
@@ -1187,6 +1187,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, const CB
     const auto& blockMap = chainstate->GetBlockMap();
 
     assert(pindexNew->pprev == chainstate->ActiveChain().Tip());
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     mempool.check(&coinsTip, blockMap);
     CCoinsViewCache view(&coinsTip);
 
@@ -2688,7 +2689,7 @@ bool static AlreadyHave(const CInv& inv)
     switch (inv.GetType()) {
     case MSG_TX: {
         bool txInMap = false;
-        txInMap = mempool.exists(inv.GetHash());
+        txInMap = GetTransactionMemoryPool().exists(inv.GetHash());
         return txInMap || OrphanTransactionIsKnown(inv.GetHash());
     }
 
@@ -2722,7 +2723,7 @@ static bool PushKnownInventory(CNode* pfrom, const CInv& inv)
     case InventoryType::MSG_TX:
         {
             CTransaction tx;
-            if (mempool.lookup(inv.GetHash(), tx))
+            if (GetTransactionMemoryPool().lookup(inv.GetHash(), tx))
             {
                 CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                 ss.reserve(1000);
@@ -3268,6 +3269,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
         CNode::ClearInventoryItem(inv);
 
+        CTxMemPool& mempool = GetTransactionMemoryPool();
         if ( AcceptToMemoryPool(mempool, state, tx, true, &fMissingInputs))
         {
             mempool.check(&coinsTip, blockMap);
@@ -3858,6 +3860,7 @@ void RebroadcastSomeMempoolTxs()
     constexpr int maxNumberOfRebroadcastableTransactions = 32;
     if(mainLockAcquired)
     {
+        CTxMemPool& mempool = GetTransactionMemoryPool();
         TRY_LOCK(mempool.cs,mempoolLockAcquired);
         if(mempoolLockAcquired)
         {

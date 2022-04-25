@@ -133,6 +133,10 @@ bool fAddressIndex = false;
 bool fSpentIndex = false;
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
 CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate());
+CTxMemPool& GetTransactionMemoryPool()
+{
+    return mempool;
+}
 
 /** Global instance of the SporkManager, managed through startup/shutdown.  */
 std::unique_ptr<CSporkManager> sporkManagerInstance;
@@ -148,7 +152,7 @@ void InitializeWallet(std::string strWalletFile)
             chain,
             blockMap,
             Params().COINBASE_MATURITY(),
-            mempool,
+            GetTransactionMemoryPool(),
             cs_main));
     pwalletMain = new CWallet(strWalletFile, chain, blockMap, *confirmationsCalculator);
 #endif
@@ -157,7 +161,7 @@ void InitializeWallet(std::string strWalletFile)
 void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* pwalletMain)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
-    InitializeCoinMintingModule(settings,GetPeerBlockNotifyService(), feeAndPriorityCalculator.getMinimumRelayFeeRate(), cs_main, mempool, pwalletMain);
+    InitializeCoinMintingModule(settings,GetPeerBlockNotifyService(), feeAndPriorityCalculator.getMinimumRelayFeeRate(), cs_main, GetTransactionMemoryPool(), pwalletMain);
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
     {
@@ -614,7 +618,7 @@ bool CheckCriticalUnsupportedFeaturesAreNotUsed()
 void SetConsistencyChecks()
 {
     // Checkmempool and checkblockindex default to true in regtest mode
-    mempool.setSanityCheck(settings.GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
+    GetTransactionMemoryPool().setSanityCheck(settings.GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
     fCheckBlockIndex = settings.GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks());
     CCheckpointServices::fEnabled = settings.GetBoolArg("-checkpoints", true);
 }
@@ -1183,7 +1187,7 @@ void SubmitUnconfirmedWalletTransactionsToMempool(const CWallet& wallet)
         if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
         {
             // Try to add to memory pool
-            SubmitTransactionToMempool(mempool,wtx);
+            SubmitTransactionToMempool(GetTransactionMemoryPool(),wtx);
         }
     }
 }

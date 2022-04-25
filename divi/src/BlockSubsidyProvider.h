@@ -18,6 +18,5 @@ public:
         const CChainParams& chainParameters,
         I_SuperblockHeightValidator& heightValidator);
     virtual CBlockRewards GetBlockSubsidity(int nHeight) const;
-    virtual CAmount GetFullBlockValue(int nHeight) const;
 };
 #endif// BLOCK_SUBSIDY_PROVIDER_H

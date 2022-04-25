@@ -59,7 +59,3 @@ CBlockRewards BlockSubsidyProvider::GetBlockSubsidity(int nHeight) const
     updateLotteryReward(nHeight,rewards, heightValidator_.IsValidLotteryBlockHeight(nHeight));
     return rewards;
 }
-CAmount BlockSubsidyProvider::GetFullBlockValue(int nHeight) const
-{
-    return GetBlockSubsidity(nHeight).total();
-}

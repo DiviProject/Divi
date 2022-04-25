@@ -60,10 +60,6 @@ bool SporkDataIsKnown(const uint256& inventoryHash)
 {
     return mapSporks.count(inventoryHash);
 }
-void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
-{
-    GetSporkManager().ProcessSpork(pfrom, strCommand, vRecv);
-}
 CSporkManager& GetSporkManager()
 {
     assert(sporkManagerInstance != nullptr);

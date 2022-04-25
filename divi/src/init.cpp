@@ -778,9 +778,8 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
     LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
 }
 
-bool SetSporkKey()
+bool SetSporkKey(CSporkManager& sporkManager)
 {
-    CSporkManager& sporkManager = GetSporkManager();
     sporkManager.SetSporkAddress(Params().SporkKey());
     if (settings.ParameterIsSet("-sporkkey")) // spork priv key
     {
@@ -854,7 +853,7 @@ std::pair<size_t,size_t> CalculateDBCacheSizes()
 
 enum class BlockLoadingStatus {RETRY_LOADING,FAILED_LOADING,SUCCESS_LOADING};
 
-BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
+BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& strLoadError)
 {
     if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
@@ -868,7 +867,7 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
 
         // DIVI: load previous sessions sporks if we have them.
         uiInterface.InitMessage(translate("Loading sporks..."));
-        GetSporkManager().LoadSporksFromDB();
+        sporkManager.LoadSporksFromDB();
 
         if(!fReindex) uiInterface.InitMessage(translate("Loading block index..."));
         std::string strBlockIndexError = "";
@@ -1325,7 +1324,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     const auto& blockMap = chainstateInstance->GetBlockMap();
     sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
 
-    if(!SetSporkKey())
+    if(!SetSporkKey(*sporkManagerInstance))
         return false;
 
     bool fLoaded = false;
@@ -1337,7 +1336,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         uiInterface.InitMessage(translate("Loading block index..."));
 
         nStart = GetTimeMillis();
-        const BlockLoadingStatus status = TryToLoadBlocks(strLoadError);
+        const BlockLoadingStatus status = TryToLoadBlocks(*sporkManagerInstance, strLoadError);
         fLoaded = (status == BlockLoadingStatus::SUCCESS_LOADING);
         if(!fLoaded && status != BlockLoadingStatus::RETRY_LOADING)
         {

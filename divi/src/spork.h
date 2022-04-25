@@ -41,7 +41,6 @@ static const int SPORK_END                                              = SPORK_
 
 bool ShareSporkDataWithPeer(CNode* peer, const uint256& inventoryHash);
 bool SporkDataIsKnown(const uint256& inventoryHash);
-void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
 CSporkManager& GetSporkManager();
 //
 // Spork classes

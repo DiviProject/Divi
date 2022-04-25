@@ -3560,7 +3560,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             }
         }
     } else {
-        ProcessSpork(pfrom, strCommand, vRecv);
+        GetSporkManager().ProcessSpork(pfrom, strCommand, vRecv);
         ProcessMasternodeMessages(pfrom,strCommand,vRecv);
     }
 

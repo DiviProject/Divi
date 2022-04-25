@@ -14,4 +14,8 @@ typedef int64_t CAmount;
 static const CAmount COIN = 100000000;
 static const CAmount CENT = 1000000;
 
+inline double ValueFromAmount(const CAmount& amount)
+{
+    return (double)amount / (double)COIN;
+}
 #endif //  BITCOIN_AMOUNT_H

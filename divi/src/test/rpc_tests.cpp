@@ -7,6 +7,7 @@
 
 #include "base58.h"
 #include "netbase.h"
+#include <amount.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
@@ -46,6 +47,10 @@ Value CallRPC(string args)
     }
 }
 
+Value ValueFromAmountRPC(const CAmount& amount)
+{
+    return ValueFromAmount(amount);
+}
 
 BOOST_AUTO_TEST_SUITE(rpc_tests)
 
@@ -118,14 +123,14 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign)
 
 BOOST_AUTO_TEST_CASE(rpc_format_monetary_values)
 {
-    BOOST_CHECK_EQUAL(write_string(ValueFromAmount(0LL), false), "0.00000000");
-    BOOST_CHECK_EQUAL(write_string(ValueFromAmount(1LL), false), "0.00000001");
-    BOOST_CHECK_EQUAL(write_string(ValueFromAmount(17622195LL), false), "0.17622195");
-    BOOST_CHECK_EQUAL(write_string(ValueFromAmount(50000000LL), false), "0.50000000");
-    BOOST_CHECK_EQUAL(write_string(ValueFromAmount(89898989LL), false), "0.89898989");
-    BOOST_CHECK_EQUAL(write_string(ValueFromAmount(100000000LL), false), "1.00000000");
-    BOOST_CHECK_EQUAL(write_string(ValueFromAmount(2099999999999990LL), false), "20999999.99999990");
-    BOOST_CHECK_EQUAL(write_string(ValueFromAmount(2099999999999999LL), false), "20999999.99999999");
+    BOOST_CHECK_EQUAL(write_string(ValueFromAmountRPC(0LL), false), "0.00000000");
+    BOOST_CHECK_EQUAL(write_string(ValueFromAmountRPC(1LL), false), "0.00000001");
+    BOOST_CHECK_EQUAL(write_string(ValueFromAmountRPC(17622195LL), false), "0.17622195");
+    BOOST_CHECK_EQUAL(write_string(ValueFromAmountRPC(50000000LL), false), "0.50000000");
+    BOOST_CHECK_EQUAL(write_string(ValueFromAmountRPC(89898989LL), false), "0.89898989");
+    BOOST_CHECK_EQUAL(write_string(ValueFromAmountRPC(100000000LL), false), "1.00000000");
+    BOOST_CHECK_EQUAL(write_string(ValueFromAmountRPC(2099999999999990LL), false), "20999999.99999990");
+    BOOST_CHECK_EQUAL(write_string(ValueFromAmountRPC(2099999999999999LL), false), "20999999.99999999");
 }
 
 static Value ValueFromString(const std::string &str)

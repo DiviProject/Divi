@@ -49,7 +49,6 @@ using namespace boost::assign;
 extern Settings& settings;
 extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
 
 #ifdef ENABLE_WALLET
 Value setgenerate(const Array& params, bool fHelp)
@@ -241,7 +240,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("blocks", (int)chainstate->ActiveChain().Height()));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
-    obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
+    obj.push_back(Pair("pooledtx", (uint64_t)GetTransactionMemoryPool().size()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
     obj.push_back(Pair("chain", Params().NetworkIDString()));
     return obj;
@@ -272,6 +271,6 @@ Value prioritisetransaction(const Array& params, bool fHelp)
 
     CAmount nAmount = params[2].get_int64();
 
-    mempool.PrioritiseTransaction(hash, nAmount);
+    GetTransactionMemoryPool().PrioritiseTransaction(hash, nAmount);
     return true;
 }

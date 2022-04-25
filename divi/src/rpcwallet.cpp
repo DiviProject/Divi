@@ -55,7 +55,6 @@ static CCriticalSection cs_nWalletUnlockTime;
 extern CCriticalSection cs_main;
 extern CWallet* pwalletMain;
 extern Settings& settings;
-extern CTxMemPool mempool;
 
 extern void RelayTransactionToAllPeers(const CTransaction& tx);
 
@@ -691,7 +690,7 @@ std::string SendMoney(
         // Broadcast
         {
             LOCK(cs_main);
-            if (!SubmitTransactionToMempool(mempool, *txCreation.wtxNew)) {
+            if (!SubmitTransactionToMempool(GetTransactionMemoryPool(), *txCreation.wtxNew)) {
                 // This must not fail. The transaction has already been signed and recorded.
                 LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
                 std::string strError = "Error: Invalid transaction committed to wallet!";

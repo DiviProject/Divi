@@ -27,11 +27,11 @@
 #include <txmempool.h>
 #include <blockmap.h>
 #include <JsonTxHelpers.h>
+#include <init.h>
 
 using namespace json_spirit;
 using namespace std;
 
-extern bool ShutdownRequested();
 extern CTxMemPool mempool;
 
 double GetDifficulty(const CBlockIndex* blockindex)
@@ -508,13 +508,7 @@ Value verifychain(const Array& params, bool fHelp)
     if (params.size() > 0)
         nCheckDepth = params[1].get_int();
 
-    ChainstateManager::Reference chainstate;
-    const CVerifyDB dbVerifier(
-        *chainstate,
-        uiInterface,
-        chainstate->GetNominalViewCacheSize(),
-        &ShutdownRequested);
-    return dbVerifier.VerifyDB(&chainstate->CoinsTip(), chainstate->CoinsTip().GetCacheSize(), nCheckLevel, nCheckDepth);
+    return VerifyChain(nCheckLevel,nCheckDepth, true);
 }
 
 Value getblockchaininfo(const Array& params, bool fHelp)

@@ -11,6 +11,7 @@
 #include <set>
 class CWallet;
 class CBlockIndex;
+class CTxMemPool;
 
 namespace boost
 {
@@ -27,4 +28,5 @@ bool InitializeDivi(boost::thread_group& threadGroup);
 void InitializeWallet(std::string strWalletFile);
 void DeallocateWallet();
 bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
+CTxMemPool& GetTransactionMemoryPool();
 #endif // BITCOIN_INIT_H

@@ -48,7 +48,6 @@ using namespace std;
 
 extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
 extern bool fSpentIndex;
 
 void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& entry,
@@ -638,6 +637,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
     CCoinsViewBacked temporaryBacking;
     CCoinsViewCache view(&temporaryBacking);
     {
+        CTxMemPool& mempool = GetTransactionMemoryPool();
         LOCK(mempool.cs);
         const ChainstateManager::Reference chainstate;
         const CCoinsViewCache& viewChain = chainstate->CoinsTip();
@@ -773,6 +773,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
 
 static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransaction& tx)
 {
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     LOCK(mempool.cs);
     const ChainstateManager::Reference chainstate;
     const CCoinsViewMemPool viewMemPool(&chainstate->CoinsTip(), mempool);
@@ -821,6 +822,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
 
     const ChainstateManager::Reference chainstate;
     const auto& view = chainstate->CoinsTip();
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     const bool fHaveMempool = mempool.exists(hashTx);
 
     /* We use the UTXO set as heuristic about whether or not a transaction

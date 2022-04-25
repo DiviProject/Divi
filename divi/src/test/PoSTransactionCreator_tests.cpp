@@ -75,8 +75,6 @@ protected:
       walletScript(GetScriptForDestination(wallet.getNewKey().GetID()))
   {
     /* Set up a default block reward if we don't need anything else.  */
-    EXPECT_CALL(blockSubsidyProvider, GetFullBlockValue(_))
-        .WillRepeatedly(Return(11 * COIN));
     EXPECT_CALL(blockSubsidyProvider, GetBlockSubsidity(_))
         .WillRepeatedly(Return(CBlockRewards(10 * COIN, COIN, 0, 0, 0, 0)));
 

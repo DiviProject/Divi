@@ -12,6 +12,5 @@ namespace Legacy
     int64_t GetCharityReward(const CBlockRewards &rewards, const CChainParams& chainParams);
     int64_t GetLotteryReward(const CBlockRewards &rewards, const CChainParams& chainParams);
     CBlockRewards GetBlockSubsidity(int nHeight, const CChainParams& chainParams);
-    CAmount GetFullBlockValue(int nHeight, const CChainParams& chainParams);
-};
+}
 #endif // LEGACY_BLOCK_SUBSIDIES_H

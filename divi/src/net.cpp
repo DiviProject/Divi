@@ -1238,6 +1238,36 @@ void ThreadOpenConnections()
             OpenNetworkConnection(addrConnect);
     }
 }
+bool addNode(const std::string& strNode, const std::string& strCommand)
+{
+    if (strCommand == "onetry") {
+        CAddress addr;
+        OpenNetworkConnection(addr, strNode.c_str());
+        return true;
+    }
+
+    LOCK(cs_vAddedNodes);
+    std::vector<std::string>::iterator it = vAddedNodes.begin();
+    for (; it != vAddedNodes.end(); it++)
+        if (strNode == *it)
+            break;
+
+    if (strCommand == "add") {
+        if (it != vAddedNodes.end())
+            return false;
+        vAddedNodes.push_back(strNode);
+    } else if (strCommand == "remove") {
+        if (it == vAddedNodes.end())
+            return false;
+        vAddedNodes.erase(it);
+    }
+    return true;
+}
+std::vector<std::string> getAddedNodeList()
+{
+    LOCK(cs_vAddedNodes);
+    return vAddedNodes;
+}
 
 void ThreadOpenAddedConnections()
 {

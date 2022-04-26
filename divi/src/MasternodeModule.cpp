@@ -37,7 +37,6 @@
 #include <I_Clock.h>
 #include <I_BlockchainSyncQueryService.h>
 
-bool fLiteMode = false;
 
 class LocalClock final: public I_Clock
 {
@@ -202,11 +201,6 @@ bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionI
     bool enableMasternode = settings.ParameterIsSet("-masternode");
     if(enableMasternode) GetMutableModule().designateLocalNodeAsMasternode();
 
-    fLiteMode = settings.GetBoolArg("-litemode", false);
-    if (enableMasternode && fLiteMode) {
-        errorMessage = "You can not start a masternode in litemode";
-        return false;
-    }
     if(!LoadMasternodeConfigurations(settings,errorMessage))
     {
         return false;
@@ -230,7 +224,6 @@ bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionI
 
 bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataDir)
 {
-    if (!fLiteMode)
     {
         const auto& mod = GetMasternodeModule();
         MasternodeNetworkMessageManager& networkMessageManager = mod.getNetworkMessageManager();
@@ -267,7 +260,6 @@ bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataD
 }
 void SaveMasternodeDataToDisk()
 {
-    if(!fLiteMode)
     {
         const auto& mod = GetMasternodeModule();
         MasternodeNetworkMessageManager& networkMessageManager = mod.getNetworkMessageManager();
@@ -359,7 +351,7 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
     static CMasternodeMan& mnodeman = mod.getMasternodeManager();
     static CMasternodePayments& masternodePayments = mod.getMasternodePayments();
     static CMasternodeSync& masternodeSync = mod.getMasternodeSynchronization();
-    if(!fLiteMode && IsBlockchainSynced())
+    if(IsBlockchainSynced())
     {
         masternodeSync.ProcessSyncUpdate(pfrom,strCommand,vRecv);
         mnodeman.ProcessMNBroadcastsAndPings(pfrom, strCommand, vRecv);
@@ -373,7 +365,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
     static CMasternodeSync& masternodeSync = mod.getMasternodeSynchronization();
     static CActiveMasternode& activeMasternode = mod.getActiveMasternode();
     static CMasternodePayments& masternodePayments = mod.getMasternodePayments();
-    if (fLiteMode || !masternodeSync.IsMasternodeListSynced() || !mod.localNodeIsAMasternode()) return false;
+    if (!masternodeSync.IsMasternodeListSynced() || !mod.localNodeIsAMasternode()) return false;
     constexpr int numberOfBlocksIntoTheFutureToVoteOn = 10;
     static int64_t lastBlockVotedOn = 0;
     const int64_t currentBlockToVoteFor = pindex->nHeight + numberOfBlocksIntoTheFutureToVoteOn;
@@ -456,7 +448,6 @@ void LockUpMasternodeCollateral(const Settings& settings, std::function<void(con
 //TODO: Rename/move to core
 void ThreadMasternodeBackgroundSync()
 {
-    if (fLiteMode) return;
 
     RenameThread("divi-obfuscation");
 

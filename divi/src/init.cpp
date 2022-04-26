@@ -112,14 +112,7 @@ constexpr int nWalletBackups = 20;
 
 namespace
 {
-
-//! -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
-const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
-//! -maxtxfee will warn if called with a higher fee than this amount (in satoshis)
-const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
-
 constexpr char FEE_ESTIMATES_FILENAME[] = "fee_estimates.dat";
-
 } // anonymous namespace
 
 CClientUIInterface uiInterface;
@@ -656,6 +649,8 @@ bool SetTransactionRequirements()
 #ifdef ENABLE_WALLET
     if (settings.ParameterIsSet("-maxtxfee")) {
         CAmount maxTxFee;
+        const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
+        const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
         if (!ParseMoney(settings.GetParameter("-maxtxfee"), maxTxFee))
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), settings.GetParameter("-maxtxfee")));
         if (maxTxFee > nHighTransactionMaxFeeWarning)

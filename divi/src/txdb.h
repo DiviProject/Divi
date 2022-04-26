@@ -69,7 +69,16 @@ private:
     CBlockTreeDB(const CBlockTreeDB&);
     void operator=(const CBlockTreeDB&);
 
+    bool addressIndexing_;
+    bool spentIndexing_;
 public:
+    void SetAddressIndexing(bool addressIndexing);
+    bool GetAddressIndexing() const;
+    void SetSpentIndexing(bool spentIndexing);
+    bool GetSpentIndexing() const;
+    void LoadIndexingFlags();
+    void WriteIndexingFlags(bool addressIndexing, bool spentIndexing);
+
     bool WriteBlockIndex(const CDiskBlockIndex& blockindex);
     bool ReadBlockFileInfo(int nFile, CBlockFileInfo& fileinfo) const;
     bool WriteBlockFileInfo(int nFile, const CBlockFileInfo& fileinfo);

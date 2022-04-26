@@ -155,10 +155,12 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
     return true;
 }
 
+
 CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe
     ) : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe)
     , addressIndexing_(false)
     , spentIndexing_(false)
+    , txIndexing_(true)
 {
 }
 
@@ -482,6 +484,15 @@ void CBlockTreeDB::SetSpentIndexing(bool spentIndexing)
 bool CBlockTreeDB::GetSpentIndexing() const
 {
     return spentIndexing_;
+}
+
+void CBlockTreeDB::SetTxIndexing(bool txIndexing)
+{
+    txIndexing_ = txIndexing;
+}
+bool CBlockTreeDB::GetTxIndexing() const
+{
+    return txIndexing_;
 }
 
 void CBlockTreeDB::LoadIndexingFlags()

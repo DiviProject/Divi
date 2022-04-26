@@ -110,11 +110,6 @@ constexpr int nWalletBackups = 20;
  */
 #endif
 
-namespace
-{
-constexpr char FEE_ESTIMATES_FILENAME[] = "fee_estimates.dat";
-} // anonymous namespace
-
 CClientUIInterface uiInterface;
 
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();

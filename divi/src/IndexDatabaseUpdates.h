@@ -28,7 +28,9 @@ struct IndexDatabaseUpdates
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > addressUnspentIndex;
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;
     std::vector<TxIndexEntry> txLocationData;
+    const bool addressIndexingEnabled_;
+    const bool spentIndexingEnabled_;
 
-    IndexDatabaseUpdates();
+    IndexDatabaseUpdates(bool addressIndexingEnabled, bool spentIndexingEnabled);
 };
 #endif// INDEX_DATABASE_UPDATES_H

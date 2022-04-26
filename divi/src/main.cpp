@@ -989,7 +989,7 @@ bool ConnectBlock(
         subsidiesContainer.blockSubsidiesProvider());
 
     const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
-    IndexDatabaseUpdates indexDatabaseUpdates;
+    IndexDatabaseUpdates indexDatabaseUpdates(fAddressIndex,fSpentIndex);
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
     if(ActivationState(pindex->pprev).IsActive(Fork::DeprecateMasternodes))
     {

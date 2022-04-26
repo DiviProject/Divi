@@ -8,8 +8,6 @@
 #include <coins.h>
 #include <script/StakingVaultScript.h>
 
-extern bool fAddressIndex;
-extern bool fSpentIndex;
 
 HashBytesAndAddressType ComputeHashbytesAndAddressTypeForScript(const CScript& script)
 {
@@ -46,7 +44,7 @@ void CollectUpdatesFromInputs(
     IndexDatabaseUpdates& indexDatabaseUpdates)
 {
     if (tx.IsCoinBase()) return;
-    if (fAddressIndex || fSpentIndex)
+    if (indexDatabaseUpdates.addressIndexingEnabled_ || indexDatabaseUpdates.spentIndexingEnabled_)
     {
         for (size_t j = 0; j < tx.vin.size(); j++) {
 
@@ -55,13 +53,13 @@ void CollectUpdatesFromInputs(
             HashBytesAndAddressType hashbytesAndAddressType = ComputeHashbytesAndAddressTypeForScript(prevout.scriptPubKey);
             const uint160& hashBytes = hashbytesAndAddressType.first;
             const int& addressType = hashbytesAndAddressType.second;
-            if (fAddressIndex && addressType > 0) {
+            if (indexDatabaseUpdates.addressIndexingEnabled_ && addressType > 0) {
                 // record spending activity
                 indexDatabaseUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(addressType, hashBytes, txLocationRef.blockHeight, txLocationRef.transactionIndex, txLocationRef.hash, j, true), prevout.nValue * -1));
                 // remove address from unspent index
                 indexDatabaseUpdates.addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(addressType, hashBytes, input.prevout.hash, input.prevout.n), CAddressUnspentValue()));
             }
-            if (fSpentIndex) {
+            if (indexDatabaseUpdates.spentIndexingEnabled_) {
                 // add the spent index to determine the txid and input that spent an output
                 // and to find the amount and address from an input
                 indexDatabaseUpdates.spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue(txLocationRef.hash, j, txLocationRef.blockHeight, prevout.nValue, addressType, hashBytes)));
@@ -75,7 +73,7 @@ void CollectUpdatesFromOutputs(
     const TransactionLocationReference& txLocationRef,
     IndexDatabaseUpdates& indexDatabaseUpdates)
 {
-    if (fAddressIndex) {
+    if (indexDatabaseUpdates.addressIndexingEnabled_) {
         for (unsigned int k = 0; k < tx.vout.size(); k++) {
             const CTxOut &out = tx.vout[k];
             HashBytesAndAddressType hashbytesAndAddressType = ComputeHashbytesAndAddressTypeForScript(out.scriptPubKey);
@@ -110,7 +108,7 @@ static void CollectUpdatesFromInputs(
     for( unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
     {
         const CTxIn& input = tx.vin[txInputIndex];
-        if (fAddressIndex)
+        if (indexDBUpdates.addressIndexingEnabled_)
         {
             const CTxOut &prevout = view.GetOutputFor(input);
 
@@ -131,7 +129,7 @@ static void CollectUpdatesFromInputs(
                         CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, txLocationReference.blockHeight)));
             }
         }
-        if(fSpentIndex)
+        if(indexDBUpdates.spentIndexingEnabled_)
         {
             indexDBUpdates.spentIndex.push_back(
                 std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue()));
@@ -144,7 +142,7 @@ static void CollectUpdatesFromOutputs(
     const TransactionLocationReference& txLocationReference,
     IndexDatabaseUpdates& indexDBUpdates)
 {
-    if (!fAddressIndex) return;
+    if (!indexDBUpdates.addressIndexingEnabled_) return;
     const std::vector<CTxOut>& txOutputs = tx.vout;
     for (unsigned int k = txOutputs.size(); k-- > 0;)
     {

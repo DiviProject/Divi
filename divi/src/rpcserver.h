@@ -19,6 +19,7 @@
 #include "json/json_spirit_reader_template.h"
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
+#include <JsonParseHelpers.h>
 
 class CBlockIndex;
 class CNetAddr;
@@ -130,17 +131,6 @@ public:
         return rpcTable;
     }
 };
-
-/**
- * Utilities: convert hex-encoded Values
- * (throws error if not hex).
- */
-extern uint256 ParseHashV(const json_spirit::Value& v, std::string strName);
-extern uint256 ParseHashO(const json_spirit::Object& o, std::string strKey);
-extern std::vector<unsigned char> ParseHexV(const json_spirit::Value& v, std::string strName);
-extern std::vector<unsigned char> ParseHexO(const json_spirit::Object& o, std::string strKey);
-extern int ParseInt(const json_spirit::Object& o, std::string strKey);
-extern bool ParseBool(const json_spirit::Object& o, std::string strKey);
 
 extern void InitRPCMining();
 extern void ShutdownRPCMining();

@@ -174,7 +174,7 @@ static bool UpdateDBIndicesForNewBlock(
         if (!blockTreeDatabase.WriteTxIndex(indexDatabaseUpdates.txLocationData))
             return state.Abort("ConnectingBlock: Failed to write transaction index");
 
-    if (fAddressIndex) {
+    if (indexDatabaseUpdates.addressIndexingEnabled_) {
         if (!blockTreeDatabase.WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
             return state.Abort("ConnectingBlock: Failed to write address index");
         }
@@ -184,7 +184,7 @@ static bool UpdateDBIndicesForNewBlock(
         }
     }
 
-    if (fSpentIndex)
+    if (indexDatabaseUpdates.spentIndexingEnabled_)
         if (!blockTreeDatabase.UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
             return state.Abort("ConnectingBlock: Failed to write update spent index");
 

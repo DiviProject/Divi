@@ -139,11 +139,4 @@ int64_t TimeTillWalletLock();
 std::string HelpRequiringPassphrase();
 std::string HelpExampleCli(std::string methodname, std::string args);
 std::string HelpExampleRpc(std::string methodname, std::string args);
-
-// in rest.cpp
-extern bool HTTPReq_REST(AcceptedConnection* conn,
-    std::string& strURI,
-    std::map<std::string, std::string>& mapHeaders,
-    bool fRun);
-
 #endif // BITCOIN_RPCSERVER_H

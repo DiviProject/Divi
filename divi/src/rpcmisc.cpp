@@ -61,9 +61,7 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
-extern int64_t nLastCoinStakeSearchInterval;
 extern bool fAddressIndex;
-extern CCriticalSection cs_main;
 extern CWallet* pwalletMain;
 extern bool fSpentIndex;
 
@@ -802,7 +800,6 @@ Value getaddressdeltas(const Array& params, bool fHelp)
     Object result;
 
     if (includeChainInfo && start > 0 && end > 0) {
-        LOCK(cs_main);
 
         if (start > chain.Height() || end > chain.Height()) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Start or end is outside chain range");
@@ -1022,7 +1019,6 @@ Value getaddressutxos(const Array& params, bool fHelp)
         Object result;
         result.push_back(Pair("utxos", utxos));
 
-        LOCK(cs_main);
         result.push_back(Pair("hash", chain.Tip()->GetBlockHash().GetHex()));
         result.push_back(Pair("height", (int)chain.Height()));
         return result;

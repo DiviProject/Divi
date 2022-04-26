@@ -228,52 +228,6 @@ CAmount AmountFromValue(const Value& value, const bool allowZero)
     return nAmount;
 }
 
-uint256 ParseHashV(const Value& v, string strName)
-{
-    string strHex;
-    if (v.type() == str_type)
-        strHex = v.get_str();
-    if (!IsHex(strHex)) // Note: IsHex("") is false
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strName + " must be hexadecimal string (not '" + strHex + "')");
-    uint256 result;
-    result.SetHex(strHex);
-    return result;
-}
-uint256 ParseHashO(const Object& o, string strKey)
-{
-    return ParseHashV(find_value(o, strKey), strKey);
-}
-std::vector<unsigned char> ParseHexV(const Value& v, string strName)
-{
-    string strHex = (v.type() == str_type)? v.get_str(): "";
-    if (!IsHex(strHex))
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strName + " must be hexadecimal string (not '" + strHex + "')");
-    return ParseHex(strHex);
-}
-std::vector<unsigned char> ParseHexO(const Object& o, string strKey)
-{
-    return ParseHexV(find_value(o, strKey), strKey);
-}
-
-int ParseInt(const Object& o, string strKey)
-{
-    const Value& v = find_value(o, strKey);
-    if (v.type() != int_type)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, " + strKey + "is not an int");
-
-    return v.get_int();
-}
-
-bool ParseBool(const Object& o, string strKey)
-{
-    const Value& v = find_value(o, strKey);
-    if (v.type() != bool_type)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, " + strKey + "is not a bool");
-
-    return v.get_bool();
-}
-
-
 /**
  * Note: This interface may still be subject to change.
  */

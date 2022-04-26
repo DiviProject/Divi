@@ -40,8 +40,6 @@ using namespace json_spirit;
 using namespace std;
 extern CWallet* pwalletMain;
 
-void EnsureWalletIsUnlocked();
-
 Value importprivkey(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 3)

@@ -9,10 +9,29 @@
 #include <Logging.h>
 #include <defaultValues.h>
 #include <ThreadManagementHelpers.h>
+#include <boost/thread.hpp>
 
-extern int nScriptCheckThreads;
+int TransactionInputChecker::nScriptCheckThreads = 0;
+
+void TransactionInputChecker::SetScriptCheckingThreadCount(int threadCount)
+{
+    nScriptCheckThreads = threadCount;
+}
+int TransactionInputChecker::GetScriptCheckingThreadCount()
+{
+    return nScriptCheckThreads;
+}
+
+void TransactionInputChecker::InitializeScriptCheckingThreads(boost::thread_group& threadGroup)
+{
+    if (TransactionInputChecker::nScriptCheckThreads) {
+        for (int i = 0; i < TransactionInputChecker::nScriptCheckThreads - 1; i++)
+            threadGroup.create_thread(&TransactionInputChecker::ThreadScriptCheck);
+    }
+}
+
+
 static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
-
 void TransactionInputChecker::ThreadScriptCheck()
 {
     RenameThread("divi-scriptch");
@@ -25,7 +44,7 @@ TransactionInputChecker::TransactionInputChecker(
     CValidationState& state
     ): nSigOps(0u)
     , vChecks()
-    , multiThreadedScriptChecker( nScriptCheckThreads ? &scriptcheckqueue : NULL )
+    , multiThreadedScriptChecker( TransactionInputChecker::nScriptCheckThreads ? &scriptcheckqueue : NULL )
     , view_(view)
     , blockIndexMap_(blockIndexMap)
     , state_(state)
@@ -44,7 +63,7 @@ bool TransactionInputChecker::CheckInputsAndUpdateCoinSupplyRecords(
     assert(vChecks.empty());
     CAmount txFees =0;
     CAmount txInputAmount=0;
-    if (!CheckInputs(tx, state_, view_, blockIndexMap_, txFees, txInputAmount, true, flags, nScriptCheckThreads ? &vChecks : NULL, true))
+    if (!CheckInputs(tx, state_, view_, blockIndexMap_, txFees, txInputAmount, true, flags, TransactionInputChecker::nScriptCheckThreads ? &vChecks : NULL, true))
     {
         vChecks.clear();
         return false;

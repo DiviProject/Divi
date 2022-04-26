@@ -17,12 +17,10 @@
 #include <UtxoCheckingAndUpdating.h>
 
 ActiveChainManager::ActiveChainManager(
-    const bool& addressIndexingIsEnabled,
-    const bool& spentIndexingIsEnabled,
     CBlockTreeDB* blocktree,
     const I_BlockDataReader& blockDataReader
-    ): addressIndexingIsEnabled_(addressIndexingIsEnabled)
-    , spentIndexingIsEnabled_(spentIndexingIsEnabled)
+    ): addressIndexingIsEnabled_(blocktree->GetAddressIndexing())
+    , spentIndexingIsEnabled_(blocktree->GetSpentIndexing())
     , blocktree_(blocktree)
     , blockDataReader_(blockDataReader)
 {

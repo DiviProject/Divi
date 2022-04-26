@@ -61,9 +61,7 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
-extern bool fAddressIndex;
 extern CWallet* pwalletMain;
-extern bool fSpentIndex;
 
 std::string GetWarnings(std::string strFor);
 
@@ -667,11 +665,11 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &blockTree, (*it).first, (*it).second, addressIndex, start, end)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(&blockTree, (*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &blockTree, (*it).first, (*it).second, addressIndex)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(&blockTree, (*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -769,11 +767,11 @@ Value getaddressdeltas(const Array& params, bool fHelp)
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &blockTree, (*it).first, (*it).second, addressIndex, start, end)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(&blockTree, (*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &blockTree, (*it).first, (*it).second, addressIndex)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(&blockTree, (*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -860,7 +858,7 @@ Value getaddressbalance(const Array& params, bool fHelp)
     const ChainstateManager::Reference chainstate;
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex, &chainstate->BlockTree(), (*it).first, (*it).second, addressIndex)) {
+        if (!TransactionSearchIndexes::GetAddressIndex(&chainstate->BlockTree(), (*it).first, (*it).second, addressIndex)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }
@@ -931,7 +929,7 @@ Value getspentinfo(const Array& params, bool fHelp)
 
     const ChainstateManager::Reference chainstate;
 
-    if (!TransactionSearchIndexes::GetSpentIndex(fSpentIndex, &chainstate->BlockTree(), key, value)) {
+    if (!TransactionSearchIndexes::GetSpentIndex(&chainstate->BlockTree(), key, value)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unable to get spent info");
     }
 
@@ -990,7 +988,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
     const auto& chain = chainstate->ActiveChain();
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!TransactionSearchIndexes::GetAddressUnspent(fAddressIndex, &chainstate->BlockTree(), (*it).first, (*it).second, unspentOutputs)) {
+        if (!TransactionSearchIndexes::GetAddressUnspent(&chainstate->BlockTree(), (*it).first, (*it).second, unspentOutputs)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }

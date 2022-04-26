@@ -4,7 +4,6 @@
 #include <Logging.h>
 
 bool TransactionSearchIndexes::GetAddressIndex(
-    bool addresIndexEnabled,
     const CBlockTreeDB* pblocktree,
     uint160 addressHash,
     int type,
@@ -12,7 +11,7 @@ bool TransactionSearchIndexes::GetAddressIndex(
     int start,
     int end)
 {
-    if (!addresIndexEnabled)
+    if (!pblocktree->GetAddressIndexing())
         return error("address index not enabled");
 
     if (!pblocktree->ReadAddressIndex(addressHash, type, addressIndex, start, end))
@@ -22,13 +21,12 @@ bool TransactionSearchIndexes::GetAddressIndex(
 }
 
 bool TransactionSearchIndexes::GetAddressUnspent(
-    bool addresIndexEnabled,
     const CBlockTreeDB* pblocktree,
     uint160 addressHash,
     int type,
     std::vector<std::pair<CAddressUnspentKey,CAddressUnspentValue> > &unspentOutputs)
 {
-    if (!addresIndexEnabled)
+    if (!pblocktree->GetAddressIndexing())
         return error("address index not enabled");
 
     if (!pblocktree->ReadAddressUnspentIndex(addressHash, type, unspentOutputs))
@@ -38,12 +36,11 @@ bool TransactionSearchIndexes::GetAddressUnspent(
 }
 
 bool TransactionSearchIndexes::GetSpentIndex(
-    bool spentIndexEnabled,
     const CBlockTreeDB* pblocktree,
     const CSpentIndexKey &key,
     CSpentIndexValue &value)
 {
-    if (!spentIndexEnabled)
+    if (!pblocktree->GetSpentIndexing())
         return false;
 
     if (!pblocktree->ReadSpentIndex(key, value))

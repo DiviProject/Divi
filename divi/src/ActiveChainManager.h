@@ -19,8 +19,8 @@ class I_BlockDataReader;
 class ActiveChainManager
 {
 private:
-    const bool& addressIndexingIsEnabled_;
-    const bool& spentIndexingIsEnabled_;
+    const bool addressIndexingIsEnabled_;
+    const bool spentIndexingIsEnabled_;
     CBlockTreeDB* blocktree_;
     const I_BlockDataReader& blockDataReader_;
 
@@ -30,8 +30,6 @@ private:
         CValidationState& state) const;
 public:
     ActiveChainManager(
-        const bool& addressIndexingIsEnabled,
-        const bool& spentIndexingIsEnabled,
         CBlockTreeDB* blocktree,
         const I_BlockDataReader& blockDataReader);
     bool DisconnectBlock(

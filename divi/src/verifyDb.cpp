@@ -22,8 +22,6 @@
 #include <BlockDiskAccessor.h>
 #include <ChainstateManager.h>
 
-extern bool fAddressIndex;
-extern bool fSpentIndex;
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
@@ -35,7 +33,7 @@ CVerifyDB::CVerifyDB(
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
     ): blockDiskReader_(new BlockDiskDataReader())
-    , chainManager_(new ActiveChainManager(fAddressIndex, fSpentIndex, &chainstate.BlockTree(), *blockDiskReader_))
+    , chainManager_(new ActiveChainManager(&chainstate.BlockTree(), *blockDiskReader_))
     , activeChain_(chainstate.ActiveChain())
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)

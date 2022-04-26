@@ -1098,10 +1098,39 @@ std::vector<std::string> CRPCTable::listCommands() const
     return commandList;
 }
 
+static int64_t nWalletUnlockTime;
+static CCriticalSection cs_nWalletUnlockTime;
 void EnsureWalletIsUnlocked()
 {
     if (pwalletMain && !pwalletMain->IsFullyUnlocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+}
+void LockWallet()
+{
+    if(pwalletMain)
+    {
+        RPCDiscardRunLater("lockwallet");
+        LOCK(cs_nWalletUnlockTime);
+        nWalletUnlockTime = 0;
+        pwalletMain->LockFully();
+    }
+}
+void UnlockWalletBriefly(int64_t sleepTime)
+{
+    if(pwalletMain)
+    {
+        LOCK(cs_nWalletUnlockTime);
+        nWalletUnlockTime = GetTime() + sleepTime;
+
+        if (sleepTime > 0) {
+            nWalletUnlockTime = GetTime () + sleepTime;
+            RPCRunLater ("lockwallet", boost::bind (LockWallet), sleepTime);
+        }
+    }
+}
+int64_t TimeTillWalletLock()
+{
+    return nWalletUnlockTime;
 }
 
 std::string HelpRequiringPassphrase()

@@ -644,8 +644,7 @@ bool SetTransactionRequirements()
 #ifdef ENABLE_WALLET
     if (settings.ParameterIsSet("-maxtxfee")) {
         CAmount maxTxFee;
-        const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
-        const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
+        const CAmount nHighTransactionMaxFeeWarning = 10 * COIN;
         if (!ParseMoney(settings.GetParameter("-maxtxfee"), maxTxFee))
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), settings.GetParameter("-maxtxfee")));
         if (maxTxFee > nHighTransactionMaxFeeWarning)

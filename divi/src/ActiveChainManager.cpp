@@ -89,7 +89,7 @@ bool ActiveChainManager::DisconnectBlock(
     if(blockUndo.vtxundo.size() + 1 != block.vtx.size())
         return error("%s: block and undo data inconsistent", __func__);
 
-    IndexDatabaseUpdates indexDBUpdates;
+    IndexDatabaseUpdates indexDBUpdates(addressIndexingIsEnabled_,spentIndexingIsEnabled_);
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];

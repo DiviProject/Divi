@@ -31,7 +31,6 @@ extern CClientUIInterface uiInterface;
 extern CWallet* pwalletMain;
 extern Settings& settings;
 extern void noui_connect();
-extern int nScriptCheckThreads;
 
 /* The global spork-manager instance is normally managed by init.cpp (where it
    is also defined).  For unit tests, we override the init sequence, and
@@ -71,9 +70,8 @@ struct TestingSetup {
         pwalletMain->LoadWallet();
         RegisterValidationInterface(pwalletMain);
 #endif
-        nScriptCheckThreads = 3;
-        for (int i=0; i < nScriptCheckThreads-1; i++)
-            threadGroup.create_thread(&TransactionInputChecker::ThreadScriptCheck);
+        TransactionInputChecker::SetScriptCheckingThreadCount(3);
+        TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
         RegisterNodeSignals(GetNodeSignals());
         EnableUnitTestSignals();
     }

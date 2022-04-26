@@ -85,7 +85,6 @@ extern CCriticalSection cs_main;
 extern Settings& settings;
 extern bool fReindex;
 extern bool fImporting;
-extern int nScriptCheckThreads;
 extern bool fVerifyingBlocks;
 extern bool fLiteMode;
 extern Settings& settings;
@@ -620,14 +619,15 @@ void SetConsistencyChecks()
 
 void SetNumberOfThreadsToCheckScripts()
 {
-    // -par=0 means autodetect, but nScriptCheckThreads==0 means no concurrency
-    nScriptCheckThreads = settings.GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS);
-    if (nScriptCheckThreads <= 0)
-        nScriptCheckThreads += boost::thread::hardware_concurrency();
-    if (nScriptCheckThreads <= 1)
-        nScriptCheckThreads = 0;
-    else if (nScriptCheckThreads > MAX_SCRIPTCHECK_THREADS)
-        nScriptCheckThreads = MAX_SCRIPTCHECK_THREADS;
+    // -par=0 means autodetect, but scriptCheckingThreadCount==0 means no concurrency
+    int scriptCheckingThreadCount = settings.GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS);
+    if (scriptCheckingThreadCount <= 0)
+        scriptCheckingThreadCount += boost::thread::hardware_concurrency();
+    if (scriptCheckingThreadCount <= 1)
+        scriptCheckingThreadCount = 0;
+    else if (scriptCheckingThreadCount > MAX_SCRIPTCHECK_THREADS)
+        scriptCheckingThreadCount = MAX_SCRIPTCHECK_THREADS;
+    TransactionInputChecker::SetScriptCheckingThreadCount(scriptCheckingThreadCount);
 }
 
 bool WalletIsDisabled()
@@ -700,10 +700,7 @@ bool CheckWalletFileExists(std::string strDataDir)
 
 void StartScriptVerificationThreads(boost::thread_group& threadGroup)
 {
-    if (nScriptCheckThreads) {
-        for (int i = 0; i < nScriptCheckThreads - 1; i++)
-            threadGroup.create_thread(&TransactionInputChecker::ThreadScriptCheck);
-    }
+    TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
 }
 
 
@@ -789,7 +786,7 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
     LogPrintf("Using data directory %s\n", dataDirectoryInUse);
     LogPrintf("Using config file %s\n", settings.GetConfigFile().string());
     LogPrintf("Using at most %i connections (%i file descriptors available)\n", maximumNumberOfConnections, numberOfFileDescriptors);
-    LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
+    LogPrintf("Using %u threads for script verification\n", TransactionInputChecker::GetScriptCheckingThreadCount());
 }
 
 bool SetSporkKey(CSporkManager& sporkManager)

@@ -10,6 +10,11 @@ class CCoinsViewCache;
 class CBlockIndex;
 class CTransaction;
 
+namespace boost
+{
+class thread_group;
+} // namespace boost
+
 class TransactionInputChecker
 {
 private:
@@ -19,9 +24,14 @@ private:
     const CCoinsViewCache& view_;
     const BlockMap& blockIndexMap_;
     CValidationState& state_;
+    static int nScriptCheckThreads;
 
-public:
     static void ThreadScriptCheck();
+public:
+    static void SetScriptCheckingThreadCount(int threadCount);
+    static int GetScriptCheckingThreadCount();
+    static void InitializeScriptCheckingThreads(boost::thread_group& threadGroup);
+
     TransactionInputChecker(
         const CCoinsViewCache& view,
         const BlockMap& blockIndexMap,

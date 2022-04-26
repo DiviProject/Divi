@@ -97,7 +97,6 @@ int64_t timeOfLastChainTipUpdate =0;
 const CBlockIndex* pindexBestHeader = nullptr;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
-int nScriptCheckThreads = 0;
 bool fImporting = false;
 bool fReindex = false;
 bool fVerifyingBlocks = false;

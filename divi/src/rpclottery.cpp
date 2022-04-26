@@ -10,7 +10,6 @@
 #include <rpcprotocol.h>
 #include <sync.h>
 
-extern CCriticalSection cs_main;
 using namespace json_spirit;
 
 Value getlotteryblockwinners(const Array& params, bool fHelp)
@@ -45,12 +44,8 @@ Value getlotteryblockwinners(const Array& params, bool fHelp)
     const ChainstateManager::Reference chainstate;
     const LotteryWinnersCalculator calculator(
         chainParameters.GetLotteryBlockStartBlock(), chainstate->ActiveChain(), GetSporkManager(),subsidyCointainer.superblockHeightValidator());
-    const CBlockIndex* chainTip = nullptr;
-    {
-        LOCK(cs_main);
-        chainTip = chainstate->ActiveChain().Tip();
-        if(!chainTip) throw JSONRPCError(RPC_MISC_ERROR,"Could not acquire lock on chain tip.");
-    }
+    const CBlockIndex* chainTip = chainTip = chainstate->ActiveChain().Tip();
+    if(!chainTip) throw JSONRPCError(RPC_MISC_ERROR,"Could not acquire lock on chain tip.");
     int blockHeight = (params.size()>0)? std::min(params[0].get_int(),chainTip->nHeight): chainTip->nHeight;
     const CBlockIndex* soughtIndex = chainTip->GetAncestor(blockHeight);
 

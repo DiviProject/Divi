@@ -155,7 +155,10 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
     return true;
 }
 
-CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe)
+CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe
+    ) : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe)
+    , addressIndexing_(false)
+    , spentIndexing_(false)
 {
 }
 
@@ -462,4 +465,42 @@ bool CBlockTreeDB::UpdateSpentIndex(const std::vector<std::pair<CSpentIndexKey, 
         }
     }
     return WriteBatch(batch);
+}
+
+void CBlockTreeDB::SetAddressIndexing(bool addressIndexing)
+{
+    addressIndexing_ = addressIndexing;
+}
+bool CBlockTreeDB::GetAddressIndexing() const
+{
+    return addressIndexing_;
+}
+void CBlockTreeDB::SetSpentIndexing(bool spentIndexing)
+{
+    spentIndexing_ =spentIndexing;
+}
+bool CBlockTreeDB::GetSpentIndexing() const
+{
+    return spentIndexing_;
+}
+
+void CBlockTreeDB::LoadIndexingFlags()
+{
+    // Check whether we have an address index
+    ReadFlag("addressindex", addressIndexing_);
+    LogPrintf("%s: address index %s\n", __func__, addressIndexing_ ? "enabled" : "disabled");
+
+    // Check whether we have a spent index
+    ReadFlag("spentindex", spentIndexing_);
+    LogPrintf("%s: spent index %s\n", __func__, spentIndexing_ ? "enabled" : "disabled");
+}
+
+void CBlockTreeDB::WriteIndexingFlags(bool addressIndexing, bool spentIndexing)
+{
+    // Use the provided setting for -addressindex in the new database
+    SetAddressIndexing(addressIndexing);
+    WriteFlag("addressindex", addressIndexing_);
+
+    SetSpentIndexing(spentIndexing);
+    WriteFlag("spentindex", spentIndexing_);
 }

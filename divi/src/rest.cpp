@@ -19,6 +19,7 @@
 #include <sync.h>
 
 #include <JsonTxHelpers.h>
+#include <JsonBlockHelpers.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -50,8 +51,6 @@ public:
     enum HTTPStatusCode status;
     string message;
 };
-
-extern Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false);
 
 static RestErr RESTERR(enum HTTPStatusCode status, string message)
 {

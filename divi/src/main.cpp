@@ -100,7 +100,6 @@ CConditionVariable cvBlockChange;
 int nScriptCheckThreads = 0;
 bool fImporting = false;
 bool fReindex = false;
-bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 
 
@@ -2477,7 +2476,8 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp)
 
 void static CheckBlockIndex()
 {
-    if (!fCheckBlockIndex) {
+    static const bool defaultConsistencyChecks = Params().DefaultConsistencyChecks();
+    if (!settings.GetBoolArg("-checkblockindex",defaultConsistencyChecks)) {
         return;
     }
 

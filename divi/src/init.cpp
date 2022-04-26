@@ -86,7 +86,6 @@ extern Settings& settings;
 extern bool fReindex;
 extern bool fImporting;
 extern bool fVerifyingBlocks;
-extern Settings& settings;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif

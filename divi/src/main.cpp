@@ -100,7 +100,6 @@ CConditionVariable cvBlockChange;
 int nScriptCheckThreads = 0;
 bool fImporting = false;
 bool fReindex = false;
-bool fTxIndex = true;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 
@@ -168,7 +167,7 @@ static bool UpdateDBIndicesForNewBlock(
     CBlockTreeDB& blockTreeDatabase,
     CValidationState& state)
 {
-    if (fTxIndex)
+    if (blockTreeDatabase.GetTxIndexing())
         if (!blockTreeDatabase.WriteTxIndex(indexDatabaseUpdates.txLocationData))
             return state.Abort("ConnectingBlock: Failed to write transaction index");
 
@@ -2276,8 +2275,8 @@ bool static LoadBlockIndexState(string& strError)
     fReindex |= fReindexing;
 
     // Check whether we have a transaction index
-    blockTree.ReadFlag("txindex", fTxIndex);
-    LogPrintf("%s: transaction index %s\n",__func__, fTxIndex ? "enabled" : "disabled");
+    blockTree.ReadFlag("txindex", blockTree.GetTxIndexing());
+    LogPrintf("%s: transaction index %s\n",__func__, blockTree.GetTxIndexing() ? "enabled" : "disabled");
 
     // Check whether we have an address index
     blockTree.LoadIndexingFlags();
@@ -2341,8 +2340,8 @@ bool InitBlockIndex()
         return true;
 
     // Use the provided setting for -txindex in the new database
-    fTxIndex = settings.GetBoolArg("-txindex", true);
-    blockTree.WriteFlag("txindex", fTxIndex);
+    blockTree.SetTxIndexing(settings.GetBoolArg("-txindex", true));
+    blockTree.WriteFlag("txindex", blockTree.GetTxIndexing());
 
     // Use the provided setting for -addressindex in the new database
     blockTree.WriteIndexingFlags(

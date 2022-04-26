@@ -12,7 +12,6 @@
 #include <Logging.h>
 
 extern CCriticalSection cs_main;
-extern bool fTxIndex;
 
 extern CTxMemPool& GetTransactionMemoryPool();
 /** Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock */
@@ -30,7 +29,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
             }
         }
 
-        if (fTxIndex) {
+        if (chainstate->BlockTree().GetTxIndexing()) {
             CDiskTxPos postx;
             if (chainstate->BlockTree().ReadTxIndex(hash, postx)) {
                 CAutoFile file(OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);

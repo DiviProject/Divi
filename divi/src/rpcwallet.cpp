@@ -231,11 +231,6 @@ void GetAccountAmounts(
     }
 }
 
-std::string HelpRequiringPassphrase()
-{
-    return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
-}
-
 void EnsureWalletIsUnlocked()
 {
     if (!pwalletMain->IsFullyUnlocked())

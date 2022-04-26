@@ -1098,6 +1098,11 @@ std::vector<std::string> CRPCTable::listCommands() const
     return commandList;
 }
 
+std::string HelpRequiringPassphrase()
+{
+    return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
+}
+
 std::string HelpExampleCli(string methodname, string args)
 {
     return "> divi-cli " + methodname + " " + args + "\n";

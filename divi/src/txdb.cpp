@@ -510,9 +510,11 @@ void CBlockTreeDB::LoadIndexingFlags()
     LogPrintf("%s: spent index %s\n", __func__, spentIndexing_ ? "enabled" : "disabled");
 }
 
-void CBlockTreeDB::WriteIndexingFlags(bool addressIndexing, bool spentIndexing)
+void CBlockTreeDB::WriteIndexingFlags(bool addressIndexing, bool spentIndexing, bool txIndexing)
 {
-    // Use the provided setting for -addressindex in the new database
+    SetTxIndexing(txIndexing);
+    WriteFlag("txindex", txIndexing_);
+
     SetAddressIndexing(addressIndexing);
     WriteFlag("addressindex", addressIndexing_);
 

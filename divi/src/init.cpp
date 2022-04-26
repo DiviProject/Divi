@@ -129,8 +129,6 @@ constexpr char FEE_ESTIMATES_FILENAME[] = "fee_estimates.dat";
 
 CClientUIInterface uiInterface;
 
-bool fAddressIndex = false;
-bool fSpentIndex = false;
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
 CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate());
 CTxMemPool& GetTransactionMemoryPool()

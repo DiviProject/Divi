@@ -48,7 +48,6 @@ using namespace std;
 
 extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
-extern bool fSpentIndex;
 
 void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& entry,
                       int nHeight = 0, int nConfirmations = 0, int nBlockTime = 0)
@@ -77,7 +76,7 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
             // Add address and value info if spentindex enabled
             CSpentIndexValue spentInfo;
             const CSpentIndexKey spentKey(txin.prevout.hash, txin.prevout.n);
-            if (TransactionSearchIndexes::GetSpentIndex(fSpentIndex, &blockTree, spentKey, spentInfo)) {
+            if (TransactionSearchIndexes::GetSpentIndex(&blockTree, spentKey, spentInfo)) {
                 in.push_back(Pair("value", ValueFromAmount(spentInfo.satoshis)));
                 in.push_back(Pair("valueSat", spentInfo.satoshis));
                 if (spentInfo.addressType == 1) {
@@ -108,9 +107,9 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
         // so we simply try looking up by both txid and bare txid as at
         // most one of them can match anyway.
         CSpentIndexValue spentInfo;
-        bool found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex, &blockTree, CSpentIndexKey(txid, i), spentInfo);
+        bool found = TransactionSearchIndexes::GetSpentIndex(&blockTree, CSpentIndexKey(txid, i), spentInfo);
         if (!found)
-          found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex, &blockTree, CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
+          found = TransactionSearchIndexes::GetSpentIndex(&blockTree, CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
         if (found) {
             out.push_back(Pair("spentTxId", spentInfo.txid.GetHex()));
             out.push_back(Pair("spentIndex", (int)spentInfo.inputIndex));

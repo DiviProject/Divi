@@ -1098,6 +1098,12 @@ std::vector<std::string> CRPCTable::listCommands() const
     return commandList;
 }
 
+void EnsureWalletIsUnlocked()
+{
+    if (pwalletMain && !pwalletMain->IsFullyUnlocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+}
+
 std::string HelpRequiringPassphrase()
 {
     return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";

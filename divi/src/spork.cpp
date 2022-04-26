@@ -30,7 +30,6 @@
 #include <NodeStateRegistry.h>
 #include <utilstrencodings.h>
 
-extern bool fLiteMode;
 extern CCriticalSection cs_main;
 extern std::map<uint256, int64_t> mapRejectedBlocks;
 
@@ -219,8 +218,6 @@ void CSporkManager::LoadSporksFromDB()
 
 void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
-    if(fLiteMode) return; // disable all Dash specific functionality
-
     if (strCommand == "spork") {
 
         CSporkMessage spork;

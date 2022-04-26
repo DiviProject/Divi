@@ -86,7 +86,6 @@ extern Settings& settings;
 extern bool fReindex;
 extern bool fImporting;
 extern bool fVerifyingBlocks;
-extern bool fLiteMode;
 extern Settings& settings;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -1484,7 +1483,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
     LockUpMasternodeCollateral();
     threadGroup.create_thread(boost::bind(&ThreadMasternodeBackgroundSync));
-    LogPrintf("fLiteMode %d\n", fLiteMode);
 
     // ********************************************************* Step 11: start node
 

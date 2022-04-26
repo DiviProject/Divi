@@ -104,8 +104,6 @@ bool fTxIndex = true;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 
-extern bool fAddressIndex;
-extern bool fSpentIndex;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
@@ -989,7 +987,9 @@ bool ConnectBlock(
         subsidiesContainer.blockSubsidiesProvider());
 
     const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
-    IndexDatabaseUpdates indexDatabaseUpdates(fAddressIndex,fSpentIndex);
+    IndexDatabaseUpdates indexDatabaseUpdates(
+        chainstate->BlockTree().GetAddressIndexing(),
+        chainstate->BlockTree().GetSpentIndexing());
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
     if(ActivationState(pindex->pprev).IsActive(Fork::DeprecateMasternodes))
     {
@@ -1136,7 +1136,7 @@ bool static DisconnectTip(CValidationState& state, const bool updateCoinDatabase
     mempool.check(&coinsTip, blockMap);
     // Read block from disk.
     const BlockDiskDataReader blockDiskReader;
-    const ActiveChainManager chainManager(fAddressIndex, fSpentIndex, &chainstate->BlockTree(), blockDiskReader);
+    const ActiveChainManager chainManager(&chainstate->BlockTree(), blockDiskReader);
     std::pair<CBlock,bool> disconnectedBlock;
     {
          CCoinsViewCache view(&coinsTip);
@@ -2280,12 +2280,7 @@ bool static LoadBlockIndexState(string& strError)
     LogPrintf("%s: transaction index %s\n",__func__, fTxIndex ? "enabled" : "disabled");
 
     // Check whether we have an address index
-    blockTree.ReadFlag("addressindex", fAddressIndex);
-    LogPrintf("%s: address index %s\n", __func__, fAddressIndex ? "enabled" : "disabled");
-
-    // Check whether we have a spent index
-    blockTree.ReadFlag("spentindex", fSpentIndex);
-    LogPrintf("%s: spent index %s\n", __func__, fSpentIndex ? "enabled" : "disabled");
+    blockTree.LoadIndexingFlags();
 
     // If this is written true before the next client init, then we know the shutdown process failed
     blockTree.WriteFlag("shutdown", false);
@@ -2350,11 +2345,11 @@ bool InitBlockIndex()
     blockTree.WriteFlag("txindex", fTxIndex);
 
     // Use the provided setting for -addressindex in the new database
-    fAddressIndex = settings.GetBoolArg("-addressindex", DEFAULT_ADDRESSINDEX);
-    blockTree.WriteFlag("addressindex", fAddressIndex);
+    blockTree.WriteIndexingFlags(
+        settings.GetBoolArg("-addressindex", DEFAULT_ADDRESSINDEX),
+        settings.GetBoolArg("-spentindex", DEFAULT_SPENTINDEX)
+    );
 
-    fSpentIndex = settings.GetBoolArg("-spentindex", DEFAULT_SPENTINDEX);
-    blockTree.WriteFlag("spentindex", fSpentIndex);
 
     LogPrintf("Initializing databases...\n");
 

@@ -33,6 +33,10 @@
 
 extern CCriticalSection cs_main;
 extern CConditionVariable cvBlockChange;
+extern bool HTTPReq_REST(AcceptedConnection* conn,
+    std::string& strURI,
+    std::map<std::string, std::string>& mapHeaders,
+    bool fRun);
 
 // RPC Endpoints
 extern json_spirit::Value getconnectioncount(const json_spirit::Array& params, bool fHelp); // in rpcnet.cpp

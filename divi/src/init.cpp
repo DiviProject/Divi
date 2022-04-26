@@ -85,7 +85,6 @@ extern CCriticalSection cs_main;
 extern Settings& settings;
 extern bool fReindex;
 extern bool fImporting;
-extern bool fCheckBlockIndex;
 extern int nScriptCheckThreads;
 extern bool fVerifyingBlocks;
 extern bool fLiteMode;
@@ -616,7 +615,6 @@ void SetConsistencyChecks()
 {
     // Checkmempool and checkblockindex default to true in regtest mode
     GetTransactionMemoryPool().setSanityCheck(settings.GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
-    fCheckBlockIndex = settings.GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks());
     CCheckpointServices::fEnabled = settings.GetBoolArg("-checkpoints", true);
 }
 

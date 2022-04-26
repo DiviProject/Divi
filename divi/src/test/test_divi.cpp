@@ -31,7 +31,6 @@ extern CClientUIInterface uiInterface;
 extern CWallet* pwalletMain;
 extern Settings& settings;
 extern void noui_connect();
-extern bool fCheckBlockIndex;
 extern int nScriptCheckThreads;
 
 /* The global spork-manager instance is normally managed by init.cpp (where it
@@ -55,7 +54,7 @@ struct TestingSetup {
     {
         SetupEnvironment();
         fPrintToDebugLog = false; // don't want to write to debug.log file
-        fCheckBlockIndex = true;
+        settings.SetParameter("-checkblockindex","1");
         SelectParams(CBaseChainParams::UNITTEST);
         noui_connect();
 #ifdef ENABLE_WALLET

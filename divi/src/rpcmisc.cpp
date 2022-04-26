@@ -66,7 +66,6 @@ extern bool fAddressIndex;
 extern CCriticalSection cs_main;
 extern CWallet* pwalletMain;
 extern bool fSpentIndex;
-extern int64_t nWalletUnlockTime;
 
 std::string GetWarnings(std::string strFor);
 
@@ -164,7 +163,7 @@ Value getinfo(const Array& params, bool fHelp)
         obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
     }
     if (pwalletMain && pwalletMain->IsCrypted())
-        obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
+        obj.push_back(Pair("unlocked_until", TimeTillWalletLock()));
 #endif
     obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate().GetFeePerK())));
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();

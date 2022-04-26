@@ -52,8 +52,6 @@ using namespace boost;
 using namespace boost::assign;
 using namespace json_spirit;
 
-int64_t nWalletUnlockTime;
-static CCriticalSection cs_nWalletUnlockTime;
 extern CCriticalSection cs_main;
 extern CWallet* pwalletMain;
 extern Settings& settings;
@@ -2321,14 +2319,6 @@ Value keypoolrefill(const Array& params, bool fHelp)
     return Value::null;
 }
 
-
-static void LockWallet(CWallet* pWallet)
-{
-    LOCK(cs_nWalletUnlockTime);
-    nWalletUnlockTime = 0;
-    pWallet->LockFully();
-}
-
 Value walletpassphrase(const Array& params, bool fHelp)
 {
     if (pwalletMain->IsCrypted() && (fHelp || params.size() < 2 || params.size() > 3))
@@ -2378,14 +2368,7 @@ Value walletpassphrase(const Array& params, bool fHelp)
     pwalletMain->TopUpKeyPool();
 
     int64_t nSleepTime = params[1].get_int64();
-    LOCK(cs_nWalletUnlockTime);
-    nWalletUnlockTime = GetTime() + nSleepTime;
-
-    if (nSleepTime > 0) {
-        nWalletUnlockTime = GetTime () + nSleepTime;
-        RPCRunLater ("lockwallet", boost::bind (LockWallet, pwalletMain), nSleepTime);
-    }
-
+    UnlockWalletBriefly(nSleepTime);
     return Value::null;
 }
 
@@ -2449,11 +2432,7 @@ Value walletlock(const Array& params, bool fHelp)
     if (!pwalletMain->IsCrypted())
         throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but walletlock was called.");
 
-    RPCDiscardRunLater("lockwallet");
-
-    {
-        LockWallet(pwalletMain);
-    }
+    LockWallet();
 
     return Value::null;
 }
@@ -2689,7 +2668,7 @@ Value getwalletinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("txcount", (int)pwalletMain->GetWalletTransactionReferences().size()));
     obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
     if (pwalletMain->IsCrypted())
-        obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
+        obj.push_back(Pair("unlocked_until", TimeTillWalletLock() ));
 
     obj.push_back(Pair("encryption_status", DescribeEncryptionStatus(pwalletMain)));
 

@@ -209,25 +209,6 @@ void RPCTypeCheck(const Object& o,
     }
 }
 
-static inline int64_t roundint64(double d)
-{
-    return (int64_t)(d > 0 ? d + 0.5 : d - 0.5);
-}
-
-CAmount AmountFromValue(const Value& value, const bool allowZero)
-{
-    const double dAmount = value.get_real();
-    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-    if (dAmount < 0.0 || dAmount >  maxMoneyAllowedInOutput)
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
-    const CAmount nAmount = roundint64(dAmount * COIN);
-    if (!allowZero && nAmount == 0)
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
-    if (!MoneyRange(nAmount,maxMoneyAllowedInOutput))
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
-    return nAmount;
-}
-
 /**
  * Note: This interface may still be subject to change.
  */

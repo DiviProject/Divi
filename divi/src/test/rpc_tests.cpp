@@ -8,6 +8,7 @@
 #include "base58.h"
 #include "netbase.h"
 #include <amount.h>
+#include <JsonTxHelpers.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>

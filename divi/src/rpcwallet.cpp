@@ -45,6 +45,8 @@
 
 #include <walletdb.h>
 
+#include <JsonTxHelpers.h>
+
 using namespace std;
 using namespace boost;
 using namespace boost::assign;

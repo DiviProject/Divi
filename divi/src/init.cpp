@@ -87,7 +87,6 @@ extern bool fReindex;
 extern bool fImporting;
 extern bool fCheckBlockIndex;
 extern int nScriptCheckThreads;
-extern bool fTxIndex;
 extern bool fVerifyingBlocks;
 extern bool fLiteMode;
 extern Settings& settings;
@@ -929,7 +928,7 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
         }
 
         // Check for changed -txindex state
-        if (fTxIndex != settings.GetBoolArg("-txindex", true)) {
+        if (chainstate->BlockTree().GetTxIndexing() != settings.GetBoolArg("-txindex", true)) {
             strLoadError = translate("You need to rebuild the database using -reindex to change -txindex");
             return BlockLoadingStatus::RETRY_LOADING;
         }
@@ -1481,9 +1480,12 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return InitError("Unknown key or missing label for masternode=<alias>. masternode=<alias> may be missing from configuration.");
     }
-    if(!InitializeMasternodeIfRequested(settings,fTxIndex,errorMessage))
+    {
+    ChainstateManager::Reference chainstate;
+    if(!InitializeMasternodeIfRequested(settings,chainstate->BlockTree().GetTxIndexing(),errorMessage))
     {
         return InitError(errorMessage);
+    }
     }
     LockUpMasternodeCollateral();
     threadGroup.create_thread(boost::bind(&ThreadMasternodeBackgroundSync));

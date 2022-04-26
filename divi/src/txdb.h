@@ -71,11 +71,14 @@ private:
 
     bool addressIndexing_;
     bool spentIndexing_;
+    bool txIndexing_;
 public:
     void SetAddressIndexing(bool addressIndexing);
     bool GetAddressIndexing() const;
     void SetSpentIndexing(bool spentIndexing);
     bool GetSpentIndexing() const;
+    void SetTxIndexing(bool txIndexing);
+    bool GetTxIndexing() const;
     void LoadIndexingFlags();
     void WriteIndexingFlags(bool addressIndexing, bool spentIndexing);
 

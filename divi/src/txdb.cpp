@@ -497,10 +497,6 @@ bool CBlockTreeDB::GetTxIndexing() const
 
 void CBlockTreeDB::LoadIndexingFlags()
 {
-    // Check whether we have an tx index
-    ReadFlag("txindex", txIndexing_);
-    LogPrintf("%s: transaction index %s\n",__func__, txIndexing_ ? "enabled" : "disabled");
-
     // Check whether we have an address index
     ReadFlag("addressindex", addressIndexing_);
     LogPrintf("%s: address index %s\n", __func__, addressIndexing_ ? "enabled" : "disabled");
@@ -508,16 +504,20 @@ void CBlockTreeDB::LoadIndexingFlags()
     // Check whether we have a spent index
     ReadFlag("spentindex", spentIndexing_);
     LogPrintf("%s: spent index %s\n", __func__, spentIndexing_ ? "enabled" : "disabled");
+
+    // Check whether we have an tx index
+    ReadFlag("txindex", txIndexing_);
+    LogPrintf("%s: transaction index %s\n",__func__, txIndexing_ ? "enabled" : "disabled");
 }
 
 void CBlockTreeDB::WriteIndexingFlags(bool addressIndexing, bool spentIndexing, bool txIndexing)
 {
-    SetTxIndexing(txIndexing);
-    WriteFlag("txindex", txIndexing_);
-
     SetAddressIndexing(addressIndexing);
     WriteFlag("addressindex", addressIndexing_);
 
     SetSpentIndexing(spentIndexing);
     WriteFlag("spentindex", spentIndexing_);
+
+    SetTxIndexing(txIndexing);
+    WriteFlag("txindex", txIndexing_);
 }

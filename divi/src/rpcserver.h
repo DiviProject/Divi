@@ -133,6 +133,9 @@ public:
 };
 
 void EnsureWalletIsUnlocked();
+void LockWallet();
+void UnlockWalletBriefly(int64_t sleepTime);
+int64_t TimeTillWalletLock();
 std::string HelpRequiringPassphrase();
 std::string HelpExampleCli(std::string methodname, std::string args);
 std::string HelpExampleRpc(std::string methodname, std::string args);

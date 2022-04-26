@@ -56,6 +56,7 @@ using namespace json_spirit;
 extern CCriticalSection cs_main;
 extern CWallet* pwalletMain;
 extern Settings& settings;
+extern CScript _createmultisig_redeemScript(const Array& params);
 
 struct WalletOutputEntryParsing
 {
@@ -1456,9 +1457,6 @@ Value sendmany(const Array& params, bool fHelp)
     rpcTxRequest.accountName = strAccount;
     return SendMoney(vecSend,rpcTxRequest);
 }
-
-// Defined in rpcmisc.cpp
-extern CScript _createmultisig_redeemScript(const Array& params);
 
 Value addmultisigaddress(const Array& params, bool fHelp)
 {

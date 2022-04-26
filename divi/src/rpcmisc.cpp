@@ -64,6 +64,7 @@ extern bool fAddressIndex;
 extern CCriticalSection cs_main;
 extern CWallet* pwalletMain;
 extern bool fSpentIndex;
+extern int64_t nWalletUnlockTime;
 
 std::string GetWarnings(std::string strFor);
 

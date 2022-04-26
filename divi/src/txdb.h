@@ -80,7 +80,7 @@ public:
     void SetTxIndexing(bool txIndexing);
     bool GetTxIndexing() const;
     void LoadIndexingFlags();
-    void WriteIndexingFlags(bool addressIndexing, bool spentIndexing);
+    void WriteIndexingFlags(bool addressIndexing, bool spentIndexing, bool txIndexing);
 
     bool WriteBlockIndex(const CDiskBlockIndex& blockindex);
     bool ReadBlockFileInfo(int nFile, CBlockFileInfo& fileinfo) const;

@@ -2335,14 +2335,11 @@ bool InitBlockIndex()
     if (chainstate->ActiveChain().Genesis() != nullptr)
         return true;
 
-    // Use the provided setting for -txindex in the new database
-    blockTree.SetTxIndexing(settings.GetBoolArg("-txindex", true));
-    blockTree.WriteFlag("txindex", blockTree.GetTxIndexing());
-
-    // Use the provided setting for -addressindex in the new database
+    // Use the provided setting for transaciton search indices
     blockTree.WriteIndexingFlags(
         settings.GetBoolArg("-addressindex", DEFAULT_ADDRESSINDEX),
-        settings.GetBoolArg("-spentindex", DEFAULT_SPENTINDEX)
+        settings.GetBoolArg("-spentindex", DEFAULT_SPENTINDEX),
+        settings.GetBoolArg("-txindex", true)
     );
 
 

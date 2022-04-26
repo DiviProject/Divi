@@ -465,6 +465,7 @@ libbitcoin_server_a_SOURCES = \
   pow.cpp \
   rest.cpp \
   JsonTxHelpers.cpp \
+  JsonParseHelpers.cpp \
   rpcblockchain.cpp \
   rpclottery.cpp \
   rpcmasternode.cpp \

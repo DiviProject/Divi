@@ -24,6 +24,7 @@
 #include <script/StakingVaultScript.h>
 #include <TransactionDiskAccessor.h>
 #include <txmempool.h>
+#include <net.h>
 #include <WalletTx.h>
 #include <stdint.h>
 #include <OutputEntry.h>
@@ -55,8 +56,6 @@ using namespace json_spirit;
 extern CCriticalSection cs_main;
 extern CWallet* pwalletMain;
 extern Settings& settings;
-
-extern void RelayTransactionToAllPeers(const CTransaction& tx);
 
 struct WalletOutputEntryParsing
 {

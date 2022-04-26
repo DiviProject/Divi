@@ -133,11 +133,10 @@ public:
 };
 
 extern double GetDifficulty(const CBlockIndex* blockindex = NULL);
+void EnsureWalletIsUnlocked();
 std::string HelpRequiringPassphrase();
 std::string HelpExampleCli(std::string methodname, std::string args);
 std::string HelpExampleRpc(std::string methodname, std::string args);
-
-extern void EnsureWalletIsUnlocked();
 
 // in rest.cpp
 extern bool HTTPReq_REST(AcceptedConnection* conn,

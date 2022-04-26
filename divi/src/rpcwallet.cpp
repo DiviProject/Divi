@@ -231,12 +231,6 @@ void GetAccountAmounts(
     }
 }
 
-void EnsureWalletIsUnlocked()
-{
-    if (!pwalletMain->IsFullyUnlocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
-}
-
 void WalletTxToJSON(const CWallet& wallet, const CWalletTx& wtx, Object& entry)
 {
 

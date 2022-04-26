@@ -44,6 +44,9 @@ class thread_group;
 
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo);
 bool OpenNetworkConnection(const CAddress& addrConnect, const char* strDest = NULL, bool fOneShot = false);
+bool addNode(const std::string& strNode, const std::string& strCommand);
+std::vector<std::string> getAddedNodeList();
+
 void StartNode(boost::thread_group& threadGroup, I_StakingWallet* pwalletMain);
 bool StopNode();
 void CleanupP2PConnections();

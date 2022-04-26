@@ -38,6 +38,8 @@
 #include <IndexDatabaseUpdateCollector.h>
 #include <TransactionSearchIndexes.h>
 
+#include <JsonBlockHelpers.h>
+
 #include <Settings.h>
 extern Settings& settings;
 

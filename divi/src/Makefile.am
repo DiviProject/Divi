@@ -288,6 +288,7 @@ BITCOIN_CORE_H = \
   rpcclient.h \
   rpcprotocol.h \
   JsonTxHelpers.h \
+  JsonBlockHelpers.h \
   rpcserver.h \
   script/interpreter.h \
   script/SignatureCheckers.h \
@@ -465,6 +466,7 @@ libbitcoin_server_a_SOURCES = \
   pow.cpp \
   rest.cpp \
   JsonTxHelpers.cpp \
+  JsonBlockHelpers.cpp \
   JsonParseHelpers.cpp \
   rpcblockchain.cpp \
   rpclottery.cpp \

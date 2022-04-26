@@ -132,7 +132,6 @@ public:
     }
 };
 
-extern double GetDifficulty(const CBlockIndex* blockindex = NULL);
 void EnsureWalletIsUnlocked();
 std::string HelpRequiringPassphrase();
 std::string HelpExampleCli(std::string methodname, std::string args);

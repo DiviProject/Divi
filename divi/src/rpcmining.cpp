@@ -42,6 +42,8 @@
 #include <FeeAndPriorityCalculator.h>
 #include <blockmap.h>
 
+#include <JsonBlockHelpers.h>
+
 using namespace json_spirit;
 using namespace std;
 using namespace boost;

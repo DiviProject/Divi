@@ -2274,11 +2274,7 @@ bool static LoadBlockIndexState(string& strError)
     blockTree.ReadReindexing(fReindexing);
     fReindex |= fReindexing;
 
-    // Check whether we have a transaction index
-    blockTree.ReadFlag("txindex", blockTree.GetTxIndexing());
-    LogPrintf("%s: transaction index %s\n",__func__, blockTree.GetTxIndexing() ? "enabled" : "disabled");
-
-    // Check whether we have an address index
+    // Check whether we have address, spent or tx indexing enabled
     blockTree.LoadIndexingFlags();
 
     // If this is written true before the next client init, then we know the shutdown process failed

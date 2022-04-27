@@ -289,6 +289,7 @@ BITCOIN_CORE_H = \
   rpcclient.h \
   rpcprotocol.h \
   JsonTxHelpers.h \
+  JsonParseHelpers.h \
   JsonBlockHelpers.h \
   rpcserver.h \
   script/interpreter.h \

@@ -37,6 +37,9 @@ std::unique_ptr<CoinMintingModule> coinMintingModule;
 
 void InitializeCoinMintingModule(
     const Settings& settings,
+    const CChainParams& chainParameters,
+    const MasternodeModule& masternodeModule,
+    const CSporkManager& sporkManager,
     const CFeeRate& minimumRelayFeeRate,
     const I_PeerBlockNotifyService& peerNotificationService,
     const I_BlockSubmitter& blockSubmitter,
@@ -49,12 +52,12 @@ void InitializeCoinMintingModule(
     coinMintingModule.reset(
         new CoinMintingModule(
             settings,
-            Params(),
-            GetMasternodeModule(),
+            chainParameters,
+            masternodeModule,
             minimumRelayFeeRate,
             peerNotificationService,
             blockSubmitter,
-            GetSporkManager(),
+            sporkManager,
             mainCS,
             mempool,
             *pwallet));

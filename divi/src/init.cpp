@@ -52,6 +52,7 @@
 #include <MerkleTxConfirmationNumberCalculator.h>
 #include <VaultManager.h>
 #include <VaultManagerDatabase.h>
+#include <I_BlockSubmitter.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
@@ -139,10 +140,32 @@ void InitializeWallet(std::string strWalletFile)
 #endif
 }
 
+class BlockSubmitter final: public I_BlockSubmitter
+{
+public:
+    bool submitBlockForChainExtension(CBlock& block) const override
+    {
+        LogPrintf("%s\n", block);
+        LogPrintf("generated %s\n", FormatMoney(block.vtx[0].vout[0].nValue));
+
+        // Process this block the same as if we had received it from another node
+        CValidationState state;
+        if (!IsBlockValidChainExtension(&block) || !ProcessNewBlock(state, NULL, &block))
+            return error("%s : block not accepted",__func__);
+
+        return true;
+    }
+    static const BlockSubmitter& instance()
+    {
+        static BlockSubmitter blockSubmitter;
+        return blockSubmitter;
+    }
+};
+
 void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* pwalletMain)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
-    InitializeCoinMintingModule(settings,GetPeerBlockNotifyService(), feeAndPriorityCalculator.getMinimumRelayFeeRate(), cs_main, GetTransactionMemoryPool(), pwalletMain);
+    InitializeCoinMintingModule(settings, feeAndPriorityCalculator.getMinimumRelayFeeRate(), GetPeerBlockNotifyService(), BlockSubmitter::instance(), cs_main, GetTransactionMemoryPool(), pwalletMain);
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
     {

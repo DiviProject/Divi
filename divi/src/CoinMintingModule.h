@@ -24,6 +24,7 @@ class CCoinsViewCache;
 class CFeeRate;
 class MasternodeModule;
 class I_PeerBlockNotifyService;
+class I_BlockSubmitter;
 
 class CoinMintingModule
 {
@@ -48,6 +49,7 @@ public:
         const MasternodeModule& masternodeModule,
         const CFeeRate& relayTxFeeCalculator,
         const I_PeerBlockNotifyService& peers,
+        const I_BlockSubmitter& blockSubmitter,
         const CSporkManager& sporkManager,
         CCriticalSection& mainCS,
         CTxMemPool& mempool,

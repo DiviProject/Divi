@@ -17,6 +17,7 @@
 #include <reservekey.h>
 #include <script/standard.h>
 #include <ForkActivation.h>
+#include <I_BlockSubmitter.h>
 
 constexpr int hashingDelay = 45;
 extern bool ProcessNewBlockFoundByMe(CBlock* pblock);
@@ -25,6 +26,7 @@ CoinMinter::CoinMinter(
     const CChain& chain,
     const CChainParams& chainParameters,
     const I_PeerBlockNotifyService& peerNotifier,
+    const I_BlockSubmitter& blockSubmitter,
     const CMasternodeSync& masternodeSynchronization,
     I_BlockFactory& blockFactory,
     I_StakingWallet& wallet,
@@ -32,6 +34,7 @@ CoinMinter::CoinMinter(
     ): chain_(chain)
     , chainParameters_(chainParameters)
     , peerNotifier_( peerNotifier)
+    , blockSubmitter_(blockSubmitter)
     , masternodeSync_(masternodeSynchronization)
     , blockFactory_( blockFactory )
     , wallet_(wallet)

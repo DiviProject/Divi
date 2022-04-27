@@ -18,9 +18,15 @@ class CCriticalSection;
 class Settings;
 class CFeeRate;
 class I_BlockSubmitter;
+class CChainParams;
+class MasternodeModule;
+class CSporkManager;
 
 void InitializeCoinMintingModule(
     const Settings& settings,
+    const CChainParams& chainParameters,
+    const MasternodeModule& masternodeModule,
+    const CSporkManager& sporkManager,
     const CFeeRate& minimumRelayFeeRate,
     const I_PeerBlockNotifyService& peerNotificationService,
     const I_BlockSubmitter& blockSubmitter,

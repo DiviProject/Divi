@@ -176,7 +176,17 @@ public:
 void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* pwalletMain)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
-    InitializeCoinMintingModule(settings, feeAndPriorityCalculator.getMinimumRelayFeeRate(), GetPeerBlockNotifyService(), BlockSubmitter::instance(), cs_main, GetTransactionMemoryPool(), pwalletMain);
+    InitializeCoinMintingModule(
+        settings,
+        Params(),
+        GetMasternodeModule(),
+        GetSporkManager(),
+        feeAndPriorityCalculator.getMinimumRelayFeeRate(),
+        GetPeerBlockNotifyService(),
+        BlockSubmitter::instance(),
+        cs_main,
+        GetTransactionMemoryPool(),
+        pwalletMain);
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
     {

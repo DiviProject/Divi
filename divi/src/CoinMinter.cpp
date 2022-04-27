@@ -20,7 +20,6 @@
 #include <I_BlockSubmitter.h>
 
 constexpr int hashingDelay = 45;
-extern bool ProcessNewBlockFoundByMe(CBlock* pblock);
 
 CoinMinter::CoinMinter(
     const CChain& chain,

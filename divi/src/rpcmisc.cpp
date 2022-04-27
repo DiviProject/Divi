@@ -288,7 +288,7 @@ public:
 */
 Value spork(const Array& params, bool fHelp)
 {
-    static CSporkManager& sporkManager = GetSporkManager();
+    CSporkManager& sporkManager = GetSporkManager();
     if (params.size() == 1 && params[0].get_str() == "show") {
         Object ret;
         for (int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++) {

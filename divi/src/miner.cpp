@@ -7,21 +7,12 @@
 
 #include "miner.h"
 
-#include "amount.h"
-#include "chainparams.h"
 #include <ChainstateManager.h>
-#include <masternode-payments.h>
-#include <MasternodeModule.h>
 #include <CoinMintingModule.h>
 #include <I_CoinMinter.h>
 #include <Logging.h>
-#include <spork.h>
-#include <coins.h>
 #include <ThreadManagementHelpers.h>
-#include <I_PeerBlockNotifyService.h>
-#include <I_BlockSubmitter.h>
 #include <chain.h>
-#include <FeeRate.h>
 #include <sync.h>
 
 #include <boost/thread.hpp>

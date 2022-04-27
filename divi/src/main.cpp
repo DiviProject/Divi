@@ -2016,16 +2016,6 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
     return true;
 }
-bool IsBlockValidChainExtension(CBlock* pblock)
-{
-    {
-        LOCK(cs_main);
-        const ChainstateManager::Reference chainstate;
-        if (pblock->hashPrevBlock != chainstate->ActiveChain().Tip()->GetBlockHash())
-            return error("%s : generated block is stale",__func__);
-    }
-    return true;
-}
 
 static std::vector<std::pair<int, CBlockIndex*> > ComputeHeightSortedBlockIndices(BlockMap& blockIndicesByHash)
 {

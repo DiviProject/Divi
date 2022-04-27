@@ -2026,18 +2026,6 @@ bool IsBlockValidChainExtension(CBlock* pblock)
     }
     return true;
 }
-bool ProcessNewBlockFoundByMe(CBlock* pblock)
-{
-    LogPrintf("%s\n", *pblock);
-    LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
-
-    // Process this block the same as if we had received it from another node
-    CValidationState state;
-    if (!IsBlockValidChainExtension(pblock) || !ProcessNewBlock(state, NULL, pblock))
-        return error("%s : block not accepted",__func__);
-
-    return true;
-}
 
 static std::vector<std::pair<int, CBlockIndex*> > ComputeHeightSortedBlockIndices(BlockMap& blockIndicesByHash)
 {

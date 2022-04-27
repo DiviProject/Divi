@@ -127,7 +127,7 @@ bool CoinMinter::mintingHasBeenRequested() const
 
 bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey* reservekey) const
 {
-    if(ProcessNewBlockFoundByMe(block))
+    if(blockSubmitter_.submitBlockForChainExtension(*block))
     {
         if(block->IsProofOfWork())
         {

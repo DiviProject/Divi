@@ -142,6 +142,17 @@ void InitializeWallet(std::string strWalletFile)
 
 class BlockSubmitter final: public I_BlockSubmitter
 {
+private:
+    bool IsBlockValidChainExtension(CBlock* pblock) const
+    {
+        {
+            LOCK(cs_main);
+            const ChainstateManager::Reference chainstate;
+            if (pblock->hashPrevBlock != chainstate->ActiveChain().Tip()->GetBlockHash())
+                return error("%s : generated block is stale",__func__);
+        }
+        return true;
+    }
 public:
     bool submitBlockForChainExtension(CBlock& block) const override
     {

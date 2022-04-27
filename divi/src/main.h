@@ -64,7 +64,6 @@ int GetHeight();
  * @param[out]  dbp     If pblock is stored to disk (or already there), this will be set to its location.
  * @return True if state.IsValid()
  */
-bool IsBlockValidChainExtension(CBlock* pblock);
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
 /** Import blocks from an external file */

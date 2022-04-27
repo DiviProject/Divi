@@ -983,7 +983,7 @@ bool ConnectBlock(
         return false;
     }
 
-    const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
+    const SuperblockSubsidyContainer subsidiesContainer(chainParameters, GetSporkManager());
     const BlockIncentivesPopulator incentives(
         chainParameters,
         GetMasternodeModule(),

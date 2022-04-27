@@ -11,12 +11,13 @@
 #include "test_only.h"
 
 #include <chainparams.h>
+#include <spork.h>
 #include <SuperblockSubsidyContainer.h>
 
 BOOST_AUTO_TEST_SUITE(main_tests)
 
 
-CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParameters)
+CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParameters, const CSporkManager& sporkManager)
 {
     CAmount startingExpectedSubsidy = 1250 * COIN;
     CAmount yearlySubsidyReduction = 100 * COIN;
@@ -37,7 +38,7 @@ CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParamet
     };
 
     CAmount expectedSubsidyValue = expectedSubsidy(nHeight/numberOfBlocksPerHalving);
-    SuperblockSubsidyContainer superblockSubsidies(chainParameters);
+    SuperblockSubsidyContainer superblockSubsidies(chainParameters, sporkManager);
     const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
     if(heightValidator.IsValidTreasuryBlockHeight(nHeight))
     {
@@ -65,11 +66,11 @@ CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParamet
     return expectedSubsidyValue;
 }
 
-void CheckRewardDistribution(const CChainParams& chainParameters)
+void CheckRewardDistribution(const CChainParams& chainParameters, const CSporkManager& sporkManager)
 {
     CAmount nSum = 0;
 
-    SuperblockSubsidyContainer subsidiesContainer(chainParameters);
+    SuperblockSubsidyContainer subsidiesContainer(chainParameters, sporkManager);
 
     for(int nHeight = 0; nHeight < chainParameters.SubsidyHalvingInterval()*13; ++nHeight)
     {
@@ -85,7 +86,7 @@ void CheckRewardDistribution(const CChainParams& chainParameters)
         }
         else
         {
-            expectedSubsidyValue = getExpectedSubsidyAtHeight(nHeight, chainParameters);
+            expectedSubsidyValue = getExpectedSubsidyAtHeight(nHeight, chainParameters, sporkManager);
 
             testPass = nSubsidy==expectedSubsidyValue;
             BOOST_CHECK_MESSAGE(testPass, "Mismatched subsidy at height " << nHeight << "! " << nSubsidy << " vs. " << expectedSubsidyValue);
@@ -99,8 +100,9 @@ void CheckRewardDistribution(const CChainParams& chainParameters)
 
 BOOST_AUTO_TEST_CASE(willDistributeTotalRewardsForBlocksAndSuperblocksCorrectly)
 {
-    CheckRewardDistribution(Params(CBaseChainParams::Network::MAIN));
-    CheckRewardDistribution(Params(CBaseChainParams::Network::TESTNET));
+    const CSporkManager& sporkManager = GetSporkManager();
+    CheckRewardDistribution(Params(CBaseChainParams::Network::MAIN), sporkManager);
+    CheckRewardDistribution(Params(CBaseChainParams::Network::TESTNET), sporkManager);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

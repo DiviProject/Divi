@@ -4,9 +4,10 @@
 #include <BlockSubsidyProvider.h>
 
 SuperblockSubsidyContainer::SuperblockSubsidyContainer(
-    const CChainParams& chainParameters
+    const CChainParams& chainParameters,
+    const CSporkManager& sporkManager
     ): heightValidator_(new SuperblockHeightValidator(chainParameters))
-    , blockSubsidies_(new BlockSubsidyProvider(chainParameters,*heightValidator_))
+    , blockSubsidies_(new BlockSubsidyProvider(chainParameters, sporkManager, *heightValidator_))
 {
 }
 

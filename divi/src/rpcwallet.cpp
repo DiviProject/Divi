@@ -1763,7 +1763,7 @@ static std::string ParseScriptAsAddressString(const CScript& scriptPubKey)
 }
 void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const UtxoOwnershipFilter& filter)
 {
-    const SuperblockSubsidyContainer superblockSubsidies(Params());
+    const SuperblockSubsidyContainer superblockSubsidies(Params(), GetSporkManager());
     const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
     const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
 

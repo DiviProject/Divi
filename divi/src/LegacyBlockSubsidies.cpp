@@ -27,10 +27,10 @@ CAmount BlockSubsidy(int nHeight, const CChainParams& chainParameters)
     return nSubsidy;
 }
 
-CAmount GetFullBlockValue(int nHeight, const CChainParams& chainParameters)
+CAmount GetFullBlockValue(int nHeight, const CChainParams& chainParameters, const CSporkManager& sporkManager)
 {
     CAmount blockSubsidy = 0u;
-    if(GetSporkManager().GetFullBlockValue(nHeight,chainParameters,blockSubsidy))
+    if(sporkManager.GetFullBlockValue(nHeight,chainParameters,blockSubsidy))
     {
         return blockSubsidy;
     }
@@ -42,9 +42,9 @@ CAmount GetFullBlockValue(int nHeight, const CChainParams& chainParameters)
 
 } // anonymous namespace
 
-CBlockRewards GetBlockSubsidity(int nHeight, const CChainParams& chainParameters)
+CBlockRewards GetBlockSubsidity(int nHeight, const CChainParams& chainParameters, const CSporkManager& sporkManager)
 {
-    CAmount nSubsidy = GetFullBlockValue(nHeight,chainParameters);
+    CAmount nSubsidy = GetFullBlockValue(nHeight, chainParameters, sporkManager);
 
     if(nHeight <= chainParameters.LAST_POW_BLOCK()) {
         return CBlockRewards(nSubsidy, 0, 0, 0, 0, 0);
@@ -76,7 +76,7 @@ CBlockRewards GetBlockSubsidity(int nHeight, const CChainParams& chainParameters
     };
 
     BlockPaymentSporkValue rewardDistribution;
-    if(GetSporkManager().GetRewardDistribution(nHeight,chainParameters,rewardDistribution))
+    if(sporkManager.GetRewardDistribution(nHeight,chainParameters,rewardDistribution))
     {
         return helper(
                 rewardDistribution.nStakeReward,

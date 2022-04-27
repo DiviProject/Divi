@@ -4,11 +4,13 @@
 class CChainParams;
 class I_SuperblockHeightValidator;
 class CBlockRewards;
+class CSporkManager;
 
 class BlockSubsidyProvider: public I_BlockSubsidyProvider
 {
 private:
     const CChainParams& chainParameters_;
+    const CSporkManager& sporkManager_;
     I_SuperblockHeightValidator& heightValidator_;
 
     void updateTreasuryReward(int nHeight, CBlockRewards& rewards, bool isTreasuryBlock) const;
@@ -16,6 +18,7 @@ private:
 public:
     BlockSubsidyProvider(
         const CChainParams& chainParameters,
+        const CSporkManager& sporkManager,
         I_SuperblockHeightValidator& heightValidator);
     virtual CBlockRewards GetBlockSubsidity(int nHeight) const;
 };

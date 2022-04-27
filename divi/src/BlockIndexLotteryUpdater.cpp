@@ -11,7 +11,7 @@ BlockIndexLotteryUpdater::BlockIndexLotteryUpdater(
     const CChain& activeChain,
     const CSporkManager& sporkManager
     ): chainParameters_(chainParameters)
-    , subsidyContainer_(new SuperblockSubsidyContainer(chainParameters_))
+    , subsidyContainer_(new SuperblockSubsidyContainer(chainParameters_, sporkManager))
     , lotteryCalculator_(new LotteryWinnersCalculator(chainParameters_.GetLotteryBlockStartBlock(),activeChain,sporkManager, subsidyContainer_->superblockHeightValidator()) )
 {
 }

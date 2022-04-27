@@ -7,8 +7,10 @@
 
 BlockSubsidyProvider::BlockSubsidyProvider(
     const CChainParams& chainParameters,
+    const CSporkManager& sporkManager,
     I_SuperblockHeightValidator& heightValidator
     ): chainParameters_(chainParameters)
+    , sporkManager_(sporkManager)
     , heightValidator_(heightValidator)
 {
 
@@ -25,7 +27,7 @@ void BlockSubsidyProvider::updateTreasuryReward(int nHeight, CBlockRewards& rewa
     }
     int treasuryBlockCycleLength = heightValidator_.GetTreasuryBlockPaymentCycle(nHeight);
     int priorTreasuryBlockHeight = nHeight - treasuryBlockCycleLength;
-    CBlockRewards priorRewards = isTreasuryBlock? Legacy::GetBlockSubsidity(priorTreasuryBlockHeight,chainParameters_): rewards;
+    CBlockRewards priorRewards = isTreasuryBlock? Legacy::GetBlockSubsidity(priorTreasuryBlockHeight, chainParameters_, sporkManager_): rewards;
     int numberOfSubsidyIntervals = nHeight/chainParameters_.SubsidyHalvingInterval(); // must be at least 2;
     int priorRewardWeight = numberOfSubsidyIntervals*chainParameters_.SubsidyHalvingInterval() - priorTreasuryBlockHeight;
     int currentRewardWeight =  nHeight - numberOfSubsidyIntervals*chainParameters_.SubsidyHalvingInterval();
@@ -44,7 +46,7 @@ void BlockSubsidyProvider::updateLotteryReward(int nHeight, CBlockRewards& rewar
     }
     int lotteryBlockCycleLength = heightValidator_.GetLotteryBlockPaymentCycle(nHeight);
     int priorLotteryBlockHeight = nHeight - lotteryBlockCycleLength;
-    CBlockRewards priorRewards = isLotteryBlock? Legacy::GetBlockSubsidity(priorLotteryBlockHeight,chainParameters_): rewards;
+    CBlockRewards priorRewards = isLotteryBlock? Legacy::GetBlockSubsidity(priorLotteryBlockHeight, chainParameters_, sporkManager_): rewards;
     int numberOfSubsidyIntervals = nHeight/chainParameters_.SubsidyHalvingInterval(); // must be at least 2;
     int priorRewardWeight = numberOfSubsidyIntervals*chainParameters_.SubsidyHalvingInterval() - priorLotteryBlockHeight;
     int currentRewardWeight =  nHeight - numberOfSubsidyIntervals*chainParameters_.SubsidyHalvingInterval();
@@ -54,7 +56,7 @@ void BlockSubsidyProvider::updateLotteryReward(int nHeight, CBlockRewards& rewar
 
 CBlockRewards BlockSubsidyProvider::GetBlockSubsidity(int nHeight) const
 {
-    CBlockRewards rewards = Legacy::GetBlockSubsidity(nHeight,chainParameters_);
+    CBlockRewards rewards = Legacy::GetBlockSubsidity(nHeight, chainParameters_, sporkManager_);
     updateTreasuryReward(nHeight,rewards, heightValidator_.IsValidTreasuryBlockHeight(nHeight));
     updateLotteryReward(nHeight,rewards, heightValidator_.IsValidLotteryBlockHeight(nHeight));
     return rewards;

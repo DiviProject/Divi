@@ -41,7 +41,7 @@ Value getlotteryblockwinners(const Array& params, bool fHelp)
 
 
     const auto& chainParameters = Params();
-    const SuperblockSubsidyContainer subsidyCointainer(chainParameters);
+    const SuperblockSubsidyContainer subsidyCointainer(chainParameters, GetSporkManager());
     const ChainstateManager::Reference chainstate;
     const LotteryWinnersCalculator calculator(
         chainParameters.GetLotteryBlockStartBlock(), chainstate->ActiveChain(), GetSporkManager(),subsidyCointainer.superblockHeightValidator());

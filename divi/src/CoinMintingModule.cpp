@@ -68,7 +68,7 @@ CoinMintingModule::CoinMintingModule(
     ): mapHashedBlocks_()
     , chainstate_(new ChainstateManagerReference())
     , posModule_(new ProofOfStakeModule(chainParameters, (*chainstate_)->ActiveChain(), (*chainstate_)->GetBlockMap()))
-    , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
+    , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters, sporkManager))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
         chainParameters,
         masternodeModule,

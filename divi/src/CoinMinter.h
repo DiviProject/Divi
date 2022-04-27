@@ -24,6 +24,7 @@ class I_BlockFactory;
 class CBlockTemplate;
 class CTxMemPool;
 class I_BlockSubsidyProvider;
+class I_BlockSubmitter;
 
 class CoinMinter final: public I_CoinMinter
 {
@@ -31,6 +32,7 @@ class CoinMinter final: public I_CoinMinter
     const CChain& chain_;
     const CChainParams& chainParameters_;
     const I_PeerBlockNotifyService& peerNotifier_;
+    const I_BlockSubmitter& blockSubmitter_;
     const CMasternodeSync& masternodeSync_;
 
     I_BlockFactory& blockFactory_;
@@ -56,6 +58,7 @@ public:
         const CChain& chain,
         const CChainParams& chainParameters,
         const I_PeerBlockNotifyService& peers,
+        const I_BlockSubmitter& blockSubmitter,
         const CMasternodeSync& masternodeSynchronization,
         I_BlockFactory& blockFactory,
         I_StakingWallet& wallet,

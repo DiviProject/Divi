@@ -19,6 +19,7 @@
 #include <coins.h>
 #include <ThreadManagementHelpers.h>
 #include <I_PeerBlockNotifyService.h>
+#include <I_BlockSubmitter.h>
 #include <chain.h>
 #include <FeeRate.h>
 #include <sync.h>
@@ -36,8 +37,9 @@ std::unique_ptr<CoinMintingModule> coinMintingModule;
 
 void InitializeCoinMintingModule(
     const Settings& settings,
-    const I_PeerBlockNotifyService& peerNotificationService,
     const CFeeRate& minimumRelayFeeRate,
+    const I_PeerBlockNotifyService& peerNotificationService,
+    const I_BlockSubmitter& blockSubmitter,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
     I_StakingWallet* pwallet)
@@ -51,6 +53,7 @@ void InitializeCoinMintingModule(
             GetMasternodeModule(),
             minimumRelayFeeRate,
             peerNotificationService,
+            blockSubmitter,
             GetSporkManager(),
             mainCS,
             mempool,

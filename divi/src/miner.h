@@ -17,11 +17,13 @@ class CTxMemPool;
 class CCriticalSection;
 class Settings;
 class CFeeRate;
+class I_BlockSubmitter;
 
 void InitializeCoinMintingModule(
     const Settings& settings,
-    const I_PeerBlockNotifyService& peerNotificationService,
     const CFeeRate& minimumRelayFeeRate,
+    const I_PeerBlockNotifyService& peerNotificationService,
+    const I_BlockSubmitter& blockSubmitter,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
     I_StakingWallet* pwallet);

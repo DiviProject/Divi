@@ -971,7 +971,7 @@ bool ConnectBlock(
     if (!fAlreadyChecked && !CheckBlock(block, state))
         return false;
 
-    static const CChainParams& chainParameters = Params();
+    const CChainParams& chainParameters = Params();
     VerifyBestBlockIsAtPreviousBlock(pindex,view);
     if (block.GetHash() == Params().HashGenesisBlock())
     {
@@ -983,8 +983,8 @@ bool ConnectBlock(
         return false;
     }
 
-    static const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
-    static const BlockIncentivesPopulator incentives(
+    const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
+    const BlockIncentivesPopulator incentives(
         chainParameters,
         GetMasternodeModule(),
         subsidiesContainer.superblockHeightValidator(),

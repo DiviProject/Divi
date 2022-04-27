@@ -1763,9 +1763,9 @@ static std::string ParseScriptAsAddressString(const CScript& scriptPubKey)
 }
 void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const UtxoOwnershipFilter& filter)
 {
-    static SuperblockSubsidyContainer superblockSubsidies(Params());
-    static const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    static const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
+    const SuperblockSubsidyContainer superblockSubsidies(Params());
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
 
     string strSentAccount = wtx.strFromAccount;
     const std::string allAccounts = "*";

@@ -7,13 +7,11 @@
 #include <string>
 #include <vector>
 
-/* Variables used by logging*/
-extern bool fLogTimestamps;
-
 void requestReopeningDebugLog();
 void setWriteToDebugLogFlag(bool settingValue);
 void SetLoggingAndDebugSettings();
 bool ShouldLogPeerIPs();
+bool ShouldLogTimestamps();
 /** Return true if log accepts specified category */
 bool LogAcceptCategory(const char* category);
 /** Send a string to the log output */

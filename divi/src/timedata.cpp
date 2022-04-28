@@ -98,11 +98,6 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
                 }
             }
         }
-        if (fDebug) {
-            BOOST_FOREACH (int64_t n, vSorted)
-                LogPrintf("%+d  ", n);
-            LogPrintf("|  ");
-        }
         LogPrintf("nTimeOffset = %+d  (%+d minutes)\n", nTimeOffset, nTimeOffset / 60);
     }
 }

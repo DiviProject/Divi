@@ -8,9 +8,9 @@
 #include <vector>
 
 /* Variables used by logging*/
-extern volatile bool fReopenDebugLog;
 extern bool fLogTimestamps;
 
+void requestReopeningDebugLog();
 void setWriteToDebugLogFlag(bool settingValue);
 void SetLoggingAndDebugSettings();
 bool ShouldLogPeerIPs();

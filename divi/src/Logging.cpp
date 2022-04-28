@@ -22,6 +22,10 @@ bool fLogIPs = false;
 
 extern Settings& settings;
 
+void requestReopeningDebugLog()
+{
+    fReopenDebugLog = true;
+}
 void setWriteToDebugLogFlag(bool settingValue)
 {
     fPrintToDebugLog = settingValue;

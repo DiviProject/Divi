@@ -485,7 +485,7 @@ void HandleSIGTERM(int)
 
 void HandleSIGHUP(int)
 {
-    fReopenDebugLog = true;
+    requestReopeningDebugLog();
 }
 
 void BlockNotifyCallback(const uint256& hashNewTip)

@@ -1304,7 +1304,7 @@ void ThreadOpenAddedConnections()
         std::list<std::vector<CService> > lservAddressesToAdd(0);
         BOOST_FOREACH (std::string& strAddNode, lAddresses) {
             std::vector<CService> vservNode(0);
-            if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0)) {
+            if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), getNameLookupFlag(), 0)) {
                 lservAddressesToAdd.push_back(vservNode);
             }
         }
@@ -1815,7 +1815,7 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
     }
 
     // Check for host lookup allowed before parsing any network related parameters
-    fNameLookup = settings.GetBoolArg("-dns", DEFAULT_NAME_LOOKUP);
+    setNameLookupFlag(settings.GetBoolArg("-dns", DEFAULT_NAME_LOOKUP));
 
     bool proxyRandomize = settings.GetBoolArg("-proxyrandomize", true);
     // -proxy sets a proxy for all outgoing network traffic
@@ -1823,7 +1823,7 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
     std::string proxyArg = settings.GetArg("-proxy", "");
     if (proxyArg != "" && proxyArg != "0") {
         CService proxyAddr;
-        if (!Lookup(proxyArg.c_str(), proxyAddr, 9050, fNameLookup)) {
+        if (!Lookup(proxyArg.c_str(), proxyAddr, 9050, getNameLookupFlag())) {
             return uiMessenger.InitError(strprintf(translate("Invalid -proxy address or hostname: '%s'"), proxyArg));
         }
 
@@ -1847,7 +1847,7 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
             SetReachable(NET_TOR, false); // set onions as unreachable
         } else {
             CService onionProxy;
-            if (!Lookup(onionArg.c_str(), onionProxy, 9050, fNameLookup)) {
+            if (!Lookup(onionArg.c_str(), onionProxy, 9050, getNameLookupFlag())) {
                 return uiMessenger.InitError(strprintf(translate("Invalid -onion address or hostname: '%s'"), onionArg));
             }
             proxyType addrOnion = proxyType(onionProxy, proxyRandomize);
@@ -1891,10 +1891,10 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
 
     if (settings.ParameterIsSet("-externalip")) {
         BOOST_FOREACH (std::string strAddr, settings.GetMultiParameter("-externalip")) {
-            CService addrLocal(strAddr, GetListenPort(), fNameLookup);
+            CService addrLocal(strAddr, GetListenPort(), getNameLookupFlag());
             if (!addrLocal.IsValid())
                 return uiMessenger.InitError(strprintf(translate("Cannot resolve -externalip address: '%s'"), strAddr));
-            AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
+            AddLocal(CService(strAddr, GetListenPort(), getNameLookupFlag()), LOCAL_MANUAL);
         }
     }
 

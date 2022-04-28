@@ -61,8 +61,7 @@ public:
         CValidationState& state,
         CBlockIndex* pindex,
         CCoinsViewCache& view,
-        const BlockMap& blockIndexMap,
-        const int blocksToSkipChecksFor);
+        const BlockMap& blockIndexMap);
 
     bool Check(
         const CBlockRewards& nExpectedMint,

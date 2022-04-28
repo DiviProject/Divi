@@ -984,7 +984,6 @@ bool ConnectBlock(
         subsidiesContainer.superblockHeightValidator(),
         subsidiesContainer.blockSubsidiesProvider());
 
-    const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
     IndexDatabaseUpdates indexDatabaseUpdates(
         chainstate->BlockTree().GetAddressIndexing(),
         chainstate->BlockTree().GetSpentIndexing());
@@ -994,7 +993,7 @@ bool ConnectBlock(
         nExpectedMint.nStakeReward += nExpectedMint.nMasternodeReward;
         nExpectedMint.nMasternodeReward = 0;
     }
-    BlockTransactionChecker blockTxChecker(block, state, pindex, view, chainstate->GetBlockMap(), blocksToSkipChecksFor);
+    BlockTransactionChecker blockTxChecker(block, state, pindex, view, chainstate->GetBlockMap());
 
     if(!blockTxChecker.Check(nExpectedMint, indexDatabaseUpdates))
     {

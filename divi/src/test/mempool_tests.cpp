@@ -38,9 +38,10 @@ public:
 
   MempoolTestFixture()
     : fakeChain(1, 1500000000, 1),
-      testPool(CFeeRate(0)),
+      testPool(),
       coinsMemPool(testPool), coins(&coinsMemPool)
   {
+    testPool.setSanityCheck(true);
     CMutableTransaction mtx;
     mtx.vout.emplace_back(2 * COIN, CScript () << OP_TRUE);
     mtx.vout.emplace_back(COIN, CScript () << OP_TRUE);
@@ -85,7 +86,6 @@ public:
         txGrandChild[i].vout[0].nValue = COIN;
     }
 
-    testPool.setSanityCheck(true);
     testPool.clear();
   }
 

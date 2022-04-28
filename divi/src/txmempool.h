@@ -12,7 +12,6 @@
 #include "addressindex.h"
 #include "spentindex.h"
 #include "amount.h"
-#include "FeeRate.h"
 #include "coins.h"
 #include "primitives/transaction.h"
 #include "sync.h"
@@ -58,8 +57,7 @@ public:
 class CTxMemPool
 {
 private:
-    bool fSanityCheck; //! Normally false, true if -checkmempool or -regtest
-    const CFeeRate& minRelayFee; //! Passed to constructor to avoid dependency on main
+    bool fSanityCheck_; //! Normally false, true if -checkmempool or -regtest
     uint64_t totalTxSize; //! sum of all mempool tx' byte sizes
 
     std::map<uint256, std::pair<double, CAmount> > mapDeltas;
@@ -75,7 +73,7 @@ public:
     std::map<uint256, CTxMemPoolEntry> mapTx;
     std::map<COutPoint, CInPoint> mapNextTx;
 
-    explicit CTxMemPool(const CFeeRate& _minRelayFee);
+    explicit CTxMemPool();
     ~CTxMemPool();
 
     /**
@@ -85,7 +83,7 @@ public:
      * check does nothing.
      */
     void check(const CCoinsViewCache* pcoins, const BlockMap& blockIndexMap) const;
-    void setSanityCheck(bool _fSanityCheck) { fSanityCheck = _fSanityCheck; }
+    void setSanityCheck(bool fSanityCheck) { fSanityCheck_ = fSanityCheck; }
 
     bool addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry, const CCoinsViewCache& view);
     void remove(const CTransaction& tx, std::list<CTransaction>& removed, bool fRecursive = false);

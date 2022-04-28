@@ -1,8 +1,8 @@
 #include <CoinMintingModule.h>
+
 #include <BlockFactory.h>
 #include <ChainstateManager.h>
 #include <CoinMinter.h>
-#include <sync.h>
 #include <ExtendedBlockFactory.h>
 #include <chainparams.h>
 #include <BlockMemoryPoolTransactionCollector.h>

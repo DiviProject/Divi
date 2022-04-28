@@ -150,7 +150,6 @@ public:
 // Global state variables
 //
 bool fDiscover = true;
-bool fListen = true;
 
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
@@ -352,10 +351,6 @@ CNodeSignals& GetNodeSignals()
     return globalNodeSignals;
 }
 
-const bool& IsListening()
-{
-    return fListen;
-}
 int GetMaxConnections()
 {
     return nMaxConnections;
@@ -486,7 +481,7 @@ bool PeersLocalAddressIsGood(CNode* pnode)
 // pushes our own address to a peer
 void AdvertizeLocal(CNode* pnode)
 {
-    if (fListen && pnode->fSuccessfullyConnected) {
+    if (IsListening() && pnode->fSuccessfullyConnected) {
         CAddress addrLocal = GetLocalAddress(&pnode->addr);
         // If discovery is enabled, sometimes give our peer the address it
         // tells us that it sees us as in case it has a better idea of our
@@ -1859,11 +1854,11 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
     }
 
     // see Step 2: parameter interactions for more information about these
-    fListen = settings.GetBoolArg("-listen", DEFAULT_LISTEN);
+    setListeningFlag(settings.GetBoolArg("-listen", DEFAULT_LISTEN));
     fDiscover = settings.GetBoolArg("-discover", true);
 
     bool fBound = false;
-    if (fListen) {
+    if (IsListening()) {
         if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
             BOOST_FOREACH (std::string strBind, settings.GetMultiParameter("-bind")) {
                 CService addrBind;

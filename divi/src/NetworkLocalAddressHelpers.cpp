@@ -10,7 +10,7 @@
 #include <chainparams.h>
 
 extern Settings& settings;
-extern bool fListen;
+volatile bool fListen = true;
 extern bool fDiscover;
 
 CCriticalSection cs_mapLocalHost;
@@ -18,6 +18,15 @@ std::map<CNetAddr, LocalServiceInfo> mapLocalHost;
 static bool vfReachable[NET_MAX] = {};
 static bool vfLimited[NET_MAX] = {};
 uint64_t nLocalServices = NODE_NETWORK;
+
+bool IsListening()
+{
+    return fListen;
+}
+void setListeningFlag(bool updatedListenFlag)
+{
+    fListen = updatedListenFlag;
+}
 
 struct LocalServiceInfo {
     int nScore;
@@ -158,7 +167,7 @@ bool IsReachable(const CNetAddr& addr)
 // find 'best' local address for a particular peer
 bool GetLocal(CService& addr, const CNetAddr* paddrPeer)
 {
-    if (!fListen)
+    if (!IsListening())
         return false;
 
     int nBestScore = -1;

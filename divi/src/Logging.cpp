@@ -17,7 +17,7 @@ volatile bool fDebug = false;
 bool fPrintToConsole = false;
 volatile bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
-bool fLogTimestamps = false;
+volatile bool fLogTimestamps = false;
 bool fLogIPs = false;
 
 extern Settings& settings;
@@ -203,4 +203,8 @@ void SetLoggingAndDebugSettings()
 bool ShouldLogPeerIPs()
 {
     return fLogIPs;
+}
+bool ShouldLogTimestamps()
+{
+    return fLogTimestamps;
 }

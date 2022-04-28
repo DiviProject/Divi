@@ -43,8 +43,7 @@ BlockTransactionChecker::BlockTransactionChecker(
     CValidationState& state,
     CBlockIndex* pindex,
     CCoinsViewCache& view,
-    const BlockMap& blockIndexMap,
-    const int blocksToSkipChecksFor
+    const BlockMap& blockIndexMap
     ): blockundo_(block.vtx.size() - 1)
     , block_(block)
     , activation_(pindex)

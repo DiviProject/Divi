@@ -54,6 +54,7 @@
 #include <VaultManager.h>
 #include <VaultManagerDatabase.h>
 #include <I_BlockSubmitter.h>
+#include <ThreadManagementHelpers.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"

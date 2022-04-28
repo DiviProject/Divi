@@ -73,6 +73,7 @@
 #include <TransactionSearchIndexes.h>
 #include <ProofOfStakeModule.h>
 #include <BlockFileHelpers.h>
+#include <ThreadManagementHelpers.h>
 
 using namespace boost;
 using namespace std;

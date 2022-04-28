@@ -8,6 +8,7 @@
 #include <DataDirectory.h>
 #include "dbenv.h"
 #include "hash.h"
+#include <Logging.h>
 #include "protocol.h"
 #include "util.h"
 #include "utilstrencodings.h"

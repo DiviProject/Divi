@@ -15,12 +15,17 @@
 
 bool fDebug = false;
 bool fPrintToConsole = false;
-bool fPrintToDebugLog = true;
+volatile bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
 bool fLogTimestamps = false;
 bool fLogIPs = false;
 
 extern Settings& settings;
+
+void setWriteToDebugLogFlag(bool settingValue)
+{
+    fPrintToDebugLog = settingValue;
+}
 
 LOG_FORMAT_WITH_TOSTRING(uint256)
 

@@ -581,8 +581,8 @@ NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool
     CAddrMan& addrman = GetNetworkAddressManager();
     SOCKET hSocket;
     bool proxyConnectionFailed = false;
-    if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort(), nConnectTimeout, &proxyConnectionFailed) :
-                  ConnectSocket(addrConnect, hSocket, nConnectTimeout, &proxyConnectionFailed)) {
+    if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort(), getConnectionTimeoutDuration(), &proxyConnectionFailed) :
+                  ConnectSocket(addrConnect, hSocket, getConnectionTimeoutDuration(), &proxyConnectionFailed)) {
         if (!IsSelectableSocket(hSocket)) {
             LogPrintf("Cannot create connection: non-selectable socket created (fd >= FD_SETSIZE ?)\n");
             CloseSocket(hSocket);
@@ -1775,9 +1775,7 @@ void SetNetworkingParameters()
             LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
     }
 
-    nConnectTimeout = settings.GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
-    if (nConnectTimeout <= 0)
-        nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
+    setConnectionTimeoutDuration(settings.GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT));
 
     EnableAlertsAccordingToSettings(settings);
     if (settings.GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))

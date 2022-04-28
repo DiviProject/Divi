@@ -116,7 +116,7 @@ constexpr int nWalletBackups = 20;
 CClientUIInterface uiInterface;
 
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
-CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate());
+static CTxMemPool mempool;
 CTxMemPool& GetTransactionMemoryPool()
 {
     return mempool;

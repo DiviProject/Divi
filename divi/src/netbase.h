@@ -16,8 +16,9 @@
 #include <string>
 #include <vector>
 
-extern int nConnectTimeout;
 extern bool fNameLookup;
+int getConnectionTimeoutDuration();
+void setConnectionTimeoutDuration(int timeoutDuration);
 
 /** -timeout default */
 static const int DEFAULT_CONNECT_TIMEOUT = 5000;

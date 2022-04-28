@@ -42,8 +42,16 @@ using namespace std;
 static proxyType proxyInfo[NET_MAX];
 static proxyType nameProxy;
 static CCriticalSection cs_proxyInfos;
-int nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
+volatile int nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
 bool fNameLookup = false;
+int getConnectionTimeoutDuration()
+{
+    return nConnectTimeout;
+}
+void setConnectionTimeoutDuration(int timeoutDuration)
+{
+    nConnectTimeout = timeoutDuration>0? timeoutDuration: DEFAULT_CONNECT_TIMEOUT;
+}
 
 static const unsigned char pchIPv4[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
 

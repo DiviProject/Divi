@@ -8,11 +8,11 @@
 #include <vector>
 
 /* Variables used by logging*/
-extern bool fPrintToDebugLog;
 extern bool fDebug;
 extern volatile bool fReopenDebugLog;
 extern bool fLogTimestamps;
 
+void setWriteToDebugLogFlag(bool settingValue);
 void SetLoggingAndDebugSettings();
 bool ShouldLogPeerIPs();
 /** Return true if log accepts specified category */

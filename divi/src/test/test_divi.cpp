@@ -52,7 +52,7 @@ struct TestingSetup {
     TestingSetup(): pathTemp(), threadGroup(), bitdb_(BerkleyDBEnvWrapper())
     {
         SetupEnvironment();
-        fPrintToDebugLog = false; // don't want to write to debug.log file
+        setWriteToDebugLogFlag(false);
         settings.SetParameter("-checkblockindex","1");
         SelectParams(CBaseChainParams::UNITTEST);
         noui_connect();

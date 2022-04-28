@@ -247,7 +247,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
     std::list<std::pair<std::string, std::vector<CService> > > laddedAddreses(0);
     BOOST_FOREACH (string& strAddNode, laddedNodes) {
         std::vector<CService> vservNode(0);
-        if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0))
+        if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), getNameLookupFlag(), 0))
             laddedAddreses.push_back(std::make_pair(strAddNode, vservNode));
         else {
             Object obj;

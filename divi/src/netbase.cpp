@@ -43,7 +43,7 @@ static proxyType proxyInfo[NET_MAX];
 static proxyType nameProxy;
 static CCriticalSection cs_proxyInfos;
 volatile int nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
-bool fNameLookup = false;
+volatile bool fNameLookup = false;
 int getConnectionTimeoutDuration()
 {
     return nConnectTimeout;
@@ -52,6 +52,15 @@ void setConnectionTimeoutDuration(int timeoutDuration)
 {
     nConnectTimeout = timeoutDuration>0? timeoutDuration: DEFAULT_CONNECT_TIMEOUT;
 }
+bool getNameLookupFlag()
+{
+    return fNameLookup;
+}
+void setNameLookupFlag(bool updatedNameLookupFlag)
+{
+    fNameLookup = updatedNameLookupFlag;
+}
+
 
 static const unsigned char pchIPv4[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
 
@@ -632,7 +641,7 @@ bool ConnectSocketByName(CService& addr, SOCKET& hSocketRet, const char* pszDest
     proxyType nameProxy;
     GetNameProxy(nameProxy);
 
-    CService addrResolved(CNetAddr(strDest, fNameLookup && !HaveNameProxy()), port);
+    CService addrResolved(CNetAddr(strDest, getNameLookupFlag() && !HaveNameProxy()), port);
     if (addrResolved.IsValid()) {
         addr = addrResolved;
         return ConnectSocket(addr, hSocketRet, nTimeout);

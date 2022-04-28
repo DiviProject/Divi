@@ -16,9 +16,11 @@
 #include <string>
 #include <vector>
 
-extern bool fNameLookup;
 int getConnectionTimeoutDuration();
 void setConnectionTimeoutDuration(int timeoutDuration);
+
+bool getNameLookupFlag();
+void setNameLookupFlag(bool updatedNameLookupFlag);
 
 /** -timeout default */
 constexpr int DEFAULT_CONNECT_TIMEOUT = 5000;

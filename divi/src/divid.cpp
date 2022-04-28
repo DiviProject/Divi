@@ -6,6 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "clientversion.h"
+#include <DataDirectory.h>
 #include "init.h"
 #include "main.h"
 #include <chainparams.h>

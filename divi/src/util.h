@@ -29,7 +29,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread/exceptions.hpp>
 
-#include <DataDirectory.h>
 #include <ThreadManagementHelpers.h>
 //DIVI only features
 

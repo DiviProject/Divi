@@ -7,6 +7,7 @@
 
 #include "chainparamsbase.h"
 #include "clientversion.h"
+#include <DataDirectory.h>
 #include <LicenseAndInfo.h>
 #include "rpcclient.h"
 #include "rpcprotocol.h"

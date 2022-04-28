@@ -5,6 +5,7 @@
 
 #include "db.h"
 
+#include <DataDirectory.h>
 #include "dbenv.h"
 #include "hash.h"
 #include "protocol.h"

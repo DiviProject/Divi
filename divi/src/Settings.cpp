@@ -225,3 +225,14 @@ unsigned CopyableSettings::NumerOfMultiParameters() const
 {
     return mapMultiArgs_.size();
 }
+
+bool CopyableSettings::debugModeIsEnabled() const
+{
+    const std::vector<std::string>& categories = GetMultiParameter("-debug");
+    bool debug = !categories.empty();
+    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
+    if (GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
+        debug = false;
+
+    return debug;
+}

@@ -15,6 +15,8 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "Settings.h"
+#include <ThreadManagementHelpers.h>
+
 #include <LicenseAndInfo.h>
 
 #include <boost/algorithm/string/predicate.hpp>

@@ -7,6 +7,7 @@
 
 #include "rpcserver.h"
 
+#include <Logging.h>
 #include <rpcprotocol.h>
 #include "base58.h"
 #include "init.h"

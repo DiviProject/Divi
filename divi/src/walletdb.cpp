@@ -11,6 +11,7 @@
 #include <DataDirectory.h>
 #include "db.h"
 #include <dbenv.h>
+#include <Logging.h>
 #include "protocol.h"
 #include "serialize.h"
 #include "sync.h"
@@ -24,6 +25,7 @@
 #include <ValidationState.h>
 #include <WalletTx.h>
 #include <Settings.h>
+#include <ThreadManagementHelpers.h>
 #include <I_WalletLoader.h>
 #include <MasterKey.h>
 #include <keypool.h>

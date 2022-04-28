@@ -14,6 +14,7 @@
 #include "util.h"
 #include "utilstrencodings.h"
 #include "Settings.h"
+#include <ThreadManagementHelpers.h>
 
 #include <boost/filesystem/operations.hpp>
 

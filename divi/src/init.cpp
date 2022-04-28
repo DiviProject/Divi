@@ -20,6 +20,7 @@
 #include <chainparams.h>
 #include "checkpoints.h"
 #include "compat/sanity.h"
+#include <DataDirectory.h>
 #include <defaultValues.h>
 #include <dbenv.h>
 #include "key.h"

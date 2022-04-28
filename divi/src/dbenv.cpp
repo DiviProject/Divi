@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <boost/filesystem.hpp>
 #include <boost/thread/thread.hpp>
+#include <DataDirectory.h>
 #include "util.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"

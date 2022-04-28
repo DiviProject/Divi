@@ -59,7 +59,6 @@ void UnregisterNodeSignals(CNodeSignals& nodeSignals);
 bool PeersLocalAddressIsGood(CNode* pnode);
 void AdvertizeLocal(CNode* pnode);
 
-const bool& IsListening();
 int GetMaxConnections();
 const I_PeerSyncQueryService& GetPeerSyncQueryService();
 const I_PeerBlockNotifyService& GetPeerBlockNotifyService();

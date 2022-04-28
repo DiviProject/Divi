@@ -35,6 +35,8 @@ unsigned short GetListenPort();
 const uint64_t& GetLocalServices();
 void EnableBloomFilters();
 bool BloomFiltersAreEnabled();
+bool IsListening();
+void setListeningFlag(bool updatedListenFlag);
 
 struct LocalHostData
 {

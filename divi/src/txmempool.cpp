@@ -29,9 +29,7 @@ bool IsMemPoolHeight(unsigned coinHeight)
 }
 
 CTxMemPool::CTxMemPool(
-    const CFeeRate& _minRelayFee
-    ): fSanityCheck(false)
-    , minRelayFee(_minRelayFee)
+    ): fSanityCheck_(false)
     , mapDeltas()
     , mapBareTxid()
     , mapTx()
@@ -148,7 +146,7 @@ void CTxMemPool::removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned in
             if (lookupOutpoint(txin.prevout.hash, tx2))
                 continue;
             const CCoins* coins = pcoins->AccessCoins(txin.prevout.hash);
-            if (fSanityCheck) assert(coins);
+            if (fSanityCheck_) assert(coins);
             if (!coins || ((coins->IsCoinBase() || coins->IsCoinStake()) && nMemPoolHeight - coins->nHeight < (unsigned)Params().COINBASE_MATURITY())) {
                 transactionsToRemove.push_back(tx);
                 break;
@@ -209,7 +207,7 @@ void CTxMemPool::clear()
 
 void CTxMemPool::check(const CCoinsViewCache* pcoins, const BlockMap& blockIndexMap) const
 {
-    if (!fSanityCheck)
+    if (!fSanityCheck_)
         return;
 
     LogPrint("mempool", "Checking mempool with %u transactions and %u inputs\n", (unsigned int)mapTx.size(), (unsigned int)mapNextTx.size());

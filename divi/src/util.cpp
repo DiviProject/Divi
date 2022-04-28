@@ -13,6 +13,7 @@
 
 #include "allocators.h"
 #include "chainparamsbase.h"
+#include <Logging.h>
 #include "random.h"
 #include "serialize.h"
 #include "sync.h"

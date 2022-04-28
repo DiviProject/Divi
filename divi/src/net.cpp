@@ -149,8 +149,6 @@ public:
 //
 // Global state variables
 //
-bool fDiscover = true;
-
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 class NodeWithSocket
@@ -474,7 +472,7 @@ void AddOneShot(string strDest)
 // Is our peer's addrLocal potentially useful as an external IP source?
 bool PeersLocalAddressIsGood(CNode* pnode)
 {
-    return fDiscover && pnode->addr.IsRoutable() && pnode->addrLocal.IsRoutable() &&
+    return isDiscoverEnabled() && pnode->addr.IsRoutable() && pnode->addrLocal.IsRoutable() &&
            !IsLimited(pnode->addrLocal.GetNetwork());
 }
 
@@ -985,7 +983,7 @@ void ThreadMapPort()
 
     r = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
     if (r == 1) {
-        if (fDiscover) {
+        if (isDiscoverEnabled()) {
             char externalIPAddress[40];
             r = UPNP_GetExternalIPAddress(urls.controlURL, data.first.servicetype, externalIPAddress);
             if (r != UPNPCOMMAND_SUCCESS)
@@ -1431,7 +1429,7 @@ bool BindListenPort(const CService& addrBind, string& strError, bool fWhiteliste
     }
 
     NodeManager::Instance().addListeningSocket(hListenSocket,fWhitelisted);
-    if (addrBind.IsRoutable() && fDiscover && !fWhitelisted)
+    if (addrBind.IsRoutable() && isDiscoverEnabled() && !fWhitelisted)
         AddLocal(addrBind, LOCAL_BIND);
 
     return true;
@@ -1439,7 +1437,7 @@ bool BindListenPort(const CService& addrBind, string& strError, bool fWhiteliste
 
 void static Discover(boost::thread_group& threadGroup)
 {
-    if (!fDiscover)
+    if (!isDiscoverEnabled())
         return;
 
 #ifdef WIN32
@@ -1855,7 +1853,7 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
 
     // see Step 2: parameter interactions for more information about these
     setListeningFlag(settings.GetBoolArg("-listen", DEFAULT_LISTEN));
-    fDiscover = settings.GetBoolArg("-discover", true);
+    setDiscoverFlag(settings.GetBoolArg("-discover", true));
 
     bool fBound = false;
     if (IsListening()) {

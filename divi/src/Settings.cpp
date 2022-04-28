@@ -229,9 +229,10 @@ unsigned CopyableSettings::NumerOfMultiParameters() const
 bool CopyableSettings::debugModeIsEnabled() const
 {
     const std::vector<std::string>& categories = GetMultiParameter("-debug");
+    const bool anyNegativeDebugCategory = std::find(categories.begin(), categories.end(), std::string("0")) != categories.end();
     bool debug = !categories.empty();
     // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-    if (GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
+    if (GetBoolArg("-nodebug", false) || anyNegativeDebugCategory)
         debug = false;
 
     return debug;

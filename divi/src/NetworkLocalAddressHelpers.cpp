@@ -11,7 +11,7 @@
 
 extern Settings& settings;
 volatile bool fListen = true;
-extern bool fDiscover;
+volatile bool fDiscover = true;
 
 CCriticalSection cs_mapLocalHost;
 std::map<CNetAddr, LocalServiceInfo> mapLocalHost;
@@ -26,6 +26,15 @@ bool IsListening()
 void setListeningFlag(bool updatedListenFlag)
 {
     fListen = updatedListenFlag;
+}
+
+bool isDiscoverEnabled()
+{
+    return fDiscover;
+}
+void setDiscoverFlag(bool updatedDiscoverFlag)
+{
+    fDiscover = updatedDiscoverFlag;
 }
 
 struct LocalServiceInfo {

@@ -8,7 +8,6 @@
 #include <vector>
 
 /* Variables used by logging*/
-extern bool fDebug;
 extern volatile bool fReopenDebugLog;
 extern bool fLogTimestamps;
 

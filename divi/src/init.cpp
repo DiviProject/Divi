@@ -975,7 +975,7 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
             }
         }
     } catch (std::exception& e) {
-        if (fDebug) LogPrintf("%s\n", e.what());
+        if (settings.debugModeIsEnabled()) LogPrintf("%s\n", e.what());
         strLoadError = translate("Error opening block database");
         fVerifyingBlocks = false;
         return BlockLoadingStatus::RETRY_LOADING;

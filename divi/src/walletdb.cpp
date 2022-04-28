@@ -8,6 +8,7 @@
 #include "walletdb.h"
 
 #include "base58.h"
+#include <DataDirectory.h>
 #include "db.h"
 #include <dbenv.h>
 #include "protocol.h"

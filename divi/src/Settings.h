@@ -50,6 +50,7 @@ public:
     void ReadConfigFile();
     unsigned MaxNumberOfPoSCombinableInputs() const;
     int MaxFutureBlockDrift() const;
+    bool debugModeIsEnabled() const;
 };
 
 class Settings: public CopyableSettings

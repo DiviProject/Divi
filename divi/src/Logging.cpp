@@ -13,7 +13,7 @@
 #include <serialize.h>
 #include <Settings.h>
 
-bool fDebug = false;
+volatile bool fDebug = false;
 bool fPrintToConsole = false;
 volatile bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
@@ -185,11 +185,7 @@ void SetLoggingAndDebugSettings()
     fLogTimestamps = settings.GetBoolArg("-logtimestamps", true);
     fLogIPs = settings.GetBoolArg("-logips", false);
 
-    const std::vector<std::string>& categories = settings.GetMultiParameter("-debug");
-    fDebug = !categories.empty();
-    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-    if (settings.GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
-        fDebug = false;
+    fDebug = settings.debugModeIsEnabled();
 
     if (settings.GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();

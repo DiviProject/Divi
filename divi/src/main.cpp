@@ -3502,7 +3502,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
     }
     else if (strCommand == "reject")
     {
-        if (fDebug) {
+        if (settings.debugModeIsEnabled()) {
             try {
                 string strMsg;
                 unsigned char ccode;

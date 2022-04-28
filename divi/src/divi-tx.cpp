@@ -21,6 +21,7 @@
 #include "utilstrencodings.h"
 #include "Settings.h"
 #include <stdio.h>
+#include <ThreadManagementHelpers.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/assign/list_of.hpp>

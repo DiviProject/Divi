@@ -4,6 +4,7 @@
 
 #include "timedata.h"
 
+#include <Logging.h>
 #include "netbase.h"
 #include "sync.h"
 #include "ui_interface.h"
@@ -16,6 +17,7 @@ using namespace std;
 
 static CCriticalSection cs_nTimeOffset;
 static int64_t nTimeOffset = 0;
+extern std::string strMiscWarning;
 
 /**
  * "Never go to sea with two chronometers; take one or three."

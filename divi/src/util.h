@@ -29,9 +29,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread/exceptions.hpp>
 
-#include <ThreadManagementHelpers.h>
-//DIVI only features
-
 class Settings;
 
 void SetupEnvironment();

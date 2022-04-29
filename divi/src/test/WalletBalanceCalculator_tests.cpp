@@ -428,5 +428,15 @@ BOOST_AUTO_TEST_CASE(willNotCountUnconfirmedButMatureUtxosThatComeFromADebitedTr
     BOOST_CHECK_EQUAL(calculator.getBalance(), CAmount(0)  );
 }
 
+BOOST_AUTO_TEST_CASE(willNotCountImmatureUnconfirmedTransactionsInImmatureBalance)
+{
+    CTransaction tx = RandomTransactionGenerator()(20*COIN,1,1);
+    addTransactionToMockWalletRecord(tx);
+    ON_CALL(utxoOwnershipDetector,isMine(tx.vout.back())).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(0));
+    ON_CALL(confsCalculator,GetBlocksToMaturity(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
+    BOOST_CHECK_EQUAL(calculator.getImmatureBalance(), CAmount(0)  );
+}
 
 BOOST_AUTO_TEST_SUITE_END()

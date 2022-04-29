@@ -369,4 +369,24 @@ BOOST_AUTO_TEST_CASE(willEnsureThatATransactionSpendingOnlyUnownedFundsStillNeed
     BOOST_CHECK_EQUAL(calculator.getBalance(), CAmount(0) );
 }
 
+BOOST_AUTO_TEST_CASE(willEnsureThatMaturedButUnconfirmedTransactionsAreRecordedInUnconfirmeBalance)
+{
+    CMutableTransaction mutableTx = RandomTransactionGenerator()(1*COIN);
+    const CTxOut ownedUtxo = mutableTx.vout[0];
+    ON_CALL(utxoOwnershipDetector,isMine(ownedUtxo)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    for(const CTxOut& output: mutableTx.vout)
+    {
+        if(ownedUtxo != output)
+            ON_CALL(utxoOwnershipDetector,isMine(output)).WillByDefault(Return(isminetype::ISMINE_NO));
+    }
+    std::random_shuffle(mutableTx.vout.begin(),mutableTx.vout.end());
+    CTransaction tx(mutableTx);
+    addTransactionToMockWalletRecord(tx);
+
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(0));
+    ON_CALL(confsCalculator,GetBlocksToMaturity(getWalletTx(tx.GetHash()))).WillByDefault(Return(0));
+
+    BOOST_CHECK_EQUAL(calculator.getUnconfirmedBalance(), ownedUtxo.nValue);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

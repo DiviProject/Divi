@@ -27,5 +27,6 @@ public:
         const I_MerkleTxConfirmationNumberCalculator& confsCalculator);
     ~WalletBalanceCalculator();
     CAmount getBalance() const;
+    CAmount getUnconfirmedBalance() const;
 };
 #endif// WALLET_BALANCE_CALCULATOR_H

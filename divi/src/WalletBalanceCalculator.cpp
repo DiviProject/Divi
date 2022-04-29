@@ -40,6 +40,28 @@ bool debitsFunds(const I_UtxoOwnershipDetector& ownershipDetector, const std::ma
     return false;
 }
 
+CAmount computeDebitedFunds(
+    const I_UtxoOwnershipDetector& ownershipDetector,
+    const std::map<uint256, CWalletTx>& transactionsByHash,
+    const CTransaction& tx)
+{
+    CAmount totalDebit = 0;
+    for(const auto& input: tx.vin)
+    {
+        auto it = transactionsByHash.find(input.prevout.hash);
+        if(it != transactionsByHash.end())
+        {
+            const auto& outputsToBeSpent = it->second.vout;
+            if(ownershipDetector.isMine(outputsToBeSpent[input.prevout.n]) == isminetype::ISMINE_SPENDABLE &&
+                outputsToBeSpent[input.prevout.n].nValue>0)
+            {
+                totalDebit += outputsToBeSpent[input.prevout.n].nValue;
+            }
+        }
+    }
+    return totalDebit;
+}
+
 CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
 {
     assert((flag & BalanceFlag::UNCONFIRMED & BalanceFlag::CONFIRMED) == 0);

@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(willIgnoreUnconfirmedTransactionsNonDebitingTransaction)
     BOOST_CHECK_EQUAL(calculator.getBalance(),CAmount(0));
 }
 
-BOOST_AUTO_TEST_CASE(willNotIgnoreUnconfirmedTransactionsDebitingFunds)
+BOOST_AUTO_TEST_CASE(willVerifyUnconfirmedTransactionsDebitingConfirmedFundsDebitNormalBalanceAndCreditUnconfirmedBalance)
 {
     CTransaction tx = RandomTransactionGenerator()(1*COIN,1u);
     addTransactionToMockWalletRecord(tx);
@@ -118,7 +118,8 @@ BOOST_AUTO_TEST_CASE(willNotIgnoreUnconfirmedTransactionsDebitingFunds)
         )
     );
 
-    BOOST_CHECK_EQUAL(calculator.getBalance(), tx.GetValueOut() + spendingTx.GetValueOut() - spentFunds );
+    BOOST_CHECK_EQUAL(calculator.getBalance(), tx.GetValueOut() - spentFunds);
+    BOOST_CHECK_EQUAL(calculator.getUnconfirmedBalance(), spendingTx.GetValueOut());
 }
 
 BOOST_AUTO_TEST_CASE(theBalanceOfAWalletWhoOwnsAllUtxosIsTheTotalOfOutputs)
@@ -389,7 +390,7 @@ BOOST_AUTO_TEST_CASE(willEnsureThatMaturedButUnconfirmedTransactionsAreRecordedI
     BOOST_CHECK_EQUAL(calculator.getUnconfirmedBalance(), ownedUtxo.nValue);
 }
 
-BOOST_AUTO_TEST_CASE(willEnsureThatImmaturedButUnconfirmedTransactionsAreNotRecordedInUnconfirmeBalance)
+BOOST_AUTO_TEST_CASE(willEnsureThatImmaturedButUnconfirmedTransactionsAreRecordedInUnconfirmeBalance)
 {
     CMutableTransaction mutableTx = RandomTransactionGenerator()(1*COIN);
     const CTxOut ownedUtxo = mutableTx.vout[0];
@@ -406,7 +407,25 @@ BOOST_AUTO_TEST_CASE(willEnsureThatImmaturedButUnconfirmedTransactionsAreNotReco
     ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(0));
     ON_CALL(confsCalculator,GetBlocksToMaturity(getWalletTx(tx.GetHash()))).WillByDefault(Return(1));
 
-    BOOST_CHECK_EQUAL(calculator.getUnconfirmedBalance(), CAmount(0));
+    BOOST_CHECK_EQUAL(calculator.getUnconfirmedBalance(), ownedUtxo.nValue);
+}
+
+BOOST_AUTO_TEST_CASE(willNotCountUnconfirmedButMatureUtxosThatComeFromADebitedTransaction)
+{
+    CTransaction tx = RandomTransactionGenerator()(20*COIN,1,1);
+    addTransactionToMockWalletRecord(tx);
+    ON_CALL(utxoOwnershipDetector,isMine(tx.vout.back())).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(tx.GetHash()))).WillByDefault(Return(0));
+    ON_CALL(confsCalculator,GetBlocksToMaturity(getWalletTx(tx.GetHash()))).WillByDefault(Return(0));
+    ON_CALL(spentOutputTracker,IsSpent(tx.GetHash(),0,_)).WillByDefault(Return(true));
+    CTransaction spendingTx = createRandomSpendingTransaction(tx,1u);
+    addTransactionToMockWalletRecord(spendingTx);
+    ON_CALL(confsCalculator,GetNumberOfBlockConfirmations(getWalletTx(spendingTx.GetHash()))).WillByDefault(Return(0));
+    ON_CALL(confsCalculator,GetBlocksToMaturity(getWalletTx(spendingTx.GetHash()))).WillByDefault(Return(0));
+    ON_CALL(utxoOwnershipDetector,isMine(spendingTx.vout.back())).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(spentOutputTracker,IsSpent(tx.GetHash(),_,_)).WillByDefault(Return(false));
+
+    BOOST_CHECK_EQUAL(calculator.getBalance(), CAmount(0)  );
 }
 
 

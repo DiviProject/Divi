@@ -17,8 +17,9 @@ private:
     {
         UNCONFIRMED = 1 << 0,
         CONFIRMED = 1 << 1,
-        TRUSTED = 1 << 2,
-        TRUSTED_OR_CONFIRMED = TRUSTED | CONFIRMED,
+        IMMATURED = 1 << 2,
+        MATURED = 1 << 3,
+        CONFIRMED_AND_MATURED = CONFIRMED | MATURED,
     };
     CAmount calculateBalance(BalanceFlag flag) const;
 public:

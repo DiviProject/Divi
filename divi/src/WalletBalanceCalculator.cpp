@@ -75,12 +75,7 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
         if(depth < 1 && (tx.IsCoinStake() || tx.IsCoinBase())) continue;
         if( (flag & BalanceFlag::UNCONFIRMED) > 0 && depth != 0) continue;
         if( (flag & BalanceFlag::CONFIRMED) > 0 && depth < 1) continue;
-        if( (flag & BalanceFlag::TRUSTED) > 0 && depth==0)
-        {
-            if(!debitsFunds(ownershipDetector_,transactionsByHash,tx)) continue;
-        }
-
-        if( confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
+        if( (flag & BalanceFlag::MATURED) > 0 && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
 
         const uint256& txid = txidAndTransaction.first;
         for(unsigned outputIndex=0u; outputIndex < tx.vout.size(); ++outputIndex)
@@ -97,7 +92,7 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
 
 CAmount WalletBalanceCalculator::getBalance() const
 {
-    return calculateBalance(TRUSTED);
+    return calculateBalance(CONFIRMED_AND_MATURED);
 }
 
 CAmount WalletBalanceCalculator::getUnconfirmedBalance() const

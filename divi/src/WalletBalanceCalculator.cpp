@@ -40,8 +40,9 @@ bool debitsFunds(const I_UtxoOwnershipDetector& ownershipDetector, const std::ma
     return false;
 }
 
-CAmount WalletBalanceCalculator::getBalance() const
+CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
 {
+    if(flag != BalanceFlag::TRUSTED_OR_CONFIRMED) return 0;
     CAmount totalBalance = 0;
     const auto& transactionsByHash = txRecord_.GetWalletTransactions();
     for(const auto& txidAndTransaction: transactionsByHash)
@@ -64,4 +65,9 @@ CAmount WalletBalanceCalculator::getBalance() const
         }
     }
     return totalBalance;
+}
+
+CAmount WalletBalanceCalculator::getBalance() const
+{
+    return calculateBalance(TRUSTED_OR_CONFIRMED);
 }

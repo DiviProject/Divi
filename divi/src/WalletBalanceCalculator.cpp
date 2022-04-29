@@ -50,6 +50,7 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
         const CWalletTx& tx = txidAndTransaction.second;
         const int depth = confsCalculator_.GetNumberOfBlockConfirmations(tx);
         if(depth < 0) continue;
+        if(depth < 1 && (tx.IsCoinStake() || tx.IsCoinBase())) continue;
         if( (flag & BalanceFlag::UNCONFIRMED) > 0 && depth != 0) continue;
         if( (flag & BalanceFlag::CONFIRMED) > 0 && depth < 1) continue;
         if( (flag & BalanceFlag::TRUSTED) > 0)
@@ -57,7 +58,6 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
             if(depth==0 && !debitsFunds(ownershipDetector_,transactionsByHash,tx)) continue;
         }
 
-        if(depth < 1 && (tx.IsCoinStake() || tx.IsCoinBase())) continue;
         if( confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
 
         const uint256& txid = txidAndTransaction.first;

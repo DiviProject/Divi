@@ -42,7 +42,6 @@ bool debitsFunds(const I_UtxoOwnershipDetector& ownershipDetector, const std::ma
 
 CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
 {
-    if(flag != BalanceFlag::TRUSTED_OR_CONFIRMED) return 0;
     CAmount totalBalance = 0;
     const auto& transactionsByHash = txRecord_.GetWalletTransactions();
     for(const auto& txidAndTransaction: transactionsByHash)
@@ -50,7 +49,7 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
         const CWalletTx& tx = txidAndTransaction.second;
         const int depth = confsCalculator_.GetNumberOfBlockConfirmations(tx);
         const bool txIsBlockReward = tx.IsCoinStake() || tx.IsCoinBase();
-        const bool needsAtLeastOneConfirmation = txIsBlockReward || !debitsFunds(ownershipDetector_,transactionsByHash,tx);
+        const bool needsAtLeastOneConfirmation = flag != BalanceFlag::UNCONFIRMED && (txIsBlockReward || !debitsFunds(ownershipDetector_,transactionsByHash,tx));
         if( depth < (needsAtLeastOneConfirmation? 1: 0)) continue;
         if( txIsBlockReward && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
 
@@ -70,4 +69,9 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
 CAmount WalletBalanceCalculator::getBalance() const
 {
     return calculateBalance(TRUSTED_OR_CONFIRMED);
+}
+
+CAmount WalletBalanceCalculator::getUnconfirmedBalance() const
+{
+    return calculateBalance(UNCONFIRMED);
 }

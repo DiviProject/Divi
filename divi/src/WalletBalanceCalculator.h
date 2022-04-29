@@ -15,8 +15,10 @@ private:
 
     enum BalanceFlag
     {
-        TRUSTED_OR_CONFIRMED,
-        UNCONFIRMED,
+        UNCONFIRMED = 1 << 0,
+        CONFIRMED = 1 << 1,
+        TRUSTED = 1 << 2,
+        TRUSTED_OR_CONFIRMED = TRUSTED | CONFIRMED,
     };
     CAmount calculateBalance(BalanceFlag flag) const;
 public:

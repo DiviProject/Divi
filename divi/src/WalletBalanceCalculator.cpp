@@ -65,7 +65,7 @@ CAmount computeDebitedFunds(
 CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
 {
     assert((flag & BalanceFlag::UNCONFIRMED & BalanceFlag::CONFIRMED) == 0);
-    assert((flag & BalanceFlag::IMMATURED & BalanceFlag::MATURED) == 0);
+    assert((flag & BalanceFlag::IMMATURE & BalanceFlag::MATURE) == 0);
     CAmount totalBalance = 0;
     const auto& transactionsByHash = txRecord_.GetWalletTransactions();
     for(const auto& txidAndTransaction: transactionsByHash)
@@ -76,7 +76,8 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
         if(depth < 1 && (tx.IsCoinStake() || tx.IsCoinBase())) continue;
         if( (flag & BalanceFlag::UNCONFIRMED) > 0 && depth != 0) continue;
         if( (flag & BalanceFlag::CONFIRMED) > 0 && depth < 1) continue;
-        if( (flag & BalanceFlag::MATURED) > 0 && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
+        if( (flag & BalanceFlag::MATURE) > 0 && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
+        if( (flag & BalanceFlag::IMMATURE) > 0 && confsCalculator_.GetBlocksToMaturity(tx) == 0) continue;
 
         const uint256& txid = txidAndTransaction.first;
         for(unsigned outputIndex=0u; outputIndex < tx.vout.size(); ++outputIndex)
@@ -93,10 +94,15 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
 
 CAmount WalletBalanceCalculator::getBalance() const
 {
-    return calculateBalance(CONFIRMED_AND_MATURED);
+    return calculateBalance(CONFIRMED_AND_MATURE);
 }
 
 CAmount WalletBalanceCalculator::getUnconfirmedBalance() const
 {
     return calculateBalance(UNCONFIRMED);
+}
+
+CAmount WalletBalanceCalculator::getImmatureBalance() const
+{
+    return calculateBalance(CONFIRMED_AND_IMMATURE);
 }

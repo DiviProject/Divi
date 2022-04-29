@@ -17,9 +17,10 @@ private:
     {
         UNCONFIRMED = 1 << 0,
         CONFIRMED = 1 << 1,
-        IMMATURED = 1 << 2,
-        MATURED = 1 << 3,
-        CONFIRMED_AND_MATURED = CONFIRMED | MATURED,
+        IMMATURE = 1 << 2,
+        MATURE = 1 << 3,
+        CONFIRMED_AND_MATURE = CONFIRMED | MATURE,
+        CONFIRMED_AND_IMMATURE = CONFIRMED | IMMATURE,
     };
     CAmount calculateBalance(BalanceFlag flag) const;
 public:
@@ -31,5 +32,6 @@ public:
     ~WalletBalanceCalculator();
     CAmount getBalance() const;
     CAmount getUnconfirmedBalance() const;
+    CAmount getImmatureBalance() const;
 };
 #endif// WALLET_BALANCE_CALCULATOR_H

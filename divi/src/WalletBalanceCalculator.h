@@ -7,11 +7,18 @@ class I_MerkleTxConfirmationNumberCalculator;
 class I_UtxoOwnershipDetector;
 class WalletBalanceCalculator
 {
+private:
     const I_UtxoOwnershipDetector& ownershipDetector_;
     const I_AppendOnlyTransactionRecord& txRecord_;
     const I_SpentOutputTracker& spentOutputTracker_;
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator_;
 
+    enum BalanceFlag
+    {
+        TRUSTED_OR_CONFIRMED,
+        UNCONFIRMED,
+    };
+    CAmount calculateBalance(BalanceFlag flag) const;
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,

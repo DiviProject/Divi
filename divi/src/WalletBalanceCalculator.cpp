@@ -42,6 +42,7 @@ bool debitsFunds(const I_UtxoOwnershipDetector& ownershipDetector, const std::ma
 
 CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
 {
+    assert((flag & BalanceFlag::UNCONFIRMED & BalanceFlag::CONFIRMED) == 0);
     CAmount totalBalance = 0;
     const auto& transactionsByHash = txRecord_.GetWalletTransactions();
     for(const auto& txidAndTransaction: transactionsByHash)

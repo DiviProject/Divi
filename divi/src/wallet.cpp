@@ -75,7 +75,7 @@ bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeig
  *
  * See consensus/consensus.h for flag definitions.
  */
-bool CheckFinalTx(const CTransaction& tx, const CChain& activeChain, int flags = -1)
+bool CheckFinalTx(const CTransaction& tx, const CChain& activeChain)
 {
     AssertLockHeld(cs_main);
 
@@ -85,7 +85,6 @@ bool CheckFinalTx(const CTransaction& tx, const CChain& activeChain, int flags =
     // rules would be enforced for the next block and setting the
     // appropriate flags. At the present time no soft-forks are
     // scheduled, so no flags are set.
-    flags = std::max(flags, 0);
 
     // CheckFinalTx() uses activeChain_.Height()+1 to evaluate
     // nLockTime because when IsFinalTx() is called within
@@ -100,7 +99,7 @@ bool CheckFinalTx(const CTransaction& tx, const CChain& activeChain, int flags =
     // When the next block is created its previous block will be the current
     // chain tip, so we use that to calculate the median time passed to
     // IsFinalTx() if LOCKTIME_MEDIAN_TIME_PAST is set.
-    const int64_t nBlockTime = (flags & LOCKTIME_MEDIAN_TIME_PAST) ? activeChain.Tip()->GetMedianTimePast() : GetAdjustedTime();
+    const int64_t nBlockTime = GetAdjustedTime();
 
     return IsFinalTx(tx, activeChain, nBlockHeight, nBlockTime);
 }

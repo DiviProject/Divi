@@ -1790,7 +1790,7 @@ CAmount CWallet::GetImmatureBalance() const
  */
 bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const
 {
-    if (!CheckFinalTx(*pcoin, activeChain_))
+    if (!IsFinalTx(*pcoin, activeChain_, activeChain_.Height() + 1, GetAdjustedTime()))
         return false;
 
     if (fOnlyConfirmed && !IsTrusted(*pcoin))

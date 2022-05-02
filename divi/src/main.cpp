@@ -1804,8 +1804,11 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
 
     // Check that all transactions are finalized
     for (const auto& tx : block.vtx)
-            if (!IsFinalTx(tx, chain, nHeight, block.GetBlockTime())) {
-        return state.DoS(10, error("%s : contains a non-final transaction", __func__), REJECT_INVALID, "bad-txns-nonfinal");
+    {
+        if (!IsFinalTx(tx, chain, nHeight, block.GetBlockTime()))
+        {
+            return state.DoS(10, error("%s : contains a non-final transaction", __func__), REJECT_INVALID, "bad-txns-nonfinal");
+        }
     }
 
     // Enforce the BIP34 rule that the coinbase starts with serialized block height.

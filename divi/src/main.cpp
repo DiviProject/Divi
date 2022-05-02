@@ -1751,7 +1751,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state)
     return true;
 }
 
-bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex* const pindexPrev)
+bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const CBlockIndex* const pindexPrev)
 {
     const uint256 hash = block.GetHash();
 
@@ -1795,7 +1795,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     return true;
 }
 
-bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIndex* const pindexPrev)
+bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CBlockIndex* const pindexPrev)
 {
     const ChainstateManager::Reference chainstate;
     const auto& chain = chainstate->ActiveChain();

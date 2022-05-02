@@ -1640,7 +1640,10 @@ CAmount CWallet::GetChange(const CWalletTx& walletTransaction) const
  *
  * @{
  */
-
+CAmount CWallet::GetVaultedBalance() const
+{
+    return GetBalanceByCoinType(AvailableCoinsType::OWNED_VAULT_COINS);
+}
 CAmount CWallet::GetStakingBalance() const
 {
     return GetBalanceByCoinType(AvailableCoinsType::STAKABLE_COINS);

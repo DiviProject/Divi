@@ -254,6 +254,8 @@ protected:
     bool LoadHDChain(const CHDChain& chain, bool memonly) override;
 
     void InitializeDatabaseBackend();
+    CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;
+
 public:
     explicit CWallet(
         const CChain& chain,
@@ -381,7 +383,7 @@ public:
     CAmount ComputeChange(const CTransaction& tx) const;
 
     CAmount GetBalance() const;
-    CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;
+    CAmount GetVaultedBalance() const;
     CAmount GetSpendableBalance() const;
     CAmount GetStakingBalance() const;
 

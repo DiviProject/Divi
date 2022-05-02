@@ -1760,10 +1760,11 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
         return false;
     if (fOnlyConfirmed && !IsFinalTx(*pcoin, activeChain_))
         return false;
+
+    const auto& walletTransaction = *pcoin;
+    nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction);
     if(fOnlyConfirmed)
     {
-        const auto& walletTransaction = *pcoin;
-        nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction);
         if(nDepth < 1)
         {
             if (nDepth < 0)
@@ -1789,7 +1790,6 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 
     // We should not consider coins which aren't at least in our mempool
     // It's possible for these to be conflicted via ancestors which we may never be able to detect
-    nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*pcoin);
     if (nDepth == -1) return false;
 
     return true;

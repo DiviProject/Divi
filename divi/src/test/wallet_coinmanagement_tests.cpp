@@ -359,7 +359,7 @@ BOOST_AUTO_TEST_CASE(willEnsureBalancesAreAsExpected)
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), totalBalance,"Total balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetStakingBalance(), normalTxValue+managedVaultTxValue,"Staking balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetSpendableBalance(), normalTxValue,"Spendable balance was not the expected amount");
-    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalanceByCoinType(AvailableCoinsType::OWNED_VAULT_COINS), ownedVaultTxValue,"Owned vault balance was not the expected amount");
+    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetVaultedBalance(), ownedVaultTxValue,"Owned vault balance was not the expected amount");
 }
 
 BOOST_AUTO_TEST_CASE(willEnsureLockedCoinsDoNotCountTowardStakableBalance)

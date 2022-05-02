@@ -25,9 +25,9 @@ public:
         const int coinbaseConfirmationsForMaturity,
         CTxMemPool& mempool,
         CCriticalSection& mainCS);
-    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const;
-    int GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const;
-    int GetBlocksToMaturity(const CMerkleTx& merkleTx) const;
+    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const override;
+    int GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const override;
+    int GetBlocksToMaturity(const CMerkleTx& merkleTx) const override;
 };
 
 #endif// MERKLE_TX_CONFIRMATION_CALCULATOR_H

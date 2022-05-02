@@ -1759,8 +1759,31 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
     if (!IsFinalTx(*pcoin, activeChain_, activeChain_.Height() + 1, GetAdjustedTime()))
         return false;
 
-    if (fOnlyConfirmed && !IsTrusted(*pcoin))
-        return false;
+    if(fOnlyConfirmed)
+    {
+        const auto& walletTransaction = *pcoin;
+        if (!IsFinalTx(walletTransaction, activeChain_))
+            return false;
+        nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction);
+        if(nDepth < 1)
+        {
+            if (nDepth < 0)
+                return false;
+            if (!allowSpendingZeroConfirmationOutputs || !DebitsFunds(walletTransaction, isminetype::ISMINE_SPENDABLE)) // using wtx's cached debit
+                return false;
+
+            // Trusted if all inputs are from us and are in the mempool:
+            BOOST_FOREACH (const CTxIn& txin, walletTransaction.vin) {
+                // Transactions not sent by us: not trusted
+                const CWalletTx* parent = GetWalletTx(txin.prevout.hash);
+                if (parent == NULL)
+                    return false;
+                const CTxOut& parentOut = parent->vout[txin.prevout.n];
+                if (IsMine(parentOut) != isminetype::ISMINE_SPENDABLE)
+                    return false;
+            }
+        }
+    }
 
     if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && confirmationNumberCalculator_.GetBlocksToMaturity(*pcoin) > 0)
         return false;

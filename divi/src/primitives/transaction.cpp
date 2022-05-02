@@ -4,17 +4,12 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "primitives/block.h"
-#include "primitives/transaction.h"
-#include "chain.h"
-#include "hash.h"
-#include "main.h"
-#include "tinyformat.h"
-#include "utilstrencodings.h"
 #include "transaction.h"
 
-#include <boost/foreach.hpp>
-
+#include "primitives/block.h"
+#include "hash.h"
+#include "tinyformat.h"
+#include "utilstrencodings.h"
 
 
 COutPoint::COutPoint() { SetNull(); }

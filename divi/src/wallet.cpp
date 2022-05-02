@@ -1763,10 +1763,8 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 
     const auto& walletTransaction = *pcoin;
     nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction);
-    if(fOnlyConfirmed)
+    if(fOnlyConfirmed && nDepth < 1)
     {
-        if(nDepth < 1)
-        {
             if (nDepth < 0)
                 return false;
             if (!allowSpendingZeroConfirmationOutputs || !DebitsFunds(walletTransaction, isminetype::ISMINE_SPENDABLE)) // using wtx's cached debit
@@ -1782,7 +1780,6 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
                 if (IsMine(parentOut) != isminetype::ISMINE_SPENDABLE)
                     return false;
             }
-        }
     }
 
     if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && confirmationNumberCalculator_.GetBlocksToMaturity(*pcoin) > 0)

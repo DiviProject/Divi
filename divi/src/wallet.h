@@ -27,6 +27,7 @@
 #include <I_StakingCoinSelector.h>
 #include <I_WalletLoader.h>
 #include <I_WalletDatabase.h>
+#include <I_UtxoOwnershipDetector.h>
 
 class I_CoinSelectionAlgorithm;
 class CKeyMetadata;
@@ -161,6 +162,7 @@ struct TransactionCreationResult
 class CWallet final:
     public CCryptoKeyStore,
     public NotificationInterface,
+    public I_UtxoOwnershipDetector,
     public virtual I_KeypoolReserver,
     public I_WalletGuiNotifications,
     public I_StakingWallet,
@@ -219,9 +221,9 @@ private:
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
     void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override;
 
-    isminetype IsMine(const CScript& scriptPubKey) const;
-    isminetype IsMine(const CTxIn& txin) const;
-    bool IsMine(const CTransaction& tx) const;
+    isminetype isMine(const CScript& scriptPubKey) const;
+    isminetype isMine(const CTxIn& txin) const;
+    bool isMine(const CTransaction& tx) const;
 
     void UpdateTimeFirstKey(int64_t nCreateTime);
     bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
@@ -297,6 +299,7 @@ public:
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;
     bool CanStakeCoins() const override;
 
+    isminetype isMine(const CTxOut& txout) const override;
     bool IsSpent(const CWalletTx& wtx, unsigned int n) const;
     bool PruneWallet();
 
@@ -364,8 +367,7 @@ public:
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
     bool AllInputsAreMine(const CWalletTx& walletTransaction) const;
-    isminetype IsMine(const CTxOut& txout) const;
-    isminetype IsMine(const CTxDestination& dest) const;
+    isminetype isMine(const CTxDestination& dest) const;
 
     bool IsChange(const CTxOut& txout) const;
     CAmount GetChange(const CWalletTx& walletTransaction) const;

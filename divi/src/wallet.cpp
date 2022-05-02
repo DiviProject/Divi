@@ -438,23 +438,23 @@ bool CWallet::CanSupportFeature(enum WalletFeature wf)
     return nWalletMaxVersion >= wf;
 }
 
-isminetype CWallet::IsMine(const CScript& scriptPubKey) const
+isminetype CWallet::isMine(const CScript& scriptPubKey) const
 {
     return ::IsMine(*this, scriptPubKey);
 }
-isminetype CWallet::IsMine(const CTxDestination& dest) const
+isminetype CWallet::isMine(const CTxDestination& dest) const
 {
     return ::IsMine(*this, dest);
 }
-isminetype CWallet::IsMine(const CTxOut& txout) const
+isminetype CWallet::isMine(const CTxOut& txout) const
 {
-    return IsMine(txout.scriptPubKey);
+    return isMine(txout.scriptPubKey);
 }
 bool CWallet::AllInputsAreMine(const CWalletTx& walletTransaction) const
 {
     bool allInputsAreMine = true;
     for (const CTxIn& txin : walletTransaction.vin) {
-        isminetype mine = IsMine(txin);
+        isminetype mine = isMine(txin);
         allInputsAreMine &= static_cast<bool>(mine == isminetype::ISMINE_SPENDABLE);
     }
     return allInputsAreMine;
@@ -465,7 +465,7 @@ CAmount CWallet::ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& f
     const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     if (!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
         throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
-    return ( filter.hasRequested(IsMine(txout)) ? txout.nValue : 0);
+    return ( filter.hasRequested(isMine(txout)) ? txout.nValue : 0);
 }
 CAmount CWallet::ComputeChange(const CTxOut& txout) const
 {
@@ -474,10 +474,10 @@ CAmount CWallet::ComputeChange(const CTxOut& txout) const
         throw std::runtime_error("CWallet::ComputeChange() : value out of range");
     return (IsChange(txout) ? txout.nValue : 0);
 }
-bool CWallet::IsMine(const CTransaction& tx) const
+bool CWallet::isMine(const CTransaction& tx) const
 {
     BOOST_FOREACH (const CTxOut& txout, tx.vout)
-        if (IsMine(txout) != isminetype::ISMINE_NO)
+        if (isMine(txout) != isminetype::ISMINE_NO)
             return true;
     return false;
 }
@@ -1123,7 +1123,7 @@ bool CWallet::CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprune
 {
     for(unsigned outputIndex = 0; outputIndex < wtx.vout.size(); ++outputIndex)
     {
-        if(IsMine(wtx.vout[outputIndex]) != isminetype::ISMINE_NO)
+        if(isMine(wtx.vout[outputIndex]) != isminetype::ISMINE_NO)
         {
             if(!outputTracker_->IsSpent(wtx.GetHash(), outputIndex,minimumNumberOfConfs)) return false;
         }
@@ -1132,7 +1132,7 @@ bool CWallet::CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprune
     {
         const CWalletTx* previousTx = transactionRecord_->GetWalletTx(input.prevout.hash);
         if(previousTx != nullptr &&
-            IsMine(previousTx->vout[input.prevout.n]) != isminetype::ISMINE_NO &&
+            isMine(previousTx->vout[input.prevout.n]) != isminetype::ISMINE_NO &&
             unprunedTransactionIds.count(input.prevout.hash) > 0)
         {
             return false;
@@ -1470,7 +1470,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
         AssertLockHeld(cs_wallet);
         bool fExisted = GetWalletTx(tx.GetHash()) != nullptr;
         if (fExisted && !fUpdate) return false;
-        if (fExisted || IsMine(tx) || DebitsFunds(tx)) {
+        if (fExisted || isMine(tx) || DebitsFunds(tx)) {
             CWalletTx wtx(tx);
             // Get merkle branch if transaction was found in a block
             if (pblock)
@@ -1538,7 +1538,7 @@ void CWallet::UpdatedBlockTip(const CBlockIndex *pindex)
     timeOfLastChainTipUpdate = GetTime();
 }
 
-isminetype CWallet::IsMine(const CTxIn& txin) const
+isminetype CWallet::isMine(const CTxIn& txin) const
 {
     {
         LOCK(cs_wallet);
@@ -1546,7 +1546,7 @@ isminetype CWallet::IsMine(const CTxIn& txin) const
         if (txPtr != nullptr) {
             const CWalletTx& prev = *txPtr;
             if (txin.prevout.n < prev.vout.size())
-                return IsMine(prev.vout[txin.prevout.n]);
+                return isMine(prev.vout[txin.prevout.n]);
         }
     }
     return isminetype::ISMINE_NO;
@@ -1560,7 +1560,7 @@ CAmount CWallet::GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) 
         if (txPtr != nullptr) {
             const CWalletTx& prev = *txPtr;
             if (txin.prevout.n < prev.vout.size())
-                if (filter.hasRequested(IsMine(prev.vout[txin.prevout.n])))
+                if (filter.hasRequested(isMine(prev.vout[txin.prevout.n])))
                     return prev.vout[txin.prevout.n].nValue;
         }
     }
@@ -1778,7 +1778,7 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
             if (parent == NULL)
                 return false;
             const CTxOut& parentOut = parent->vout[txin.prevout.n];
-            if (IsMine(parentOut) != isminetype::ISMINE_SPENDABLE)
+            if (isMine(parentOut) != isminetype::ISMINE_SPENDABLE)
                 return false;
         }
     }
@@ -2602,7 +2602,7 @@ bool CWallet::IsTrusted(const CWalletTx& walletTransaction) const
         if (parent == NULL)
             return false;
         const CTxOut& parentOut = parent->vout[txin.prevout.n];
-        if (IsMine(parentOut) != isminetype::ISMINE_SPENDABLE)
+        if (isMine(parentOut) != isminetype::ISMINE_SPENDABLE)
             return false;
     }
     return true;

@@ -1765,9 +1765,7 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
     nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction);
     if(fOnlyConfirmed && nDepth < 1)
     {
-        if (nDepth < 0)
-            return false;
-        if (!allowSpendingZeroConfirmationOutputs || !DebitsFunds(walletTransaction, isminetype::ISMINE_SPENDABLE)) // using wtx's cached debit
+        if (nDepth < 0 || !allowSpendingZeroConfirmationOutputs || !DebitsFunds(walletTransaction, isminetype::ISMINE_SPENDABLE)) // using wtx's cached debit
             return false;
 
         // Trusted if all inputs are from us and are in the mempool:

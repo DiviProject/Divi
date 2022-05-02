@@ -40,6 +40,7 @@
 #include <VaultManagerDatabase.h>
 #include <BlockScanner.h>
 #include <ui_interface.h>
+#include <WalletBalanceCalculator.h>
 
 #include <stack>
 
@@ -172,6 +173,12 @@ CWallet::CWallet(
     , vaultManager_()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
+    , balanceCalculator_(
+        new WalletBalanceCalculator(
+            *static_cast<I_UtxoOwnershipDetector*>(this),
+            *transactionRecord_,
+            *outputTracker_,
+            confirmationNumberCalculator_  ))
     , nWalletVersion(FEATURE_BASE)
     , nWalletMaxVersion(FEATURE_BASE)
     , mapKeyMetadata()

@@ -55,6 +55,7 @@ class I_VaultManagerDatabase;
 class VaultManager;
 class CBlockLocator;
 class I_BlockDataReader;
+class WalletBalanceCalculator;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
@@ -191,6 +192,7 @@ private:
     std::shared_ptr<VaultManager> vaultManager_;
     std::unique_ptr<I_AppendOnlyTransactionRecord> transactionRecord_;
     std::unique_ptr<I_SpentOutputTracker> outputTracker_;
+    std::unique_ptr<WalletBalanceCalculator> balanceCalculator_;
 
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded

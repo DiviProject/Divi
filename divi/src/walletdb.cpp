@@ -593,7 +593,6 @@ bool CWalletDB::Flush()
                 // Flush wallet.dat so it's self contained
                 berkleyDbEnvWrapper_.CloseDb(dbFilename_);
                 berkleyDbEnvWrapper_.CheckpointLSN(dbFilename_);
-                berkleyDbEnvWrapper_.mapFileUseCount.erase(mi++);
                 return true;
             }
         }

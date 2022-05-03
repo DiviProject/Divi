@@ -110,6 +110,7 @@ BASE_SCRIPTS = [
     'proxy_test.py',
     'receivedby.py',
     'reindex.py',
+    'repeatedwalletbackup.py',
     'rescan.py',
     'PowToPosTransition.py',
     'rawtransactions.py',

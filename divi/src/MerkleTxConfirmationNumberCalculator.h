@@ -16,14 +16,14 @@ private:
     const CChain& activeChain_;
     const BlockMap& blockIndices_;
     const int coinbaseConfirmationsForMaturity_;
-    CTxMemPool& mempool_;
+    const CTxMemPool& mempool_;
     CCriticalSection& mainCS_;
 public:
     MerkleTxConfirmationNumberCalculator(
         const CChain& activeChain,
         const BlockMap& blockIndices,
         const int coinbaseConfirmationsForMaturity,
-        CTxMemPool& mempool,
+        const CTxMemPool& mempool,
         CCriticalSection& mainCS);
     std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const override;
     int GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const override;

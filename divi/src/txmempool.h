@@ -110,7 +110,7 @@ public:
         return totalTxSize;
     }
 
-    bool exists(const uint256& hash)
+    bool exists(const uint256& hash) const
     {
         LOCK(cs);
         return (mapTx.count(hash) != 0);

@@ -1600,37 +1600,6 @@ bool CWallet::IsChange(const CTxOut& txout) const
     return false;
 }
 
-CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache) const
-{
-    if ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) &&
-        confirmationNumberCalculator_.GetBlocksToMaturity(walletTransaction) > 0 &&
-        confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction) > 0)
-    {
-        if (fUseCache && walletTransaction.fImmatureCreditCached)
-            return walletTransaction.nImmatureCreditCached;
-        walletTransaction.nImmatureCreditCached = ComputeCredit(walletTransaction, isminetype::ISMINE_SPENDABLE);
-        walletTransaction.fImmatureCreditCached = true;
-        return walletTransaction.nImmatureCreditCached;
-    }
-
-    return 0;
-}
-
-CAmount CWallet::GetAvailableCredit(const CWalletTx& walletTransaction, bool fUseCache) const
-{
-    // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (confirmationNumberCalculator_.GetBlocksToMaturity(walletTransaction) > 0)
-        return 0;
-
-    if (fUseCache && walletTransaction.fAvailableCreditCached)
-        return walletTransaction.nAvailableCreditCached;
-
-    CAmount nCredit = ComputeCredit(walletTransaction,isminetype::ISMINE_SPENDABLE, REQUIRE_UNSPENT);
-    walletTransaction.nAvailableCreditCached = nCredit;
-    walletTransaction.fAvailableCreditCached = true;
-    return nCredit;
-}
-
 CAmount CWallet::GetChange(const CWalletTx& walletTransaction) const
 {
     if (walletTransaction.fChangeCached)
@@ -1666,12 +1635,6 @@ CAmount CWallet::GetBalance() const
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
-        /*const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
-        for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it) {
-            const CWalletTx* pcoin = &(*it).second;
-            if (IsTrusted(*pcoin))
-                nTotal += GetAvailableCredit(*pcoin);
-        }*/
         nTotal += balanceCalculator_->getBalance();
         if(vaultManager_)
         {

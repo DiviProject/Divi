@@ -383,7 +383,7 @@ public:
     CAmount GetChange(const CWalletTx& walletTransaction) const;
 
     CAmount getDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;
-    CAmount GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const;
+    CAmount getCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeChange(const CTransaction& tx) const;
 
     CAmount GetVaultedBalance() const;

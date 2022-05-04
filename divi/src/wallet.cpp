@@ -1666,12 +1666,13 @@ CAmount CWallet::GetBalance() const
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
-        const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
+        /*const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
         for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             if (IsTrusted(*pcoin))
                 nTotal += GetAvailableCredit(*pcoin);
-        }
+        }*/
+        nTotal += balanceCalculator_->getBalance();
         if(vaultManager_)
         {
             auto utxos = vaultManager_->getManagedUTXOs();
@@ -1721,12 +1722,7 @@ CAmount CWallet::GetUnconfirmedBalance() const
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
-        const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
-        for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it) {
-            const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin, activeChain_) || (!IsTrusted(*pcoin) && confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*pcoin) == 0))
-                nTotal += GetAvailableCredit(*pcoin);
-        }
+        nTotal += balanceCalculator_->getUnconfirmedBalance();
         if(vaultManager_)
         {
             auto utxos = vaultManager_->getManagedUTXOs(VaultUTXOFilters::UNCONFIRMED);

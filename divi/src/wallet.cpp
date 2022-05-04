@@ -509,32 +509,6 @@ CAmount CWallet::ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter&
     }
     return nDebit;
 }
-CAmount CWallet::getDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const
-{
-    if (tx.vin.empty())
-        return 0;
-
-    CAmount debit = 0;
-    if (filter.hasRequested(isminetype::ISMINE_SPENDABLE)) {
-        if (tx.fDebitCached)
-            debit += tx.nDebitCached;
-        else {
-            tx.nDebitCached = ComputeDebit(tx, isminetype::ISMINE_SPENDABLE);
-            tx.fDebitCached = true;
-            debit += tx.nDebitCached;
-        }
-    }
-    if (filter.hasRequested(isminetype::ISMINE_WATCH_ONLY)) {
-        if (tx.fWatchDebitCached)
-            debit += tx.nWatchDebitCached;
-        else {
-            tx.nWatchDebitCached = ComputeDebit(tx, isminetype::ISMINE_WATCH_ONLY);
-            tx.fWatchDebitCached = true;
-            debit += tx.nWatchDebitCached;
-        }
-    }
-    return debit;
-}
 
 CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags) const
 {
@@ -562,7 +536,32 @@ CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& f
     }
     return nCredit;
 }
+CAmount CWallet::getDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const
+{
+    if (tx.vin.empty())
+        return 0;
 
+    CAmount debit = 0;
+    if (filter.hasRequested(isminetype::ISMINE_SPENDABLE)) {
+        if (tx.fDebitCached)
+            debit += tx.nDebitCached;
+        else {
+            tx.nDebitCached = ComputeDebit(tx, isminetype::ISMINE_SPENDABLE);
+            tx.fDebitCached = true;
+            debit += tx.nDebitCached;
+        }
+    }
+    if (filter.hasRequested(isminetype::ISMINE_WATCH_ONLY)) {
+        if (tx.fWatchDebitCached)
+            debit += tx.nWatchDebitCached;
+        else {
+            tx.nWatchDebitCached = ComputeDebit(tx, isminetype::ISMINE_WATCH_ONLY);
+            tx.fWatchDebitCached = true;
+            debit += tx.nWatchDebitCached;
+        }
+    }
+    return debit;
+}
 CAmount CWallet::getCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it

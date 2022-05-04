@@ -495,7 +495,7 @@ bool CWallet::DebitsFunds(const CTransaction& tx) const
 }
 bool CWallet::DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const
 {
-    return GetDebit(tx,filter) > 0;
+    return getDebit(tx,filter) > 0;
 }
 
 CAmount CWallet::ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const
@@ -509,7 +509,7 @@ CAmount CWallet::ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter&
     }
     return nDebit;
 }
-CAmount CWallet::GetDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const
+CAmount CWallet::getDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const
 {
     if (tx.vin.empty())
         return 0;

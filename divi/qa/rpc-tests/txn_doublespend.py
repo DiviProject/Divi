@@ -154,7 +154,10 @@ class TxnMallTest(BitcoinTestFramework):
         fees_paid = tx1["fee"] + tx2["fee"]
         expected = starting_balance + node0_balance_change
         amount_sent = -node0_balance_change - fees_paid
-        assert_near(self.nodes[0].getbalance(), expected, Decimal(0.001))
+
+        wallet_info = self.nodes[0].getwalletinfo()
+        total_confirmed_and_unconfirmed_balance = wallet_info["balance"] + wallet_info["unconfirmed_balance"]
+        assert_near(total_confirmed_and_unconfirmed_balance, expected, Decimal(0.001))
 
         # foo and bar accounts should be debited:
         account_balances = self.collect_balances_by_account(sender,account_names=["foo","bar"])

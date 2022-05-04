@@ -564,10 +564,6 @@ CAmount CWallet::getDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter
 }
 CAmount CWallet::getCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
 {
-    // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (walletTransaction.IsCoinBase() && confirmationNumberCalculator_.GetBlocksToMaturity(walletTransaction) > 0)
-        return 0;
-
     CAmount credit = 0;
     if (filter.hasRequested(isminetype::ISMINE_SPENDABLE)) {
         // GetBalance can assume transactions in mapWallet won't change

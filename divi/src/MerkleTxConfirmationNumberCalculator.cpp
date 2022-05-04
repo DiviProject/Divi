@@ -9,7 +9,7 @@ MerkleTxConfirmationNumberCalculator::MerkleTxConfirmationNumberCalculator(
     const CChain& activeChain,
     const BlockMap& blockIndices,
     const int coinbaseConfirmationsForMaturity,
-    CTxMemPool& mempool,
+    const CTxMemPool& mempool,
     CCriticalSection& mainCS
     ): activeChain_(activeChain)
     , blockIndices_(blockIndices)

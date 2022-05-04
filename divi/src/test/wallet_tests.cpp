@@ -44,7 +44,7 @@ class WalletTestFixture
 {
 
 protected:
-
+  std::set<uint256> txsFromMe;
   FakeBlockIndexWithHashes fakeChain;
   FakeWallet fakeWallet;
   CWallet& wallet;
@@ -53,13 +53,14 @@ protected:
 
 
   WalletTestFixture()
-    : fakeChain(1, 1600000000, 1)
+    : txsFromMe()
+    , fakeChain(1, 1600000000, 1)
     , fakeWallet(fakeChain)
     , wallet(static_cast<CWallet&>(fakeWallet))
     , confChecker(
         [this](const CWalletTx& wtx,int nConfMine,int nConfTheirs) -> int
         {
-            return (wtx.fDebitCached && wtx.nDebitCached > 0)? nConfMine : nConfTheirs;
+            return (txsFromMe.count(wtx.GetHash()) > 0)? nConfMine : nConfTheirs;
         })
   {}
 
@@ -83,8 +84,7 @@ void WalletTestFixture::add_coin(const CAmount nValue, int nAge, bool fIsFromMe,
     CWalletTx* wtx = new CWalletTx(tx);
     if (fIsFromMe)
     {
-        wtx->fDebitCached = true;
-        wtx->nDebitCached = 1;
+        txsFromMe.insert(wtx->GetHash());
     }
     COutput output(wtx, nInput, nAge, true);
     vCoins.push_back(output);

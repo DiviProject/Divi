@@ -105,7 +105,7 @@ WalletOutputEntryParsing GetAmounts(
     parsedEntry.listSent.clear();
     parsedEntry.previousOutputsSpent.clear();
 
-    CAmount nDebit = wallet.GetDebit(wtx,filter);
+    CAmount nDebit = wallet.getDebit(wtx,filter);
     wtx.totalInputs = 0;
     if(nDebit > 0)
     {
@@ -1752,7 +1752,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
 
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
     const bool isCoinstake = wtx.IsCoinStake();
-    const CAmount nDebit = wallet.GetDebit(wtx,isminetype::ISMINE_SPENDABLE);
+    const CAmount nDebit = wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE);
 
     if (isCoinstake)
     {
@@ -1855,8 +1855,8 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         {
             Object entry;
             entry.push_back(Pair("category", "move"));
-            auto nFee = wallet.GetDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.GetCredit(wtx,isminetype::ISMINE_SPENDABLE);
-            entry.push_back(Pair("amount", ValueFromAmount( wallet.GetDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.GetChange(wtx) - nFee)));
+            auto nFee = wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.GetCredit(wtx,isminetype::ISMINE_SPENDABLE);
+            entry.push_back(Pair("amount", ValueFromAmount( wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.GetChange(wtx) - nFee)));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
 
             Array addresses;
@@ -2248,7 +2248,7 @@ Value gettransaction(const Array& params, bool fHelp)
     const CWalletTx& wtx = *txPtr;
 
     CAmount nCredit = pwalletMain->GetCredit(wtx,filter);
-    CAmount nDebit = pwalletMain->GetDebit(wtx,filter);
+    CAmount nDebit = pwalletMain->getDebit(wtx,filter);
     CAmount nNet = nCredit - nDebit;
     CAmount nFee =  nDebit > 0 ? nDebit - wtx.GetValueOut(): 0;
 

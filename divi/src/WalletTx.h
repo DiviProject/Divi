@@ -35,20 +35,16 @@ public:
     // memory only
     mutable bool fDebitCached;
     mutable bool fCreditCached;
-    mutable bool fImmatureCreditCached;
-    mutable bool fAvailableCreditCached;
-    mutable bool fWatchDebitCached;
-    mutable bool fWatchCreditCached;
-    mutable bool fChangeCached;
-    mutable bool totalInputsCached;
     mutable CAmount nDebitCached;
     mutable CAmount nCreditCached;
-    mutable CAmount nImmatureCreditCached;
-    mutable CAmount nAvailableCreditCached;
+
+    mutable bool fWatchDebitCached;
+    mutable bool fWatchCreditCached;
     mutable CAmount nWatchDebitCached;
     mutable CAmount nWatchCreditCached;
+
+    mutable bool fChangeCached;
     mutable CAmount nChangeCached;
-    mutable CAmount totalInputs;
 
     CWalletTx();
     CWalletTx(const CTransaction& txIn);

@@ -59,7 +59,7 @@ protected:
     , confChecker(
         [this](const CWalletTx& wtx,int nConfMine,int nConfTheirs) -> int
         {
-            return this->wallet.DebitsFunds(wtx,isminetype::ISMINE_SPENDABLE)? nConfMine : nConfTheirs;
+            return (wtx.fDebitCached && wtx.nDebitCached > 0)? nConfMine : nConfTheirs;
         })
   {}
 

@@ -563,7 +563,7 @@ CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& f
     return nCredit;
 }
 
-CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
+CAmount CWallet::getCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it
     if (walletTransaction.IsCoinBase() && confirmationNumberCalculator_.GetBlocksToMaturity(walletTransaction) > 0)

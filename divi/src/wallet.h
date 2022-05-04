@@ -237,6 +237,10 @@ private:
     int64_t getTimestampOfFistKey() const;
     bool CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const;
 
+    CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
+    CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;
+    CAmount ComputeChange(const CTxOut& txout) const;
+
 protected:
 
     // CWalletDB: load from disk methods
@@ -374,9 +378,6 @@ public:
     bool IsChange(const CTxOut& txout) const;
     CAmount GetChange(const CWalletTx& walletTransaction) const;
 
-    CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
-    CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;
-    CAmount ComputeChange(const CTxOut& txout) const;
     bool DebitsFunds(const CTransaction& tx) const;
     bool DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const;
 

@@ -386,13 +386,11 @@ public:
     CAmount GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeChange(const CTransaction& tx) const;
 
-    CAmount GetBalance() const;
     CAmount GetVaultedBalance() const;
     CAmount GetSpendableBalance() const;
     CAmount GetStakingBalance() const;
 
-    CAmount GetAvailableCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
-    CAmount GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
+    CAmount GetBalance() const;
     CAmount GetUnconfirmedBalance() const;
     CAmount GetImmatureBalance() const;
 

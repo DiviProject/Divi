@@ -1855,7 +1855,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         {
             Object entry;
             entry.push_back(Pair("category", "move"));
-            auto nFee = wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.GetCredit(wtx,isminetype::ISMINE_SPENDABLE);
+            auto nFee = wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.getCredit(wtx,isminetype::ISMINE_SPENDABLE);
             entry.push_back(Pair("amount", ValueFromAmount( wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.GetChange(wtx) - nFee)));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
 
@@ -2247,7 +2247,7 @@ Value gettransaction(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
     const CWalletTx& wtx = *txPtr;
 
-    CAmount nCredit = pwalletMain->GetCredit(wtx,filter);
+    CAmount nCredit = pwalletMain->getCredit(wtx,filter);
     CAmount nDebit = pwalletMain->getDebit(wtx,filter);
     CAmount nNet = nCredit - nDebit;
     CAmount nFee =  nDebit > 0 ? nDebit - wtx.GetValueOut(): 0;

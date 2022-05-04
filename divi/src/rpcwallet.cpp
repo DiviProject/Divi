@@ -106,13 +106,13 @@ WalletOutputEntryParsing GetAmounts(
     parsedEntry.previousOutputsSpent.clear();
 
     CAmount nDebit = wallet.getDebit(wtx,filter);
-    wtx.totalInputs = 0;
+    CAmount wtxTotalInputs = 0;
     if(nDebit > 0)
     {
         if(wallet.AllInputsAreMine(wtx))
         {
             parsedEntry.nFee = nDebit - wtx.GetValueOut();
-            wtx.totalInputs = nDebit;
+            wtxTotalInputs = nDebit;
             if(collectPreviousOutputs)
             {
                 for(const CTxIn& txin: wtx.vin)
@@ -135,11 +135,11 @@ WalletOutputEntryParsing GetAmounts(
                 if(collectPreviousOutputs) parsedEntry.previousOutputsSpent.push_back(tx.vout[txin.prevout.n]);
                 totalInputs += tx.vout[txin.prevout.n].nValue;
             }
-            wtx.totalInputs = totalInputs;
-            parsedEntry.nFee = wtx.totalInputs - wtx.GetValueOut();
+            wtxTotalInputs = totalInputs;
+            parsedEntry.nFee = wtxTotalInputs - wtx.GetValueOut();
         }
     }
-    parsedEntry.sentByOthers = wtx.totalInputs - nDebit;
+    parsedEntry.sentByOthers = wtxTotalInputs - nDebit;
 
     // Sent/received.
     for (unsigned int i = 0; i < wtx.vout.size(); ++i) {

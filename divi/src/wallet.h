@@ -382,7 +382,7 @@ public:
     bool IsChange(const CTxOut& txout) const;
     CAmount GetChange(const CWalletTx& walletTransaction) const;
 
-    CAmount GetDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;
+    CAmount getDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;
     CAmount GetCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeChange(const CTransaction& tx) const;
 

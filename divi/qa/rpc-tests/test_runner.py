@@ -127,6 +127,7 @@ BASE_SCRIPTS = [
     'VaultUtxoIndexing.py',
     'vaultfork.py',
     'wallet.py',
+    'wallet_balances.py',
     'walletbackup.py',
     'wallet_notifications.py',
     'wallet_sends.py',

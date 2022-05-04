@@ -1740,11 +1740,7 @@ CAmount CWallet::GetImmatureBalance() const
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
-        const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
-        for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it) {
-            const CWalletTx* pcoin = &(*it).second;
-            nTotal += GetImmatureCredit(*pcoin);
-        }
+        nTotal += balanceCalculator_->getImmatureBalance();
         if(vaultManager_)
         {
             auto utxos = vaultManager_->getManagedUTXOs(VaultUTXOFilters::INMATURE);

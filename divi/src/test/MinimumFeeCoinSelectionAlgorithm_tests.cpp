@@ -318,7 +318,6 @@ BOOST_AUTO_TEST_CASE(willEstimateFeesPaidByExistingInputs)
 
     CAmount feesPaidEstimate = 0*COIN;
     std::set<COutput> selectedUTXOsWithoutFeeRestrictions = algorithm.SelectCoins(nextTransaction,utxos,feesPaidEstimate);
-    std::cout << "This is a test: " << numberOfUtxos << ", " << utxos.size() << std::endl;
     BOOST_CHECK_EQUAL_MESSAGE(feesPaidEstimate, feeRate.GetFee(txSize), "Fee estimated and fee rate mismatched");
 
 }

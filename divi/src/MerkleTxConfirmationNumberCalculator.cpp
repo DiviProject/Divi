@@ -5,8 +5,6 @@
 #include <txmempool.h>
 #include <merkletx.h>
 
-const unsigned MerkleTxConfirmationNumberCalculator::DEPTH = 288u;
-
 MerkleTxConfirmationNumberCalculator::MerkleTxConfirmationNumberCalculator(
     const CChain& activeChain,
     const BlockMap& blockIndices,
@@ -18,8 +16,6 @@ MerkleTxConfirmationNumberCalculator::MerkleTxConfirmationNumberCalculator(
     , coinbaseConfirmationsForMaturity_(coinbaseConfirmationsForMaturity)
     , mempool_(mempool)
     , mainCS_(mainCS)
-    , cacheLock_()
-    , cachedConfirmationLookups_()
 {
 }
 
@@ -27,22 +23,7 @@ std::pair<const CBlockIndex*,int> MerkleTxConfirmationNumberCalculator::FindConf
 {
     static const std::pair<const CBlockIndex*,int> defaultValue = std::make_pair(nullptr,0);
     if(!merkleTx.MerkleBranchIsSet())
-    {
         return defaultValue;
-    }
-    else
-    {
-        LOCK(cacheLock_);
-        if(cachedConfirmationLookups_.count(merkleTx.hashBlock)>0)
-        {
-            const CBlockIndex* confirmationBlockIndex = cachedConfirmationLookups_.find(merkleTx.hashBlock)->second;
-            const int confirmations = activeChain_.Height() - confirmationBlockIndex->nHeight + 1;
-            if(confirmations > 0 && static_cast<unsigned>(confirmations) >= DEPTH && activeChain_.Contains(confirmationBlockIndex))
-            {
-                return std::make_pair(confirmationBlockIndex,confirmations);
-            }
-        }
-    }
 
     // Find the block it claims to be in
     int depth;
@@ -60,11 +41,6 @@ std::pair<const CBlockIndex*,int> MerkleTxConfirmationNumberCalculator::FindConf
             return defaultValue;
         }
         depth = activeChain_.Height() - pindex->nHeight + 1;
-        if(depth > 0 && static_cast<unsigned>(depth) >= DEPTH && cachedConfirmationLookups_.count(merkleTx.hashBlock)==0)
-        {
-            LOCK(cacheLock_);
-            cachedConfirmationLookups_.insert({merkleTx.hashBlock,pindex});
-        }
     }
     return std::make_pair(pindex,depth);
 }

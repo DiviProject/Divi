@@ -1,6 +1,7 @@
 #ifndef WALLET_BALANCE_CALCULATOR_H
 #define WALLET_BALANCE_CALCULATOR_H
 #include <amount.h>
+#include <IsMineType.h>
 class I_AppendOnlyTransactionRecord;
 class I_SpentOutputTracker;
 class I_MerkleTxConfirmationNumberCalculator;
@@ -22,7 +23,7 @@ private:
         CONFIRMED_AND_MATURE = CONFIRMED | MATURE,
         CONFIRMED_AND_IMMATURE = CONFIRMED | IMMATURE,
     };
-    CAmount calculateBalance(BalanceFlag flag) const;
+    CAmount calculateBalance(BalanceFlag flag,UtxoOwnershipFilter ownershipFilter) const;
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,
@@ -30,8 +31,8 @@ public:
         const I_SpentOutputTracker& spentOutputTracker,
         const I_MerkleTxConfirmationNumberCalculator& confsCalculator);
     ~WalletBalanceCalculator();
-    CAmount getBalance() const;
-    CAmount getUnconfirmedBalance() const;
-    CAmount getImmatureBalance() const;
+    CAmount getBalance(isminetype ownershipType = isminetype::ISMINE_SPENDABLE) const;
+    CAmount getUnconfirmedBalance(isminetype ownershipType = isminetype::ISMINE_SPENDABLE) const;
+    CAmount getImmatureBalance(isminetype ownershipType = isminetype::ISMINE_SPENDABLE) const;
 };
 #endif// WALLET_BALANCE_CALCULATOR_H

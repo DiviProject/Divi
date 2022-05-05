@@ -22,7 +22,7 @@ WalletBalanceCalculator::~WalletBalanceCalculator()
 {
 }
 
-CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag,UtxoOwnershipFilter ownershipFilter) const
+CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag, const UtxoOwnershipFilter& ownershipFilter) const
 {
     assert((flag & BalanceFlag::UNCONFIRMED & BalanceFlag::CONFIRMED) == 0);
     assert((flag & BalanceFlag::IMMATURE & BalanceFlag::MATURE) == 0);
@@ -52,17 +52,17 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag,UtxoOwnership
     return totalBalance;
 }
 
-CAmount WalletBalanceCalculator::getBalance(isminetype ownershipType) const
+CAmount WalletBalanceCalculator::getBalance(UtxoOwnershipFilter ownershipFilter) const
 {
-    return calculateBalance(CONFIRMED_AND_MATURE,ownershipType);
+    return calculateBalance(CONFIRMED_AND_MATURE,ownershipFilter);
 }
 
-CAmount WalletBalanceCalculator::getUnconfirmedBalance(isminetype ownershipType) const
+CAmount WalletBalanceCalculator::getUnconfirmedBalance(UtxoOwnershipFilter ownershipFilter) const
 {
-    return calculateBalance(UNCONFIRMED,ownershipType);
+    return calculateBalance(UNCONFIRMED,ownershipFilter);
 }
 
-CAmount WalletBalanceCalculator::getImmatureBalance(isminetype ownershipType) const
+CAmount WalletBalanceCalculator::getImmatureBalance(UtxoOwnershipFilter ownershipFilter) const
 {
-    return calculateBalance(CONFIRMED_AND_IMMATURE,ownershipType);
+    return calculateBalance(CONFIRMED_AND_IMMATURE,ownershipFilter);
 }

@@ -23,7 +23,7 @@ private:
         CONFIRMED_AND_MATURE = CONFIRMED | MATURE,
         CONFIRMED_AND_IMMATURE = CONFIRMED | IMMATURE,
     };
-    CAmount calculateBalance(BalanceFlag flag,UtxoOwnershipFilter ownershipFilter) const;
+    CAmount calculateBalance(BalanceFlag flag,const UtxoOwnershipFilter& ownershipFilter) const;
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,
@@ -31,8 +31,8 @@ public:
         const I_SpentOutputTracker& spentOutputTracker,
         const I_MerkleTxConfirmationNumberCalculator& confsCalculator);
     ~WalletBalanceCalculator();
-    CAmount getBalance(isminetype ownershipType = isminetype::ISMINE_SPENDABLE) const;
-    CAmount getUnconfirmedBalance(isminetype ownershipType = isminetype::ISMINE_SPENDABLE) const;
-    CAmount getImmatureBalance(isminetype ownershipType = isminetype::ISMINE_SPENDABLE) const;
+    CAmount getBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const;
+    CAmount getUnconfirmedBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const;
+    CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const;
 };
 #endif// WALLET_BALANCE_CALCULATOR_H

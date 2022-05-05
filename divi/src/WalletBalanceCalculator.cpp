@@ -22,7 +22,7 @@ WalletBalanceCalculator::~WalletBalanceCalculator()
 {
 }
 
-CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
+CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag,UtxoOwnershipFilter ownershipFilter) const
 {
     assert((flag & BalanceFlag::UNCONFIRMED & BalanceFlag::CONFIRMED) == 0);
     assert((flag & BalanceFlag::IMMATURE & BalanceFlag::MATURE) == 0);
@@ -42,7 +42,7 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
         const uint256& txid = txidAndTransaction.first;
         for(unsigned outputIndex=0u; outputIndex < tx.vout.size(); ++outputIndex)
         {
-            if(ownershipDetector_.isMine(tx.vout[outputIndex]) == isminetype::ISMINE_SPENDABLE &&
+            if( ownershipFilter.hasRequested(ownershipDetector_.isMine(tx.vout[outputIndex])) &&
                !spentOutputTracker_.IsSpent(txid,outputIndex,0))
             {
                 totalBalance += tx.vout[outputIndex].nValue;
@@ -52,17 +52,17 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag) const
     return totalBalance;
 }
 
-CAmount WalletBalanceCalculator::getBalance() const
+CAmount WalletBalanceCalculator::getBalance(isminetype ownershipType) const
 {
-    return calculateBalance(CONFIRMED_AND_MATURE);
+    return calculateBalance(CONFIRMED_AND_MATURE,ownershipType);
 }
 
-CAmount WalletBalanceCalculator::getUnconfirmedBalance() const
+CAmount WalletBalanceCalculator::getUnconfirmedBalance(isminetype ownershipType) const
 {
-    return calculateBalance(UNCONFIRMED);
+    return calculateBalance(UNCONFIRMED,ownershipType);
 }
 
-CAmount WalletBalanceCalculator::getImmatureBalance() const
+CAmount WalletBalanceCalculator::getImmatureBalance(isminetype ownershipType) const
 {
-    return calculateBalance(CONFIRMED_AND_IMMATURE);
+    return calculateBalance(CONFIRMED_AND_IMMATURE,ownershipType);
 }

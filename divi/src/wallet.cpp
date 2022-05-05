@@ -69,18 +69,33 @@ bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeig
     return true;
 }
 
-bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine,VaultType& vaultType)
+template <typename T>
+isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScript, const bool overwriteMineType = true)
 {
-    mine = ::IsMine(keystore, scriptPubKey, vaultType);
-    if( coinType == AvailableCoinsType::STAKABLE_COINS && vaultType == OWNED_VAULT)
+    isminetype mine = ::IsMine(keystore, destinationOrScript);
+    const bool isManagedVault = mine == isminetype::ISMINE_MANAGED_VAULT;
+    const bool isOwnedVault = mine == isminetype::ISMINE_OWNED_VAULT;
+    const bool isVault = isManagedVault || isOwnedVault;
+    if(isVault && overwriteMineType) mine = isminetype::ISMINE_SPENDABLE;
+    return mine;
+}
+
+bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine)
+{
+    mine = computeMineType(keystore, scriptPubKey, false);
+    const bool isManagedVault = mine == isminetype::ISMINE_MANAGED_VAULT;
+    const bool isOwnedVault = mine == isminetype::ISMINE_OWNED_VAULT;
+    const bool isVault = isManagedVault || isOwnedVault;
+    if(isVault) mine = isminetype::ISMINE_SPENDABLE;
+    if( coinType == AvailableCoinsType::STAKABLE_COINS && isOwnedVault)
     {
         return false;
     }
-    else if( coinType == AvailableCoinsType::ALL_SPENDABLE_COINS && vaultType != NON_VAULT)
+    else if(coinType == AvailableCoinsType::ALL_SPENDABLE_COINS && isVault)
     {
         return false;
     }
-    else if( coinType == AvailableCoinsType::OWNED_VAULT_COINS && vaultType != OWNED_VAULT)
+    else if( coinType == AvailableCoinsType::OWNED_VAULT_COINS && !isOwnedVault)
     {
         return false;
     }
@@ -88,15 +103,13 @@ bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, Ava
 }
 bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType)
 {
-    VaultType vaultType;
     isminetype recoveredOwnershipType;
-    return IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType,vaultType);
+    return IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType);
 }
 bool FilterAvailableTypeByOwnershipType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype requiredOwnershipType)
 {
-    VaultType vaultType;
     isminetype recoveredOwnershipType;
-    if(!IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType,vaultType))
+    if(!IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType))
     {
         return false;
     }
@@ -447,11 +460,11 @@ bool CWallet::CanSupportFeature(enum WalletFeature wf)
 
 isminetype CWallet::isMine(const CScript& scriptPubKey) const
 {
-    return ::IsMine(*this, scriptPubKey);
+    return computeMineType(*this, scriptPubKey);
 }
 isminetype CWallet::isMine(const CTxDestination& dest) const
 {
-    return ::IsMine(*this, dest);
+    return computeMineType(*this, dest);
 }
 isminetype CWallet::isMine(const CTxOut& txout) const
 {
@@ -1578,7 +1591,7 @@ bool CWallet::IsChange(const CTxOut& txout) const
     // a better way of identifying which outputs are 'the send' and which are
     // 'the change' will need to be implemented (maybe extend CWalletTx to remember
     // which output, if any, was change).
-    if (::IsMine(*this, txout.scriptPubKey) != isminetype::ISMINE_NO)
+    if (computeMineType(*this, txout.scriptPubKey) != isminetype::ISMINE_NO)
     {
         CTxDestination address;
         if (!ExtractDestination(txout.scriptPubKey, address))
@@ -1753,8 +1766,7 @@ bool CWallet::IsAvailableForSpending(
     AvailableCoinsType coinType) const
 {
     isminetype mine;
-    VaultType vaultType;
-    if(!IsAvailableType(*this,pcoin->vout[i].scriptPubKey,coinType,mine,vaultType))
+    if(!IsAvailableType(*this,pcoin->vout[i].scriptPubKey,coinType,mine))
     {
         return false;
     }
@@ -2347,7 +2359,7 @@ bool CWallet::SetAddressLabel(const CTxDestination& address, const std::string& 
         LOCK(cs_wallet);
         fUpdated = addressBookManager_->SetAddressLabel(address,strName);
     }
-    NotifyAddressBookChanged(address, strName, ::IsMine(*this, address) != isminetype::ISMINE_NO, (fUpdated ? "updated address label" : "new address label"));
+    NotifyAddressBookChanged(address, strName, computeMineType(*this, address) != isminetype::ISMINE_NO, (fUpdated ? "updated address label" : "new address label"));
 
     return !fFileBacked || GetDatabaseBackend()->WriteName(CBitcoinAddress(address).ToString(), strName);
 }

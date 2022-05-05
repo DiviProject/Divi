@@ -22,6 +22,7 @@ private:
         MATURE = 1 << 3,
         CONFIRMED_AND_MATURE = CONFIRMED | MATURE,
         CONFIRMED_AND_IMMATURE = CONFIRMED | IMMATURE,
+        UNCONFIRMED_AND_MATURE = UNCONFIRMED | MATURE,
     };
     CAmount calculateBalance(BalanceFlag flag,const UtxoOwnershipFilter& ownershipFilter) const;
 public:
@@ -34,5 +35,6 @@ public:
     CAmount getBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const;
     CAmount getUnconfirmedBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const;
     CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const;
+    CAmount getUnconfirmedMatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const;
 };
 #endif// WALLET_BALANCE_CALCULATOR_H

@@ -66,3 +66,7 @@ CAmount WalletBalanceCalculator::getImmatureBalance(UtxoOwnershipFilter ownershi
 {
     return calculateBalance(CONFIRMED_AND_IMMATURE,ownershipFilter);
 }
+CAmount WalletBalanceCalculator::getUnconfirmedMatureBalance(UtxoOwnershipFilter ownershipFilter) const
+{
+    return calculateBalance(UNCONFIRMED_AND_MATURE,ownershipFilter);
+}

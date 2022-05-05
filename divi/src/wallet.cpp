@@ -1676,20 +1676,27 @@ CAmount CWallet::GetBalance() const
 CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
 {
     CAmount nTotal = 0;
+    CAmount totalLockedCoinsBalance = 0;
     {
-        LOCK2(cs_main, cs_wallet);
-        const auto& walletTransactionsByHash = transactionRecord_->GetWalletTransactions();
-        for (std::map<uint256, CWalletTx>::const_iterator it = walletTransactionsByHash.begin(); it != walletTransactionsByHash.end(); ++it) {
-            const CWalletTx* pcoin = &(*it).second;
-            if (IsTrusted(*pcoin))
-            {
-                int coinTypeEncoding = static_cast<int>(coinType) << 4;
-                int additionalFilterFlags = REQUIRE_UNSPENT | REQUIRE_AVAILABLE_TYPE | coinTypeEncoding;
-                if(coinType==AvailableCoinsType::STAKABLE_COINS) additionalFilterFlags |= REQUIRE_UNLOCKED;
-                nTotal += ComputeCredit(*pcoin,isminetype::ISMINE_SPENDABLE, additionalFilterFlags);
-            }
-
+        LOCK2(cs_main, cs_wallet); 
+        UtxoOwnershipFilter filter;
+        switch(coinType)
+        {
+            case AvailableCoinsType::ALL_SPENDABLE_COINS:
+                filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
+                if(allowSpendingZeroConfirmationOutputs)
+                    nTotal += balanceCalculator_->getUnconfirmedMatureBalance(filter);
+                break;
+            case AvailableCoinsType::STAKABLE_COINS:
+                filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
+                filter.addOwnershipType(isminetype::ISMINE_MANAGED_VAULT);
+                totalLockedCoinsBalance = LockedCoinBalance(filter);
+                break;
+            case AvailableCoinsType::OWNED_VAULT_COINS:
+                filter.addOwnershipType(isminetype::ISMINE_OWNED_VAULT);
+                break;
         }
+        nTotal += balanceCalculator_->getBalance(filter) - totalLockedCoinsBalance;
 
         if(coinType == AvailableCoinsType::STAKABLE_COINS && vaultManager_)
         {
@@ -2630,6 +2637,22 @@ void CWallet::ListLockedCoins(std::vector<COutPoint>& vOutpts)
         COutPoint outpt = (*it);
         vOutpts.push_back(outpt);
     }
+}
+CAmount CWallet::LockedCoinBalance(const UtxoOwnershipFilter& filter) const
+{
+    AssertLockHeld(cs_wallet);
+    CAmount totalLockedBalance =0;
+    for(const COutPoint& outPoint: setLockedCoins)
+    {
+        const CWalletTx* const walletTxPtr = GetWalletTx(outPoint.hash);
+        if(filter.hasRequested(ownershipDetector_->isMine(walletTxPtr->vout[outPoint.n])) &&
+            !IsSpent(*walletTxPtr,outPoint.n) &&
+            confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*walletTxPtr)>0)
+        {
+            totalLockedBalance += ComputeCredit(*walletTxPtr,isminetype::ISMINE_SPENDABLE);
+        }
+    }
+    return totalLockedBalance;
 }
 
 CKeyPool::CKeyPool()

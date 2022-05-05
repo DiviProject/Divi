@@ -12,10 +12,10 @@ enum class isminetype {
     //! Indicates that we dont know how to create a scriptSig that would solve this if we were given the appropriate private keys
     ISMINE_WATCH_ONLY = 1,
     //! Indicates that we know how to create a scriptSig that would solve this if we were given the appropriate private keys
-    ISMINE_MULTISIG = 2,
-    ISMINE_SPENDABLE  = 4,
-    ISMINE_OWNED_VAULT = ISMINE_SPENDABLE | (VaultType::OWNED_VAULT << 3),
-    ISMINE_MANAGED_VAULT = ISMINE_SPENDABLE | (VaultType::MANAGED_VAULT << 3),
+    ISMINE_MULTISIG = 1 << 1,
+    ISMINE_SPENDABLE  = 1 << 2,
+    ISMINE_OWNED_VAULT = 1 << 3,
+    ISMINE_MANAGED_VAULT = 1 << 4,
 };
 /** used for bitflags of isminetype */
 class UtxoOwnershipFilter

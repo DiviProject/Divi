@@ -163,7 +163,6 @@ struct TransactionCreationResult
 class CWallet final:
     public CCryptoKeyStore,
     public NotificationInterface,
-    public I_UtxoOwnershipDetector,
     public virtual I_KeypoolReserver,
     public I_WalletGuiNotifications,
     public I_StakingWallet,
@@ -192,6 +191,7 @@ private:
     std::shared_ptr<VaultManager> vaultManager_;
     std::unique_ptr<I_AppendOnlyTransactionRecord> transactionRecord_;
     std::unique_ptr<I_SpentOutputTracker> outputTracker_;
+    std::unique_ptr<I_UtxoOwnershipDetector> ownershipDetector_;
     std::unique_ptr<WalletBalanceCalculator> balanceCalculator_;
 
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
@@ -309,7 +309,7 @@ public:
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;
     bool CanStakeCoins() const override;
 
-    isminetype isMine(const CTxOut& txout) const override;
+    isminetype isMine(const CTxOut& txout) const;
     bool IsSpent(const CWalletTx& wtx, unsigned int n) const;
     bool PruneWallet();
 

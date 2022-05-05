@@ -171,6 +171,17 @@ TransactionCreationResult::TransactionCreationResult(TransactionCreationResult&&
     reserveKey.reset(other.reserveKey.release());
 }
 
+class WalletUtxoOwnershipDetector final: public I_UtxoOwnershipDetector
+{
+private:
+    const CKeyStore& keyStore_;
+public:
+    WalletUtxoOwnershipDetector(const CKeyStore& keyStore): keyStore_(keyStore) {}
+    isminetype isMine(const CTxOut& output) const override
+    {
+        return computeMineType(keyStore_,output.scriptPubKey,false);
+    }
+};
 
 CWallet::CWallet(
     const CChain& chain,
@@ -186,9 +197,10 @@ CWallet::CWallet(
     , vaultManager_()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
+    , ownershipDetector_(new WalletUtxoOwnershipDetector(*static_cast<CKeyStore*>(this)))
     , balanceCalculator_(
         new WalletBalanceCalculator(
-            *static_cast<I_UtxoOwnershipDetector*>(this),
+            *ownershipDetector_,
             *transactionRecord_,
             *outputTracker_,
             confirmationNumberCalculator_  ))
@@ -1643,7 +1655,11 @@ CAmount CWallet::GetBalance() const
     CAmount nTotal = 0;
     {
         LOCK2(cs_main, cs_wallet);
-        nTotal += balanceCalculator_->getBalance();
+        UtxoOwnershipFilter filter;
+        filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
+        filter.addOwnershipType(isminetype::ISMINE_OWNED_VAULT);
+        filter.addOwnershipType(isminetype::ISMINE_MANAGED_VAULT);
+        nTotal += balanceCalculator_->getBalance(filter);
         if(vaultManager_)
         {
             auto utxos = vaultManager_->getManagedUTXOs();

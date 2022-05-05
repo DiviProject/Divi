@@ -2,6 +2,11 @@
 #define ISMINE_TYPE_H
 #include <stdint.h>
 /** IsMine() return codes */
+enum VaultType {
+    NON_VAULT = 0,
+    OWNED_VAULT = 1,
+    MANAGED_VAULT = 2
+};
 enum class isminetype {
     ISMINE_NO = 0,
     //! Indicates that we dont know how to create a scriptSig that would solve this if we were given the appropriate private keys
@@ -9,6 +14,8 @@ enum class isminetype {
     //! Indicates that we know how to create a scriptSig that would solve this if we were given the appropriate private keys
     ISMINE_MULTISIG = 2,
     ISMINE_SPENDABLE  = 4,
+    ISMINE_OWNED_VAULT = ISMINE_SPENDABLE | (VaultType::OWNED_VAULT << 3),
+    ISMINE_MANAGED_VAULT = ISMINE_SPENDABLE | (VaultType::MANAGED_VAULT << 3),
 };
 /** used for bitflags of isminetype */
 class UtxoOwnershipFilter

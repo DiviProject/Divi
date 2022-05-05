@@ -36,13 +36,6 @@ isminetype IsMine(const CKeyStore& keystore, const CTxDestination& dest)
 
 isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey)
 {
-    VaultType vaultType;
-    return IsMine(keystore,scriptPubKey,vaultType);
-}
-
-isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultType& vaultType)
-{
-    vaultType = NON_VAULT;
     if(keystore.HaveWatchOnly(scriptPubKey))
         return isminetype::ISMINE_WATCH_ONLY;
     if(keystore.HaveMultiSig(scriptPubKey))
@@ -78,7 +71,7 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultT
         CScriptID scriptID = CScriptID(uint160(vSolutions[0]));
         CScript subscript;
         if(keystore.GetCScript(scriptID, subscript)) {
-            isminetype ret = IsMine(keystore, subscript,vaultType);
+            isminetype ret = IsMine(keystore, subscript);
             if(ret != isminetype::ISMINE_NO)
                 return ret;
         }
@@ -88,15 +81,13 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultT
         keyID = CKeyID(uint160(vSolutions[0]));
         if(keystore.HaveKey(keyID))
         {
-            vaultType = OWNED_VAULT;
-            return isminetype::ISMINE_SPENDABLE;
+            return isminetype::ISMINE_OWNED_VAULT;
         }
         keyID = CKeyID(uint160(vSolutions[1]));
         if(keystore.HaveKey(keyID))
         {
-            vaultType = MANAGED_VAULT;
             CScriptID scriptID = CScriptID(scriptPubKey);
-            return keystore.HaveCScript(scriptID) ? isminetype::ISMINE_SPENDABLE : isminetype::ISMINE_NO;
+            return keystore.HaveCScript(scriptID) ? isminetype::ISMINE_MANAGED_VAULT : isminetype::ISMINE_NO;
         }
         break;
     }

@@ -3,6 +3,9 @@
 #include <boost/thread/recursive_mutex.hpp>
 #include <I_MerkleTxConfirmationNumberCalculator.h>
 #include <utility>
+#include <unordered_map>
+#include <uint256.h>
+#include <sync.h>
 class CBlockIndex;
 class CChain;
 class BlockMap;
@@ -10,6 +13,9 @@ class CTxMemPool;
 class CMerkleTx;
 class CCriticalSection;
 
+struct HashHasher {
+    size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
+};
 class MerkleTxConfirmationNumberCalculator final: public I_MerkleTxConfirmationNumberCalculator
 {
 private:
@@ -18,6 +24,9 @@ private:
     const int coinbaseConfirmationsForMaturity_;
     const CTxMemPool& mempool_;
     CCriticalSection& mainCS_;
+    mutable CCriticalSection cacheLock_;
+    mutable std::unordered_map<uint256,const CBlockIndex*,HashHasher> cachedConfirmationLookups_;
+    static const unsigned DEPTH;
 public:
     MerkleTxConfirmationNumberCalculator(
         const CChain& activeChain,

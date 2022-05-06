@@ -1814,8 +1814,7 @@ bool CWallet::IsAvailableForSpending(
 void CWallet::AvailableCoins(
     std::vector<COutput>& vCoins,
     bool fOnlyConfirmed,
-    AvailableCoinsType nCoinType,
-    CAmount nExactValue) const
+    AvailableCoinsType nCoinType) const
 {
     vCoins.clear();
 
@@ -1833,9 +1832,6 @@ void CWallet::AvailableCoins(
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++)
             {
-                bool found = (nExactValue>0)? pcoin->vout[i].nValue == nExactValue : true;
-                if (!found) continue;
-
                 bool fIsSpendable = false;
                 if(!IsAvailableForSpending(pcoin,i,fIsSpendable,nCoinType))
                 {

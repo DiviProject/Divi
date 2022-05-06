@@ -332,8 +332,7 @@ public:
     void AvailableCoins(
         std::vector<COutput>& vCoins,
         bool fOnlyConfirmed = true,
-        AvailableCoinsType nCoinType = AvailableCoinsType::ALL_SPENDABLE_COINS,
-        CAmount nExactValue = CAmount(0)) const;
+        AvailableCoinsType nCoinType = AvailableCoinsType::ALL_SPENDABLE_COINS) const;
 
     bool IsLockedCoin(const uint256& hash, unsigned int n) const;
     void LockCoin(const COutPoint& output);

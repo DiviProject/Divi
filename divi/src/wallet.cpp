@@ -1740,6 +1740,7 @@ bool CWallet::IsAvailableForSpending(
     unsigned int i,
     AvailableCoinsType coinType) const
 {
+    AssertLockHeld(cs_wallet);
     isminetype mine;
     if(!IsAvailableType(*this,pcoin->vout[i],coinType,mine))
     {

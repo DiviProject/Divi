@@ -1662,14 +1662,6 @@ CAmount CWallet::GetBalance() const
         filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
         filter.addOwnershipType(isminetype::ISMINE_OWNED_VAULT);
         nTotal += balanceCalculator_->getBalance(filter);
-        if(vaultManager_)
-        {
-            auto utxos = vaultManager_->getManagedUTXOs();
-            for(const auto& utxo: utxos)
-            {
-                nTotal += utxo.Value();
-            }
-        }
     }
 
     return nTotal;

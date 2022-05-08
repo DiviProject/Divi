@@ -236,9 +236,12 @@ CWallet::CWallet(
 
 CWallet::~CWallet()
 {
+    balanceCalculator_.reset();
+    ownershipDetector_.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
     vaultManager_.reset();
+    addressBookManager_.reset();
 }
 
 void CWallet::InitializeDatabaseBackend()
@@ -1678,7 +1681,7 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
     CAmount nTotal = 0;
     CAmount totalLockedCoinsBalance = 0;
     {
-        LOCK2(cs_main, cs_wallet); 
+        LOCK2(cs_main, cs_wallet);
         UtxoOwnershipFilter filter;
         switch(coinType)
         {

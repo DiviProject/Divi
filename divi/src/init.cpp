@@ -1458,7 +1458,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         {
             // Off by default in wallet
             InitializeVault();
-            pwalletMain->activateVaultMode(vaultManager);
+            pwalletMain->activateVaultMode();
         }
 
 

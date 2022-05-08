@@ -30,7 +30,6 @@ class CAddrMan;
 class CAlert;
 class CBlockIndex;
 class CNode;
-class I_StakingWallet;
 class CInv;
 class CDataStream;
 class uint256;
@@ -47,7 +46,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, const char* strDest = NU
 bool addNode(const std::string& strNode, const std::string& strCommand);
 std::vector<std::string> getAddedNodeList();
 
-void StartNode(boost::thread_group& threadGroup, I_StakingWallet* pwalletMain);
+void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void CleanupP2PConnections();
 

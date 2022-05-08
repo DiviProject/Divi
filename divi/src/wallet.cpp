@@ -1661,7 +1661,6 @@ CAmount CWallet::GetBalance() const
         UtxoOwnershipFilter filter;
         filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
         filter.addOwnershipType(isminetype::ISMINE_OWNED_VAULT);
-        filter.addOwnershipType(isminetype::ISMINE_MANAGED_VAULT);
         nTotal += balanceCalculator_->getBalance(filter);
         if(vaultManager_)
         {

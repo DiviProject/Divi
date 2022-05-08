@@ -1663,7 +1663,7 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
             case AvailableCoinsType::ALL_SPENDABLE_COINS:
                 filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
                 if(allowSpendingZeroConfirmationOutputs)
-                    nTotal += balanceCalculator_->getUnconfirmedMatureBalance(filter);
+                    nTotal += balanceCalculator_->getUnconfirmedBalance(filter);
                 break;
             case AvailableCoinsType::STAKABLE_COINS:
                 filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);

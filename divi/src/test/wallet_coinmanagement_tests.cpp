@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(willReturnCorrectBalanceWhenTransactionIsConfirmed)
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 100*COIN,"Total balance was not the expected amount");
 }
 
-BOOST_AUTO_TEST_CASE(willFindStakingBalanceMatchesBalanceWhenOwnWalletFundsAreNotVaulted)
+BOOST_AUTO_TEST_CASE(willFindStakingBalanceIncludesBalanceEvenWhenOwnWalletFundsAreNotVaulted)
 {
     CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
     CScript managedVaultScript = vaultScriptAsManager();
@@ -302,8 +302,10 @@ BOOST_AUTO_TEST_CASE(willFindStakingBalanceMatchesBalanceWhenOwnWalletFundsAreNo
     const CWalletTx& managedVaultTx = fakeWallet.AddDefaultTx(managedVaultScript,outputIndex,10000*COIN);
     fakeWallet.FakeAddToChain(normalTx);
     fakeWallet.FakeAddToChain(managedVaultTx);
+    BOOST_CHECK(fakeWallet.TransactionIsInMainChain(&normalTx));
+    BOOST_CHECK(fakeWallet.TransactionIsInMainChain(&managedVaultTx));
 
-    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 10100*COIN,"Total balance was not the expected amount");
+    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 100*COIN,"Total balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetStakingBalance(), 10100*COIN,"Staking balance was not the expected amount");
 }
 
@@ -316,7 +318,7 @@ BOOST_AUTO_TEST_CASE(willHaveAStakingBalanceFromAVaultThatIsntSpendable)
     const CWalletTx& managedVaultTx = fakeWallet.AddDefaultTx(managedVaultScript,outputIndex,10000*COIN);
     fakeWallet.FakeAddToChain(managedVaultTx);
 
-    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 10000*COIN,"Total balance was not the expected amount");
+    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 0*COIN,"Total balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetStakingBalance(), 10000*COIN,"Staking balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetSpendableBalance(), 0*COIN,"Spendable balance was not the expected amount");
 }
@@ -345,7 +347,7 @@ BOOST_AUTO_TEST_CASE(willEnsureBalancesAreAsExpected)
     CAmount normalTxValue = (GetRand(1000)+1)*COIN;
     CAmount ownedVaultTxValue = (GetRand(1000)+1)*COIN;
     CAmount managedVaultTxValue = (GetRand(1000)+1)*COIN;
-    CAmount totalBalance = normalTxValue + ownedVaultTxValue + managedVaultTxValue;
+    CAmount totalBalance = normalTxValue + ownedVaultTxValue;
 
     unsigned outputIndex=0;
     const CWalletTx& normalTx = fakeWallet.AddDefaultTx(normalScript,outputIndex,normalTxValue);

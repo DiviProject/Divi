@@ -1478,7 +1478,7 @@ void static Discover(boost::thread_group& threadGroup)
 #endif
 }
 
-void StartNode(boost::thread_group& threadGroup, I_StakingWallet* pwalletMain)
+void StartNode(boost::thread_group& threadGroup)
 {
     uiInterface.InitMessage(translate("Loading addresses..."));
     // Load addresses for peers.dat

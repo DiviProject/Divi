@@ -1479,7 +1479,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         StartTorControl(threadGroup);
 
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
-    StartNode(threadGroup,pwalletMain);
+    StartNode(threadGroup);
     StartCoinMintingModule(threadGroup,pwalletMain);
 
     // ********************************************************* Step 12: finished

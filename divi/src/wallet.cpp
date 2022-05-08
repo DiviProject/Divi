@@ -41,6 +41,7 @@
 #include <BlockScanner.h>
 #include <ui_interface.h>
 #include <WalletBalanceCalculator.h>
+#include <script/StakingVaultScript.h>
 
 #include <stack>
 
@@ -80,13 +81,20 @@ isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScri
     return mine;
 }
 
-bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine)
+bool IsAvailableType(const CKeyStore& keystore, const CTxOut& output, AvailableCoinsType coinType, isminetype& mine)
 {
+    const CScript& scriptPubKey = output.scriptPubKey;
     mine = computeMineType(keystore, scriptPubKey, false);
     const bool isManagedVault = mine == isminetype::ISMINE_MANAGED_VAULT;
     const bool isOwnedVault = mine == isminetype::ISMINE_OWNED_VAULT;
     const bool isVault = isManagedVault || isOwnedVault;
     if(isVault) mine = isminetype::ISMINE_SPENDABLE;
+    if( isManagedVault &&
+        settings.GetArg("-vault_min",0)*COIN > output.nValue &&
+        coinType == AvailableCoinsType::STAKABLE_COINS)
+    {
+        return false;
+    }
     if( coinType == AvailableCoinsType::STAKABLE_COINS && isOwnedVault)
     {
         return false;
@@ -101,19 +109,10 @@ bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, Ava
     }
     return true;
 }
-bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType)
+bool IsAvailableType(const CKeyStore& keystore, const CTxOut& output, AvailableCoinsType coinType)
 {
     isminetype recoveredOwnershipType;
-    return IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType);
-}
-bool FilterAvailableTypeByOwnershipType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype requiredOwnershipType)
-{
-    isminetype recoveredOwnershipType;
-    if(!IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType))
-    {
-        return false;
-    }
-    return requiredOwnershipType == recoveredOwnershipType;
+    return IsAvailableType(keystore,output,coinType,recoveredOwnershipType);
 }
 
 AddressBookManager::AddressBookManager(): mapAddressBook(), destinationByLabel_()
@@ -552,7 +551,7 @@ CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& f
         if( (creditFilterFlags & REQUIRE_AVAILABLE_TYPE) )
         {
             AvailableCoinsType coinType = static_cast<AvailableCoinsType>( creditFilterFlags >> 4);
-            if(!IsAvailableType(*this,out.scriptPubKey, coinType))
+            if(!IsAvailableType(*this,out, coinType))
             {
                 continue;
             }
@@ -942,9 +941,9 @@ bool CWallet::AddVault(
     if(vaultManager_)
     {
         LOCK(cs_wallet);
-        vaultManager_->addManagedScript(vaultScript);
-        vaultManager_->addTransaction(tx, pblock, true,vaultScript);
-        return vaultManager_->Sync();
+        AddCScript(vaultScript);
+        AddTransactions({tx},pblock,TransactionSyncType::RESCAN);
+        return true;
     }
     return false;
 }
@@ -952,8 +951,8 @@ bool CWallet::RemoveVault(const CScript& vaultScript)
 {
     if(vaultManager_)
     {
-        LOCK(cs_wallet);
-        vaultManager_->removeManagedScript(vaultScript);
+        LOCK2(cs_wallet,cs_KeyStore);
+        mapScripts.erase(CScriptID(vaultScript));
         return true;
     }
     return false;
@@ -1515,7 +1514,6 @@ void CWallet::AddTransactions(const TransactionVector& txs, const CBlock* pblock
 {
     AssertLockHeld(cs_main);
     AssertLockHeld(cs_wallet);
-    if(vaultManager_) vaultManager_->syncTransactions(txs,pblock);
     for(const CTransaction& tx: txs)
     {
         if (!AddToWalletIfInvolvingMe(tx, pblock, true,syncType))
@@ -1691,15 +1689,6 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
                 break;
         }
         nTotal += balanceCalculator_->getBalance(filter) - totalLockedCoinsBalance;
-
-        if(coinType == AvailableCoinsType::STAKABLE_COINS && vaultManager_)
-        {
-            auto utxos = vaultManager_->getManagedUTXOs();
-            for(const auto& utxo: utxos)
-            {
-                nTotal += utxo.Value();
-            }
-        }
     }
 
     return nTotal;
@@ -1711,14 +1700,6 @@ CAmount CWallet::GetUnconfirmedBalance() const
     {
         LOCK2(cs_main, cs_wallet);
         nTotal += balanceCalculator_->getUnconfirmedBalance();
-        if(vaultManager_)
-        {
-            auto utxos = vaultManager_->getManagedUTXOs(VaultUTXOFilters::UNCONFIRMED);
-            for(const auto& utxo: utxos)
-            {
-                nTotal += utxo.Value();
-            }
-        }
     }
     return nTotal;
 }
@@ -1729,14 +1710,6 @@ CAmount CWallet::GetImmatureBalance() const
     {
         LOCK2(cs_main, cs_wallet);
         nTotal += balanceCalculator_->getImmatureBalance();
-        if(vaultManager_)
-        {
-            auto utxos = vaultManager_->getManagedUTXOs(VaultUTXOFilters::INMATURE);
-            for(const auto& utxo: utxos)
-            {
-                nTotal += utxo.Value();
-            }
-        }
     }
     return nTotal;
 }
@@ -1783,7 +1756,7 @@ bool CWallet::IsAvailableForSpending(
     AvailableCoinsType coinType) const
 {
     isminetype mine;
-    if(!IsAvailableType(*this,pcoin->vout[i].scriptPubKey,coinType,mine))
+    if(!IsAvailableType(*this,pcoin->vout[i],coinType,mine))
     {
         return false;
     }
@@ -1832,26 +1805,12 @@ void CWallet::AvailableCoins(
                     continue;
                 }
 
+                const CTxOut& output = pcoin->vout[i];
+                if(HaveCScript(CScriptID(output.scriptPubKey)) && output.nValue < settings.GetArg("-vault_min",0)*COIN)
+                {
+                    continue;
+                }
                 vCoins.emplace_back(COutput(pcoin, i, nDepth, fIsSpendable));
-            }
-        }
-        if(nCoinType == AvailableCoinsType::STAKABLE_COINS && vaultManager_)
-        {
-            std::vector<COutput> utxos = vaultManager_->getManagedUTXOs();
-            for (const auto& entry : utxos)
-            {
-                const CWalletTx* pcoin = entry.tx;
-
-                int nDepth = 0;
-                if(!SatisfiesMinimumDepthRequirements(pcoin,nDepth,fOnlyConfirmed))
-                {
-                    continue;
-                }
-                if(settings.ParameterIsSet("-vault_min") && entry.Value() <  settings.GetArg("-vault_min",0)*COIN)
-                {
-                    continue;
-                }
-                vCoins.emplace_back(COutput(pcoin, entry.i, nDepth, entry.fSpendable));
             }
         }
     }

@@ -36,8 +36,6 @@
 #include <I_CoinSelectionAlgorithm.h>
 #include <MerkleTxConfirmationNumberCalculator.h>
 #include <random.h>
-#include <VaultManager.h>
-#include <VaultManagerDatabase.h>
 #include <BlockScanner.h>
 #include <ui_interface.h>
 #include <WalletBalanceCalculator.h>
@@ -189,11 +187,11 @@ CWallet::CWallet(
     ): cs_wallet()
     , fFileBacked(false)
     , strWalletFile()
+    , vaultModeEnabled_(false)
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
     , confirmationNumberCalculator_(confirmationNumberCalculator)
     , addressBookManager_(new AddressBookManager())
-    , vaultManager_()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
     , ownershipDetector_(new WalletUtxoOwnershipDetector(*static_cast<CKeyStore*>(this)))
@@ -239,7 +237,6 @@ CWallet::~CWallet()
     ownershipDetector_.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
-    vaultManager_.reset();
     addressBookManager_.reset();
 }
 
@@ -255,12 +252,11 @@ std::unique_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
     return std::unique_ptr<I_WalletDatabase>{fFileBacked? new CWalletDB(settings,strWalletFile): nullptr};
 }
 
-void CWallet::activateVaultMode(
-    std::shared_ptr<VaultManager> vaultManager)
+void CWallet::activateVaultMode()
 {
-    if(!vaultManager_)
+    if(!vaultModeEnabled_)
     {
-        vaultManager_ = vaultManager;
+        vaultModeEnabled_ = true;
     }
 }
 
@@ -938,18 +934,18 @@ bool CWallet::AddVault(
     const CBlock* pblock,
     const CTransaction& tx)
 {
-    if(vaultManager_)
+    if(vaultModeEnabled_)
     {
         LOCK(cs_wallet);
         AddCScript(vaultScript);
         AddTransactions({tx},pblock,TransactionSyncType::RESCAN);
-        return true;
+        return GetWalletTx(tx.GetHash()) != nullptr;
     }
     return false;
 }
 bool CWallet::RemoveVault(const CScript& vaultScript)
 {
-    if(vaultManager_)
+    if(vaultModeEnabled_)
     {
         LOCK2(cs_wallet,cs_KeyStore);
         mapScripts.erase(CScriptID(vaultScript));

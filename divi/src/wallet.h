@@ -229,7 +229,6 @@ private:
 
     void UpdateTimeFirstKey(int64_t nCreateTime);
     bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
-    bool IsTrusted(const CWalletTx& walletTransaction) const;
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
 
     bool CanSupportFeature(enum WalletFeature wf);

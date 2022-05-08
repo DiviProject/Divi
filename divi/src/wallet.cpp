@@ -1747,18 +1747,11 @@ bool CWallet::IsAvailableForSpending(
         return false;
     }
 
+    if (mine == isminetype::ISMINE_NO || mine == isminetype::ISMINE_WATCH_ONLY)
+        return false;
+
     const uint256 hash = pcoin->GetHash();
-
-    if (IsSpent(*pcoin, i))
-        return false;
-    if (mine == isminetype::ISMINE_NO)
-        return false;
-    if (mine == isminetype::ISMINE_WATCH_ONLY)
-        return false;
-
-    if (IsLockedCoin(hash, i))
-        return false;
-    if (pcoin->vout[i].nValue <= 0)
+    if (pcoin->vout[i].nValue <= 0 || IsLockedCoin(hash, i) || IsSpent(*pcoin, i))
         return false;
 
     fIsSpendable = (mine == isminetype::ISMINE_SPENDABLE);

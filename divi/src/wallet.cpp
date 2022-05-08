@@ -1790,12 +1790,6 @@ void CWallet::AvailableCoins(
                 {
                     continue;
                 }
-
-                const CTxOut& output = pcoin->vout[i];
-                if(HaveCScript(CScriptID(output.scriptPubKey)) && output.nValue < settings.GetArg("-vault_min",0)*COIN)
-                {
-                    continue;
-                }
                 vCoins.emplace_back(COutput(pcoin, i, nDepth, fIsSpendable));
             }
         }

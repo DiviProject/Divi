@@ -26,6 +26,10 @@ CAmount WalletBalanceCalculator::calculateBalance(BalanceFlag flag, const UtxoOw
 {
     assert((flag & BalanceFlag::UNCONFIRMED & BalanceFlag::CONFIRMED) == 0);
     assert((flag & BalanceFlag::IMMATURE & BalanceFlag::MATURE) == 0);
+    // Only block rewards need non trivial maturity, and unconfirmed coin rewards are therefore conflicted
+    assert((flag & BalanceFlag::UNCONFIRMED & BalanceFlag::IMMATURE) == 0);
+    // Unconfirmed transactions that are not conflicted are mature.
+    assert((flag & BalanceFlag::UNCONFIRMED & BalanceFlag::MATURE) == 0);
     CAmount totalBalance = 0;
     const auto& transactionsByHash = txRecord_.GetWalletTransactions();
     for(const auto& txidAndTransaction: transactionsByHash)
@@ -65,8 +69,4 @@ CAmount WalletBalanceCalculator::getUnconfirmedBalance(UtxoOwnershipFilter owner
 CAmount WalletBalanceCalculator::getImmatureBalance(UtxoOwnershipFilter ownershipFilter) const
 {
     return calculateBalance(CONFIRMED_AND_IMMATURE,ownershipFilter);
-}
-CAmount WalletBalanceCalculator::getUnconfirmedMatureBalance(UtxoOwnershipFilter ownershipFilter) const
-{
-    return calculateBalance(UNCONFIRMED_AND_MATURE,ownershipFilter);
 }

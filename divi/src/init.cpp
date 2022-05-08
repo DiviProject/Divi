@@ -51,8 +51,6 @@
 #include <txmempool.h>
 #include <StartAndShutdownSignals.h>
 #include <MerkleTxConfirmationNumberCalculator.h>
-#include <VaultManager.h>
-#include <VaultManagerDatabase.h>
 #include <I_BlockSubmitter.h>
 #include <ThreadManagementHelpers.h>
 
@@ -94,17 +92,6 @@ static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
 #ifdef ENABLE_WALLET
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
-
-struct VaultDatabseSyncOnDestruction
-{
-    void operator()(VaultManagerDatabase* obj) const
-    {
-        if(obj) obj->Sync(true);
-        delete obj;
-    }
-};
-std::unique_ptr<VaultManagerDatabase,VaultDatabseSyncOnDestruction> vaultManagerDatabase(nullptr);
-std::shared_ptr<VaultManager> vaultManager(nullptr);
 CWallet* pwalletMain = NULL;
 constexpr int nWalletBackups = 20;
 
@@ -204,51 +191,6 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* p
 
 namespace
 {
-
-CCriticalSection vaultAllocationLock;
-void ThreadSyncVaultDatabase()
-{
-#ifdef ENABLE_WALLET
-    TRY_LOCK(vaultAllocationLock,lockAcquired);
-    boost::this_thread::interruption_point();
-    if(lockAcquired && vaultManagerDatabase) vaultManagerDatabase->Sync(false);
-#endif
-}
-
-void InitializeVault()
-{
-#ifdef ENABLE_WALLET
-    LOCK(vaultAllocationLock);
-    const std::string keystring = pwalletMain->getWalletIdentifier();
-    const std::string vaultID = std::string("vault_") + Hash160(keystring.begin(),keystring.end()).ToString().substr(0,10);
-    constexpr size_t vaultDBCacheSize = 1 << 21; // 2MB
-    vaultManagerDatabase.reset(new VaultManagerDatabase(vaultID,vaultDBCacheSize));
-    vaultManager.reset(new VaultManager(*confirmationsCalculator,*vaultManagerDatabase));
-    for(const std::string& whitelistedVaultScript: settings.GetMultiParameter("-whitelisted_vault"))
-    {
-        auto byteVector = ParseHex(whitelistedVaultScript);
-        CScript whitelistedScript(byteVector.begin(),byteVector.end());
-        assert(HexStr(ToByteVector(whitelistedScript)) == whitelistedVaultScript);
-        vaultManager->addWhiteListedScript(whitelistedScript);
-    }
-    if(vaultManager)
-    {
-        RegisterValidationInterface(vaultManager.get());
-    }
-#endif
-}
-void DeallocateVault()
-{
-#ifdef ENABLE_WALLET
-    LOCK(vaultAllocationLock);
-    if(vaultManager)
-    {
-        UnregisterValidationInterface(vaultManager.get());
-    }
-    vaultManager.reset();
-    vaultManagerDatabase.reset();
-#endif
-}
 
 bool InitError(const std::string& str)
 {
@@ -394,7 +336,6 @@ void MainShutdown()
 
 // Shutdown part 2: delete wallet instance
 #ifdef ENABLE_WALLET
-    DeallocateVault();
     DeallocateWallet();
 #endif
     CleanupP2PConnections();
@@ -1457,7 +1398,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if(settings.GetBoolArg("-vault", false))
         {
             // Off by default in wallet
-            InitializeVault();
             pwalletMain->activateVaultMode();
         }
 
@@ -1564,7 +1504,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if (settings.GetBoolArg("-flushwallet", true))
         {
             threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, settings, pwalletMain->dbFilename() ));
-            threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "vaultsync", &ThreadSyncVaultDatabase, 500));
         }
         if(pwalletMain && pwalletMain->isBackedByFile())
         {

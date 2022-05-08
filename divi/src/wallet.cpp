@@ -1547,18 +1547,8 @@ void CWallet::SetBestChain(const CBlockLocator& loc)
     if(fFileBacked) GetDatabaseBackend()->WriteBestBlock(loc);
 }
 
-static std::string ValueFromCAmount(const CAmount& amount)
-{
-    bool sign = amount < 0;
-    int64_t n_abs = (sign ? -amount : amount);
-    int64_t quotient = n_abs / COIN;
-    int64_t remainder = n_abs % COIN;
-    return strprintf("%s%d.%08d", sign ? "-" : "", quotient, remainder);
-}
 void CWallet::UpdatedBlockTip(const CBlockIndex *pindex)
 {
-    LogPrintf("%s - block %s; time = %s; balance = %s\n",
-        __func__,std::to_string(pindex->nHeight), std::to_string(pindex->nTime), ValueFromCAmount(GetBalance()));
     timeOfLastChainTipUpdate = GetTime();
 }
 

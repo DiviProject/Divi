@@ -326,7 +326,6 @@ public:
     bool IsAvailableForSpending(
         const CWalletTx* pcoin,
         unsigned int i,
-        bool& fIsSpendable,
         AvailableCoinsType coinType = AvailableCoinsType::ALL_SPENDABLE_COINS) const;
     void AvailableCoins(
         std::vector<COutput>& vCoins,

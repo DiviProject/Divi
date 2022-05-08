@@ -1077,7 +1077,9 @@ Value getstakingstatus(const Array& params, bool fHelp)
     if (pwalletMain) {
         obj.push_back(Pair("walletunlocked", !pwalletMain->IsLocked()));
         obj.push_back(Pair("mintablecoins", pwalletMain->HasAgedCoins()));
-        obj.push_back(Pair("enoughcoins", pwalletMain->GetStakingBalance() > 0  ));
+        CAmount stakkingBalance = pwalletMain->GetStakingBalance();
+        obj.push_back(Pair("staking_balance", ValueFromAmount(stakkingBalance)   ));
+        obj.push_back(Pair("enoughcoins", stakkingBalance > 0 ));
     }
 
     obj.push_back(Pair("mnsync", GetMasternodeModule().getMasternodeSynchronization().IsSynced()));

@@ -66,9 +66,7 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingUnlockedCoin)
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable));
-    BOOST_CHECK(fIsSpendable);
+    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex));
 }
 
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
@@ -79,9 +77,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
     wallet.LockCoin(COutPoint(wtx.GetHash(),outputIndex));
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable));
-    BOOST_CHECK(!fIsSpendable);/**/
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex));
 }
 
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromKeyOutsideWallet)
@@ -93,9 +89,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromKeyOutsideWallet)
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable));
-    BOOST_CHECK(!fIsSpendable);/**/
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex));
 }
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
 {
@@ -108,9 +102,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
     wallet.AddWatchOnly(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable));
-    BOOST_CHECK(!fIsSpendable);/**/
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex));
 }
 
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
@@ -120,9 +112,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
     wallet.AddWatchOnly(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable));
-    BOOST_CHECK(!fIsSpendable);/**/
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex));
 }
 
 BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
@@ -134,9 +124,7 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
     wallet.LockCoin(COutPoint(wtx.GetHash(),outputIndex));
     wallet.UnlockCoin(COutPoint(wtx.GetHash(),outputIndex));
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable));
-    BOOST_CHECK(fIsSpendable);
+    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex));
 }
 
 BOOST_AUTO_TEST_CASE(willMakeNoDistinctionBetweenAllCoinsAndStakableCoins)
@@ -145,12 +133,8 @@ BOOST_AUTO_TEST_CASE(willMakeNoDistinctionBetweenAllCoinsAndStakableCoins)
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::ALL_SPENDABLE_COINS));
-    BOOST_CHECK(fIsSpendable);
-    fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::STAKABLE_COINS));
-    BOOST_CHECK(fIsSpendable);
+    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::ALL_SPENDABLE_COINS));
+    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::STAKABLE_COINS));
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndSpendableCoinsSelected)
@@ -160,8 +144,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndSpendableCoinsSe
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
     wallet.AddCScript(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::ALL_SPENDABLE_COINS));
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::ALL_SPENDABLE_COINS));
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnerAndSpendableCoinsSelected)
@@ -170,8 +153,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnerAndSpendableCoinsSele
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::ALL_SPENDABLE_COINS));
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::ALL_SPENDABLE_COINS));
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnedAndStakableCoinsSelected)
@@ -180,8 +162,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnedAndStakableCoinsSelec
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::STAKABLE_COINS));
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::STAKABLE_COINS));
 }
 BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfManagedAndStakableCoinsSelected)
 {
@@ -190,8 +171,7 @@ BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfManagedAndStakableCoinsSelect
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
     wallet.AddCScript(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::STAKABLE_COINS));
+    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::STAKABLE_COINS));
 }
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedButScriptNotAdded)
 {
@@ -199,10 +179,9 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedButScriptNotAdded)
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::STAKABLE_COINS));
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::ALL_SPENDABLE_COINS));
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::OWNED_VAULT_COINS));
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::STAKABLE_COINS));
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::ALL_SPENDABLE_COINS));
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::OWNED_VAULT_COINS));
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsSelected)
@@ -212,8 +191,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsS
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
     wallet.AddCScript(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::OWNED_VAULT_COINS));
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::OWNED_VAULT_COINS));
 }
 
 BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfOwnerAndOwnedVaultCoinsSelected)
@@ -222,8 +200,7 @@ BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfOwnerAndOwnedVaultCoinsSelect
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::OWNED_VAULT_COINS));
+    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::OWNED_VAULT_COINS));
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingNonVaultFundsIfOwnedVaultCoinsRequested)
@@ -232,12 +209,8 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingNonVaultFundsIfOwnedVaultCoinsRequeste
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::OWNED_VAULT_COINS));
-    BOOST_CHECK(!fIsSpendable);
-    fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,fIsSpendable,AvailableCoinsType::ALL_SPENDABLE_COINS));
-    BOOST_CHECK(fIsSpendable);
+    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::OWNED_VAULT_COINS));
+    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,AvailableCoinsType::ALL_SPENDABLE_COINS));
 }
 
 BOOST_AUTO_TEST_CASE(willFindThatTransactionsByDefaultHaveNonPositiveDepth)

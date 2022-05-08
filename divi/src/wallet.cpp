@@ -1738,7 +1738,6 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 bool CWallet::IsAvailableForSpending(
     const CWalletTx* pcoin,
     unsigned int i,
-    bool& fIsSpendable,
     AvailableCoinsType coinType) const
 {
     isminetype mine;
@@ -1754,8 +1753,7 @@ bool CWallet::IsAvailableForSpending(
     if (pcoin->vout[i].nValue <= 0 || IsLockedCoin(hash, i) || IsSpent(*pcoin, i))
         return false;
 
-    fIsSpendable = (mine == isminetype::ISMINE_SPENDABLE);
-    return true;
+    return mine == isminetype::ISMINE_SPENDABLE;
 }
 void CWallet::AvailableCoins(
     std::vector<COutput>& vCoins,
@@ -1778,12 +1776,11 @@ void CWallet::AvailableCoins(
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++)
             {
-                bool fIsSpendable = false;
-                if(!IsAvailableForSpending(pcoin,i,fIsSpendable,nCoinType))
+                if(!IsAvailableForSpending(pcoin,i,nCoinType))
                 {
                     continue;
                 }
-                vCoins.emplace_back(COutput(pcoin, i, nDepth, fIsSpendable));
+                vCoins.emplace_back(COutput(pcoin, i, nDepth, true));
             }
         }
     }

@@ -43,6 +43,6 @@ void FilteredTransactionsCalculator<CalculationResult>::applyCalculationToMatchi
         if( (flag & TxFlag::MATURE) > 0 && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
         if( (flag & TxFlag::IMMATURE) > 0 && confsCalculator_.GetBlocksToMaturity(tx) == 0) continue;
 
-        calculate(tx,ownershipFilter,initialValue);
+        calculate(tx,depth, ownershipFilter,initialValue);
     }
 }

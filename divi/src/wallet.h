@@ -177,7 +177,6 @@ public:
      *      strWalletFile (immutable after instantiation)
      */
     mutable CCriticalSection cs_wallet;
-    bool isBackedByFile() const;
     const std::string dbFilename() const;
 private:
 

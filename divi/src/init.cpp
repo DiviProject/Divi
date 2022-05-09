@@ -1505,7 +1505,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         {
             threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, settings, pwalletMain->dbFilename() ));
         }
-        if(pwalletMain && pwalletMain->isBackedByFile())
+        if(pwalletMain)
         {
             const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
             int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
@@ -1514,10 +1514,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
                 boost::bind(&LoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay):
                 boost::bind(&MockLoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay)
                 );
-        }
-        else
-        {
-            LogPrintf("Error: Wallet monthly backups not enabled. Wallet isn't backed by file\n");
         }
     }
 #endif

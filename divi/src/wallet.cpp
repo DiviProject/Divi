@@ -1676,9 +1676,7 @@ CAmount CWallet::GetImmatureBalance() const
 bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const
 {
     const auto& walletTransaction = *pcoin;
-    if (!fOnlyConfirmed && !IsFinalTx(walletTransaction, activeChain_, activeChain_.Height() + 1, GetAdjustedTime()))
-        return false;
-    if (fOnlyConfirmed && !IsFinalTx(walletTransaction, activeChain_))
+    if (!IsFinalTx(walletTransaction, activeChain_, activeChain_.Height() + (fOnlyConfirmed? 0:1), GetAdjustedTime()))
         return false;
 
     nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction);

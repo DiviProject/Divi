@@ -173,15 +173,13 @@ public:
      * Main wallet lock.
      * This lock protects all the fields added by CWallet
      *   except for:
-     *      fFileBacked (immutable after instantiation)
      *      strWalletFile (immutable after instantiation)
      */
     mutable CCriticalSection cs_wallet;
     const std::string dbFilename() const;
 private:
 
-    bool fFileBacked;
-    std::string strWalletFile;
+    const std::string strWalletFile;
     bool vaultModeEnabled_;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;

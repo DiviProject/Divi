@@ -16,7 +16,7 @@ private:
     const I_UtxoOwnershipDetector& ownershipDetector_;
     const I_SpentOutputTracker& spentOutputTracker_;
 
-    void calculate(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& ownershipFilter,CAmount& intermediateBalance) const override;
+    void calculate(const CWalletTx& walletTransaction, const int txDepth, const UtxoOwnershipFilter& ownershipFilter,CAmount& intermediateBalance) const override;
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,

@@ -20,7 +20,7 @@ WalletBalanceCalculator::~WalletBalanceCalculator()
 {
 }
 
-void WalletBalanceCalculator::calculate(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& ownershipFilter,CAmount& intermediateBalance) const
+void WalletBalanceCalculator::calculate(const CWalletTx& walletTransaction,const int txDepth, const UtxoOwnershipFilter& ownershipFilter,CAmount& intermediateBalance) const
 {
     const uint256 txid = walletTransaction.GetHash();
     for(unsigned outputIndex=0u; outputIndex < walletTransaction.vout.size(); ++outputIndex)

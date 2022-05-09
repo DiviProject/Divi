@@ -12,7 +12,7 @@ private:
     const I_AppendOnlyTransactionRecord& txRecord_;
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator_;
 protected:
-    virtual void calculate(const CWalletTx& transaction, const UtxoOwnershipFilter& ownershipFilter, CalculationResult& intermediateResult) const = 0;
+    virtual void calculate(const CWalletTx& transaction, const int txDepth, const UtxoOwnershipFilter& ownershipFilter, CalculationResult& intermediateResult) const = 0;
 public:
     FilteredTransactionsCalculator(
         const I_AppendOnlyTransactionRecord& txRecord,

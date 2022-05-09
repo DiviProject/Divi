@@ -31,8 +31,7 @@ CAmount WalletBalanceCalculator::calculateBalance(TxFlag flag, const UtxoOwnersh
     // Unconfirmed transactions that are not conflicted are mature.
     assert((flag & TxFlag::UNCONFIRMED & TxFlag::MATURE) == 0);
     CAmount totalBalance = 0;
-    const auto& transactionsByHash = txRecord_.GetWalletTransactions();
-    for(const auto& txidAndTransaction: transactionsByHash)
+    for(const auto& txidAndTransaction: txRecord_.GetWalletTransactions())
     {
         const CWalletTx& tx = txidAndTransaction.second;
         const int depth = confsCalculator_.GetNumberOfBlockConfirmations(tx);

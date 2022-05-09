@@ -254,10 +254,6 @@ int64_t CWallet::getTimestampOfFistKey() const
     return nTimeFirstKey;
 }
 
-bool CWallet::isBackedByFile() const
-{
-    return fFileBacked;
-}
 const std::string CWallet::dbFilename() const
 {
     return strWalletFile;

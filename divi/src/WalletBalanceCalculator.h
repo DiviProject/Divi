@@ -14,7 +14,7 @@ private:
     const I_SpentOutputTracker& spentOutputTracker_;
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator_;
 
-    enum BalanceFlag
+    enum TxFlag
     {
         UNCONFIRMED = 1 << 0,
         CONFIRMED = 1 << 1,
@@ -23,7 +23,7 @@ private:
         CONFIRMED_AND_MATURE = CONFIRMED | MATURE,
         CONFIRMED_AND_IMMATURE = CONFIRMED | IMMATURE,
     };
-    CAmount calculateBalance(BalanceFlag flag,const UtxoOwnershipFilter& ownershipFilter) const;
+    CAmount calculateBalance(TxFlag flag,const UtxoOwnershipFilter& ownershipFilter) const;
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,

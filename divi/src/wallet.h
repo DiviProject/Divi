@@ -180,7 +180,6 @@ public:
     bool isBackedByFile() const;
     const std::string dbFilename() const;
 private:
-    void SetNull();
 
     bool fFileBacked;
     std::string strWalletFile;
@@ -269,10 +268,6 @@ protected:
     CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;
 
 public:
-    explicit CWallet(
-        const CChain& chain,
-        const BlockMap& blockMap,
-        const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator);
     explicit CWallet(
         const std::string& strWalletFileIn,
         const CChain& chain,

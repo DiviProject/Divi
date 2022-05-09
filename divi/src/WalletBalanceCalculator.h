@@ -37,24 +37,13 @@ public:
         CalculationResult& initialValue) const;
 };
 
-class WalletBalanceCalculator
+class WalletBalanceCalculator: protected FilteredTransactionsCalculator<CAmount>
 {
 private:
     const I_UtxoOwnershipDetector& ownershipDetector_;
-    const I_AppendOnlyTransactionRecord& txRecord_;
     const I_SpentOutputTracker& spentOutputTracker_;
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator_;
 
-    enum TxFlag
-    {
-        UNCONFIRMED = 1 << 0,
-        CONFIRMED = 1 << 1,
-        IMMATURE = 1 << 2,
-        MATURE = 1 << 3,
-        CONFIRMED_AND_MATURE = CONFIRMED | MATURE,
-        CONFIRMED_AND_IMMATURE = CONFIRMED | IMMATURE,
-    };
-    CAmount calculateBalance(TxFlag flag,const UtxoOwnershipFilter& ownershipFilter) const;
+    void calculate(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& ownershipFilter,CAmount& intermediateBalance) const override;
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,

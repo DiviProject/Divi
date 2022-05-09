@@ -181,12 +181,13 @@ public:
 };
 
 CWallet::CWallet(
+    const std::string& strWalletFileIn,
     const CChain& chain,
     const BlockMap& blockMap,
     const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator
     ): cs_wallet()
-    , fFileBacked(false)
-    , strWalletFile()
+    , fFileBacked(true)
+    , strWalletFile(strWalletFileIn)
     , vaultModeEnabled_(false)
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
@@ -217,18 +218,6 @@ CWallet::CWallet(
     , allowSpendingZeroConfirmationOutputs(false)
     , defaultKeyPoolTopUp(0)
 {
-    SetNull();
-}
-
-CWallet::CWallet(
-    const std::string& strWalletFileIn,
-    const CChain& chain,
-    const BlockMap& blockMap,
-    const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator
-    ): CWallet(chain, blockMap,confirmationNumberCalculator)
-{
-    strWalletFile = strWalletFileIn;
-    fFileBacked = true;
 }
 
 CWallet::~CWallet()
@@ -263,17 +252,6 @@ void CWallet::activateVaultMode()
 int64_t CWallet::getTimestampOfFistKey() const
 {
     return nTimeFirstKey;
-}
-
-void CWallet::SetNull()
-{
-    nWalletVersion = FEATURE_BASE;
-    nWalletMaxVersion = FEATURE_BASE;
-    fFileBacked = false;
-    nMasterKeyMaxID = 0;
-    nTimeFirstKey = 0;
-    walletStakingOnly = false;
-
 }
 
 bool CWallet::isBackedByFile() const

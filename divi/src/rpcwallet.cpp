@@ -923,30 +923,7 @@ Value fundvault(const Array& params, bool fHelp)
     std::string addressEncodings = params[0].get_str();
     CBitcoinAddress ownerAddress;
     CBitcoinAddress managerAddress;
-    size_t indexOfSeparator = addressEncodings.find(':');
-    if(indexOfSeparator != std::string::npos)
-    {
-        ownerAddress.SetString(addressEncodings.substr(0u,indexOfSeparator));
-        managerAddress.SetString(addressEncodings.substr(indexOfSeparator+1));
-    }
-    else
-    {
-        string strAccount = AccountFromValue("");
-        if (!pwalletMain->IsLocked())
-            pwalletMain->TopUpKeyPool();
-
-        // Generate a new key that is added to wallet
-        CPubKey ownerKey;
-        if (!pwalletMain->GetKeyFromPool(ownerKey, false))
-            throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
-        CKeyID ownerKeyID = ownerKey.GetID();
-        pwalletMain->SetAddressLabel(ownerKeyID, strAccount);
-
-        ownerAddress.Set(ownerKeyID);
-        managerAddress.SetString(addressEncodings);
-
-        addressEncodings = ownerAddress.ToString() + ":" + managerAddress.ToString();
-    }
+    parseVaultAddressEncoding(addressEncodings,ownerAddress,managerAddress);
 
     CKeyID managerKeyID;
     if (!managerAddress.IsValid() || !managerAddress.GetKeyID(managerKeyID))

@@ -924,16 +924,7 @@ Value fundvault(const Array& params, bool fHelp)
     CBitcoinAddress ownerAddress;
     CBitcoinAddress managerAddress;
     parseVaultAddressEncoding(addressEncodings,ownerAddress,managerAddress);
-
-    CKeyID managerKeyID;
-    if (!managerAddress.IsValid() || !managerAddress.GetKeyID(managerKeyID))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid manager DIVI address");
-
-    CKeyID ownerKeyID;
-    if (!ownerAddress.IsValid() || !ownerAddress.GetKeyID(ownerKeyID))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid owner DIVI address");
-
-    CScript vaultScript = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
+    const CScript vaultScript = validateAndConstructVaultScriptFromParsedAddresses(ownerAddress,managerAddress);
     std::vector<std::pair<CScript, CAmount>>  vecSend = {std::make_pair(vaultScript, nAmount)};
 
     EnsureWalletIsUnlocked();

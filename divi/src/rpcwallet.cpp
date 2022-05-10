@@ -870,21 +870,23 @@ CScript validateAndConstructVaultScriptFromParsedAddresses(
 void parseSimpleVaultFund(
     std::string addressEncoding,
     CAmount nAmount,
-    std::vector<std::string>& addressEncodings,
+    Array& addressEncodings,
     std::vector<std::pair<CScript, CAmount>>& vecSend)
 {
     CBitcoinAddress ownerAddress;
     CBitcoinAddress managerAddress;
     parseVaultAddressEncoding(addressEncoding,ownerAddress,managerAddress);
     CScript vaultScript = validateAndConstructVaultScriptFromParsedAddresses(ownerAddress,managerAddress);
-    assert(addressEncoding == GetVaultEncoding(vaultScript));
-    addressEncodings.push_back(addressEncoding);
     vecSend.emplace_back(vaultScript, nAmount);
+    assert(addressEncoding == GetVaultEncoding(vaultScript));
+    Object obj;
+    obj.push_back(Pair("encoding",addressEncoding));
+    addressEncodings.push_back(obj);
 }
 
 std::vector<std::pair<CScript, CAmount>> parseFundVaultsVaults(
     const Array& params,
-    std::vector<std::string>& addressEncodings)
+    Array& addressEncodings)
 {
     std::vector<std::pair<CScript, CAmount>> vecSend;
     bool isSimpleSend = params[0].type() != obj_type;

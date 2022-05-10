@@ -47,7 +47,7 @@ class VaultUtxoIndexing (BitcoinTestFramework):
         self.owner.setgenerate(50)
         self.vault_hashes = []
         for vault_datum in self.vault_data:
-            assert self.staker.addvault(vault_datum["vault"],vault_datum["txhash"])["succeeded"]
+            assert self.staker.addvault(vault_datum["vault"][0]["encoding"],vault_datum["txhash"])["succeeded"]
             self.vault_hashes.append(vault_datum["txhash"])
         sync_blocks(self.nodes)
 

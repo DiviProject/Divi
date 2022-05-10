@@ -919,11 +919,11 @@ Value fundvault(const Array& params, bool fHelp)
                 "   \"manager_address\" -> The divi address owned by the vault manager.\n"
                 "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n");
 
-    std::string addressEncoding;
+    Array addressEncodings;
     std::vector<std::pair<CScript, CAmount>>  vecSend;
     if(params[0].type() == str_type)
     {
-        addressEncoding = params[0].get_str();
+        std::string addressEncoding = params[0].get_str();
         CAmount nAmount = AmountFromValue(params[1]);
         CBitcoinAddress ownerAddress;
         CBitcoinAddress managerAddress;
@@ -932,6 +932,9 @@ Value fundvault(const Array& params, bool fHelp)
         const CScript vaultScript = validateAndConstructVaultScriptFromParsedAddresses(ownerAddress,managerAddress);
         vecSend = {std::make_pair(vaultScript, nAmount)};
         assert(addressEncoding == GetVaultEncoding(vaultScript));
+        Object obj;
+        obj.push_back(Pair("encoding",addressEncoding));
+        addressEncodings.push_back(obj);
     }
     else
     {
@@ -945,7 +948,7 @@ Value fundvault(const Array& params, bool fHelp)
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", txid ));
-    fundingAttemptResult.push_back(Pair("vault",addressEncoding));
+    fundingAttemptResult.push_back(Pair("vault",addressEncodings));
     return fundingAttemptResult;
 }
 

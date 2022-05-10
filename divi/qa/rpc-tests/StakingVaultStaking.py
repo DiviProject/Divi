@@ -58,9 +58,9 @@ def createVaultPoSStacks(ownerNodes,vaultNode):
       minting_node.setgenerate( 1)
     sync_blocks(all_nodes)
 
-    assert_raises(JSONRPCException,vaultNode.addvault,bad_funding_data["vault"],bad_funding_data["txhash"])
+    assert_raises(JSONRPCException,vaultNode.addvault,bad_funding_data["vault"][0]["encoding"],bad_funding_data["txhash"])
     for funding_datum in funding_data:
-      assert vaultNode.addvault(funding_datum["vault"],funding_datum["txhash"])["succeeded"]
+      assert vaultNode.addvault(funding_datum["vault"][0]["encoding"],funding_datum["txhash"])["succeeded"]
 
 class StakingVaultStakingTest(BitcoinTestFramework):
 

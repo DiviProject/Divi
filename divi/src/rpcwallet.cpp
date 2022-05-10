@@ -923,12 +923,12 @@ Value fundvault(const Array& params, bool fHelp)
     std::string addressEncoding = params[0].get_str();
     CBitcoinAddress ownerAddress;
     CBitcoinAddress managerAddress;
+    EnsureWalletIsUnlocked();
     parseVaultAddressEncoding(addressEncoding,ownerAddress,managerAddress);
     const CScript vaultScript = validateAndConstructVaultScriptFromParsedAddresses(ownerAddress,managerAddress);
     std::vector<std::pair<CScript, CAmount>>  vecSend = {std::make_pair(vaultScript, nAmount)};
     assert(addressEncoding == GetVaultEncoding(vaultScript));
 
-    EnsureWalletIsUnlocked();
     // Amount & Send
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = false;

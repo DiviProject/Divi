@@ -1438,15 +1438,33 @@ Value sendmany(const Array& params, bool fHelp)
         if (!address.IsValid())
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid DIVI address: ") + s.name_);
 
+        CAmount nAmount = 0;
+        unsigned numberOfUtxos = 1u;
+        if(s.value_.type() == obj_type)
+        {
+            Object sendDetails = s.value_.get_obj();
+            RPCTypeCheck(sendDetails, map_list_of("amount", real_type)("repetitions", int_type), true);
+            const Value& amountToSend = find_value(sendDetails, "amount");
+            const Value& repetitions  = find_value(sendDetails, "repetitions");
+            if(amountToSend.type() == null_type) throw JSONRPCError(RPC_INVALID_PARAMETER,std::string("Unable to parse amount for: ") + s.name_);
+            if(repetitions.type() == null_type) throw JSONRPCError(RPC_INVALID_PARAMETER,std::string("Unable to parse repetitions for: ") + s.name_);
+
+            nAmount = AmountFromValue(amountToSend);
+            numberOfUtxos = static_cast<unsigned>(std::max<int>(repetitions.get_int(),1));
+        }
+        else
+        {
+            nAmount = AmountFromValue(s.value_);
+        }
+
         if (setAddress.count(address))
             throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + s.name_);
         setAddress.insert(address);
 
         CScript scriptPubKey = GetScriptForDestination(address.Get());
-        CAmount nAmount = AmountFromValue(s.value_);
-        totalAmount += nAmount;
-
-        vecSend.push_back(std::make_pair(scriptPubKey, nAmount));
+        totalAmount += nAmount*numberOfUtxos;
+        for(unsigned utxosAppendedForAddress = 0u; utxosAppendedForAddress < numberOfUtxos; ++utxosAppendedForAddress)
+            vecSend.push_back(std::make_pair(scriptPubKey, nAmount));
     }
 
     EnsureWalletIsUnlocked();

@@ -884,7 +884,7 @@ void parseSimpleVaultFund(
     addressEncodings.push_back(obj);
 }
 
-std::vector<std::pair<CScript, CAmount>> parseFundVaultsVaults(
+std::vector<std::pair<CScript, CAmount>> parseFundVaultRPCParameters(
     const Array& params,
     Array& addressEncodings)
 {

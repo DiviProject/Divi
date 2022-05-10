@@ -898,6 +898,7 @@ std::vector<std::pair<CScript, CAmount>> parseFundVaultRPCParameters(
     }
     else
     {
+        if(params[0].type() != obj_type) throw JSONRPCError(RPC_PARSE_ERROR,"Unable to parse json object for vault funding");
         Object fundingDetails = params[0].get_obj();
         BOOST_FOREACH (const Pair& funding, fundingDetails)
         {
@@ -921,27 +922,9 @@ Value fundvault(const Array& params, bool fHelp)
                 "   \"manager_address\" -> The divi address owned by the vault manager.\n"
                 "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n");
 
+    EnsureWalletIsUnlocked();
     Array addressEncodings;
-    std::vector<std::pair<CScript, CAmount>>  vecSend;
-    if(params[0].type() == str_type)
-    {
-        std::string addressEncoding = params[0].get_str();
-        CAmount nAmount = AmountFromValue(params[1]);
-        CBitcoinAddress ownerAddress;
-        CBitcoinAddress managerAddress;
-        EnsureWalletIsUnlocked();
-        parseVaultAddressEncoding(addressEncoding,ownerAddress,managerAddress);
-        const CScript vaultScript = validateAndConstructVaultScriptFromParsedAddresses(ownerAddress,managerAddress);
-        vecSend = {std::make_pair(vaultScript, nAmount)};
-        assert(addressEncoding == GetVaultEncoding(vaultScript));
-        Object obj;
-        obj.push_back(Pair("encoding",addressEncoding));
-        addressEncodings.push_back(obj);
-    }
-    else
-    {
-        throw JSONRPCError(RPC_INVALID_PARAMETER,"Unable to parse vault funding details");
-    }
+    std::vector<std::pair<CScript, CAmount>>  vecSend = parseFundVaultRPCParameters(params,addressEncodings);
 
     // Amount & Send
     RpcTransactionCreationRequest rpcRequest;

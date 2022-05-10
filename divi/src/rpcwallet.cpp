@@ -834,6 +834,7 @@ Value fundvault(const Array& params, bool fHelp)
                 "   \"manager_address\" -> The divi address owned by the vault manager.\n"
                 "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n");
 
+    CAmount nAmount = AmountFromValue(params[1]);
     std::string addressEncodings = params[0].get_str();
     CBitcoinAddress ownerAddress;
     CBitcoinAddress managerAddress;
@@ -871,13 +872,13 @@ Value fundvault(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid owner DIVI address");
 
     CScript vaultScript = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
+    std::vector<std::pair<CScript, CAmount>>  vecSend = {std::make_pair(vaultScript, nAmount)};
 
     EnsureWalletIsUnlocked();
     // Amount & Send
-    CAmount nAmount = AmountFromValue(params[1]);
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = false;
-    const std::string txid = SendMoney({std::make_pair(vaultScript, nAmount)}, rpcRequest);
+    const std::string txid = SendMoney(vecSend, rpcRequest);
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", txid ));

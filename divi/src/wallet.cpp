@@ -180,6 +180,124 @@ public:
     }
 };
 
+class AvailableUtxoCalculator final: protected FilteredTransactionsCalculator<std::vector<COutput>>
+{
+private:
+    const I_AppendOnlyTransactionRecord& txRecord_;
+    const I_UtxoOwnershipDetector& ownershipDetector_;
+    const CKeyStore& keyStore_;
+    const CAmount minimumVaultAmount_;
+    const CChain& activeChain_;
+    const I_SpentOutputTracker& spentOutputTracker_;
+    const LockedCoinsSet& lockedCoins_;
+    mutable AvailableCoinsType coinType_;
+    mutable bool onlyConfirmedTxs_;
+    mutable bool requireInputsSpentByMe_;
+
+    bool IsAvailableType(const CTxOut& output, AvailableCoinsType coinType, isminetype& mine) const
+    {
+        const CScript& scriptPubKey = output.scriptPubKey;
+        mine = computeMineType(keyStore_, scriptPubKey, false);
+        const bool isManagedVault = mine == isminetype::ISMINE_MANAGED_VAULT;
+        const bool isOwnedVault = mine == isminetype::ISMINE_OWNED_VAULT;
+        const bool isVault = isManagedVault || isOwnedVault;
+        if(isVault) mine = isminetype::ISMINE_SPENDABLE;
+        if( isManagedVault &&
+            minimumVaultAmount_ > output.nValue &&
+            coinType == AvailableCoinsType::STAKABLE_COINS)
+        {
+            return false;
+        }
+        if( coinType == AvailableCoinsType::STAKABLE_COINS && isOwnedVault)
+        {
+            return false;
+        }
+        else if(coinType == AvailableCoinsType::ALL_SPENDABLE_COINS && isVault)
+        {
+            return false;
+        }
+        else if( coinType == AvailableCoinsType::OWNED_VAULT_COINS && !isOwnedVault)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool allInputsAreSpendableByMe(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& ownershipFilter) const
+    {
+        const auto& walletTransactionsByHash = txRecord_.GetWalletTransactions();
+        for(const CTxIn& input: walletTransaction.vin)
+        {
+            const auto it = walletTransactionsByHash.find(input.prevout.hash);
+            if(it == walletTransactionsByHash.end()) return false;
+            if(!ownershipFilter.hasRequested(ownershipDetector_.isMine(it->second.vout[input.prevout.n]))) return false;
+        }
+        return true;
+    }
+
+    void calculate(
+        const CWalletTx& walletTransaction,
+        const int txDepth,
+        const UtxoOwnershipFilter& ownershipFilter,
+        std::vector<COutput>& outputs) const override
+    {
+        if (!IsFinalTx(walletTransaction, activeChain_, activeChain_.Height() + (onlyConfirmedTxs_? 0:1), GetAdjustedTime())) return;
+        if(!onlyConfirmedTxs_ && requireInputsSpentByMe_ && !allInputsAreSpendableByMe(walletTransaction,ownershipFilter)) return;
+        const uint256& txid = walletTransaction.GetHash();
+        for(unsigned outputIndex = 0u; outputIndex < walletTransaction.vout.size(); ++outputIndex)
+        {
+            isminetype mine;
+            if(!IsAvailableType(walletTransaction.vout[outputIndex],coinType_,mine)) continue;
+
+            if(lockedCoins_.count(COutPoint(txid,outputIndex))>0) continue;
+            if(walletTransaction.vout[outputIndex].nValue <= 0 ||
+                lockedCoins_.count(COutPoint(txid,outputIndex)) > 0 ||
+                spentOutputTracker_.IsSpent(txid, outputIndex,0)) continue;
+            if(!ownershipFilter.hasRequested(mine)) continue;
+
+            outputs.emplace_back(COutput(&walletTransaction, outputIndex, txDepth, true));
+        }
+    }
+public:
+    AvailableUtxoCalculator(
+        const CKeyStore& keyStore,
+        const Settings& settings,
+        const CChain& activeChain,
+        const I_AppendOnlyTransactionRecord& txRecord,
+        const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
+        const I_UtxoOwnershipDetector& ownershipDetector,
+        const I_SpentOutputTracker& spentOutputTracker,
+        const LockedCoinsSet& lockedCoins
+        ): FilteredTransactionsCalculator<std::vector<COutput>>(txRecord,confsCalculator)
+        , txRecord_(txRecord)
+        , ownershipDetector_(ownershipDetector)
+        , keyStore_(keyStore)
+        , minimumVaultAmount_(settings.GetArg("-vault_min",0)*COIN)
+        , activeChain_(activeChain)
+        , spentOutputTracker_(spentOutputTracker)
+        , lockedCoins_(lockedCoins)
+        , coinType_(AvailableCoinsType::ALL_SPENDABLE_COINS)
+        , onlyConfirmedTxs_(true)
+        , requireInputsSpentByMe_(false)
+    {
+    }
+    ~AvailableUtxoCalculator() = default;
+
+    void setCoinTypeAndGetAvailableUtxos(bool onlyConfirmed, AvailableCoinsType coinType, std::vector<COutput>& outputs) const
+    {
+        coinType_ = coinType;
+        onlyConfirmedTxs_ = onlyConfirmed;
+        requireInputsSpentByMe_ = false;
+        outputs.clear();
+        applyCalculationToMatchingTransactions(CONFIRMED_AND_MATURE,isminetype::ISMINE_SPENDABLE,outputs);
+        if(!onlyConfirmedTxs_)
+        {
+            requireInputsSpentByMe_ = true;
+            applyCalculationToMatchingTransactions(UNCONFIRMED,isminetype::ISMINE_SPENDABLE,outputs);
+        }
+    }
+};
+
 CWallet::CWallet(
     const std::string& strWalletFileIn,
     const CChain& chain,

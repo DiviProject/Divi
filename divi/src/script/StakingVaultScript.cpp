@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <script/script.h>
+#include <base58address.h>
 
 typedef std::vector<unsigned char> valtype;
 
@@ -57,4 +58,16 @@ bool GetStakingVaultPubkeyHashes(const CScript& scriptPubKey, std::pair<valtype,
         pubkeyHashes = std::pair<valtype,valtype>();
         return false;
     }
+}
+
+std::string GetVaultEncoding(const CScript& scriptPubKey)
+{
+    std::pair<valtype,valtype> pubkeyHashes;
+    if(GetStakingVaultPubkeyHashes(scriptPubKey,pubkeyHashes))
+    {
+        CBitcoinAddress ownerAddress(CKeyID(uint160(pubkeyHashes.first)));
+        CBitcoinAddress managerAddress(CKeyID( uint160(pubkeyHashes.second) ));
+        return ownerAddress.ToString() + ":" + managerAddress.ToString();
+    }
+    return std::string("SCRIPT IS NOT A VAULT!");
 }

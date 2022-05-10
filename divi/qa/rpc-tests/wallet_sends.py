@@ -181,13 +181,28 @@ class WalletSends (BitcoinTestFramework):
         assert_equal(reference_balance,alt_balance)
         assert_equal(reference_balance, acc_balance + starting_balance)
 
-
+    def send_to_many_with_repetitions(self):
+        sender_wallet_info = self.sender.getwalletinfo()
+        balance_before = sender_wallet_info["balance"]+sender_wallet_info["unconfirmed_balance"]
+        addr1 = self.receiver.getnewaddress()
+        addr2 = self.receiver.getnewaddress()
+        addr3 = self.receiver.getnewaddress()
+        sendmany_format = {}
+        sendmany_format[addr1] = {"amount":100.0,"repetitions": 7}
+        sendmany_format[addr2] = {"amount":100.0,"repetitions": 9}
+        sendmany_format[addr3] = 100.0*5
+        amount_sent = Decimal(100.0*(7 + 9 + 5))
+        txid = self.sender.sendmany("",sendmany_format)
+        sender_wallet_info = self.sender.getwalletinfo()
+        balance_after = sender_wallet_info["balance"]+sender_wallet_info["unconfirmed_balance"]
+        assert_near(balance_before,balance_after+amount_sent,Decimal(1e-3))
 
     def run_test(self):
         self.ensure_change_output_only_for_positive_change_amounts()
         self.join_sends_compute_balance_correctly()
         self.ensure_complex_spends_resolve_balances_correctly()
         self.ensure_complex_spends_resolve_balances_correctly("safekeeping")
+        self.send_to_many_with_repetitions()
 
 if __name__ == '__main__':
     WalletSends().main ()

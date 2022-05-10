@@ -821,15 +821,16 @@ Value getcoinavailability(const Array& params, bool fHelp)
     }
 }
 
-std::vector<std::pair<CScript, CAmount>> parseFundVaultsVaults(std::string& addressEncodings,CAmount nAmount)
+void parseVaultAddressEncoding(
+    std::string& addressEncoding,
+    CBitcoinAddress& ownerAddress,
+    CBitcoinAddress& managerAddress)
 {
-    CBitcoinAddress ownerAddress;
-    CBitcoinAddress managerAddress;
-    size_t indexOfSeparator = addressEncodings.find(':');
+    size_t indexOfSeparator = addressEncoding.find(':');
     if(indexOfSeparator != std::string::npos)
     {
-        ownerAddress.SetString(addressEncodings.substr(0u,indexOfSeparator));
-        managerAddress.SetString(addressEncodings.substr(indexOfSeparator+1));
+        ownerAddress.SetString(addressEncoding.substr(0u,indexOfSeparator));
+        managerAddress.SetString(addressEncoding.substr(indexOfSeparator+1));
     }
     else
     {
@@ -845,11 +846,16 @@ std::vector<std::pair<CScript, CAmount>> parseFundVaultsVaults(std::string& addr
         pwalletMain->SetAddressLabel(ownerKeyID, strAccount);
 
         ownerAddress.Set(ownerKeyID);
-        managerAddress.SetString(addressEncodings);
+        managerAddress.SetString(addressEncoding);
 
-        addressEncodings = ownerAddress.ToString() + ":" + managerAddress.ToString();
+        addressEncoding = ownerAddress.ToString() + ":" + managerAddress.ToString();
     }
+}
 
+CScript validateAndConstructVaultScriptFromParsedAddresses(
+    const CBitcoinAddress& ownerAddress,
+    const CBitcoinAddress& managerAddress)
+{
     CKeyID managerKeyID;
     if (!managerAddress.IsValid() || !managerAddress.GetKeyID(managerKeyID))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid manager DIVI address");
@@ -858,9 +864,46 @@ std::vector<std::pair<CScript, CAmount>> parseFundVaultsVaults(std::string& addr
     if (!ownerAddress.IsValid() || !ownerAddress.GetKeyID(ownerKeyID))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid owner DIVI address");
 
-    CScript vaultScript = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
-    assert(addressEncodings == GetVaultEncoding(vaultScript));
-    return {std::make_pair(vaultScript, nAmount)};
+    return CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
+}
+
+void parseSimpleVaultFund(
+    std::string addressEncoding,
+    CAmount nAmount,
+    std::vector<std::string>& addressEncodings,
+    std::vector<std::pair<CScript, CAmount>>& vecSend)
+{
+    CBitcoinAddress ownerAddress;
+    CBitcoinAddress managerAddress;
+    parseVaultAddressEncoding(addressEncoding,ownerAddress,managerAddress);
+    CScript vaultScript = validateAndConstructVaultScriptFromParsedAddresses(ownerAddress,managerAddress);
+    assert(addressEncoding == GetVaultEncoding(vaultScript));
+    addressEncodings.push_back(addressEncoding);
+    vecSend.emplace_back(vaultScript, nAmount);
+}
+
+std::vector<std::pair<CScript, CAmount>> parseFundVaultsVaults(
+    const Array& params,
+    std::vector<std::string>& addressEncodings)
+{
+    std::vector<std::pair<CScript, CAmount>> vecSend;
+    bool isSimpleSend = params[0].type() != obj_type;
+    if(isSimpleSend)
+    {
+        CAmount nAmount = AmountFromValue(params[1]);
+        std::string addressEncoding = params[0].get_str();
+        parseSimpleVaultFund(addressEncoding,nAmount,addressEncodings,vecSend);
+    }
+    else
+    {
+        Object fundingDetails = params[0].get_obj();
+        BOOST_FOREACH (const Pair& funding, fundingDetails)
+        {
+            CAmount nAmount = AmountFromValue(funding.value_);
+            parseSimpleVaultFund(funding.name_,nAmount,addressEncodings,vecSend);
+        }
+    }
+    return vecSend;
 }
 
 Value fundvault(const Array& params, bool fHelp)

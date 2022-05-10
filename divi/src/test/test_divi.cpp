@@ -64,7 +64,7 @@ struct TestingSetup {
         settings.SetParameter("-datadir", pathTemp.string());
         chainstateInstance.reset(new ChainstateManager(1 << 20, 1 << 23, 5000, true, false));
         sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
-        InitBlockIndex();
+        InitBlockIndex(*chainstateInstance, *sporkManagerInstance);
 #ifdef ENABLE_WALLET
         InitializeWallet("wallet.dat");
         pwalletMain->LoadWallet();

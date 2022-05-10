@@ -107,7 +107,7 @@ bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeig
 
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
-static void CheckBlockIndex();
+static void CheckBlockIndex(const ChainstateManager& chainstate);
 
 std::map<uint256, int64_t> mapRejectedBlocks;
 // Internal stuff
@@ -954,12 +954,13 @@ bool ConnectBlock(
     const CBlock& block,
     CValidationState& state,
     CBlockIndex* pindex,
+    ChainstateManager& chainstate,
+    const CSporkManager& sporkManager,
     CCoinsViewCache& view,
     bool fJustCheck,
     bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
-    ChainstateManager::Reference chainstate;
 
     // Check it again in case a previous version let a bad block in
     if (!fAlreadyChecked && !CheckBlock(block, state))
@@ -977,7 +978,7 @@ bool ConnectBlock(
         return false;
     }
 
-    const SuperblockSubsidyContainer subsidiesContainer(chainParameters, GetSporkManager());
+    const SuperblockSubsidyContainer subsidiesContainer(chainParameters, sporkManager);
     const BlockIncentivesPopulator incentives(
         chainParameters,
         GetMasternodeModule(),
@@ -985,15 +986,15 @@ bool ConnectBlock(
         subsidiesContainer.blockSubsidiesProvider());
 
     IndexDatabaseUpdates indexDatabaseUpdates(
-        chainstate->BlockTree().GetAddressIndexing(),
-        chainstate->BlockTree().GetSpentIndexing());
+        chainstate.BlockTree().GetAddressIndexing(),
+        chainstate.BlockTree().GetSpentIndexing());
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
     if(ActivationState(pindex->pprev).IsActive(Fork::DeprecateMasternodes))
     {
         nExpectedMint.nStakeReward += nExpectedMint.nMasternodeReward;
         nExpectedMint.nMasternodeReward = 0;
     }
-    BlockTransactionChecker blockTxChecker(block, state, pindex, view, chainstate->GetBlockMap());
+    BlockTransactionChecker blockTxChecker(block, state, pindex, view, chainstate.GetBlockMap());
 
     if(!blockTxChecker.Check(nExpectedMint, indexDatabaseUpdates))
     {
@@ -1013,7 +1014,7 @@ bool ConnectBlock(
 
     if (!fJustCheck) {
         if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
-           !UpdateDBIndicesForNewBlock(indexDatabaseUpdates, pindex->GetBlockHash(), chainstate->BlockTree(), state))
+           !UpdateDBIndicesForNewBlock(indexDatabaseUpdates, pindex->GetBlockHash(), chainstate.BlockTree(), state))
         {
             return false;
         }
@@ -1175,15 +1176,14 @@ static int64_t nTimePostConnect = 0;
  * Connect a new block to chainActive. pblock is either NULL or a pointer to a CBlock
  * corresponding to pindexNew, to bypass loading it again from disk.
  */
-bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, const CBlock* pblock, bool fAlreadyChecked)
+bool static ConnectTip(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CBlockIndex* pindexNew, const CBlock* pblock, bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
 
-    ChainstateManager::Reference chainstate;
-    auto& coinsTip = chainstate->CoinsTip();
-    const auto& blockMap = chainstate->GetBlockMap();
+    auto& coinsTip = chainstate.CoinsTip();
+    const auto& blockMap = chainstate.GetBlockMap();
 
-    assert(pindexNew->pprev == chainstate->ActiveChain().Tip());
+    assert(pindexNew->pprev == chainstate.ActiveChain().Tip());
     CTxMemPool& mempool = GetTransactionMemoryPool();
     mempool.check(&coinsTip, blockMap);
     CCoinsViewCache view(&coinsTip);
@@ -1206,7 +1206,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, const CB
     LogPrint("bench", "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001, nTimeReadFromDisk * 0.000001);
     {
         CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
-        bool rv = ConnectBlock(*pblock, state, pindexNew, view, false, fAlreadyChecked);
+        bool rv = ConnectBlock(*pblock, state, pindexNew, chainstate, sporkManager, view, false, fAlreadyChecked);
         if (!rv) {
             if (state.IsInvalid())
                 InvalidBlockFound(pindexNew, state);
@@ -1348,12 +1348,11 @@ static void PruneBlockIndexCandidates()
  * Try to make some progress towards making pindexMostWork the active block.
  * pblock is either NULL or a pointer to a CBlock corresponding to pindexMostWork.
  */
-static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMostWork, const CBlock* pblock, bool fAlreadyChecked)
+static bool ActivateBestChainStep(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CBlockIndex* pindexMostWork, const CBlock* pblock, bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
 
-    const ChainstateManager::Reference chainstate;
-    const auto& chain = chainstate->ActiveChain();
+    const auto& chain = chainstate.ActiveChain();
 
     if (pblock == NULL)
         fAlreadyChecked = false;
@@ -1386,7 +1385,7 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
 
         // Connect new blocks.
         BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect) {
-            if (!ConnectTip(state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
+            if (!ConnectTip(chainstate, sporkManager, state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
                 if (state.IsInvalid()) {
                     // The block violates a consensus rule.
                     if (!state.CorruptionPossible())
@@ -1424,10 +1423,9 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
  * or an activated best chain. pblock is either NULL or a pointer to a block
  * that is already loaded (to avoid loading it again from disk).
  */
-bool ActivateBestChain(CValidationState& state, const CBlock* pblock, bool fAlreadyChecked)
+bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, const CBlock* pblock, bool fAlreadyChecked)
 {
-    const ChainstateManager::Reference chainstate;
-    const auto& chain = chainstate->ActiveChain();
+    const auto& chain = chainstate.ActiveChain();
 
     const CBlockIndex* pindexNewTip = NULL;
     CBlockIndex* pindexMostWork = NULL;
@@ -1448,7 +1446,7 @@ bool ActivateBestChain(CValidationState& state, const CBlock* pblock, bool fAlre
             if (pindexMostWork == NULL || pindexMostWork == chain.Tip())
                 return true;
 
-            if (!ActivateBestChainStep(state, pindexMostWork, pblock && pblock->GetHash() == pindexMostWork->GetBlockHash() ? pblock : NULL, fAlreadyChecked))
+            if (!ActivateBestChainStep(chainstate, sporkManager, state, pindexMostWork, pblock && pblock->GetHash() == pindexMostWork->GetBlockHash() ? pblock : NULL, fAlreadyChecked))
                 return false;
 
             pindexNewTip = chain.Tip();
@@ -1469,7 +1467,7 @@ bool ActivateBestChain(CValidationState& state, const CBlock* pblock, bool fAlre
             timeOfLastChainTipUpdate = GetTime();
         }
     } while (pindexMostWork != chain.Tip());
-    CheckBlockIndex();
+    CheckBlockIndex(chainstate);
 
     // Write changes periodically to disk, after relay.
     if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
@@ -1824,12 +1822,14 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CB
     return true;
 }
 
-bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex** ppindex)
+namespace
+{
+
+bool AcceptBlockHeader(const CBlock& block, ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CBlockIndex** ppindex)
 {
     AssertLockHeld(cs_main);
 
-    const ChainstateManager::Reference chainstate;
-    const auto& blockMap = chainstate->GetBlockMap();
+    const auto& blockMap = chainstate.GetBlockMap();
 
     // Check for duplicate
     uint256 hash = block.GetHash();
@@ -1861,7 +1861,7 @@ bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex
                 CValidationState statePrev;
                 ReconsiderBlock(statePrev, pindexPrev);
                 if (statePrev.IsValid()) {
-                    ActivateBestChain(statePrev);
+                    ActivateBestChain(chainstate, sporkManager, statePrev);
                     return true;
                 }
             }
@@ -1884,12 +1884,11 @@ bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex
     return true;
 }
 
-bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, CDiskBlockPos* dbp, bool fAlreadyCheckedBlock)
+bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CBlockIndex** ppindex, CDiskBlockPos* dbp, bool fAlreadyCheckedBlock)
 {
     AssertLockHeld(cs_main);
 
-    const ChainstateManager::Reference chainstate;
-    const auto& blockMap = chainstate->GetBlockMap();
+    const auto& blockMap = chainstate.GetBlockMap();
 
     CBlockIndex*& pindex = *ppindex;
 
@@ -1907,7 +1906,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
                 CValidationState statePrev;
                 ReconsiderBlock(statePrev, pindexPrev);
                 if (statePrev.IsValid()) {
-                    ActivateBestChain(statePrev);
+                    ActivateBestChain(chainstate, sporkManager, statePrev);
                     return true;
                 }
             }
@@ -1916,7 +1915,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         }
     }
 
-    const ProofOfStakeModule posModule(Params(), chainstate->ActiveChain(), blockMap);
+    const ProofOfStakeModule posModule(Params(), chainstate.ActiveChain(), blockMap);
     const I_ProofOfStakeGenerator& posGenerator = posModule.proofOfStakeGenerator();
 
     const uint256 blockHash = block.GetHash();
@@ -1929,7 +1928,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         }
     }
 
-    if (!AcceptBlockHeader(block, state, &pindex))
+    if (!AcceptBlockHeader(block, chainstate, sporkManager, state, &pindex))
         return false;
 
     if (pindex->nStatus & BLOCK_HAVE_DATA) {
@@ -1968,7 +1967,9 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
     return true;
 }
 
-bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
+} // anonymous namespace
+
+bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
     // Preliminary checks
     int64_t nStartTime = GetTimeMillis();
@@ -1978,14 +1979,13 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     if (!CheckBlockSignature(*pblock))
         return error("%s : bad proof-of-stake block signature",__func__);
 
-    const ChainstateManager::Reference chainstate;
-    const auto& blockMap = chainstate->GetBlockMap();
+    const auto& blockMap = chainstate.GetBlockMap();
 
     if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
         //if we get this far, check if the prev block is our prev block, if not then request sync and return false
         const auto mi = blockMap.find(pblock->hashPrevBlock);
         if (mi == blockMap.end()) {
-            pfrom->PushMessage("getblocks", chainstate->ActiveChain().GetLocator(), uint256(0));
+            pfrom->PushMessage("getblocks", chainstate.ActiveChain().GetLocator(), uint256(0));
             return false;
         }
     }
@@ -2000,17 +2000,17 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         }
 
         // Store to disk
-        bool ret = AcceptBlock(*pblock, state, &pindex, dbp, checked);
+        bool ret = AcceptBlock(*pblock, chainstate, sporkManager, state, &pindex, dbp, checked);
         if (pindex && pfrom) {
             mapBlockSource[pindex->GetBlockHash ()] = pfrom->GetId ();
         }
-        CheckBlockIndex ();
+        CheckBlockIndex (chainstate);
         if (!ret)
             return error ("%s : AcceptBlock FAILED", __func__);
     }
     assert(pindex != nullptr);
 
-    if (!ActivateBestChain(state, pblock, checked))
+    if (!ActivateBestChain(chainstate, sporkManager, state, pblock, checked))
         return error("%s : ActivateBestChain failed", __func__);
 
     VoteForMasternodePayee(pindex);
@@ -2303,15 +2303,14 @@ bool LoadBlockIndex(string& strError)
 }
 
 
-bool InitBlockIndex()
+bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkManager)
 {
     LOCK(cs_main);
 
-    ChainstateManager::Reference chainstate;
-    auto& blockTree = chainstate->BlockTree();
+    auto& blockTree = chainstate.BlockTree();
 
     // Check whether we're already initialized
-    if (chainstate->ActiveChain().Genesis() != nullptr)
+    if (chainstate.ActiveChain().Genesis() != nullptr)
         return true;
 
     // Use the provided setting for transaciton search indices
@@ -2339,7 +2338,7 @@ bool InitBlockIndex()
             CBlockIndex* pindex = AddToBlockIndex(block);
             if (!ReceivedBlockTransactions(block, state, pindex, blockPos))
                 return error("LoadBlockIndex() : genesis block not accepted");
-            if (!ActivateBestChain(state, &block))
+            if (!ActivateBestChain(chainstate, sporkManager, state, &block))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);
@@ -2351,14 +2350,13 @@ bool InitBlockIndex()
 }
 
 
-bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp)
+bool LoadExternalBlockFile(ChainstateManager& chainstate, const CSporkManager& sporkManager, FILE* fileIn, CDiskBlockPos* dbp)
 {
     // Map of disk positions for blocks with unknown parent (only used for reindex)
     static std::multimap<uint256, CDiskBlockPos> mapBlocksUnknownParent;
     int64_t nStart = GetTimeMillis();
 
-    const ChainstateManager::Reference chainstate;
-    const auto& blockMap = chainstate->GetBlockMap();
+    const auto& blockMap = chainstate.GetBlockMap();
 
     int nLoaded = 0;
     try {
@@ -2413,7 +2411,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp)
                 const auto mit = blockMap.find(hash);
                 if (mit == blockMap.end() || (mit->second->nStatus & BLOCK_HAVE_DATA) == 0) {
                     CValidationState state;
-                    if (ProcessNewBlock(state, NULL, &block, dbp))
+                    if (ProcessNewBlock(chainstate, sporkManager, state, NULL, &block, dbp))
                         nLoaded++;
                     if (state.IsError())
                         break;
@@ -2433,7 +2431,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp)
                         if (ReadBlockFromDisk(block, it->second)) {
                             LogPrintf("%s: Processing out of order child %s of %s\n", __func__, block.GetHash(), head);
                             CValidationState dummy;
-                            if (ProcessNewBlock(dummy, NULL, &block, &it->second)) {
+                            if (ProcessNewBlock(chainstate, sporkManager, dummy, NULL, &block, &it->second)) {
                                 nLoaded++;
                                 queue.push_back(block.GetHash());
                             }
@@ -2454,7 +2452,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp)
     return nLoaded > 0;
 }
 
-void static CheckBlockIndex()
+void static CheckBlockIndex(const ChainstateManager& chainstate)
 {
     static const bool defaultConsistencyChecks = Params().DefaultConsistencyChecks();
     if (!settings.GetBoolArg("-checkblockindex",defaultConsistencyChecks)) {
@@ -2463,9 +2461,8 @@ void static CheckBlockIndex()
 
     LOCK(cs_main);
 
-    const ChainstateManager::Reference chainstate;
-    const auto& blockMap = chainstate->GetBlockMap();
-    const auto& chain = chainstate->ActiveChain();
+    const auto& blockMap = chainstate.GetBlockMap();
+    const auto& chain = chainstate.ActiveChain();
 
     // During a reindex, we read the genesis block and call CheckBlockIndex before ActivateBestChain,
     // so we have the genesis block in mapBlockIndex but no active chain.  (A few of the tests when
@@ -2985,10 +2982,11 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         return true;
     }
 
-    const ChainstateManager::Reference chainstate;
+    ChainstateManager::Reference chainstate;
     const auto& coinsTip = chainstate->CoinsTip();
     const auto& blockMap = chainstate->GetBlockMap();
     const auto& chain = chainstate->ActiveChain();
+    auto& sporkManager = GetSporkManager ();
 
     if (strCommand == std::string(NetworkMessageType_VERSION))
     {
@@ -3353,7 +3351,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             /*TODO: this has a CBlock cast on it so that it will compile. There should be a solution for this
              * before headers are reimplemented on mainnet
              */
-            if (!AcceptBlockHeader((CBlock)header, state, &pindexLast)) {
+            if (!AcceptBlockHeader((CBlock)header, *chainstate, sporkManager, state, &pindexLast)) {
                 int nDoS;
                 if (state.IsInvalid(nDoS)) {
                     if (nDoS > 0)
@@ -3375,7 +3373,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             pfrom->PushMessage("getheaders", chain.GetLocator(pindexLast), uint256(0));
         }
 
-        CheckBlockIndex();
+        CheckBlockIndex(*chainstate);
     }
     else if (strCommand == "block" && !fImporting && !fReindex) // Ignore blocks received while importing
     {
@@ -3401,7 +3399,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
             CValidationState state;
             if (!blockMap.count(block.GetHash())) {
-                ProcessNewBlock(state, pfrom, &block);
+                ProcessNewBlock(*chainstate, sporkManager, state, pfrom, &block);
                 int nDoS;
                 if(state.IsInvalid(nDoS)) {
                     pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),
@@ -3527,7 +3525,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             }
         }
     } else {
-        GetSporkManager().ProcessSpork(pfrom, strCommand, vRecv);
+        sporkManager.ProcessSpork(pfrom, strCommand, vRecv);
         ProcessMasternodeMessages(pfrom,strCommand,vRecv);
     }
 

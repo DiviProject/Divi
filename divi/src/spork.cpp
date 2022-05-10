@@ -35,7 +35,7 @@ extern std::map<uint256, int64_t> mapRejectedBlocks;
 
 extern bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
 extern bool DisconnectBlocksAndReprocess(int blocks);
-extern bool ActivateBestChain(CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
+extern bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
 
 /* The spork manager global is defined in init.cpp.  */
 extern std::unique_ptr<CSporkManager> sporkManagerInstance;
@@ -186,7 +186,7 @@ bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
     return true;
 }
 
-CSporkManager::CSporkManager(const ChainstateManager& chainstate)
+CSporkManager::CSporkManager(ChainstateManager& chainstate)
     : chainstate_(chainstate),
       pSporkDB_(new CSporkDB(0, false, false))
 {}
@@ -284,7 +284,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
 namespace
 {
 
-void ReprocessBlocks(const ChainstateManager& chainstate, int nBlocks)
+void ReprocessBlocks(ChainstateManager& chainstate, const CSporkManager& sporkManager, int nBlocks)
 {
     std::map<uint256, int64_t>::iterator it = mapRejectedBlocks.begin();
     while (it != mapRejectedBlocks.end()) {
@@ -312,7 +312,7 @@ void ReprocessBlocks(const ChainstateManager& chainstate, int nBlocks)
     }
 
     if (state.IsValid()) {
-        ActivateBestChain(state);
+        ActivateBestChain(chainstate, sporkManager, state);
     }
 }
 
@@ -363,7 +363,7 @@ void CSporkManager::ExecuteSpork(int nSporkID)
 
             LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
 
-            ReprocessBlocks(chainstate_, nValue);
+            ReprocessBlocks(chainstate_, *this, nValue);
             nTimeExecuted = GetTime();
         }
     }

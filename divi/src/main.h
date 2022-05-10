@@ -32,6 +32,7 @@ struct CNodeSignals;
 class CTxMemPool;
 class CCoinsViewCache;
 class CDiskBlockPos;
+class CSporkManager;
 class CTransaction;
 class CLevelDBWrapper;
 
@@ -64,12 +65,12 @@ int GetHeight();
  * @param[out]  dbp     If pblock is stored to disk (or already there), this will be set to its location.
  * @return True if state.IsValid()
  */
-bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
+bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
 /** Import blocks from an external file */
-bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos* dbp = NULL);
+bool LoadExternalBlockFile(ChainstateManager& chainstate, const CSporkManager& sporkManager, FILE* fileIn, CDiskBlockPos* dbp = NULL);
 /** Initialize a new block tree database + block data on disk */
-bool InitBlockIndex();
+bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkManager);
 /** Load the block tree and coins database from disk */
 bool LoadBlockIndex(std::string& strError);
 /** Unload database information.  If a ChainstateManager is present,
@@ -99,7 +100,7 @@ std::string GetWarnings(std::string strFor);
 bool DisconnectBlocksAndReprocess(int blocks);
 
 // ***TODO***
-bool ActivateBestChain(CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
+bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
@@ -138,7 +139,7 @@ bool IsStandardTx(const CTransaction& tx, std::string& reason);
 bool DisconnectBlocksAndReprocess(int blocks);
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
-bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
+bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, ChainstateManager& chainstate, const CSporkManager& sporkManager, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
 
 /** Context-independent validity checks */
 bool CheckBlock(const CBlock& block, CValidationState& state);
@@ -146,10 +147,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state);
 /** Context-dependent validity checks */
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const CBlockIndex* const pindexPrev);
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CBlockIndex* const pindexPrev);
-
-/** Store block on disk. If dbp is provided, the file is known to already reside on disk */
-bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** pindex, CDiskBlockPos* dbp = NULL, bool fAlreadyCheckedBlock = false);
-bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex** ppindex = NULL);
 
 /** Find the last common block between the parameter chain and a locator. */
 const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);

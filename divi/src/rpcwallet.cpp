@@ -920,12 +920,13 @@ Value fundvault(const Array& params, bool fHelp)
                 "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n");
 
     CAmount nAmount = AmountFromValue(params[1]);
-    std::string addressEncodings = params[0].get_str();
+    std::string addressEncoding = params[0].get_str();
     CBitcoinAddress ownerAddress;
     CBitcoinAddress managerAddress;
-    parseVaultAddressEncoding(addressEncodings,ownerAddress,managerAddress);
+    parseVaultAddressEncoding(addressEncoding,ownerAddress,managerAddress);
     const CScript vaultScript = validateAndConstructVaultScriptFromParsedAddresses(ownerAddress,managerAddress);
     std::vector<std::pair<CScript, CAmount>>  vecSend = {std::make_pair(vaultScript, nAmount)};
+    assert(addressEncoding == GetVaultEncoding(vaultScript));
 
     EnsureWalletIsUnlocked();
     // Amount & Send
@@ -935,8 +936,7 @@ Value fundvault(const Array& params, bool fHelp)
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", txid ));
-    fundingAttemptResult.push_back(Pair("vault",addressEncodings));
-    fundingAttemptResult.push_back(Pair("script",HexStr(ToByteVector(vaultScript) ) ));
+    fundingAttemptResult.push_back(Pair("vault",addressEncoding));
     return fundingAttemptResult;
 }
 

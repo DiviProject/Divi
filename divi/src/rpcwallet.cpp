@@ -821,6 +821,48 @@ Value getcoinavailability(const Array& params, bool fHelp)
     }
 }
 
+std::vector<std::pair<CScript, CAmount>> parseFundVaultsVaults(std::string& addressEncodings,CAmount nAmount)
+{
+    CBitcoinAddress ownerAddress;
+    CBitcoinAddress managerAddress;
+    size_t indexOfSeparator = addressEncodings.find(':');
+    if(indexOfSeparator != std::string::npos)
+    {
+        ownerAddress.SetString(addressEncodings.substr(0u,indexOfSeparator));
+        managerAddress.SetString(addressEncodings.substr(indexOfSeparator+1));
+    }
+    else
+    {
+        string strAccount = AccountFromValue("");
+        if (!pwalletMain->IsLocked())
+            pwalletMain->TopUpKeyPool();
+
+        // Generate a new key that is added to wallet
+        CPubKey ownerKey;
+        if (!pwalletMain->GetKeyFromPool(ownerKey, false))
+            throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
+        CKeyID ownerKeyID = ownerKey.GetID();
+        pwalletMain->SetAddressLabel(ownerKeyID, strAccount);
+
+        ownerAddress.Set(ownerKeyID);
+        managerAddress.SetString(addressEncodings);
+
+        addressEncodings = ownerAddress.ToString() + ":" + managerAddress.ToString();
+    }
+
+    CKeyID managerKeyID;
+    if (!managerAddress.IsValid() || !managerAddress.GetKeyID(managerKeyID))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid manager DIVI address");
+
+    CKeyID ownerKeyID;
+    if (!ownerAddress.IsValid() || !ownerAddress.GetKeyID(ownerKeyID))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid owner DIVI address");
+
+    CScript vaultScript = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
+    assert(addressEncodings == GetVaultEncoding(vaultScript));
+    return {std::make_pair(vaultScript, nAmount)};
+}
+
 Value fundvault(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)

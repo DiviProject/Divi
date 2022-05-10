@@ -4,7 +4,10 @@
 #include <I_AppendOnlyTransactionRecord.h>
 #include <I_MerkleTxConfirmationNumberCalculator.h>
 #include <amount.h>
+#include <vector>
+#include <Output.h>
 template class FilteredTransactionsCalculator<CAmount>;
+template class FilteredTransactionsCalculator<std::vector<COutput>>;
 
 template <typename CalculationResult>
 FilteredTransactionsCalculator<CalculationResult>::FilteredTransactionsCalculator(

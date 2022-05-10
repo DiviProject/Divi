@@ -21,19 +21,23 @@
 #include <ActiveChainManager.h>
 #include <BlockDiskAccessor.h>
 #include <ChainstateManager.h>
+#include <spork.h>
 
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
-bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
+bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, ChainstateManager& chainstate, const CSporkManager& sporkManager, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
 bool CheckBlock(const CBlock& block, CValidationState& state);
 
 CVerifyDB::CVerifyDB(
     ChainstateManager& chainstate,
+    const CSporkManager& sporkManager,
     CClientUIInterface& clientInterface,
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
     ): blockDiskReader_(new BlockDiskDataReader())
     , chainManager_(new ActiveChainManager(&chainstate.BlockTree(), *blockDiskReader_))
+    , chainstate_(chainstate)
+    , sporkManager_(sporkManager)
     , activeChain_(chainstate.ActiveChain())
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)
@@ -128,7 +132,7 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
                apply ConnectBlock to a temporary copy, and verify later on
                that the fields computed match the ones we have already.  */
             CBlockIndex indexCopy(*pindex);
-            if (!ConnectBlock(block, state, &indexCopy, coins, true))
+            if (!ConnectBlock(block, state, &indexCopy, chainstate_, sporkManager_, coins, true))
                 return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             if (indexCopy.nUndoPos != pindex->nUndoPos
                   || indexCopy.nStatus != pindex->nStatus

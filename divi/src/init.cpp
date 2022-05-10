@@ -161,9 +161,11 @@ public:
         LogPrintf("%s\n", block);
         LogPrintf("generated %s\n", FormatMoney(block.vtx[0].vout[0].nValue));
 
+        ChainstateManager::Reference chainstate;
+
         // Process this block the same as if we had received it from another node
         CValidationState state;
-        if (!IsBlockValidChainExtension(&block) || !ProcessNewBlock(state, NULL, &block))
+        if (!IsBlockValidChainExtension(&block) || !ProcessNewBlock(*chainstate, GetSporkManager(), state, NULL, &block))
             return error("%s : block not accepted",__func__);
 
         return true;
@@ -424,6 +426,7 @@ bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip)
     ChainstateManager::Reference chainstate;
     const CVerifyDB dbVerifier(
         *chainstate,
+        GetSporkManager(),
         uiInterface,
         chainstate->GetNominalViewCacheSize(),
         &ShutdownRequested);
@@ -512,7 +515,7 @@ struct CImportingNow {
     }
 };
 
-void ReconstructBlockIndex()
+void ReconstructBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkManager)
 {
     // -reindex
     CImportingNow imp;
@@ -525,22 +528,21 @@ void ReconstructBlockIndex()
         if (!file)
             break; // This error is logged in OpenBlockFile
         LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
-        LoadExternalBlockFile(file, &pos);
+        LoadExternalBlockFile(chainstate, sporkManager, file, &pos);
         nFile++;
     }
-    ChainstateManager::Reference chainstate;
-    chainstate->BlockTree().WriteReindexing(false);
+    chainstate.BlockTree().WriteReindexing(false);
     fReindex = false;
     LogPrintf("Reindexing finished\n");
     // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
-    InitBlockIndex();
+    InitBlockIndex(chainstate, sporkManager);
 }
 
-void ReindexAndImportBlockFiles(const Settings& settings)
+void ReindexAndImportBlockFiles(ChainstateManager* chainstate, const CSporkManager* sporkManager, const Settings& settings)
 {
     RenameThread("divi-loadblk");
 
-    if(fReindex) ReconstructBlockIndex();
+    if(fReindex) ReconstructBlockIndex(*chainstate, *sporkManager);
     std::vector<boost::filesystem::path> vImportFiles;
     if(settings.ParameterIsSet("-loadblock"))
     {
@@ -556,7 +558,7 @@ void ReindexAndImportBlockFiles(const Settings& settings)
             CImportingNow imp;
             boost::filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
             LogPrintf("Importing bootstrap.dat...\n");
-            LoadExternalBlockFile(file);
+            LoadExternalBlockFile(*chainstate, *sporkManager, file);
             RenameOver(pathBootstrap, pathBootstrapOld);
         } else {
             LogPrintf("Warning: Could not open bootstrap file %s\n", pathBootstrap.string());
@@ -569,7 +571,7 @@ void ReindexAndImportBlockFiles(const Settings& settings)
         if (file) {
             CImportingNow imp;
             LogPrintf("Importing blocks file %s...\n", path.string());
-            LoadExternalBlockFile(file);
+            LoadExternalBlockFile(*chainstate, *sporkManager, file);
         } else {
             LogPrintf("Warning: Could not open blocks file %s\n", path.string());
         }
@@ -950,7 +952,7 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
 
         // Initialize the block index (no-op if non-empty database was already loaded)
         if(!fReindex) uiInterface.InitMessage(translate("Initializing block index databases..."));
-        if (!InitBlockIndex()) {
+        if (!InitBlockIndex(*chainstate, sporkManager)) {
             strLoadError = translate("Error initializing block database");
             return BlockLoadingStatus::RETRY_LOADING;
         }
@@ -1480,7 +1482,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
     uiInterface.InitMessage(translate("Connecting best block..."));
     CValidationState state;
-    if (!ActivateBestChain(state))
+    if (!ActivateBestChain(*chainstateInstance, *sporkManagerInstance, state))
         strErrors << "Failed to connect best block";
 #ifdef ENABLE_WALLET
     if(settings.ParameterIsSet("-prunewalletconfs"))
@@ -1489,7 +1491,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 #endif
 
-    threadGroup.create_thread(boost::bind(&ReindexAndImportBlockFiles, settings));
+    threadGroup.create_thread(boost::bind(&ReindexAndImportBlockFiles, chainstateInstance.get(), sporkManagerInstance.get(), settings));
 
     if (chainActive.Tip() == NULL) {
         LogPrintf("Waiting for genesis block to be imported...\n");
@@ -1509,8 +1511,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return InitError("Unknown key or missing label for masternode=<alias>. masternode=<alias> may be missing from configuration.");
     }
     {
-    ChainstateManager::Reference chainstate;
-    if(!InitializeMasternodeIfRequested(settings,chainstate->BlockTree().GetTxIndexing(),errorMessage))
+    if(!InitializeMasternodeIfRequested(settings, chainstateInstance->BlockTree().GetTxIndexing(), errorMessage))
     {
         return InitError(errorMessage);
     }

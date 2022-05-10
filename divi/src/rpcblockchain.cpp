@@ -27,6 +27,7 @@
 #include <JsonTxHelpers.h>
 #include <init.h>
 #include <JsonBlockHelpers.h>
+#include <spork.h>
 
 using namespace json_spirit;
 using namespace std;
@@ -626,19 +627,17 @@ Value invalidateblock(const Array& params, bool fHelp)
     uint256 hash(strHash);
     CValidationState state;
 
-    {
-        ChainstateManager::Reference chainstate;
-        auto& blockMap = chainstate->GetBlockMap();
-        const auto mit = blockMap.find(hash);
-        if (mit == blockMap.end())
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+    ChainstateManager::Reference chainstate;
+    auto& blockMap = chainstate->GetBlockMap();
+    const auto mit = blockMap.find(hash);
+    if (mit == blockMap.end())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
-        CBlockIndex* pblockindex = mit->second;
-        InvalidateBlock(state, pblockindex);
-    }
+    CBlockIndex* pblockindex = mit->second;
+    InvalidateBlock(state, pblockindex);
 
     if (state.IsValid()) {
-        ActivateBestChain(state);
+        ActivateBestChain(*chainstate, GetSporkManager(), state);
     }
 
     if (!state.IsValid()) {
@@ -665,19 +664,17 @@ Value reconsiderblock(const Array& params, bool fHelp)
     uint256 hash(strHash);
     CValidationState state;
 
-    {
-        ChainstateManager::Reference chainstate;
-        auto& blockMap = chainstate->GetBlockMap();
-        const auto mit = blockMap.find(hash);
-        if (mit == blockMap.end())
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+    ChainstateManager::Reference chainstate;
+    auto& blockMap = chainstate->GetBlockMap();
+    const auto mit = blockMap.find(hash);
+    if (mit == blockMap.end())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
-        CBlockIndex* pblockindex = mit->second;
-        ReconsiderBlock(state, pblockindex);
-    }
+    CBlockIndex* pblockindex = mit->second;
+    ReconsiderBlock(state, pblockindex);
 
     if (state.IsValid()) {
-        ActivateBestChain(state);
+        ActivateBestChain(*chainstate, GetSporkManager(), state);
     }
 
     if (!state.IsValid()) {

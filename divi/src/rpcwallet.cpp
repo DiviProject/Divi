@@ -869,7 +869,8 @@ CScript validateAndConstructVaultScriptFromParsedAddresses(
 
 void parseSimpleVaultFund(
     std::string addressEncoding,
-    CAmount nAmount,
+    const CAmount nAmount,
+    const unsigned repetitions,
     Array& addressEncodings,
     std::vector<std::pair<CScript, CAmount>>& vecSend)
 {
@@ -877,7 +878,10 @@ void parseSimpleVaultFund(
     CBitcoinAddress managerAddress;
     parseVaultAddressEncoding(addressEncoding,ownerAddress,managerAddress);
     CScript vaultScript = validateAndConstructVaultScriptFromParsedAddresses(ownerAddress,managerAddress);
-    vecSend.emplace_back(vaultScript, nAmount);
+    for(unsigned utxosAppendedForAddress = 0u; utxosAppendedForAddress < repetitions; ++utxosAppendedForAddress)
+    {
+        vecSend.emplace_back(vaultScript, nAmount);
+    }
     assert(addressEncoding == GetVaultEncoding(vaultScript));
     Object obj;
     obj.push_back(Pair("encoding",addressEncoding));
@@ -894,7 +898,7 @@ std::vector<std::pair<CScript, CAmount>> parseFundVaultRPCParameters(
     {
         CAmount nAmount = AmountFromValue(params[1]);
         std::string addressEncoding = params[0].get_str();
-        parseSimpleVaultFund(addressEncoding,nAmount,addressEncodings,vecSend);
+        parseSimpleVaultFund(addressEncoding,nAmount,1u,addressEncodings,vecSend);
     }
     else
     {
@@ -902,8 +906,29 @@ std::vector<std::pair<CScript, CAmount>> parseFundVaultRPCParameters(
         Object fundingDetails = params[0].get_obj();
         BOOST_FOREACH (const Pair& funding, fundingDetails)
         {
-            CAmount nAmount = AmountFromValue(funding.value_);
-            parseSimpleVaultFund(funding.name_,nAmount,addressEncodings,vecSend);
+            if(funding.value_.type() == real_type)
+            {
+                CAmount nAmount = AmountFromValue(funding.value_);
+                parseSimpleVaultFund(funding.name_,nAmount,1u,addressEncodings,vecSend);
+            }
+            else if(funding.value_.type() == obj_type)
+            {
+                Object additionalFundingDetails = funding.value_.get_obj();
+                RPCTypeCheck(additionalFundingDetails, map_list_of("amount", real_type)("repetitions", int_type), true);
+                const Value& amountToSend = find_value(additionalFundingDetails, "amount");
+                const Value& repetitions  = find_value(additionalFundingDetails, "repetitions");
+                if(amountToSend.type() == null_type) throw JSONRPCError(RPC_INVALID_PARAMETER,std::string("Unable to parse amount for: ") + funding.name_);
+                if(repetitions.type() == null_type) throw JSONRPCError(RPC_INVALID_PARAMETER,std::string("Unable to parse repetitions for: ") + funding.name_);
+
+                CAmount nAmount = AmountFromValue(amountToSend);
+                const unsigned numberOfUtxos = static_cast<unsigned>(std::max<int>(repetitions.get_int(),1));
+                parseSimpleVaultFund(funding.name_,nAmount,numberOfUtxos,addressEncodings,vecSend);
+            }
+            else
+            {
+                throw JSONRPCError(RPC_INVALID_PARAMETER,std::string("Unknown json input. Unable to parse input for ")+funding.name_);
+            }
+
         }
     }
     return vecSend;
@@ -911,7 +936,7 @@ std::vector<std::pair<CScript, CAmount>> parseFundVaultRPCParameters(
 
 Value fundvault(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 2)
+    if (fHelp || params.size() > 2 || params.size() < 1 || (params.size() == 1 && params[0].type() != obj_type))
         throw runtime_error(
                 "fundvault \"[owner_address:]manager_address\" amount\n"
                 "\nSend an amount to a given vault manager address. The amount is a real and is rounded to the nearest 0.00000001\n" +

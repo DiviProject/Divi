@@ -73,13 +73,14 @@ class MnPlusVaults (MnTestFramework):
     staking_vault = self.nodes[6]
     staking_address = staking_vault.getnewaddress()
     funding_data = []
-    for _ in range(20):
-      funding_data.append(self.nodes[0].fundvault(staking_address,20))
+    funding_format = {staking_address:{"amount":20.0,"repetitions":20}}
+    funding_data.append(self.nodes[0].fundvault(funding_format))
 
     sync_mempools(self.nodes)
     self.mine_blocks(1)
     for data in funding_data:
-      staking_vault.addvault(data["vault"][0]["encoding"],data["txhash"])
+      for vault in data["vault"]:
+        staking_vault.addvault(vault["encoding"],data["txhash"])
 
 
   def fund_masternodes (self):

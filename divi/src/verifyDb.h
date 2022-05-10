@@ -14,6 +14,7 @@ class CCoinsView;
 class CChain;
 class CClientUIInterface;
 class CCoinsViewCache;
+class CSporkManager;
 class CBlockTreeDB;
 class ActiveChainManager;
 class BlockDiskDataReader;
@@ -27,6 +28,8 @@ public:
 private:
     std::unique_ptr<const BlockDiskDataReader> blockDiskReader_;
     std::unique_ptr<const ActiveChainManager> chainManager_;
+    ChainstateManager& chainstate_;
+    const CSporkManager& sporkManager_;
     const CChain& activeChain_;
     CClientUIInterface& clientInterface_;
     const unsigned coinsCacheSize_;
@@ -34,6 +37,7 @@ private:
 public:
     CVerifyDB(
         ChainstateManager& chainstate,
+        const CSporkManager& sporkManager,
         CClientUIInterface& clientInterface,
         const unsigned& coinsCacheSize,
         ShutdownListener shutdownListener);

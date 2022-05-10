@@ -79,7 +79,7 @@ class MnPlusVaults (MnTestFramework):
     sync_mempools(self.nodes)
     self.mine_blocks(1)
     for data in funding_data:
-      staking_vault.addvault(data["vault"],data["txhash"])
+      staking_vault.addvault(data["vault"][0]["encoding"],data["txhash"])
 
 
   def fund_masternodes (self):

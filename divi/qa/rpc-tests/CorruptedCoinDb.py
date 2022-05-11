@@ -40,8 +40,8 @@ class CorruptedCoinDB(BitcoinTestFramework):
         # Make the chain 3 blocks deeper with 5 blocks at each depth
         non_coinbase_tx_address = self.nodes[0].getnewaddress()
         for _ in range(3):
-            for _ in range(8):
-                txid = self.nodes[0].sendtoaddress(non_coinbase_tx_address,1200.0)
+            for _ in range(5):
+                txid = self.nodes[0].sendtoaddress(non_coinbase_tx_address,600.0)
                 non_coinbase_txids.append(txid)
             self.nodes[0].setgenerate(1)
             self.create_forks(fork_count=5)

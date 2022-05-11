@@ -316,7 +316,7 @@ public:
     //! check whether we are allowed to upgrade (or already support) to the named feature
     void AvailableCoins(
         std::vector<COutput>& vCoins,
-        bool fOnlyConfirmed = true,
+        bool fOnlyConfirmed,
         AvailableCoinsType nCoinType = AvailableCoinsType::ALL_SPENDABLE_COINS) const;
 
     bool IsLockedCoin(const uint256& hash, unsigned int n) const;

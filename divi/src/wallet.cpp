@@ -306,6 +306,7 @@ CWallet::CWallet(
     ): cs_wallet()
     , strWalletFile(strWalletFileIn)
     , vaultModeEnabled_(false)
+    , setLockedCoins()
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
     , confirmationNumberCalculator_(confirmationNumberCalculator)
@@ -313,6 +314,16 @@ CWallet::CWallet(
     , transactionRecord_(new WalletTransactionRecord(cs_wallet) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
     , ownershipDetector_(new WalletUtxoOwnershipDetector(*static_cast<CKeyStore*>(this)))
+    , utxoCalculator_(
+        new AvailableUtxoCalculator(
+            *static_cast<CKeyStore*>(this),
+            settings,
+            activeChain_,
+            *transactionRecord_,
+            confirmationNumberCalculator_,
+            *ownershipDetector_,
+            *outputTracker_,
+            setLockedCoins))
     , balanceCalculator_(
         new WalletBalanceCalculator(
             *ownershipDetector_,
@@ -324,7 +335,6 @@ CWallet::CWallet(
     , mapKeyMetadata()
     , mapMasterKeys()
     , nMasterKeyMaxID(0)
-    , setLockedCoins()
     , mapHdPubKeys()
     , vchDefaultKey()
     , nTimeFirstKey(0)
@@ -339,6 +349,7 @@ CWallet::CWallet(
 CWallet::~CWallet()
 {
     balanceCalculator_.reset();
+    utxoCalculator_.reset();
     ownershipDetector_.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
@@ -1781,73 +1792,13 @@ CAmount CWallet::GetImmatureBalance() const
     return nTotal;
 }
 
-/**
- * populate vCoins with vector of available COutputs.
- */
-bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const
-{
-    const auto& walletTransaction = *pcoin;
-    if (!IsFinalTx(walletTransaction, activeChain_, activeChain_.Height() + (fOnlyConfirmed? 0:1), GetAdjustedTime()))
-        return false;
-
-    nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction);
-
-    if(nDepth == -1 || ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) && confirmationNumberCalculator_.GetBlocksToMaturity(walletTransaction) > 0))
-        return false;
-
-    return true;
-}
-
-bool CWallet::IsAvailableForSpending(
-    const CWalletTx* pcoin,
-    unsigned int i,
-    AvailableCoinsType coinType) const
-{
-    AssertLockHeld(cs_wallet);
-    isminetype mine;
-    if(!IsAvailableType(*this,pcoin->vout[i],coinType,mine))
-    {
-        return false;
-    }
-
-    if (mine == isminetype::ISMINE_NO || mine == isminetype::ISMINE_WATCH_ONLY)
-        return false;
-
-    const uint256 hash = pcoin->GetHash();
-    if (pcoin->vout[i].nValue <= 0 || IsLockedCoin(hash, i) || IsSpent(*pcoin, i))
-        return false;
-
-    return mine == isminetype::ISMINE_SPENDABLE;
-}
 void CWallet::AvailableCoins(
     std::vector<COutput>& vCoins,
     bool fOnlyConfirmed,
     AvailableCoinsType nCoinType) const
 {
-    vCoins.clear();
-
-    {
-        LOCK2(cs_main, cs_wallet);
-        for (const auto& entry : transactionRecord_->GetWalletTransactions())
-        {
-            const CWalletTx* pcoin = &entry.second;
-
-            int nDepth = 0;
-            if(!SatisfiesMinimumDepthRequirements(pcoin,nDepth,fOnlyConfirmed))
-            {
-                continue;
-            }
-
-            for (unsigned int i = 0; i < pcoin->vout.size(); i++)
-            {
-                if(!IsAvailableForSpending(pcoin,i,nCoinType))
-                {
-                    continue;
-                }
-                vCoins.emplace_back(COutput(pcoin, i, nDepth, true));
-            }
-        }
-    }
+    LOCK2(cs_main, cs_wallet);
+    utxoCalculator_->setCoinTypeAndGetAvailableUtxos(fOnlyConfirmed, nCoinType, vCoins);
 }
 
 bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const

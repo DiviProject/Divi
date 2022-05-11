@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingUnlockedCoin)
     fakeWallet.FakeAddToChain(wtx);
 
     std::vector<COutput> utxos;
-    wallet.AvailableCoins(utxos);
+    wallet.AvailableCoins(utxos,false);
     BOOST_CHECK(!utxos.empty());
     BOOST_CHECK(utxos.front().tx->GetHash() == wtx.GetHash());
     BOOST_CHECK(static_cast<unsigned>(utxos.front().i) == outputIndex);
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
     wallet.LockCoin(COutPoint(wtx.GetHash(),outputIndex));
 
     std::vector<COutput> utxos;
-    wallet.AvailableCoins(utxos);
+    wallet.AvailableCoins(utxos,false);
     BOOST_CHECK(utxos.empty());
 }
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromKeyOutsideWallet)
     fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
     std::vector<COutput> utxos;
-    wallet.AvailableCoins(utxos);
+    wallet.AvailableCoins(utxos,false);
     BOOST_CHECK(utxos.empty());
 }
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
     wallet.AddWatchOnly(defaultScript);
 
     std::vector<COutput> utxos;
-    wallet.AvailableCoins(utxos);
+    wallet.AvailableCoins(utxos,false);
     BOOST_CHECK(utxos.empty());
 }
 
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
     wallet.AddWatchOnly(defaultScript);
 
     std::vector<COutput> utxos;
-    wallet.AvailableCoins(utxos);
+    wallet.AvailableCoins(utxos,false);
     BOOST_CHECK(utxos.empty());
 }
 
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
     wallet.UnlockCoin(COutPoint(wtx.GetHash(),outputIndex));
 
     std::vector<COutput> utxos;
-    wallet.AvailableCoins(utxos);
+    wallet.AvailableCoins(utxos,false);
     BOOST_CHECK(!utxos.empty());
     BOOST_CHECK(utxos.front().tx->GetHash() == wtx.GetHash());
     BOOST_CHECK(static_cast<unsigned>(utxos.front().i) == outputIndex);

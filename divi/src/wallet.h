@@ -56,6 +56,7 @@ class VaultManager;
 class CBlockLocator;
 class I_BlockDataReader;
 class WalletBalanceCalculator;
+class AvailableUtxoCalculator;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
@@ -181,6 +182,7 @@ private:
 
     const std::string strWalletFile;
     bool vaultModeEnabled_;
+    LockedCoinsSet setLockedCoins;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
     const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator_;
@@ -188,6 +190,7 @@ private:
     std::unique_ptr<I_AppendOnlyTransactionRecord> transactionRecord_;
     std::unique_ptr<I_SpentOutputTracker> outputTracker_;
     std::unique_ptr<I_UtxoOwnershipDetector> ownershipDetector_;
+    std::unique_ptr<AvailableUtxoCalculator> utxoCalculator_;
     std::unique_ptr<WalletBalanceCalculator> balanceCalculator_;
 
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
@@ -198,7 +201,6 @@ private:
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
 
-    LockedCoinsSet setLockedCoins;
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
     CPubKey vchDefaultKey;
     int64_t nTimeFirstKey;
@@ -312,10 +314,6 @@ public:
     std::set<uint256> GetConflicts(const uint256& txid) const;
 
     //! check whether we are allowed to upgrade (or already support) to the named feature
-    bool IsAvailableForSpending(
-        const CWalletTx* pcoin,
-        unsigned int i,
-        AvailableCoinsType coinType = AvailableCoinsType::ALL_SPENDABLE_COINS) const;
     void AvailableCoins(
         std::vector<COutput>& vCoins,
         bool fOnlyConfirmed = true,

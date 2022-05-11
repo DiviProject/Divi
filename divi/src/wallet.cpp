@@ -1733,16 +1733,11 @@ CAmount CWallet::GetSpendableBalance() const
 
 CAmount CWallet::GetBalance() const
 {
-    CAmount nTotal = 0;
-    {
-        LOCK2(cs_main, cs_wallet);
-        UtxoOwnershipFilter filter;
-        filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
-        filter.addOwnershipType(isminetype::ISMINE_OWNED_VAULT);
-        nTotal += balanceCalculator_->getBalance(filter);
-    }
-
-    return nTotal;
+    LOCK2(cs_main, cs_wallet);
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
+    filter.addOwnershipType(isminetype::ISMINE_OWNED_VAULT);
+    return balanceCalculator_->getBalance(filter);
 }
 
 CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const

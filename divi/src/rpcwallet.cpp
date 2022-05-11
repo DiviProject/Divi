@@ -1956,7 +1956,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             Object entry;
             entry.push_back(Pair("category", "move"));
             auto nFee = wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.getCredit(wtx,isminetype::ISMINE_SPENDABLE);
-            entry.push_back(Pair("amount", ValueFromAmount( wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.GetChange(wtx) - nFee)));
+            entry.push_back(Pair("amount", ValueFromAmount( wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE) - wallet.getChange(wtx) - nFee)));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
 
             Array addresses;

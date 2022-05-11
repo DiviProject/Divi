@@ -1390,11 +1390,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         {
             return InitError(strErrors.str());
         }
-        if(settings.GetBoolArg("-spendzeroconfchange", false))
-        {
-            // Off by default in wallet
-            pwalletMain->toggleSpendingZeroConfirmationOutputs();
-        }
         if(settings.GetBoolArg("-vault", false))
         {
             // Off by default in wallet

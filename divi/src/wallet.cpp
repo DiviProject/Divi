@@ -332,7 +332,6 @@ CWallet::CWallet(
     , setInternalKeyPool()
     , setExternalKeyPool()
     , walletStakingOnly(false)
-    , allowSpendingZeroConfirmationOutputs(false)
     , defaultKeyPoolTopUp(0)
 {
 }
@@ -542,10 +541,6 @@ void CWallet::SetDefaultKeyTopUp(int64_t keypoolTopUp)
     defaultKeyPoolTopUp = keypoolTopUp;
 }
 
-void CWallet::toggleSpendingZeroConfirmationOutputs()
-{
-    allowSpendingZeroConfirmationOutputs = !allowSpendingZeroConfirmationOutputs;
-}
 const I_MerkleTxConfirmationNumberCalculator& CWallet::getConfirmationCalculator() const
 {
     return confirmationNumberCalculator_;
@@ -1750,8 +1745,6 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
         {
             case AvailableCoinsType::ALL_SPENDABLE_COINS:
                 filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
-                if(allowSpendingZeroConfirmationOutputs)
-                    nTotal += balanceCalculator_->getUnconfirmedBalance(filter);
                 break;
             case AvailableCoinsType::STAKABLE_COINS:
                 filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
@@ -1798,22 +1791,6 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
         return false;
 
     nDepth = confirmationNumberCalculator_.GetNumberOfBlockConfirmations(walletTransaction);
-    if(fOnlyConfirmed && nDepth < 1)
-    {
-        if (nDepth < 0 || !allowSpendingZeroConfirmationOutputs || !DebitsFunds(walletTransaction, isminetype::ISMINE_SPENDABLE)) // using wtx's cached debit
-            return false;
-
-        // Trusted if all inputs are from us and are in the mempool:
-        BOOST_FOREACH (const CTxIn& txin, walletTransaction.vin) {
-            // Transactions not sent by us: not trusted
-            const CWalletTx* parent = GetWalletTx(txin.prevout.hash);
-            if (parent == NULL)
-                return false;
-            const CTxOut& parentOut = parent->vout[txin.prevout.n];
-            if (isMine(parentOut) != isminetype::ISMINE_SPENDABLE)
-                return false;
-        }
-    }
 
     if(nDepth == -1 || ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) && confirmationNumberCalculator_.GetBlocksToMaturity(walletTransaction) > 0))
         return false;

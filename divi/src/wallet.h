@@ -207,7 +207,6 @@ private:
     std::set<int64_t> setInternalKeyPool;
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
-    bool allowSpendingZeroConfirmationOutputs;
     int64_t defaultKeyPoolTopUp;
 
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
@@ -289,7 +288,6 @@ public:
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 
     void verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis);
-    void toggleSpendingZeroConfirmationOutputs();
     void activateVaultMode();
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 

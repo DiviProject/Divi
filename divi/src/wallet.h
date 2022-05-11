@@ -236,6 +236,7 @@ private:
     CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeChange(const CTxOut& txout) const;
+    CAmount ComputeChange(const CTransaction& tx) const;
     CAmount ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
     bool DebitsFunds(const CTransaction& tx) const;
@@ -369,7 +370,6 @@ public:
     CAmount getChange(const CWalletTx& walletTransaction) const;
     CAmount getDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;
     CAmount getCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const;
-    CAmount ComputeChange(const CTransaction& tx) const;
 
     CAmount GetVaultedBalance() const;
     CAmount GetSpendableBalance() const;

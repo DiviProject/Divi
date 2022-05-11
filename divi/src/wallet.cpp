@@ -655,6 +655,19 @@ CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& f
     }
     return nCredit;
 }
+
+CAmount CWallet::ComputeChange(const CTransaction& tx) const
+{
+    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
+    CAmount nChange = 0;
+    BOOST_FOREACH (const CTxOut& txout, tx.vout) {
+        nChange += ComputeChange(txout);
+        if (!MoneyRange(nChange,maxMoneyAllowedInOutput))
+            throw std::runtime_error("CWallet::ComputeChange() : value out of range");
+    }
+    return nChange;
+}
+
 CAmount CWallet::getDebit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const
 {
     if (tx.vin.empty())
@@ -706,16 +719,13 @@ CAmount CWallet::getCredit(const CWalletTx& walletTransaction, const UtxoOwnersh
     return credit;
 }
 
-CAmount CWallet::ComputeChange(const CTransaction& tx) const
+CAmount CWallet::GetChange(const CWalletTx& walletTransaction) const
 {
-    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-    CAmount nChange = 0;
-    BOOST_FOREACH (const CTxOut& txout, tx.vout) {
-        nChange += ComputeChange(txout);
-        if (!MoneyRange(nChange,maxMoneyAllowedInOutput))
-            throw std::runtime_error("CWallet::ComputeChange() : value out of range");
-    }
-    return nChange;
+    if (walletTransaction.fChangeCached)
+        return walletTransaction.nChangeCached;
+    walletTransaction.nChangeCached = ComputeChange(walletTransaction);
+    walletTransaction.fChangeCached = true;
+    return walletTransaction.nChangeCached;
 }
 
 int CWallet::GetVersion()
@@ -1699,15 +1709,6 @@ bool CWallet::IsChange(const CTxOut& txout) const
         }
     }
     return false;
-}
-
-CAmount CWallet::GetChange(const CWalletTx& walletTransaction) const
-{
-    if (walletTransaction.fChangeCached)
-        return walletTransaction.nChangeCached;
-    walletTransaction.nChangeCached = ComputeChange(walletTransaction);
-    walletTransaction.fChangeCached = true;
-    return walletTransaction.nChangeCached;
 }
 
 /** @} */ // end of mapWallet

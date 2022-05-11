@@ -719,7 +719,7 @@ CAmount CWallet::getCredit(const CWalletTx& walletTransaction, const UtxoOwnersh
     return credit;
 }
 
-CAmount CWallet::GetChange(const CWalletTx& walletTransaction) const
+CAmount CWallet::getChange(const CWalletTx& walletTransaction) const
 {
     if (walletTransaction.fChangeCached)
         return walletTransaction.nChangeCached;

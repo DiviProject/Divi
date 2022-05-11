@@ -560,7 +560,6 @@ libbitcoin_wallet_a_SOURCES = \
   MinimumFeeCoinSelectionAlgorithm.cpp \
   MerkleTxConfirmationNumberCalculator.cpp \
   BlockScanner.cpp \
-  FilteredTransactionsCalculator.cpp \
   WalletBalanceCalculator.cpp \
   wallet.cpp \
   Output.cpp \

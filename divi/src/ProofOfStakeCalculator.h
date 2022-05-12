@@ -11,7 +11,7 @@ private:
     const COutPoint& utxoToStake_;
     const int64_t& utxoValue_;
     const uint64_t stakeModifier_;
-    const uint256 targetPerCoinDay_;
+    const uint256 coinAgeTarget_;
     const unsigned int& coinstakeStartTime_;
 public:
     ProofOfStakeCalculator(

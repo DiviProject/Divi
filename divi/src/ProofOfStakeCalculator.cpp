@@ -39,7 +39,7 @@ ProofOfStakeCalculator::ProofOfStakeCalculator(
     ): utxoToStake_(stakingData.utxoBeingStaked_)
     , utxoValue_(stakingData.utxoValue_)
     , stakeModifier_(stakeModifier)
-    , targetPerCoinDay_(uint256().SetCompact(stakingData.nBits_))
+    , coinAgeTarget_(uint256().SetCompact(stakingData.nBits_))
     , coinstakeStartTime_(stakingData.blockTimeOfFirstConfirmationBlock_)
 {
 }
@@ -51,5 +51,5 @@ bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
 {
     if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,hashproofTimestamp, utxoToStake_,coinstakeStartTime_);
     int64_t coinAgeWeightOfUtxo = std::min<int64_t>(hashproofTimestamp - coinstakeStartTime_, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
-    return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
+    return stakeTargetHit(computedProofOfStake,utxoValue_,coinAgeTarget_, coinAgeWeightOfUtxo);
 }

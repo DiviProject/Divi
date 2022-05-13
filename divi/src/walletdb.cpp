@@ -626,58 +626,6 @@ CWalletDB::BackupStatus CWalletDB::Backup(const std::string& destination)
     }
 }
 
-void ThreadFlushWalletDB(Settings& settings, const string& strFile)
-{
-    // Make this thread recognisable as the wallet flushing thread
-    RenameThread("divi-wallet");
-
-    static bool fOneThread;
-    if (fOneThread)
-        return;
-    fOneThread = true;
-
-    CWalletDB walletDbToFlush(settings,strFile,"flush");
-    const unsigned& walletDbUpdated = walletDbToFlush.numberOfWalletUpdates();
-    unsigned int nLastSeen =  walletDbUpdated;
-    unsigned int nLastFlushed = walletDbUpdated;
-    int64_t nLastWalletUpdate = GetTime();
-    while (true) {
-        MilliSleep(500);
-
-        if (nLastSeen != walletDbUpdated) {
-            nLastSeen = walletDbUpdated;
-            nLastWalletUpdate = GetTime();
-        }
-
-        if (nLastFlushed != walletDbUpdated && GetTime() - nLastWalletUpdate >= 2) {
-            if (walletDbToFlush.Flush())
-            {
-                nLastFlushed = walletDbUpdated;
-            }
-        }
-    }
-}
-
-bool BackupWallet(Settings& settings, const std::string& walletDBFilename, const string& strDest)
-{
-    CWalletDB walletDb(settings,walletDBFilename,"flush");
-    while (true) {
-        {
-            const CWalletDB::BackupStatus status = walletDb.Backup(strDest);
-            if(status == CWalletDB::BackupStatus::FAILED_FILESYSTEM_ERROR)
-            {
-                return false;
-            }
-            else if (status == CWalletDB::BackupStatus::SUCCEEDED)
-            {
-                return true;
-            }
-        }
-        MilliSleep(100);
-    }
-    return false;
-}
-
 //
 // Try to (very carefully!) recover wallet.dat if there is a problem.
 //

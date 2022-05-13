@@ -92,7 +92,5 @@ private:
     void operator=(const CWalletDB&) = delete;
 };
 
-void ThreadFlushWalletDB(Settings& settings, const std::string& strWalletFile);
-bool BackupWallet(Settings& settings, const std::string& walletDBFilename, const std::string& strDest);
 
 #endif // BITCOIN_WALLETDB_H

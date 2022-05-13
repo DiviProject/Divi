@@ -1,5 +1,6 @@
 #include <TransactionDiskAccessor.h>
 
+#include <addressindex.h>
 #include <BlockDiskAccessor.h>
 #include <ChainstateManager.h>
 #include <sync.h>

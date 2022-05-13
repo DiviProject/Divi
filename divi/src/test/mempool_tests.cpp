@@ -4,6 +4,7 @@
 
 #include "txmempool.h"
 
+#include <chain.h>
 #include "FakeBlockIndexChain.h"
 
 #include <boost/test/unit_test.hpp>

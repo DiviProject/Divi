@@ -44,8 +44,6 @@
 #include <obfuscation.h>
 #include <Settings.h>
 
-#include <walletdb.h>
-
 #include <JsonTxHelpers.h>
 
 using namespace std;

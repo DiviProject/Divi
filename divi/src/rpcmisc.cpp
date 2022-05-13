@@ -16,8 +16,8 @@
 #include "miner.h"
 #ifdef ENABLE_WALLET
 #include "wallet.h"
-#include "walletdb.h"
 #endif
+#include <KeyMetadata.h>
 
 #include <stdint.h>
 

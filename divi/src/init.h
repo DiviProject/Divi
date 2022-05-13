@@ -12,6 +12,7 @@
 class CWallet;
 class CBlockIndex;
 class CTxMemPool;
+class Settings;
 
 namespace boost
 {
@@ -29,4 +30,5 @@ void InitializeWallet(std::string strWalletFile);
 void DeallocateWallet();
 bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
 CTxMemPool& GetTransactionMemoryPool();
+bool ManualBackupWallet(Settings& settings, const std::string& walletDBFilename, const std::string& strDest);
 #endif // BITCOIN_INIT_H

@@ -9,6 +9,7 @@ template<typename CalculationResult>
 class I_TransactionDetailCalculator
 {
 public:
+    virtual ~I_TransactionDetailCalculator(){}
     virtual void calculate(const CWalletTx& transaction, const int txDepth, const UtxoOwnershipFilter& ownershipFilter, CalculationResult& intermediateResult) const = 0;
 };
 

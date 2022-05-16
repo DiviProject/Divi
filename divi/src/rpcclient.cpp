@@ -153,17 +153,13 @@ Array RPCConvertValues(const std::string& strMethod, const std::vector<std::stri
     for (unsigned int idx = 0; idx < strParams.size(); idx++) {
         const std::string& strVal = strParams[idx];
 
-        // insert string value directly
-        if (!rpcCvtTable.convert(strMethod, idx))
+        Value jVal;
+        if (!read_string(strVal, jVal))
         {
             params.push_back(strVal);
         }
         else
-        { // parse string as JSON, insert bool/number/object/etc. value
-
-            Value jVal;
-            if (!read_string(strVal, jVal))
-                throw runtime_error(string("Error parsing JSON:") + strVal);
+        {
             params.push_back(jVal);
         }
     }

@@ -7,7 +7,6 @@
 # Test correct update of staking status when chain tip hasn't been hashed for 5 whole minutes
 #
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 import time
 

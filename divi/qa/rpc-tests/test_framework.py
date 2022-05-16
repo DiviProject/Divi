@@ -10,8 +10,8 @@ import sys
 import tempfile
 import traceback
 
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
+from authproxy import JSONRPCException
 
 
 class BitcoinTestFramework(object):

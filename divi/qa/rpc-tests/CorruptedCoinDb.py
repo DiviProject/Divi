@@ -8,7 +8,6 @@
 #
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
 class CorruptedCoinDB(BitcoinTestFramework):

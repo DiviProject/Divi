@@ -7,7 +7,6 @@
 # Test automatic rescan trigger on seed recovery
 #
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 import time
 

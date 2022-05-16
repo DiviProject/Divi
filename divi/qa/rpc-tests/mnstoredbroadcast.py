@@ -12,6 +12,7 @@
 from test_framework import BitcoinTestFramework
 from util import *
 from masternode import *
+from authproxy import JSONRPCException
 
 import codecs
 import time

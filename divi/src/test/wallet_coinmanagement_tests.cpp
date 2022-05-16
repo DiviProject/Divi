@@ -29,7 +29,7 @@ public:
     WalletCoinManagementTestFixture()
       : fakeChain(1, 1600000000, 1)
       , fakeWallet(fakeChain)
-      , wallet(static_cast<CWallet&>(fakeWallet))
+      , wallet(fakeWallet.getWallet())
       , walletKeyForTests()
     {
         ENTER_CRITICAL_SECTION(wallet.cs_wallet);

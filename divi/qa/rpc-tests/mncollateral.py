@@ -9,6 +9,7 @@
 
 from util import *
 from masternode import *
+from authproxy import JSONRPCException
 
 
 class MnCollateralTest (MnTestFramework):

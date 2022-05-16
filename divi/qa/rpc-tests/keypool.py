@@ -11,7 +11,7 @@ import subprocess
 import tempfile
 import traceback
 
-from authproxy import AuthServiceProxy, JSONRPCException
+from authproxy import JSONRPCException
 from test_framework import BitcoinTestFramework
 from util import *
 

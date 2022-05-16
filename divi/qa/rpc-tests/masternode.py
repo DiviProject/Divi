@@ -7,6 +7,7 @@
 from test_framework import BitcoinTestFramework
 from util import *
 import time
+from authproxy import JSONRPCException
 
 
 class MnConfigLine (object):

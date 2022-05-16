@@ -9,6 +9,7 @@
 
 from random import Random
 from test_framework import BitcoinTestFramework
+from authproxy import JSONRPCException
 from util import *
 from messages import *
 from script import *

@@ -38,7 +38,7 @@ class PoSTransactionCreatorTestFixture
 protected:
 
   FakeBlockIndexWithHashes fakeChain;
-  FakeWallet wallet;
+  FakeWallet fakeWallet;
 
 private:
 
@@ -66,13 +66,13 @@ protected:
 
   PoSTransactionCreatorTestFixture()
     : fakeChain(1, 1600000000, 1),
-      wallet(fakeChain),
+      fakeWallet(fakeChain),
       chainParams(Params(CBaseChainParams::REGTEST)),
       posModule(chainParams, *fakeChain.activeChain, *fakeChain.blockIndexByHash),
       txCreator(settings, chainParams, *fakeChain.activeChain, *fakeChain.blockIndexByHash,
                 blockSubsidyProvider, blockIncentivesPopulator,
-                posModule.proofOfStakeGenerator(), wallet, hashedBlockTimestamps),
-      walletScript(GetScriptForDestination(wallet.getNewKey().GetID()))
+                posModule.proofOfStakeGenerator(), fakeWallet.getWallet(), hashedBlockTimestamps),
+      walletScript(GetScriptForDestination(fakeWallet.getNewKey().GetID()))
   {
     /* Set up a default block reward if we don't need anything else.  */
     EXPECT_CALL(blockSubsidyProvider, GetBlockSubsidity(_))
@@ -109,12 +109,12 @@ BOOST_AUTO_TEST_CASE(failsWithoutCoinsInWallet)
 
 BOOST_AUTO_TEST_CASE(checksForConfirmationsAndAge)
 {
-  const auto& tx = wallet.AddDefaultTx(walletScript, outputIndex, 1000 * COIN);
-  wallet.FakeAddToChain(tx);
+  const auto& tx = fakeWallet.AddDefaultTx(walletScript, outputIndex, 1000 * COIN);
+  fakeWallet.FakeAddToChain(tx);
 
   BOOST_CHECK(!CreatePoS());
 
-  wallet.AddConfirmations(20, 1000);
+  fakeWallet.AddConfirmations(20, 1000);
   BOOST_CHECK(CreatePoS());
 }
 

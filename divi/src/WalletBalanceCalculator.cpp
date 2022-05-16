@@ -1,5 +1,6 @@
 #include <WalletBalanceCalculator.h>
 
+#include <FilteredTransactionsCalculator.h>
 #include <WalletTx.h>
 #include <I_SpentOutputTracker.h>
 #include <I_UtxoOwnershipDetector.h>
@@ -10,9 +11,12 @@ WalletBalanceCalculator::WalletBalanceCalculator(
     const I_AppendOnlyTransactionRecord& txRecord,
     const I_SpentOutputTracker& spentOutputTracker,
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator
-    ): FilteredTransactionsCalculator<CAmount>(txRecord,confsCalculator)
-    , ownershipDetector_(ownershipDetector)
+    ): ownershipDetector_(ownershipDetector)
     , spentOutputTracker_(spentOutputTracker)
+    , filteredTxCalculator_(
+        txRecord,
+        confsCalculator,
+        *static_cast<I_TransactionDetailCalculator<CAmount>*>(this))
 {
 }
 
@@ -32,20 +36,20 @@ void WalletBalanceCalculator::calculate(const CWalletTx& walletTransaction,const
 CAmount WalletBalanceCalculator::getBalance(UtxoOwnershipFilter ownershipFilter) const
 {
     CAmount totalBalance = 0;
-    applyCalculationToMatchingTransactions(CONFIRMED_AND_MATURE,ownershipFilter,totalBalance);
+    filteredTxCalculator_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CAmount>::CONFIRMED_AND_MATURE,ownershipFilter,totalBalance);
     return totalBalance;
 }
 
 CAmount WalletBalanceCalculator::getUnconfirmedBalance(UtxoOwnershipFilter ownershipFilter) const
 {
     CAmount totalBalance = 0;
-    applyCalculationToMatchingTransactions(UNCONFIRMED,ownershipFilter,totalBalance);
+    filteredTxCalculator_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CAmount>::UNCONFIRMED,ownershipFilter,totalBalance);
     return totalBalance;
 }
 
 CAmount WalletBalanceCalculator::getImmatureBalance(UtxoOwnershipFilter ownershipFilter) const
 {
     CAmount totalBalance = 0;
-    applyCalculationToMatchingTransactions(CONFIRMED_AND_IMMATURE,ownershipFilter,totalBalance);
+    filteredTxCalculator_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CAmount>::CONFIRMED_AND_IMMATURE,ownershipFilter,totalBalance);
     return totalBalance;
 }

@@ -180,9 +180,11 @@ public:
     }
 };
 
-class AvailableUtxoCalculator final: protected FilteredTransactionsCalculator<std::vector<COutput>>
+class AvailableUtxoCalculator final: protected I_TransactionDetailCalculator<std::vector<COutput>>
 {
 private:
+    typedef std::vector<COutput> CalculationType;
+    FilteredTransactionsCalculator<CalculationType> filteredTransactions_;
     const I_AppendOnlyTransactionRecord& txRecord_;
     const I_UtxoOwnershipDetector& ownershipDetector_;
     const CKeyStore& keyStore_;
@@ -268,7 +270,10 @@ public:
         const I_UtxoOwnershipDetector& ownershipDetector,
         const I_SpentOutputTracker& spentOutputTracker,
         const LockedCoinsSet& lockedCoins
-        ): FilteredTransactionsCalculator<std::vector<COutput>>(txRecord,confsCalculator)
+        ): filteredTransactions_(
+            txRecord,
+            confsCalculator,
+            static_cast<I_TransactionDetailCalculator<std::vector<COutput>>&>(*this) )
         , txRecord_(txRecord)
         , ownershipDetector_(ownershipDetector)
         , keyStore_(keyStore)
@@ -289,11 +294,11 @@ public:
         onlyConfirmedTxs_ = onlyConfirmed;
         requireInputsSpentByMe_ = false;
         outputs.clear();
-        applyCalculationToMatchingTransactions(CONFIRMED_AND_MATURE,isminetype::ISMINE_SPENDABLE,outputs);
+        filteredTransactions_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CalculationType>::CONFIRMED_AND_MATURE,isminetype::ISMINE_SPENDABLE,outputs);
         if(!onlyConfirmedTxs_)
         {
             requireInputsSpentByMe_ = true;
-            applyCalculationToMatchingTransactions(UNCONFIRMED,isminetype::ISMINE_SPENDABLE,outputs);
+            filteredTransactions_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CalculationType>::UNCONFIRMED,isminetype::ISMINE_SPENDABLE,outputs);
         }
     }
 };

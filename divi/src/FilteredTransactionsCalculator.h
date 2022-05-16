@@ -6,17 +6,25 @@
 class UtxoOwnershipFilter;
 
 template<typename CalculationResult>
+class I_TransactionDetailCalculator
+{
+public:
+    virtual void calculate(const CWalletTx& transaction, const int txDepth, const UtxoOwnershipFilter& ownershipFilter, CalculationResult& intermediateResult) const = 0;
+};
+
+template<typename CalculationResult>
 class FilteredTransactionsCalculator
 {
 private:
     const I_AppendOnlyTransactionRecord& txRecord_;
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator_;
-protected:
-    virtual void calculate(const CWalletTx& transaction, const int txDepth, const UtxoOwnershipFilter& ownershipFilter, CalculationResult& intermediateResult) const = 0;
+    const I_TransactionDetailCalculator<CalculationResult>& txDetailCalculator_;
+
 public:
     FilteredTransactionsCalculator(
         const I_AppendOnlyTransactionRecord& txRecord,
-        const I_MerkleTxConfirmationNumberCalculator& confsCalculator);
+        const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
+        const I_TransactionDetailCalculator<CalculationResult>& txDetailCalculator);
     ~FilteredTransactionsCalculator();
 
     enum TxFlag
@@ -37,9 +45,11 @@ public:
 template <typename CalculationResult>
 FilteredTransactionsCalculator<CalculationResult>::FilteredTransactionsCalculator(
     const I_AppendOnlyTransactionRecord& txRecord,
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
+    const I_TransactionDetailCalculator<CalculationResult>& txDetailCalculator
     ): txRecord_(txRecord)
     , confsCalculator_(confsCalculator)
+    , txDetailCalculator_(txDetailCalculator)
 {
 }
 
@@ -71,7 +81,7 @@ void FilteredTransactionsCalculator<CalculationResult>::applyCalculationToMatchi
         if( (flag & TxFlag::MATURE) > 0 && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
         if( (flag & TxFlag::IMMATURE) > 0 && confsCalculator_.GetBlocksToMaturity(tx) == 0) continue;
 
-        calculate(tx,depth, ownershipFilter,initialValue);
+        txDetailCalculator_.calculate(tx,depth, ownershipFilter,initialValue);
     }
 }
 

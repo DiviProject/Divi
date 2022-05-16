@@ -6,21 +6,19 @@
 #include <I_UtxoOwnershipDetector.h>
 
 
-WalletBalanceCalculator::WalletBalanceCalculator(
+UtxoBalance::UtxoBalance(
     const I_UtxoOwnershipDetector& ownershipDetector,
-    const I_AppendOnlyTransactionRecord& txRecord,
-    const I_SpentOutputTracker& spentOutputTracker,
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator
+    const I_SpentOutputTracker& spentOutputTracker
     ): ownershipDetector_(ownershipDetector)
     , spentOutputTracker_(spentOutputTracker)
-    , filteredTxCalculator_(
-        txRecord,
-        confsCalculator,
-        *static_cast<I_TransactionDetailCalculator<CAmount>*>(this))
 {
 }
 
-void WalletBalanceCalculator::calculate(const CWalletTx& walletTransaction,const int txDepth, const UtxoOwnershipFilter& ownershipFilter,CAmount& intermediateBalance) const
+void UtxoBalance::calculate(
+    const CWalletTx& walletTransaction,
+    const int txDepth,
+    const UtxoOwnershipFilter& ownershipFilter,
+    CAmount& intermediateBalance) const
 {
     const uint256 txid = walletTransaction.GetHash();
     for(unsigned outputIndex=0u; outputIndex < walletTransaction.vout.size(); ++outputIndex)
@@ -31,6 +29,21 @@ void WalletBalanceCalculator::calculate(const CWalletTx& walletTransaction,const
             intermediateBalance += walletTransaction.vout[outputIndex].nValue;
         }
     }
+}
+
+WalletBalanceCalculator::WalletBalanceCalculator(
+    const I_UtxoOwnershipDetector& ownershipDetector,
+    const I_AppendOnlyTransactionRecord& txRecord,
+    const I_SpentOutputTracker& spentOutputTracker,
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator
+    ): ownershipDetector_(ownershipDetector)
+    , spentOutputTracker_(spentOutputTracker)
+    , utxoBalanceCalculator_(new UtxoBalance(ownershipDetector_,spentOutputTracker_) )
+    , filteredTxCalculator_(
+        txRecord,
+        confsCalculator,
+        *utxoBalanceCalculator_)
+{
 }
 
 CAmount WalletBalanceCalculator::getBalance(UtxoOwnershipFilter ownershipFilter) const

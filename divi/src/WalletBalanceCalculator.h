@@ -2,6 +2,7 @@
 #define WALLET_BALANCE_CALCULATOR_H
 #include <amount.h>
 #include <IsMineType.h>
+#include <memory>
 #include <FilteredTransactionsCalculator.h>
 
 class I_AppendOnlyTransactionRecord;
@@ -19,14 +20,30 @@ public:
     virtual CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
 };
 
-class WalletBalanceCalculator final: protected I_TransactionDetailCalculator<CAmount>, public I_WalletBalanceCalculator
+class UtxoBalance final: public I_TransactionDetailCalculator<CAmount>
 {
 private:
     const I_UtxoOwnershipDetector& ownershipDetector_;
     const I_SpentOutputTracker& spentOutputTracker_;
+public:
+    UtxoBalance(
+        const I_UtxoOwnershipDetector& ownershipDetector,
+        const I_SpentOutputTracker& spentOutputTracker);
+    void calculate(
+        const CWalletTx& walletTransaction,
+        const int txDepth,
+        const UtxoOwnershipFilter& ownershipFilter,
+        CAmount& intermediateBalance) const override;
+};
+
+class WalletBalanceCalculator final: public I_WalletBalanceCalculator
+{
+private:
+    const I_UtxoOwnershipDetector& ownershipDetector_;
+    const I_SpentOutputTracker& spentOutputTracker_;
+    std::unique_ptr<I_TransactionDetailCalculator<CAmount>> utxoBalanceCalculator_;
     FilteredTransactionsCalculator<CAmount> filteredTxCalculator_;
 
-    void calculate(const CWalletTx& walletTransaction, const int txDepth, const UtxoOwnershipFilter& ownershipFilter,CAmount& intermediateBalance) const override;
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,

@@ -19,7 +19,7 @@ public:
     virtual CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
 };
 
-class WalletBalanceCalculator: protected FilteredTransactionsCalculator<CAmount>, public I_WalletBalanceCalculator
+class WalletBalanceCalculator final: protected FilteredTransactionsCalculator<CAmount>, public I_WalletBalanceCalculator
 {
 private:
     const I_UtxoOwnershipDetector& ownershipDetector_;

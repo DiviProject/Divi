@@ -30,7 +30,7 @@ private:
   /** The fake chain that we use for the wallet.  */
   FakeBlockIndexWithHashes& fakeChain;
   std::unique_ptr<FakeMerkleTxConfirmationNumberCalculator> confirmationsCalculator_;
-  std::unique_ptr<CWallet> wrappedWallet_;
+  mutable std::unique_ptr<CWallet> wrappedWallet_;
 
 public:
 
@@ -39,8 +39,8 @@ public:
   explicit FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename);
   ~FakeWallet ();
 
-  operator CWallet&() const { return *wrappedWallet_; }
-  operator const CWallet&() const { return *wrappedWallet_; }
+  CWallet& getWallet() { return *wrappedWallet_; }
+  const CWallet& getWallet() const { return *wrappedWallet_; }
 
   /** Adds a new block to our fake chain.  */
   void AddBlock();

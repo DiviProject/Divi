@@ -56,7 +56,7 @@ protected:
     : txsFromMe()
     , fakeChain(1, 1600000000, 1)
     , fakeWallet(fakeChain)
-    , wallet(static_cast<CWallet&>(fakeWallet))
+    , wallet(fakeWallet.getWallet())
     , confChecker(
         [this](const CWalletTx& wtx,int nConfMine,int nConfTheirs) -> int
         {

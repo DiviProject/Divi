@@ -4,6 +4,7 @@
 #include <IsMineType.h>
 #include <memory>
 #include <FilteredTransactionsCalculator.h>
+#include <uint256.h>
 
 class I_AppendOnlyTransactionRecord;
 class I_SpentOutputTracker;
@@ -34,6 +35,25 @@ public:
         const int txDepth,
         const UtxoOwnershipFilter& ownershipFilter,
         CAmount& intermediateBalance) const override;
+};
+
+class CachedUtxoBalance final: public I_TransactionDetailCalculator<CAmount>
+{
+private:
+    std::unique_ptr<UtxoBalance> utxoBalance_;
+    mutable std::map<uint256, std::map<uint8_t, CAmount>> balanceCache_;
+
+public:
+    CachedUtxoBalance(
+        const I_UtxoOwnershipDetector& ownershipDetector,
+        const I_SpentOutputTracker& spentOutputTracker);
+    void calculate(
+        const CWalletTx& walletTransaction,
+        const int txDepth,
+        const UtxoOwnershipFilter& ownershipFilter,
+        CAmount& intermediateBalance) const override;
+
+    void recomputeCacheEntry(const CWalletTx& walletTransaction) const;
 };
 
 class WalletBalanceCalculator final: public I_WalletBalanceCalculator

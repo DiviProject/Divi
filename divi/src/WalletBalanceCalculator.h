@@ -11,6 +11,7 @@ class I_SpentOutputTracker;
 class I_MerkleTxConfirmationNumberCalculator;
 class I_UtxoOwnershipDetector;
 class CWalletTx;
+class UtxoBalanceCalculator;
 
 class I_WalletBalanceCalculator
 {
@@ -19,22 +20,6 @@ public:
     virtual CAmount getBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
     virtual CAmount getUnconfirmedBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
     virtual CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
-};
-
-class UtxoBalanceCalculator final: public I_TransactionDetailCalculator<CAmount>
-{
-private:
-    const I_UtxoOwnershipDetector& ownershipDetector_;
-    const I_SpentOutputTracker& spentOutputTracker_;
-public:
-    UtxoBalanceCalculator(
-        const I_UtxoOwnershipDetector& ownershipDetector,
-        const I_SpentOutputTracker& spentOutputTracker);
-    void calculate(
-        const CWalletTx& walletTransaction,
-        const int txDepth,
-        const UtxoOwnershipFilter& ownershipFilter,
-        CAmount& intermediateBalance) const override;
 };
 
 class CachedUtxoBalance final: public I_TransactionDetailCalculator<CAmount>

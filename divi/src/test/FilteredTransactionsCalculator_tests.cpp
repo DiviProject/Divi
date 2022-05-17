@@ -62,6 +62,19 @@ public:
         walletTransactions[tx_.GetHash()] = tx_;
         assert(tx_.IsCoinStake());
     }
+
+    const std::set<TxFlag>& allTxFlags() const
+    {
+        static const std::set<TxFlag> setOfTxFlags = {
+            TxFlag::UNCONFIRMED,
+            TxFlag::CONFIRMED,
+            TxFlag::IMMATURE,
+            TxFlag::MATURE,
+            TxFlag::CONFIRMED_AND_MATURE,
+            TxFlag::CONFIRMED_AND_IMMATURE};
+
+        return setOfTxFlags;
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(FilteredTransactionCalculatorTests, FilteredTransactionsCalculatorTestFixture)
@@ -116,5 +129,22 @@ BOOST_AUTO_TEST_CASE(willNotApplyCalculationToUnconfirmedCoinstakeTransactions)
     CAmount totalBalance = 0;
     txBalancesCalculator.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,filter,totalBalance);
 }
+
+BOOST_AUTO_TEST_CASE(willIgnoreConflictedTransactions)
+{
+    setWalletTransactionRecordToSingleTx();
+    ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
+    ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(-1));
+    ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(1)));
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+
+    for(auto txFlag: allTxFlags())
+    {
+        UtxoOwnershipFilter filter;
+        CAmount totalBalance = 0;
+        txBalancesCalculator.applyCalculationToMatchingTransactions(txFlag,filter,totalBalance);
+    }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

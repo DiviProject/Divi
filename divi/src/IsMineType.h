@@ -38,5 +38,9 @@ public:
         const uint8_t bitfieldDescriptionOfType = static_cast<uint8_t>(type);
         return (bitmaskForOwnership_ & bitfieldDescriptionOfType) > 0;
     }
+    uint8_t underlyingBitMask() const
+    {
+        return bitmaskForOwnership_;
+    }
 };
 #endif// ISMINE_TYPE_H

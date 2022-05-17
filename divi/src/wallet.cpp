@@ -294,11 +294,11 @@ public:
         onlyConfirmedTxs_ = onlyConfirmed;
         requireInputsSpentByMe_ = false;
         outputs.clear();
-        filteredTransactions_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CalculationType>::CONFIRMED_AND_MATURE,isminetype::ISMINE_SPENDABLE,outputs);
+        filteredTransactions_.applyCalculationToMatchingTransactions(TxFlag::CONFIRMED_AND_MATURE,isminetype::ISMINE_SPENDABLE,outputs);
         if(!onlyConfirmedTxs_)
         {
             requireInputsSpentByMe_ = true;
-            filteredTransactions_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CalculationType>::UNCONFIRMED,isminetype::ISMINE_SPENDABLE,outputs);
+            filteredTransactions_.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,isminetype::ISMINE_SPENDABLE,outputs);
         }
     }
 };

@@ -13,6 +13,16 @@ public:
     virtual void calculate(const CWalletTx& transaction, const int txDepth, const UtxoOwnershipFilter& ownershipFilter, CalculationResult& intermediateResult) const = 0;
 };
 
+enum TxFlag
+{
+    UNCONFIRMED = 1 << 0,
+    CONFIRMED = 1 << 1,
+    IMMATURE = 1 << 2,
+    MATURE = 1 << 3,
+    CONFIRMED_AND_MATURE = CONFIRMED | MATURE,
+    CONFIRMED_AND_IMMATURE = CONFIRMED | IMMATURE,
+};
+
 template<typename CalculationResult>
 class FilteredTransactionsCalculator
 {
@@ -28,15 +38,7 @@ public:
         const I_TransactionDetailCalculator<CalculationResult>& txDetailCalculator);
     ~FilteredTransactionsCalculator();
 
-    enum TxFlag
-    {
-        UNCONFIRMED = 1 << 0,
-        CONFIRMED = 1 << 1,
-        IMMATURE = 1 << 2,
-        MATURE = 1 << 3,
-        CONFIRMED_AND_MATURE = CONFIRMED | MATURE,
-        CONFIRMED_AND_IMMATURE = CONFIRMED | IMMATURE,
-    };
+
     void applyCalculationToMatchingTransactions(
         TxFlag flag,
         const UtxoOwnershipFilter& ownershipFilter,

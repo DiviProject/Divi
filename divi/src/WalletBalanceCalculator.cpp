@@ -82,20 +82,20 @@ WalletBalanceCalculator::WalletBalanceCalculator(
 CAmount WalletBalanceCalculator::getBalance(UtxoOwnershipFilter ownershipFilter) const
 {
     CAmount totalBalance = 0;
-    filteredTxCalculator_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CAmount>::CONFIRMED_AND_MATURE,ownershipFilter,totalBalance);
+    filteredTxCalculator_.applyCalculationToMatchingTransactions(TxFlag::CONFIRMED_AND_MATURE,ownershipFilter,totalBalance);
     return totalBalance;
 }
 
 CAmount WalletBalanceCalculator::getUnconfirmedBalance(UtxoOwnershipFilter ownershipFilter) const
 {
     CAmount totalBalance = 0;
-    filteredTxCalculator_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CAmount>::UNCONFIRMED,ownershipFilter,totalBalance);
+    filteredTxCalculator_.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,ownershipFilter,totalBalance);
     return totalBalance;
 }
 
 CAmount WalletBalanceCalculator::getImmatureBalance(UtxoOwnershipFilter ownershipFilter) const
 {
     CAmount totalBalance = 0;
-    filteredTxCalculator_.applyCalculationToMatchingTransactions(FilteredTransactionsCalculator<CAmount>::CONFIRMED_AND_IMMATURE,ownershipFilter,totalBalance);
+    filteredTxCalculator_.applyCalculationToMatchingTransactions(TxFlag::CONFIRMED_AND_IMMATURE,ownershipFilter,totalBalance);
     return totalBalance;
 }

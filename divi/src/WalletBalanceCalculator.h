@@ -67,8 +67,8 @@ private:
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,
-        const I_AppendOnlyTransactionRecord& txRecord,
         const I_SpentOutputTracker& spentOutputTracker,
+        const I_AppendOnlyTransactionRecord& txRecord,
         const I_MerkleTxConfirmationNumberCalculator& confsCalculator);
     virtual ~WalletBalanceCalculator() = default;
     CAmount getBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const override;

@@ -332,8 +332,8 @@ CWallet::CWallet(
     , balanceCalculator_(
         new WalletBalanceCalculator(
             *ownershipDetector_,
-            *transactionRecord_,
             *outputTracker_,
+            *transactionRecord_,
             confirmationNumberCalculator_  ))
     , nWalletVersion(FEATURE_BASE)
     , nWalletMaxVersion(FEATURE_BASE)

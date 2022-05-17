@@ -53,4 +53,15 @@ BOOST_AUTO_TEST_CASE(willIgnoreAllUnspentUtxosThatAreNotOwned)
     BOOST_CHECK_EQUAL(totalBalance, 0*COIN);
 }
 
+BOOST_AUTO_TEST_CASE(willTotalAllUnspentUtxosThatAreOwned)
+{
+    ON_CALL(utxoOwnershipDetector,isMine(_)).WillByDefault(Return(isminetype::ISMINE_SPENDABLE));
+    ON_CALL(spentOutputTracker,IsSpent(_,_,_)).WillByDefault(Return(false));
+    UtxoOwnershipFilter filter(isminetype::ISMINE_SPENDABLE);
+    CWalletTx tx = RandomTransactionGenerator()();
+    CAmount totalBalance = 0;
+    calculator.calculate(tx,GetRandInt(100),filter,totalBalance);
+    BOOST_CHECK_EQUAL(totalBalance, tx.GetValueOut());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

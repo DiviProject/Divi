@@ -348,6 +348,7 @@ BITCOIN_CORE_H = \
   wallet.h \
   WalletTx.h \
   I_UtxoOwnershipDetector.h \
+  I_TransactionDetailCalculator.h \
   FilteredTransactionsCalculator.h \
   WalletBalanceCalculator.h \
   I_AppendOnlyTransactionRecord.h \

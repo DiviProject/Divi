@@ -20,17 +20,17 @@ private:
     MockTransactionRecord::TransactionsByHash transactionsHeldInRecord_;
 public:
     NiceMock<MockUtxoOwnershipDetector> utxoOwnershipDetector;
-    NiceMock<MockTransactionRecord> transactionRecord;
     NiceMock<MockSpentOutputTracker> spentOutputTracker;
+    NiceMock<MockTransactionRecord> transactionRecord;
     NiceMock<MockMerkleTxConfirmationNumberCalculator> confsCalculator;
     WalletBalanceCalculator calculator;
     WalletBalanceCalculatorTestFixture(
         ): transactionsHeldInRecord_()
         , utxoOwnershipDetector()
-        , transactionRecord()
         , spentOutputTracker()
+        , transactionRecord()
         , confsCalculator()
-        , calculator(utxoOwnershipDetector,transactionRecord,spentOutputTracker,confsCalculator)
+        , calculator(utxoOwnershipDetector,spentOutputTracker, transactionRecord,confsCalculator)
     {
         ON_CALL(transactionRecord,GetWalletTransactions()).WillByDefault(ReturnRef(transactionsHeldInRecord_));
     }

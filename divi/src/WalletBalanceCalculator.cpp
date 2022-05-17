@@ -66,8 +66,8 @@ void CachedUtxoBalance::recomputeCacheEntry(const CWalletTx& walletTransaction) 
 
 WalletBalanceCalculator::WalletBalanceCalculator(
     const I_UtxoOwnershipDetector& ownershipDetector,
-    const I_AppendOnlyTransactionRecord& txRecord,
     const I_SpentOutputTracker& spentOutputTracker,
+    const I_AppendOnlyTransactionRecord& txRecord,
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator
     ): ownershipDetector_(ownershipDetector)
     , spentOutputTracker_(spentOutputTracker)

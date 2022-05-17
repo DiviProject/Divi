@@ -102,6 +102,7 @@ BITCOIN_TESTS =\
   test/versionbits_tests.cpp \
   test/googletestenabled_test.cpp \
   test/wallet_coinmanagement_tests.cpp \
+  test/UtxoBalanceCalculator_tests.cpp \
   test/WalletBalanceCalculator_tests.cpp \
   test/walletbackupcreator_tests.cpp \
   test/WalletIntegrityVerifier_tests.cpp \

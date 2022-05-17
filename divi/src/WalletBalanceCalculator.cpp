@@ -6,7 +6,7 @@
 #include <I_UtxoOwnershipDetector.h>
 
 
-UtxoBalance::UtxoBalance(
+UtxoBalanceCalculator::UtxoBalanceCalculator(
     const I_UtxoOwnershipDetector& ownershipDetector,
     const I_SpentOutputTracker& spentOutputTracker
     ): ownershipDetector_(ownershipDetector)
@@ -14,7 +14,7 @@ UtxoBalance::UtxoBalance(
 {
 }
 
-void UtxoBalance::calculate(
+void UtxoBalanceCalculator::calculate(
     const CWalletTx& walletTransaction,
     const int txDepth,
     const UtxoOwnershipFilter& ownershipFilter,
@@ -34,7 +34,7 @@ void UtxoBalance::calculate(
 CachedUtxoBalance::CachedUtxoBalance(
     const I_UtxoOwnershipDetector& ownershipDetector,
     const I_SpentOutputTracker& spentOutputTracker
-    ): utxoBalance_(new UtxoBalance(ownershipDetector,spentOutputTracker))
+    ): utxoBalance_(new UtxoBalanceCalculator(ownershipDetector,spentOutputTracker))
     , balanceCache_()
 {
 }
@@ -71,7 +71,7 @@ WalletBalanceCalculator::WalletBalanceCalculator(
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator
     ): ownershipDetector_(ownershipDetector)
     , spentOutputTracker_(spentOutputTracker)
-    , utxoBalanceCalculator_(new UtxoBalance(ownershipDetector_,spentOutputTracker_) )
+    , utxoBalanceCalculator_(new UtxoBalanceCalculator(ownershipDetector_,spentOutputTracker_) )
     , filteredTxCalculator_(
         txRecord,
         confsCalculator,

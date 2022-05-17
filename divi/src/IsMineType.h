@@ -22,9 +22,19 @@ class UtxoOwnershipFilter
 {
 private:
     uint8_t bitmaskForOwnership_;
+    void setBitmask(uint8_t value)
+    {
+        bitmaskForOwnership_ = value;
+    }
 public:
     UtxoOwnershipFilter(): bitmaskForOwnership_(0u){}
     UtxoOwnershipFilter(isminetype type): bitmaskForOwnership_(static_cast<uint8_t>(type)){}
+    UtxoOwnershipFilter createFilterThatOwnsEverything()
+    {
+        UtxoOwnershipFilter filter;
+        filter.setBitmask(~static_cast<int8_t>(0));
+        return filter;
+    }
     void addOwnershipType(const isminetype& type)
     {
         const uint8_t bitfieldDescriptionOfType = static_cast<uint8_t>(type);

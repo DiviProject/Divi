@@ -113,9 +113,12 @@ BOOST_AUTO_TEST_CASE(willNotApplyCalculationToUnconfirmedCoinbaseTransactions)
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(1)));
     EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
 
-    UtxoOwnershipFilter filter;
-    CAmount totalBalance = 0;
-    txBalancesCalculator.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,filter,totalBalance);
+    for(auto txFlag: allTxFlags())
+    {
+        UtxoOwnershipFilter filter;
+        CAmount totalBalance = 0;
+        txBalancesCalculator.applyCalculationToMatchingTransactions(txFlag,filter,totalBalance);
+    }
 }
 BOOST_AUTO_TEST_CASE(willNotApplyCalculationToUnconfirmedCoinstakeTransactions)
 {
@@ -125,9 +128,12 @@ BOOST_AUTO_TEST_CASE(willNotApplyCalculationToUnconfirmedCoinstakeTransactions)
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(1)));
     EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
 
-    UtxoOwnershipFilter filter;
-    CAmount totalBalance = 0;
-    txBalancesCalculator.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,filter,totalBalance);
+    for(auto txFlag: allTxFlags())
+    {
+        UtxoOwnershipFilter filter;
+        CAmount totalBalance = 0;
+        txBalancesCalculator.applyCalculationToMatchingTransactions(txFlag,filter,totalBalance);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(willIgnoreConflictedTransactions)

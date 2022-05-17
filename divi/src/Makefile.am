@@ -349,6 +349,7 @@ BITCOIN_CORE_H = \
   WalletTx.h \
   I_UtxoOwnershipDetector.h \
   I_TransactionDetailCalculator.h \
+  UtxoBalanceCalculator.h \
   FilteredTransactionsCalculator.h \
   WalletBalanceCalculator.h \
   I_AppendOnlyTransactionRecord.h \
@@ -561,6 +562,7 @@ libbitcoin_wallet_a_SOURCES = \
   MinimumFeeCoinSelectionAlgorithm.cpp \
   MerkleTxConfirmationNumberCalculator.cpp \
   BlockScanner.cpp \
+  UtxoBalanceCalculator.cpp \
   WalletBalanceCalculator.cpp \
   wallet.cpp \
   Output.cpp \

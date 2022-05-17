@@ -167,4 +167,54 @@ BOOST_AUTO_TEST_CASE(willNotCalculateAnythingWithoutAnyTransactions)
     }
 }
 
+BOOST_AUTO_TEST_CASE(willNotUseUnconfirmedTransactionsIfConfirmedFlagIsPresent)
+{
+    setWalletTransactionRecordToSingleTx();
+    ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
+    ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
+    ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(0)));
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+
+    UtxoOwnershipFilter filter;
+    CAmount totalBalance = 0;
+    txBalancesCalculator.applyCalculationToMatchingTransactions(TxFlag::CONFIRMED,filter,totalBalance);
+}
+BOOST_AUTO_TEST_CASE(willUseUnconfirmedTransactionsIfUnonfirmedFlagIsPresent)
+{
+    setWalletTransactionRecordToSingleTx();
+    ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
+    ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
+    ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(0)));
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(1);
+
+    UtxoOwnershipFilter filter;
+    CAmount totalBalance = 0;
+    txBalancesCalculator.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,filter,totalBalance);
+}
+
+BOOST_AUTO_TEST_CASE(willUseConfirmedTransactionsIfConfirmedFlagIsPresent)
+{
+    setWalletTransactionRecordToSingleTx();
+    ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
+    ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(1));
+    ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(0)));
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(1);
+
+    UtxoOwnershipFilter filter;
+    CAmount totalBalance = 0;
+    txBalancesCalculator.applyCalculationToMatchingTransactions(TxFlag::CONFIRMED,filter,totalBalance);
+}
+BOOST_AUTO_TEST_CASE(willNotUseConfirmedTransactionsIfUnonfirmedFlagIsPresent)
+{
+    setWalletTransactionRecordToSingleTx();
+    ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
+    ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(1));
+    ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(0)));
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+
+    UtxoOwnershipFilter filter;
+    CAmount totalBalance = 0;
+    txBalancesCalculator.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,filter,totalBalance);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

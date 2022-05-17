@@ -31,6 +31,39 @@ void UtxoBalance::calculate(
     }
 }
 
+CachedUtxoBalance::CachedUtxoBalance(
+    const I_UtxoOwnershipDetector& ownershipDetector,
+    const I_SpentOutputTracker& spentOutputTracker
+    ): utxoBalance_(new UtxoBalance(ownershipDetector,spentOutputTracker))
+    , balanceCache_()
+{
+}
+
+void CachedUtxoBalance::calculate(
+    const CWalletTx& walletTransaction,
+    const int txDepth,
+    const UtxoOwnershipFilter& ownershipFilter,
+    CAmount& intermediateBalance) const
+{
+    auto txid = walletTransaction.GetHash();
+    if(balanceCache_.count(txid) > 0 && balanceCache_[txid].count(ownershipFilter.underlyingBitMask()))
+    {
+        intermediateBalance += balanceCache_[txid][ownershipFilter.underlyingBitMask()];
+    }
+    else
+    {
+        CAmount balanceFromOutputs = 0;
+        utxoBalance_->calculate(walletTransaction,txDepth,ownershipFilter,balanceFromOutputs);
+        balanceCache_[txid][ownershipFilter.underlyingBitMask()] = balanceFromOutputs;
+        intermediateBalance += balanceFromOutputs;
+    }
+}
+
+void CachedUtxoBalance::recomputeCacheEntry(const CWalletTx& walletTransaction) const
+{
+    balanceCache_.erase(walletTransaction.GetHash());
+}
+
 WalletBalanceCalculator::WalletBalanceCalculator(
     const I_UtxoOwnershipDetector& ownershipDetector,
     const I_AppendOnlyTransactionRecord& txRecord,

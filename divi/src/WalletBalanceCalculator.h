@@ -4,7 +4,6 @@
 #include <IsMineType.h>
 #include <memory>
 #include <FilteredTransactionsCalculator.h>
-#include <uint256.h>
 
 class I_AppendOnlyTransactionRecord;
 class I_SpentOutputTracker;
@@ -20,23 +19,6 @@ public:
     virtual CAmount getBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
     virtual CAmount getUnconfirmedBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
     virtual CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
-};
-
-class CachedUtxoBalanceCalculator final: public I_CachedTransactionDetailCalculator<CAmount>
-{
-private:
-    const I_TransactionDetailCalculator<CAmount>& utxoBalance_;
-    mutable std::map<uint256, std::map<uint8_t, CAmount>> balanceCache_;
-
-public:
-    CachedUtxoBalanceCalculator(const I_TransactionDetailCalculator<CAmount>& utxoBalance);
-    void calculate(
-        const CWalletTx& walletTransaction,
-        const int txDepth,
-        const UtxoOwnershipFilter& ownershipFilter,
-        CAmount& intermediateBalance) const override;
-
-    void recomputeCachedTxEntries(const CWalletTx& walletTransaction) const override;
 };
 
 class WalletBalanceCalculator final: public I_WalletBalanceCalculator

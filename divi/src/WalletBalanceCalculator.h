@@ -22,7 +22,7 @@ public:
     virtual CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
 };
 
-class CachedUtxoBalanceCalculator final: public I_TransactionDetailCalculator<CAmount>
+class CachedUtxoBalanceCalculator final: public I_CachedTransactionDetailCalculator<CAmount>
 {
 private:
     const I_TransactionDetailCalculator<CAmount>& utxoBalance_;
@@ -36,7 +36,7 @@ public:
         const UtxoOwnershipFilter& ownershipFilter,
         CAmount& intermediateBalance) const override;
 
-    void recomputeCacheEntry(const CWalletTx& walletTransaction) const;
+    void recomputeCachedTxEntries(const CWalletTx& walletTransaction) const override;
 };
 
 class WalletBalanceCalculator final: public I_WalletBalanceCalculator

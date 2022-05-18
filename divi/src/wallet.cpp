@@ -333,8 +333,6 @@ CWallet::CWallet(
     , utxoBalanceCalculator_( new UtxoBalanceCalculator(*ownershipDetector_,*outputTracker_) )
     , balanceCalculator_(
         new WalletBalanceCalculator(
-            *ownershipDetector_,
-            *outputTracker_,
             *utxoBalanceCalculator_,
             *transactionRecord_,
             confirmationNumberCalculator_  ))

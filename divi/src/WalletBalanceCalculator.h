@@ -46,13 +46,13 @@ class WalletBalanceCalculator final: public I_WalletBalanceCalculator
 private:
     const I_UtxoOwnershipDetector& ownershipDetector_;
     const I_SpentOutputTracker& spentOutputTracker_;
-    std::unique_ptr<I_TransactionDetailCalculator<CAmount>> utxoBalanceCalculator_;
     FilteredTransactionsCalculator<CAmount> filteredTxCalculator_;
 
 public:
     WalletBalanceCalculator(
         const I_UtxoOwnershipDetector& ownershipDetector,
         const I_SpentOutputTracker& spentOutputTracker,
+        const I_TransactionDetailCalculator<CAmount>& utxoBalanceCalculator,
         const I_AppendOnlyTransactionRecord& txRecord,
         const I_MerkleTxConfirmationNumberCalculator& confsCalculator);
     virtual ~WalletBalanceCalculator() = default;

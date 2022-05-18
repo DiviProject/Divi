@@ -57,6 +57,7 @@ class CBlockLocator;
 class I_BlockDataReader;
 class I_WalletBalanceCalculator;
 class AvailableUtxoCalculator;
+class UtxoBalanceCalculator;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
@@ -191,6 +192,7 @@ private:
     std::unique_ptr<I_SpentOutputTracker> outputTracker_;
     std::unique_ptr<I_UtxoOwnershipDetector> ownershipDetector_;
     std::unique_ptr<AvailableUtxoCalculator> utxoCalculator_;
+    std::unique_ptr<UtxoBalanceCalculator> utxoBalanceCalculator_;
     std::unique_ptr<I_WalletBalanceCalculator> balanceCalculator_;
 
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet

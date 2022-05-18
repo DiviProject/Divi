@@ -25,13 +25,11 @@ public:
 class CachedUtxoBalance final: public I_TransactionDetailCalculator<CAmount>
 {
 private:
-    std::unique_ptr<UtxoBalanceCalculator> utxoBalance_;
+    const I_TransactionDetailCalculator<CAmount>& utxoBalance_;
     mutable std::map<uint256, std::map<uint8_t, CAmount>> balanceCache_;
 
 public:
-    CachedUtxoBalance(
-        const I_UtxoOwnershipDetector& ownershipDetector,
-        const I_SpentOutputTracker& spentOutputTracker);
+    CachedUtxoBalance(const I_TransactionDetailCalculator<CAmount>& utxoBalance);
     void calculate(
         const CWalletTx& walletTransaction,
         const int txDepth,

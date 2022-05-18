@@ -189,7 +189,6 @@ private:
     FilteredTransactionsCalculator<CalculationType> filteredTransactions_;
     const I_AppendOnlyTransactionRecord& txRecord_;
     const I_UtxoOwnershipDetector& ownershipDetector_;
-    const CKeyStore& keyStore_;
     const CAmount minimumVaultAmount_;
     const BlockMap& blockIndexByHash_;
     const CChain& activeChain_;
@@ -202,7 +201,7 @@ private:
     bool IsAvailableType(const CTxOut& output, AvailableCoinsType coinType, isminetype& mine) const
     {
         const CScript& scriptPubKey = output.scriptPubKey;
-        mine = computeMineType(keyStore_, scriptPubKey, false);
+        mine = ownershipDetector_.isMine(output);
         const bool isManagedVault = mine == isminetype::ISMINE_MANAGED_VAULT;
         const bool isOwnedVault = mine == isminetype::ISMINE_OWNED_VAULT;
         const bool isVault = isManagedVault || isOwnedVault;
@@ -251,9 +250,9 @@ private:
         for(unsigned outputIndex = 0u; outputIndex < walletTransaction.vout.size(); ++outputIndex)
         {
             isminetype mine;
-            if(!IsAvailableType(walletTransaction.vout[outputIndex],coinType_,mine)) continue;
+            if(!IsAvailableType(walletTransaction.vout[outputIndex],coinType_,mine) || !ownershipFilter.hasRequested(mine)) continue;
             if(walletTransaction.vout[outputIndex].nValue <= 0 || lockedCoins_.count(COutPoint(txid,outputIndex)) > 0) continue;
-            if(!ownershipFilter.hasRequested(mine) || spentOutputTracker_.IsSpent(txid, outputIndex,0)) continue;
+            if(spentOutputTracker_.IsSpent(txid, outputIndex,0)) continue;
 
             BlockMap::const_iterator it = blockIndexByHash_.find(walletTransaction.hashBlock);
             const CBlockIndex* const blockIndexOfConfirmation = it == blockIndexByHash_.end()? nullptr: it->second;
@@ -265,7 +264,6 @@ private:
     }
 public:
     AvailableUtxoCalculator(
-        const CKeyStore& keyStore,
         const Settings& settings,
         const BlockMap& blockIndexByHash,
         const CChain& activeChain,
@@ -280,7 +278,6 @@ public:
             static_cast<I_TransactionDetailCalculator<std::vector<COutput>>&>(*this) )
         , txRecord_(txRecord)
         , ownershipDetector_(ownershipDetector)
-        , keyStore_(keyStore)
         , minimumVaultAmount_(settings.GetArg("-vault_min",0)*COIN)
         , blockIndexByHash_(blockIndexByHash)
         , activeChain_(activeChain)
@@ -326,7 +323,6 @@ CWallet::CWallet(
     , ownershipDetector_(new WalletUtxoOwnershipDetector(*static_cast<CKeyStore*>(this)))
     , utxoCalculator_(
         new AvailableUtxoCalculator(
-            *static_cast<CKeyStore*>(this),
             settings,
             blockIndexByHash_,
             activeChain_,

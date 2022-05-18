@@ -621,10 +621,6 @@ bool CWallet::DebitsFunds(const CTransaction& tx) const
 {
     return (ComputeDebit(tx, isminetype::ISMINE_SPENDABLE) > 0);
 }
-bool CWallet::DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const
-{
-    return getDebit(tx,filter) > 0;
-}
 
 CAmount CWallet::ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const
 {

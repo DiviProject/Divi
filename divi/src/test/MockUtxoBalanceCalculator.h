@@ -9,6 +9,6 @@
 class MockUtxoBalanceCalculator: public I_TransactionDetailCalculator<CAmount>
 {
 public:
-    MOCK_CONST_METHOD4(calculate, void(const CWalletTx&, const int, const UtxoOwnershipFilter&, CAmount&));
+    MOCK_CONST_METHOD3(calculate, void(const CWalletTx&, const UtxoOwnershipFilter&, CAmount&));
 };
 #endif// MOCK_UTXO_BALANCE_CALCULATOR_H

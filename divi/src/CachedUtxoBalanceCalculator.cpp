@@ -12,7 +12,6 @@ CachedUtxoBalanceCalculator::CachedUtxoBalanceCalculator(
 
 void CachedUtxoBalanceCalculator::calculate(
     const CWalletTx& walletTransaction,
-    const int txDepth,
     const UtxoOwnershipFilter& ownershipFilter,
     CAmount& intermediateBalance) const
 {
@@ -24,7 +23,7 @@ void CachedUtxoBalanceCalculator::calculate(
     else
     {
         CAmount balanceFromOutputs = 0;
-        utxoBalanceCalculator_.calculate(walletTransaction,txDepth,ownershipFilter,balanceFromOutputs);
+        utxoBalanceCalculator_.calculate(walletTransaction,ownershipFilter,balanceFromOutputs);
         balanceCache_[txid][ownershipFilter.underlyingBitMask()] = balanceFromOutputs;
         intermediateBalance += balanceFromOutputs;
     }

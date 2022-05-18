@@ -76,7 +76,7 @@ void FilteredTransactionsCalculator<CalculationResult>::applyCalculationToMatchi
         if( (flag & TxFlag::MATURE) > 0 && confsCalculator_.GetBlocksToMaturity(tx) > 0) continue;
         if( (flag & TxFlag::IMMATURE) > 0 && confsCalculator_.GetBlocksToMaturity(tx) == 0) continue;
 
-        txDetailCalculator_.calculate(tx,depth, ownershipFilter,initialValue);
+        txDetailCalculator_.calculate(tx, ownershipFilter,initialValue);
     }
 }
 

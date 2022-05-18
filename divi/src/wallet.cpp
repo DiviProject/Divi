@@ -38,6 +38,7 @@
 #include <random.h>
 #include <BlockScanner.h>
 #include <ui_interface.h>
+#include <UtxoBalanceCalculator.h>
 #include <WalletBalanceCalculator.h>
 #include <script/StakingVaultScript.h>
 
@@ -329,10 +330,12 @@ CWallet::CWallet(
             *ownershipDetector_,
             *outputTracker_,
             setLockedCoins))
+    , utxoBalanceCalculator_( new UtxoBalanceCalculator(*ownershipDetector_,*outputTracker_) )
     , balanceCalculator_(
         new WalletBalanceCalculator(
             *ownershipDetector_,
             *outputTracker_,
+            *utxoBalanceCalculator_,
             *transactionRecord_,
             confirmationNumberCalculator_  ))
     , nWalletVersion(FEATURE_BASE)
@@ -354,6 +357,7 @@ CWallet::CWallet(
 CWallet::~CWallet()
 {
     balanceCalculator_.reset();
+    utxoBalanceCalculator_.reset();
     utxoCalculator_.reset();
     ownershipDetector_.reset();
     outputTracker_.reset();

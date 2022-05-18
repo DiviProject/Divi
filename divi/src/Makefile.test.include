@@ -105,7 +105,6 @@ BITCOIN_TESTS =\
   test/wallet_coinmanagement_tests.cpp \
   test/UtxoBalanceCalculator_tests.cpp \
   test/FilteredTransactionsCalculator_tests.cpp \
-  test/WalletBalanceCalculator_tests.cpp \
   test/walletbackupcreator_tests.cpp \
   test/WalletIntegrityVerifier_tests.cpp \
   test/CoinMinting_tests.cpp \

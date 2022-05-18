@@ -7,9 +7,8 @@
 #include <UtxoBalanceCalculator.h>
 
 CachedUtxoBalance::CachedUtxoBalance(
-    const I_UtxoOwnershipDetector& ownershipDetector,
-    const I_SpentOutputTracker& spentOutputTracker
-    ): utxoBalance_(new UtxoBalanceCalculator(ownershipDetector,spentOutputTracker))
+    const I_TransactionDetailCalculator<CAmount>& utxoBalance
+    ): utxoBalance_(utxoBalance)
     , balanceCache_()
 {
 }
@@ -28,7 +27,7 @@ void CachedUtxoBalance::calculate(
     else
     {
         CAmount balanceFromOutputs = 0;
-        utxoBalance_->calculate(walletTransaction,txDepth,ownershipFilter,balanceFromOutputs);
+        utxoBalance_.calculate(walletTransaction,txDepth,ownershipFilter,balanceFromOutputs);
         balanceCache_[txid][ownershipFilter.underlyingBitMask()] = balanceFromOutputs;
         intermediateBalance += balanceFromOutputs;
     }

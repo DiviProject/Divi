@@ -8,7 +8,7 @@ class I_TransactionDetailCalculator
 {
 public:
     virtual ~I_TransactionDetailCalculator(){}
-    virtual void calculate(const CWalletTx& transaction, const int txDepth, const UtxoOwnershipFilter& ownershipFilter, CalculationResult& intermediateResult) const = 0;
+    virtual void calculate(const CWalletTx& transaction, const UtxoOwnershipFilter& ownershipFilter, CalculationResult& intermediateResult) const = 0;
 };
 
 template<typename CalculationResult>

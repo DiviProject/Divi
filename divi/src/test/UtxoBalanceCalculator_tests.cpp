@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(willIgnoreAllSpentUtxosEvenIfAllAreOwned)
     UtxoOwnershipFilter filter(isminetype::ISMINE_SPENDABLE);
     CWalletTx tx = RandomTransactionGenerator()();
     CAmount totalBalance = 0;
-    calculator.calculate(tx,GetRandInt(100),filter,totalBalance);
+    calculator.calculate(tx,filter,totalBalance);
     BOOST_CHECK_EQUAL(totalBalance, 0*COIN);
 }
 
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(willIgnoreAllUnspentUtxosThatAreNotOwned)
     UtxoOwnershipFilter filter(isminetype::ISMINE_SPENDABLE);
     CWalletTx tx = RandomTransactionGenerator()();
     CAmount totalBalance = 0;
-    calculator.calculate(tx,GetRandInt(100),filter,totalBalance);
+    calculator.calculate(tx,filter,totalBalance);
     BOOST_CHECK_EQUAL(totalBalance, 0*COIN);
 }
 
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(willTotalAllUnspentUtxosThatAreOwned)
     UtxoOwnershipFilter filter(isminetype::ISMINE_SPENDABLE);
     CWalletTx tx = RandomTransactionGenerator()();
     CAmount totalBalance = 0;
-    calculator.calculate(tx,GetRandInt(100),filter,totalBalance);
+    calculator.calculate(tx,filter,totalBalance);
     BOOST_CHECK_EQUAL(totalBalance, tx.GetValueOut());
 }
 
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(willTotalAllUnspentUtxosThatAreOwnedInTransactionWithMixedO
 
     UtxoOwnershipFilter filter(isminetype::ISMINE_SPENDABLE);
     CAmount totalBalance = 0;
-    calculator.calculate(tx,GetRandInt(100),filter,totalBalance);
+    calculator.calculate(tx,filter,totalBalance);
     BOOST_CHECK_EQUAL(totalBalance, totalBalanceExpected);
 }
 

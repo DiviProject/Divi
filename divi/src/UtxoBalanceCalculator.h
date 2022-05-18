@@ -15,7 +15,6 @@ public:
         const I_SpentOutputTracker& spentOutputTracker);
     void calculate(
         const CWalletTx& walletTransaction,
-        const int txDepth,
         const UtxoOwnershipFilter& ownershipFilter,
         CAmount& intermediateBalance) const override;
 };

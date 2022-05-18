@@ -40,6 +40,7 @@
 #include <ui_interface.h>
 #include <UtxoBalanceCalculator.h>
 #include <WalletBalanceCalculator.h>
+#include <CachedUtxoBalanceCalculator.h>
 #include <script/StakingVaultScript.h>
 
 #include <stack>
@@ -331,9 +332,10 @@ CWallet::CWallet(
             *outputTracker_,
             setLockedCoins))
     , utxoBalanceCalculator_( new UtxoBalanceCalculator(*ownershipDetector_,*outputTracker_) )
+    , cachedUtxoBalanceCalculator_( new CachedUtxoBalanceCalculator(*utxoBalanceCalculator_) )
     , balanceCalculator_(
         new WalletBalanceCalculator(
-            *utxoBalanceCalculator_,
+            *cachedUtxoBalanceCalculator_,
             *transactionRecord_,
             confirmationNumberCalculator_  ))
     , nWalletVersion(FEATURE_BASE)
@@ -1428,7 +1430,7 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
 
 void CWallet::LoadWalletTransaction(const CWalletTx& wtxIn)
 {
-    outputTracker_->UpdateSpends(wtxIn, true).first->RecomputeCachedQuantities();
+    outputTracker_->UpdateSpends(wtxIn, true);
 }
 
 static bool topologicallySortTransactions(
@@ -1558,7 +1560,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     // Inserts only if not already there, returns tx inserted or tx found
     std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,false);
     CWalletTx& wtx = *walletTxAndRecordStatus.first;
-    wtx.RecomputeCachedQuantities();
+    cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(wtx);
     bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
 
     bool walletTransactionHasBeenUpdated = false;
@@ -1588,7 +1590,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     }
 
     // Break debit/credit balance caches:
-    wtx.RecomputeCachedQuantities();
+    cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(wtx);
 
     // Notify UI of new or updated transaction
     NotifyTransactionChanged(wtxIn.GetHash(), (transactionHashIsNewToWallet) ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
@@ -1632,8 +1634,7 @@ void CWallet::AddTransactions(const TransactionVector& txs, const CBlock* pblock
         BOOST_FOREACH (const CTxIn& txin, tx.vin)
         {
             CWalletTx* wtx = const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
-            if (wtx != nullptr)
-                wtx->RecomputeCachedQuantities();
+            if (wtx != nullptr) cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(*wtx);
         }
     }
 }
@@ -2177,7 +2178,6 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
 
     wtxNew.fTimeReceivedIsTxTime = true;
     wtxNew.createdByMe = true;
-    wtxNew.RecomputeCachedQuantities();
     CMutableTransaction txNew;
 
     LOCK2(cs_main, cs_wallet);
@@ -2231,7 +2231,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
                         LogPrintf("%s: Spending inputs not recorded in wallet - %s\n", __func__, txin.prevout.hash);
                         assert(coinPtr);
                     }
-                    coinPtr->RecomputeCachedQuantities();
+                    cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(*coinPtr);
                     NotifyTransactionChanged(coinPtr->GetHash(), TransactionNotificationType::SPEND_FROM);
                     updated_hashes.insert(txin.prevout.hash);
                 }
@@ -2512,7 +2512,7 @@ void CWallet::LockCoin(const COutPoint& output)
     AssertLockHeld(cs_wallet); // setLockedCoins
     setLockedCoins.insert(output);
     CWalletTx* txPtr = const_cast<CWalletTx*>(GetWalletTx(output.hash));
-    if (txPtr != nullptr) txPtr->RecomputeCachedQuantities(); // recalculate all credits for this tx
+    if (txPtr != nullptr) cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(*txPtr);
 }
 
 void CWallet::UnlockCoin(const COutPoint& output)

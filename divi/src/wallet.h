@@ -248,7 +248,6 @@ private:
     CAmount ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
     bool DebitsFunds(const CTransaction& tx) const;
-    bool DebitsFunds(const CWalletTx& tx,const UtxoOwnershipFilter& filter) const;
     CAmount LockedCoinBalance(const UtxoOwnershipFilter& filter) const;
 
 protected:

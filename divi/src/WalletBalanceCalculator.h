@@ -22,14 +22,14 @@ public:
     virtual CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
 };
 
-class CachedUtxoBalance final: public I_TransactionDetailCalculator<CAmount>
+class CachedUtxoBalanceCalculator final: public I_TransactionDetailCalculator<CAmount>
 {
 private:
     const I_TransactionDetailCalculator<CAmount>& utxoBalance_;
     mutable std::map<uint256, std::map<uint8_t, CAmount>> balanceCache_;
 
 public:
-    CachedUtxoBalance(const I_TransactionDetailCalculator<CAmount>& utxoBalance);
+    CachedUtxoBalanceCalculator(const I_TransactionDetailCalculator<CAmount>& utxoBalance);
     void calculate(
         const CWalletTx& walletTransaction,
         const int txDepth,

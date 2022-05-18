@@ -4,39 +4,6 @@
 #include <WalletTx.h>
 #include <I_SpentOutputTracker.h>
 #include <I_UtxoOwnershipDetector.h>
-#include <UtxoBalanceCalculator.h>
-
-CachedUtxoBalanceCalculator::CachedUtxoBalanceCalculator(
-    const I_TransactionDetailCalculator<CAmount>& utxoBalance
-    ): utxoBalance_(utxoBalance)
-    , balanceCache_()
-{
-}
-
-void CachedUtxoBalanceCalculator::calculate(
-    const CWalletTx& walletTransaction,
-    const int txDepth,
-    const UtxoOwnershipFilter& ownershipFilter,
-    CAmount& intermediateBalance) const
-{
-    auto txid = walletTransaction.GetHash();
-    if(balanceCache_.count(txid) > 0 && balanceCache_[txid].count(ownershipFilter.underlyingBitMask()))
-    {
-        intermediateBalance += balanceCache_[txid][ownershipFilter.underlyingBitMask()];
-    }
-    else
-    {
-        CAmount balanceFromOutputs = 0;
-        utxoBalance_.calculate(walletTransaction,txDepth,ownershipFilter,balanceFromOutputs);
-        balanceCache_[txid][ownershipFilter.underlyingBitMask()] = balanceFromOutputs;
-        intermediateBalance += balanceFromOutputs;
-    }
-}
-
-void CachedUtxoBalanceCalculator::recomputeCacheEntry(const CWalletTx& walletTransaction) const
-{
-    balanceCache_.erase(walletTransaction.GetHash());
-}
 
 WalletBalanceCalculator::WalletBalanceCalculator(
     const I_TransactionDetailCalculator<CAmount>& utxoBalanceCalculator,

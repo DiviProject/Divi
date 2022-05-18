@@ -15,7 +15,6 @@ public:
     CachedUtxoBalanceCalculator(const I_TransactionDetailCalculator<CAmount>& utxoBalanceCalculator);
     void calculate(
         const CWalletTx& walletTransaction,
-        const int txDepth,
         const UtxoOwnershipFilter& ownershipFilter,
         CAmount& intermediateBalance) const override;
 

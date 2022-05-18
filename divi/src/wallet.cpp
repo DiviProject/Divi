@@ -191,6 +191,7 @@ private:
     const I_UtxoOwnershipDetector& ownershipDetector_;
     const CKeyStore& keyStore_;
     const CAmount minimumVaultAmount_;
+    const BlockMap& blockIndexByHash_;
     const CChain& activeChain_;
     const I_SpentOutputTracker& spentOutputTracker_;
     const LockedCoinsSet& lockedCoins_;
@@ -241,7 +242,6 @@ private:
 
     void calculate(
         const CWalletTx& walletTransaction,
-        const int txDepth,
         const UtxoOwnershipFilter& ownershipFilter,
         std::vector<COutput>& outputs) const override
     {
@@ -259,6 +259,11 @@ private:
                 spentOutputTracker_.IsSpent(txid, outputIndex,0)) continue;
             if(!ownershipFilter.hasRequested(mine)) continue;
 
+            BlockMap::const_iterator it = blockIndexByHash_.find(walletTransaction.hashBlock);
+            const CBlockIndex* const blockIndexOfConfirmation = it == blockIndexByHash_.end()? nullptr: it->second;
+            const int txDepth = (blockIndexOfConfirmation && activeChain_.Contains(blockIndexOfConfirmation))
+                ? activeChain_.Height() - blockIndexOfConfirmation->nHeight + 1
+                : 0;
             outputs.emplace_back(COutput(&walletTransaction, outputIndex, txDepth, true));
         }
     }
@@ -266,6 +271,7 @@ public:
     AvailableUtxoCalculator(
         const CKeyStore& keyStore,
         const Settings& settings,
+        const BlockMap& blockIndexByHash,
         const CChain& activeChain,
         const I_AppendOnlyTransactionRecord& txRecord,
         const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
@@ -280,6 +286,7 @@ public:
         , ownershipDetector_(ownershipDetector)
         , keyStore_(keyStore)
         , minimumVaultAmount_(settings.GetArg("-vault_min",0)*COIN)
+        , blockIndexByHash_(blockIndexByHash)
         , activeChain_(activeChain)
         , spentOutputTracker_(spentOutputTracker)
         , lockedCoins_(lockedCoins)
@@ -325,6 +332,7 @@ CWallet::CWallet(
         new AvailableUtxoCalculator(
             *static_cast<CKeyStore*>(this),
             settings,
+            blockIndexByHash_,
             activeChain_,
             *transactionRecord_,
             confirmationNumberCalculator_,

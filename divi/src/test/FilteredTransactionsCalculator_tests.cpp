@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(willApplyCalculationToConfirmedTransactions)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(1));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(1)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(1);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(1);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(willApplyCalculationToUnconfirmedTransactionThatIsntReward)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(1)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(1);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(1);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(willNotApplyCalculationToUnconfirmedCoinbaseTransactions)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(1)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(0);
 
     for(auto txFlag: allTxFlags())
     {
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(willNotApplyCalculationToUnconfirmedCoinstakeTransactions)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(1)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(0);
 
     for(auto txFlag: allTxFlags())
     {
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(willIgnoreConflictedTransactions)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(-1));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(1)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(0);
 
     for(auto txFlag: allTxFlags())
     {
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(willNotCalculateAnythingWithoutAnyTransactions)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(1));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(0)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(0);
 
     for(auto txFlag: allTxFlags())
     {
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(willNotUseUnconfirmedTransactionsIfConfirmedFlagIsPresent)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(0)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(0);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(willUseUnconfirmedTransactionsIfUnonfirmedFlagIsPresent)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(0)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(1);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(1);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(willUseConfirmedTransactionsIfConfirmedFlagIsPresent)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(1));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(0)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(1);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(1);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(willNotUseConfirmedTransactionsIfUnonfirmedFlagIsPresent)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(1));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(GetRandInt(0)));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(0);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(willNotUseImmatureTransactionsIfMatureFlagIsPresent)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(1));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(0);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(willUseImmatureTransactionsIfImmatureFlagIsPresent)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(1));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(1);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(1);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(willNotUseMatureTransactionsIfImmatureFlagIsPresent)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(0));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(0);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(0);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(willUseMatureTransactionsIfMatureFlagIsPresent)
     ON_CALL(txRecord,GetWalletTransactions()).WillByDefault(ReturnRef(walletTransactions));
     ON_CALL(confsCalculator, GetNumberOfBlockConfirmations(_)).WillByDefault(Return(0));
     ON_CALL(confsCalculator, GetBlocksToMaturity(_)).WillByDefault(Return(0));
-    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_,_)).Times(1);
+    EXPECT_CALL(utxoBalanceCalculator,calculate(_,_,_)).Times(1);
 
     UtxoOwnershipFilter filter;
     CAmount totalBalance = 0;

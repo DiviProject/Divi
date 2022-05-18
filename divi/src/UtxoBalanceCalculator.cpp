@@ -15,7 +15,6 @@ UtxoBalanceCalculator::UtxoBalanceCalculator(
 
 void UtxoBalanceCalculator::calculate(
     const CWalletTx& walletTransaction,
-    const int txDepth,
     const UtxoOwnershipFilter& ownershipFilter,
     CAmount& intermediateBalance) const
 {

@@ -252,12 +252,8 @@ private:
         {
             isminetype mine;
             if(!IsAvailableType(walletTransaction.vout[outputIndex],coinType_,mine)) continue;
-
-            if(lockedCoins_.count(COutPoint(txid,outputIndex))>0) continue;
-            if(walletTransaction.vout[outputIndex].nValue <= 0 ||
-                lockedCoins_.count(COutPoint(txid,outputIndex)) > 0 ||
-                spentOutputTracker_.IsSpent(txid, outputIndex,0)) continue;
-            if(!ownershipFilter.hasRequested(mine)) continue;
+            if(walletTransaction.vout[outputIndex].nValue <= 0 || lockedCoins_.count(COutPoint(txid,outputIndex)) > 0) continue;
+            if(!ownershipFilter.hasRequested(mine) || spentOutputTracker_.IsSpent(txid, outputIndex,0)) continue;
 
             BlockMap::const_iterator it = blockIndexByHash_.find(walletTransaction.hashBlock);
             const CBlockIndex* const blockIndexOfConfirmation = it == blockIndexByHash_.end()? nullptr: it->second;

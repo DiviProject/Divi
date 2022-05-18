@@ -6,14 +6,14 @@
 #include <I_UtxoOwnershipDetector.h>
 #include <UtxoBalanceCalculator.h>
 
-CachedUtxoBalance::CachedUtxoBalance(
+CachedUtxoBalanceCalculator::CachedUtxoBalanceCalculator(
     const I_TransactionDetailCalculator<CAmount>& utxoBalance
     ): utxoBalance_(utxoBalance)
     , balanceCache_()
 {
 }
 
-void CachedUtxoBalance::calculate(
+void CachedUtxoBalanceCalculator::calculate(
     const CWalletTx& walletTransaction,
     const int txDepth,
     const UtxoOwnershipFilter& ownershipFilter,
@@ -33,7 +33,7 @@ void CachedUtxoBalance::calculate(
     }
 }
 
-void CachedUtxoBalance::recomputeCacheEntry(const CWalletTx& walletTransaction) const
+void CachedUtxoBalanceCalculator::recomputeCacheEntry(const CWalletTx& walletTransaction) const
 {
     balanceCache_.erase(walletTransaction.GetHash());
 }

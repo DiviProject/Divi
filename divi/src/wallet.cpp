@@ -627,7 +627,7 @@ CAmount CWallet::ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter&
     const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     CAmount nDebit = 0;
     BOOST_FOREACH (const CTxIn& txin, tx.vin) {
-        nDebit += GetDebit(txin, filter);
+        nDebit += ComputeDebit(txin, filter);
         if (!MoneyRange(nDebit,maxMoneyAllowedInOutput))
             throw std::runtime_error("CWallet::ComputeDebit() : value out of range");
     }
@@ -1672,7 +1672,7 @@ isminetype CWallet::isMine(const CTxIn& txin) const
     return isminetype::ISMINE_NO;
 }
 
-CAmount CWallet::GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const
+CAmount CWallet::ComputeDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const
 {
     {
         LOCK(cs_wallet);

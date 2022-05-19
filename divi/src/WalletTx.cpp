@@ -40,27 +40,7 @@ void CWalletTx::Init()
     nTimeSmart = 0;
     createdByMe = false;
     strFromAccount.clear();
-    fDebitCached = false;
-    fCreditCached = false;
-    fWatchDebitCached = false;
-    fWatchCreditCached = false;
-    fChangeCached = false;
-    nDebitCached = 0;
-    nCreditCached = 0;
-    nWatchDebitCached = 0;
-    nWatchCreditCached = 0;
-    nChangeCached = 0;
     nOrderPos = -1;
-}
-
-//! make sure balances are recalculated
-void CWalletTx::RecomputeCachedQuantities()
-{
-    fCreditCached = false;
-    fWatchDebitCached = false;
-    fWatchCreditCached = false;
-    fDebitCached = false;
-    fChangeCached = false;
 }
 
 int64_t CWalletTx::GetTxTime() const

@@ -167,6 +167,32 @@ struct TransactionCreationResult
     TransactionCreationResult(TransactionCreationResult&& other);
 };
 
+struct CachedTransactionDeltas
+{
+    CAmount credit;
+    CAmount debit;
+    CAmount changeAmount;
+    CAmount fees;
+    CachedTransactionDeltas(
+        ): credit(0)
+        , debit(0)
+        , changeAmount(0)
+        , fees(0)
+    {
+    }
+    CachedTransactionDeltas(
+        CAmount creditIn,
+        CAmount debitIn,
+        CAmount changeAmountIn,
+        CAmount feesIn
+        ): credit(creditIn)
+        , debit(debitIn)
+        , changeAmount(changeAmountIn)
+        , fees(feesIn)
+    {
+    }
+};
+
 class CWallet final:
     public CCryptoKeyStore,
     public NotificationInterface,
@@ -200,6 +226,7 @@ private:
     std::unique_ptr<I_TransactionDetailCalculator<CAmount>> utxoBalanceCalculator_;
     std::unique_ptr<I_CachedTransactionDetailCalculator<CAmount>> cachedUtxoBalanceCalculator_;
     std::unique_ptr<I_WalletBalanceCalculator> balanceCalculator_;
+    mutable std::map<uint256,std::map<uint8_t, CachedTransactionDeltas>> cachedTransactionDeltasByHash_;
 
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
@@ -251,6 +278,7 @@ private:
     CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
     bool DebitsFunds(const CTransaction& tx) const;
 
+    void cacheTransactionDeltas(const CWalletTx& wtx) const;
     CAmount LockedCoinBalance(const UtxoOwnershipFilter& filter) const;
 
 protected:

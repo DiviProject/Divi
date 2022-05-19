@@ -720,9 +720,28 @@ bool CheckWalletFileExists(std::string strDataDir)
 {
     std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     // Wallet file must be a plain filename without a directory
-    if (strWalletFile != boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile))
-        return InitError(strprintf(translate("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
+    const std::string expectedWalletFilename = boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile);
+    if (strWalletFile != expectedWalletFilename)
+    {
+        return InitError(strprintf(translate("Unexpected wallet filename %s"), strWalletFile));
+    }
 
+    boost::filesystem::path pathToWallet = boost::filesystem::path(strDataDir) / strWalletFile;
+    if(boost::filesystem::exists(pathToWallet))
+    {
+        if(settings.ParameterIsSet("-hdseed") || settings.ParameterIsSet("-mnemonic"))
+        {
+            try
+            {
+                boost::filesystem::path pathDest = boost::filesystem::path(strDataDir) / ( strWalletFile + std::to_string(GetTime()) + ".moved" );
+                boost::filesystem::rename(pathToWallet,pathDest);
+            }
+            catch(...)
+            {
+                return  InitError(strprintf(translate("Unable to move wallet out of the way for seed restore: %s"), pathToWallet.string()));
+            }
+        }
+    }
     return true;
 }
 

@@ -275,7 +275,7 @@ private:
     CAmount ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
 
     CAmount ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const;
-    CAmount GetDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
+    CAmount ComputeDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
     bool DebitsFunds(const CTransaction& tx) const;
 
     void cacheTransactionDeltas(const CWalletTx& wtx) const;

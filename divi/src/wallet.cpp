@@ -200,7 +200,6 @@ private:
 
     bool IsAvailableType(const CTxOut& output, AvailableCoinsType coinType, isminetype& mine) const
     {
-        const CScript& scriptPubKey = output.scriptPubKey;
         mine = ownershipDetector_.isMine(output);
         const bool isManagedVault = mine == isminetype::ISMINE_MANAGED_VAULT;
         const bool isOwnedVault = mine == isminetype::ISMINE_OWNED_VAULT;

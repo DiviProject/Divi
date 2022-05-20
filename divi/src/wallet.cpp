@@ -1215,14 +1215,6 @@ std::set<uint256> CWallet::GetConflicts(const uint256& txid) const
    return outputTracker_->GetConflictingTxHashes(*txPtr);
 }
 
-/**
- * Outpoint is spent if any non-conflicted transaction
- * spends it:
- */
-bool CWallet::IsSpent(const CWalletTx& wtx, unsigned int n) const
-{
-    return outputTracker_->IsSpent(wtx.GetHash(), n,0);
-}
 bool CWallet::CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const
 {
     for(unsigned outputIndex = 0; outputIndex < wtx.vout.size(); ++outputIndex)
@@ -2533,7 +2525,7 @@ CAmount CWallet::LockedCoinBalance(const UtxoOwnershipFilter& filter) const
     {
         const CWalletTx* const walletTxPtr = GetWalletTx(outPoint.hash);
         if(filter.hasRequested(ownershipDetector_->isMine(walletTxPtr->vout[outPoint.n])) &&
-            !IsSpent(*walletTxPtr,outPoint.n) &&
+            !outputTracker_->IsSpent(outPoint.hash,outPoint.n,0) &&
             confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*walletTxPtr)>0)
         {
             totalLockedBalance += ComputeCredit(*walletTxPtr,isminetype::ISMINE_SPENDABLE);

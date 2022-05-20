@@ -348,7 +348,6 @@ public:
         bool fOnlyConfirmed,
         AvailableCoinsType nCoinType = AvailableCoinsType::ALL_SPENDABLE_COINS) const;
 
-    bool IsLockedCoin(const uint256& hash, unsigned int n) const;
     void LockCoin(const COutPoint& output);
     void UnlockCoin(const COutPoint& output);
     void UnlockAllCoins();

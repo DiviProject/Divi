@@ -247,8 +247,8 @@ private:
     int64_t defaultKeyPoolTopUp;
 
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
-
     void AddTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType);
+    bool InitializeDefaultKey();
 
     // Notification interface methods
     void SetBestChain(const CBlockLocator& loc) override;
@@ -325,7 +325,6 @@ public:
     std::unique_ptr<I_WalletDatabase> GetDatabaseBackend() const;
 
     std::string getWalletIdentifier() const;
-    bool InitializeDefaultKey();
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 
     void verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis);

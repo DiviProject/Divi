@@ -2632,6 +2632,11 @@ void CWallet::GenerateNewHDChain()
         settings.SetParameter("-rescan","1");
         assert(settings.GetBoolArg("-rescan",false));
     }
+    if(!InitializeDefaultKey())
+    {
+        throw std::runtime_error(std::string(__func__)+": Failed to initialize default key");
+    }
+    SetMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
 }
 
 bool CWallet::LoadHDChain(const CHDChain& chain, bool memonly)

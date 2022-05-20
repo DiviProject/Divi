@@ -634,26 +634,12 @@ CAmount CWallet::ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter&
     return nDebit;
 }
 
-CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags) const
+CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const
 {
     const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     CAmount nCredit = 0;
-    uint256 hash = tx.GetHash();
-    for (unsigned int i = 0; i < tx.vout.size(); i++) {
-        if( (creditFilterFlags & REQUIRE_UNSPENT) && IsSpent(tx,i)) continue;
-        if( (creditFilterFlags & REQUIRE_UNLOCKED) && IsLockedCoin(hash,i)) continue;
-        if( (creditFilterFlags & REQUIRE_LOCKED) && !IsLockedCoin(hash,i)) continue;
-
-        const CTxOut& out = tx.vout[i];
-        if( (creditFilterFlags & REQUIRE_AVAILABLE_TYPE) )
-        {
-            AvailableCoinsType coinType = static_cast<AvailableCoinsType>( creditFilterFlags >> 4);
-            if(!IsAvailableType(*this,out, coinType))
-            {
-                continue;
-            }
-        }
-
+    for (const CTxOut& out: tx.vout)
+    {
         nCredit += ComputeCredit(out, filter);
         if (!MoneyRange(nCredit,maxMoneyAllowedInOutput))
             throw std::runtime_error("CWallet::ComputeCredit() : value out of range");

@@ -88,14 +88,6 @@ enum class AvailableCoinsType {
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.
  */
-enum TransactionCreditFilters
-{
-    REQUIRE_NOTHING = 0,
-    REQUIRE_UNSPENT = 1,
-    REQUIRE_LOCKED = 1 << 1,
-    REQUIRE_UNLOCKED  = 1 << 2,
-    REQUIRE_AVAILABLE_TYPE  = 1 << 3,
-};
 using LockedCoinsSet = std::set<COutPoint>;
 using CoinVector = std::vector<COutPoint>;
 using AddressBook = std::map<CTxDestination, AddressLabel>;
@@ -272,7 +264,7 @@ private:
     CAmount ComputeChange(const CTransaction& tx) const;
 
     CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;
-    CAmount ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
+    CAmount ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;
 
     CAmount ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const;
     CAmount ComputeDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;

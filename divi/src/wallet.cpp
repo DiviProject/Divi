@@ -1555,6 +1555,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,false);
     CWalletTx& wtx = *walletTxAndRecordStatus.first;
     cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(wtx);
+    cacheTransactionDeltas(wtx);
     bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
 
     bool walletTransactionHasBeenUpdated = false;

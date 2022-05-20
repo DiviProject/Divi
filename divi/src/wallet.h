@@ -331,7 +331,6 @@ public:
     bool CanStakeCoins() const override;
 
     isminetype isMine(const CTxOut& txout) const;
-    bool IsSpent(const CWalletTx& wtx, unsigned int n) const;
     bool PruneWallet();
 
     bool IsUnlockedForStakingOnly() const;

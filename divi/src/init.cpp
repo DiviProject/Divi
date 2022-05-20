@@ -1096,14 +1096,17 @@ bool InitializeWalletHDAndChainState(std::ostringstream& strErrors)
             return false;
         }
 
-        pwalletMain->GenerateNewHDChain(); // generate a new master key
-        pwalletMain->SetMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
-    }
+        try
+        {
+            pwalletMain->GenerateNewHDChain(); // generate a new master key
+        }
+        catch(...)
+        {
+            strErrors << translate("Cannot initialize hd chain or cannot write default address") << "\n";
+            return false;
+        }
 
-    if(!pwalletMain->InitializeDefaultKey())
-    {
-        strErrors << translate("Cannot write default address") << "\n";
-        return false;
+        pwalletMain->SetMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
     }
     return true;
 }

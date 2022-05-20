@@ -595,13 +595,6 @@ bool CWallet::AllInputsAreMine(const CWalletTx& walletTransaction) const
     return allInputsAreMine;
 }
 
-CAmount CWallet::ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const
-{
-    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-    if (!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
-        throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
-    return ( filter.hasRequested(isMine(txout)) ? txout.nValue : 0);
-}
 CAmount CWallet::ComputeChange(const CTxOut& txout) const
 {
     const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
@@ -634,6 +627,13 @@ CAmount CWallet::ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter&
     return nDebit;
 }
 
+CAmount CWallet::ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const
+{
+    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
+    if (!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
+        throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
+    return ( filter.hasRequested(isMine(txout)) ? txout.nValue : 0);
+}
 CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const
 {
     const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();

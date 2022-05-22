@@ -188,7 +188,6 @@ struct CachedTransactionDeltas
 class CWallet final:
     public CCryptoKeyStore,
     public NotificationInterface,
-    public virtual I_KeypoolReserver,
     public I_WalletGuiNotifications,
     public I_StakingWallet,
     protected I_WalletLoader

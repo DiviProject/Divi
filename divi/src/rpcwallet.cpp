@@ -2539,9 +2539,6 @@ Value walletverify(const json_spirit::Array& params, bool fHelp)
                 "walletverify\n"
                 "\nChecks wallet integrity, if this returns true, you can be sure that all funds are accesible\n");
 
-    if (fHelp)
-        return true;
-
     EnsureWalletIsUnlocked();
 
     if(!pwalletMain->IsHDEnabled())

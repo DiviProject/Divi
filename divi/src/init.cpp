@@ -1105,8 +1105,6 @@ bool InitializeWalletHDAndChainState(std::ostringstream& strErrors)
             strErrors << translate("Cannot initialize hd chain or cannot write default address") << "\n";
             return false;
         }
-
-        pwalletMain->SetMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
     }
     return true;
 }

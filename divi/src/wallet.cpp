@@ -81,40 +81,6 @@ isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScri
     return mine;
 }
 
-bool IsAvailableType(const CKeyStore& keystore, const CTxOut& output, AvailableCoinsType coinType, isminetype& mine)
-{
-    const CScript& scriptPubKey = output.scriptPubKey;
-    mine = computeMineType(keystore, scriptPubKey, false);
-    const bool isManagedVault = mine == isminetype::ISMINE_MANAGED_VAULT;
-    const bool isOwnedVault = mine == isminetype::ISMINE_OWNED_VAULT;
-    const bool isVault = isManagedVault || isOwnedVault;
-    if(isVault) mine = isminetype::ISMINE_SPENDABLE;
-    if( isManagedVault &&
-        settings.GetArg("-vault_min",0)*COIN > output.nValue &&
-        coinType == AvailableCoinsType::STAKABLE_COINS)
-    {
-        return false;
-    }
-    if( coinType == AvailableCoinsType::STAKABLE_COINS && isOwnedVault)
-    {
-        return false;
-    }
-    else if(coinType == AvailableCoinsType::ALL_SPENDABLE_COINS && isVault)
-    {
-        return false;
-    }
-    else if( coinType == AvailableCoinsType::OWNED_VAULT_COINS && !isOwnedVault)
-    {
-        return false;
-    }
-    return true;
-}
-bool IsAvailableType(const CKeyStore& keystore, const CTxOut& output, AvailableCoinsType coinType)
-{
-    isminetype recoveredOwnershipType;
-    return IsAvailableType(keystore,output,coinType,recoveredOwnershipType);
-}
-
 AddressBookManager::AddressBookManager(): mapAddressBook(), destinationByLabel_()
 {
 }

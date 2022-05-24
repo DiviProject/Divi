@@ -469,12 +469,6 @@ bool CWallet::VerifyHDKeys() const
     return true;
 }
 
-
-std::string CWallet::getWalletIdentifier() const
-{
-    return vchDefaultKey.GetID().ToString();
-}
-
 bool CWallet::LoadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
 {
     if (updateDatabase) {

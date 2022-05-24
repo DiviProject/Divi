@@ -299,7 +299,6 @@ public:
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     std::unique_ptr<I_WalletDatabase> GetDatabaseBackend() const;
 
-    std::string getWalletIdentifier() const;
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 
     void verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis);

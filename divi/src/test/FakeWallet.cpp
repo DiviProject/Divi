@@ -94,7 +94,6 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
   wrappedWallet_.reset(new CWallet(filename,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
   wrappedWallet_->SetDefaultKeyTopUp(3);
   wrappedWallet_->LoadWallet();
-  wrappedWallet_->SetMinVersion(FEATURE_HD);
 }
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)

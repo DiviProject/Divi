@@ -345,6 +345,7 @@ BITCOIN_CORE_H = \
   I_CoinSelectionAlgorithm.h \
   CoinControlSelectionAlgorithm.h \
   StochasticSubsetSelectionAlgorithm.h \
+  AddressBookManager.h \
   wallet.h \
   WalletTx.h \
   I_UtxoOwnershipDetector.h \
@@ -566,6 +567,7 @@ libbitcoin_wallet_a_SOURCES = \
   CachedUtxoBalanceCalculator.cpp \
   UtxoBalanceCalculator.cpp \
   WalletBalanceCalculator.cpp \
+  AddressBookManager.cpp \
   wallet.cpp \
   Output.cpp \
   WalletTx.cpp \

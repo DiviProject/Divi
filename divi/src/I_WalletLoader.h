@@ -4,7 +4,6 @@
 #include <uint256.h>
 #include <destination.h>
 #include <string>
-class AddressLabel;
 class CWalletTx;
 class CScript;
 class CKey;
@@ -14,16 +13,6 @@ class CKeyPool;
 class CHDChain;
 class CHDPubKey;
 class CKeyMetadata;
-
-/** Address book data */
-class AddressLabel
-{
-public:
-    std::string name;
-    AddressLabel()
-    {
-    }
-};
 
 class I_WalletLoader
 {

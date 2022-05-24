@@ -28,6 +28,7 @@
 #include <I_WalletLoader.h>
 #include <I_WalletDatabase.h>
 #include <I_UtxoOwnershipDetector.h>
+#include <AddressBookManager.h>
 
 class I_CoinSelectionAlgorithm;
 class CKeyMetadata;
@@ -90,7 +91,6 @@ enum class AvailableCoinsType {
  */
 using LockedCoinsSet = std::set<COutPoint>;
 using CoinVector = std::vector<COutPoint>;
-using AddressBook = std::map<CTxDestination, AddressLabel>;
 using Inputs = std::vector<CTxIn>;
 using Outputs = std::vector<CTxOut>;
 
@@ -109,22 +109,6 @@ public:
     boost::signals2::signal<void(const std::string& title, int nProgress)> ShowProgress;
     boost::signals2::signal<void(bool fHaveWatchOnly)> NotifyWatchonlyChanged;
     boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
-};
-
-class AddressBookManager
-{
-public:
-    typedef std::map<std::string,CTxDestination> LastDestinationByLabel;
-private:
-    AddressBook mapAddressBook;
-    LastDestinationByLabel destinationByLabel_;
-public:
-    AddressBookManager();
-    const AddressBook& GetAddressBook() const;
-    const LastDestinationByLabel& GetLastDestinationByLabel() const;
-    bool SetAddressLabel(
-        const CTxDestination& address,
-        const std::string strName);
 };
 
 enum TransactionFeeMode

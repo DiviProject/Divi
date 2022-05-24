@@ -357,6 +357,7 @@ CWallet::CWallet(
 CWallet::~CWallet()
 {
     balanceCalculator_.reset();
+    cachedUtxoBalanceCalculator_.reset();
     utxoBalanceCalculator_.reset();
     utxoCalculator_.reset();
     ownershipDetector_.reset();

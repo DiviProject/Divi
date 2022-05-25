@@ -256,6 +256,11 @@ private:
     void cacheTransactionDeltas(const CWalletTx& wtx) const;
     CAmount LockedCoinBalance(const UtxoOwnershipFilter& filter) const;
 
+    //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
+    bool SetMinVersion(enum WalletFeature, bool fExplicit = false);
+    //! change which version we're allowed to upgrade to (note that this does not immediately imply upgrading to that format)
+    bool SetMaxVersion(int nVersion);
+
 protected:
 
     // CWalletDB: load from disk methods
@@ -288,10 +293,6 @@ public:
     ~CWallet();
 
     DBErrors LoadWallet();
-    //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
-    bool SetMinVersion(enum WalletFeature, bool fExplicit = false);
-    //! change which version we're allowed to upgrade to (note that this does not immediately imply upgrading to that format)
-    bool SetMaxVersion(int nVersion);
     //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
     int GetVersion();
 

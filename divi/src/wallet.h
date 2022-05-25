@@ -58,6 +58,7 @@ class CBlockLocator;
 class I_BlockDataReader;
 class I_WalletBalanceCalculator;
 class AvailableUtxoCalculator;
+class I_WalletDatabaseEndpointFactory;
 
 template <typename T>
 class I_CachedTransactionDetailCalculator;
@@ -190,6 +191,7 @@ private:
     const std::string strWalletFile;
     bool vaultModeEnabled_;
     LockedCoinsSet setLockedCoins;
+    const I_WalletDatabaseEndpointFactory& walletDatabaseEndpointFactory_;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
     const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator_;
@@ -287,6 +289,7 @@ protected:
 public:
     explicit CWallet(
         const std::string& strWalletFileIn,
+        const I_WalletDatabaseEndpointFactory& walletDatabaseEndpointFactory,
         const CChain& chain,
         const BlockMap& blockMap,
         const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator);

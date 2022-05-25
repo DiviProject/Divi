@@ -2238,7 +2238,7 @@ bool CWallet::SetAddressLabel(const CTxDestination& address, const std::string& 
     bool fUpdated = false;
     {
         LOCK(cs_wallet);
-        fUpdated = addressBookManager_->SetAddressLabel(address,strName);
+        fUpdated = addressBookManager_->setAddressLabel(address,strName);
     }
     NotifyAddressBookChanged(address, strName, computeMineType(*this, address) != isminetype::ISMINE_NO, (fUpdated ? "updated address label" : "new address label"));
 
@@ -2252,7 +2252,7 @@ const AddressBookManager& CWallet::GetAddressBookManager() const
 
 void CWallet::LoadAddressLabel(const CTxDestination& address, const std::string newLabel)
 {
-    addressBookManager_->SetAddressLabel(address,newLabel);
+    addressBookManager_->setAddressLabel(address,newLabel);
 }
 
 /**

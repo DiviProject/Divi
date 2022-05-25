@@ -23,9 +23,9 @@ private:
     LastDestinationByLabel destinationByLabel_;
 public:
     AddressBookManager();
-    const AddressBook& GetAddressBook() const;
-    const LastDestinationByLabel& GetLastDestinationByLabel() const;
-    bool SetAddressLabel(
+    const AddressBook& getAddressBook() const;
+    const LastDestinationByLabel& getLastDestinationByLabel() const;
+    bool setAddressLabel(
         const CTxDestination& address,
         const std::string strName);
 };

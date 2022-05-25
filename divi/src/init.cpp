@@ -93,7 +93,7 @@ static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
 #ifdef ENABLE_WALLET
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
-std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
+std::unique_ptr<I_WalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
 CWallet* pwalletMain = NULL;
 constexpr int nWalletBackups = 20;
 

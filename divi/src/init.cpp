@@ -180,7 +180,7 @@ void InitializeWallet(std::string strWalletFile)
             GetTransactionMemoryPool(),
             cs_main));
     walletDatabaseEndpointFactory.reset(new LegacyWalletDatabaseEndpointFactory(strWalletFile,settings));
-    pwalletMain = new CWallet(strWalletFile, chain, blockMap, *confirmationsCalculator);
+    pwalletMain = new CWallet(strWalletFile,*walletDatabaseEndpointFactory, chain, blockMap, *confirmationsCalculator);
 #endif
 }
 

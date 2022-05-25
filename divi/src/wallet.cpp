@@ -252,6 +252,7 @@ public:
 
 CWallet::CWallet(
     const std::string& strWalletFileIn,
+    const I_WalletDatabaseEndpointFactory& walletDatabaseEndpointFactory,
     const CChain& chain,
     const BlockMap& blockMap,
     const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator
@@ -259,6 +260,7 @@ CWallet::CWallet(
     , strWalletFile(strWalletFileIn)
     , vaultModeEnabled_(false)
     , setLockedCoins()
+    , walletDatabaseEndpointFactory_(walletDatabaseEndpointFactory)
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
     , confirmationNumberCalculator_(confirmationNumberCalculator)

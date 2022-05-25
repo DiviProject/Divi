@@ -5,16 +5,16 @@ AddressBookManager::AddressBookManager(): mapAddressBook(), destinationByLabel_(
 {
 }
 
-const AddressBookManager::LastDestinationByLabel& AddressBookManager::GetLastDestinationByLabel() const
+const AddressBookManager::LastDestinationByLabel& AddressBookManager::getLastDestinationByLabel() const
 {
     return destinationByLabel_;
 }
 
-const AddressBook& AddressBookManager::GetAddressBook() const
+const AddressBook& AddressBookManager::getAddressBook() const
 {
     return mapAddressBook;
 }
-bool AddressBookManager::SetAddressLabel(const CTxDestination& address, const std::string newLabel)
+bool AddressBookManager::setAddressLabel(const CTxDestination& address, const std::string newLabel)
 {
     bool updatesExistingLabel = mapAddressBook.find(address) != mapAddressBook.end();
     mapAddressBook[address].name = newLabel;

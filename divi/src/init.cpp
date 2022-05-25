@@ -1063,28 +1063,6 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }
 
-bool UpdateWalletVersion(std::ostringstream& strErrors)
-{
-    int nMaxVersion = settings.GetArg("-upgradewallet", 0);
-    if (nMaxVersion == 0) // the -upgradewallet without argument case
-    {
-        LogPrintf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
-        nMaxVersion = CLIENT_VERSION;
-        pwalletMain->SetMinVersion(FEATURE_LATEST); // permanently upgrade the wallet immediately
-    }
-    else
-    {
-        LogPrintf("Allowing wallet upgrade up to %i\n", nMaxVersion);
-    }
-    if (nMaxVersion < pwalletMain->GetVersion())
-    {
-        strErrors << translate("Cannot downgrade wallet") << "\n";
-        return false;
-    }
-    pwalletMain->SetMaxVersion(nMaxVersion);
-    return true;
-}
-
 bool InitializeWalletHDAndChainState(std::ostringstream& strErrors)
 {
      // Create new keyUser and set as default key

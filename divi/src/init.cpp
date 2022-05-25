@@ -58,6 +58,7 @@
 #include "wallet.h"
 #include "walletdb.h"
 #include <WalletTx.h>
+#include <LegacyWalletDatabaseEndpointFactory.h>
 #endif
 
 #include <fstream>
@@ -92,6 +93,7 @@ static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
 #ifdef ENABLE_WALLET
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
+std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
 CWallet* pwalletMain = NULL;
 constexpr int nWalletBackups = 20;
 
@@ -177,6 +179,7 @@ void InitializeWallet(std::string strWalletFile)
             Params().COINBASE_MATURITY(),
             GetTransactionMemoryPool(),
             cs_main));
+    walletDatabaseEndpointFactory.reset(new LegacyWalletDatabaseEndpointFactory(strWalletFile,settings));
     pwalletMain = new CWallet(strWalletFile, chain, blockMap, *confirmationsCalculator);
 #endif
 }
@@ -263,6 +266,7 @@ void DeallocateWallet()
 #ifdef ENABLE_WALLET
     delete pwalletMain;
     pwalletMain = nullptr;
+    walletDatabaseEndpointFactory.reset();
     confirmationsCalculator.reset();
 #endif
 }

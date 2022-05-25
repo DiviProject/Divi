@@ -10,6 +10,7 @@
 #include <walletdb.h>
 #include <primitives/transaction.h>
 
+#include <clientversion.h>
 #include <dbenv.h>
 #include "checkpoints.h"
 #include <chain.h>
@@ -2214,6 +2215,15 @@ DBErrors CWallet::LoadWallet()
     uiInterface.LoadWallet(this);
     if(nLoadWalletRet == DB_LOAD_OK_FIRST_RUN)
     {
+        int nMaxVersion = settings.GetArg("-upgradewallet", CLIENT_VERSION);
+        if(nMaxVersion == CLIENT_VERSION) SetMinVersion(FEATURE_LATEST);
+        if(GetVersion() > nMaxVersion)
+        {
+            LogPrintf("Unable to downgrade wallet version. -upgradewallet=<custom_version> might be incorrectly set\n");
+            return DB_LOAD_FAIL;
+        }
+        SetMaxVersion(nMaxVersion);
+
         if(!settings.ParameterIsSet("-hdseed") && !settings.ParameterIsSet("-mnemonic"))
         {
             LogPrintf("%s -- Setting the best chain for wallet to the active chain...\n",__func__);

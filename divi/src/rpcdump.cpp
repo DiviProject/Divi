@@ -249,23 +249,6 @@ static bool CheckIntegrity(const std::string strAddress,const std::string strKey
     return addressParsed.compare(strAddress)==0;
 }
 
-class DummyConfirmationCalculator final: public I_MerkleTxConfirmationNumberCalculator
-{
-public:
-    std::pair<const CBlockIndex*,int> FindConfirmedBlockIndexAndDepth(const CMerkleTx& merkleTx) const override
-    {
-        return std::make_pair(nullptr,-1);
-    }
-    int GetNumberOfBlockConfirmations(const CMerkleTx& merkleTx) const override
-    {
-        return -1;
-    }
-    int GetBlocksToMaturity(const CMerkleTx& merkleTx) const override
-    {
-        return 1000;
-    }
-};
-
 Value bip38paperwallet(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
@@ -284,40 +267,25 @@ Value bip38paperwallet(const Array& params, bool fHelp)
     std::string strPassphrase;
     std::string strAddress;
     uint256 privKey;
-    bool compressedKey = false;
-    const std::string walletDummyFilename = "paper_wallet.dat";
+    bool compressedKey = true;
     {
-        CChain dummyChain;
-        BlockMap dummyBlockMap;
-        DummyConfirmationCalculator dummyConfs;
-        std::unique_ptr<CWallet> temporaryWallet(new CWallet(walletDummyFilename,dummyChain,dummyBlockMap,dummyConfs));
-        temporaryWallet->SetDefaultKeyTopUp(1);
-        temporaryWallet->LoadWallet();
-        temporaryWallet->GenerateNewHDChain();
-        CPubKey tempPubKey;
-        temporaryWallet->GetKeyFromPool(tempPubKey,true);
+        CKey freshKey;
+        freshKey.MakeNewKey(compressedKey);
+        CPubKey tempPubKey = freshKey.GetPubKey();
         if(!tempPubKey.IsValid())
         {
-            temporaryWallet.reset();
-            boost::filesystem::remove(GetDataDir()/walletDummyFilename);
             throw JSONRPCError(RPC_WALLET_ERROR, "Invalid key");
         }
         const CKeyID keyID = tempPubKey.GetID();
-
         strPassphrase = params[0].get_str();
         strAddress = CBitcoinAddress(keyID).ToString();
 
-        CKey key;
-        if(!temporaryWallet->GetKey(keyID,key))
+        privKey = uint256(ToByteVector(freshKey));
+        if(compressedKey != freshKey.IsCompressed())
         {
-            temporaryWallet.reset();
-            boost::filesystem::remove(GetDataDir()/walletDummyFilename);
-            throw JSONRPCError(RPC_WALLET_ERROR, "Unknown error when generating fresh throwaway wallet");
+            privKey = uint256(0);
         }
-        privKey = uint256(ToByteVector(key));
-        compressedKey = key.IsCompressed();
     }
-    boost::filesystem::remove(GetDataDir()/walletDummyFilename);
     const std::string encryptedOut = BIP38_Encrypt(strAddress, strPassphrase, privKey, compressedKey);
 
     Object result;

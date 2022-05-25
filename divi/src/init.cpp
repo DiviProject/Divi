@@ -1549,16 +1549,13 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if (settings.GetBoolArg("-flushwallet", true))
             walletDatabaseEndpointFactory->enableBackgroundDatabaseFlushing(threadGroup);
 
-        if(pwalletMain)
-        {
-            const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
-            int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
-            threadGroup.create_thread(
-                (!underRegressionTesting)?
-                boost::bind(&LoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay):
-                boost::bind(&MockLoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay)
-                );
-        }
+        const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
+        int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
+        threadGroup.create_thread(
+            (!underRegressionTesting)?
+            boost::bind(&LoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay):
+            boost::bind(&MockLoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay)
+            );
     }
 #endif
 

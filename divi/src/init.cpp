@@ -1140,10 +1140,6 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
             break;
     }
 
-    if (settings.GetBoolArg("-upgradewallet", fFirstRun) && !UpdateWalletVersion(strErrors))
-    {
-        return false;
-    }
     if (fFirstRun && !InitializeWalletHDAndChainState(strErrors))
     {
         return false;

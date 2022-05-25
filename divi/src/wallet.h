@@ -283,7 +283,6 @@ protected:
     void LoadAddressLabel(const CTxDestination& address, const std::string newLabel) override;
     bool LoadHDChain(const CHDChain& chain, bool memonly) override;
 
-    void InitializeDatabaseBackend();
     CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;
 
 public:

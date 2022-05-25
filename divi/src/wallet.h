@@ -300,7 +300,6 @@ public:
 
     const AddressBookManager& getAddressBookManager() const;
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
-    std::unique_ptr<I_WalletDatabase> GetDatabaseBackend() const;
 
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 

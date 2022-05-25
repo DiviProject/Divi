@@ -89,12 +89,12 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
   , wrappedWallet_()
 {
   {
-    wrappedWallet_.reset(new CWallet(walletFilename_,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
+    wrappedWallet_.reset(new CWallet(walletFilename_,*databaseEndpointFactory_,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
     wrappedWallet_->LoadWallet();
     wrappedWallet_->GetDatabaseBackend()->WriteHDChain(getHDWalletSeedForTesting());
     wrappedWallet_.reset();
   }
-  wrappedWallet_.reset(new CWallet(walletFilename_,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
+  wrappedWallet_.reset(new CWallet(walletFilename_,*databaseEndpointFactory_, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
   wrappedWallet_->SetDefaultKeyTopUp(3);
   wrappedWallet_->LoadWallet();
 }
@@ -104,7 +104,7 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)
   , fakeChain(c)
   , databaseEndpointFactory_(getWalletDBEndpointFactory(walletFilename_))
   , confirmationsCalculator_(new FakeMerkleTxConfirmationNumberCalculator(*fakeChain.activeChain, *fakeChain.blockIndexByHash))
-  , wrappedWallet_(new CWallet(walletFilename_, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_))
+  , wrappedWallet_(new CWallet(walletFilename_, *databaseEndpointFactory_, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_))
 {
   wrappedWallet_->LoadWallet();
 }

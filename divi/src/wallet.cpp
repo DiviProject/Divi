@@ -2220,6 +2220,11 @@ DBErrors CWallet::LoadWallet()
             LogPrintf("%s -- Setting the best chain for wallet to the active chain...\n",__func__);
             SetBestChain(activeChain_.GetLocator());
         }
+
+        if (!IsHDEnabled())
+        {
+            GenerateNewHDChain();
+        }
     }
     return nLoadWalletRet;
 }
@@ -2517,6 +2522,8 @@ void CWallet::GenerateNewHDChain()
         if(strMnemonic.empty()) LogPrintf("Generating new seed for wallet...!\n");
         // NOTE: default mnemonic passphrase is an empty string
         std::string strMnemonicPassphrase = settings.GetArg("-mnemonicpassphrase", "");
+        if(strMnemonicPassphrase.size() > 256)
+            throw std::runtime_error(std::string(__func__) + ": Mnemonic passphrase is too long, must be at most 256 characters" );
 
         SecureVector vchMnemonic(strMnemonic.begin(), strMnemonic.end());
         SecureVector vchMnemonicPassphrase(strMnemonicPassphrase.begin(), strMnemonicPassphrase.end());

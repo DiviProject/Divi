@@ -296,7 +296,7 @@ public:
     //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
     int GetVersion();
 
-    const AddressBookManager& GetAddressBookManager() const;
+    const AddressBookManager& getAddressBookManager() const;
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
     std::unique_ptr<I_WalletDatabase> GetDatabaseBackend() const;
 

@@ -370,7 +370,7 @@ Value validateaddress(const Array& params, bool fHelp)
         }
         if (pwalletMain)
         {
-            const AddressBook& addressBook = pwalletMain->GetAddressBookManager().getAddressBook();
+            const AddressBook& addressBook = pwalletMain->getAddressBookManager().getAddressBook();
             if(addressBook.count(dest)) ret.push_back(Pair("account", addressBook.find(dest)->second.name));
         }
 

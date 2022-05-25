@@ -171,6 +171,7 @@ BITCOIN_CORE_H = \
   I_Filesystem.h \
   I_WalletLoader.h \
   I_WalletDatabase.h \
+  I_WalletDatabaseEndpointFactory.h \
   I_WalletBackupCreator.h \
   I_DatabaseWrapper.h \
   I_SuperblockHeightValidator.h \

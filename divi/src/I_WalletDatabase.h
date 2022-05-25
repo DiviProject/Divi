@@ -18,6 +18,8 @@ class I_WalletLoader;
 class CHDChain;
 class CHDPubKey;
 class CKeyMetadata;
+class CPubKey;
+
 using WalletTxVector = std::vector<CWalletTx>;
 
 /** Error statuses for the wallet database */

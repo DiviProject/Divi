@@ -7,6 +7,7 @@
 #include <blockmap.h>
 #include "chain.h"
 #include <chainparams.h>
+#include <LegacyWalletDatabaseEndpointFactory.h>
 #include "merkletx.h"
 #include "primitives/transaction.h"
 #include "random.h"
@@ -17,8 +18,15 @@
 
 #include <sstream>
 #include <string>
+
+extern Settings& settings;
 namespace
 {
+
+LegacyWalletDatabaseEndpointFactory* getWalletDBEndpointFactory(const std::string walletFilename)
+{
+  return new LegacyWalletDatabaseEndpointFactory(walletFilename, settings);
+}
 
 /** Returns a unique wallet filename.  */
 std::string GetWalletFilename()
@@ -80,26 +88,29 @@ CMutableTransaction createDefaultTransaction(const CScript& defaultScript, unsig
 } // anonymous namespace
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
-  : fakeChain(c)
+  : walletFilename_(GetWalletFilename())
+  , fakeChain(c)
+  , databaseEndpointFactory_(getWalletDBEndpointFactory(walletFilename_))
   , confirmationsCalculator_(new FakeMerkleTxConfirmationNumberCalculator(*fakeChain.activeChain, *fakeChain.blockIndexByHash))
   , wrappedWallet_()
 {
-  const std::string filename = GetWalletFilename();
   {
-    wrappedWallet_.reset(new CWallet(filename,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
+    wrappedWallet_.reset(new CWallet(walletFilename_,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
     wrappedWallet_->LoadWallet();
     wrappedWallet_->GetDatabaseBackend()->WriteHDChain(getHDWalletSeedForTesting());
     wrappedWallet_.reset();
   }
-  wrappedWallet_.reset(new CWallet(filename,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
+  wrappedWallet_.reset(new CWallet(walletFilename_,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
   wrappedWallet_->SetDefaultKeyTopUp(3);
   wrappedWallet_->LoadWallet();
 }
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)
-  : fakeChain(c)
+  : walletFilename_(walletFilename)
+  , fakeChain(c)
+  , databaseEndpointFactory_(getWalletDBEndpointFactory(walletFilename_))
   , confirmationsCalculator_(new FakeMerkleTxConfirmationNumberCalculator(*fakeChain.activeChain, *fakeChain.blockIndexByHash))
-  , wrappedWallet_(new CWallet(walletFilename, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_))
+  , wrappedWallet_(new CWallet(walletFilename_, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_))
 {
   wrappedWallet_->LoadWallet();
 }
@@ -107,6 +118,8 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)
 FakeWallet::~FakeWallet()
 {
   wrappedWallet_.reset();
+  confirmationsCalculator_.reset();
+  databaseEndpointFactory_.reset();
 }
 
 void FakeWallet::AddBlock()

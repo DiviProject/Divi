@@ -88,12 +88,7 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
   , confirmationsCalculator_(new FakeMerkleTxConfirmationNumberCalculator(*fakeChain.activeChain, *fakeChain.blockIndexByHash))
   , wrappedWallet_()
 {
-  {
-    wrappedWallet_.reset(new CWallet(walletFilename_,*databaseEndpointFactory_,*fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
-    wrappedWallet_->LoadWallet();
-    wrappedWallet_->GetDatabaseBackend()->WriteHDChain(getHDWalletSeedForTesting());
-    wrappedWallet_.reset();
-  }
+  databaseEndpointFactory_->getDatabaseEndpoint()->WriteHDChain(getHDWalletSeedForTesting());
   wrappedWallet_.reset(new CWallet(walletFilename_,*databaseEndpointFactory_, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
   wrappedWallet_->SetDefaultKeyTopUp(3);
   wrappedWallet_->LoadWallet();
@@ -143,7 +138,7 @@ void FakeWallet::FakeAddToChain(const CWalletTx& tx)
   txPtr->hashBlock = fakeChain.activeChain->Tip()->GetBlockHash();
   txPtr->merkleBranchIndex = 0;
   txPtr->fMerkleVerified = true;
-  wrappedWallet_->GetDatabaseBackend()->WriteTx(txPtr->GetHash(),*txPtr);
+  databaseEndpointFactory_->getDatabaseEndpoint()->WriteTx(txPtr->GetHash(),*txPtr);
 }
 
 bool FakeWallet::TransactionIsInMainChain(const CWalletTx* walletTx) const

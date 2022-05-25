@@ -1029,7 +1029,19 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
 {
     InitializeWallet(strWalletFile);
     pwalletMain->NotifyTransactionChanged.connect(&ExternalNotificationScript);
-    DBErrors nLoadWalletRet = pwalletMain->LoadWallet();
+    DBErrors nLoadWalletRet = DB_LOAD_OK;
+    try
+    {
+        nLoadWalletRet = pwalletMain->LoadWallet();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        std::string errorMessage = std::string("Error loading or creating wallet.dat, ")+ e.what();
+        strErrors << translate(errorMessage.c_str()) << "\n";
+        return ERROR_LOADING_WALLET;
+    }
+
     const bool fFirstRun = nLoadWalletRet == DB_LOAD_OK_FIRST_RUN;
     if(nLoadWalletRet != DB_LOAD_OK && (nLoadWalletRet==DB_LOAD_OK_FIRST_RUN || nLoadWalletRet == DB_LOAD_OK_RELOAD))
         nLoadWalletRet = DB_LOAD_OK;
@@ -1067,30 +1079,6 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }
 
-bool InitializeWalletHDAndChainState(std::ostringstream& strErrors)
-{
-     // Create new keyUser and set as default key
-    if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled())
-    {
-        if (settings.GetArg("-mnemonicpassphrase", "").size() > 256)
-        {
-            strErrors << translate("Mnemonic passphrase is too long, must be at most 256 characters") << "\n";
-            return false;
-        }
-
-        try
-        {
-            pwalletMain->GenerateNewHDChain(); // generate a new master key
-        }
-        catch(...)
-        {
-            strErrors << translate("Cannot initialize hd chain or cannot write default address") << "\n";
-            return false;
-        }
-    }
-    return true;
-}
-
 bool EnsureWalletHDIsNotChanged(std::ostringstream& strErrors)
 {
     bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
@@ -1122,10 +1110,6 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
             break;
     }
 
-    if (fFirstRun && !InitializeWalletHDAndChainState(strErrors))
-    {
-        return false;
-    }
     if (!fFirstRun && settings.ParameterIsSet("-usehd") && !EnsureWalletHDIsNotChanged(strErrors))
     {
         return false;

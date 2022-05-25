@@ -2245,7 +2245,7 @@ bool CWallet::SetAddressLabel(const CTxDestination& address, const std::string& 
     return GetDatabaseBackend()->WriteName(CBitcoinAddress(address).ToString(), strName);
 }
 
-const AddressBookManager& CWallet::GetAddressBookManager() const
+const AddressBookManager& CWallet::getAddressBookManager() const
 {
     return *addressBookManager_;
 }

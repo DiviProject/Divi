@@ -43,6 +43,7 @@
 #include <WalletBalanceCalculator.h>
 #include <CachedUtxoBalanceCalculator.h>
 #include <script/StakingVaultScript.h>
+#include <I_WalletDatabaseEndpointFactory.h>
 
 #include <stack>
 
@@ -314,15 +315,9 @@ CWallet::~CWallet()
     addressBookManager_.reset();
 }
 
-void CWallet::InitializeDatabaseBackend()
-{
-    AssertLockHeld(cs_wallet);
-    CWalletDB(settings,strWalletFile,"cr+");
-}
-
 std::unique_ptr<I_WalletDatabase> CWallet::GetDatabaseBackend() const
 {
-    return std::unique_ptr<I_WalletDatabase>{new CWalletDB(settings,strWalletFile)};
+    return walletDatabaseEndpointFactory_.getDatabaseEndpoint();
 }
 
 void CWallet::activateVaultMode()
@@ -2198,7 +2193,6 @@ DBErrors CWallet::LoadWallet()
     DBErrors nLoadWalletRet;
     {
         LOCK(cs_wallet);
-        InitializeDatabaseBackend();
         nLoadWalletRet = GetDatabaseBackend()->LoadWallet(*static_cast<I_WalletLoader*>(this));
     }
     if (nLoadWalletRet == DB_REWRITTEN)

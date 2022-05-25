@@ -47,13 +47,7 @@ const CHDChain& getHDWalletSeedForTesting()
 
   if (toBeConstructed)
   {
-    FakeBlockIndexWithHashes dummyChain(1, 1600000000, 1);
-    FakeMerkleTxConfirmationNumberCalculator confsCalculator(*dummyChain.activeChain, *dummyChain.blockIndexByHash);
-    CWallet wallet("test_wallet.dat", *dummyChain.activeChain, *dummyChain.blockIndexByHash,confsCalculator);
-    wallet.SetDefaultKeyTopUp(1);
-    wallet.LoadWallet();
-    wallet.GenerateNewHDChain();
-    wallet.GetHDChain(hdchain);
+    CHDChain::setNewHDChain(hdchain);
     toBeConstructed = false;
   }
 

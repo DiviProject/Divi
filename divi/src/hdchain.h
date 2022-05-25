@@ -115,6 +115,8 @@ public:
     bool GetAccount(uint32_t nAccountIndex, CHDAccount& hdAccountRet);
     bool SetAccount(uint32_t nAccountIndex, const CHDAccount& hdAccount);
     size_t CountAccounts();
+
+    static void setNewHDChain(CHDChain& hdChain);
 };
 
 /* hd pubkey data model */

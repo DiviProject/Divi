@@ -366,6 +366,7 @@ BITCOIN_CORE_H = \
   WalletIntegrityVerifier.h \
   IsMineType.h \
   wallet_ismine.h \
+  LegacyWalletDatabaseEndpointFactory.h \
   walletdb.h \
   zmq/zmqabstractnotifier.h \
   zmq/zmqconfig.h \
@@ -575,6 +576,7 @@ libbitcoin_wallet_a_SOURCES = \
   WalletTransactionRecord.cpp \
   merkletx.cpp \
   wallet_ismine.cpp \
+  LegacyWalletDatabaseEndpointFactory.cpp \
   walletdb.cpp \
   $(BITCOIN_CORE_H)
 

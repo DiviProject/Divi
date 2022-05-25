@@ -180,3 +180,14 @@ std::string CHDPubKey::GetKeyPath() const
 {
     return strprintf("m/44'/%d'/%d'/%d/%d", Params().ExtCoinType(), nAccountIndex, nChangeIndex, extPubKey.nChild);
 }
+
+void CHDChain::setNewHDChain(CHDChain& hdChain)
+{
+    std::string strMnemonic = "";
+    std::string strMnemonicPassphrase = "";
+    SecureVector vchMnemonic(strMnemonic.begin(), strMnemonic.end());
+    SecureVector vchMnemonicPassphrase(strMnemonicPassphrase.begin(), strMnemonicPassphrase.end());
+    if (!hdChain.SetMnemonic(vchMnemonic, vchMnemonicPassphrase, true))
+        throw std::runtime_error(std::string(__func__) + ": SetMnemonic failed");
+
+}

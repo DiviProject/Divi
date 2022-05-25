@@ -1079,21 +1079,6 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }
 
-bool EnsureWalletHDIsNotChanged(std::ostringstream& strErrors)
-{
-    bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
-    if (pwalletMain->IsHDEnabled() && !useHD)
-    {
-        strErrors << strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"), pwalletMain->dbFilename()) << "\n";
-        return false;
-    }
-    if (!pwalletMain->IsHDEnabled() && useHD) {
-        strErrors << strprintf(translate("Error loading %s: You can't enable HD on a already existing non-HD wallet"), pwalletMain->dbFilename()) << "\n";
-        return false;
-    }
-    return true;
-}
-
 bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
 {
     const LoadWalletResult loadResult = LoadWallet(strWalletFile, strErrors);
@@ -1109,14 +1094,14 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
             fFirstRun = false;
             break;
     }
-
-    if (!fFirstRun && settings.ParameterIsSet("-usehd") && !EnsureWalletHDIsNotChanged(strErrors))
+    if(!pwalletMain->IsHDEnabled())
     {
+        strErrors << translate("Loaded wallet is not HD enabled") << "\n";
         return false;
     }
 
     // Warn user every time he starts non-encrypted HD wallet
-    if (!settings.GetBoolArg("-allowunencryptedwallet", false) && settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked())
+    if (!settings.GetBoolArg("-allowunencryptedwallet", false) && !pwalletMain->IsLocked())
     {
         InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
     }

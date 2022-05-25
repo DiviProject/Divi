@@ -1547,9 +1547,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         }
         // Run a thread to flush wallet periodically
         if (settings.GetBoolArg("-flushwallet", true))
-        {
-            threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, settings, pwalletMain->dbFilename() ));
-        }
+            walletDatabaseEndpointFactory->enableBackgroundDatabaseFlushing(threadGroup);
+
         if(pwalletMain)
         {
             const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;

@@ -38,7 +38,7 @@
 
 using namespace json_spirit;
 using namespace std;
-extern CWallet* pwalletMain;
+extern std::unique_ptr<CWallet> pwalletMain;
 
 Value importprivkey(const Array& params, bool fHelp)
 {

@@ -61,7 +61,7 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
-extern CWallet* pwalletMain;
+extern std::unique_ptr<CWallet> pwalletMain;
 
 std::string GetWarnings(std::string strFor);
 

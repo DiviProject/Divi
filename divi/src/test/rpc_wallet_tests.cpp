@@ -19,7 +19,7 @@ using namespace json_spirit;
 extern Array createArgs(int nRequired, const char* address1 = NULL, const char* address2 = NULL);
 extern Value CallRPC(string args);
 
-extern CWallet* pwalletMain;
+extern std::unique_ptr<CWallet> pwalletMain;
 extern CCriticalSection cs_main;
 extern Settings& settings;
 

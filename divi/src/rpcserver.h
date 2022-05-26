@@ -96,6 +96,7 @@ public:
     bool okSafeMode;
     bool threadSafe;
     bool requiresWalletLock;
+    bool requiresWalletInstance;
 };
 
 /**

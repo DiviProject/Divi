@@ -237,7 +237,7 @@ std::string CRPCTable::help(std::string strCommand) const
         if ((strCommand != "" || pcmd->category == "hidden") && strMethod != strCommand)
             continue;
 #ifdef ENABLE_WALLET
-        if (pcmd->reqWallet && !pwalletMain)
+        if (pcmd->requiresWalletLock && !pwalletMain)
             continue;
 #endif
 
@@ -308,7 +308,7 @@ Value stop(const Array& params, bool fHelp)
  */
 static const CRPCCommand vRPCCommands[] =
     {
-        //  category              name                      actor (function)         okSafeMode threadSafe reqWallet
+        //  category              name                      actor (function)         okSafeMode threadSafe requiresWalletLock
         //  --------------------- ------------------------  -----------------------  ---------- ---------- ---------
         /* Overall control/query calls */
         {"control", "getinfo", &getinfo, true, false, false}, /* uses wallet if enabled */
@@ -1024,7 +1024,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
     if (!pcmd)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found");
 #ifdef ENABLE_WALLET
-    if (pcmd->reqWallet && !pwalletMain)
+    if (pcmd->requiresWalletLock && !pwalletMain)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method unavailable due to manually disabled wallet");
 #endif
 
@@ -1045,7 +1045,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
 #ifdef ENABLE_WALLET
             else if (!pwalletMain)
             {
-                assert(!pcmd->reqWallet); // Implied by above condition failing on wallet
+                assert(!pcmd->requiresWalletLock); // Implied by above condition failing on wallet
                 LOCK(cs_main);
                 result = pcmd->actor(params, false);
             } else {
@@ -1056,7 +1056,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
                         MilliSleep(50);
                         continue;
                     }
-                    else if(!pcmd->reqWallet)
+                    else if(!pcmd->requiresWalletLock)
                     {
                         result = pcmd->actor(params, false);
                         break;

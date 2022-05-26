@@ -95,7 +95,7 @@ public:
     rpcfn_type actor;
     bool okSafeMode;
     bool threadSafe;
-    bool reqWallet;
+    bool requiresWalletLock;
 };
 
 /**

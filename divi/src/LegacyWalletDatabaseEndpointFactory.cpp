@@ -3,9 +3,19 @@
 #include <walletdb.h>
 #include <Settings.h>
 #include <utiltime.h>
+#include <timeIntervalConstants.h>
+#include <WalletBackupFeatureContainer.h>
 
 #include <ThreadManagementHelpers.h>
 #include <boost/thread.hpp>
+
+struct BackupParameters
+{
+    const Settings& settings;
+    const std::string dataDirectory;
+    const std::string& walletFilename;
+};
+
 
 namespace
 {
@@ -62,6 +72,21 @@ bool ManualBackupWallet(Settings& settings, const std::string& walletDBFilename,
     return false;
 }
 
+void MonthlyWalletBackupThread(const BackupParameters& params)
+{
+    static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(params.settings.GetArg("-monthlybackups", 12)), params.walletFilename, params.dataDirectory);
+    WalletBackupFeatureContainer::BackupStatus status = walletBackupFeatureContainer.createMonthlyBackup();
+    while (
+        status != WalletBackupFeatureContainer::BackupStatus::BACKUP_ATTEMPTED &&
+        status != WalletBackupFeatureContainer::BackupStatus::BACKUP_CREATED &&
+        status != WalletBackupFeatureContainer::BackupStatus::INTEGRITY_CHECK_FAILED &&
+        status != WalletBackupFeatureContainer::BackupStatus::NO_FILE_TO_BACKUP)
+    {
+        MilliSleep(100);
+        status = walletBackupFeatureContainer.createMonthlyBackup();
+    }
+}
+
 } // namespace name
 
 LegacyWalletDatabaseEndpointFactory::LegacyWalletDatabaseEndpointFactory(
@@ -81,6 +106,18 @@ std::unique_ptr<I_WalletDatabase> LegacyWalletDatabaseEndpointFactory::getDataba
 void LegacyWalletDatabaseEndpointFactory::enableBackgroundDatabaseFlushing(boost::thread_group& threadGroup) const
 {
     threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, settings_, walletFilename_ ));
+}
+
+void LegacyWalletDatabaseEndpointFactory::enableBackgroundMonthlyWalletBackup(boost::thread_group& threadGroup, const std::string dataDirectory,bool regtestMode) const
+{
+    int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
+    typedef void (*monthlyBackupMethod)(const BackupParameters&);
+    BackupParameters backupParameters{settings_, dataDirectory, walletFilename_};
+    threadGroup.create_thread(
+        (!regtestMode)?
+        boost::bind(&LoopForever<monthlyBackupMethod, const BackupParameters&>, "monthly_backup", &MonthlyWalletBackupThread, backupParameters, millisecondDelay):
+        boost::bind(&MockLoopForever<monthlyBackupMethod, const BackupParameters&>, "monthly_backup", &MonthlyWalletBackupThread, backupParameters , millisecondDelay)
+        );
 }
 
 bool LegacyWalletDatabaseEndpointFactory::backupWalletFile(const std::string& strDest) const

@@ -1473,12 +1473,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             walletDatabaseEndpointFactory->enableBackgroundDatabaseFlushing(threadGroup);
 
         const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
-        int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
-        threadGroup.create_thread(
-            (!underRegressionTesting)?
-            boost::bind(&LoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &MonthlyWalletBackupThread, pwalletMain->dbFilename(), millisecondDelay):
-            boost::bind(&MockLoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &MonthlyWalletBackupThread, pwalletMain->dbFilename(), millisecondDelay)
-            );
+        walletDatabaseEndpointFactory->enableBackgroundMonthlyWalletBackup(threadGroup,GetDataDir().string(),underRegressionTesting);
     }
 #endif
 

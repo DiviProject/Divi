@@ -13,6 +13,7 @@ public:
     std::unique_ptr<I_WalletDatabase> getDatabaseEndpoint() const override;
 
     void enableBackgroundDatabaseFlushing(boost::thread_group& threadGroup) const;
+    void enableBackgroundMonthlyWalletBackup(boost::thread_group& threadGroup,const std::string dataDirectory, bool regtestMode) const;
     bool backupWalletFile(const std::string& strDest) const;
 };
 #endif// LEGACY_WALLET_DATABASE_ENDPOINT_FACTORY_H

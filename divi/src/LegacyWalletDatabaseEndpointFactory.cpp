@@ -42,6 +42,26 @@ void ThreadFlushWalletDB(Settings& settings, const std::string& strFile)
     }
 }
 
+bool ManualBackupWallet(Settings& settings, const std::string& walletDBFilename, const std::string& strDest)
+{
+    CWalletDB walletDb(settings,walletDBFilename,"flush");
+    while (true) {
+        {
+            const CWalletDB::BackupStatus status = walletDb.Backup(strDest);
+            if(status == CWalletDB::BackupStatus::FAILED_FILESYSTEM_ERROR)
+            {
+                return false;
+            }
+            else if (status == CWalletDB::BackupStatus::SUCCEEDED)
+            {
+                return true;
+            }
+        }
+        MilliSleep(100);
+    }
+    return false;
+}
+
 } // namespace name
 
 LegacyWalletDatabaseEndpointFactory::LegacyWalletDatabaseEndpointFactory(
@@ -61,4 +81,9 @@ std::unique_ptr<I_WalletDatabase> LegacyWalletDatabaseEndpointFactory::getDataba
 void LegacyWalletDatabaseEndpointFactory::enableBackgroundDatabaseFlushing(boost::thread_group& threadGroup) const
 {
     threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, settings_, walletFilename_ ));
+}
+
+bool LegacyWalletDatabaseEndpointFactory::backupWalletFile(const std::string& strDest) const
+{
+    return ManualBackupWallet(settings_,walletFilename_,strDest);
 }

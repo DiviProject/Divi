@@ -11,6 +11,8 @@ private:
 public:
     LegacyWalletDatabaseEndpointFactory(const std::string walletFilename, Settings& settings);
     std::unique_ptr<I_WalletDatabase> getDatabaseEndpoint() const override;
-    void enableBackgroundDatabaseFlushing(boost::thread_group& threadGroup) const override;
+
+    void enableBackgroundDatabaseFlushing(boost::thread_group& threadGroup) const;
+    bool backupWalletFile(const std::string& strDest) const;
 };
 #endif// LEGACY_WALLET_DATABASE_ENDPOINT_FACTORY_H

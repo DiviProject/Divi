@@ -265,7 +265,7 @@ private:
 
 protected:
 
-    // CWalletDB: load from disk methods
+    // I_WalletLoader: load from disk methods
     void LoadWalletTransaction(const CWalletTx& wtxIn) override;
     bool LoadWatchOnly(const CScript& dest) override;
     bool LoadMinVersion(int nVersion) override;

@@ -2378,7 +2378,7 @@ Value backupwallet(const Array& params, bool fHelp)
                 HelpExampleCli("backupwallet", "\"backup.dat\"") + HelpExampleRpc("backupwallet", "\"backup.dat\""));
 
     string strDest = params[0].get_str();
-    if (!ManualBackupWallet(settings,pwalletMain->dbFilename(), strDest))
+    if (!ManualBackupWallet(strDest))
         throw JSONRPCError(RPC_WALLET_ERROR, "Error: Wallet backup failed!");
 
     return Value::null;

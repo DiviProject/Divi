@@ -114,38 +114,6 @@ CTxMemPool& GetTransactionMemoryPool()
 /** Global instance of the SporkManager, managed through startup/shutdown.  */
 std::unique_ptr<CSporkManager> sporkManagerInstance;
 
-void ThreadFlushWalletDB(Settings& settings, const std::string& strFile)
-{
-    // Make this thread recognisable as the wallet flushing thread
-    RenameThread("divi-wallet");
-
-    static bool fOneThread;
-    if (fOneThread)
-        return;
-    fOneThread = true;
-
-    CWalletDB walletDbToFlush(settings,strFile,"flush");
-    const unsigned& walletDbUpdated = walletDbToFlush.numberOfWalletUpdates();
-    unsigned int nLastSeen =  walletDbUpdated;
-    unsigned int nLastFlushed = walletDbUpdated;
-    int64_t nLastWalletUpdate = GetTime();
-    while (true) {
-        MilliSleep(500);
-
-        if (nLastSeen != walletDbUpdated) {
-            nLastSeen = walletDbUpdated;
-            nLastWalletUpdate = GetTime();
-        }
-
-        if (nLastFlushed != walletDbUpdated && GetTime() - nLastWalletUpdate >= 2) {
-            if (walletDbToFlush.Flush())
-            {
-                nLastFlushed = walletDbUpdated;
-            }
-        }
-    }
-}
-
 bool ManualBackupWallet(Settings& settings, const std::string& walletDBFilename, const std::string& strDest)
 {
     CWalletDB walletDb(settings,walletDBFilename,"flush");

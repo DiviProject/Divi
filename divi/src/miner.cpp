@@ -99,22 +99,18 @@ void MinterThread(I_CoinMinter& minter)
     RenameThread("divi-miner");
 
     // Each thread has its own key and counter
-
-    while(true) {
-
-        try {
-            MintCoins(minter);
-        }
-        catch (const boost::thread_interrupted&)
-        {
-            LogPrintf("MinterThread -- terminated\n");
-            throw;
-        }
-        catch (const std::runtime_error &e)
-        {
-            LogPrintf("MinterThread -- runtime error: %s\n", e.what());
-            return;
-        }
+    try {
+        MintCoins(minter);
+    }
+    catch (const boost::thread_interrupted&)
+    {
+        LogPrintf("MinterThread -- terminated\n");
+        throw;
+    }
+    catch (const std::runtime_error &e)
+    {
+        LogPrintf("MinterThread -- runtime error: %s\n", e.what());
+        return;
     }
 }
 

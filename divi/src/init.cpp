@@ -94,7 +94,7 @@ static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #ifdef ENABLE_WALLET
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
 std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
-CWallet* pwalletMain = NULL;
+std::unique_ptr<CWallet> pwalletMain(nullptr);
 constexpr int nWalletBackups = 20;
 
 /**
@@ -134,7 +134,7 @@ void InitializeWallet(std::string strWalletFile)
             GetTransactionMemoryPool(),
             cs_main));
     walletDatabaseEndpointFactory.reset(new LegacyWalletDatabaseEndpointFactory(strWalletFile,settings));
-    pwalletMain = new CWallet(strWalletFile,*walletDatabaseEndpointFactory, chain, blockMap, *confirmationsCalculator);
+    pwalletMain.reset( new CWallet(strWalletFile,*walletDatabaseEndpointFactory, chain, blockMap, *confirmationsCalculator) );
 #endif
 }
 
@@ -218,8 +218,7 @@ bool InitWarning(const std::string& str)
 void DeallocateWallet()
 {
 #ifdef ENABLE_WALLET
-    delete pwalletMain;
-    pwalletMain = nullptr;
+    pwalletMain.reset();
     walletDatabaseEndpointFactory.reset();
     confirmationsCalculator.reset();
 #endif
@@ -1332,7 +1331,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     const std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     if (fDisableWallet) {
-        pwalletMain = NULL;
+        pwalletMain.reset();
         LogPrintf("Wallet disabled!\n");
     } else {
         uiInterface.InitMessage(translate("Loading wallet..."));
@@ -1353,7 +1352,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         LogPrintf("%s", strErrors.str());
         LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
 
-        RegisterValidationInterface(pwalletMain);
+        RegisterValidationInterface(pwalletMain.get());
 
         ScanBlockchainForWalletUpdates();
         fVerifyingBlocks = false;
@@ -1394,7 +1393,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return false;
     }
     uiInterface.InitMessage(translate("Checking for active masternode..."));
-    if(!LookupMasternodeKey(settings,pwalletMain,errorMessage))
+    if(!LookupMasternodeKey(settings,pwalletMain.get(),errorMessage))
     {
         return InitError("Unknown key or missing label for masternode=<alias>. masternode=<alias> may be missing from configuration.");
     }
@@ -1428,7 +1427,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
     StartNode(threadGroup);
-    StartCoinMintingModule(threadGroup,pwalletMain);
+    StartCoinMintingModule(threadGroup,pwalletMain.get());
 
     // ********************************************************* Step 12: finished
 

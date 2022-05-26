@@ -34,7 +34,7 @@
 #include <fstream>
 using namespace json_spirit;
 
-extern CWallet* pwalletMain;
+extern std::unique_ptr<CWallet> pwalletMain;
 extern CCriticalSection cs_main;
 extern std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue);
 extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool forceNewKey, bool isWalletDerivedKey);

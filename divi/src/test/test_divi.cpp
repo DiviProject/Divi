@@ -28,7 +28,7 @@
 #include <boost/thread.hpp>
 
 extern CClientUIInterface uiInterface;
-extern CWallet* pwalletMain;
+extern std::unique_ptr<CWallet> pwalletMain;
 extern Settings& settings;
 extern void noui_connect();
 
@@ -68,7 +68,7 @@ struct TestingSetup {
 #ifdef ENABLE_WALLET
         InitializeWallet("wallet.dat");
         pwalletMain->LoadWallet();
-        RegisterValidationInterface(pwalletMain);
+        RegisterValidationInterface(pwalletMain.get());
 #endif
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
         TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);

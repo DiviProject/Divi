@@ -94,7 +94,7 @@ void MintCoins(
 }
 void MinterThread(I_CoinMinter& minter)
 {
-    LogPrintf("DIVIMiner started\n");
+    LogPrintf("%s started\n",__func__);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("divi-miner");
 
@@ -104,12 +104,12 @@ void MinterThread(I_CoinMinter& minter)
     }
     catch (const boost::thread_interrupted&)
     {
-        LogPrintf("MinterThread -- terminated\n");
+        LogPrintf("%s -- terminated\n",__func__);
         throw;
     }
     catch (const std::runtime_error &e)
     {
-        LogPrintf("MinterThread -- runtime error: %s\n", e.what());
+        LogPrintf("%s -- runtime error: %s\n", __func__, e.what());
         return;
     }
 }
@@ -138,7 +138,7 @@ bool HasRecentlyAttemptedToGenerateProofOfStake()
 void ThreadCoinMinter()
 {
     boost::this_thread::interruption_point();
-    LogPrintf("ThreadCoinMinter started\n");
+    LogPrintf("%s started\n",__func__);
     try {
         /* While the thread is running, we keep the mutex locked; this ensures
            that the module will not be reset or destructed while in use.  */
@@ -149,10 +149,10 @@ void ThreadCoinMinter()
         MinterThread(minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
-        LogPrintf("ThreadCoinMinter() exception \n");
+        LogPrintf("%s exception \n",__func__);
     } catch (...) {
-        LogPrintf("ThreadCoinMinter() error \n");
+        LogPrintf("%s error \n",__func__);
     }
-    LogPrintf("ThreadCoinMinter exiting,\n");
+    LogPrintf("%s exiting,\n",__func__);
 }
 #endif // ENABLE_WALLET

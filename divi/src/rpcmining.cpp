@@ -49,7 +49,6 @@ using namespace std;
 using namespace boost;
 using namespace boost::assign;
 extern Settings& settings;
-extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
 
 #ifdef ENABLE_WALLET
@@ -69,12 +68,10 @@ Value setgenerate(const Array& params, bool fHelp)
             "\nUsing json rpc\n" +
             HelpExampleRpc("setgenerate", "1"));
 
-    if (pwalletMain == NULL || Params().NetworkID() != CBaseChainParams::REGTEST)
+    if (Params().NetworkID() != CBaseChainParams::REGTEST)
     {
         std::string preffix = ": ";
-        std::string reason = "";
-        if(pwalletMain == nullptr) reason += "Wallet is uninitialized";
-        if(Params().NetworkID() != CBaseChainParams::REGTEST) reason += ", invalid networks setting (regtest only)";
+        std::string reason = "invalid networks setting (regtest only)";
         std::string errorMsg = std::string("Method disabled") + ((!reason.empty())? (preffix+reason): std::string(""));
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, errorMsg.c_str() );
     }
@@ -146,9 +143,6 @@ Value generateblock(const Array& params, bool fHelp)
     if (params.size() > 0)
         options = params[0].get_obj();
     RPCTypeCheck(options, map_list_of("extratx", array_type)("coinstake", str_type)("ignoreMempool", bool_type), true);
-
-    if (pwalletMain == NULL)
-        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
 
     int nHeight = 0;
 

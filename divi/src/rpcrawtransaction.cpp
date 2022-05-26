@@ -46,7 +46,7 @@ using namespace boost::assign;
 using namespace json_spirit;
 using namespace std;
 
-extern CWallet* pwalletMain;
+extern std::unique_ptr<CWallet> pwalletMain;
 extern CCriticalSection cs_main;
 
 void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& entry,

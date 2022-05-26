@@ -52,7 +52,7 @@ using namespace boost::assign;
 using namespace json_spirit;
 
 extern CCriticalSection cs_main;
-extern CWallet* pwalletMain;
+extern std::unique_ptr<CWallet> pwalletMain;
 extern Settings& settings;
 extern CScript _createmultisig_redeemScript(const Array& params);
 
@@ -2713,14 +2713,14 @@ Value listlockunspent(const Array& params, bool fHelp)
     return ret;
 }
 
-static std::string DescribeEncryptionStatus(CWallet *wallet)
+static std::string DescribeEncryptionStatus(const CWallet& wallet)
 {
-    if(wallet->IsCrypted())
+    if(wallet.IsCrypted())
     {
-        if(wallet->IsUnlockedForStakingOnly()) {
+        if(wallet.IsUnlockedForStakingOnly()) {
             return "unlocked-for-staking";
         }
-        else if(wallet->IsLocked()) {
+        else if(wallet.IsLocked()) {
             return "locked";
         }
         else {
@@ -2764,7 +2764,7 @@ Value getwalletinfo(const Array& params, bool fHelp)
     if (pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", TimeTillWalletLock() ));
 
-    obj.push_back(Pair("encryption_status", DescribeEncryptionStatus(pwalletMain)));
+    obj.push_back(Pair("encryption_status", DescribeEncryptionStatus(*pwalletMain)));
 
     if (fHDEnabled) {
         obj.push_back(Pair("hdchainid", hdChainCurrent.GetID().GetHex()));

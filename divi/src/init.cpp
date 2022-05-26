@@ -173,7 +173,7 @@ public:
     }
 };
 
-void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* pwalletMain)
+void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* stakingWallet)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
     InitializeCoinMintingModule(
@@ -186,9 +186,9 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* p
         BlockSubmitter::instance(),
         cs_main,
         GetTransactionMemoryPool(),
-        pwalletMain);
+        stakingWallet);
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
-    if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
+    if (!underRegressionTesting && stakingWallet && settings.GetBoolArg("-staking", true))
     {
         threadGroup.create_thread(
             boost::bind(

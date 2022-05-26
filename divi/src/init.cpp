@@ -742,7 +742,7 @@ void ClearFoldersForResync()
     }
 }
 
-void ThreadBackupWallet(const std::string& walletFileName)
+void MonthlyWalletBackupThread(const std::string& walletFileName)
 {
     static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(settings.GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
     WalletBackupFeatureContainer::BackupStatus status = walletBackupFeatureContainer.createMonthlyBackup();
@@ -1476,8 +1476,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
         threadGroup.create_thread(
             (!underRegressionTesting)?
-            boost::bind(&LoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay):
-            boost::bind(&MockLoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &ThreadBackupWallet, pwalletMain->dbFilename(), millisecondDelay)
+            boost::bind(&LoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &MonthlyWalletBackupThread, pwalletMain->dbFilename(), millisecondDelay):
+            boost::bind(&MockLoopForever<void (*)(const std::string&), const std::string&>, "monthly_backup", &MonthlyWalletBackupThread, pwalletMain->dbFilename(), millisecondDelay)
             );
     }
 #endif

@@ -254,7 +254,6 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             ssKey >> hash;
             CWalletTx wtx;
             ssValue >> wtx;
-            CValidationState state;
             // false because there is no reason to go through the zerocoin checks for our own wallet
             if (wtx.GetHash() != hash)
                 return false;

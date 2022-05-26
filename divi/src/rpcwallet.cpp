@@ -304,7 +304,7 @@ bool AccountShouldUseNewKey(CWallet& wallet, const CScript& accountScript)
 {
     if (!accountScript.empty())
     {
-        std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+        std::vector<const CWalletTx*> walletTransactions = wallet.GetWalletTransactionReferences();
         for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
         {
             const CWalletTx& wtx = *(*it);

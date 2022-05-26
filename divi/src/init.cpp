@@ -1021,16 +1021,11 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
 bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
 {
     const LoadWalletResult loadResult = LoadWallet(strWalletFile, strErrors);
-    bool fFirstRun = false;
     switch(loadResult)
     {
         case ERROR_LOADING_WALLET:
             return false;
-        case NEW_WALLET_CREATED:
-            fFirstRun = true;
-            break;
-        case EXISTING_WALLET_LOADED:
-            fFirstRun = false;
+        case NEW_WALLET_CREATED: case EXISTING_WALLET_LOADED:
             break;
     }
     if(!pwalletMain->IsHDEnabled())

@@ -668,7 +668,7 @@ std::string SendMoney(
         LogPrintf("SendMoney() : %s", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
-    static AccountCoinSelector coinSelector(*pwalletMain);
+    AccountCoinSelector coinSelector(*pwalletMain);
     coinSelector.SetAccountName(rpcTxRequest.accountName);
     TransactionCreationRequest request(scriptsToFund,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), &coinSelector);
     TransactionCreationResult txCreation = pwalletMain->SendMoney(request);

@@ -1452,8 +1452,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if (settings.GetBoolArg("-flushwallet", true))
             walletDatabaseEndpointFactory->enableBackgroundDatabaseFlushing(threadGroup);
 
-        const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
-        walletDatabaseEndpointFactory->enableBackgroundMonthlyWalletBackup(threadGroup,GetDataDir().string(),underRegressionTesting);
+        if(settings.GetArg("-monthlybackups",12) > 0)
+            walletDatabaseEndpointFactory->enableBackgroundMonthlyWalletBackup(
+                threadGroup,
+                GetDataDir().string(),
+                Params().NetworkID() == CBaseChainParams::REGTEST);
     }
 #endif
 

@@ -461,8 +461,7 @@ static bool IsKeyType(string strType)
 
 DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
 {
-    I_WalletLoader* pwallet = &wallet;
-    pwallet->LoadDefaultKey(CPubKey(),false);
+    wallet.LoadDefaultKey(CPubKey(),false);
     CWalletScanState wss;
     bool fNoncriticalErrors = false;
     DBErrors result = DB_LOAD_OK;
@@ -472,7 +471,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
         if (berkleyDB_->Read((string) "minversion", nMinVersion)) {
             if (nMinVersion > CLIENT_VERSION)
                 return DB_TOO_NEW;
-            pwallet->LoadMinVersion(nMinVersion);
+            wallet.LoadMinVersion(nMinVersion);
         }
 
         // Get cursor
@@ -496,7 +495,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
 
             // Try to be tolerant of single corrupt records:
             string strType, strErr;
-            if (!ReadKeyValue(pwallet, ssKey, ssValue, wss, strType, strErr)) {
+            if (!ReadKeyValue(&wallet, ssKey, ssValue, wss, strType, strErr)) {
                 // losing keys is considered a catastrophic error, anything else
                 // we assume the user can live with:
                 if (IsKeyType(strType))
@@ -538,7 +537,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
         LogPrintf("Some keys lack metadata. Wallet may require a rescan\n");
     }
 
-    pwallet->ReserializeTransactions(wss.vWalletUpgrade);
+    wallet.ReserializeTransactions(wss.vWalletUpgrade);
 
     // Rewrite encrypted wallets of versions 0.4.0 and 0.5.0rc:
     if (wss.fIsEncrypted && (wss.nFileVersion == 40000 || wss.nFileVersion == 50000))

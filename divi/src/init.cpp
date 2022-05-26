@@ -93,7 +93,7 @@ static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
 #ifdef ENABLE_WALLET
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
-std::unique_ptr<I_WalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
+std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
 CWallet* pwalletMain = NULL;
 constexpr int nWalletBackups = 20;
 
@@ -114,24 +114,10 @@ CTxMemPool& GetTransactionMemoryPool()
 /** Global instance of the SporkManager, managed through startup/shutdown.  */
 std::unique_ptr<CSporkManager> sporkManagerInstance;
 
-bool ManualBackupWallet(Settings& settings, const std::string& walletDBFilename, const std::string& strDest)
+bool ManualBackupWallet(const std::string& strDest)
 {
-    CWalletDB walletDb(settings,walletDBFilename,"flush");
-    while (true) {
-        {
-            const CWalletDB::BackupStatus status = walletDb.Backup(strDest);
-            if(status == CWalletDB::BackupStatus::FAILED_FILESYSTEM_ERROR)
-            {
-                return false;
-            }
-            else if (status == CWalletDB::BackupStatus::SUCCEEDED)
-            {
-                return true;
-            }
-        }
-        MilliSleep(100);
-    }
-    return false;
+    assert(walletDatabaseEndpointFactory);
+    return walletDatabaseEndpointFactory->backupWalletFile(strDest);
 }
 
 void InitializeWallet(std::string strWalletFile)

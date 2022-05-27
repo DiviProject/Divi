@@ -173,7 +173,7 @@ public:
     }
 };
 
-void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* stakingWallet)
+void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& stakingWallet)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
     InitializeCoinMintingModule(
@@ -188,7 +188,7 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet* s
         GetTransactionMemoryPool(),
         stakingWallet);
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
-    if (!underRegressionTesting && stakingWallet && settings.GetBoolArg("-staking", true))
+    if (!underRegressionTesting && settings.GetBoolArg("-staking", true))
     {
         threadGroup.create_thread(
             boost::bind(
@@ -1427,7 +1427,12 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
     StartNode(threadGroup);
-    StartCoinMintingModule(threadGroup,pwalletMain.get());
+#ifdef ENABLE_WALLET
+    if (pwalletMain)
+    {
+        StartCoinMintingModule(threadGroup,*pwalletMain);
+    }
+#endif
 
     // ********************************************************* Step 12: finished
 

@@ -37,7 +37,7 @@ void InitializeCoinMintingModule(
     const I_BlockSubmitter& blockSubmitter,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
-    I_StakingWallet* pwallet)
+    I_StakingWallet& stakingWallet)
 {
     LOCK(cs_coinMintingModule);
     assert(coinMintingModule == nullptr);
@@ -52,7 +52,7 @@ void InitializeCoinMintingModule(
             sporkManager,
             mainCS,
             mempool,
-            *pwallet));
+            stakingWallet));
     moduleInitialized = true;
 }
 
@@ -118,6 +118,7 @@ void MinterThread(I_CoinMinter& minter)
 
 bool CheckHeightForRecentProofOfStakeGeneration(const int blockHeight)
 {
+    if(!moduleInitialized) return false;
     const auto& mapHashedBlocks = GetCoinMintingModule().GetBlockTimestampsByHeight();
     constexpr int64_t fiveMinutes = 5*60;
     const auto it = mapHashedBlocks.find(blockHeight);

@@ -153,14 +153,6 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
     obj.push_back(Pair("moneysupply",ValueFromAmount(chain.Tip()->nMoneySupply)));
-
-#ifdef ENABLE_WALLET
-    if (pwalletMain) {
-        obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
-    }
-    if (pwalletMain && pwalletMain->IsCrypted())
-        obj.push_back(Pair("unlocked_until", TimeTillWalletLock()));
-#endif
     obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate().GetFeePerK())));
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));

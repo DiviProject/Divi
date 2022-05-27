@@ -1099,8 +1099,8 @@ void LockWallet()
 {
     if(pwalletMain)
     {
-        RPCDiscardRunLater("lockwallet");
         LOCK(pwalletMain->cs_wallet); // Required for modifying unlock time
+        RPCDiscardRunLater("lockwallet");
         nWalletUnlockTime = 0;
         pwalletMain->LockFully();
     }

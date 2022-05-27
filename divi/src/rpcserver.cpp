@@ -1105,7 +1105,17 @@ void LockWallet()
         pwalletMain->LockFully();
     }
 }
-void UnlockWalletBriefly(int64_t sleepTime)
+void RevertWalletToUnlockedForStaking()
+{
+    if(pwalletMain)
+    {
+        LOCK(pwalletMain->cs_wallet); // Required for modifying unlock time
+        RPCDiscardRunLater("lockwallet");
+        nWalletUnlockTime = 0;
+        pwalletMain->UnlockForStakingOnly();
+    }
+}
+void UnlockWalletBriefly(int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry)
 {
     if(pwalletMain)
     {
@@ -1114,7 +1124,14 @@ void UnlockWalletBriefly(int64_t sleepTime)
 
         if (sleepTime > 0) {
             nWalletUnlockTime = GetTime () + sleepTime;
-            RPCRunLater ("lockwallet", boost::bind (LockWallet), sleepTime);
+            if(!revertToUnlockedForStakingOnExpiry)
+            {
+                RPCRunLater ("lockwallet", boost::bind (LockWallet), sleepTime);
+            }
+            else
+            {
+                RPCRunLater ("lockwallet", boost::bind (RevertWalletToUnlockedForStaking), sleepTime);
+            }
         }
     }
 }

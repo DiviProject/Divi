@@ -320,6 +320,7 @@ public:
     bool IsUnlockedForStakingOnly() const;
     bool IsFullyUnlocked() const;
     void LockFully();
+    void UnlockForStakingOnly();
 
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;

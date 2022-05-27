@@ -2456,6 +2456,7 @@ Value walletpassphrase(const Array& params, bool fHelp)
     {
         throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked for staking.");
     }
+    const bool shouldRevertToUnlockedForStakingAtTimerExpiry = pwalletMain->IsUnlockedForStakingOnly();
 
     if (!pwalletMain->Unlock(strWalletPass, stakingOnly))
         throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
@@ -2463,7 +2464,7 @@ Value walletpassphrase(const Array& params, bool fHelp)
     pwalletMain->TopUpKeyPool();
 
     int64_t nSleepTime = params[1].get_int64();
-    UnlockWalletBriefly(nSleepTime);
+    UnlockWalletBriefly(nSleepTime, shouldRevertToUnlockedForStakingAtTimerExpiry);
     return Value::null;
 }
 

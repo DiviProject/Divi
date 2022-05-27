@@ -2626,3 +2626,11 @@ void CWallet::LockFully()
     walletStakingOnly = false;
     Lock();
 }
+void CWallet::UnlockForStakingOnly()
+{
+    AssertLockHeld(cs_wallet);
+    if(IsFullyUnlocked())
+    {
+        walletStakingOnly = true;
+    }
+}

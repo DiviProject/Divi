@@ -135,7 +135,7 @@ public:
 
 void EnsureWalletIsUnlocked();
 void LockWallet();
-void UnlockWalletBriefly(int64_t sleepTime);
+void UnlockWalletBriefly(int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry);
 int64_t TimeTillWalletLock();
 std::string HelpRequiringPassphrase();
 std::string HelpExampleCli(std::string methodname, std::string args);

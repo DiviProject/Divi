@@ -23,6 +23,7 @@ namespace
 
 CCriticalSection cs_coinMintingModule;
 std::unique_ptr<CoinMintingModule> coinMintingModule;
+volatile bool moduleInitialized = false;
 
 } // anonymous namespace
 
@@ -52,12 +53,13 @@ void InitializeCoinMintingModule(
             mainCS,
             mempool,
             *pwallet));
+    moduleInitialized = true;
 }
 
 void DestructCoinMintingModule()
 {
     LOCK(cs_coinMintingModule);
-    assert(coinMintingModule != nullptr);
+    assert(!moduleInitialized || coinMintingModule != nullptr);
     coinMintingModule.reset();
 }
 

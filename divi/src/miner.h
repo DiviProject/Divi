@@ -32,7 +32,7 @@ void InitializeCoinMintingModule(
     const I_BlockSubmitter& blockSubmitter,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
-    I_StakingWallet* pwallet);
+    I_StakingWallet& stakingWallet);
 void DestructCoinMintingModule();
 const CoinMintingModule& GetCoinMintingModule();
 

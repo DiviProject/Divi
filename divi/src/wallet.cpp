@@ -2622,7 +2622,7 @@ bool CWallet::IsFullyUnlocked() const
 }
 void CWallet::LockFully()
 {
-    LOCK(cs_wallet);
+    AssertLockHeld(cs_wallet);
     walletStakingOnly = false;
     Lock();
 }

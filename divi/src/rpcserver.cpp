@@ -821,6 +821,10 @@ void RPCRunHandler(const boost::system::error_code& err, boost::function<void(vo
         func();
 }
 
+/**
+ * Run func nSeconds from now. Uses boost deadline timers.
+ * Overrides previous timer <name> (if any).
+ */
 void RPCRunLater(const std::string& name, boost::function<void(void)> func, int64_t nSeconds)
 {
     assert(rpc_io_service != NULL);
@@ -831,6 +835,15 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
     }
     deadlineTimers[name]->expires_from_now(posix_time::seconds(nSeconds));
     deadlineTimers[name]->async_wait(boost::bind(RPCRunHandler, _1, func));
+}
+void RPCDiscardRunLater(const string &name)
+{
+    auto it = deadlineTimers.find(name);
+
+    if(it != std::end(deadlineTimers)) {
+        it->second->cancel();
+        deadlineTimers.erase(it);
+    }
 }
 
 class JSONRequest
@@ -1156,14 +1169,4 @@ std::string HelpExampleRpc(string methodname, string args)
     return "> curl --user myusername --data-binary '{\"jsonrpc\": \"1.0\", \"id\":\"curltest\", "
            "\"method\": \"" +
            methodname + "\", \"params\": [" + args + "] }' -H 'content-type: text/plain;' http://127.0.0.1:51473/\n";
-}
-
-void RPCDiscardRunLater(const string &name)
-{
-    auto it = deadlineTimers.find(name);
-
-    if(it != std::end(deadlineTimers)) {
-        it->second->cancel();
-        deadlineTimers.erase(it);
-    }
 }

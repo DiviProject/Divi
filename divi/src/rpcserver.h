@@ -74,14 +74,6 @@ void RPCTypeCheck(const json_spirit::Object& o,
     const std::map<std::string, json_spirit::Value_type>& typesExpected,
     bool fAllowNull = false);
 
-/**
- * Run func nSeconds from now. Uses boost deadline timers.
- * Overrides previous timer <name> (if any).
- */
-void RPCRunLater(const std::string& name, boost::function<void(void)> func, int64_t nSeconds);
-
-void RPCDiscardRunLater(const std::string &name);
-
 //! Convert boost::asio address to CNetAddr
 CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address);
 

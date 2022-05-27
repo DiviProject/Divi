@@ -1101,7 +1101,7 @@ void LockWallet()
     if(pwalletMain)
     {
         RPCDiscardRunLater("lockwallet");
-        LOCK(cs_nWalletUnlockTime);
+        LOCK2(pwalletMain->cs_wallet, cs_nWalletUnlockTime);
         nWalletUnlockTime = 0;
         pwalletMain->LockFully();
     }
@@ -1110,6 +1110,7 @@ void UnlockWalletBriefly(int64_t sleepTime)
 {
     if(pwalletMain)
     {
+        AssertLockHeld(pwalletMain->cs_wallet);
         LOCK(cs_nWalletUnlockTime);
         nWalletUnlockTime = GetTime() + sleepTime;
 

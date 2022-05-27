@@ -1090,7 +1090,6 @@ std::vector<std::string> CRPCTable::listCommands() const
 }
 
 static int64_t nWalletUnlockTime;
-static CCriticalSection cs_nWalletUnlockTime;
 void EnsureWalletIsUnlocked()
 {
     if (pwalletMain && !pwalletMain->IsFullyUnlocked())
@@ -1101,7 +1100,7 @@ void LockWallet()
     if(pwalletMain)
     {
         RPCDiscardRunLater("lockwallet");
-        LOCK2(pwalletMain->cs_wallet, cs_nWalletUnlockTime);
+        LOCK(pwalletMain->cs_wallet); // Required for modifying unlock time
         nWalletUnlockTime = 0;
         pwalletMain->LockFully();
     }
@@ -1111,7 +1110,6 @@ void UnlockWalletBriefly(int64_t sleepTime)
     if(pwalletMain)
     {
         AssertLockHeld(pwalletMain->cs_wallet);
-        LOCK(cs_nWalletUnlockTime);
         nWalletUnlockTime = GetTime() + sleepTime;
 
         if (sleepTime > 0) {
@@ -1122,6 +1120,7 @@ void UnlockWalletBriefly(int64_t sleepTime)
 }
 int64_t TimeTillWalletLock()
 {
+    AssertLockHeld(pwalletMain->cs_wallet);
     return nWalletUnlockTime;
 }
 

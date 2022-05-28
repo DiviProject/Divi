@@ -21,6 +21,8 @@
 #include <utilmoneystr.h>
 #include <random.h>
 
+#include <deque>
+
 #include "json/json_spirit_writer_template.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
@@ -1108,46 +1110,122 @@ void EnsureWalletIsUnlocked()
     if (pwalletMain && !pwalletMain->IsFullyUnlocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 }
-void LockWallet()
+
+struct CancellableMethod
 {
-    if(pwalletMain)
+private:
+    mutable bool executionComplete;
+    mutable bool cancelled;
+    bool unlockedForStakingOnExpiry;
+
+public:
+    CancellableMethod(
+        bool revertToUnlockedForStakingOnExpiry
+        ): executionComplete(false)
+        , cancelled(false)
+        , unlockedForStakingOnExpiry(revertToUnlockedForStakingOnExpiry)
     {
-        LOCK(pwalletMain->cs_wallet); // Required for modifying unlock time
-        RPCDiscardRunLater("lockwallet");
-        nWalletUnlockTime = 0;
-        pwalletMain->LockFully();
+    }
+
+    void cancel()
+    {
+        if(pwalletMain) AssertLockHeld(pwalletMain->cs_wallet);
+        cancelled = true;
+    }
+
+    bool canBeRemoved() const
+    {
+        if(pwalletMain) AssertLockHeld(pwalletMain->cs_wallet);
+        return executionComplete;
+    }
+
+    void LockWallet() const
+    {
+        if(pwalletMain)
+        {
+            LOCK(pwalletMain->cs_wallet); // Required for modifying unlock time
+            if(cancelled){ executionComplete = true; return; }
+            RPCDiscardRunLater("lockwallet");
+            nWalletUnlockTime = 0;
+            pwalletMain->LockFully();
+            executionComplete = true;
+            return;
+        }
+        executionComplete = true;
+    }
+    void RevertWalletToUnlockedForStaking() const
+    {
+        if(pwalletMain)
+        {
+            LOCK(pwalletMain->cs_wallet); // Required for modifying unlock time
+            if(cancelled){ executionComplete = true; return; }
+            RPCDiscardRunLater("lockwallet");
+            nWalletUnlockTime = 0;
+            pwalletMain->UnlockForStakingOnly();
+            executionComplete = true;
+            return;
+        }
+        executionComplete = true;
+    }
+    void operator ()() const
+    {
+        if(unlockedForStakingOnExpiry) RevertWalletToUnlockedForStaking();
+        else LockWallet();
+    }
+};
+static std::deque<CancellableMethod> cancellableCallStack;
+
+void removeCompletedOrCancelPendingCalls()
+{
+    for(auto it = cancellableCallStack.begin(); it != cancellableCallStack.end(); )
+    {
+        if(it->canBeRemoved())
+        {
+            it = cancellableCallStack.erase(it);
+            continue;
+        }
+        else
+        {
+            it->cancel();
+            ++it;
+        }
     }
 }
-void RevertWalletToUnlockedForStaking()
+
+enum class WalletLockMode
 {
-    if(pwalletMain)
-    {
-        LOCK(pwalletMain->cs_wallet); // Required for modifying unlock time
-        RPCDiscardRunLater("lockwallet");
-        nWalletUnlockTime = 0;
-        pwalletMain->UnlockForStakingOnly();
-    }
-}
-void UnlockWalletBriefly(int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry)
+    UNLOCK,
+    LOCK,
+};
+void ModifyWalletLockStateBriefly(WalletLockMode mode, int64_t sleepTime = 0, bool revertToUnlockedForStakingOnExpiry = false)
 {
     if(pwalletMain)
     {
         AssertLockHeld(pwalletMain->cs_wallet);
         nWalletUnlockTime = GetTime() + sleepTime;
-
-        if (sleepTime > 0) {
+        removeCompletedOrCancelPendingCalls();
+        if(mode==WalletLockMode::LOCK)
+        {
+            CancellableMethod().LockWallet();
+        }
+        else if (sleepTime > 0 && mode == WalletLockMode::UNLOCK)
+        {
             nWalletUnlockTime = GetTime () + sleepTime;
-            if(!revertToUnlockedForStakingOnExpiry)
-            {
-                RPCRunLater ("lockwallet", boost::bind (LockWallet), sleepTime);
-            }
-            else
-            {
-                RPCRunLater ("lockwallet", boost::bind (RevertWalletToUnlockedForStaking), sleepTime);
-            }
+            cancellableCallStack.emplace_back(revertToUnlockedForStakingOnExpiry);
+            RPCRunLater ("lockwallet", boost::bind (&CancellableMethod::operator(), &cancellableCallStack.back()), sleepTime);
         }
     }
 }
+
+void LockWallet()
+{
+    ModifyWalletLockStateBriefly(WalletLockMode::LOCK);
+}
+void UnlockWalletBriefly(int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry)
+{
+    ModifyWalletLockStateBriefly(WalletLockMode::UNLOCK,sleepTime,revertToUnlockedForStakingOnExpiry);
+}
+
 int64_t TimeTillWalletLock()
 {
     AssertLockHeld(pwalletMain->cs_wallet);

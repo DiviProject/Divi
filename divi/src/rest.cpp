@@ -23,6 +23,8 @@
 
 #include <boost/algorithm/string.hpp>
 
+#include <AcceptedConnection.h>
+
 using namespace std;
 using namespace json_spirit;
 

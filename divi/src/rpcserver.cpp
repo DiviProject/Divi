@@ -34,6 +34,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 
+#include <AcceptedConnection.h>
+
 extern CCriticalSection cs_main;
 extern CConditionVariable cvBlockChange;
 extern bool HTTPReq_REST(AcceptedConnection* conn,

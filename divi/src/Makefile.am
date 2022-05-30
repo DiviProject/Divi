@@ -292,6 +292,7 @@ BITCOIN_CORE_H = \
   JsonTxHelpers.h \
   JsonParseHelpers.h \
   JsonBlockHelpers.h \
+  AcceptedConnection.h \
   rpcserver.h \
   script/interpreter.h \
   script/SignatureCheckers.h \

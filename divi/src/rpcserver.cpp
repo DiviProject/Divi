@@ -1138,8 +1138,7 @@ public:
         if(pwalletMain) AssertLockHeld(pwalletMain->cs_wallet);
         return executionComplete;
     }
-
-    void LockWallet() const
+    void revertWalletUnlockStatus() const
     {
         if(pwalletMain)
         {
@@ -1147,30 +1146,12 @@ public:
             if(cancelled){ executionComplete = true; return; }
             RPCDiscardRunLater("lockwallet");
             nWalletUnlockTime = 0;
-            pwalletMain->LockFully();
+            if(unlockedForStakingOnExpiry) pwalletMain->UnlockForStakingOnly();
+            else pwalletMain->LockFully();
             executionComplete = true;
             return;
         }
         executionComplete = true;
-    }
-    void RevertWalletToUnlockedForStaking() const
-    {
-        if(pwalletMain)
-        {
-            LOCK(pwalletMain->cs_wallet); // Required for modifying unlock time
-            if(cancelled){ executionComplete = true; return; }
-            RPCDiscardRunLater("lockwallet");
-            nWalletUnlockTime = 0;
-            pwalletMain->UnlockForStakingOnly();
-            executionComplete = true;
-            return;
-        }
-        executionComplete = true;
-    }
-    void operator ()() const
-    {
-        if(unlockedForStakingOnExpiry) RevertWalletToUnlockedForStaking();
-        else LockWallet();
     }
 };
 static std::deque<CancellableMethod> cancellableCallStack;
@@ -1206,13 +1187,15 @@ void ModifyWalletLockStateBriefly(WalletLockMode mode, int64_t sleepTime = 0, bo
         removeCompletedOrCancelPendingCalls();
         if(mode==WalletLockMode::LOCK)
         {
-            CancellableMethod().LockWallet();
+            RPCDiscardRunLater("lockwallet");
+            nWalletUnlockTime = 0;
+            pwalletMain->LockFully();
         }
         else if (sleepTime > 0 && mode == WalletLockMode::UNLOCK)
         {
             nWalletUnlockTime = GetTime () + sleepTime;
             cancellableCallStack.emplace_back(revertToUnlockedForStakingOnExpiry);
-            RPCRunLater ("lockwallet", boost::bind (&CancellableMethod::operator(), &cancellableCallStack.back()), sleepTime);
+            RPCRunLater ("lockwallet", boost::bind (&CancellableMethod::revertWalletUnlockStatus, &cancellableCallStack.back()), sleepTime);
         }
     }
 }

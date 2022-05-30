@@ -34,7 +34,6 @@
 #include <fstream>
 using namespace json_spirit;
 
-extern std::unique_ptr<CWallet> pwalletMain;
 extern CCriticalSection cs_main;
 extern std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue);
 extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool forceNewKey, bool isWalletDerivedKey);
@@ -81,7 +80,12 @@ Value allocatefunds(const Array& params, bool fHelp)
     {
         throw std::runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
     }
-	CBitcoinAddress acctAddr = GetAccountAddress(*pwalletMain,"alloc->" + params[1].get_str(),false,true);
+    CWallet* pwallet = GetWallet();
+    if(!pwallet)
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Invalid masternode tier");
+    }
+	CBitcoinAddress acctAddr = GetAccountAddress(*GetWallet(),"alloc->" + params[1].get_str(),false,true);
 	std::string strAmt = params[2].get_str();
 
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
@@ -93,7 +97,7 @@ Value allocatefunds(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     const uint256 txid = uint256S(SendMoneyToAddress(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier)));
-    const CWalletTx* walletTx = pwalletMain->GetWalletTx(txid);
+    const CWalletTx* walletTx = pwallet->GetWalletTx(txid);
     if(!walletTx)
         throw JSONRPCError(RPC_WALLET_ERROR, "Couldn't find MN allocation transaction");
 
@@ -170,7 +174,8 @@ Value signmnbroadcast(const Array& params, bool fHelp)
 
     Object result;
     std::string hexdata = params[0].get_str();
-    if(!SignMasternodeBroadcast(*pwalletMain,hexdata))
+    CWallet* pwallet = GetWallet();
+    if(!pwallet || !SignMasternodeBroadcast(*pwallet,hexdata))
     {
         throw JSONRPCError(RPC_INVALID_PARAMS,"Unable to sign broadcast!");
     }
@@ -201,14 +206,16 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    CBitcoinAddress address = GetAccountAddress(*pwalletMain,"reserved->" + params[0].get_str(),false,true);
+    CWallet* pwallet = GetWallet();
+    if(!pwallet) throw JSONRPCError(RPC_WALLET_ERROR,"Wallet disabled!");
+    CBitcoinAddress address = GetAccountAddress(*pwallet,"reserved->" + params[0].get_str(),false,true);
     CKeyID keyID;
     if (!address.GetKeyID(keyID))
     {
         throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
     }
     CKey masternodeKey;
-    if (!pwalletMain->GetKey(keyID, masternodeKey))
+    if (!pwallet->GetKey(keyID, masternodeKey))
     {
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + CBitcoinAddress(keyID).ToString() + " is not known");
     }
@@ -228,7 +235,7 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     CMasternodeBroadcast mnb;
     std::string errorMsg;
-    if(!CMasternodeBroadcastFactory::CreateWithoutCollateralKey(*pwalletMain,config,masternodeKey.GetPubKey(),pubkeyCollateralAddress,errorMsg,mnb))
+    if(!CMasternodeBroadcastFactory::CreateWithoutCollateralKey(*pwallet,config,masternodeKey.GetPubKey(),pubkeyCollateralAddress,errorMsg,mnb))
     {
         throw JSONRPCError(RPC_INVALID_PARAMS,errorMsg);
     }
@@ -405,7 +412,7 @@ Value startmasternode(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
     Object result;
-    MasternodeStartResult mnResult = StartMasternode(*pwalletMain, GetMasternodeModule().getStoredBroadcasts(), alias, deferRelay);
+    MasternodeStartResult mnResult = StartMasternode(*GetWallet(), GetMasternodeModule().getStoredBroadcasts(), alias, deferRelay);
 
     result.push_back(Pair("status",mnResult.status?"success":"failed"));
     if(!mnResult.status)

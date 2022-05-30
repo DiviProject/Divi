@@ -61,7 +61,6 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
-extern std::unique_ptr<CWallet> pwalletMain;
 
 std::string GetWarnings(std::string strFor);
 
@@ -141,9 +140,10 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("version", CLIENT_VERSION_STR));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
 #ifdef ENABLE_WALLET
-    if (pwalletMain) {
-        obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
-        obj.push_back(Pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
+    CWallet* pwallet = GetWallet();
+    if (pwallet) {
+        obj.push_back(Pair("walletversion", pwallet->GetVersion()));
+        obj.push_back(Pair("balance", ValueFromAmount(pwallet->GetBalance())));
     }
 #endif
     obj.push_back(Pair("blocks", (int)chain.Height()));
@@ -230,9 +230,9 @@ class DescribeAddressVisitor : public boost::static_visitor<Object>
 {
 private:
     isminetype mine;
-
+    const CWallet* walletRef_;
 public:
-    DescribeAddressVisitor(isminetype mineIn) : mine(mineIn) {}
+    DescribeAddressVisitor(isminetype mineIn,const CWallet* walletRef) : mine(mineIn), walletRef_(walletRef) {}
 
     Object operator()(const CNoDestination& dest) const { return Object(); }
 
@@ -242,7 +242,7 @@ public:
         CPubKey vchPubKey;
         obj.push_back(Pair("isscript", false));
         if (mine == isminetype::ISMINE_SPENDABLE) {
-            pwalletMain->GetPubKey(keyID, vchPubKey);
+            if(walletRef_) walletRef_->GetPubKey(keyID, vchPubKey);
             obj.push_back(Pair("pubkey", HexStr(vchPubKey)));
             obj.push_back(Pair("iscompressed", vchPubKey.IsCompressed()));
         }
@@ -255,7 +255,7 @@ public:
         obj.push_back(Pair("isscript", true));
         if (mine != isminetype::ISMINE_NO) {
             CScript subscript;
-            pwalletMain->GetCScript(scriptID, subscript);
+            walletRef_->GetCScript(scriptID, subscript);
             std::vector<CTxDestination> addresses;
             txnouttype whichType;
             int nRequired;
@@ -353,23 +353,24 @@ Value validateaddress(const Array& params, bool fHelp)
         ret.push_back(Pair("scriptPubKey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
 
 #ifdef ENABLE_WALLET
-        isminetype mine = pwalletMain ? pwalletMain->isMine(dest) : isminetype::ISMINE_NO;
+        CWallet* pwallet = GetWallet();
+        isminetype mine = pwallet ? pwallet->isMine(dest) : isminetype::ISMINE_NO;
         ret.push_back(Pair("ismine", (mine == isminetype::ISMINE_SPENDABLE) ? true : false));
         if (mine != isminetype::ISMINE_NO) {
             ret.push_back(Pair("iswatchonly", (mine == isminetype::ISMINE_WATCH_ONLY) ? true : false));
-            Object detail = boost::apply_visitor(DescribeAddressVisitor(mine), dest);
+            Object detail = boost::apply_visitor(DescribeAddressVisitor(mine,pwallet), dest);
             ret.insert(ret.end(), detail.begin(), detail.end());
         }
-        if (pwalletMain)
+        if (pwallet)
         {
-            const AddressBook& addressBook = pwalletMain->getAddressBookManager().getAddressBook();
+            const AddressBook& addressBook = pwallet->getAddressBookManager().getAddressBook();
             if(addressBook.count(dest)) ret.push_back(Pair("account", addressBook.find(dest)->second.name));
         }
 
 
         CKeyID keyID;
-        if (pwalletMain) {
-            CKeyMetadata result = pwalletMain->getKeyMetadata(dest);
+        if (pwallet) {
+            CKeyMetadata result = pwallet->getKeyMetadata(dest);
             if(!result.unknownKeyID)
             {
                 ret.push_back(Pair("timestamp", result.nCreateTime));
@@ -409,14 +410,15 @@ CScript _createmultisig_redeemScript(const Array& params)
         const std::string& ks = keys[i].get_str();
 #ifdef ENABLE_WALLET
         // Case 1: DIVI address and we have full public key:
+        CWallet* pwallet = GetWallet();
         CBitcoinAddress address(ks);
-        if (pwalletMain && address.IsValid()) {
+        if (pwallet && address.IsValid()) {
             CKeyID keyID;
             if (!address.GetKeyID(keyID))
                 throw runtime_error(
                     strprintf("%s does not refer to a key", ks));
             CPubKey vchPubKey;
-            if (!pwalletMain->GetPubKey(keyID, vchPubKey))
+            if (!pwallet->GetPubKey(keyID, vchPubKey))
                 throw runtime_error(
                     strprintf("no full public key for address %s", ks));
             if (!vchPubKey.IsFullyValid())
@@ -1061,10 +1063,11 @@ Value getstakingstatus(const Array& params, bool fHelp)
     Object obj;
     obj.push_back(Pair("validtime", chainstate->ActiveChain().Tip()->nTime > 1471482000));
     obj.push_back(Pair("haveconnections", GetPeerCount()>0 ));
-    if (pwalletMain) {
-        obj.push_back(Pair("walletunlocked", !pwalletMain->IsLocked()));
-        obj.push_back(Pair("mintablecoins", pwalletMain->HasAgedCoins()));
-        CAmount stakkingBalance = pwalletMain->GetStakingBalance();
+    CWallet* pwallet = GetWallet();
+    if (pwallet) {
+        obj.push_back(Pair("walletunlocked", !pwallet->IsLocked()));
+        obj.push_back(Pair("mintablecoins", pwallet->HasAgedCoins()));
+        CAmount stakkingBalance = pwallet->GetStakingBalance();
         obj.push_back(Pair("staking_balance", ValueFromAmount(stakkingBalance)   ));
         obj.push_back(Pair("enoughcoins", stakkingBalance > 0 ));
     }

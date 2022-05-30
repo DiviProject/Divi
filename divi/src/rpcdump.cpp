@@ -38,7 +38,6 @@
 
 using namespace json_spirit;
 using namespace std;
-extern std::unique_ptr<CWallet> pwalletMain;
 
 Value importprivkey(const Array& params, bool fHelp)
 {
@@ -81,21 +80,24 @@ Value importprivkey(const Array& params, bool fHelp)
     CPubKey pubkey = key.GetPubKey();
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
+
+    CWallet* pwallet = GetWallet();
+    if(pwallet)
     {
-        pwalletMain->SetAddressLabel(vchAddress, strLabel);
+        pwallet->SetAddressLabel(vchAddress, strLabel);
 
         // Don't throw error in case a key is already there
-        if (pwalletMain->HaveKey(vchAddress))
+        if (pwallet->HaveKey(vchAddress))
             return Value::null;
 
-        if (!pwalletMain->AddKeyPubKey(key, pubkey))
+        if (!pwallet->AddKeyPubKey(key, pubkey))
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
 
         // whenever a key is imported, we need to scan the whole chain; 0 would be considered 'no value'
 
         if (fRescan) {
             BlockDiskDataReader reader;
-            pwalletMain->verifySyncToActiveChain(reader,true);
+            pwallet->verifySyncToActiveChain(reader,true);
         }
     }
 
@@ -140,27 +142,28 @@ Value importaddress(const Array& params, bool fHelp)
     if (params.size() > 2)
         fRescan = params[2].get_bool();
 
+    CWallet* pwallet = GetWallet();
     {
-        if(!pwalletMain)
+        if(!pwallet)
             throw JSONRPCError(RPC_WALLET_ERROR,"Wallet is not enabled in this build");
 
-        if (pwalletMain->isMine(address.Get()) == isminetype::ISMINE_SPENDABLE)
+        if (pwallet->isMine(address.Get()) == isminetype::ISMINE_SPENDABLE)
             throw JSONRPCError(RPC_WALLET_ERROR, "The wallet already contains the private key for this address or script");
 
         // add to address book or update label
         if (address.IsValid())
-            pwalletMain->SetAddressLabel(address.Get(), strLabel);
+            pwallet->SetAddressLabel(address.Get(), strLabel);
 
         // Don't throw error in case an address is already there
-        if (pwalletMain->HaveWatchOnly(script))
+        if (pwallet->HaveWatchOnly(script))
             return Value::null;
 
-        if (!pwalletMain->AddWatchOnly(script))
+        if (!pwallet->AddWatchOnly(script))
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding address to wallet");
 
         if (fRescan) {
             BlockDiskDataReader reader;
-            pwalletMain->verifySyncToActiveChain(reader,true);
+            pwallet->verifySyncToActiveChain(reader,true);
         }
     }
 
@@ -191,7 +194,8 @@ Value dumpprivkey(const Array& params, bool fHelp)
     if (!address.GetKeyID(keyID))
         throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
     CKey vchSecret;
-    if (!pwalletMain->GetKey(keyID, vchSecret))
+    CWallet* pwallet = GetWallet();
+    if (!pwallet->GetKey(keyID, vchSecret))
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + strAddress + " is not known");
     return CBitcoinSecret(vchSecret).ToString();
 }
@@ -213,15 +217,16 @@ Value dumphdinfo(const Array& params, bool fHelp)
             + HelpExampleRpc("dumphdinfo", "")
         );
 
-    LOCK(pwalletMain->cs_wallet);
+    CWallet* pwallet = GetWallet();
+    LOCK(pwallet->cs_wallet);
 
     EnsureWalletIsUnlocked();
 
     CHDChain hdChainCurrent;
-    if (!pwalletMain->GetHDChain(hdChainCurrent))
+    if (!pwallet->GetHDChain(hdChainCurrent))
         throw JSONRPCError(RPC_WALLET_ERROR, "This wallet is not a HD wallet.");
 
-    if (!pwalletMain->GetDecryptedHDChain(hdChainCurrent))
+    if (!pwallet->GetDecryptedHDChain(hdChainCurrent))
         throw JSONRPCError(RPC_INTERNAL_ERROR, "Cannot decrypt HD seed");
 
     SecureString ssMnemonic;
@@ -332,19 +337,20 @@ Value bip38decrypt(const Array& params, bool fHelp)
     assert(key.VerifyPubKey(pubkey));
     result.push_back(Pair("Address", CBitcoinAddress(pubkey.GetID()).ToString()));
     CKeyID vchAddress = pubkey.GetID();
+    CWallet* pwallet = GetWallet();
     {
-        pwalletMain->SetAddressLabel(vchAddress, "");
+        pwallet->SetAddressLabel(vchAddress, "");
 
         // Don't throw error in case a key is already there
-        if (pwalletMain->HaveKey(vchAddress))
+        if (pwallet->HaveKey(vchAddress))
             throw JSONRPCError(RPC_WALLET_ERROR, "Key already held by wallet");
 
-        if (!pwalletMain->AddKeyPubKey(key, pubkey))
+        if (!pwallet->AddKeyPubKey(key, pubkey))
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
 
         // whenever a key is imported, we need to scan the whole chain; 0 would be considered 'no value'
         BlockDiskDataReader reader;
-        pwalletMain->verifySyncToActiveChain(reader,true);
+        pwallet->verifySyncToActiveChain(reader,true);
     }
 
     return result;

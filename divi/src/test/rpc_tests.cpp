@@ -16,6 +16,7 @@
 
 using namespace std;
 using namespace json_spirit;
+extern CWallet* GetWallet();
 
 Array
 createArgs(int nRequired, const char* address1=NULL, const char* address2=NULL)
@@ -39,7 +40,7 @@ Value CallRPC(string args)
 
     rpcfn_type method = CRPCTable::getRPCTable()[strMethod]->actor;
     try {
-        Value result = (*method)(params, false);
+        Value result = (*method)(params, false,GetWallet());
         return result;
     }
     catch (Object& objError)

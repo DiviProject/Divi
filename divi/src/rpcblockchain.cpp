@@ -32,7 +32,7 @@
 using namespace json_spirit;
 using namespace std;
 
-Value getblockcount(const Array& params, bool fHelp)
+Value getblockcount(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -47,7 +47,7 @@ Value getblockcount(const Array& params, bool fHelp)
     return chainstate->ActiveChain().Height();
 }
 
-Value getbestblockhash(const Array& params, bool fHelp)
+Value getbestblockhash(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -62,7 +62,7 @@ Value getbestblockhash(const Array& params, bool fHelp)
     return chainstate->ActiveChain().Tip()->GetBlockHash().GetHex();
 }
 
-Value getdifficulty(const Array& params, bool fHelp)
+Value getdifficulty(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -77,7 +77,7 @@ Value getdifficulty(const Array& params, bool fHelp)
 }
 
 
-Value getrawmempool(const Array& params, bool fHelp)
+Value getrawmempool(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -150,7 +150,7 @@ Value getrawmempool(const Array& params, bool fHelp)
     }
 }
 
-Value getblockhash(const Array& params, bool fHelp)
+Value getblockhash(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -173,7 +173,7 @@ Value getblockhash(const Array& params, bool fHelp)
     return pblockindex->GetBlockHash().GetHex();
 }
 
-Value getblock(const Array& params, bool fHelp)
+Value getblock(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -237,7 +237,7 @@ Value getblock(const Array& params, bool fHelp)
     return blockToJSON(block, pblockindex);
 }
 
-Value getblockheader(const Array& params, bool fHelp)
+Value getblockheader(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -290,7 +290,7 @@ Value getblockheader(const Array& params, bool fHelp)
     return blockHeaderToJSON(block, pblockindex);
 }
 
-Value gettxoutsetinfo(const Array& params, bool fHelp)
+Value gettxoutsetinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -327,7 +327,7 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
     return ret;
 }
 
-Value gettxout(const Array& params, bool fHelp)
+Value gettxout(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 2 || params.size() > 3)
         throw runtime_error(
@@ -401,7 +401,7 @@ Value gettxout(const Array& params, bool fHelp)
     return ret;
 }
 
-Value verifychain(const Array& params, bool fHelp)
+Value verifychain(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 2)
         throw runtime_error(
@@ -422,7 +422,7 @@ Value verifychain(const Array& params, bool fHelp)
     return VerifyChain(nCheckLevel,nCheckDepth, true);
 }
 
-Value getblockchaininfo(const Array& params, bool fHelp)
+Value getblockchaininfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
     if (fHelp || params.size() != 0)
@@ -469,7 +469,7 @@ struct CompareBlocksByHeight {
     }
 };
 
-Value getchaintips(const Array& params, bool fHelp)
+Value getchaintips(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -555,7 +555,7 @@ Value getchaintips(const Array& params, bool fHelp)
     return res;
 }
 
-Value getmempoolinfo(const Array& params, bool fHelp)
+Value getmempoolinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -577,7 +577,7 @@ Value getmempoolinfo(const Array& params, bool fHelp)
     return ret;
 }
 
-Value reverseblocktransactions(const Array& params, bool fHelp)
+Value reverseblocktransactions(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -611,7 +611,7 @@ Value reverseblocktransactions(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value invalidateblock(const Array& params, bool fHelp)
+Value invalidateblock(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -647,7 +647,7 @@ Value invalidateblock(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value reconsiderblock(const Array& params, bool fHelp)
+Value reconsiderblock(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -684,7 +684,7 @@ Value reconsiderblock(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value getinvalid (const Array& params, bool fHelp)
+Value getinvalid (const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(

@@ -11,8 +11,9 @@
 #include <sync.h>
 
 using namespace json_spirit;
+class CWallet;
 
-Value getlotteryblockwinners(const Array& params, bool fHelp)
+Value getlotteryblockwinners(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw std::runtime_error(

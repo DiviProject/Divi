@@ -52,7 +52,7 @@ extern Settings& settings;
 extern CCriticalSection cs_main;
 
 #ifdef ENABLE_WALLET
-Value setgenerate(const Array& params, bool fHelp)
+Value setgenerate(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -119,7 +119,7 @@ Value setgenerate(const Array& params, bool fHelp)
     return blockHashes;
 }
 
-Value generateblock(const Array& params, bool fHelp)
+Value generateblock(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -211,7 +211,7 @@ Value generateblock(const Array& params, bool fHelp)
 #endif
 
 
-Value getmininginfo(const Array& params, bool fHelp)
+Value getmininginfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -244,7 +244,7 @@ Value getmininginfo(const Array& params, bool fHelp)
 
 
 // NOTE: Unlike wallet RPC (which use DIVI values), mining RPCs follow GBT (BIP 22) in using satoshi amounts
-Value prioritisetransaction(const Array& params, bool fHelp)
+Value prioritisetransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 3)
         throw runtime_error(

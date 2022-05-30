@@ -64,7 +64,7 @@ using namespace std;
 
 std::string GetWarnings(std::string strFor);
 
-Value ban(const Array& params, bool fHelp)
+Value ban(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -100,7 +100,7 @@ Value ban(const Array& params, bool fHelp)
     return Value();
 }
 
-Value getinfo(const Array& params, bool fHelp)
+Value getinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -140,7 +140,6 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("version", CLIENT_VERSION_STR));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
 #ifdef ENABLE_WALLET
-    CWallet* pwallet = GetWallet();
     if (pwallet) {
         obj.push_back(Pair("walletversion", pwallet->GetVersion()));
         obj.push_back(Pair("balance", ValueFromAmount(pwallet->GetBalance())));
@@ -160,7 +159,7 @@ Value getinfo(const Array& params, bool fHelp)
     return obj;
 }
 
-Value mnsync(const Array& params, bool fHelp)
+Value mnsync(const Array& params, bool fHelp, CWallet* pwallet)
 {
     std::string strMode;
     if (params.size() == 1)
@@ -277,7 +276,7 @@ public:
 /*
     Used for updating/reading spork settings on the network
 */
-Value spork(const Array& params, bool fHelp)
+Value spork(const Array& params, bool fHelp, CWallet* pwallet)
 {
     CSporkManager& sporkManager = GetSporkManager();
     if (params.size() == 1 && params[0].get_str() == "show") {
@@ -318,7 +317,7 @@ Value spork(const Array& params, bool fHelp)
         HelpRequiringPassphrase());
 }
 
-Value validateaddress(const Array& params, bool fHelp)
+Value validateaddress(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -353,7 +352,6 @@ Value validateaddress(const Array& params, bool fHelp)
         ret.push_back(Pair("scriptPubKey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
 
 #ifdef ENABLE_WALLET
-        CWallet* pwallet = GetWallet();
         isminetype mine = pwallet ? pwallet->isMine(dest) : isminetype::ISMINE_NO;
         ret.push_back(Pair("ismine", (mine == isminetype::ISMINE_SPENDABLE) ? true : false));
         if (mine != isminetype::ISMINE_NO) {
@@ -389,7 +387,7 @@ Value validateaddress(const Array& params, bool fHelp)
 /**
  * Used by addmultisigaddress / createmultisig:
  */
-CScript _createmultisig_redeemScript(const Array& params)
+CScript _createmultisig_redeemScript(const Array& params, CWallet* pwallet)
 {
     int nRequired = params[0].get_int();
     const Array& keys = params[1].get_array();
@@ -410,7 +408,6 @@ CScript _createmultisig_redeemScript(const Array& params)
         const std::string& ks = keys[i].get_str();
 #ifdef ENABLE_WALLET
         // Case 1: DIVI address and we have full public key:
-        CWallet* pwallet = GetWallet();
         CBitcoinAddress address(ks);
         if (pwallet && address.IsValid()) {
             CKeyID keyID;
@@ -447,7 +444,7 @@ CScript _createmultisig_redeemScript(const Array& params)
     return result;
 }
 
-Value createmultisig(const Array& params, bool fHelp)
+Value createmultisig(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 2 || params.size() > 2) {
         string msg = "createmultisig nrequired [\"key\",...]\n"
@@ -476,7 +473,7 @@ Value createmultisig(const Array& params, bool fHelp)
     }
 
     // Construct using pay-to-script-hash:
-    CScript inner = _createmultisig_redeemScript(params);
+    CScript inner = _createmultisig_redeemScript(params,pwallet);
     CScriptID innerID(inner);
     CBitcoinAddress address(innerID);
 
@@ -487,7 +484,7 @@ Value createmultisig(const Array& params, bool fHelp)
     return result;
 }
 
-Value verifymessage(const Array& params, bool fHelp)
+Value verifymessage(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 3)
         throw runtime_error(
@@ -528,7 +525,7 @@ Value verifymessage(const Array& params, bool fHelp)
     return CObfuScationSigner::VerifyMessage(keyID,vchSig,strMessage,errorMessage);
 }
 
-Value setmocktime(const Array& params, bool fHelp)
+Value setmocktime(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -611,7 +608,7 @@ bool getAddressFromIndex(const int &type, const uint160 &hash, std::string &addr
     return true;
 }
 
-Value getaddresstxids(const Array& params, bool fHelp)
+Value getaddresstxids(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -695,7 +692,7 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
 }
 
-Value getaddressdeltas(const Array& params, bool fHelp)
+Value getaddressdeltas(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -819,7 +816,7 @@ Value getaddressdeltas(const Array& params, bool fHelp)
     }
 }
 
-Value getaddressbalance(const Array& params, bool fHelp)
+Value getaddressbalance(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -880,7 +877,7 @@ bool heightSort(std::pair<CAddressUnspentKey, CAddressUnspentValue> a,
     return a.second.blockHeight < b.second.blockHeight;
 }
 
-Value getspentinfo(const Array& params, bool fHelp)
+Value getspentinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
 
     if (fHelp || params.size() != 1 || params[0].type() != obj_type)
@@ -930,7 +927,7 @@ Value getspentinfo(const Array& params, bool fHelp)
     return obj;
 }
 
-Value getaddressutxos(const Array& params, bool fHelp)
+Value getaddressutxos(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -1014,7 +1011,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
     }
 }
 
-Value clearbanned(const Array& params, bool fHelp)
+Value clearbanned(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -1025,7 +1022,7 @@ Value clearbanned(const Array& params, bool fHelp)
     return Value();
 
 }
-Value listbanned(const Array& params, bool fHelp)
+Value listbanned(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -1039,7 +1036,7 @@ Value listbanned(const Array& params, bool fHelp)
 }
 
 #ifdef ENABLE_WALLET
-Value getstakingstatus(const Array& params, bool fHelp)
+Value getstakingstatus(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -1063,7 +1060,6 @@ Value getstakingstatus(const Array& params, bool fHelp)
     Object obj;
     obj.push_back(Pair("validtime", chainstate->ActiveChain().Tip()->nTime > 1471482000));
     obj.push_back(Pair("haveconnections", GetPeerCount()>0 ));
-    CWallet* pwallet = GetWallet();
     if (pwallet) {
         obj.push_back(Pair("walletunlocked", !pwallet->IsLocked()));
         obj.push_back(Pair("mintablecoins", pwallet->HasAgedCoins()));

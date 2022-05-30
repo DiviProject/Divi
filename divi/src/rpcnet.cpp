@@ -35,7 +35,7 @@ using namespace std;
 
 extern CCriticalSection cs_main;
 
-Value getconnectioncount(const Array& params, bool fHelp)
+Value getconnectioncount(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -49,7 +49,7 @@ Value getconnectioncount(const Array& params, bool fHelp)
     return GetPeerCount();
 }
 
-Value ping(const Array& params, bool fHelp)
+Value ping(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -65,7 +65,7 @@ Value ping(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value getpeerinfo(const Array& params, bool fHelp)
+Value getpeerinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -154,7 +154,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
     return ret;
 }
 
-Value addnode(const Array& params, bool fHelp)
+Value addnode(const Array& params, bool fHelp, CWallet* pwallet)
 {
     string strCommand;
     if (params.size() == 2)
@@ -186,7 +186,7 @@ Value addnode(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value getaddednodeinfo(const Array& params, bool fHelp)
+Value getaddednodeinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -287,7 +287,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
     return ret;
 }
 
-Value getnettotals(const Array& params, bool fHelp)
+Value getnettotals(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 0)
         throw runtime_error(
@@ -330,7 +330,7 @@ static Array GetNetworksInfo()
     return networks;
 }
 
-Value getnetworkinfo(const Array& params, bool fHelp)
+Value getnetworkinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(

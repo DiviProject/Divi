@@ -137,7 +137,14 @@ void InitializeWallet(std::string strWalletFile)
     pwalletMain.reset( new CWallet(strWalletFile,*walletDatabaseEndpointFactory, chain, blockMap, *confirmationsCalculator) );
 #endif
 }
-
+CWallet* GetWallet()
+{
+#ifdef ENABLE_WALLET
+    return pwalletMain.get();
+#else
+    return nullptr;
+#endif
+}
 class BlockSubmitter final: public I_BlockSubmitter
 {
 private:

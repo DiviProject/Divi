@@ -15,7 +15,14 @@ int TransactionInputChecker::nScriptCheckThreads = 0;
 
 void TransactionInputChecker::SetScriptCheckingThreadCount(int threadCount)
 {
-    nScriptCheckThreads = threadCount;
+    int scriptCheckingThreadCount = threadCount;
+    if (scriptCheckingThreadCount <= 0)
+        scriptCheckingThreadCount += boost::thread::hardware_concurrency();
+    if (scriptCheckingThreadCount <= 1)
+        scriptCheckingThreadCount = 0;
+    else if (scriptCheckingThreadCount > MAX_SCRIPTCHECK_THREADS)
+        scriptCheckingThreadCount = MAX_SCRIPTCHECK_THREADS;
+    nScriptCheckThreads = scriptCheckingThreadCount;
 }
 int TransactionInputChecker::GetScriptCheckingThreadCount()
 {

@@ -10,7 +10,6 @@
 #include "init.h"
 #include <chainparams.h>
 #include "noui.h"
-#include "rpcserver.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "Settings.h"

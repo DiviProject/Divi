@@ -30,4 +30,5 @@ void DeallocateWallet();
 bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
 CTxMemPool& GetTransactionMemoryPool();
 bool ManualBackupWallet(const std::string& strDest);
+CWallet* GetWallet();
 #endif // BITCOIN_INIT_H

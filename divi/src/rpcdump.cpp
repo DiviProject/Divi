@@ -39,7 +39,7 @@
 using namespace json_spirit;
 using namespace std;
 
-Value importprivkey(const Array& params, bool fHelp)
+Value importprivkey(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 3)
         throw runtime_error(
@@ -81,7 +81,6 @@ Value importprivkey(const Array& params, bool fHelp)
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
 
-    CWallet* pwallet = GetWallet();
     if(pwallet)
     {
         pwallet->SetAddressLabel(vchAddress, strLabel);
@@ -104,7 +103,7 @@ Value importprivkey(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value importaddress(const Array& params, bool fHelp)
+Value importaddress(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 3)
         throw runtime_error(
@@ -142,7 +141,6 @@ Value importaddress(const Array& params, bool fHelp)
     if (params.size() > 2)
         fRescan = params[2].get_bool();
 
-    CWallet* pwallet = GetWallet();
     {
         if(!pwallet)
             throw JSONRPCError(RPC_WALLET_ERROR,"Wallet is not enabled in this build");
@@ -170,7 +168,7 @@ Value importaddress(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value dumpprivkey(const Array& params, bool fHelp)
+Value dumpprivkey(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -194,13 +192,12 @@ Value dumpprivkey(const Array& params, bool fHelp)
     if (!address.GetKeyID(keyID))
         throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
     CKey vchSecret;
-    CWallet* pwallet = GetWallet();
     if (!pwallet->GetKey(keyID, vchSecret))
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + strAddress + " is not known");
     return CBitcoinSecret(vchSecret).ToString();
 }
 
-Value dumphdinfo(const Array& params, bool fHelp)
+Value dumphdinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw std::runtime_error(
@@ -217,7 +214,6 @@ Value dumphdinfo(const Array& params, bool fHelp)
             + HelpExampleRpc("dumphdinfo", "")
         );
 
-    CWallet* pwallet = GetWallet();
     LOCK(pwallet->cs_wallet);
 
     EnsureWalletIsUnlocked();
@@ -254,7 +250,7 @@ static bool CheckIntegrity(const std::string strAddress,const std::string strKey
     return addressParsed.compare(strAddress)==0;
 }
 
-Value bip38paperwallet(const Array& params, bool fHelp)
+Value bip38paperwallet(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -300,7 +296,7 @@ Value bip38paperwallet(const Array& params, bool fHelp)
     return result;
 }
 
-Value bip38decrypt(const Array& params, bool fHelp)
+Value bip38decrypt(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 2)
         throw runtime_error(
@@ -337,7 +333,6 @@ Value bip38decrypt(const Array& params, bool fHelp)
     assert(key.VerifyPubKey(pubkey));
     result.push_back(Pair("Address", CBitcoinAddress(pubkey.GetID()).ToString()));
     CKeyID vchAddress = pubkey.GetID();
-    CWallet* pwallet = GetWallet();
     {
         pwallet->SetAddressLabel(vchAddress, "");
 

@@ -67,7 +67,8 @@ void RPCTypeCheck(const json_spirit::Object& o,
 //! Convert boost::asio address to CNetAddr
 CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address);
 
-typedef json_spirit::Value (*rpcfn_type)(const json_spirit::Array& params, bool fHelp);
+class CWallet;
+typedef json_spirit::Value (*rpcfn_type)(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
 class CRPCCommand
 {

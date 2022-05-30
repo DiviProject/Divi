@@ -61,7 +61,7 @@ static MasternodeTier GetMasternodeTierFromString(std::string str)
     return MasternodeTier::INVALID;
 }
 
-Value allocatefunds(const Array& params, bool fHelp)
+Value allocatefunds(const Array& params, bool fHelp, CWallet* pwallet)
 {
 	if (fHelp || params.size() != 3)
 		throw std::runtime_error(
@@ -80,7 +80,6 @@ Value allocatefunds(const Array& params, bool fHelp)
     {
         throw std::runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
     }
-    CWallet* pwallet = GetWallet();
     if(!pwallet)
     {
         throw JSONRPCError(RPC_WALLET_ERROR, "Invalid masternode tier");
@@ -121,7 +120,7 @@ Value allocatefunds(const Array& params, bool fHelp)
     return obj;
 }
 
-Value verifymasternodesetup(const Array&params, bool fHelp)
+Value verifymasternodesetup(const Array&params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 4)
 		throw std::runtime_error(
@@ -160,7 +159,7 @@ Value verifymasternodesetup(const Array&params, bool fHelp)
     return result;
 }
 
-Value signmnbroadcast(const Array& params, bool fHelp)
+Value signmnbroadcast(const Array& params, bool fHelp, CWallet* pwallet)
 {
    	if (fHelp || params.size() != 1)
 		throw std::runtime_error(
@@ -174,7 +173,6 @@ Value signmnbroadcast(const Array& params, bool fHelp)
 
     Object result;
     std::string hexdata = params[0].get_str();
-    CWallet* pwallet = GetWallet();
     if(!pwallet || !SignMasternodeBroadcast(*pwallet,hexdata))
     {
         throw JSONRPCError(RPC_INVALID_PARAMS,"Unable to sign broadcast!");
@@ -183,7 +181,7 @@ Value signmnbroadcast(const Array& params, bool fHelp)
     return result;
 }
 
-Value setupmasternode(const Array& params, bool fHelp)
+Value setupmasternode(const Array& params, bool fHelp, CWallet* pwallet)
 {
 	if (fHelp || params.size() < 5 || params.size() > 6)
 		throw std::runtime_error(
@@ -206,7 +204,6 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    CWallet* pwallet = GetWallet();
     if(!pwallet) throw JSONRPCError(RPC_WALLET_ERROR,"Wallet disabled!");
     CBitcoinAddress address = GetAccountAddress(*pwallet,"reserved->" + params[0].get_str(),false,true);
     CKeyID keyID;
@@ -264,7 +261,7 @@ std::string nodeHelp(std::string indent = "")
 	return ret;
 }
 
-Value listmasternodes(const Array& params, bool fHelp)
+Value listmasternodes(const Array& params, bool fHelp, CWallet* pwallet)
 {
     std::string strFilter = "";
 
@@ -328,7 +325,7 @@ Value listmasternodes(const Array& params, bool fHelp)
     return ret;
 }
 
-Value getmasternodecount (const Array& params, bool fHelp)
+Value getmasternodecount (const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || (params.size() > 0))
         throw std::runtime_error(
@@ -362,7 +359,7 @@ Value getmasternodecount (const Array& params, bool fHelp)
     return obj;
 }
 
-Value broadcaststartmasternode(const Array& params, bool fHelp)
+Value broadcaststartmasternode(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 2 || params.size() < 1)
         throw std::runtime_error(
@@ -394,7 +391,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
     return result;
 }
 
-Value startmasternode(const Array& params, bool fHelp)
+Value startmasternode(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw std::runtime_error(
@@ -428,7 +425,7 @@ Value startmasternode(const Array& params, bool fHelp)
     return result;
 }
 
-Value getmasternodestatus (const Array& params, bool fHelp)
+Value getmasternodestatus (const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || (params.size() != 0))
         throw std::runtime_error(
@@ -490,7 +487,7 @@ std::string ParsePayeesIntoPaymentsString(const MasternodePaymentData& paymentDa
     return "Unknown";
 }
 
-Value getmasternodewinners (const Array& params, bool fHelp)
+Value getmasternodewinners (const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 3)
         throw std::runtime_error(
@@ -596,7 +593,7 @@ Value getmasternodewinners (const Array& params, bool fHelp)
     return ret;
 }
 
-Value importmnbroadcast(const Array& params, bool fHelp)
+Value importmnbroadcast(const Array& params, bool fHelp, CWallet* pwallet)
 {
      if (fHelp || params.size() != 1)
         throw std::runtime_error(
@@ -616,7 +613,7 @@ Value importmnbroadcast(const Array& params, bool fHelp)
     return GetMasternodeModule().getStoredBroadcasts().AddBroadcast(mnb);
 }
 
-Value listmnbroadcasts(const Array& params, bool fHelp)
+Value listmnbroadcasts(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 0)
         throw std::runtime_error(

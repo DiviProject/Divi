@@ -137,7 +137,7 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
 
 }
 
-Value getrawtransaction(const Array& params, bool fHelp)
+Value getrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -249,7 +249,7 @@ Value getrawtransaction(const Array& params, bool fHelp)
 }
 
 #ifdef ENABLE_WALLET
-Value listunspent(const Array& params, bool fHelp)
+Value listunspent(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 3)
         throw runtime_error(
@@ -309,7 +309,6 @@ Value listunspent(const Array& params, bool fHelp)
 
     Array results;
     std::vector<COutput> vecOutputs;
-    CWallet* pwallet = GetWallet();
     if(!pwallet)
     {
         throw JSONRPCError(RPC_WALLET_ERROR,"No wallet is enabled");
@@ -360,7 +359,7 @@ Value listunspent(const Array& params, bool fHelp)
 }
 #endif
 
-Value createrawtransaction(const Array& params, bool fHelp)
+Value createrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 2)
         throw runtime_error(
@@ -463,7 +462,7 @@ Value createrawtransaction(const Array& params, bool fHelp)
     return EncodeHexTx(rawTx);
 }
 
-Value decoderawtransaction(const Array& params, bool fHelp)
+Value decoderawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -526,7 +525,7 @@ Value decoderawtransaction(const Array& params, bool fHelp)
     return result;
 }
 
-Value decodescript(const Array& params, bool fHelp)
+Value decodescript(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -565,7 +564,7 @@ Value decodescript(const Array& params, bool fHelp)
     return r;
 }
 
-Value signrawtransaction(const Array& params, bool fHelp)
+Value signrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 4)
         throw runtime_error(
@@ -725,7 +724,6 @@ Value signrawtransaction(const Array& params, bool fHelp)
     }
 
 #ifdef ENABLE_WALLET
-    CWallet* pwallet = GetWallet();
     const CKeyStore& keystore = ((fGivenKeys || !pwallet) ? tempKeystore : *pwallet);
 #else
     const CKeyStore& keystore = tempKeystore;
@@ -792,7 +790,7 @@ static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransa
     }
 }
 
-Value sendrawtransaction(const Array& params, bool fHelp)
+Value sendrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(

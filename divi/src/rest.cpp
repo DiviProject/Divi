@@ -28,7 +28,6 @@ using namespace std;
 using namespace json_spirit;
 
 extern CCriticalSection cs_main;
-extern bool RPCIsInWarmup(std::string* statusOut);
 
 enum RetFormat {
     RF_UNDEF,
@@ -240,14 +239,16 @@ static const struct {
     {"/rest/block/", rest_block_extended},
 };
 
-bool HTTPReq_REST(AcceptedConnection* conn,
+bool HTTPReq_REST(
+    bool (*rpcStatusCheck)(std::string* statusMessageRef),
+    AcceptedConnection* conn,
     string& strURI,
     map<string, string>& mapHeaders,
     bool fRun)
 {
     try {
         std::string statusmessage;
-        if (RPCIsInWarmup(&statusmessage))
+        if (rpcStatusCheck(&statusmessage))
             throw RESTERR(HTTP_SERVICE_UNAVAILABLE, "Service temporarily unavailable: " + statusmessage);
 
         for (unsigned int i = 0; i < ARRAYLEN(uri_prefixes); i++) {

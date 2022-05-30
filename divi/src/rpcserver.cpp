@@ -38,7 +38,9 @@
 
 extern CCriticalSection cs_main;
 extern CConditionVariable cvBlockChange;
-extern bool HTTPReq_REST(AcceptedConnection* conn,
+extern bool HTTPReq_REST(
+    bool (*rpcStatusCheck)(std::string* statusMessageRef),
+    AcceptedConnection* conn,
     std::string& strURI,
     std::map<std::string, std::string>& mapHeaders,
     bool fRun);
@@ -1011,7 +1013,7 @@ void ServiceConnection(AcceptedConnection* conn)
 
             // Process via HTTP REST API
         } else if (strURI.substr(0, 6) == "/rest/" && settings.GetBoolArg("-rest", false)) {
-            if (!HTTPReq_REST(conn, strURI, mapHeaders, fRun))
+            if (!HTTPReq_REST(&RPCIsInWarmup,conn, strURI, mapHeaders, fRun))
                 break;
 
         } else {

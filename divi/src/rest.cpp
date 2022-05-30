@@ -9,7 +9,6 @@
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "rpcprotocol.h"
-#include "rpcserver.h"
 #include "streams.h"
 #include "sync.h"
 #include <TransactionDiskAccessor.h>
@@ -29,6 +28,7 @@ using namespace std;
 using namespace json_spirit;
 
 extern CCriticalSection cs_main;
+extern bool RPCIsInWarmup(std::string* statusOut);
 
 enum RetFormat {
     RF_UNDEF,

@@ -19,15 +19,15 @@ using namespace json_spirit;
 extern Array createArgs(int nRequired, const char* address1 = NULL, const char* address2 = NULL);
 extern Value CallRPC(string args);
 
-extern std::unique_ptr<CWallet> pwalletMain;
 extern CCriticalSection cs_main;
 extern Settings& settings;
+extern CWallet* GetWallet();
 
 BOOST_AUTO_TEST_SUITE(rpc_wallet_tests)
 
 BOOST_AUTO_TEST_CASE(rpc_addmultisig)
 {
-    LOCK(pwalletMain->cs_wallet);
+    LOCK(GetWallet()->cs_wallet);
 
     rpcfn_type addmultisig = CRPCTable::getRPCTable()["addmultisigaddress"]->actor;
 
@@ -68,20 +68,20 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
 {
     // Test RPC calls for various wallet statistics
     Value r;
+    CWallet* pwallet = GetWallet();
+    LOCK2(cs_main, pwallet->cs_wallet);
 
-    LOCK2(cs_main, pwalletMain->cs_wallet);
-
-    CPubKey demoPubkey = pwalletMain->GenerateNewKey(0,false);
+    CPubKey demoPubkey = pwallet->GenerateNewKey(0,false);
     CBitcoinAddress demoAddress = CBitcoinAddress(CTxDestination(demoPubkey.GetID()));
     Value retValue;
     string strAccount = "walletDemoAccount";
     BOOST_CHECK_NO_THROW({ /*Initialize Wallet with an account */
         CAccount account;
         account.vchPubKey = demoPubkey;
-        pwalletMain->SetAddressLabel(account.vchPubKey.GetID(), strAccount);
+        pwallet->SetAddressLabel(account.vchPubKey.GetID(), strAccount);
     });
 
-    CPubKey setaccountDemoPubkey = pwalletMain->GenerateNewKey(0,false);
+    CPubKey setaccountDemoPubkey = pwallet->GenerateNewKey(0,false);
     CBitcoinAddress setaccountDemoAddress = CBitcoinAddress(CTxDestination(setaccountDemoPubkey.GetID()));
 
     /*********************************

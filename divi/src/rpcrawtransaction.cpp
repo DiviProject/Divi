@@ -46,7 +46,6 @@ using namespace boost::assign;
 using namespace json_spirit;
 using namespace std;
 
-extern std::unique_ptr<CWallet> pwalletMain;
 extern CCriticalSection cs_main;
 
 void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& entry,
@@ -310,9 +309,13 @@ Value listunspent(const Array& params, bool fHelp)
 
     Array results;
     std::vector<COutput> vecOutputs;
-    assert(pwalletMain != NULL);
-    pwalletMain->AvailableCoins(vecOutputs, false);
-    const AddressBook& addressBook = pwalletMain->getAddressBookManager().getAddressBook();
+    CWallet* pwallet = GetWallet();
+    if(!pwallet)
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR,"No wallet is enabled");
+    }
+    pwallet->AvailableCoins(vecOutputs, false);
+    const AddressBook& addressBook = pwallet->getAddressBookManager().getAddressBook();
     BOOST_FOREACH (const COutput& out, vecOutputs) {
         if (out.nDepth < nMinDepth || out.nDepth > nMaxDepth)
             continue;
@@ -343,7 +346,7 @@ Value listunspent(const Array& params, bool fHelp)
             if (ExtractDestination(pk, address)) {
                 const CScriptID& hash = boost::get<CScriptID>(address);
                 CScript redeemScript;
-                if (pwalletMain->GetCScript(hash, redeemScript))
+                if (pwallet->GetCScript(hash, redeemScript))
                     entry.push_back(Pair("redeemScript", HexStr(redeemScript.begin(), redeemScript.end())));
             }
         }
@@ -722,7 +725,8 @@ Value signrawtransaction(const Array& params, bool fHelp)
     }
 
 #ifdef ENABLE_WALLET
-    const CKeyStore& keystore = ((fGivenKeys || !pwalletMain) ? tempKeystore : *pwalletMain);
+    CWallet* pwallet = GetWallet();
+    const CKeyStore& keystore = ((fGivenKeys || !pwallet) ? tempKeystore : *pwallet);
 #else
     const CKeyStore& keystore = tempKeystore;
 #endif

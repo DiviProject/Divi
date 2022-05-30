@@ -163,7 +163,6 @@ using namespace json_spirit;
 using namespace std;
 extern Settings& settings;
 static std::string strRPCUserColonPass;
-extern std::unique_ptr<CWallet> pwalletMain;
 
 static bool fRPCRunning = false;
 static bool fRPCInWarmup = true;
@@ -238,7 +237,7 @@ std::string CRPCTable::help(std::string strCommand) const
         if ((strCommand != "" || pcmd->category == "hidden") && strMethod != strCommand)
             continue;
 #ifdef ENABLE_WALLET
-        if (pcmd->requiresWalletLock && !pwalletMain)
+        if (pcmd->requiresWalletLock && !GetWallet())
             continue;
 #endif
 
@@ -1026,7 +1025,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found");
 #ifdef ENABLE_WALLET
     assert(!pcmd->requiresWalletLock || (!pcmd->threadSafe && pcmd->requiresWalletInstance) );
-    if ((pcmd->requiresWalletLock || pcmd->requiresWalletInstance) && !pwalletMain)
+    if ((pcmd->requiresWalletLock || pcmd->requiresWalletInstance) && !GetWallet())
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method unavailable due to manually disabled wallet");
 #endif
 
@@ -1045,7 +1044,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
                 result = pcmd->actor(params, false);
             }
 #ifdef ENABLE_WALLET
-            else if (!pwalletMain)
+            else if (!GetWallet())
             {
                 assert(!(pcmd->requiresWalletLock || pcmd->requiresWalletInstance)); // Implied by above condition failing on wallet
                 LOCK(cs_main);
@@ -1067,7 +1066,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
                     {
                         while (true)
                         {
-                            TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
+                            TRY_LOCK(GetWallet()->cs_wallet, lockWallet);
                             if (!lockMain) {
                                 MilliSleep(50);
                                 continue;
@@ -1106,7 +1105,8 @@ std::vector<std::string> CRPCTable::listCommands() const
 static int64_t nWalletUnlockTime;
 void EnsureWalletIsUnlocked()
 {
-    if (pwalletMain && !pwalletMain->IsFullyUnlocked())
+    CWallet* pwallet = GetWallet();
+    if (pwallet && !pwallet->IsFullyUnlocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 }
 
@@ -1116,37 +1116,40 @@ private:
     mutable bool executionComplete;
     mutable bool cancelled;
     bool unlockedForStakingOnExpiry;
+    CWallet* walletRef_;
 
 public:
     CancellableMethod(
-        bool revertToUnlockedForStakingOnExpiry
+        bool revertToUnlockedForStakingOnExpiry,
+        CWallet* walletReference
         ): executionComplete(false)
         , cancelled(false)
         , unlockedForStakingOnExpiry(revertToUnlockedForStakingOnExpiry)
+        , walletRef_(walletReference)
     {
     }
 
     void cancel()
     {
-        if(pwalletMain) AssertLockHeld(pwalletMain->cs_wallet);
+        if(walletRef_) AssertLockHeld(walletRef_->cs_wallet);
         cancelled = true;
     }
 
     bool canBeRemoved() const
     {
-        if(pwalletMain) AssertLockHeld(pwalletMain->cs_wallet);
+        if(walletRef_) AssertLockHeld(walletRef_->cs_wallet);
         return executionComplete;
     }
     void revertWalletUnlockStatus() const
     {
-        if(pwalletMain)
+        if(walletRef_)
         {
-            LOCK(pwalletMain->cs_wallet); // Required for modifying unlock time
+            LOCK(walletRef_->cs_wallet); // Required for modifying unlock time
             if(cancelled){ executionComplete = true; return; }
             RPCDiscardRunLater("lockwallet");
             nWalletUnlockTime = 0;
-            if(unlockedForStakingOnExpiry) pwalletMain->UnlockForStakingOnly();
-            else pwalletMain->LockFully();
+            if(unlockedForStakingOnExpiry) walletRef_->UnlockForStakingOnly();
+            else walletRef_->LockFully();
             executionComplete = true;
             return;
         }
@@ -1179,21 +1182,22 @@ enum class WalletLockMode
 };
 void ModifyWalletLockStateBriefly(WalletLockMode mode, int64_t sleepTime = 0, bool revertToUnlockedForStakingOnExpiry = false)
 {
-    if(pwalletMain)
+    CWallet* pwallet = GetWallet();
+    if(pwallet)
     {
-        AssertLockHeld(pwalletMain->cs_wallet);
+        AssertLockHeld(pwallet->cs_wallet);
         nWalletUnlockTime = GetTime() + sleepTime;
         removeCompletedOrCancelPendingCalls();
         if(mode==WalletLockMode::LOCK)
         {
             RPCDiscardRunLater("lockwallet");
             nWalletUnlockTime = 0;
-            pwalletMain->LockFully();
+            pwallet->LockFully();
         }
         else if (sleepTime > 0 && mode == WalletLockMode::UNLOCK)
         {
             nWalletUnlockTime = GetTime () + sleepTime;
-            cancellableCallStack.emplace_back(revertToUnlockedForStakingOnExpiry);
+            cancellableCallStack.emplace_back(revertToUnlockedForStakingOnExpiry,pwallet);
             RPCRunLater ("lockwallet", boost::bind (&CancellableMethod::revertWalletUnlockStatus, &cancellableCallStack.back()), sleepTime);
         }
     }
@@ -1210,13 +1214,14 @@ void UnlockWalletBriefly(int64_t sleepTime, bool revertToUnlockedForStakingOnExp
 
 int64_t TimeTillWalletLock()
 {
-    AssertLockHeld(pwalletMain->cs_wallet);
+    AssertLockHeld(GetWallet()->cs_wallet);
     return nWalletUnlockTime;
 }
 
 std::string HelpRequiringPassphrase()
 {
-    return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
+    CWallet* pwallet = GetWallet();
+    return pwallet && pwallet->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
 }
 
 std::string HelpExampleCli(string methodname, string args)

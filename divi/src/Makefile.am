@@ -282,6 +282,7 @@ BITCOIN_CORE_H = \
   PeerBanningService.h \
   OutputEntry.h \
   noui.h \
+  rest.h \
   pow.h \
   protocol.h \
   pubkey.h \

@@ -3,6 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <rest.h>
+
 #include "main.h"
 #include "BlockDiskAccessor.h"
 #include "ChainstateManager.h"
@@ -242,8 +244,8 @@ static const struct {
 bool HTTPReq_REST(
     bool (*rpcStatusCheck)(std::string* statusMessageRef),
     AcceptedConnection* conn,
-    string& strURI,
-    map<string, string>& mapHeaders,
+    std::string& strURI,
+    std::map<std::string, std::string>& mapHeaders,
     bool fRun)
 {
     try {

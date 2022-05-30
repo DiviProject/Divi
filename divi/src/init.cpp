@@ -604,14 +604,7 @@ void SetConsistencyChecks()
 void SetNumberOfThreadsToCheckScripts()
 {
     // -par=0 means autodetect, but scriptCheckingThreadCount==0 means no concurrency
-    int scriptCheckingThreadCount = settings.GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS);
-    if (scriptCheckingThreadCount <= 0)
-        scriptCheckingThreadCount += boost::thread::hardware_concurrency();
-    if (scriptCheckingThreadCount <= 1)
-        scriptCheckingThreadCount = 0;
-    else if (scriptCheckingThreadCount > MAX_SCRIPTCHECK_THREADS)
-        scriptCheckingThreadCount = MAX_SCRIPTCHECK_THREADS;
-    TransactionInputChecker::SetScriptCheckingThreadCount(scriptCheckingThreadCount);
+    TransactionInputChecker::SetScriptCheckingThreadCount(settings.GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS));
 }
 
 bool WalletIsDisabled()

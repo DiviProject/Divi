@@ -54,13 +54,20 @@ Value ValueFromAmountRPC(const CAmount& amount)
     return ValueFromAmount(amount);
 }
 
-BOOST_AUTO_TEST_SUITE(rpc_tests)
+class RpcTestFramework
+{
+public:
+    CWallet* pwallet;
+    RpcTestFramework(): pwallet(GetWallet()) {}
+    ~RpcTestFramework(){ pwallet = nullptr; }
+};
+
+BOOST_FIXTURE_TEST_SUITE(rpc_tests, RpcTestFramework)
 
 BOOST_AUTO_TEST_CASE(rpc_rawparams)
 {
     // Test raw transaction API argument handling
     Value r;
-    CWallet* pwallet = GetWallet();
 
     BOOST_CHECK_THROW(CallRPC("getrawtransaction",pwallet), runtime_error);
     BOOST_CHECK_THROW(CallRPC("getrawtransaction not_hex",pwallet), runtime_error);
@@ -101,7 +108,6 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
 BOOST_AUTO_TEST_CASE(rpc_rawsign)
 {
     Value r;
-    CWallet* pwallet = GetWallet();
     // input is a 1-of-2 multisig (so is output):
     string prevout =
       "[{\"txid\":\"dd2888870cdc3f6e92661f6b0829667ee4bb07ed086c44205e726bbf3338f726\","

@@ -57,7 +57,7 @@ Value importprivkey(const Array& params, bool fHelp, CWallet* pwallet)
             "\nImport using a label and without rescan\n" + HelpExampleCli("importprivkey", "\"mykey\" \"testing\" false") +
             "\nAs a JSON-RPC call\n" + HelpExampleRpc("importprivkey", "\"mykey\", \"testing\", false"));
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
     string strSecret = params[0].get_str();
     string strLabel = "";
@@ -182,7 +182,7 @@ Value dumpprivkey(const Array& params, bool fHelp, CWallet* pwallet)
             "\nExamples:\n" +
             HelpExampleCli("dumpprivkey", "\"myaddress\"") + HelpExampleCli("importprivkey", "\"mykey\"") + HelpExampleRpc("dumpprivkey", "\"myaddress\""));
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
     string strAddress = params[0].get_str();
     CBitcoinAddress address;
@@ -216,7 +216,7 @@ Value dumphdinfo(const Array& params, bool fHelp, CWallet* pwallet)
 
     LOCK(pwallet->cs_wallet);
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
     CHDChain hdChainCurrent;
     if (!pwallet->GetHDChain(hdChainCurrent))
@@ -263,7 +263,7 @@ Value bip38paperwallet(const Array& params, bool fHelp, CWallet* pwallet)
             "\"key\"                (string) The encrypted private key\n"
             "\nExamples:\n");
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
     std::string strPassphrase;
     std::string strAddress;
@@ -310,7 +310,7 @@ Value bip38decrypt(const Array& params, bool fHelp, CWallet* pwallet)
             "\"key\"                (string) The decrypted private key\n"
             "\nExamples:\n");
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
     /** Collect private key and passphrase **/
     string strKey = params[0].get_str();

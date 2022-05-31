@@ -93,7 +93,7 @@ private:
 
 public:
     const CRPCCommand* operator[](std::string name) const;
-    std::string help(std::string name) const;
+    std::string help(std::string name,CWallet* pwallet) const;
 
     /**
      * Execute a method.
@@ -116,11 +116,11 @@ public:
     }
 };
 
-void EnsureWalletIsUnlocked();
-void LockWallet();
-void UnlockWalletBriefly(int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry);
-int64_t TimeTillWalletLock();
-std::string HelpRequiringPassphrase();
+void EnsureWalletIsUnlocked(CWallet* pwallet);
+void LockWallet(CWallet* pwallet);
+void UnlockWalletBriefly(CWallet* pwallet, int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry);
+int64_t TimeTillWalletLock(CWallet* pwallet);
+std::string HelpRequiringPassphrase(CWallet* pwallet);
 std::string HelpExampleCli(std::string methodname, std::string args);
 std::string HelpExampleRpc(std::string methodname, std::string args);
 #endif // BITCOIN_RPCSERVER_H

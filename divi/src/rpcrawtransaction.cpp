@@ -575,7 +575,7 @@ Value signrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
             "The third optional argument (may be null) is an array of base58-encoded private\n"
             "keys that, if given, will be the only keys used to sign the transaction.\n"
 #ifdef ENABLE_WALLET
-            + HelpRequiringPassphrase() + "\n"
+            + HelpRequiringPassphrase(pwallet) + "\n"
 #endif
             "\nArguments:\n"
             "1. \"hexstring\"     (string, required) The transaction hex string\n"
@@ -672,7 +672,7 @@ Value signrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
     }
 #ifdef ENABLE_WALLET
     else
-        EnsureWalletIsUnlocked();
+        EnsureWalletIsUnlocked(pwallet);
 #endif
 
     // Add previous txouts given in the RPC call:

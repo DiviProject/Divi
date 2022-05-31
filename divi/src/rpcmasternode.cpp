@@ -35,7 +35,7 @@
 using namespace json_spirit;
 
 extern CCriticalSection cs_main;
-extern std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue);
+extern std::string SendMoneyToAddress(CWallet* pwallet, const CTxDestination& address, CAmount nValue);
 extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool forceNewKey, bool isWalletDerivedKey);
 
 static MasternodeTier GetMasternodeTierFromString(std::string str)
@@ -84,7 +84,7 @@ Value allocatefunds(const Array& params, bool fHelp, CWallet* pwallet)
     {
         throw JSONRPCError(RPC_WALLET_ERROR, "Invalid masternode tier");
     }
-	CBitcoinAddress acctAddr = GetAccountAddress(*GetWallet(),"alloc->" + params[1].get_str(),false,true);
+	CBitcoinAddress acctAddr = GetAccountAddress(*pwallet,"alloc->" + params[1].get_str(),false,true);
 	std::string strAmt = params[2].get_str();
 
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
@@ -93,9 +93,9 @@ Value allocatefunds(const Array& params, bool fHelp, CWallet* pwallet)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
     }
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
-    const uint256 txid = uint256S(SendMoneyToAddress(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier)));
+    const uint256 txid = uint256S(SendMoneyToAddress(pwallet,acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier)));
     const CWalletTx* walletTx = pwallet->GetWalletTx(txid);
     if(!walletTx)
         throw JSONRPCError(RPC_WALLET_ERROR, "Couldn't find MN allocation transaction");
@@ -202,7 +202,7 @@ Value setupmasternode(const Array& params, bool fHelp, CWallet* pwallet)
 
     Object result;
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
     if(!pwallet) throw JSONRPCError(RPC_WALLET_ERROR,"Wallet disabled!");
     CBitcoinAddress address = GetAccountAddress(*pwallet,"reserved->" + params[0].get_str(),false,true);
@@ -407,9 +407,9 @@ Value startmasternode(const Array& params, bool fHelp, CWallet* pwallet)
     const std::string alias = params[0].get_str();
     const bool deferRelay = (params.size() == 1)? false: params[1].get_bool();
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
     Object result;
-    MasternodeStartResult mnResult = StartMasternode(*GetWallet(), GetMasternodeModule().getStoredBroadcasts(), alias, deferRelay);
+    MasternodeStartResult mnResult = StartMasternode(*pwallet, GetMasternodeModule().getStoredBroadcasts(), alias, deferRelay);
 
     result.push_back(Pair("status",mnResult.status?"success":"failed"));
     if(!mnResult.status)

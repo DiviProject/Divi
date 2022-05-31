@@ -64,11 +64,6 @@ struct TestingSetup {
         chainstateInstance.reset(new ChainstateManager(1 << 20, 1 << 23, 5000, true, false));
         sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
         InitBlockIndex(*chainstateInstance, *sporkManagerInstance);
-#ifdef ENABLE_WALLET
-        InitializeWallet("wallet.dat");
-        GetWallet()->LoadWallet();
-        RegisterValidationInterface(GetWallet());
-#endif
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
         TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
         RegisterNodeSignals(GetNodeSignals());
@@ -79,9 +74,6 @@ struct TestingSetup {
         threadGroup.interrupt_all();
         threadGroup.join_all();
         UnregisterNodeSignals(GetNodeSignals());
-#ifdef ENABLE_WALLET
-        DeallocateWallet();
-#endif
         sporkManagerInstance.reset();
         chainstateInstance.reset();
 #ifdef ENABLE_WALLET

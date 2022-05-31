@@ -1071,8 +1071,17 @@ bool LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& erro
     settings.ForceRemoveArg("-masternodeprivkey");
     if(settings.ParameterIsSet("-masternode"))
     {
+        if(!pwallet)
+        {
+            errorMessage = "Wallet must be enabled to run masternode";
+            return false;
+        }
         std::string alias = settings.GetArg("-masternode","");
-        if(alias.empty()) return false;
+        if(alias.empty())
+        {
+            errorMessage = "missing label for masternode=<alias>. masternode=<alias> may be missing from configuration.";
+            return false;
+        }
         // Pull up keyID by alias and pass it downstream with keystore for lookup of the private key
         // Potential issues may arise in the event that a person reuses the same alias for a differnt
         // MN - should assert here that if duplicate potential addresses are found that it will pick
@@ -1092,6 +1101,7 @@ bool LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& erro
                 return true;
             }
         }
+        errorMessage = "Unknown key for specified mn alias. masternode=<alias> may be missing from configuration.";
         return false;
     }
     return true;
@@ -1372,7 +1382,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (!ActivateBestChain(*chainstateInstance, *sporkManagerInstance, state))
         strErrors << "Failed to connect best block";
 #ifdef ENABLE_WALLET
-    if(settings.ParameterIsSet("-prunewalletconfs"))
+    if(pwalletMain && settings.ParameterIsSet("-prunewalletconfs"))
     {
         pwalletMain->PruneWallet();
     }
@@ -1395,7 +1405,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     uiInterface.InitMessage(translate("Checking for active masternode..."));
     if(!LookupMasternodeKey(settings,pwalletMain.get(),errorMessage))
     {
-        return InitError("Unknown key or missing label for masternode=<alias>. masternode=<alias> may be missing from configuration.");
+        return InitError(errorMessage);
     }
     {
     if(!InitializeMasternodeIfRequested(settings, chainstateInstance->BlockTree().GetTxIndexing(), errorMessage))

@@ -217,7 +217,7 @@ void RPCTypeCheck(const Object& o,
  * Note: This interface may still be subject to change.
  */
 
-std::string CRPCTable::help(std::string strCommand) const
+std::string CRPCTable::help(std::string strCommand, CWallet* pwallet) const
 {
     std::string strRet;
     std::string category;
@@ -237,7 +237,7 @@ std::string CRPCTable::help(std::string strCommand) const
         if ((strCommand != "" || pcmd->category == "hidden") && strMethod != strCommand)
             continue;
 #ifdef ENABLE_WALLET
-        if (pcmd->requiresWalletLock && !GetWallet())
+        if (pcmd->requiresWalletLock && !pwallet)
             continue;
 #endif
 
@@ -245,7 +245,7 @@ std::string CRPCTable::help(std::string strCommand) const
             Array params;
             rpcfn_type pfn = pcmd->actor;
             if (setDone.insert(pfn).second)
-                (*pfn)(params, true, GetWallet());
+                (*pfn)(params, true, pwallet);
         } catch (std::exception& e) {
             // Help text is returned in an exception
             string strHelp = string(e.what());
@@ -286,7 +286,7 @@ Value help(const Array& params, bool fHelp, CWallet* pwallet)
     if (params.size() > 0)
         strCommand = params[0].get_str();
 
-    return CRPCTable::getRPCTable().help(strCommand);
+    return CRPCTable::getRPCTable().help(strCommand, pwallet);
 }
 
 
@@ -1023,9 +1023,11 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
     const CRPCCommand* pcmd = CRPCTable::getRPCTable()[strMethod];
     if (!pcmd)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found");
+
+    CWallet* pwallet = GetWallet();
 #ifdef ENABLE_WALLET
     assert(!pcmd->requiresWalletLock || (!pcmd->threadSafe && pcmd->requiresWalletInstance) );
-    if ((pcmd->requiresWalletLock || pcmd->requiresWalletInstance) && !GetWallet())
+    if ((pcmd->requiresWalletLock || pcmd->requiresWalletInstance) && !pwallet)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method unavailable due to manually disabled wallet");
 #endif
 
@@ -1041,14 +1043,14 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
         {
             if (pcmd->threadSafe)
             {
-                result = pcmd->actor(params, false, GetWallet());
+                result = pcmd->actor(params, false, pwallet);
             }
 #ifdef ENABLE_WALLET
-            else if (!GetWallet())
+            else if (!pwallet)
             {
                 assert(!(pcmd->requiresWalletLock || pcmd->requiresWalletInstance)); // Implied by above condition failing on wallet
                 LOCK(cs_main);
-                result = pcmd->actor(params, false, GetWallet());
+                result = pcmd->actor(params, false, pwallet);
             } else {
                 // Not threadsafe and may or may not require
                 while (true) {
@@ -1059,19 +1061,19 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
                     }
                     else if(!pcmd->requiresWalletLock)
                     {
-                        result = pcmd->actor(params, false, GetWallet());
+                        result = pcmd->actor(params, false, pwallet);
                         break;
                     }
                     else
                     {
                         while (true)
                         {
-                            TRY_LOCK(GetWallet()->cs_wallet, lockWallet);
+                            TRY_LOCK(pwallet->cs_wallet, lockWallet);
                             if (!lockMain) {
                                 MilliSleep(50);
                                 continue;
                             }
-                            result = pcmd->actor(params, false, GetWallet());
+                            result = pcmd->actor(params, false, pwallet);
                             break;
                         }
                     }
@@ -1081,7 +1083,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
 #else  // ENABLE_WALLET
             else {
                 LOCK(cs_main);
-                result = pcmd->actor(params, false, GetWallet());
+                result = pcmd->actor(params, false, pwallet);
             }
 #endif // !ENABLE_WALLET
         }
@@ -1103,9 +1105,8 @@ std::vector<std::string> CRPCTable::listCommands() const
 }
 
 static int64_t nWalletUnlockTime;
-void EnsureWalletIsUnlocked()
+void EnsureWalletIsUnlocked(CWallet* pwallet)
 {
-    CWallet* pwallet = GetWallet();
     if (pwallet && !pwallet->IsFullyUnlocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 }
@@ -1180,9 +1181,8 @@ enum class WalletLockMode
     UNLOCK,
     LOCK,
 };
-void ModifyWalletLockStateBriefly(WalletLockMode mode, int64_t sleepTime = 0, bool revertToUnlockedForStakingOnExpiry = false)
+void ModifyWalletLockStateBriefly(CWallet* pwallet, WalletLockMode mode, int64_t sleepTime = 0, bool revertToUnlockedForStakingOnExpiry = false)
 {
-    CWallet* pwallet = GetWallet();
     if(pwallet)
     {
         AssertLockHeld(pwallet->cs_wallet);
@@ -1203,24 +1203,23 @@ void ModifyWalletLockStateBriefly(WalletLockMode mode, int64_t sleepTime = 0, bo
     }
 }
 
-void LockWallet()
+void LockWallet(CWallet* pwallet)
 {
-    ModifyWalletLockStateBriefly(WalletLockMode::LOCK);
+    ModifyWalletLockStateBriefly(pwallet, WalletLockMode::LOCK);
 }
-void UnlockWalletBriefly(int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry)
+void UnlockWalletBriefly(CWallet* pwallet,int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry)
 {
-    ModifyWalletLockStateBriefly(WalletLockMode::UNLOCK,sleepTime,revertToUnlockedForStakingOnExpiry);
+    ModifyWalletLockStateBriefly(pwallet,WalletLockMode::UNLOCK,sleepTime,revertToUnlockedForStakingOnExpiry);
 }
 
-int64_t TimeTillWalletLock()
+int64_t TimeTillWalletLock(CWallet* pwallet)
 {
-    AssertLockHeld(GetWallet()->cs_wallet);
+    AssertLockHeld(pwallet->cs_wallet);
     return nWalletUnlockTime;
 }
 
-std::string HelpRequiringPassphrase()
+std::string HelpRequiringPassphrase(CWallet* pwallet)
 {
-    CWallet* pwallet = GetWallet();
     return pwallet && pwallet->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
 }
 

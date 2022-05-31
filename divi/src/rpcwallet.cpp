@@ -626,6 +626,7 @@ struct RpcTransactionCreationRequest
 };
 
 std::string SendMoney(
+    CWallet* pwallet,
     const std::vector<std::pair<CScript,CAmount>>& scriptsToFund,
     RpcTransactionCreationRequest rpcTxRequest)
 {
@@ -633,7 +634,6 @@ std::string SendMoney(
     const bool useDefaultAccount = rpcTxRequest.accountName.empty();
     assert(useDefaultAccount || !rpcTxRequest.txShouldSpendFromVaults);
 
-    CWallet* pwallet = GetWallet();
     CAmount availableWalletBalance = 0;
     if(useDefaultAccount)
     {
@@ -701,17 +701,17 @@ std::string SendMoney(
     return txCreation.wtxNew->GetHash().GetHex();
 }
 
-std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue, RpcTransactionCreationRequest rpcRequest)
+std::string SendMoneyToAddress(CWallet* pwallet,const CTxDestination& address, CAmount nValue, RpcTransactionCreationRequest rpcRequest)
 {
     // Parse DIVI address
     CScript scriptPubKey = GetScriptForDestination(address);
-    return SendMoney({std::make_pair(scriptPubKey, nValue)}, rpcRequest);
+    return SendMoney(pwallet,{std::make_pair(scriptPubKey, nValue)}, rpcRequest);
 }
 
-std::string SendMoneyToAddress(const CTxDestination& address, CAmount nValue)
+std::string SendMoneyToAddress(CWallet* pwallet, const CTxDestination& address, CAmount nValue)
 {
     RpcTransactionCreationRequest rpcRequest;
-    return SendMoneyToAddress(address,nValue, rpcRequest);
+    return SendMoneyToAddress(pwallet, address,nValue, rpcRequest);
 }
 
 Value getcoinavailability(const Array& params, bool fHelp, CWallet* pwallet)
@@ -938,21 +938,21 @@ Value fundvault(const Array& params, bool fHelp, CWallet* pwallet)
         throw runtime_error(
                 "fundvault \"[owner_address:]manager_address\" amount\n"
                 "\nSend an amount to a given vault manager address. The amount is a real and is rounded to the nearest 0.00000001\n" +
-                HelpRequiringPassphrase() +
+                HelpRequiringPassphrase(pwallet) +
                 "\nArguments:\n"
                 "1. \"[owner_address:]manager_address\" (string, required)\n"
                 "   \"owner_address\" -> The address of the key owning the vault funds. Needs ':' separator if used. \n"
                 "   \"manager_address\" -> The divi address owned by the vault manager.\n"
                 "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n");
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
     Array addressEncodings;
     std::vector<std::pair<CScript, CAmount>>  vecSend = parseFundVaultRPCParameters(pwallet, params,addressEncodings);
 
     // Amount & Send
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = false;
-    const std::string txid = SendMoney(vecSend, rpcRequest);
+    const std::string txid = SendMoney(pwallet, vecSend, rpcRequest);
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", txid ));
@@ -967,7 +967,7 @@ Value reclaimvaultfunds(const Array& params, bool fHelp, CWallet* pwallet)
         throw runtime_error(
                 "reclaimvaultfunds destination amount (feeMode|metadata) ( \"comment\" \"comment-to\" )\n"
                 "\nWithdraw an amount from your vaults into a separate address. The amount is a real and is rounded to the nearest 0.00000001\n" +
-                HelpRequiringPassphrase() +
+                HelpRequiringPassphrase(pwallet) +
                 "\nArguments:\n"
                 "1. \"diviaddress\"  (string, required) The divi address of your choosing to send to.\n"
                 "2. \"amount\"      (numeric, required) The amount in DIVI to move. eg 0.1\n"
@@ -1010,8 +1010,8 @@ Value reclaimvaultfunds(const Array& params, bool fHelp, CWallet* pwallet)
 
 
 
-    EnsureWalletIsUnlocked();
-    return SendMoneyToAddress(address.Get(), nAmount, rpcRequest);
+    EnsureWalletIsUnlocked(pwallet);
+    return SendMoneyToAddress(pwallet, address.Get(), nAmount, rpcRequest);
 }
 
 Value removevault(const Array& params, bool fHelp, CWallet* pwallet)
@@ -1134,7 +1134,7 @@ Value sendtoaddress(const Array& params, bool fHelp, CWallet* pwallet)
         throw runtime_error(
                 "sendtoaddress \"diviaddress\" amount (feeMode|metadata)( \"comment\" \"comment-to\" )\n"
                 "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
-                HelpRequiringPassphrase() +
+                HelpRequiringPassphrase(pwallet) +
                 "\nArguments:\n"
                 "1. \"diviaddress\"  (string, required) The divi address to send to.\n"
                 "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n"
@@ -1182,8 +1182,8 @@ Value sendtoaddress(const Array& params, bool fHelp, CWallet* pwallet)
         }
     }
 
-    EnsureWalletIsUnlocked();
-    return SendMoneyToAddress(address.Get(), nAmount, rpcRequest);
+    EnsureWalletIsUnlocked(pwallet);
+    return SendMoneyToAddress(pwallet, address.Get(), nAmount, rpcRequest);
 }
 
 Value signmessage(const Array& params, bool fHelp, CWallet* pwallet)
@@ -1192,7 +1192,7 @@ Value signmessage(const Array& params, bool fHelp, CWallet* pwallet)
         throw runtime_error(
                 "signmessage \"diviaddress\" \"message\" \"input_format\" \"output_format\"\n"
                 "\nSign a message with the private key of an address" +
-                HelpRequiringPassphrase() + "\n"
+                HelpRequiringPassphrase(pwallet) + "\n"
                                             "\nArguments:\n"
                                             "1. \"diviaddress\"    (string, required) The divi address to use for the private key.\n"
                                             "2. \"message\"        (string, required) The message to create a signature of.\n"
@@ -1207,7 +1207,7 @@ Value signmessage(const Array& params, bool fHelp, CWallet* pwallet)
                 "\nVerify the signature\n" + HelpExampleCli("verifymessage", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" \"signature\" \"my message\"") +
                 "\nAs json rpc\n" + HelpExampleRpc("signmessage", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\", \"my message\""));
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
     string strAddress = params[0].get_str();
     string strMessage = params[1].get_str();
@@ -1424,7 +1424,7 @@ Value getunconfirmedbalance(const Array& params, bool fHelp, CWallet* pwallet)
         throw runtime_error(
                 "getunconfirmedbalance\n"
                 "Returns the server's total unconfirmed balance\n");
-    return ValueFromAmount(GetWallet()->GetUnconfirmedBalance());
+    return ValueFromAmount(pwallet->GetUnconfirmedBalance());
 }
 
 Value sendfrom(const Array& params, bool fHelp, CWallet* pwallet)
@@ -1434,7 +1434,7 @@ Value sendfrom(const Array& params, bool fHelp, CWallet* pwallet)
                 "sendfrom \"fromaccount\" \"todiviaddress\" amount ( \"comment\" \"comment-to\" )\n"
                 "\nSent an amount from an account to a divi address.\n"
                 "The amount is a real and is rounded to the nearest 0.00000001." +
-                HelpRequiringPassphrase() + "\n"
+                HelpRequiringPassphrase(pwallet) + "\n"
                                             "\nArguments:\n"
                                             "1. \"fromaccount\"       (string, required) The name of the account to send funds from. May be the default account using \"\".\n"
                                             "2. \"todiviaddress\"  (string, required) The divi address to send funds to.\n"
@@ -1465,11 +1465,11 @@ Value sendfrom(const Array& params, bool fHelp, CWallet* pwallet)
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
         metadata["to"] = params[4].get_str();
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
     RpcTransactionCreationRequest rpcTxRequest;
     rpcTxRequest.txMetadata = metadata;
     rpcTxRequest.accountName = strAccount;
-    return SendMoneyToAddress(address.Get(),nAmount,rpcTxRequest);
+    return SendMoneyToAddress(pwallet, address.Get(),nAmount,rpcTxRequest);
 }
 
 
@@ -1521,7 +1521,7 @@ Value sendmany(const Array& params, bool fHelp, CWallet* pwallet)
         throw runtime_error(
                 "sendmany \"fromaccount\" {\"address\":amount,...} ( \"comment\" )\n"
                 "\nSend multiple times. Amounts are double-precision floating point numbers." +
-                HelpRequiringPassphrase() + "\n"
+                HelpRequiringPassphrase(pwallet) + "\n"
                                             "\nArguments:\n"
                                             "1. \"fromaccount\"         (string, required) The account to send the funds from, can be \"\" for the default account\n"
                                             "2. \"amounts\"             (string, required) A json object with addresses and amounts\n"
@@ -1548,13 +1548,13 @@ Value sendmany(const Array& params, bool fHelp, CWallet* pwallet)
 
     std::vector<std::pair<CScript, CAmount> > vecSend = parseMultiSendJson(sendTo);
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
     // Send
     RpcTransactionCreationRequest rpcTxRequest;
     rpcTxRequest.txMetadata = metadata;
     rpcTxRequest.accountName = strAccount;
-    return SendMoney(vecSend,rpcTxRequest);
+    return SendMoney(pwallet, vecSend,rpcTxRequest);
 }
 
 Value addmultisigaddress(const Array& params, bool fHelp, CWallet* pwallet)
@@ -2391,7 +2391,7 @@ Value keypoolrefill(const Array& params, bool fHelp, CWallet* pwallet)
         throw runtime_error(
                 "keypoolrefill ( newsize )\n"
                 "\nFills the keypool." +
-                HelpRequiringPassphrase() + "\n"
+                HelpRequiringPassphrase(pwallet) + "\n"
                                             "\nArguments\n"
                                             "1. newsize     (numeric, optional, default=100) The new keypool size\n"
                                             "\nExamples:\n" +
@@ -2405,7 +2405,7 @@ Value keypoolrefill(const Array& params, bool fHelp, CWallet* pwallet)
         kpSize = (unsigned int)params[0].get_int();
     }
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
     pwallet->TopUpKeyPool(kpSize);
 
     if (pwallet->GetKeyPoolSize() < kpSize)
@@ -2464,7 +2464,7 @@ Value walletpassphrase(const Array& params, bool fHelp, CWallet* pwallet)
     pwallet->TopUpKeyPool();
 
     int64_t nSleepTime = params[1].get_int64();
-    UnlockWalletBriefly(nSleepTime, shouldRevertToUnlockedForStakingAtTimerExpiry);
+    UnlockWalletBriefly(pwallet, nSleepTime, shouldRevertToUnlockedForStakingAtTimerExpiry);
     return Value::null;
 }
 
@@ -2528,7 +2528,7 @@ Value walletlock(const Array& params, bool fHelp, CWallet* pwallet)
     if (!pwallet->IsCrypted())
         throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but walletlock was called.");
 
-    LockWallet();
+    LockWallet(pwallet);
 
     return Value::null;
 }
@@ -2540,7 +2540,7 @@ Value walletverify(const json_spirit::Array& params, bool fHelp, CWallet* pwalle
                 "walletverify\n"
                 "\nChecks wallet integrity, if this returns true, you can be sure that all funds are accesible\n");
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
     if(!pwallet->IsHDEnabled())
         throw runtime_error("HD wallet is disabled, checking integrity works only with HD wallets");
 
@@ -2761,7 +2761,7 @@ Value getwalletinfo(const Array& params, bool fHelp, CWallet* pwallet)
     obj.push_back(Pair("txcount", (int)pwallet->GetWalletTransactionReferences().size()));
     obj.push_back(Pair("keypoolsize", (int)pwallet->GetKeyPoolSize()));
     if (pwallet->IsCrypted())
-        obj.push_back(Pair("unlocked_until", TimeTillWalletLock() ));
+        obj.push_back(Pair("unlocked_until", TimeTillWalletLock(pwallet) ));
 
     obj.push_back(Pair("encryption_status", DescribeEncryptionStatus(*pwallet)));
 

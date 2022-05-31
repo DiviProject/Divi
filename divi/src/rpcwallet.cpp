@@ -662,7 +662,7 @@ std::string SendMoney(
     else if (pwallet->IsLocked())
     {
         std::string strError = "Error: Wallet locked, unable to create transaction!";
-        LogPrintf("SendMoney() : %s", strError);
+        LogPrintf("%s: %s\n",__func__, strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
     AccountCoinSelector coinSelector(*pwallet);
@@ -676,14 +676,14 @@ std::string SendMoney(
             LOCK(cs_main);
             if (!SubmitTransactionToMempool(GetTransactionMemoryPool(), *txCreation.wtxNew)) {
                 // This must not fail. The transaction has already been signed and recorded.
-                LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
+                LogPrintf("%s -> CommitTransaction() : Error: Transaction not valid\n",__func__);
                 std::string strError = "Error: Invalid transaction committed to wallet!";
                 throw JSONRPCError(RPC_WALLET_ERROR, strError);
             }
         }
         if(!txCreation.wtxNew->IsCoinBase() && !txCreation.wtxNew->IsCoinStake())
         {
-            LogPrintf("Relaying wtx %s\n", txCreation.wtxNew->ToStringShort());
+            LogPrintf("%s: Relaying wtx %s\n", txCreation.wtxNew->ToStringShort(),__func__);
             RelayTransactionToAllPeers(static_cast<CTransaction>(*txCreation.wtxNew));
         }
         else
@@ -695,7 +695,7 @@ std::string SendMoney(
     else
     {
         std::string strError = txCreation.errorMessage;
-        LogPrintf("SendMoney() : %s\n", strError);
+        LogPrintf("%s: %s\n",__func__, strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
     return txCreation.wtxNew->GetHash().GetHex();

@@ -13,6 +13,7 @@
 #include "test_only.h"
 
 #include <Settings.h>
+#include <test/FakeWallet.h>
 using namespace std;
 using namespace json_spirit;
 
@@ -21,14 +22,15 @@ extern Value CallRPC(string args,CWallet* pwallet);
 
 extern CCriticalSection cs_main;
 extern Settings& settings;
-extern CWallet* GetWallet();
 
 class RpcWalletTestFramework
 {
+private:
+    FakeBlockIndexWithHashes fakeChain_;
+    FakeWallet fakeWallet_;
 public:
     CWallet* pwallet;
-    RpcWalletTestFramework(): pwallet(GetWallet()) {}
-    ~RpcWalletTestFramework(){ pwallet = nullptr; }
+    RpcWalletTestFramework(): fakeChain_(1,16000000,4), fakeWallet_(fakeChain_), pwallet(&fakeWallet_.getWallet()) {}
 };
 
 

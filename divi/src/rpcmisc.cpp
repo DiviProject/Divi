@@ -314,7 +314,7 @@ Value spork(const Array& params, bool fHelp, CWallet* pwallet)
         "spork <name> [<value>]\n"
         "<name> is the corresponding spork name, or 'show' to show all current spork settings, active to show which sporks are active"
         "<value> is a epoch datetime to enable or disable spork" +
-        HelpRequiringPassphrase());
+        HelpRequiringPassphrase(pwallet));
 }
 
 Value validateaddress(const Array& params, bool fHelp, CWallet* pwallet)

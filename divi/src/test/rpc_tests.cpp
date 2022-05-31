@@ -14,9 +14,11 @@
 #include <boost/test/unit_test.hpp>
 #include "test_only.h"
 
+#include <test/FakeBlockIndexChain.h>
+#include <test/FakeWallet.h>
+
 using namespace std;
 using namespace json_spirit;
-extern CWallet* GetWallet();
 
 Array
 createArgs(int nRequired, const char* address1=NULL, const char* address2=NULL)
@@ -56,10 +58,12 @@ Value ValueFromAmountRPC(const CAmount& amount)
 
 class RpcTestFramework
 {
+private:
+    FakeBlockIndexWithHashes fakeChain_;
+    FakeWallet fakeWallet_;
 public:
     CWallet* pwallet;
-    RpcTestFramework(): pwallet(GetWallet()) {}
-    ~RpcTestFramework(){ pwallet = nullptr; }
+    RpcTestFramework(): fakeChain_(1,16000000,4), fakeWallet_(fakeChain_), pwallet(&fakeWallet_.getWallet()) {}
 };
 
 BOOST_FIXTURE_TEST_SUITE(rpc_tests, RpcTestFramework)

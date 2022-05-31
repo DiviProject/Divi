@@ -23,11 +23,19 @@ extern CCriticalSection cs_main;
 extern Settings& settings;
 extern CWallet* GetWallet();
 
-BOOST_AUTO_TEST_SUITE(rpc_wallet_tests)
+class RpcWalletTestFramework
+{
+public:
+    CWallet* pwallet;
+    RpcWalletTestFramework(): pwallet(GetWallet()) {}
+    ~RpcWalletTestFramework(){ pwallet = nullptr; }
+};
+
+
+BOOST_FIXTURE_TEST_SUITE(rpc_wallet_tests, RpcWalletTestFramework)
 
 BOOST_AUTO_TEST_CASE(rpc_addmultisig)
 {
-    CWallet* pwallet = GetWallet();
     LOCK(pwallet->cs_wallet);
 
     rpcfn_type addmultisig = CRPCTable::getRPCTable()["addmultisigaddress"]->actor;
@@ -69,7 +77,6 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
 {
     // Test RPC calls for various wallet statistics
     Value r;
-    CWallet* pwallet = GetWallet();
     LOCK2(cs_main, pwallet->cs_wallet);
 
     CPubKey demoPubkey = pwallet->GenerateNewKey(0,false);

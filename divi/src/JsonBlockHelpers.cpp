@@ -1,7 +1,6 @@
 #include <JsonBlockHelpers.h>
 
 #include <primitives/block.h>
-#include <ChainstateManager.h>
 #include <chain.h>
 #include <version.h>
 

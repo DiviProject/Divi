@@ -601,7 +601,7 @@ Value reverseblocktransactions(const Array& params, bool fHelp, CWallet* pwallet
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
         CBlockIndex* pblockindex = mit->second;
-        InvalidateBlock(state,pblockindex,true);
+        InvalidateBlock(*chainstate, state,pblockindex,true);
         ReconsiderBlock(state, pblockindex);
     }
 
@@ -635,7 +635,7 @@ Value invalidateblock(const Array& params, bool fHelp, CWallet* pwallet)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
     CBlockIndex* pblockindex = mit->second;
-    InvalidateBlock(state, pblockindex);
+    InvalidateBlock(*chainstate, state, pblockindex);
 
     if (state.IsValid()) {
         ActivateBestChain(*chainstate, GetSporkManager(), state);

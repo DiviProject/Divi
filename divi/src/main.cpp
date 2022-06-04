@@ -1477,13 +1477,12 @@ bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& spork
     return true;
 }
 
-bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)
+bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)
 {
     AssertLockHeld(cs_main);
 
-    ChainstateManager::Reference chainstate;
-    const auto& chain = chainstate->ActiveChain();
-    auto& blockMap = chainstate->GetBlockMap();
+    const auto& chain = chainstate.ActiveChain();
+    auto& blockMap = chainstate.GetBlockMap();
 
     // Mark the block itself as invalid.
     pindex->nStatus |= BLOCK_FAILED_VALID;
@@ -1504,7 +1503,7 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex, const bool up
 
     // The resulting new best tip may not be in setBlockIndexCandidates anymore, so
     // add them again.
-    for (const auto& entry : chainstate->GetBlockMap()) {
+    for (const auto& entry : chainstate.GetBlockMap()) {
         if (entry.second->IsValid(BLOCK_VALID_TRANSACTIONS) && entry.second->nChainTx && !setBlockIndexCandidates.value_comp()(entry.second, chain.Tip())) {
             setBlockIndexCandidates.insert(entry.second);
         }

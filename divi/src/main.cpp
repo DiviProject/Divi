@@ -1513,17 +1513,16 @@ bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBl
     return true;
 }
 
-bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex)
+bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex)
 {
     AssertLockHeld(cs_main);
 
-    ChainstateManager::Reference chainstate;
-    const auto& chain = chainstate->ActiveChain();
+    const auto& chain = chainstate.ActiveChain();
 
     int nHeight = pindex->nHeight;
 
     // Remove the invalidity flag from this block and all its descendants.
-    for (auto& entry : chainstate->GetBlockMap()) {
+    for (auto& entry : chainstate.GetBlockMap()) {
         CBlockIndex& blk = *entry.second;
         if (!blk.IsValid() && blk.GetAncestor(nHeight) == pindex) {
             blk.nStatus &= ~BLOCK_FAILED_MASK;
@@ -1858,7 +1857,7 @@ bool AcceptBlockHeader(const CBlock& block, ChainstateManager& chainstate, const
             if (pindex && checkpointsVerifier.CheckBlock(pindex->nHeight - 1, block.hashPrevBlock, true)) {
                 LogPrintf("%s : Reconsidering block %s height %d\n", __func__, pindexPrev->GetBlockHash(), pindexPrev->nHeight);
                 CValidationState statePrev;
-                ReconsiderBlock(statePrev, pindexPrev);
+                ReconsiderBlock(chainstate, statePrev, pindexPrev);
                 if (statePrev.IsValid()) {
                     ActivateBestChain(chainstate, sporkManager, statePrev);
                     return true;
@@ -1903,7 +1902,7 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
             if (checkpointsVerifier.CheckBlock(pindexPrev->nHeight, block.hashPrevBlock, true)) {
                 LogPrintf("%s : Reconsidering block %s height %d\n", __func__, pindexPrev->GetBlockHash(), pindexPrev->nHeight);
                 CValidationState statePrev;
-                ReconsiderBlock(statePrev, pindexPrev);
+                ReconsiderBlock(chainstate, statePrev, pindexPrev);
                 if (statePrev.IsValid()) {
                     ActivateBestChain(chainstate, sporkManager, statePrev);
                     return true;

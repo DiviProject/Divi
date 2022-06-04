@@ -155,7 +155,7 @@ const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocato
 bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly = false);
 
 /** Remove invalidity status from a block and its descendants. */
-bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
+bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex);
 
 /** Best header block height */
 int GetBestHeaderBlockHeight();

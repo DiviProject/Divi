@@ -33,7 +33,7 @@
 extern CCriticalSection cs_main;
 extern std::map<uint256, int64_t> mapRejectedBlocks;
 
-extern bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
+extern bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex);
 extern bool DisconnectBlocksAndReprocess(int blocks);
 extern bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
 
@@ -299,7 +299,7 @@ void ReprocessBlocks(ChainstateManager& chainstate, const CSporkManager& sporkMa
                 LogPrintf("ReprocessBlocks - %s\n", (*it).first);
 
                 CValidationState state;
-                ReconsiderBlock(state, pindex);
+                ReconsiderBlock(chainstate, state, pindex);
             }
         }
         ++it;

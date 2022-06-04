@@ -147,7 +147,8 @@ static bool rest_block(AcceptedConnection* conn,
     }
 
     case RF_JSON: {
-        Object objBlock = blockToJSON(block, pblockindex, showTxDetails);
+        const ChainstateManager::Reference chainstate;
+        Object objBlock = blockToJSON(chainstate->ActiveChain(),block, pblockindex, showTxDetails);
         string strJSON = write_string(Value(objBlock), false) + "\n";
         conn->stream() << HTTPReply(HTTP_OK, strJSON, fRun) << std::flush;
         return true;

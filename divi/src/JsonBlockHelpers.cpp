@@ -8,14 +8,12 @@
 #include <JsonTxHelpers.h>
 
 
-double GetDifficulty(const CBlockIndex* blockindex)
+double GetDifficulty(const CChain& activeChain, const CBlockIndex* blockindex)
 {
-    const ChainstateManager::Reference chainstate;
-
     // Floating point number that is a multiple of the minimum difficulty,
     // minimum difficulty = 1.0.
     if (blockindex == nullptr) {
-        blockindex = chainstate->ActiveChain().Tip();
+        blockindex = activeChain.Tip();
         if (blockindex == nullptr)
             return 1.0;
     }
@@ -38,16 +36,14 @@ double GetDifficulty(const CBlockIndex* blockindex)
 }
 
 
-json_spirit::Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails)
+json_spirit::Object blockToJSON(const CChain& activeChain, const CBlock& block, const CBlockIndex* blockindex, bool txDetails)
 {
-    const ChainstateManager::Reference chainstate;
-
     json_spirit::Object result;
     result.push_back(json_spirit::Pair("hash", block.GetHash().GetHex()));
     int confirmations = -1;
     // Only report confirmations if the block is on the main chain
-    if (chainstate->ActiveChain().Contains(blockindex))
-        confirmations = chainstate->ActiveChain().Height() - blockindex->nHeight + 1;
+    if (activeChain.Contains(blockindex))
+        confirmations = activeChain.Height() - blockindex->nHeight + 1;
     result.push_back(json_spirit::Pair("confirmations", confirmations));
     result.push_back(json_spirit::Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)));
     result.push_back(json_spirit::Pair("height", blockindex->nHeight));
@@ -67,12 +63,12 @@ json_spirit::Object blockToJSON(const CBlock& block, const CBlockIndex* blockind
     result.push_back(json_spirit::Pair("time", block.GetBlockTime()));
     result.push_back(json_spirit::Pair("nonce", (uint64_t)block.nNonce));
     result.push_back(json_spirit::Pair("bits", strprintf("%08x", block.nBits)));
-    result.push_back(json_spirit::Pair("difficulty", GetDifficulty(blockindex)));
+    result.push_back(json_spirit::Pair("difficulty", GetDifficulty(activeChain, blockindex)));
     result.push_back(json_spirit::Pair("chainwork", blockindex->nChainWork.GetHex()));
 
     if (blockindex->pprev)
         result.push_back(json_spirit::Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
-    const CBlockIndex* pnext = chainstate->ActiveChain().Next(blockindex);
+    const CBlockIndex* pnext = activeChain.Next(blockindex);
     if (pnext)
         result.push_back(json_spirit::Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
 

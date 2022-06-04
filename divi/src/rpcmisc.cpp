@@ -149,7 +149,7 @@ Value getinfo(const Array& params, bool fHelp, CWallet* pwallet)
     obj.push_back(Pair("timeoffset", GetTimeOffset()));
     obj.push_back(Pair("connections", (int) GetPeerCount() ));
     obj.push_back(Pair("proxy", (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : string())));
-    obj.push_back(Pair("difficulty", (double)GetDifficulty()));
+    obj.push_back(Pair("difficulty", (double)GetDifficulty(chain)));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
     obj.push_back(Pair("moneysupply",ValueFromAmount(chain.Tip()->nMoneySupply)));
     obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate().GetFeePerK())));

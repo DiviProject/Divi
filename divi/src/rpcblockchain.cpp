@@ -73,7 +73,8 @@ Value getdifficulty(const Array& params, bool fHelp, CWallet* pwallet)
             "\nExamples:\n" +
             HelpExampleCli("getdifficulty", "") + HelpExampleRpc("getdifficulty", ""));
 
-    return GetDifficulty();
+    const ChainstateManager::Reference chainstate;
+    return GetDifficulty(chainstate->ActiveChain());
 }
 
 
@@ -234,7 +235,7 @@ Value getblock(const Array& params, bool fHelp, CWallet* pwallet)
         return strHex;
     }
 
-    return blockToJSON(block, pblockindex);
+    return blockToJSON(chainstate->ActiveChain(), block, pblockindex);
 }
 
 Value getblockheader(const Array& params, bool fHelp, CWallet* pwallet)
@@ -449,7 +450,7 @@ Value getblockchaininfo(const Array& params, bool fHelp, CWallet* pwallet)
     obj.push_back(Pair("blocks", (int)chainstate->ActiveChain().Height()));
     obj.push_back(Pair("headers", GetBestHeaderBlockHeight()));
     obj.push_back(Pair("bestblockhash", chainstate->ActiveChain().Tip()->GetBlockHash().GetHex()));
-    obj.push_back(Pair("difficulty", (double)GetDifficulty()));
+    obj.push_back(Pair("difficulty", (double)GetDifficulty(chainstate->ActiveChain())));
     obj.push_back(Pair("verificationprogress", checkpointsVerifier.GuessVerificationProgress(chainstate->ActiveChain().Tip())));
     obj.push_back(Pair("chainwork", chainstate->ActiveChain().Tip()->nChainWork.GetHex()));
     return obj;

@@ -2127,11 +2127,12 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
             // Notify that old coins are spent
             {
                 std::set<uint256> updated_hashes;
-                BOOST_FOREACH (const CTxIn& txin, wtxNew.vin) {
+                BOOST_FOREACH (const CTxIn& txin, wtxNew.vin)
+                {
                     // notify only once
                     if (updated_hashes.find(txin.prevout.hash) != updated_hashes.end()) continue;
 
-                    CWalletTx* coinPtr = const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
+                    const CWalletTx* coinPtr = GetWalletTx(txin.prevout.hash);
                     if(!coinPtr)
                     {
                         LogPrintf("%s: Spending inputs not recorded in wallet - %s\n", __func__, txin.prevout.hash);

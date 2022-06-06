@@ -145,6 +145,10 @@ CWallet* GetWallet()
     return nullptr;
 #endif
 }
+const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator()
+{
+    return GetWallet()->getConfirmationCalculator();
+}
 class BlockSubmitter final: public I_BlockSubmitter
 {
 private:
@@ -1110,7 +1114,7 @@ bool LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& erro
 void SubmitUnconfirmedWalletTransactionsToMempool(const CWallet& wallet)
 {
     LOCK2(cs_main, wallet.cs_wallet);
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
     for(const std::pair<int64_t,const CWalletTx*>& item: wallet.OrderedTxItems())
     {
         const CWalletTx& wtx = *(item.second);

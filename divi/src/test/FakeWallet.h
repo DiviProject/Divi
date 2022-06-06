@@ -42,6 +42,10 @@ public:
   explicit FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename);
   ~FakeWallet ();
 
+  const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const
+  {
+    return *confirmationsCalculator_;
+  }
   CWallet& getWallet() { return *wrappedWallet_; }
   const CWallet& getWallet() const { return *wrappedWallet_; }
 

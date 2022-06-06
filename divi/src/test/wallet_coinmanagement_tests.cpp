@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(willFindThatTransactionsByDefaultHaveNonPositiveDepth)
     CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
     unsigned outputIndex=0;
     auto normalTx = fakeWallet.AddDefaultTx(normalScript,outputIndex,100*COIN);
-    BOOST_CHECK_MESSAGE(wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx) < 1,"Found wallet transaction has positive depth in empty chain!");
+    BOOST_CHECK_MESSAGE(fakeWallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx) < 1,"Found wallet transaction has positive depth in empty chain!");
 }
 
 BOOST_AUTO_TEST_CASE(willFindThatTransactionsWillHaveDepthAccordingToLengthOfChain)
@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(willFindThatTransactionsWillHaveDepthAccordingToLengthOfCha
     int startingNumberOfConfirmations = 1;
     for(int numberOfAdditionalBlocks = 0; numberOfAdditionalBlocks < someNumberOfBlocksToAdd ; ++numberOfAdditionalBlocks )
     {
-        BOOST_CHECK_EQUAL(wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx),startingNumberOfConfirmations+numberOfAdditionalBlocks);
+        BOOST_CHECK_EQUAL(fakeWallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx),startingNumberOfConfirmations+numberOfAdditionalBlocks);
         fakeWallet.AddBlock();
     }
 }
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE(willReturnCorrectBalanceWhenTransactionIsConfirmed)
     const CWalletTx& normalTx = fakeWallet.AddDefaultTx(normalScript,outputIndex,100*COIN);
     fakeWallet.FakeAddToChain(normalTx);
 
-    BOOST_CHECK_MESSAGE(wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx) >= 1,"Transaction is not at least one block deep!");
+    BOOST_CHECK_MESSAGE(fakeWallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx) >= 1,"Transaction is not at least one block deep!");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 100*COIN,"Total balance was not the expected amount");
 }
 

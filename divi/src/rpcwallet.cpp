@@ -229,7 +229,7 @@ void GetAccountAmounts(
 void WalletTxToJSON(const CWallet& wallet, const CWalletTx& wtx, Object& entry)
 {
 
-    int confirms = wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx);
+    int confirms = GetConfirmationsCalculator().GetNumberOfBlockConfirmations(wtx);
     int confirmsTotal = confirms;
     entry.push_back(Pair("confirmations", confirmsTotal));
     entry.push_back(Pair("bcconfirmations", confirms));
@@ -373,7 +373,7 @@ CAmount GetAccountBalance(const CWallet& wallet, const string& strAccount, int n
 
     // Tally wallet transactions
     std::vector<const CWalletTx*> walletTransactions = wallet.GetWalletTransactionReferences();
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
@@ -1300,7 +1300,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp, CWallet* pwallet)
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout)
                 if (txout.scriptPubKey == scriptPubKey)
-                if (pwallet->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
+                if (GetConfirmationsCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
                 nAmount += txout.nValue;
     }
 
@@ -1366,7 +1366,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp, CWallet* pwallet)
         BOOST_FOREACH (const CTxOut& txout, wtx.vout) {
             CTxDestination address;
             if (ExtractDestination(txout.scriptPubKey, address) && pwallet->isMine(address) != isminetype::ISMINE_NO && setAddress.count(address))
-                if (pwallet->getConfirmationCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
+                if (GetConfirmationsCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
                     nAmount += txout.nValue;
         }
     }
@@ -1844,12 +1844,12 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
     const SuperblockSubsidyContainer superblockSubsidies(Params(), GetSporkManager());
     const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
     const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
 
     string strSentAccount = wtx.strFromAccount;
     const std::string allAccounts = "*";
     bool fAllAccounts = (strAccount.compare(allAccounts) == 0);
 
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = wallet.getConfirmationCalculator();
     const bool isCoinstake = wtx.IsCoinStake();
     const CAmount nDebit = wallet.getDebit(wtx,isminetype::ISMINE_SPENDABLE);
 
@@ -2173,7 +2173,7 @@ Value listaccounts(const Array& params, bool fHelp, CWallet* pwallet)
     }
 
     std::vector<const CWalletTx*> walletTransactions = pwallet->GetWalletTransactionReferences();
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = pwallet->getConfirmationCalculator();
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
@@ -2279,7 +2279,7 @@ Value listsinceblock(const Array& params, bool fHelp, CWallet* pwallet)
     {
         CWalletTx tx = *(*it);
 
-        if (depth == -1 || pwallet->getConfirmationCalculator().GetNumberOfBlockConfirmations(tx) < depth)
+        if (depth == -1 || GetConfirmationsCalculator().GetNumberOfBlockConfirmations(tx) < depth)
             ParseTransactionDetails(*pwallet, tx, "*", 0, true, transactions, filter);
     }
 

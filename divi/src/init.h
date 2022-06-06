@@ -12,6 +12,7 @@
 class CWallet;
 class CBlockIndex;
 class CTxMemPool;
+class I_MerkleTxConfirmationNumberCalculator;
 
 namespace boost
 {
@@ -31,4 +32,5 @@ bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
 CTxMemPool& GetTransactionMemoryPool();
 bool ManualBackupWallet(const std::string& strDest);
 CWallet* GetWallet();
+const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator();
 #endif // BITCOIN_INIT_H

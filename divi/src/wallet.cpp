@@ -256,7 +256,8 @@ CWallet::CWallet(
     const I_WalletDatabaseEndpointFactory& walletDatabaseEndpointFactory,
     const CChain& chain,
     const BlockMap& blockMap,
-    const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator
+    const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator,
+    const unsigned defaultKeyTopUp
     ): cs_wallet()
     , strWalletFile(strWalletFileIn)
     , vaultModeEnabled_(false)
@@ -299,7 +300,7 @@ CWallet::CWallet(
     , setInternalKeyPool()
     , setExternalKeyPool()
     , walletStakingOnly(false)
-    , defaultKeyPoolTopUp(0)
+    , defaultKeyPoolTopUp_(defaultKeyTopUp)
 {
 }
 
@@ -487,11 +488,6 @@ bool CWallet::InitializeDefaultKey()
         return false;
     }
     return true;
-}
-
-void CWallet::SetDefaultKeyTopUp(int64_t keypoolTopUp)
-{
-    defaultKeyPoolTopUp = keypoolTopUp;
 }
 
 bool CWallet::CanSupportFeature(enum WalletFeature wf)
@@ -2290,7 +2286,7 @@ bool CWallet::TopUpKeyPool(unsigned int kpSize)
             nTargetSize = kpSize;
         else
             nTargetSize = std::max(
-                defaultKeyPoolTopUp? defaultKeyPoolTopUp: settings.GetArg("-keypool", DEFAULT_KEYPOOL_SIZE),
+                defaultKeyPoolTopUp_? defaultKeyPoolTopUp_: settings.GetArg("-keypool", DEFAULT_KEYPOOL_SIZE),
                 (int64_t) 0);
 
         // count amount of available keys (internal, external)

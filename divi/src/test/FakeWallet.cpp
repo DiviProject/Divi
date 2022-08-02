@@ -89,8 +89,7 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
   , wrappedWallet_()
 {
   databaseEndpointFactory_->getDatabaseEndpoint()->WriteHDChain(getHDWalletSeedForTesting());
-  wrappedWallet_.reset(new CWallet(walletFilename_,*databaseEndpointFactory_, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_));
-  wrappedWallet_->SetDefaultKeyTopUp(3);
+  wrappedWallet_.reset(new CWallet(walletFilename_,*databaseEndpointFactory_, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_, 3));
   wrappedWallet_->LoadWallet();
 }
 

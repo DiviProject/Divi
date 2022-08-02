@@ -221,7 +221,7 @@ private:
     std::set<int64_t> setInternalKeyPool;
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
-    int64_t defaultKeyPoolTopUp;
+    int64_t defaultKeyPoolTopUp_;
 
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
     void AddTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType);
@@ -291,7 +291,8 @@ public:
         const I_WalletDatabaseEndpointFactory& walletDatabaseEndpointFactory,
         const CChain& chain,
         const BlockMap& blockMap,
-        const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator);
+        const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator,
+        const unsigned defaultKeyTopUp = 0u);
     ~CWallet();
 
     DBErrors LoadWallet();
@@ -299,8 +300,6 @@ public:
     int GetVersion();
 
     const AddressBookManager& getAddressBookManager() const;
-
-    void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 
     void verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis);
     void activateVaultMode();

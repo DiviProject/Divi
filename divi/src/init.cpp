@@ -120,19 +120,32 @@ bool ManualBackupWallet(const std::string& strDest)
     return walletDatabaseEndpointFactory->backupWalletFile(strDest);
 }
 
+void InitializeConfirmationsCalculator(const CChainParams& params, const CChain& chain, const BlockMap& blockMap)
+{
+    if(!confirmationsCalculator)
+    {
+        confirmationsCalculator.reset(
+            new MerkleTxConfirmationNumberCalculator(
+                chain,
+                blockMap,
+                params.COINBASE_MATURITY(),
+                GetTransactionMemoryPool(),
+                cs_main));
+    }
+}
+void DeallocateConfirmationsCalculator()
+{
+    assert(!pwalletMain);
+    confirmationsCalculator.reset();
+}
+
 void InitializeWallet(std::string strWalletFile)
 {
 #ifdef ENABLE_WALLET
     const ChainstateManager::Reference chainstate;
     const auto& chain = chainstate->ActiveChain();
     const auto& blockMap = chainstate->GetBlockMap();
-    confirmationsCalculator.reset(
-        new MerkleTxConfirmationNumberCalculator(
-            chain,
-            blockMap,
-            Params().COINBASE_MATURITY(),
-            GetTransactionMemoryPool(),
-            cs_main));
+    InitializeConfirmationsCalculator(Params(), chain, blockMap);
     walletDatabaseEndpointFactory.reset(new LegacyWalletDatabaseEndpointFactory(strWalletFile,settings));
     pwalletMain.reset( new CWallet(strWalletFile,*walletDatabaseEndpointFactory, chain, blockMap, *confirmationsCalculator) );
 #endif
@@ -147,7 +160,8 @@ CWallet* GetWallet()
 }
 const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator()
 {
-    return GetWallet()->getConfirmationCalculator();
+    assert(confirmationsCalculator);
+    return *confirmationsCalculator;
 }
 class BlockSubmitter final: public I_BlockSubmitter
 {

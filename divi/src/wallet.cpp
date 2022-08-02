@@ -494,12 +494,6 @@ void CWallet::SetDefaultKeyTopUp(int64_t keypoolTopUp)
     defaultKeyPoolTopUp = keypoolTopUp;
 }
 
-const I_MerkleTxConfirmationNumberCalculator& CWallet::getConfirmationCalculator() const
-{
-    return confirmationNumberCalculator_;
-}
-
-
 bool CWallet::CanSupportFeature(enum WalletFeature wf)
 {
     AssertLockHeld(cs_wallet);

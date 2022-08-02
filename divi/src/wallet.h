@@ -299,7 +299,6 @@ public:
     int GetVersion();
 
     const AddressBookManager& getAddressBookManager() const;
-    const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const;
 
     void SetDefaultKeyTopUp(int64_t keypoolTopUp);
 

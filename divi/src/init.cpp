@@ -139,6 +139,12 @@ void DeallocateConfirmationsCalculator()
     confirmationsCalculator.reset();
 }
 
+const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator()
+{
+    assert(confirmationsCalculator);
+    return *confirmationsCalculator;
+}
+
 void InitializeWallet(std::string strWalletFile)
 {
 #ifdef ENABLE_WALLET
@@ -147,7 +153,7 @@ void InitializeWallet(std::string strWalletFile)
     const auto& blockMap = chainstate->GetBlockMap();
     InitializeConfirmationsCalculator(Params(), chain, blockMap);
     walletDatabaseEndpointFactory.reset(new LegacyWalletDatabaseEndpointFactory(strWalletFile,settings));
-    pwalletMain.reset( new CWallet(strWalletFile,*walletDatabaseEndpointFactory, chain, blockMap, *confirmationsCalculator) );
+    pwalletMain.reset( new CWallet(strWalletFile,*walletDatabaseEndpointFactory, chain, blockMap, GetConfirmationsCalculator() ) );
 #endif
 }
 CWallet* GetWallet()
@@ -158,11 +164,7 @@ CWallet* GetWallet()
     return nullptr;
 #endif
 }
-const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator()
-{
-    assert(confirmationsCalculator);
-    return *confirmationsCalculator;
-}
+
 class BlockSubmitter final: public I_BlockSubmitter
 {
 private:
@@ -245,7 +247,7 @@ void DeallocateWallet()
 #ifdef ENABLE_WALLET
     pwalletMain.reset();
     walletDatabaseEndpointFactory.reset();
-    confirmationsCalculator.reset();
+    DeallocateConfirmationsCalculator();
 #endif
 }
 

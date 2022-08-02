@@ -1762,7 +1762,7 @@ Value listreceivedbyaddress(const Array& params, bool fHelp, CWallet* pwallet)
                 "\nExamples:\n" +
                 HelpExampleCli("listreceivedbyaddress", "") + HelpExampleCli("listreceivedbyaddress", "6 true") + HelpExampleRpc("listreceivedbyaddress", "6, true, true"));
 
-    return ListReceived(pwallet, pwallet->getConfirmationCalculator(), params, false);
+    return ListReceived(pwallet, GetConfirmationsCalculator(), params, false);
 }
 
 Value listreceivedbyaccount(const Array& params, bool fHelp, CWallet* pwallet)
@@ -1791,7 +1791,7 @@ Value listreceivedbyaccount(const Array& params, bool fHelp, CWallet* pwallet)
                 "\nExamples:\n" +
                 HelpExampleCli("listreceivedbyaccount", "") + HelpExampleCli("listreceivedbyaccount", "6 true") + HelpExampleRpc("listreceivedbyaccount", "6, true, true"));
 
-    return ListReceived(pwallet,pwallet->getConfirmationCalculator(), params, true);
+    return ListReceived(pwallet,GetConfirmationsCalculator(), params, true);
 }
 
 static void MaybePushAddress(Object& entry, const CTxDestination& dest)

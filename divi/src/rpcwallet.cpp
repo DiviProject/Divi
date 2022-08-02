@@ -1614,7 +1614,7 @@ struct tallyitem {
     }
 };
 
-Value ListReceived(CWallet* pwallet,const Array& params, bool fByAccounts)
+Value ListReceived(CWallet* pwallet,const I_MerkleTxConfirmationNumberCalculator& confsCalculator,const Array& params, bool fByAccounts)
 {
     // Minimum confirmations
     int nMinDepth = 1;
@@ -1638,7 +1638,6 @@ Value ListReceived(CWallet* pwallet,const Array& params, bool fByAccounts)
     // Tally
     std::map<CBitcoinAddress, tallyitem> mapTally;
     std::vector<const CWalletTx*> walletTransactions = pwallet->GetWalletTransactionReferences();
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = pwallet->getConfirmationCalculator();
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
@@ -1763,7 +1762,7 @@ Value listreceivedbyaddress(const Array& params, bool fHelp, CWallet* pwallet)
                 "\nExamples:\n" +
                 HelpExampleCli("listreceivedbyaddress", "") + HelpExampleCli("listreceivedbyaddress", "6 true") + HelpExampleRpc("listreceivedbyaddress", "6, true, true"));
 
-    return ListReceived(pwallet, params, false);
+    return ListReceived(pwallet, pwallet->getConfirmationCalculator(), params, false);
 }
 
 Value listreceivedbyaccount(const Array& params, bool fHelp, CWallet* pwallet)
@@ -1792,7 +1791,7 @@ Value listreceivedbyaccount(const Array& params, bool fHelp, CWallet* pwallet)
                 "\nExamples:\n" +
                 HelpExampleCli("listreceivedbyaccount", "") + HelpExampleCli("listreceivedbyaccount", "6 true") + HelpExampleRpc("listreceivedbyaccount", "6, true, true"));
 
-    return ListReceived(pwallet, params, true);
+    return ListReceived(pwallet,pwallet->getConfirmationCalculator(), params, true);
 }
 
 static void MaybePushAddress(Object& entry, const CTxDestination& dest)

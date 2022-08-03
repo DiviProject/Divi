@@ -140,6 +140,7 @@ BITCOIN_CORE_H = \
   compressor.h \
   KeyMetadata.h \
   MasterKey.h \
+  OutPoint.h \
   primitives/block.h \
   primitives/transaction.h \
   core_io.h \
@@ -650,6 +651,7 @@ libbitcoin_common_a_SOURCES = \
   FeeAndPriorityCalculator.cpp \
   compressor.cpp \
   destination.cpp \
+  OutPoint.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \
   core_io.cpp \
@@ -793,6 +795,7 @@ if BUILD_BITCOIN_LIBS
 include_HEADERS = script/bitcoinconsensus.h
 libbitcoinconsensus_la_SOURCES = \
   allocators.cpp \
+  OutPoint.cpp \
   primitives/transaction.cpp \
   crypto/hmac_sha512.cpp \
   crypto/scrypt.cpp \

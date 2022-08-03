@@ -73,7 +73,7 @@ bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeig
 }
 
 template <typename T>
-isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScript, const bool overwriteMineType = true)
+isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScript, const bool overwriteMineType)
 {
     isminetype mine = ::IsMine(keystore, destinationOrScript);
     const bool isManagedVault = mine == isminetype::ISMINE_MANAGED_VAULT;
@@ -498,11 +498,11 @@ bool CWallet::CanSupportFeature(enum WalletFeature wf)
 
 isminetype CWallet::isMine(const CScript& scriptPubKey) const
 {
-    return computeMineType(*this, scriptPubKey);
+    return computeMineType(*this, scriptPubKey, true);
 }
 isminetype CWallet::isMine(const CTxDestination& dest) const
 {
-    return computeMineType(*this, dest);
+    return computeMineType(*this, dest, true);
 }
 isminetype CWallet::isMine(const CTxOut& txout) const
 {
@@ -1598,7 +1598,7 @@ bool CWallet::IsChange(const CTxOut& txout) const
     // a better way of identifying which outputs are 'the send' and which are
     // 'the change' will need to be implemented (maybe extend CWalletTx to remember
     // which output, if any, was change).
-    if (computeMineType(*this, txout.scriptPubKey) != isminetype::ISMINE_NO)
+    if (computeMineType(*this, txout.scriptPubKey, true) != isminetype::ISMINE_NO)
     {
         CTxDestination address;
         if (!ExtractDestination(txout.scriptPubKey, address))
@@ -2227,7 +2227,7 @@ bool CWallet::SetAddressLabel(const CTxDestination& address, const std::string& 
         LOCK(cs_wallet);
         fUpdated = addressBookManager_->setAddressLabel(address,strName);
     }
-    NotifyAddressBookChanged(address, strName, computeMineType(*this, address) != isminetype::ISMINE_NO, (fUpdated ? "updated address label" : "new address label"));
+    NotifyAddressBookChanged(address, strName, computeMineType(*this, address, true) != isminetype::ISMINE_NO, (fUpdated ? "updated address label" : "new address label"));
 
     return walletDatabaseEndpointFactory_.getDatabaseEndpoint()->WriteName(CBitcoinAddress(address).ToString(), strName);
 }

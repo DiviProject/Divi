@@ -425,8 +425,8 @@ CWallet::CWallet(
     , transactionRecord_(new WalletTransactionRecord(cs_wallet) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
     , ownershipDetector_(new WalletUtxoOwnershipDetector(*static_cast<CKeyStore*>(this)))
-    , utxoCalculator_(
-        new AvailableUtxoCalculator(
+    , availableUtxoCollector_(
+        new AvailableUtxoCollector(
             settings,
             blockIndexByHash_,
             activeChain_,
@@ -464,7 +464,7 @@ CWallet::~CWallet()
     balanceCalculator_.reset();
     cachedUtxoBalanceCalculator_.reset();
     utxoBalanceCalculator_.reset();
-    utxoCalculator_.reset();
+    availableUtxoCollector_.reset();
     ownershipDetector_.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
@@ -1853,7 +1853,7 @@ void CWallet::AvailableCoins(
     AvailableCoinsType nCoinType) const
 {
     LOCK2(cs_main, cs_wallet);
-    utxoCalculator_->setCoinTypeAndGetAvailableUtxos(fOnlyConfirmed, nCoinType, vCoins);
+    availableUtxoCollector_->setCoinTypeAndGetAvailableUtxos(fOnlyConfirmed, nCoinType, vCoins);
 }
 
 bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const

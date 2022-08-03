@@ -29,6 +29,7 @@
 #include <I_WalletDatabase.h>
 #include <I_UtxoOwnershipDetector.h>
 #include <AddressBookManager.h>
+#include <LockedCoinsSet.h>
 
 class I_CoinSelectionAlgorithm;
 class CKeyMetadata;
@@ -90,7 +91,6 @@ enum class AvailableCoinsType {
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.
  */
-using LockedCoinsSet = std::set<COutPoint>;
 using CoinVector = std::vector<COutPoint>;
 using Inputs = std::vector<CTxIn>;
 using Outputs = std::vector<CTxOut>;

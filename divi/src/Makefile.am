@@ -141,6 +141,7 @@ BITCOIN_CORE_H = \
   KeyMetadata.h \
   MasterKey.h \
   OutPoint.h \
+  LockedCoinsSet.h \
   primitives/block.h \
   primitives/transaction.h \
   core_io.h \

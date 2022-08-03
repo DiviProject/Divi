@@ -57,7 +57,7 @@ class VaultManager;
 class CBlockLocator;
 class I_BlockDataReader;
 class I_WalletBalanceCalculator;
-class AvailableUtxoCalculator;
+class AvailableUtxoCollector;
 class I_WalletDatabaseEndpointFactory;
 
 template <typename T>
@@ -199,7 +199,7 @@ private:
     std::unique_ptr<I_AppendOnlyTransactionRecord> transactionRecord_;
     std::unique_ptr<I_SpentOutputTracker> outputTracker_;
     std::unique_ptr<I_UtxoOwnershipDetector> ownershipDetector_;
-    std::unique_ptr<AvailableUtxoCalculator> utxoCalculator_;
+    std::unique_ptr<AvailableUtxoCollector> availableUtxoCollector_;
     std::unique_ptr<I_TransactionDetailCalculator<CAmount>> utxoBalanceCalculator_;
     std::unique_ptr<I_CachedTransactionDetailCalculator<CAmount>> cachedUtxoBalanceCalculator_;
     std::unique_ptr<I_WalletBalanceCalculator> balanceCalculator_;

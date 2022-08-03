@@ -129,7 +129,7 @@ public:
     }
 };
 
-class TempAvailableUtxoCalculator final: public I_TransactionDetailCalculator<std::vector<COutput>>
+class AvailableUtxoCalculator final: public I_TransactionDetailCalculator<std::vector<COutput>>
 {
 private:
     const I_AppendOnlyTransactionRecord& txRecord_;
@@ -184,7 +184,7 @@ private:
     }
 
 public:
-    TempAvailableUtxoCalculator(
+    AvailableUtxoCalculator(
         const BlockMap& blockIndexByHash,
         const CChain& activeChain,
         const CAmount minimumVaultAmount,
@@ -206,7 +206,7 @@ public:
     {
     }
 
-    ~TempAvailableUtxoCalculator() = default;
+    ~AvailableUtxoCalculator() = default;
 
     void calculate(
         const CWalletTx& walletTransaction,
@@ -243,7 +243,7 @@ public:
 class AvailableUtxoCollector
 {
 private:
-    mutable TempAvailableUtxoCalculator utxoCalculator_;
+    mutable AvailableUtxoCalculator availableUtxoCalculator_;
     FilteredTransactionsCalculator<std::vector<COutput>> filteredTransactions_;
 
 public:
@@ -256,7 +256,7 @@ public:
         const I_UtxoOwnershipDetector& ownershipDetector,
         const I_SpentOutputTracker& spentOutputTracker,
         const LockedCoinsSet& lockedCoins
-        ): utxoCalculator_(
+        ): availableUtxoCalculator_(
             blockIndexByHash,
             activeChain,
             settings.GetArg("-vault_min",0)*COIN,
@@ -265,19 +265,19 @@ public:
             ownershipDetector,
             spentOutputTracker,
             lockedCoins)
-        , filteredTransactions_(txRecord,confsCalculator,utxoCalculator_)
+        , filteredTransactions_(txRecord,confsCalculator,availableUtxoCalculator_)
     {
     }
     ~AvailableUtxoCollector() = default;
 
     void setCoinTypeAndGetAvailableUtxos(bool onlyConfirmed, AvailableCoinsType coinType, std::vector<COutput>& outputs) const
     {
-        utxoCalculator_.setRequirements(coinType,onlyConfirmed,false);
+        availableUtxoCalculator_.setRequirements(coinType,onlyConfirmed,false);
         outputs.clear();
         filteredTransactions_.applyCalculationToMatchingTransactions(TxFlag::CONFIRMED_AND_MATURE,isminetype::ISMINE_SPENDABLE,outputs);
         if(!onlyConfirmed)
         {
-            utxoCalculator_.setRequirements(coinType,onlyConfirmed,true);
+            availableUtxoCalculator_.setRequirements(coinType,onlyConfirmed,true);
             filteredTransactions_.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,isminetype::ISMINE_SPENDABLE,outputs);
         }
     }

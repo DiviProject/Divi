@@ -44,7 +44,7 @@
 #include <CachedUtxoBalanceCalculator.h>
 #include <script/StakingVaultScript.h>
 #include <I_WalletDatabaseEndpointFactory.h>
-#include <AvailableUtxoCalculator.h>
+#include <AvailableUtxoCollector.h>
 
 #include <stack>
 
@@ -127,49 +127,6 @@ public:
     isminetype isMine(const CTxOut& output) const override
     {
         return computeMineType(keyStore_,output.scriptPubKey,false);
-    }
-};
-
-class AvailableUtxoCollector
-{
-private:
-    mutable AvailableUtxoCalculator availableUtxoCalculator_;
-    FilteredTransactionsCalculator<std::vector<COutput>> filteredTransactions_;
-
-public:
-    AvailableUtxoCollector(
-        const Settings& settings,
-        const BlockMap& blockIndexByHash,
-        const CChain& activeChain,
-        const I_AppendOnlyTransactionRecord& txRecord,
-        const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
-        const I_UtxoOwnershipDetector& ownershipDetector,
-        const I_SpentOutputTracker& spentOutputTracker,
-        const LockedCoinsSet& lockedCoins
-        ): availableUtxoCalculator_(
-            blockIndexByHash,
-            activeChain,
-            settings.GetArg("-vault_min",0)*COIN,
-            txRecord,
-            confsCalculator,
-            ownershipDetector,
-            spentOutputTracker,
-            lockedCoins)
-        , filteredTransactions_(txRecord,confsCalculator,availableUtxoCalculator_)
-    {
-    }
-    ~AvailableUtxoCollector() = default;
-
-    void setCoinTypeAndGetAvailableUtxos(bool onlyConfirmed, AvailableCoinsType coinType, std::vector<COutput>& outputs) const
-    {
-        availableUtxoCalculator_.setRequirements(coinType,onlyConfirmed,false);
-        outputs.clear();
-        filteredTransactions_.applyCalculationToMatchingTransactions(TxFlag::CONFIRMED_AND_MATURE,isminetype::ISMINE_SPENDABLE,outputs);
-        if(!onlyConfirmed)
-        {
-            availableUtxoCalculator_.setRequirements(coinType,onlyConfirmed,true);
-            filteredTransactions_.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,isminetype::ISMINE_SPENDABLE,outputs);
-        }
     }
 };
 

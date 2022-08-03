@@ -73,13 +73,13 @@ bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeig
 }
 
 template <typename T>
-isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScript, const bool overwriteMineType)
+isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScript, const bool parseVaultsAsSpendable)
 {
     isminetype mine = ::IsMine(keystore, destinationOrScript);
     const bool isManagedVault = mine == isminetype::ISMINE_MANAGED_VAULT;
     const bool isOwnedVault = mine == isminetype::ISMINE_OWNED_VAULT;
     const bool isVault = isManagedVault || isOwnedVault;
-    if(isVault && overwriteMineType) mine = isminetype::ISMINE_SPENDABLE;
+    if(isVault && parseVaultsAsSpendable) mine = isminetype::ISMINE_SPENDABLE;
     return mine;
 }
 

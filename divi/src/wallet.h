@@ -30,6 +30,7 @@
 #include <I_UtxoOwnershipDetector.h>
 #include <AddressBookManager.h>
 #include <LockedCoinsSet.h>
+#include <AvailableCoinsType.h>
 
 class I_CoinSelectionAlgorithm;
 class CKeyMetadata;
@@ -79,12 +80,6 @@ enum WalletFeature {
     FEATURE_HD = 120200,
 
     FEATURE_LATEST = 61000
-};
-
-enum class AvailableCoinsType {
-    ALL_SPENDABLE_COINS = 0,                    // find masternode outputs including locked ones (use with caution)
-    STAKABLE_COINS = 1,                          // UTXO's that are valid for staking
-    OWNED_VAULT_COINS = 2
 };
 
 /**

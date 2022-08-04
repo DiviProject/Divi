@@ -217,16 +217,6 @@ private:
     int64_t getTimestampOfFistKey() const;
     bool CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const;
 
-    CAmount ComputeChange(const CTxOut& txout) const;
-    CAmount ComputeChange(const CTransaction& tx) const;
-
-    CAmount ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const;
-    CAmount ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const;
-
-    CAmount ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const;
-    CAmount ComputeDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const;
-    bool DebitsFunds(const CTransaction& tx) const;
-
     void cacheTransactionDeltas(const CWalletTx& wtx) const;
     CAmount LockedCoinBalance(const UtxoOwnershipFilter& filter) const;
 

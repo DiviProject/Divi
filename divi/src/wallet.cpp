@@ -425,68 +425,12 @@ bool CWallet::AllInputsAreMine(const CWalletTx& walletTransaction) const
     return allInputsAreMine;
 }
 
-CAmount CWallet::ComputeChange(const CTxOut& txout) const
-{
-    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-    if (!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
-        throw std::runtime_error("CWallet::ComputeChange() : value out of range");
-    return (IsChange(txout) ? txout.nValue : 0);
-}
 bool CWallet::isMine(const CTransaction& tx) const
 {
     BOOST_FOREACH (const CTxOut& txout, tx.vout)
         if (isMine(txout) != isminetype::ISMINE_NO)
             return true;
     return false;
-}
-
-bool CWallet::DebitsFunds(const CTransaction& tx) const
-{
-    return (ComputeDebit(tx, isminetype::ISMINE_SPENDABLE) > 0);
-}
-
-CAmount CWallet::ComputeDebit(const CTransaction& tx, const UtxoOwnershipFilter& filter) const
-{
-    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-    CAmount nDebit = 0;
-    BOOST_FOREACH (const CTxIn& txin, tx.vin) {
-        nDebit += ComputeDebit(txin, filter);
-        if (!MoneyRange(nDebit,maxMoneyAllowedInOutput))
-            throw std::runtime_error("CWallet::ComputeDebit() : value out of range");
-    }
-    return nDebit;
-}
-
-CAmount CWallet::ComputeCredit(const CTxOut& txout, const UtxoOwnershipFilter& filter) const
-{
-    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-    if (!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
-        throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
-    return ( filter.hasRequested(isMine(txout)) ? txout.nValue : 0);
-}
-CAmount CWallet::ComputeCredit(const CWalletTx& tx, const UtxoOwnershipFilter& filter) const
-{
-    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-    CAmount nCredit = 0;
-    for (const CTxOut& out: tx.vout)
-    {
-        nCredit += ComputeCredit(out, filter);
-        if (!MoneyRange(nCredit,maxMoneyAllowedInOutput))
-            throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
-    }
-    return nCredit;
-}
-
-CAmount CWallet::ComputeChange(const CTransaction& tx) const
-{
-    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-    CAmount nChange = 0;
-    BOOST_FOREACH (const CTxOut& txout, tx.vout) {
-        nChange += ComputeChange(txout);
-        if (!MoneyRange(nChange,maxMoneyAllowedInOutput))
-            throw std::runtime_error("CWallet::ComputeChange() : value out of range");
-    }
-    return nChange;
 }
 
 CAmount CWallet::getDebit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
@@ -1490,21 +1434,6 @@ isminetype CWallet::isMine(const CTxIn& txin) const
         }
     }
     return isminetype::ISMINE_NO;
-}
-
-CAmount CWallet::ComputeDebit(const CTxIn& txin, const UtxoOwnershipFilter& filter) const
-{
-    {
-        LOCK(cs_wallet);
-        const CWalletTx* txPtr = GetWalletTx(txin.prevout.hash);
-        if (txPtr != nullptr) {
-            const CWalletTx& prev = *txPtr;
-            if (txin.prevout.n < prev.vout.size())
-                if (filter.hasRequested(isMine(prev.vout[txin.prevout.n])))
-                    return prev.vout[txin.prevout.n].nValue;
-        }
-    }
-    return 0;
 }
 
 bool CWallet::IsChange(const CTxOut& txout) const

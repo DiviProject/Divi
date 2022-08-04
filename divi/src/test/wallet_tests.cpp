@@ -77,8 +77,6 @@ void WalletTestFixture::add_coin(const CAmount nValue, int nAge, bool fIsFromMe,
     tx.vout.resize(nInput+1);
     tx.vout[nInput].nValue = nValue;
     if (fIsFromMe) {
-        // DebitsFunds() returns (GetDebit() > 0), and GetDebit() is 0 if vin.empty(),
-        // so stop vin being empty, and cache a non-zero Debit to fake out DebitsFunds()
         tx.vin.resize(1);
     }
     CWalletTx* wtx = new CWalletTx(tx);

@@ -45,6 +45,7 @@
 #include <script/StakingVaultScript.h>
 #include <I_WalletDatabaseEndpointFactory.h>
 #include <AvailableUtxoCollector.h>
+#include <CachedTransactionDeltasCalculator.h>
 
 #include <stack>
 
@@ -194,6 +195,7 @@ CWallet::CWallet(
             *cachedUtxoBalanceCalculator_,
             *transactionRecord_,
             confirmationNumberCalculator_  ))
+    , cachedTxDeltasCalculator_(new CachedTransactionDeltasCalculator(*ownershipDetector_, *transactionRecord_, Params().MaxMoneyOut()))
     , cachedTransactionDeltasByHash_()
     , nWalletVersion(FEATURE_BASE)
     , nWalletMaxVersion(FEATURE_BASE)

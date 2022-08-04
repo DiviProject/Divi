@@ -175,6 +175,7 @@ private:
     std::unique_ptr<I_TransactionDetailCalculator<CAmount>> utxoBalanceCalculator_;
     std::unique_ptr<I_CachedTransactionDetailCalculator<CAmount>> cachedUtxoBalanceCalculator_;
     std::unique_ptr<I_WalletBalanceCalculator> balanceCalculator_;
+    std::unique_ptr<I_CachedTransactionDetailCalculator<CachedTransactionDeltas>> cachedTxDeltasCalculator_;
     mutable std::map<uint256,std::map<uint8_t, CachedTransactionDeltas>> cachedTransactionDeltasByHash_;
 
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet

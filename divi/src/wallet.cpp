@@ -1404,28 +1404,7 @@ void CWallet::UpdatedBlockTip(const CBlockIndex *pindex)
 
 bool CWallet::IsChange(const CTxOut& txout) const
 {
-    // TODO: fix handling of 'change' outputs. The assumption is that any
-    // payment to a script that is ours, but is not in the address book
-    // is change. That assumption is likely to break when we implement multisignature
-    // wallets that return change back into a multi-signature-protected address;
-    // a better way of identifying which outputs are 'the send' and which are
-    // 'the change' will need to be implemented (maybe extend CWalletTx to remember
-    // which output, if any, was change).
-    if (computeMineType(*this, txout.scriptPubKey, true) != isminetype::ISMINE_NO)
-    {
-        CTxDestination address;
-        if (!ExtractDestination(txout.scriptPubKey, address))
-            return true;
-
-        LOCK(cs_wallet);
-        if(txout.scriptPubKey.IsPayToPublicKeyHash()) {
-            auto keyID = boost::get<CKeyID>(address);
-            if(mapHdPubKeys.count(keyID)) {
-                return mapHdPubKeys.at(keyID).nChangeIndex > 0;
-            }
-        }
-    }
-    return false;
+    return ownershipDetector_->isChange(txout);
 }
 
 /** @} */ // end of mapWallet

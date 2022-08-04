@@ -403,33 +403,6 @@ bool CWallet::CanSupportFeature(enum WalletFeature wf)
     return nWalletMaxVersion >= wf;
 }
 
-isminetype CWallet::isMine(const CScript& scriptPubKey) const
-{
-    return computeMineType(*this, scriptPubKey, true);
-}
-
-isminetype CWallet::isMine(const CTxIn& txin) const
-{
-    {
-        LOCK(cs_wallet);
-        const CWalletTx* txPtr = GetWalletTx(txin.prevout.hash);
-        if (txPtr != nullptr) {
-            const CWalletTx& prev = *txPtr;
-            if (txin.prevout.n < prev.vout.size())
-                return isMine(prev.vout[txin.prevout.n]);
-        }
-    }
-    return isminetype::ISMINE_NO;
-}
-
-bool CWallet::isMine(const CTransaction& tx) const
-{
-    BOOST_FOREACH (const CTxOut& txout, tx.vout)
-        if (isMine(txout) != isminetype::ISMINE_NO)
-            return true;
-    return false;
-}
-
 isminetype CWallet::isMine(const CTxDestination& dest) const
 {
     return computeMineType(*this, dest, true);
@@ -979,7 +952,7 @@ bool CWallet::CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprune
 {
     for(unsigned outputIndex = 0; outputIndex < wtx.vout.size(); ++outputIndex)
     {
-        if(isMine(wtx.vout[outputIndex]) != isminetype::ISMINE_NO)
+        if(ownershipDetector_->isMine(wtx.vout[outputIndex]) != isminetype::ISMINE_NO)
         {
             if(!outputTracker_->IsSpent(wtx.GetHash(), outputIndex,minimumNumberOfConfs)) return false;
         }
@@ -988,7 +961,7 @@ bool CWallet::CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprune
     {
         const CWalletTx* previousTx = transactionRecord_->GetWalletTx(input.prevout.hash);
         if(previousTx != nullptr &&
-            isMine(previousTx->vout[input.prevout.n]) != isminetype::ISMINE_NO &&
+            ownershipDetector_->isMine(previousTx->vout[input.prevout.n]) != isminetype::ISMINE_NO &&
             unprunedTransactionIds.count(input.prevout.hash) > 0)
         {
             return false;

@@ -161,6 +161,8 @@ private:
     const std::string strWalletFile;
     bool vaultModeEnabled_;
     LockedCoinsSet setLockedCoins;
+    std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
+
     const I_WalletDatabaseEndpointFactory& walletDatabaseEndpointFactory_;
     const CChain& activeChain_;
     const BlockMap& blockIndexByHash_;
@@ -183,7 +185,6 @@ private:
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
 
-    std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
     CPubKey vchDefaultKey;
     int64_t nTimeFirstKey;
 

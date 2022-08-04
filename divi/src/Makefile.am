@@ -354,6 +354,7 @@ BITCOIN_CORE_H = \
   AddressBookManager.h \
   AvailableUtxoCalculator.h \
   AvailableUtxoCollector.h \
+  CachedTransactionDeltas.h \
   wallet.h \
   WalletTx.h \
   I_UtxoOwnershipDetector.h \
@@ -579,6 +580,7 @@ libbitcoin_wallet_a_SOURCES = \
   AddressBookManager.cpp \
   AvailableUtxoCalculator.cpp \
   AvailableUtxoCollector.cpp \
+  CachedTransactionDeltas.cpp \
   wallet.cpp \
   Output.cpp \
   WalletTx.cpp \

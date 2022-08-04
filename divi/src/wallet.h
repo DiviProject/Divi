@@ -274,6 +274,7 @@ public:
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;
     bool CanStakeCoins() const override;
 
+    isminetype isMine(const CTxDestination& dest) const;
     isminetype isMine(const CTxOut& txout) const;
     bool PruneWallet();
 
@@ -335,7 +336,6 @@ public:
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
     bool AllInputsAreMine(const CWalletTx& walletTransaction) const;
-    isminetype isMine(const CTxDestination& dest) const;
 
     bool IsChange(const CTxOut& txout) const;
 

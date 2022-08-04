@@ -407,14 +407,7 @@ isminetype CWallet::isMine(const CScript& scriptPubKey) const
 {
     return computeMineType(*this, scriptPubKey, true);
 }
-isminetype CWallet::isMine(const CTxDestination& dest) const
-{
-    return computeMineType(*this, dest, true);
-}
-isminetype CWallet::isMine(const CTxOut& txout) const
-{
-    return isMine(txout.scriptPubKey);
-}
+
 bool CWallet::AllInputsAreMine(const CWalletTx& walletTransaction) const
 {
     bool allInputsAreMine = true;
@@ -432,6 +425,16 @@ bool CWallet::isMine(const CTransaction& tx) const
             return true;
     return false;
 }
+
+isminetype CWallet::isMine(const CTxDestination& dest) const
+{
+    return computeMineType(*this, dest, true);
+}
+isminetype CWallet::isMine(const CTxOut& txout) const
+{
+    return isMine(txout.scriptPubKey);
+}
+
 
 CAmount CWallet::getDebit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
 {

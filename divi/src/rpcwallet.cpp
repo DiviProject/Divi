@@ -88,6 +88,26 @@ bool DebitsFromAnyAccount(const AddressBook& addressBook,const CTxOut& txout)
     return false;
 }
 
+bool AllInputsAreMine(const CWallet& wallet, const CWalletTx& walletTransaction)
+{
+    bool allInputsAreMine = true;
+    for (const CTxIn& txin : walletTransaction.vin) {
+        isminetype mine = isminetype::ISMINE_NO;
+        {
+            //LOCK(cs_wallet);
+            const CWalletTx* txPtr = wallet.GetWalletTx(txin.prevout.hash);
+            if (txPtr != nullptr)
+            {
+                const CWalletTx& prev = *txPtr;
+                if (txin.prevout.n < prev.vout.size())
+                    mine = wallet.isMine(prev.vout[txin.prevout.n]);
+            }
+        }
+        allInputsAreMine &= static_cast<bool>(mine == isminetype::ISMINE_SPENDABLE);
+    }
+    return allInputsAreMine;
+}
+
 WalletOutputEntryParsing GetAmounts(
     const CWallet& wallet,
     const CWalletTx& wtx,
@@ -106,7 +126,7 @@ WalletOutputEntryParsing GetAmounts(
     CAmount wtxTotalInputs = 0;
     if(nDebit > 0)
     {
-        if(wallet.AllInputsAreMine(wtx))
+        if(AllInputsAreMine(wallet, wtx))
         {
             parsedEntry.nFee = nDebit - wtx.GetValueOut();
             wtxTotalInputs = nDebit;
@@ -1929,7 +1949,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
     else {
         bool involvesWatchonly = false;
         bool fAllForMe = true;
-        bool fAllFromMe = wallet.AllInputsAreMine(wtx);
+        bool fAllFromMe = AllInputsAreMine(wallet, wtx);
 
         bool fMatchesReceiveAccount = false;
         typedef std::string AddressParsing;

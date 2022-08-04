@@ -31,6 +31,7 @@
 #include <AddressBookManager.h>
 #include <LockedCoinsSet.h>
 #include <AvailableCoinsType.h>
+#include <CachedTransactionDeltas.h>
 
 class I_CoinSelectionAlgorithm;
 class CKeyMetadata;
@@ -137,32 +138,6 @@ struct TransactionCreationResult
     TransactionCreationResult();
     ~TransactionCreationResult();
     TransactionCreationResult(TransactionCreationResult&& other);
-};
-
-struct CachedTransactionDeltas
-{
-    CAmount credit;
-    CAmount debit;
-    CAmount changeAmount;
-    CAmount fees;
-    CachedTransactionDeltas(
-        ): credit(0)
-        , debit(0)
-        , changeAmount(0)
-        , fees(0)
-    {
-    }
-    CachedTransactionDeltas(
-        CAmount creditIn,
-        CAmount debitIn,
-        CAmount changeAmountIn,
-        CAmount feesIn
-        ): credit(creditIn)
-        , debit(debitIn)
-        , changeAmount(changeAmountIn)
-        , fees(feesIn)
-    {
-    }
 };
 
 class CWallet final:

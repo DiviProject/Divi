@@ -352,7 +352,7 @@ Value validateaddress(const Array& params, bool fHelp, CWallet* pwallet)
         ret.push_back(Pair("scriptPubKey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
 
 #ifdef ENABLE_WALLET
-        isminetype mine = pwallet ? pwallet->isMine(dest) : isminetype::ISMINE_NO;
+        isminetype mine = pwallet ? computeMineType(*pwallet,dest,true) : isminetype::ISMINE_NO;
         ret.push_back(Pair("ismine", (mine == isminetype::ISMINE_SPENDABLE) ? true : false));
         if (mine != isminetype::ISMINE_NO) {
             ret.push_back(Pair("iswatchonly", (mine == isminetype::ISMINE_WATCH_ONLY) ? true : false));

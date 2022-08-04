@@ -408,26 +408,6 @@ isminetype CWallet::isMine(const CScript& scriptPubKey) const
     return computeMineType(*this, scriptPubKey, true);
 }
 
-bool CWallet::AllInputsAreMine(const CWalletTx& walletTransaction) const
-{
-    bool allInputsAreMine = true;
-    for (const CTxIn& txin : walletTransaction.vin) {
-        isminetype mine = isminetype::ISMINE_NO;
-        {
-            LOCK(cs_wallet);
-            const CWalletTx* txPtr = GetWalletTx(txin.prevout.hash);
-            if (txPtr != nullptr)
-            {
-                const CWalletTx& prev = *txPtr;
-                if (txin.prevout.n < prev.vout.size())
-                    mine = isMine(prev.vout[txin.prevout.n]);
-            }
-        }
-        allInputsAreMine &= static_cast<bool>(mine == isminetype::ISMINE_SPENDABLE);
-    }
-    return allInputsAreMine;
-}
-
 bool CWallet::isMine(const CTransaction& tx) const
 {
     BOOST_FOREACH (const CTxOut& txout, tx.vout)

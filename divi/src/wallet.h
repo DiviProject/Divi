@@ -335,7 +335,6 @@ public:
 
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
-    bool AllInputsAreMine(const CWalletTx& walletTransaction) const;
 
     bool IsChange(const CTxOut& txout) const;
 

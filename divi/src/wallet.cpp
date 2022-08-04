@@ -196,7 +196,6 @@ CWallet::CWallet(
             *transactionRecord_,
             confirmationNumberCalculator_  ))
     , cachedTxDeltasCalculator_(new CachedTransactionDeltasCalculator(*ownershipDetector_, *transactionRecord_, Params().MaxMoneyOut()))
-    , cachedTransactionDeltasByHash_()
     , nWalletVersion(FEATURE_BASE)
     , nWalletMaxVersion(FEATURE_BASE)
     , mapKeyMetadata()
@@ -495,43 +494,22 @@ CAmount CWallet::getDebit(const CWalletTx& walletTransaction, const UtxoOwnershi
     if (walletTransaction.vin.empty())
         return 0;
 
-    CAmount debit = 0;
-    if(cachedTransactionDeltasByHash_.count(walletTransaction.GetHash()) == 0)
-    {
-        cacheTransactionDeltas(walletTransaction);
-    }
-    if (filter.hasRequested(isminetype::ISMINE_SPENDABLE)) {
-        debit += cachedTransactionDeltasByHash_[walletTransaction.GetHash()][static_cast<uint8_t>(isminetype::ISMINE_SPENDABLE)].debit;
-    }
-    if (filter.hasRequested(isminetype::ISMINE_WATCH_ONLY)) {
-        debit += cachedTransactionDeltasByHash_[walletTransaction.GetHash()][static_cast<uint8_t>(isminetype::ISMINE_WATCH_ONLY)].debit;
-    }
-    return debit;
+    CachedTransactionDeltas txDeltas;
+    cachedTxDeltasCalculator_->calculate(walletTransaction,filter,txDeltas);
+    return txDeltas.debit;
 }
 CAmount CWallet::getCredit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
 {
-    CAmount credit = 0;
-    if(cachedTransactionDeltasByHash_.count(walletTransaction.GetHash()) == 0)
-    {
-        cacheTransactionDeltas(walletTransaction);
-    }
-    if (filter.hasRequested(isminetype::ISMINE_SPENDABLE)) {
-        // GetBalance can assume transactions in mapWallet won't change
-        credit+= cachedTransactionDeltasByHash_[walletTransaction.GetHash()][static_cast<uint8_t>(isminetype::ISMINE_SPENDABLE)].credit;
-    }
-    if (filter.hasRequested(isminetype::ISMINE_WATCH_ONLY)) {
-        credit+= cachedTransactionDeltasByHash_[walletTransaction.GetHash()][static_cast<uint8_t>(isminetype::ISMINE_WATCH_ONLY)].credit;
-    }
-    return credit;
+    CachedTransactionDeltas txDeltas;
+    cachedTxDeltasCalculator_->calculate(walletTransaction,filter,txDeltas);
+    return txDeltas.credit;
 }
 
 CAmount CWallet::getChange(const CWalletTx& walletTransaction) const
 {
-    if(cachedTransactionDeltasByHash_.count(walletTransaction.GetHash()) == 0)
-    {
-        cacheTransactionDeltas(walletTransaction);
-    }
-    return cachedTransactionDeltasByHash_[walletTransaction.GetHash()][static_cast<uint8_t>(isminetype::ISMINE_SPENDABLE)].changeAmount;
+    CachedTransactionDeltas txDeltas;
+    cachedTxDeltasCalculator_->calculate(walletTransaction,isminetype::ISMINE_SPENDABLE,txDeltas);
+    return txDeltas.changeAmount;
 }
 
 int CWallet::GetVersion()
@@ -1345,15 +1323,10 @@ bool CWallet::PruneWallet()
 
 void CWallet::cacheTransactionDeltas(const CWalletTx& wtx) const
 {
+    CachedTransactionDeltas txDeltas;
     for(auto ownershipType: {isminetype::ISMINE_SPENDABLE, isminetype::ISMINE_WATCH_ONLY})
     {
-        UtxoOwnershipFilter filter(ownershipType);
-        const CAmount credit = ComputeCredit(wtx,filter);
-        const CAmount debit = ComputeDebit(wtx,filter);
-        const CAmount changeAmount = ownershipType==isminetype::ISMINE_SPENDABLE? ComputeChange(wtx):0;
-        const CAmount feesPaid = (debit > 0)? debit - changeAmount : 0;
-        cachedTransactionDeltasByHash_[wtx.GetHash()].insert(
-            std::make_pair(filter.underlyingBitMask() , CachedTransactionDeltas(credit, debit, changeAmount,feesPaid)));
+        cachedTxDeltasCalculator_->calculate(wtx,ownershipType,txDeltas);
     }
 }
 
@@ -1364,7 +1337,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,false);
     CWalletTx& wtx = *walletTxAndRecordStatus.first;
     cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(wtx);
-    cacheTransactionDeltas(wtx);
+    cachedTxDeltasCalculator_->recomputeCachedTxEntries(wtx);
     bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
 
     bool walletTransactionHasBeenUpdated = false;
@@ -1395,6 +1368,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
 
     // Break debit/credit balance caches:
     cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(wtx);
+    cachedTxDeltasCalculator_->recomputeCachedTxEntries(wtx);
 
     // Notify UI of new or updated transaction
     NotifyTransactionChanged(wtxIn.GetHash(), (transactionHashIsNewToWallet) ? TransactionNotificationType::NEW : TransactionNotificationType::UPDATED);
@@ -1412,7 +1386,12 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
         AssertLockHeld(cs_wallet);
         bool fExisted = GetWalletTx(tx.GetHash()) != nullptr;
         if (fExisted && !fUpdate) return false;
-        if (fExisted || isMine(tx) || DebitsFunds(tx)) {
+
+        CachedTransactionDeltas txDeltas;
+        cachedTxDeltasCalculator_->calculate(tx,isminetype::ISMINE_SPENDABLE,txDeltas);
+        const bool creditsFundsOrDebitsFunds = txDeltas.credit > 0 || txDeltas.debit > 0;
+        cachedTxDeltasCalculator_->recomputeCachedTxEntries(tx);
+        if (fExisted || creditsFundsOrDebitsFunds) {
             CWalletTx wtx(tx);
             // Get merkle branch if transaction was found in a block
             if (pblock)
@@ -1438,7 +1417,11 @@ void CWallet::AddTransactions(const TransactionVector& txs, const CBlock* pblock
         BOOST_FOREACH (const CTxIn& txin, tx.vin)
         {
             CWalletTx* wtx = const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
-            if (wtx != nullptr) cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(*wtx);
+            if (wtx != nullptr)
+            {
+                cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(*wtx);
+                cachedTxDeltasCalculator_->recomputeCachedTxEntries(*wtx);
+            }
         }
     }
 }
@@ -2037,6 +2020,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
                         assert(coinPtr);
                     }
                     cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(*coinPtr);
+                    cachedTxDeltasCalculator_->recomputeCachedTxEntries(*coinPtr);
                     NotifyTransactionChanged(coinPtr->GetHash(), TransactionNotificationType::SPEND_FROM);
                     updated_hashes.insert(txin.prevout.hash);
                 }
@@ -2330,7 +2314,11 @@ void CWallet::LockCoin(const COutPoint& output)
     AssertLockHeld(cs_wallet); // setLockedCoins
     setLockedCoins.insert(output);
     CWalletTx* txPtr = const_cast<CWalletTx*>(GetWalletTx(output.hash));
-    if (txPtr != nullptr) cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(*txPtr);
+    if (txPtr != nullptr)
+    {
+        cachedUtxoBalanceCalculator_->recomputeCachedTxEntries(*txPtr);
+        cachedTxDeltasCalculator_->recomputeCachedTxEntries(*txPtr);
+    }
 }
 
 void CWallet::UnlockCoin(const COutPoint& output)
@@ -2365,7 +2353,7 @@ CAmount CWallet::LockedCoinBalance(const UtxoOwnershipFilter& filter) const
             !outputTracker_->IsSpent(outPoint.hash,outPoint.n,0) &&
             confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*walletTxPtr)>0)
         {
-            totalLockedBalance += ComputeCredit(*walletTxPtr,isminetype::ISMINE_SPENDABLE);
+            totalLockedBalance += getCredit(*walletTxPtr,isminetype::ISMINE_SPENDABLE);
         }
     }
     return totalLockedBalance;

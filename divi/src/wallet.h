@@ -204,10 +204,6 @@ private:
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
     void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override;
 
-    isminetype isMine(const CScript& scriptPubKey) const;
-    isminetype isMine(const CTxIn& txin) const;
-    bool isMine(const CTransaction& tx) const;
-
     void UpdateTimeFirstKey(int64_t nCreateTime);
     bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);

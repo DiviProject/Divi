@@ -122,11 +122,38 @@ class WalletUtxoOwnershipDetector final: public I_UtxoOwnershipDetector
 {
 private:
     const CKeyStore& keyStore_;
+    const std::map<CKeyID, CHDPubKey>& hdPubKeysByKeyID_;
+
 public:
-    WalletUtxoOwnershipDetector(const CKeyStore& keyStore): keyStore_(keyStore) {}
+    WalletUtxoOwnershipDetector(
+        const CKeyStore& keyStore,
+        const std::map<CKeyID, CHDPubKey>& hdPubKeysByKeyID
+        ): keyStore_(keyStore)
+        , hdPubKeysByKeyID_(hdPubKeysByKeyID)
+    {
+    }
+
     isminetype isMine(const CTxOut& output) const override
     {
         return computeMineType(keyStore_,output.scriptPubKey,false);
+    }
+
+    bool isChange(const CTxOut& output) const override
+    {
+        if (isMine(output) != isminetype::ISMINE_NO)
+        {
+            CTxDestination address;
+            if (!ExtractDestination(output.scriptPubKey, address))
+                return true;
+
+            if(output.scriptPubKey.IsPayToPublicKeyHash())
+            {
+                auto keyID = boost::get<CKeyID>(address);
+                auto it = hdPubKeysByKeyID_.find(keyID);
+                if(it != hdPubKeysByKeyID_.end()) return it->second.nChangeIndex > 0;
+            }
+        }
+        return false;
     }
 };
 
@@ -141,6 +168,7 @@ CWallet::CWallet(
     , strWalletFile(strWalletFileIn)
     , vaultModeEnabled_(false)
     , setLockedCoins()
+    , mapHdPubKeys()
     , walletDatabaseEndpointFactory_(walletDatabaseEndpointFactory)
     , activeChain_(chain)
     , blockIndexByHash_(blockMap)
@@ -148,7 +176,7 @@ CWallet::CWallet(
     , addressBookManager_(new AddressBookManager())
     , transactionRecord_(new WalletTransactionRecord(cs_wallet) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) )
-    , ownershipDetector_(new WalletUtxoOwnershipDetector(*static_cast<CKeyStore*>(this)))
+    , ownershipDetector_(new WalletUtxoOwnershipDetector(*static_cast<CKeyStore*>(this), mapHdPubKeys))
     , availableUtxoCollector_(
         new AvailableUtxoCollector(
             settings,
@@ -172,7 +200,6 @@ CWallet::CWallet(
     , mapKeyMetadata()
     , mapMasterKeys()
     , nMasterKeyMaxID(0)
-    , mapHdPubKeys()
     , vchDefaultKey()
     , nTimeFirstKey(0)
     , timeOfLastChainTipUpdate(0)

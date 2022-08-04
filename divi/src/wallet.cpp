@@ -408,6 +408,20 @@ isminetype CWallet::isMine(const CScript& scriptPubKey) const
     return computeMineType(*this, scriptPubKey, true);
 }
 
+isminetype CWallet::isMine(const CTxIn& txin) const
+{
+    {
+        LOCK(cs_wallet);
+        const CWalletTx* txPtr = GetWalletTx(txin.prevout.hash);
+        if (txPtr != nullptr) {
+            const CWalletTx& prev = *txPtr;
+            if (txin.prevout.n < prev.vout.size())
+                return isMine(prev.vout[txin.prevout.n]);
+        }
+    }
+    return isminetype::ISMINE_NO;
+}
+
 bool CWallet::isMine(const CTransaction& tx) const
 {
     BOOST_FOREACH (const CTxOut& txout, tx.vout)
@@ -1413,20 +1427,6 @@ void CWallet::SetBestChain(const CBlockLocator& loc)
 void CWallet::UpdatedBlockTip(const CBlockIndex *pindex)
 {
     timeOfLastChainTipUpdate = GetTime();
-}
-
-isminetype CWallet::isMine(const CTxIn& txin) const
-{
-    {
-        LOCK(cs_wallet);
-        const CWalletTx* txPtr = GetWalletTx(txin.prevout.hash);
-        if (txPtr != nullptr) {
-            const CWalletTx& prev = *txPtr;
-            if (txin.prevout.n < prev.vout.size())
-                return isMine(prev.vout[txin.prevout.n]);
-        }
-    }
-    return isminetype::ISMINE_NO;
 }
 
 bool CWallet::IsChange(const CTxOut& txout) const

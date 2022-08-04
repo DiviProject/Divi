@@ -216,7 +216,6 @@ private:
     int64_t getTimestampOfFistKey() const;
     bool CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const;
 
-    void cacheTransactionDeltas(const CWalletTx& wtx) const;
     CAmount LockedCoinBalance(const UtxoOwnershipFilter& filter) const;
 
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
@@ -273,8 +272,6 @@ public:
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;
     bool CanStakeCoins() const override;
 
-    isminetype isMine(const CTxDestination& dest) const;
-    isminetype isMine(const CTxOut& txout) const;
     bool PruneWallet();
 
     bool IsUnlockedForStakingOnly() const;

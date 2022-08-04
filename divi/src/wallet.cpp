@@ -406,16 +406,6 @@ bool CWallet::CanSupportFeature(enum WalletFeature wf)
     return nWalletMaxVersion >= wf;
 }
 
-isminetype CWallet::isMine(const CTxDestination& dest) const
-{
-    return computeMineType(*this, dest, true);
-}
-isminetype CWallet::isMine(const CTxOut& txout) const
-{
-    return computeMineType(*this, txout.scriptPubKey, true);
-}
-
-
 CAmount CWallet::getDebit(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& filter) const
 {
     if (walletTransaction.vin.empty())
@@ -1273,15 +1263,6 @@ bool CWallet::PruneWallet()
     settings.ForceRemoveArg("-prunewalletconfs");
     LogPrintf("Pruned wallet transactions loaded to memory: Original %u vs. Current %u\n",totalTxs,transactionsToKeep.size());
     return true;
-}
-
-void CWallet::cacheTransactionDeltas(const CWalletTx& wtx) const
-{
-    CachedTransactionDeltas txDeltas;
-    for(auto ownershipType: {isminetype::ISMINE_SPENDABLE, isminetype::ISMINE_WATCH_ONLY})
-    {
-        cachedTxDeltasCalculator_->calculate(wtx,ownershipType,txDeltas);
-    }
 }
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)

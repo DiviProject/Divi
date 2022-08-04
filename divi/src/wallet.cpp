@@ -85,6 +85,9 @@ isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScri
     return mine;
 }
 
+template isminetype computeMineType<CTxDestination>(const CKeyStore& keystore, const CTxDestination& destinationOrScript, const bool parseVaultsAsSpendable);
+template isminetype computeMineType<CScript>(const CKeyStore& keystore, const CScript& destinationOrScript, const bool parseVaultsAsSpendable);
+
 TransactionCreationRequest::TransactionCreationRequest(
     const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
     TransactionFeeMode txFeeMode,

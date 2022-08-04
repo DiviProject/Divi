@@ -140,6 +140,9 @@ struct TransactionCreationResult
     TransactionCreationResult(TransactionCreationResult&& other);
 };
 
+template <typename T>
+isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScript, const bool parseVaultsAsSpendable);
+
 class CWallet final:
     public CCryptoKeyStore,
     public NotificationInterface,

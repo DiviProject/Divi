@@ -145,7 +145,7 @@ Value importaddress(const Array& params, bool fHelp, CWallet* pwallet)
         if(!pwallet)
             throw JSONRPCError(RPC_WALLET_ERROR,"Wallet is not enabled in this build");
 
-        if (pwallet->isMine(address.Get()) == isminetype::ISMINE_SPENDABLE)
+        if ( computeMineType(*pwallet, address.Get(), true) == isminetype::ISMINE_SPENDABLE)
             throw JSONRPCError(RPC_WALLET_ERROR, "The wallet already contains the private key for this address or script");
 
         // add to address book or update label

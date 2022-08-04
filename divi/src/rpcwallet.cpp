@@ -100,7 +100,7 @@ bool AllInputsAreMine(const CWallet& wallet, const CWalletTx& walletTransaction)
             {
                 const CWalletTx& prev = *txPtr;
                 if (txin.prevout.n < prev.vout.size())
-                    mine = wallet.isMine(prev.vout[txin.prevout.n]);
+                    mine = computeMineType(wallet,prev.vout[txin.prevout.n].scriptPubKey,true);
             }
         }
         allInputsAreMine &= static_cast<bool>(mine == isminetype::ISMINE_SPENDABLE);
@@ -161,7 +161,7 @@ WalletOutputEntryParsing GetAmounts(
     // Sent/received.
     for (unsigned int i = 0; i < wtx.vout.size(); ++i) {
         const CTxOut& txout = wtx.vout[i];
-        const bool skippedByFilter = !(filter.hasRequested(wallet.isMine(txout)));
+        const bool skippedByFilter = !(filter.hasRequested( computeMineType(wallet,txout.scriptPubKey,true) ));
         if (nDebit > 0 && wallet.IsChange(txout)) continue;
         if (!(nDebit > 0) && skippedByFilter) continue;
 
@@ -550,7 +550,7 @@ Value setaccount(const Array& params, bool fHelp, CWallet* pwallet)
         strAccount = AccountFromValue(params[1]);
 
     // Only add the account if the address is yours.
-    if (pwallet->isMine(address.Get()) != isminetype::ISMINE_NO ) {
+    if ( computeMineType(*pwallet,address.Get(),true) != isminetype::ISMINE_NO ) {
         // Detect when changing the account of an address that is the 'unused current key' of another account:
         const AddressBook& addressBook = pwallet->getAddressBookManager().getAddressBook();
         if (addressBook.count(address.Get())) {
@@ -1297,7 +1297,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp, CWallet* pwallet)
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
 
-    if (pwallet->isMine(address.Get()) == isminetype::ISMINE_NO)
+    if ( computeMineType(*pwallet,address.Get(),true) == isminetype::ISMINE_NO)
         return (double)0.0;
 
     // Minimum confirmations
@@ -1385,7 +1385,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp, CWallet* pwallet)
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout) {
             CTxDestination address;
-            if (ExtractDestination(txout.scriptPubKey, address) && pwallet->isMine(address) != isminetype::ISMINE_NO && setAddress.count(address))
+            if (ExtractDestination(txout.scriptPubKey, address) && computeMineType(*pwallet,address,true) != isminetype::ISMINE_NO && setAddress.count(address))
                 if (GetConfirmationsCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
                     nAmount += txout.nValue;
         }
@@ -1675,7 +1675,7 @@ Value ListReceived(CWallet* pwallet,const I_MerkleTxConfirmationNumberCalculator
             if (!ExtractDestination(txout.scriptPubKey, address))
                 continue;
 
-            isminetype mine = pwallet->isMine(address);
+            isminetype mine = computeMineType(*pwallet,address,true);
             if (!filter.hasRequested(mine))
                 continue;
 
@@ -1880,7 +1880,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         const CBlockRewards rewards = blockSubsidies.GetBlockSubsidity(blockHeight);
         bool parsingAmbiguityDetected = false;
 
-        const isminetype stakerAddressOwnership = wallet.isMine(wtx.vout[1]);
+        const isminetype stakerAddressOwnership = computeMineType(wallet,wtx.vout[1].scriptPubKey,true);
         const bool stakerAddressIsSpendableByMe = stakerAddressOwnership != isminetype::ISMINE_NO;
         const CScript stakerScript = wtx.vout[1].scriptPubKey;
         if (stakerAddressIsSpendableByMe)
@@ -1922,7 +1922,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             for (unsigned int i = 1; i < wtx.vout.size(); i++)
             {
                 const CScript& scriptPubKey = wtx.vout[i].scriptPubKey;
-                isminetype mine = wallet.isMine(wtx.vout[i]);
+                isminetype mine = computeMineType(wallet,wtx.vout[i].scriptPubKey,true);
                 if (mine != isminetype::ISMINE_NO && scriptPubKey != stakerScript)
                 {
                     CTxDestination outDestination;
@@ -1957,7 +1957,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
         for (const CTxOut& txout : wtx.vout) {
             CTxDestination dest;
             ExtractDestination(txout.scriptPubKey, dest);
-            fAllForMe &= static_cast<bool>(wallet.isMine(txout) == isminetype::ISMINE_SPENDABLE);
+            fAllForMe &= static_cast<bool>( computeMineType(wallet,txout.scriptPubKey,true) == isminetype::ISMINE_SPENDABLE);
 
             std::string account;
             const AddressBook& addressBook = wallet.getAddressBookManager().getAddressBook();
@@ -1999,7 +1999,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             if ((!parsedEntry.listSent.empty() || parsedEntry.nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
                 BOOST_FOREACH (const COutputEntry& s, parsedEntry.listSent) {
                     Object entry;
-                    if (involvesWatchonly || (wallet.isMine(s.destination) == isminetype::ISMINE_WATCH_ONLY))
+                    if (involvesWatchonly || ( computeMineType(wallet,s.destination,true) == isminetype::ISMINE_WATCH_ONLY))
                         entry.push_back(Pair("involvesWatchonly", true));
                     entry.push_back(Pair("account", strSentAccount));
                     MaybePushAddress(entry, s.destination);
@@ -2023,7 +2023,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                         account = addressBook.find(r.destination)->second.name;
                     if (fAllAccounts || (account == strAccount)) {
                         Object entry;
-                        if (involvesWatchonly || (wallet.isMine(r.destination) == isminetype::ISMINE_WATCH_ONLY))
+                        if (involvesWatchonly || ( computeMineType(wallet,r.destination,true) == isminetype::ISMINE_WATCH_ONLY))
                             entry.push_back(Pair("involvesWatchonly", true));
                         entry.push_back(Pair("account", account));
                         MaybePushAddress(entry, r.destination);
@@ -2187,7 +2187,7 @@ Value listaccounts(const Array& params, bool fHelp, CWallet* pwallet)
 
     map<string, CAmount> mapAccountBalances;
     BOOST_FOREACH (const PAIRTYPE(CTxDestination, AddressLabel) & entry, pwallet->getAddressBookManager().getAddressBook()) {
-        if (filter.hasRequested(pwallet->isMine(entry.first))) // This address belongs to me
+        if (filter.hasRequested( computeMineType(*pwallet,entry.first,true) )) // This address belongs to me
             mapAccountBalances[entry.second.name] = 0;
     }
 

@@ -1307,11 +1307,38 @@ bool CWallet::PruneWallet()
             notFullySpent.insert(walletTx.GetHash());
         }
     }
+
+    cachedTxDeltasCalculator_.reset();
+    balanceCalculator_.reset();
+    cachedUtxoBalanceCalculator_.reset();
+    utxoBalanceCalculator_.reset();
+    availableUtxoCollector_.reset();
     outputTracker_.reset();
     transactionRecord_.reset();
 
     transactionRecord_.reset(new PrunedWalletTransactionRecord(cs_wallet,totalTxs));
     outputTracker_.reset( new SpentOutputTracker(*transactionRecord_,confirmationNumberCalculator_) );
+    availableUtxoCollector_.reset(
+        new AvailableUtxoCollector(
+            settings,
+            blockIndexByHash_,
+            activeChain_,
+            *transactionRecord_,
+            confirmationNumberCalculator_,
+            *ownershipDetector_,
+            *outputTracker_,
+            setLockedCoins));
+    utxoBalanceCalculator_.reset( new UtxoBalanceCalculator(*ownershipDetector_,*outputTracker_) );
+    cachedUtxoBalanceCalculator_.reset( new CachedUtxoBalanceCalculator(*utxoBalanceCalculator_) );
+    balanceCalculator_.reset(
+        new WalletBalanceCalculator(
+            *cachedUtxoBalanceCalculator_,
+            *transactionRecord_,
+            confirmationNumberCalculator_  ));
+    cachedTxDeltasCalculator_.reset(new CachedTransactionDeltasCalculator(*ownershipDetector_, *transactionRecord_, Params().MaxMoneyOut()));
+
+
+
     for(const CWalletTx& reloadedTransaction: transactionsToKeep)
     {
         LoadWalletTransaction(reloadedTransaction);

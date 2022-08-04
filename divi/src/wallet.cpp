@@ -432,7 +432,7 @@ isminetype CWallet::isMine(const CTxDestination& dest) const
 }
 isminetype CWallet::isMine(const CTxOut& txout) const
 {
-    return isMine(txout.scriptPubKey);
+    return computeMineType(*this, txout.scriptPubKey, true);
 }
 
 

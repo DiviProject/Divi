@@ -207,6 +207,9 @@ private:
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
     void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override;
 
+    bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
+    bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
+
     void UpdateTimeFirstKey(int64_t nCreateTime);
     bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
@@ -328,9 +331,6 @@ public:
 
     typedef std::multimap<int64_t, const CWalletTx*> TxItems;
     TxItems OrderedTxItems() const;
-
-    bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
-    bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
 
     bool IsChange(const CTxOut& txout) const;
 

@@ -1077,7 +1077,7 @@ CWallet::TxItems CWallet::OrderedTxItems() const
     return txOrdered;
 }
 
-int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
+int64_t CWallet::smartWalletTxTimestampEstimation(const CWalletTx& wtx)
 {
     if(wtx.hashBlock == 0) return wtx.nTimeReceived;
     if(blockIndexByHash_.count(wtx.hashBlock) == 0)
@@ -1278,7 +1278,7 @@ bool CWallet::addToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     bool walletTransactionHasBeenUpdated = false;
     if (transactionHashIsNewToWallet)
     {
-        wtx.nTimeSmart = SmartWalletTxTimestampEstimation(wtx);
+        wtx.nTimeSmart = smartWalletTxTimestampEstimation(wtx);
     }
     else
     {

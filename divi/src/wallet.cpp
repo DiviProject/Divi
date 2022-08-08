@@ -1265,7 +1265,7 @@ bool CWallet::PruneWallet()
     return true;
 }
 
-bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
+bool CWallet::addToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
 {
     LOCK(cs_wallet);
     // Inserts only if not already there, returns tx inserted or tx found
@@ -1289,7 +1289,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
     const std::string updateDescription =
         transactionHashIsNewToWallet ? "new":
         walletTransactionHasBeenUpdated? "update" : "";
-    LogPrintf("AddToWallet %s %s\n", wtxIn.ToStringShort(), updateDescription);
+    LogPrintf("addToWallet %s %s\n", wtxIn.ToStringShort(), updateDescription);
 
     // Write to disk
     if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated)
@@ -1331,7 +1331,7 @@ bool CWallet::addToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
             // Get merkle branch if transaction was found in a block
             if (pblock)
                 wtx.SetMerkleBranch(*pblock);
-            return AddToWallet(wtx,syncType == TransactionSyncType::BLOCK_DISCONNECT);
+            return addToWallet(wtx,syncType == TransactionSyncType::BLOCK_DISCONNECT);
         }
     }
     return false;
@@ -1888,7 +1888,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
 
             // Add tx to wallet, because if it has change it's also ours,
             // otherwise just for transaction history.
-            AddToWallet(wtxNew);
+            addToWallet(wtxNew);
 
             // Notify that old coins are spent
             {

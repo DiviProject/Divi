@@ -228,22 +228,22 @@ private:
 protected:
 
     // I_WalletLoader: load from disk methods
-    void LoadWalletTransaction(const CWalletTx& wtxIn) override;
-    bool LoadWatchOnly(const CScript& dest) override;
-    bool LoadMinVersion(int nVersion) override;
-    bool LoadMultiSig(const CScript& dest) override;
-    bool LoadKey(const CKey& key, const CPubKey& pubkey) override;
-    bool LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey) override;
-    bool LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) override;
-    bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp) override;
-    bool LoadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) override;
-    void LoadKeyPool(int nIndex, const CKeyPool &keypool) override;
-    bool LoadCScript(const CScript& redeemScript) override;
-    bool LoadCryptedHDChain(const CHDChain& chain, bool memonly) override;
-    bool LoadHDPubKey(const CHDPubKey &hdPubKey) override;
-    void ReserializeTransactions(const std::vector<uint256>& transactionIDs) override;
-    void LoadAddressLabel(const CTxDestination& address, const std::string newLabel) override;
-    bool LoadHDChain(const CHDChain& chain, bool memonly) override;
+    void loadWalletTransaction(const CWalletTx& wtxIn) override;
+    bool loadWatchOnly(const CScript& dest) override;
+    bool loadMinVersion(int nVersion) override;
+    bool loadMultiSig(const CScript& dest) override;
+    bool loadKey(const CKey& key, const CPubKey& pubkey) override;
+    bool loadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey) override;
+    bool loadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret) override;
+    bool loadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata, const bool updateFirstKeyTimestamp) override;
+    bool loadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase) override;
+    void loadKeyPool(int nIndex, const CKeyPool &keypool) override;
+    bool loadCScript(const CScript& redeemScript) override;
+    bool loadCryptedHDChain(const CHDChain& chain, bool memonly) override;
+    bool loadHDPubKey(const CHDPubKey &hdPubKey) override;
+    void reserializeTransactions(const std::vector<uint256>& transactionIDs) override;
+    void loadAddressLabel(const CTxDestination& address, const std::string newLabel) override;
+    bool loadHDChain(const CHDChain& chain, bool memonly) override;
 
     CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;
 

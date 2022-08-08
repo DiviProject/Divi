@@ -247,7 +247,7 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             {
                 std::string name;
                 ssValue >> name;
-                pwallet->LoadAddressLabel(CBitcoinAddress(strAddress).Get(),name);
+                pwallet->loadAddressLabel(CBitcoinAddress(strAddress).Get(),name);
             }
         } else if (strType == "tx") {
             uint256 hash;
@@ -277,7 +277,7 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             if (wtx.nOrderPos == -1)
                 wss.fAnyUnordered = true;
 
-            if(pwallet) pwallet->LoadWalletTransaction(wtx);
+            if(pwallet) pwallet->loadWalletTransaction(wtx);
         } else if (strType == "watchs") {
             CScript script;
             ssKey >> script;
@@ -285,7 +285,7 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             ssValue >> fYes;
             if (fYes == '1')
             {
-                if(pwallet) pwallet->LoadWatchOnly(script);
+                if(pwallet) pwallet->loadWatchOnly(script);
             }
         } else if (strType == "multisig") {
             CScript script;
@@ -294,7 +294,7 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             ssValue >> fYes;
             if (fYes == '1')
             {
-                if(pwallet) pwallet->LoadMultiSig(script);
+                if(pwallet) pwallet->loadMultiSig(script);
             }
         } else if (strType == "key" || strType == "wkey") {
             CPubKey vchPubKey;
@@ -343,8 +343,8 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
                 strErr = "Error reading wallet database: CPrivKey corrupt";
                 return false;
             }
-            if (pwallet && !pwallet->LoadKey(key, vchPubKey)) {
-                strErr = "Error reading wallet database: LoadKey failed";
+            if (pwallet && !pwallet->loadKey(key, vchPubKey)) {
+                strErr = "Error reading wallet database: loadKey failed";
                 return false;
             }
         } else if (strType == "mkey") {
@@ -354,7 +354,7 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             ssValue >> kMasterKey;
             if(pwallet)
             {
-                if(!pwallet->LoadMasterKey(nID,kMasterKey))
+                if(!pwallet->loadMasterKey(nID,kMasterKey))
                 {
                     strErr = strprintf("Error reading wallet database: duplicate CMasterKey id %u", nID);
                 }
@@ -366,8 +366,8 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             ssValue >> vchPrivKey;
             wss.nCKeys++;
 
-            if (pwallet && !pwallet->LoadCryptedKey(vchPubKey, vchPrivKey)) {
-                strErr = "Error reading wallet database: LoadCryptedKey failed";
+            if (pwallet && !pwallet->loadCryptedKey(vchPubKey, vchPrivKey)) {
+                strErr = "Error reading wallet database: loadCryptedKey failed";
                 return false;
             }
             wss.fIsEncrypted = true;
@@ -380,21 +380,21 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
 
             if(pwallet)
             {
-                pwallet->LoadKeyMetadata(vchPubKey, keyMeta,true);
+                pwallet->loadKeyMetadata(vchPubKey, keyMeta,true);
             }
         } else if (strType == "defaultkey") {
             CPubKey pubkey;
             ssValue >> pubkey;
             if(pwallet)
             {
-                pwallet->LoadDefaultKey(pubkey,false);
+                pwallet->loadDefaultKey(pubkey,false);
             }
         } else if (strType == "pool") {
             int64_t nIndex;
             ssKey >> nIndex;
             CKeyPool keypool;
             ssValue >> keypool;
-            if(pwallet) pwallet->LoadKeyPool(nIndex, keypool);
+            if(pwallet) pwallet->loadKeyPool(nIndex, keypool);
         } else if (strType == "version") {
             ssValue >> wss.nFileVersion;
             if (wss.nFileVersion == 10300)
@@ -404,17 +404,17 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
             ssKey >> hash;
             CScript script;
             ssValue >> script;
-            if (pwallet && !pwallet->LoadCScript(script)) {
-                strErr = "Error reading wallet database: LoadCScript failed";
+            if (pwallet && !pwallet->loadCScript(script)) {
+                strErr = "Error reading wallet database: loadCScript failed";
                 return false;
             }
         } else if (strType == "hdchain")
         {
             CHDChain chain;
             ssValue >> chain;
-            if (pwallet && !pwallet->LoadHDChain(chain, true))
+            if (pwallet && !pwallet->loadHDChain(chain, true))
             {
-                strErr = "Error reading wallet database: LoadHDChain failed";
+                strErr = "Error reading wallet database: loadHDChain failed";
                 return false;
             }
         }
@@ -422,9 +422,9 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
         {
             CHDChain chain;
             ssValue >> chain;
-            if (pwallet && !pwallet->LoadCryptedHDChain(chain, true))
+            if (pwallet && !pwallet->loadCryptedHDChain(chain, true))
             {
-                strErr = "Error reading wallet database: LoadCryptedHDChain failed";
+                strErr = "Error reading wallet database: loadCryptedHDChain failed";
                 return false;
             }
         }
@@ -441,9 +441,9 @@ bool ReadKeyValue(I_WalletLoader* pwallet, CDataStream& ssKey, CDataStream& ssVa
                 strErr = "Error reading wallet database: CHDPubKey corrupt";
                 return false;
             }
-            if (pwallet && !pwallet->LoadHDPubKey(hdPubKey))
+            if (pwallet && !pwallet->loadHDPubKey(hdPubKey))
             {
-                strErr = "Error reading wallet database: LoadHDPubKey failed";
+                strErr = "Error reading wallet database: loadHDPubKey failed";
                 return false;
             }
         }
@@ -461,7 +461,7 @@ static bool IsKeyType(string strType)
 
 DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
 {
-    wallet.LoadDefaultKey(CPubKey(),false);
+    wallet.loadDefaultKey(CPubKey(),false);
     CWalletScanState wss;
     bool fNoncriticalErrors = false;
     DBErrors result = DB_LOAD_OK;
@@ -471,7 +471,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
         if (berkleyDB_->Read((string) "minversion", nMinVersion)) {
             if (nMinVersion > CLIENT_VERSION)
                 return DB_TOO_NEW;
-            wallet.LoadMinVersion(nMinVersion);
+            wallet.loadMinVersion(nMinVersion);
         }
 
         // Get cursor
@@ -537,7 +537,7 @@ DBErrors CWalletDB::LoadWallet(I_WalletLoader& wallet)
         LogPrintf("Some keys lack metadata. Wallet may require a rescan\n");
     }
 
-    wallet.ReserializeTransactions(wss.vWalletUpgrade);
+    wallet.reserializeTransactions(wss.vWalletUpgrade);
 
     // Rewrite encrypted wallets of versions 0.4.0 and 0.5.0rc:
     if (wss.fIsEncrypted && (wss.nFileVersion == 40000 || wss.nFileVersion == 50000))

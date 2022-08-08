@@ -265,7 +265,6 @@ public:
     const AddressBookManager& getAddressBookManager() const;
 
     void verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis);
-    void activateVaultMode();
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 
     bool SetAddressLabel(const CTxDestination& address, const std::string& strName);

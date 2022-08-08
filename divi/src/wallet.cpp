@@ -400,7 +400,7 @@ bool CWallet::initializeDefaultKey()
     return true;
 }
 
-bool CWallet::CanSupportFeature(enum WalletFeature wf)
+bool CWallet::canSupportFeature(enum WalletFeature wf)
 {
     AssertLockHeld(cs_wallet);
     return nWalletMaxVersion >= wf;
@@ -465,7 +465,7 @@ std::vector<const CWalletTx*> CWallet::GetWalletTransactionReferences() const
 CPubKey CWallet::GenerateNewKey(uint32_t nAccountIndex, bool fInternal)
 {
     AssertLockHeld(cs_wallet); // mapKeyMetadata
-    bool fCompressed = CanSupportFeature(FEATURE_COMPRPUBKEY); // default to compressed public keys if we want 0.6.0 wallets
+    bool fCompressed = canSupportFeature(FEATURE_COMPRPUBKEY); // default to compressed public keys if we want 0.6.0 wallets
 
     CKey secret;
 

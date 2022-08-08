@@ -158,7 +158,6 @@ public:
      *      strWalletFile (immutable after instantiation)
      */
     mutable CCriticalSection cs_wallet;
-    const std::string dbFilename() const;
 private:
 
     const std::string strWalletFile;
@@ -257,6 +256,7 @@ public:
         const unsigned defaultKeyTopUp = 0u);
     ~CWallet();
 
+    const std::string dbFilename() const;
     CCriticalSection& getWalletCriticalSection() const;
 
     DBErrors loadWallet();

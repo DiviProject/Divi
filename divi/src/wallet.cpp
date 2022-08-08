@@ -283,7 +283,7 @@ static const CBlockIndex* ApproximateFork(const CChain& chain,const BlockMap& bl
     return chain.Genesis();
 }
 
-const CBlockIndex* CWallet::GetNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis)
+const CBlockIndex* CWallet::getNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis)
 {
     CBlockLocator locator;
     const bool forceSyncFromGenesis = settings.GetBoolArg("-force_rescan",false);
@@ -307,7 +307,7 @@ static int computeProgress(int currentHeight,int startHeight,int endHeight)
 void CWallet::verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool startFromGenesis)
 {
     LOCK2(cs_main,cs_wallet);
-    const CBlockIndex* const startingBlockIndex = GetNextUnsycnedBlockIndexInMainChain(startFromGenesis);
+    const CBlockIndex* const startingBlockIndex = getNextUnsycnedBlockIndexInMainChain(startFromGenesis);
     if(!startingBlockIndex) return;
 
     BlockScanner blockScanner(blockReader, activeChain_,startingBlockIndex);

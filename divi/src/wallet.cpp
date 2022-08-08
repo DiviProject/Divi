@@ -483,7 +483,7 @@ CPubKey CWallet::GenerateNewKey(uint32_t nAccountIndex, bool fInternal)
 
         // Compressed public keys were introduced in version 0.6.0
         if (fCompressed)
-            SetMinVersion(FEATURE_COMPRPUBKEY);
+            setMinVersion(FEATURE_COMPRPUBKEY);
 
         pubkey = secret.GetPubKey();
         assert(secret.VerifyPubKey(pubkey));
@@ -895,7 +895,7 @@ bool CWallet::ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase,
     return false;
 }
 
-bool CWallet::SetMinVersion(enum WalletFeature nVersion, bool fExplicit)
+bool CWallet::setMinVersion(enum WalletFeature nVersion, bool fExplicit)
 {
     LOCK(cs_wallet); // nWalletVersion
     if (nWalletVersion >= nVersion)
@@ -1017,7 +1017,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
                             hdChainCurrent.GetID() == hdChainCrypted.GetID() &&
                             hdChainCurrent.GetSeedHash() != hdChainCrypted.GetSeedHash() &&
                             SetCryptedHDChain(hdChainCrypted)) ) &&
-                        SetMinVersion(FEATURE_WALLETCRYPT, true);
+                        setMinVersion(FEATURE_WALLETCRYPT, true);
 
                     if(encryptionComplete && pwalletdbEncryption)
                     {
@@ -1975,7 +1975,7 @@ DBErrors CWallet::loadWallet()
     if(nLoadWalletRet == DB_LOAD_OK_FIRST_RUN)
     {
         int nMaxVersion = settings.GetArg("-upgradewallet", CLIENT_VERSION);
-        if(nMaxVersion == CLIENT_VERSION) SetMinVersion(FEATURE_LATEST);
+        if(nMaxVersion == CLIENT_VERSION) setMinVersion(FEATURE_LATEST);
         if(getVersion() > nMaxVersion)
         {
             LogPrintf("Unable to downgrade wallet version. -upgradewallet=<custom_version> might be incorrectly set\n");
@@ -2326,7 +2326,7 @@ void CWallet::GenerateNewHDChain()
     {
         throw std::runtime_error(std::string(__func__)+": Failed to initialize default key");
     }
-    SetMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
+    setMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
 }
 
 bool CWallet::LoadHDChain(const CHDChain& chain, bool memonly)

@@ -218,7 +218,7 @@ private:
     int64_t getTimestampOfFistKey() const;
     bool canBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const;
 
-    CAmount LockedCoinBalance(const UtxoOwnershipFilter& filter) const;
+    CAmount lockedCoinBalance(const UtxoOwnershipFilter& filter) const;
 
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
     bool SetMinVersion(enum WalletFeature, bool fExplicit = false);

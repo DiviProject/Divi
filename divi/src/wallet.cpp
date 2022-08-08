@@ -941,7 +941,7 @@ std::set<uint256> CWallet::GetConflicts(const uint256& txid) const
    return outputTracker_->GetConflictingTxHashes(*txPtr);
 }
 
-bool CWallet::CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const
+bool CWallet::canBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const
 {
     for(unsigned outputIndex = 0; outputIndex < wtx.vout.size(); ++outputIndex)
     {
@@ -1218,7 +1218,7 @@ bool CWallet::PruneWallet()
     std::set<uint256> notFullySpent;
     for(const auto& walletTx: allTransactions)
     {
-        if(!CanBePruned(walletTx,notFullySpent,minimumNumberOfConfs))
+        if(!canBePruned(walletTx,notFullySpent,minimumNumberOfConfs))
         {
             transactionsToKeep.push_back(walletTx);
             notFullySpent.insert(walletTx.GetHash());

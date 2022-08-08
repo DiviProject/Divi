@@ -223,7 +223,7 @@ private:
     //! signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVersion if those are lower
     bool setMinVersion(enum WalletFeature, bool fExplicit = false);
     //! change which version we're allowed to upgrade to (note that this does not immediately imply upgrading to that format)
-    bool SetMaxVersion(int nVersion);
+    bool setMaxVersion(int nVersion);
 
 protected:
 

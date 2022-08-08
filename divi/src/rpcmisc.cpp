@@ -141,7 +141,7 @@ Value getinfo(const Array& params, bool fHelp, CWallet* pwallet)
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
 #ifdef ENABLE_WALLET
     if (pwallet) {
-        obj.push_back(Pair("walletversion", pwallet->GetVersion()));
+        obj.push_back(Pair("walletversion", pwallet->getVersion()));
         obj.push_back(Pair("balance", ValueFromAmount(pwallet->GetBalance())));
     }
 #endif

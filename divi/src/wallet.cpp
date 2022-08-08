@@ -162,14 +162,12 @@ public:
 };
 
 CWallet::CWallet(
-    const std::string& strWalletFileIn,
     const I_WalletDatabaseEndpointFactory& walletDatabaseEndpointFactory,
     const CChain& chain,
     const BlockMap& blockMap,
     const I_MerkleTxConfirmationNumberCalculator& confirmationNumberCalculator,
     const unsigned defaultKeyTopUp
     ): cs_wallet()
-    , strWalletFile(strWalletFileIn)
     , vaultModeEnabled_(settings.GetBoolArg("-vault", false))
     , setLockedCoins()
     , mapHdPubKeys()

@@ -247,7 +247,6 @@ protected:
 
 public:
     explicit CWallet(
-        const std::string& strWalletFileIn,
         const I_WalletDatabaseEndpointFactory& walletDatabaseEndpointFactory,
         const CChain& chain,
         const BlockMap& blockMap,

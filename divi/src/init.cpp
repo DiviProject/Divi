@@ -153,7 +153,7 @@ void InitializeWallet(std::string strWalletFile)
     const auto& blockMap = chainstate->GetBlockMap();
     InitializeConfirmationsCalculator(Params(), chain, blockMap);
     walletDatabaseEndpointFactory.reset(new LegacyWalletDatabaseEndpointFactory(strWalletFile,settings));
-    pwalletMain.reset( new CWallet(strWalletFile,*walletDatabaseEndpointFactory, chain, blockMap, GetConfirmationsCalculator() ) );
+    pwalletMain.reset( new CWallet(*walletDatabaseEndpointFactory, chain, blockMap, GetConfirmationsCalculator() ) );
 #endif
 }
 CWallet* GetWallet()

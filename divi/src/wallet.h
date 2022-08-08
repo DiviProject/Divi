@@ -216,7 +216,7 @@ private:
     bool canSupportFeature(enum WalletFeature wf);
     const CBlockIndex* getNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis = false);
     int64_t getTimestampOfFistKey() const;
-    bool CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const;
+    bool canBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const;
 
     CAmount LockedCoinBalance(const UtxoOwnershipFilter& filter) const;
 

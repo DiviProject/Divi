@@ -210,7 +210,7 @@ private:
     bool addToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
     bool addToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
 
-    void UpdateTimeFirstKey(int64_t nCreateTime);
+    void updateTimeFirstKey(int64_t nCreateTime);
     bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
 

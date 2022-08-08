@@ -490,7 +490,7 @@ CPubKey CWallet::GenerateNewKey(uint32_t nAccountIndex, bool fInternal)
 
         // Create new metadata
         mapKeyMetadata[pubkey.GetID()] = metadata;
-        UpdateTimeFirstKey(nCreationTime);
+        updateTimeFirstKey(nCreationTime);
 
         if (!AddKeyPubKey(secret, pubkey))
             throw std::runtime_error(std::string(__func__) + ": AddKey failed");
@@ -530,7 +530,7 @@ void CWallet::deriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, u
 
     // store metadata
     mapKeyMetadata[pubkey.GetID()] = metadata;
-    UpdateTimeFirstKey(metadata.nCreateTime);
+    updateTimeFirstKey(metadata.nCreateTime);
 
     // update the chain model in the database
     CHDChain hdChainCurrent;
@@ -651,7 +651,7 @@ bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey &pubkey)
     if (HaveWatchOnly(script))
         RemoveWatchOnly(script);
 
-    UpdateTimeFirstKey(1);
+    updateTimeFirstKey(1);
     if (!IsCrypted()) {
         return walletDatabaseEndpointFactory_.getDatabaseEndpoint()->WriteKey(pubkey, secret.GetPrivKey(), mapKeyMetadata[pubkey.GetID()]);
     }
@@ -682,7 +682,7 @@ bool CWallet::LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& meta, c
         nTimeFirstKey = meta.nCreateTime;
 
     mapKeyMetadata[pubkey.GetID()] = meta;
-    if(updateFirstKeyTimestamp) UpdateTimeFirstKey(meta.nCreateTime);
+    if(updateFirstKeyTimestamp) updateTimeFirstKey(meta.nCreateTime);
     return true;
 }
 
@@ -694,7 +694,7 @@ bool CWallet::LoadMinVersion(int nVersion)
     return true;
 }
 
-void CWallet::UpdateTimeFirstKey(int64_t nCreateTime)
+void CWallet::updateTimeFirstKey(int64_t nCreateTime)
 {
     AssertLockHeld(cs_wallet);
     if (nCreateTime <= 1) {
@@ -785,7 +785,7 @@ bool CWallet::LoadWatchOnly(const CScript& dest)
 {
     // Watch-only addresses have no birthday information for now,
     // so set the wallet birthday to the beginning of time.
-    UpdateTimeFirstKey(1);
+    updateTimeFirstKey(1);
     return CCryptoKeyStore::AddWatchOnly(dest);
 }
 
@@ -814,7 +814,7 @@ bool CWallet::LoadMultiSig(const CScript& dest)
 {
     // MultiSig addresses have no birthday information for now,
     // so set the wallet birthday to the beginning of time.
-    UpdateTimeFirstKey(1);
+    updateTimeFirstKey(1);
     return CCryptoKeyStore::AddMultiSig(dest);
 }
 

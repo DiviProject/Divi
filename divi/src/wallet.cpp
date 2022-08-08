@@ -743,7 +743,7 @@ bool CWallet::AddVault(
     {
         LOCK(cs_wallet);
         AddCScript(vaultScript);
-        AddTransactions({tx},pblock,TransactionSyncType::RESCAN);
+        addTransactions({tx},pblock,TransactionSyncType::RESCAN);
         return GetWalletTx(tx.GetHash()) != nullptr;
     }
     return false;
@@ -1337,7 +1337,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
     return false;
 }
 
-void CWallet::AddTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType)
+void CWallet::addTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType)
 {
     AssertLockHeld(cs_main);
     AssertLockHeld(cs_wallet);
@@ -1367,12 +1367,12 @@ void CWallet::SyncTransactions(const TransactionVector& txs, const CBlock* pbloc
     if(syncType == TransactionSyncType::RESCAN)
     {
         AssertLockHeld(cs_wallet);
-        AddTransactions(txs,pblock,syncType);
+        addTransactions(txs,pblock,syncType);
     }
     else
     {
         LOCK(cs_wallet);
-        AddTransactions(txs,pblock,syncType);
+        addTransactions(txs,pblock,syncType);
     }
 }
 

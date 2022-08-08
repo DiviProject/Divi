@@ -90,7 +90,7 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
 {
   databaseEndpointFactory_->getDatabaseEndpoint()->WriteHDChain(getHDWalletSeedForTesting());
   wrappedWallet_.reset(new CWallet(walletFilename_,*databaseEndpointFactory_, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_, 3));
-  wrappedWallet_->LoadWallet();
+  wrappedWallet_->loadWallet();
 }
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)
@@ -100,7 +100,7 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename)
   , confirmationsCalculator_(new FakeMerkleTxConfirmationNumberCalculator(*fakeChain.activeChain, *fakeChain.blockIndexByHash))
   , wrappedWallet_(new CWallet(walletFilename_, *databaseEndpointFactory_, *fakeChain.activeChain, *fakeChain.blockIndexByHash, *confirmationsCalculator_))
 {
-  wrappedWallet_->LoadWallet();
+  wrappedWallet_->loadWallet();
 }
 
 FakeWallet::~FakeWallet()
@@ -126,7 +126,7 @@ const CWalletTx& FakeWallet::AddDefaultTx(const CScript& scriptToPayTo, unsigned
   const CTransaction tx = createDefaultTransaction(scriptToPayTo, outputIndex, amount);
   CWalletTx wtx(tx);
   databaseEndpointFactory_->getDatabaseEndpoint()->WriteTx(wtx.GetHash(),wtx);
-  wrappedWallet_->LoadWallet();
+  wrappedWallet_->loadWallet();
   const CWalletTx* txPtr = wrappedWallet_->GetWalletTx(wtx.GetHash());
   assert(txPtr);
   return *txPtr;

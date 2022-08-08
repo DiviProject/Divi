@@ -990,7 +990,7 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
     DBErrors nLoadWalletRet = DB_LOAD_OK;
     try
     {
-        nLoadWalletRet = pwalletMain->LoadWallet();
+        nLoadWalletRet = pwalletMain->loadWallet();
     }
     catch(const std::exception& e)
     {

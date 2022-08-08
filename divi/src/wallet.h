@@ -258,7 +258,7 @@ public:
         const unsigned defaultKeyTopUp = 0u);
     ~CWallet();
 
-    DBErrors LoadWallet();
+    DBErrors loadWallet();
     //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
     int GetVersion();
 

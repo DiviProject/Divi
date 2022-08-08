@@ -1951,7 +1951,7 @@ TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& r
     return std::move(result);
 }
 
-DBErrors CWallet::LoadWallet()
+DBErrors CWallet::loadWallet()
 {
     DBErrors nLoadWalletRet;
     {

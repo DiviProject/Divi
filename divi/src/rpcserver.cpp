@@ -92,7 +92,6 @@ extern json_spirit::Value keypoolrefill(const json_spirit::Array& params, bool f
 extern json_spirit::Value walletpassphrase(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value walletpassphrasechange(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value walletlock(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
-extern json_spirit::Value walletverify(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value encryptwallet(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value lockunspent(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value listlockunspent(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
@@ -444,7 +443,6 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "walletlock", &walletlock, true, false, true, true},
         {"wallet", "walletpassphrasechange", &walletpassphrasechange, true, false, true, true},
         {"wallet", "walletpassphrase", &walletpassphrase, true, false, true, true},
-        {"wallet", "walletverify", &walletverify, true, false, true, true}
 
 #endif // ENABLE_WALLET
 };

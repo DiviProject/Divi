@@ -267,7 +267,6 @@ public:
     void activateVaultMode();
     CKeyMetadata getKeyMetadata(const CBitcoinAddress& address) const;
 
-    bool VerifyHDKeys() const;
     bool SetAddressLabel(const CTxDestination& address, const std::string& strName);
 
     bool HasAgedCoins() override;

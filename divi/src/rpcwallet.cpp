@@ -2552,25 +2552,6 @@ Value walletlock(const Array& params, bool fHelp, CWallet* pwallet)
     return Value::null;
 }
 
-Value walletverify(const json_spirit::Array& params, bool fHelp, CWallet* pwallet)
-{
-    if (fHelp || params.size() != 0)
-        throw runtime_error(
-                "walletverify\n"
-                "\nChecks wallet integrity, if this returns true, you can be sure that all funds are accesible\n");
-
-    EnsureWalletIsUnlocked(pwallet);
-    if(!pwallet->IsHDEnabled())
-        throw runtime_error("HD wallet is disabled, checking integrity works only with HD wallets");
-
-    if(!pwallet->VerifyHDKeys())
-    {
-        return false;
-    }
-
-    return true;
-}
-
 Value encryptwallet(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (!pwallet->IsCrypted() && (fHelp || params.size() != 1))

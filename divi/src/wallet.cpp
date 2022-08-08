@@ -357,22 +357,6 @@ bool CWallet::loadKey(const CKey& key, const CPubKey& pubkey)
     return CCryptoKeyStore::AddKeyPubKey(key, pubkey);
 }
 
-bool CWallet::VerifyHDKeys() const
-{
-    for(const auto& entry : mapHdPubKeys)
-    {
-        CKey derivedKey;
-        if(!GetKey(entry.first, derivedKey)) {
-            return false;
-        }
-
-        if(!derivedKey.VerifyPubKey(entry.second.extPubKey.pubkey)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 bool CWallet::loadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
 {
     if (updateDatabase) {

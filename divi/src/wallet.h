@@ -214,7 +214,7 @@ private:
     int64_t smartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
 
     bool canSupportFeature(enum WalletFeature wf);
-    const CBlockIndex* GetNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis = false);
+    const CBlockIndex* getNextUnsycnedBlockIndexInMainChain(bool syncFromGenesis = false);
     int64_t getTimestampOfFistKey() const;
     bool CanBePruned(const CWalletTx& wtx, const std::set<uint256>& unprunedTransactionIds, const int minimumNumberOfConfs) const;
 

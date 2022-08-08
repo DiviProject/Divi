@@ -340,7 +340,7 @@ void CWallet::verifySyncToActiveChain(const I_BlockDataReader& blockReader, bool
     SetBestChain(activeChain_.GetLocator());
 }
 
-bool CWallet::LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey)
+bool CWallet::loadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey)
 {
     if (mapMasterKeys.count(masterKeyIndex) != 0) {
         return false;
@@ -352,7 +352,7 @@ bool CWallet::LoadMasterKey(unsigned int masterKeyIndex, CMasterKey& masterKey)
     return true;
 }
 
-bool CWallet::LoadKey(const CKey& key, const CPubKey& pubkey)
+bool CWallet::loadKey(const CKey& key, const CPubKey& pubkey)
 {
     return CCryptoKeyStore::AddKeyPubKey(key, pubkey);
 }
@@ -373,7 +373,7 @@ bool CWallet::VerifyHDKeys() const
     return true;
 }
 
-bool CWallet::LoadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
+bool CWallet::loadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
 {
     if (updateDatabase) {
         if (!walletDatabaseEndpointFactory_.getDatabaseEndpoint()->WriteDefaultKey(vchPubKey))
@@ -388,7 +388,7 @@ bool CWallet::initializeDefaultKey()
     CPubKey newDefaultKey;
     if (GetKeyFromPool(newDefaultKey, false))
     {
-        LoadDefaultKey(newDefaultKey,true);
+        loadDefaultKey(newDefaultKey,true);
         if (!SetAddressLabel(vchDefaultKey.GetID(), "")) {
             return false;
         }
@@ -547,12 +547,12 @@ void CWallet::deriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, u
         throw std::runtime_error(std::string(__func__) + ": SetAccount failed");
 
     if (IsCrypted()) {
-        if (!LoadCryptedHDChain(hdChainCurrent,false))
-            throw std::runtime_error(std::string(__func__) + ": LoadCryptedHDChain failed");
+        if (!loadCryptedHDChain(hdChainCurrent,false))
+            throw std::runtime_error(std::string(__func__) + ": loadCryptedHDChain failed");
     }
     else {
-        if (!LoadHDChain(hdChainCurrent, false))
-            throw std::runtime_error(std::string(__func__) + ": LoadHDChain failed");
+        if (!loadHDChain(hdChainCurrent, false))
+            throw std::runtime_error(std::string(__func__) + ": loadHDChain failed");
     }
 
     if (!AddHDPubKey(childKey.Neuter(), fInternal))
@@ -609,7 +609,7 @@ bool CWallet::HaveKey(const CKeyID &address) const
     return CCryptoKeyStore::HaveKey(address);
 }
 
-bool CWallet::LoadHDPubKey(const CHDPubKey &hdPubKey)
+bool CWallet::loadHDPubKey(const CHDPubKey &hdPubKey)
 {
     AssertLockHeld(cs_wallet);
 
@@ -658,7 +658,7 @@ bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey &pubkey)
     return true;
 }
 
-void CWallet::ReserializeTransactions(const std::vector<uint256>& transactionIDs)
+void CWallet::reserializeTransactions(const std::vector<uint256>& transactionIDs)
 {
     auto walletDB = walletDatabaseEndpointFactory_.getDatabaseEndpoint();
     for (uint256 hash: transactionIDs)
@@ -675,7 +675,7 @@ void CWallet::ReserializeTransactions(const std::vector<uint256>& transactionIDs
     }
 }
 
-bool CWallet::LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& meta, const bool updateFirstKeyTimestamp)
+bool CWallet::loadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& meta, const bool updateFirstKeyTimestamp)
 {
     AssertLockHeld(cs_wallet); // mapKeyMetadata
     if (meta.nCreateTime && (!nTimeFirstKey || meta.nCreateTime < nTimeFirstKey) && updateFirstKeyTimestamp)
@@ -686,7 +686,7 @@ bool CWallet::LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& meta, c
     return true;
 }
 
-bool CWallet::LoadMinVersion(int nVersion)
+bool CWallet::loadMinVersion(int nVersion)
 {
     AssertLockHeld(cs_wallet);
     nWalletVersion = nVersion;
@@ -706,7 +706,7 @@ void CWallet::updateTimeFirstKey(int64_t nCreateTime)
     }
 }
 
-bool CWallet::LoadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret)
+bool CWallet::loadCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret)
 {
     return CCryptoKeyStore::AddCryptedKey(vchPubKey, vchCryptedSecret);
 }
@@ -719,7 +719,7 @@ bool CWallet::AddCScript(const CScript& redeemScript)
     return walletDatabaseEndpointFactory_.getDatabaseEndpoint()->WriteCScript(Hash160(redeemScript), redeemScript);
 }
 
-bool CWallet::LoadCScript(const CScript& redeemScript)
+bool CWallet::loadCScript(const CScript& redeemScript)
 {
     /* A sanity check was added in pull #3843 to avoid adding redeemScripts
      * that never can be redeemed. However, old wallets may still contain
@@ -781,7 +781,7 @@ bool CWallet::RemoveWatchOnly(const CScript& dest)
     return walletDatabaseEndpointFactory_.getDatabaseEndpoint()->EraseWatchOnly(dest);
 }
 
-bool CWallet::LoadWatchOnly(const CScript& dest)
+bool CWallet::loadWatchOnly(const CScript& dest)
 {
     // Watch-only addresses have no birthday information for now,
     // so set the wallet birthday to the beginning of time.
@@ -810,7 +810,7 @@ bool CWallet::RemoveMultiSig(const CScript& dest)
     return walletDatabaseEndpointFactory_.getDatabaseEndpoint()->EraseMultiSig(dest);
 }
 
-bool CWallet::LoadMultiSig(const CScript& dest)
+bool CWallet::loadMultiSig(const CScript& dest)
 {
     // MultiSig addresses have no birthday information for now,
     // so set the wallet birthday to the beginning of time.
@@ -1112,7 +1112,7 @@ int64_t CWallet::smartWalletTxTimestampEstimation(const CWalletTx& wtx)
     return std::max(latestEntry, std::min(blocktime, latestNow));
 }
 
-void CWallet::LoadWalletTransaction(const CWalletTx& wtxIn)
+void CWallet::loadWalletTransaction(const CWalletTx& wtxIn)
 {
     outputTracker_->UpdateSpends(wtxIn, true);
 }
@@ -1258,7 +1258,7 @@ bool CWallet::PruneWallet()
 
     for(const CWalletTx& reloadedTransaction: transactionsToKeep)
     {
-        LoadWalletTransaction(reloadedTransaction);
+        loadWalletTransaction(reloadedTransaction);
     }
     settings.ForceRemoveArg("-prunewalletconfs");
     LogPrintf("Pruned wallet transactions loaded to memory: Original %u vs. Current %u\n",totalTxs,transactionsToKeep.size());
@@ -2014,7 +2014,7 @@ const AddressBookManager& CWallet::getAddressBookManager() const
     return *addressBookManager_;
 }
 
-void CWallet::LoadAddressLabel(const CTxDestination& address, const std::string newLabel)
+void CWallet::loadAddressLabel(const CTxDestination& address, const std::string newLabel)
 {
     addressBookManager_->setAddressLabel(address,newLabel);
 }
@@ -2256,7 +2256,7 @@ CKeyPool::CKeyPool(const CPubKey& vchPubKeyIn, bool fInternalIn)
     fInternal = fInternalIn;
 }
 
-void CWallet::LoadKeyPool(int nIndex, const CKeyPool &keypool)
+void CWallet::loadKeyPool(int nIndex, const CKeyPool &keypool)
 {
     if (keypool.fInternal) {
         setInternalKeyPool.insert(nIndex);
@@ -2306,8 +2306,8 @@ void CWallet::GenerateNewHDChain()
         hdchainIsFromSeedRestore = !strMnemonic.empty();
     }
 
-    if (!LoadHDChain(newHdChain, false))
-        throw std::runtime_error(std::string(__func__) + ": LoadHDChain failed");
+    if (!loadHDChain(newHdChain, false))
+        throw std::runtime_error(std::string(__func__) + ": loadHDChain failed");
 
     // clean up
     settings.ForceRemoveArg("-hdseed");
@@ -2329,7 +2329,7 @@ void CWallet::GenerateNewHDChain()
     setMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
 }
 
-bool CWallet::LoadHDChain(const CHDChain& chain, bool memonly)
+bool CWallet::loadHDChain(const CHDChain& chain, bool memonly)
 {
     LOCK(cs_wallet);
 
@@ -2342,7 +2342,7 @@ bool CWallet::LoadHDChain(const CHDChain& chain, bool memonly)
     return true;
 }
 
-bool CWallet::LoadCryptedHDChain(const CHDChain& chain, bool memonly)
+bool CWallet::loadCryptedHDChain(const CHDChain& chain, bool memonly)
 {
     AssertLockHeld(cs_wallet);
 

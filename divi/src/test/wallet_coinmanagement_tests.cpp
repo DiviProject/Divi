@@ -32,12 +32,12 @@ public:
       , wallet(fakeWallet.getWallet())
       , walletKeyForTests()
     {
-        ENTER_CRITICAL_SECTION(wallet.cs_wallet);
+        ENTER_CRITICAL_SECTION(wallet.getWalletCriticalSection());
         wallet.GetKeyFromPool(walletKeyForTests,true);
     }
     ~WalletCoinManagementTestFixture()
     {
-        LEAVE_CRITICAL_SECTION(wallet.cs_wallet);
+        LEAVE_CRITICAL_SECTION(wallet.getWalletCriticalSection());
     }
 
     CScript vaultScriptAsOwner() const

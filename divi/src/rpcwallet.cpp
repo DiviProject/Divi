@@ -357,7 +357,7 @@ CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool force
             key.MakeNewKey(true);
             newlyCreatedPubKey = key.GetPubKey();
             {
-                LOCK(wallet.cs_wallet);
+                LOCK(wallet.getWalletCriticalSection());
                 wallet.AddKeyPubKey(key,newlyCreatedPubKey);
             }
         }
@@ -1367,7 +1367,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp, CWallet* pwallet)
     string strAccount = AccountFromValue(params[0]);
     std::set<CTxDestination> setAddress;
     {
-        LOCK(pwallet->cs_wallet);
+        LOCK(pwallet->getWalletCriticalSection());
         setAddress = GetAccountAddresses(pwallet->getAddressBookManager().getAddressBook(),strAccount);
     }
 
@@ -2638,7 +2638,7 @@ Value lockunspent(const Array& params, bool fHelp, CWallet* pwallet)
         RPCTypeCheck(params, list_of(bool_type)(array_type));
 
     const bool fUnlock = params[0].get_bool();
-    LOCK(pwallet->cs_wallet);
+    LOCK(pwallet->getWalletCriticalSection());
 
     if (params.size() == 1) {
         if (fUnlock)

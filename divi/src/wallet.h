@@ -255,7 +255,6 @@ public:
         const unsigned defaultKeyTopUp = 0u);
     ~CWallet();
 
-    const std::string dbFilename() const;
     CCriticalSection& getWalletCriticalSection() const;
 
     DBErrors loadWallet();

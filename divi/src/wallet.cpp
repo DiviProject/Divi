@@ -226,6 +226,11 @@ CWallet::~CWallet()
     addressBookManager_.reset();
 }
 
+CCriticalSection& CWallet::getWalletCriticalSection() const
+{
+    return cs_wallet;
+}
+
 void CWallet::activateVaultMode()
 {
     if(!vaultModeEnabled_)

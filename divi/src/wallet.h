@@ -200,7 +200,7 @@ private:
 
     void deriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
     void addTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType);
-    bool InitializeDefaultKey();
+    bool initializeDefaultKey();
 
     // Notification interface methods
     void SetBestChain(const CBlockLocator& loc) override;

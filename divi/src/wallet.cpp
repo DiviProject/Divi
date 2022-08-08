@@ -170,7 +170,7 @@ CWallet::CWallet(
     const unsigned defaultKeyTopUp
     ): cs_wallet()
     , strWalletFile(strWalletFileIn)
-    , vaultModeEnabled_(false)
+    , vaultModeEnabled_(settings.GetBoolArg("-vault", false))
     , setLockedCoins()
     , mapHdPubKeys()
     , walletDatabaseEndpointFactory_(walletDatabaseEndpointFactory)
@@ -229,14 +229,6 @@ CWallet::~CWallet()
 CCriticalSection& CWallet::getWalletCriticalSection() const
 {
     return cs_wallet;
-}
-
-void CWallet::activateVaultMode()
-{
-    if(!vaultModeEnabled_)
-    {
-        vaultModeEnabled_ = true;
-    }
 }
 
 int64_t CWallet::getTimestampOfFistKey() const

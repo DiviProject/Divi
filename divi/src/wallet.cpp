@@ -918,7 +918,7 @@ bool CWallet::setMinVersion(enum WalletFeature nVersion, bool fExplicit)
     return true;
 }
 
-bool CWallet::SetMaxVersion(int nVersion)
+bool CWallet::setMaxVersion(int nVersion)
 {
     LOCK(cs_wallet); // nWalletVersion, nWalletMaxVersion
     // cannot downgrade below current version
@@ -1981,7 +1981,7 @@ DBErrors CWallet::loadWallet()
             LogPrintf("Unable to downgrade wallet version. -upgradewallet=<custom_version> might be incorrectly set\n");
             return DB_LOAD_FAIL;
         }
-        SetMaxVersion(nMaxVersion);
+        setMaxVersion(nMaxVersion);
 
         if(!settings.ParameterIsSet("-hdseed") && !settings.ParameterIsSet("-mnemonic"))
         {

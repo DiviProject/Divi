@@ -1315,7 +1315,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection)
  * pblock is optional, but should be provided if the transaction is known to be in a block.
  * If fUpdate is true, existing transactions will be updated.
  */
-bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType)
+bool CWallet::addToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType)
 {
     {
         AssertLockHeld(cs_wallet);
@@ -1343,7 +1343,7 @@ void CWallet::addTransactions(const TransactionVector& txs, const CBlock* pblock
     AssertLockHeld(cs_wallet);
     for(const CTransaction& tx: txs)
     {
-        if (!AddToWalletIfInvolvingMe(tx, pblock, true,syncType))
+        if (!addToWalletIfInvolvingMe(tx, pblock, true,syncType))
             continue; // Not one of ours
 
         // If a transaction changes 'conflicted' state, that changes the balance

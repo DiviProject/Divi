@@ -207,7 +207,7 @@ private:
     void UpdatedBlockTip(const CBlockIndex *pindex) override;
     void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override;
 
-    bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
+    bool addToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);
     bool AddToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
 
     void UpdateTimeFirstKey(int64_t nCreateTime);

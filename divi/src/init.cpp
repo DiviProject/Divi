@@ -1074,7 +1074,7 @@ void LockUpMasternodeCollateral()
 {
     if (pwalletMain) {
         LogPrintf("Locking Masternodes:\n");
-        LOCK(pwalletMain->cs_wallet);
+        LOCK(pwalletMain->getWalletCriticalSection());
 
         CWallet& walletReference = *pwalletMain;
         LockUpMasternodeCollateral(
@@ -1129,7 +1129,7 @@ bool LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& erro
 
 void SubmitUnconfirmedWalletTransactionsToMempool(const CWallet& wallet)
 {
-    LOCK2(cs_main, wallet.cs_wallet);
+    LOCK2(cs_main, wallet.getWalletCriticalSection());
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
     for(const std::pair<int64_t,const CWalletTx*>& item: wallet.OrderedTxItems())
     {

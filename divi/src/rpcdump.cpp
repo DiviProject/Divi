@@ -214,7 +214,7 @@ Value dumphdinfo(const Array& params, bool fHelp, CWallet* pwallet)
             + HelpExampleRpc("dumphdinfo", "")
         );
 
-    LOCK(pwallet->cs_wallet);
+    LOCK(pwallet->getWalletCriticalSection());
 
     EnsureWalletIsUnlocked(pwallet);
 

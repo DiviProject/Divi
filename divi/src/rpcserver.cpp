@@ -1066,7 +1066,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
                     {
                         while (true)
                         {
-                            TRY_LOCK(pwallet->cs_wallet, lockWallet);
+                            TRY_LOCK(pwallet->getWalletCriticalSection(), lockWallet);
                             if (!lockMain) {
                                 MilliSleep(50);
                                 continue;
@@ -1130,20 +1130,20 @@ public:
 
     void cancel()
     {
-        if(walletRef_) AssertLockHeld(walletRef_->cs_wallet);
+        if(walletRef_) AssertLockHeld(walletRef_->getWalletCriticalSection());
         cancelled = true;
     }
 
     bool canBeRemoved() const
     {
-        if(walletRef_) AssertLockHeld(walletRef_->cs_wallet);
+        if(walletRef_) AssertLockHeld(walletRef_->getWalletCriticalSection());
         return executionComplete;
     }
     void revertWalletUnlockStatus() const
     {
         if(walletRef_)
         {
-            LOCK(walletRef_->cs_wallet); // Required for modifying unlock time
+            LOCK(walletRef_->getWalletCriticalSection()); // Required for modifying unlock time
             if(cancelled){ executionComplete = true; return; }
             RPCDiscardRunLater("lockwallet");
             nWalletUnlockTime = 0;
@@ -1183,7 +1183,7 @@ void ModifyWalletLockStateBriefly(CWallet* pwallet, WalletLockMode mode, int64_t
 {
     if(pwallet)
     {
-        AssertLockHeld(pwallet->cs_wallet);
+        AssertLockHeld(pwallet->getWalletCriticalSection());
         nWalletUnlockTime = GetTime() + sleepTime;
         removeCompletedOrCancelPendingCalls();
         if(mode==WalletLockMode::LOCK)
@@ -1212,7 +1212,7 @@ void UnlockWalletBriefly(CWallet* pwallet,int64_t sleepTime, bool revertToUnlock
 
 int64_t TimeTillWalletLock(CWallet* pwallet)
 {
-    AssertLockHeld(pwallet->cs_wallet);
+    AssertLockHeld(pwallet->getWalletCriticalSection());
     return nWalletUnlockTime;
 }
 

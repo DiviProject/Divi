@@ -38,7 +38,7 @@ BOOST_FIXTURE_TEST_SUITE(rpc_wallet_tests, RpcWalletTestFramework)
 
 BOOST_AUTO_TEST_CASE(rpc_addmultisig)
 {
-    LOCK(pwallet->cs_wallet);
+    LOCK(pwallet->getWalletCriticalSection());
 
     rpcfn_type addmultisig = CRPCTable::getRPCTable()["addmultisigaddress"]->actor;
 
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
 {
     // Test RPC calls for various wallet statistics
     Value r;
-    LOCK2(cs_main, pwallet->cs_wallet);
+    LOCK2(cs_main, pwallet->getWalletCriticalSection());
 
     CPubKey demoPubkey = pwallet->GenerateNewKey(0,false);
     CBitcoinAddress demoAddress = CBitcoinAddress(CTxDestination(demoPubkey.GetID()));

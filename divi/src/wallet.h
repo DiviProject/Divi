@@ -211,7 +211,6 @@ private:
     bool addToWallet(const CWalletTx& wtxIn,bool blockDisconnection = false);
 
     void updateTimeFirstKey(int64_t nCreateTime);
-    bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
     int64_t SmartWalletTxTimestampEstimation(const CWalletTx& wtxIn);
 
     bool CanSupportFeature(enum WalletFeature wf);

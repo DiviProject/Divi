@@ -150,7 +150,7 @@ class CWallet final:
     public I_StakingWallet,
     protected I_WalletLoader
 {
-public:
+private:
     /*
      * Main wallet lock.
      * This lock protects all the fields added by CWallet
@@ -158,7 +158,6 @@ public:
      *      strWalletFile (immutable after instantiation)
      */
     mutable CCriticalSection cs_wallet;
-private:
 
     const std::string strWalletFile;
     bool vaultModeEnabled_;

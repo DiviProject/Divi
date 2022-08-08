@@ -383,7 +383,7 @@ bool CWallet::LoadDefaultKey(const CPubKey& vchPubKey, bool updateDatabase)
     return true;
 }
 
-bool CWallet::InitializeDefaultKey()
+bool CWallet::initializeDefaultKey()
 {
     CPubKey newDefaultKey;
     if (GetKeyFromPool(newDefaultKey, false))
@@ -2322,7 +2322,7 @@ void CWallet::GenerateNewHDChain()
         settings.SetParameter("-rescan","1");
         assert(settings.GetBoolArg("-rescan",false));
     }
-    if(!InitializeDefaultKey())
+    if(!initializeDefaultKey())
     {
         throw std::runtime_error(std::string(__func__)+": Failed to initialize default key");
     }

@@ -260,7 +260,7 @@ public:
 
     DBErrors loadWallet();
     //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
-    int GetVersion();
+    int getVersion();
 
     const AddressBookManager& getAddressBookManager() const;
 

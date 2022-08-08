@@ -429,7 +429,7 @@ CAmount CWallet::getChange(const CWalletTx& walletTransaction) const
     return txDeltas.changeAmount;
 }
 
-int CWallet::GetVersion()
+int CWallet::getVersion()
 {
     LOCK(cs_wallet);
     return nWalletVersion;
@@ -1976,7 +1976,7 @@ DBErrors CWallet::loadWallet()
     {
         int nMaxVersion = settings.GetArg("-upgradewallet", CLIENT_VERSION);
         if(nMaxVersion == CLIENT_VERSION) SetMinVersion(FEATURE_LATEST);
-        if(GetVersion() > nMaxVersion)
+        if(getVersion() > nMaxVersion)
         {
             LogPrintf("Unable to downgrade wallet version. -upgradewallet=<custom_version> might be incorrectly set\n");
             return DB_LOAD_FAIL;

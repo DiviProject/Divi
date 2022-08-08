@@ -236,11 +236,6 @@ int64_t CWallet::getTimestampOfFistKey() const
     return nTimeFirstKey;
 }
 
-const std::string CWallet::dbFilename() const
-{
-    return strWalletFile;
-}
-
 CKeyMetadata CWallet::getKeyMetadata(const CBitcoinAddress& address) const
 {
     CKeyID keyID;

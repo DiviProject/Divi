@@ -173,3 +173,8 @@ CPubKey FakeWallet::getNewKey()
   wrappedWallet_->GetKeyFromPool(nextKeyGenerated, false);
   return nextKeyGenerated;
 }
+
+const std::string FakeWallet::dbFilename() const
+{
+  return walletFilename_;
+}

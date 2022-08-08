@@ -39,7 +39,7 @@ public:
     {
         if(walletCache_.empty() || walletID >= walletCache_.size() || !walletCache_[walletID].get()) return "";
         std::unique_ptr<FakeWallet>& fakeWalletPtr = walletCache_[walletID];
-        const std::string walletName = fakeWalletPtr->getWallet().dbFilename();
+        const std::string walletName = fakeWalletPtr->dbFilename();
         fakeWalletPtr.reset();
         return walletName;
     }
@@ -47,7 +47,7 @@ public:
     {
         if(walletCache_.empty() || walletID >= walletCache_.size() || !walletCache_[walletID].get()) return;
         std::unique_ptr<FakeWallet>& fakeWalletPtr = walletCache_[walletID];
-        const std::string walletName = fakeWalletPtr->getWallet().dbFilename();
+        const std::string walletName = fakeWalletPtr->dbFilename();
         fakeWalletPtr.reset();
         fakeWalletPtr.reset(new FakeWallet(fakeChain_,walletName));
     }

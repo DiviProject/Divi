@@ -74,6 +74,7 @@ public:
   /** Returns a new key from the wallet.  */
   CPubKey getNewKey();
 
+  const std::string dbFilename() const;
 };
 
 #endif // FAKE_WALLET_H

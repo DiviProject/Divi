@@ -199,7 +199,7 @@ private:
     int64_t defaultKeyPoolTopUp_;
 
     void deriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
-    void AddTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType);
+    void addTransactions(const TransactionVector& txs, const CBlock* pblock,const TransactionSyncType syncType);
     bool InitializeDefaultKey();
 
     // Notification interface methods

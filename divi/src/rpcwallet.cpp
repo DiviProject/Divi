@@ -2750,7 +2750,6 @@ Value getwalletinfo(const Array& params, bool fHelp, CWallet* pwallet)
                 HelpExampleCli("getwalletinfo", "") + HelpExampleRpc("getwalletinfo", ""));
 
     CHDChain hdChainCurrent;
-    bool fHDEnabled = pwallet->GetHDChain(hdChainCurrent);
     Object obj;
     obj.push_back(Pair("walletversion", pwallet->getVersion()));
     obj.push_back(Pair("balance",       ValueFromAmount(pwallet->GetBalance())));
@@ -2764,25 +2763,5 @@ Value getwalletinfo(const Array& params, bool fHelp, CWallet* pwallet)
         obj.push_back(Pair("unlocked_until", TimeTillWalletLock(pwallet) ));
 
     obj.push_back(Pair("encryption_status", DescribeEncryptionStatus(*pwallet)));
-
-    if (fHDEnabled) {
-        obj.push_back(Pair("hdchainid", hdChainCurrent.GetID().GetHex()));
-        obj.push_back(Pair("hdaccountcount", (int64_t)hdChainCurrent.CountAccounts()));
-        Array accounts;
-        for (size_t i = 0; i < hdChainCurrent.CountAccounts(); ++i)
-        {
-            CHDAccount acc;
-            Object account;
-            account.push_back(Pair("hdaccountindex", (int64_t)i));
-            if(hdChainCurrent.GetAccount(i, acc)) {
-                account.push_back(Pair("hdexternalkeyindex", (int64_t)acc.nExternalChainCounter));
-                account.push_back(Pair("hdinternalkeyindex", (int64_t)acc.nInternalChainCounter));
-            } else {
-                account.push_back(Pair("error", strprintf("account %d is missing", i)));
-            }
-            accounts.push_back(account);
-        }
-        obj.push_back(Pair("hdaccounts", accounts));
-    }
     return obj;
 }

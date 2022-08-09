@@ -219,11 +219,8 @@ Value dumphdinfo(const Array& params, bool fHelp, CWallet* pwallet)
     EnsureWalletIsUnlocked(pwallet);
 
     CHDChain hdChainCurrent;
-    if (!pwallet->GetHDChain(hdChainCurrent))
-        throw JSONRPCError(RPC_WALLET_ERROR, "This wallet is not a HD wallet.");
-
     if (!pwallet->GetDecryptedHDChain(hdChainCurrent))
-        throw JSONRPCError(RPC_INTERNAL_ERROR, "Cannot decrypt HD seed");
+        throw JSONRPCError(RPC_WALLET_ERROR, "This wallet is not a HD wallet or cannot decrypt HD seed");
 
     SecureString ssMnemonic;
     SecureString ssMnemonicPassphrase;

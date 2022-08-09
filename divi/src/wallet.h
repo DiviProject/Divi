@@ -223,6 +223,14 @@ private:
     //! change which version we're allowed to upgrade to (note that this does not immediately imply upgrading to that format)
     bool setMaxVersion(int nVersion);
 
+    /**
+     * HD Wallet Functions
+     */
+    CPubKey GenerateNewKey(uint32_t nAccountIndex, bool fInternal);
+    bool AddHDPubKey(const CExtPubKey &extPubKey, bool fInternal);
+    void GenerateNewHDChain();
+    bool IsHDEnabled();
+
 protected:
 
     // I_WalletLoader: load from disk methods
@@ -297,11 +305,7 @@ public:
     /**
      * HD Wallet Functions
      */
-    CPubKey GenerateNewKey(uint32_t nAccountIndex, bool fInternal);
-    bool AddHDPubKey(const CExtPubKey &extPubKey, bool fInternal);
-    void GenerateNewHDChain();
     bool GetDecryptedHDChain(CHDChain& hdChainRet);
-    bool IsHDEnabled();
 
     // Generate a new key
 

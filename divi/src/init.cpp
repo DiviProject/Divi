@@ -1047,11 +1047,6 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
         case NEW_WALLET_CREATED: case EXISTING_WALLET_LOADED:
             break;
     }
-    if(!pwalletMain->IsHDEnabled())
-    {
-        strErrors << translate("Loaded wallet is not HD enabled") << "\n";
-        return false;
-    }
 
     // Warn user every time he starts non-encrypted HD wallet
     if (!settings.GetBoolArg("-allowunencryptedwallet", false) && !pwalletMain->IsLocked())

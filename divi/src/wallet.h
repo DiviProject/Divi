@@ -297,14 +297,14 @@ public:
     /**
      * HD Wallet Functions
      */
+    CPubKey GenerateNewKey(uint32_t nAccountIndex, bool fInternal);
     bool AddHDPubKey(const CExtPubKey &extPubKey, bool fInternal);
-    bool IsHDEnabled();
     void GenerateNewHDChain();
     bool GetDecryptedHDChain(CHDChain& hdChainRet);
+    bool IsHDEnabled();
 
-    //  keystore implementation
     // Generate a new key
-    CPubKey GenerateNewKey(uint32_t nAccountIndex, bool fInternal);
+
     bool AddVault(const CScript& vaultScript, const CBlock* pblock,const CTransaction& tx);
     bool RemoveVault(const CScript& vaultScript);
 

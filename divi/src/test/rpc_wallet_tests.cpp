@@ -81,7 +81,8 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
     Value r;
     LOCK2(cs_main, pwallet->getWalletCriticalSection());
 
-    CPubKey demoPubkey = pwallet->GenerateNewKey(0,false);
+    CPubKey demoPubkey;
+    BOOST_CHECK(pwallet->GetKeyFromPool(demoPubkey,false));
     CBitcoinAddress demoAddress = CBitcoinAddress(CTxDestination(demoPubkey.GetID()));
     Value retValue;
     string strAccount = "walletDemoAccount";
@@ -91,7 +92,8 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
         pwallet->SetAddressLabel(account.vchPubKey.GetID(), strAccount);
     });
 
-    CPubKey setaccountDemoPubkey = pwallet->GenerateNewKey(0,false);
+    CPubKey setaccountDemoPubkey;
+    BOOST_CHECK(pwallet->GetKeyFromPool(setaccountDemoPubkey,false));
     CBitcoinAddress setaccountDemoAddress = CBitcoinAddress(CTxDestination(setaccountDemoPubkey.GetID()));
 
     /*********************************

@@ -1968,6 +1968,11 @@ DBErrors CWallet::loadWallet()
             GenerateNewHDChain();
         }
     }
+    if(nLoadWalletRet == DB_LOAD_OK_RELOAD && !IsHDEnabled())
+    {
+        LogPrintf("%s -- Loaded wallet is not HD enabled. Non-HD wallets are invalid for this version\n",__func__);
+        return DB_LOAD_FAIL;
+    }
     return nLoadWalletRet;
 }
 

@@ -19,8 +19,8 @@ public:
     /** Tries to look up a transaction in the wallet, either by hash (txid) or
      *  the bare txid that is used after segwit-light to identify outputs.  */
     const CWalletTx* GetWalletTx(const uint256& hash) const override;
-    const std::map<uint256, CWalletTx>& GetWalletTransactions() const override;
-    std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction) override;
+    const TransactionsByHash& GetWalletTransactions() const override;
+    std::pair<TransactionsByHash::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction) override;
     unsigned size() const override;
 };
 
@@ -34,8 +34,8 @@ public:
         CCriticalSection& requiredWalletLock,
         const unsigned txCountOffset);
     const CWalletTx* GetWalletTx(const uint256& hash) const override;
-    const std::map<uint256, CWalletTx>& GetWalletTransactions() const override;
-    std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction) override;
+    const TransactionsByHash& GetWalletTransactions() const override;
+    std::pair<TransactionsByHash::iterator, bool> AddTransaction(const CWalletTx& newlyAddedTransaction) override;
     unsigned size() const override;
 };
 

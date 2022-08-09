@@ -27,13 +27,13 @@ const CWalletTx* WalletTransactionRecord::GetWalletTx(const uint256& hash) const
     return nullptr;
 }
 
-const std::map<uint256, CWalletTx>& WalletTransactionRecord::GetWalletTransactions() const
+const I_AppendOnlyTransactionRecord::TransactionsByHash& WalletTransactionRecord::GetWalletTransactions() const
 {
     AssertLockHeld(cs_walletTxRecord);
     return mapWallet;
 }
 
-std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord::AddTransaction(const CWalletTx& newlyAddedTransaction)
+std::pair<I_AppendOnlyTransactionRecord::TransactionsByHash::iterator, bool> WalletTransactionRecord::AddTransaction(const CWalletTx& newlyAddedTransaction)
 {
     AssertLockHeld(cs_walletTxRecord);
 
@@ -63,11 +63,11 @@ const CWalletTx* PrunedWalletTransactionRecord::GetWalletTx(const uint256& hash)
 {
     return walletRecord_.GetWalletTx(hash);
 }
-const std::map<uint256, CWalletTx>& PrunedWalletTransactionRecord::GetWalletTransactions() const
+const I_AppendOnlyTransactionRecord::TransactionsByHash& PrunedWalletTransactionRecord::GetWalletTransactions() const
 {
     return walletRecord_.GetWalletTransactions();
 }
-std::pair<std::map<uint256, CWalletTx>::iterator, bool> PrunedWalletTransactionRecord::AddTransaction(const CWalletTx& newlyAddedTransaction)
+std::pair<I_AppendOnlyTransactionRecord::TransactionsByHash::iterator, bool> PrunedWalletTransactionRecord::AddTransaction(const CWalletTx& newlyAddedTransaction)
 {
     return walletRecord_.AddTransaction(newlyAddedTransaction);
 }

@@ -246,10 +246,10 @@ void GetAccountAmounts(
     }
 }
 
-void WalletTxToJSON(const CWallet& wallet, const CWalletTx& wtx, Object& entry)
+void WalletTxToJSON(const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator, const CWallet& wallet, const CWalletTx& wtx, Object& entry)
 {
 
-    int confirms = GetConfirmationsCalculator().GetNumberOfBlockConfirmations(wtx);
+    int confirms = confirmationsCalculator.GetNumberOfBlockConfirmations(wtx);
     int confirmsTotal = confirms;
     entry.push_back(Pair("confirmations", confirmsTotal));
     entry.push_back(Pair("bcconfirmations", confirms));
@@ -1913,7 +1913,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             entry.push_back(Pair("category", parsingAmbiguityDetected?"stake_reward":"stake_reward+"));
             entry.push_back(Pair("account", wtx.strFromAccount));
 
-            if (fLong) WalletTxToJSON(wallet, wtx, entry);
+            if (fLong) WalletTxToJSON(confsCalculator, wallet, wtx, entry);
             ret.push_back(entry);
         }
         if(isConfirmedBlock)
@@ -1939,7 +1939,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                     entry.push_back(Pair("account", strAccountForAddress));
 
                     if (fLong)
-                        WalletTxToJSON(wallet,wtx, entry);
+                        WalletTxToJSON(confsCalculator, wallet,wtx, entry);
 
                     ret.push_back(entry);
                 }
@@ -1988,7 +1988,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
             entry.push_back(Pair("addresses", addresses));
 
             if (fLong)
-                WalletTxToJSON(wallet,wtx, entry);
+                WalletTxToJSON(confsCalculator, wallet,wtx, entry);
             ret.push_back(entry);
         }
         else
@@ -2009,7 +2009,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                     entry.push_back(Pair("vout", s.vout));
                     entry.push_back(Pair("fee", ValueFromAmount(-parsedEntry.nFee)));
                     if (fLong)
-                        WalletTxToJSON(wallet, wtx, entry);
+                        WalletTxToJSON(confsCalculator, wallet, wtx, entry);
                     ret.push_back(entry);
                 }
             }
@@ -2040,7 +2040,7 @@ void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const 
                         entry.push_back(Pair("amount", ValueFromAmount(r.amount)));
                         entry.push_back(Pair("vout", r.vout));
                         if (fLong)
-                            WalletTxToJSON(wallet, wtx, entry);
+                            WalletTxToJSON(confsCalculator,wallet, wtx, entry);
                         ret.push_back(entry);
                     }
                 }
@@ -2372,7 +2372,7 @@ Value gettransaction(const Array& params, bool fHelp, CWallet* pwallet)
     entry.push_back(Pair("amount", ValueFromAmount(nNet)));
     if (nDebit > 0) entry.push_back(Pair("fee", ValueFromAmount(nFee)));
 
-    WalletTxToJSON(*pwallet,wtx, entry);
+    WalletTxToJSON(GetConfirmationsCalculator(), *pwallet,wtx, entry);
 
     Array details;
     ParseTransactionDetails(*pwallet, wtx, "*", 0, false, details, filter);

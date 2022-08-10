@@ -321,9 +321,9 @@ bool AccountShouldUseNewKey(CWallet& wallet, const CScript& accountScript)
     if (!accountScript.empty())
     {
         std::vector<const CWalletTx*> walletTransactions = wallet.GetWalletTransactionReferences();
-        for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+        for (const CWalletTx* walletTxReference: walletTransactions)
         {
-            const CWalletTx& wtx = *(*it);
+            const CWalletTx& wtx = *walletTxReference;
             BOOST_FOREACH (const CTxOut& txout, wtx.vout)
             {
                 if (txout.scriptPubKey == accountScript)
@@ -1663,9 +1663,9 @@ Value ListReceived(CWallet* pwallet,const I_MerkleTxConfirmationNumberCalculator
     // Tally
     std::map<CBitcoinAddress, tallyitem> mapTally;
     std::vector<const CWalletTx*> walletTransactions = pwallet->GetWalletTransactionReferences();
-    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    for (const CWalletTx* walletTxReference: walletTransactions)
     {
-        const CWalletTx& wtx = *(*it);
+        const CWalletTx& wtx = *walletTxReference;
 
         if (wtx.IsCoinBase() || !IsFinalTx(wtx, chain))
             continue;
@@ -2205,9 +2205,9 @@ Value listaccounts(const Array& params, bool fHelp, CWallet* pwallet)
 
     std::vector<const CWalletTx*> walletTransactions = pwallet->GetWalletTransactionReferences();
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
-    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    for (const CWalletTx* walletTxReference: walletTransactions)
     {
-        const CWalletTx& wtx = *(*it);
+        const CWalletTx& wtx = *walletTxReference;
         string strSentAccount = wtx.strFromAccount;
         int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
         if (confsCalculator.GetBlocksToMaturity(wtx) > 0 || nDepth < 0)

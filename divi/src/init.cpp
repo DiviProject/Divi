@@ -91,6 +91,20 @@ extern bool fVerifyingBlocks;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
+CClientUIInterface uiInterface;
+
+const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
+static CTxMemPool mempool;
+CTxMemPool& GetTransactionMemoryPool()
+{
+    return mempool;
+}
+/** Global instance of the SporkManager, managed through startup/shutdown.  */
+std::unique_ptr<CSporkManager> sporkManagerInstance;
+/** Global instance of the ChainstateManager.  The lifetime is managed through
+ *  the startup/shutdown cycle.  */
+std::unique_ptr<ChainstateManager> chainstateInstance;
+
 #ifdef ENABLE_WALLET
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
 std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
@@ -101,18 +115,6 @@ constexpr int nWalletBackups = 20;
  * Wallet Settings
  */
 #endif
-
-CClientUIInterface uiInterface;
-
-const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
-static CTxMemPool mempool;
-CTxMemPool& GetTransactionMemoryPool()
-{
-    return mempool;
-}
-
-/** Global instance of the SporkManager, managed through startup/shutdown.  */
-std::unique_ptr<CSporkManager> sporkManagerInstance;
 
 bool ManualBackupWallet(const std::string& strDest)
 {
@@ -299,10 +301,6 @@ bool MainShutdownRequested()
 #ifdef ENABLE_WALLET
 inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWrapper().Flush(shutdown);}
 #endif
-
-/** Global instance of the ChainstateManager.  The lifetime is managed through
- *  the startup/shutdown cycle.  */
-std::unique_ptr<ChainstateManager> chainstateInstance;
 
 /** Preparing steps before shutting down or restarting the wallet */
 void PrepareShutdown()

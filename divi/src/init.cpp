@@ -331,18 +331,19 @@ void PrepareShutdown()
     {
         LOCK(cs_main);
         FlushStateToDisk();
+        UnregisterAllValidationInterfaces();
+#ifdef ENABLE_WALLET
+        FlushWallet(true);
+        DeallocateWallet();
+#endif
         //record that client took the proper shutdown procedure
         chainstateInstance->BlockTree().WriteFlag("shutdown", true);
         sporkManagerInstance.reset();
         chainstateInstance.reset ();
     }
 
-#ifdef ENABLE_WALLET
-    FlushWallet(true);
-#endif
 #if ENABLE_ZMQ
     if (pzmqNotificationInterface) {
-        UnregisterValidationInterface(pzmqNotificationInterface);
         delete pzmqNotificationInterface;
         pzmqNotificationInterface = NULL;
     }
@@ -350,8 +351,6 @@ void PrepareShutdown()
 #ifndef WIN32
     boost::filesystem::remove(GetPidFile(settings));
 #endif
-
-    UnregisterAllValidationInterfaces();
 }
 
 /**
@@ -371,9 +370,6 @@ void MainShutdown()
     }
 
 // Shutdown part 2: delete wallet instance
-#ifdef ENABLE_WALLET
-    DeallocateWallet();
-#endif
     CleanupP2PConnections();
     LogPrintf("%s: done\n", __func__);
 }

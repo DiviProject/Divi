@@ -2384,10 +2384,10 @@ Value gettransaction(const Array& params, bool fHelp, CWallet* pwallet)
     entry.push_back(Pair("amount", ValueFromAmount(nNet)));
     if (nDebit > 0) entry.push_back(Pair("fee", ValueFromAmount(nFee)));
 
-    WalletTxToJSON(GetConfirmationsCalculator(), *pwallet,wtx, entry);
-
     Array details;
-    ParseTransactionDetails(GetConfirmationsCalculator(), *pwallet, wtx, "*", 0, false, details, filter);
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
+    WalletTxToJSON(confsCalculator, *pwallet,wtx, entry);
+    ParseTransactionDetails(confsCalculator, *pwallet, wtx, "*", 0, false, details, filter);
     entry.push_back(Pair("details", details));
 
     string strHex = EncodeHexTx(static_cast<CTransaction>(wtx));

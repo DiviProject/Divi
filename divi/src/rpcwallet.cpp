@@ -1316,9 +1316,9 @@ Value getreceivedbyaddress(const Array& params, bool fHelp, CWallet* pwallet)
     CAmount nAmount = 0;
     CScript scriptPubKey = GetScriptForDestination(address.Get());
     std::vector<const CWalletTx*> walletTransactions = pwallet->GetWalletTransactionReferences();
-    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    for (const CWalletTx* walletTxReference : walletTransactions)
     {
-        const CWalletTx& wtx = *(*it);
+        const CWalletTx& wtx = *walletTxReference;
         if (wtx.IsCoinBase() || !IsFinalTx(wtx, chain))
             continue;
 
@@ -1382,9 +1382,9 @@ Value getreceivedbyaccount(const Array& params, bool fHelp, CWallet* pwallet)
     // Tally
     CAmount nAmount = 0;
     std::vector<const CWalletTx*> walletTransactions = pwallet->GetWalletTransactionReferences();
-    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    for (const CWalletTx* walletTxReference : walletTransactions)
     {
-        const CWalletTx& wtx = *(*it);
+        const CWalletTx& wtx = *walletTxReference;
         if (wtx.IsCoinBase() || !IsFinalTx(wtx, chain))
             continue;
 

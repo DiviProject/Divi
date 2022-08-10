@@ -2306,12 +2306,12 @@ Value listsinceblock(const Array& params, bool fHelp, CWallet* pwallet)
 
     Array transactions;
     std::vector<const CWalletTx*> walletTransactions = pwallet->GetWalletTransactionReferences();
-    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
+    for (const CWalletTx* walletTxReference : walletTransactions)
     {
-        CWalletTx tx = *(*it);
-
-        if (depth == -1 || GetConfirmationsCalculator().GetNumberOfBlockConfirmations(tx) < depth)
-            ParseTransactionDetails(GetConfirmationsCalculator(), *pwallet, tx, "*", 0, true, transactions, filter);
+        const CWalletTx& tx = *walletTxReference;
+        if (depth == -1 || confsCalculator.GetNumberOfBlockConfirmations(tx) < depth)
+            ParseTransactionDetails(confsCalculator, *pwallet, tx, "*", 0, true, transactions, filter);
     }
 
     const CBlockIndex* pblockLast = chain[chain.Height() + 1 - target_confirms];

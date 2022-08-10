@@ -384,7 +384,12 @@ CBitcoinAddress GetAccountAddress(CWallet& wallet, string strAccount, bool bForc
 }
 
 
-CAmount GetAccountBalance(const CWallet& wallet, const string& strAccount, int nMinDepth, const UtxoOwnershipFilter& filter)
+CAmount GetAccountBalance(
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
+    const CWallet& wallet,
+    const string& strAccount,
+    int nMinDepth,
+    const UtxoOwnershipFilter& filter)
 {
     const ChainstateManager::Reference chainstate;
     const auto& chain = chainstate->ActiveChain();
@@ -393,7 +398,6 @@ CAmount GetAccountBalance(const CWallet& wallet, const string& strAccount, int n
 
     // Tally wallet transactions
     std::vector<const CWalletTx*> walletTransactions = wallet.GetWalletTransactionReferences();
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
@@ -664,7 +668,7 @@ std::string SendMoney(
     else
     {
         const int nMinDepth = 1;
-        availableWalletBalance = GetAccountBalance(*pwallet,rpcTxRequest.accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
+        availableWalletBalance = GetAccountBalance(GetConfirmationsCalculator(), *pwallet,rpcTxRequest.accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
     }
     const CAmount totalAmountToSend = std::accumulate(scriptsToFund.begin(),scriptsToFund.end(),CAmount(0),
         [](const CAmount& runningTotal, const std::pair<CScript,CAmount>& recipient)
@@ -1433,7 +1437,7 @@ Value getbalance(const Array& params, bool fHelp, CWallet* pwallet)
 
     std::string strAccount = AccountFromValue(params[0]);
 
-    CAmount nBalance = GetAccountBalance(*pwallet, strAccount, nMinDepth, filter);
+    CAmount nBalance = GetAccountBalance(GetConfirmationsCalculator(), *pwallet, strAccount, nMinDepth, filter);
 
     return ValueFromAmount(nBalance);
 }

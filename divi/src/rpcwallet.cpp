@@ -398,9 +398,9 @@ CAmount GetAccountBalance(
 
     // Tally wallet transactions
     std::vector<const CWalletTx*> walletTransactions = wallet.GetWalletTransactionReferences();
-    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    for (const CWalletTx* walletTxReference: walletTransactions)
     {
-        const CWalletTx& wtx = *(*it);
+        const CWalletTx& wtx = *walletTxReference;
         if (!IsFinalTx(wtx, chain) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
             continue;
 

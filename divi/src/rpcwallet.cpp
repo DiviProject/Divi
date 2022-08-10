@@ -1863,12 +1863,19 @@ static std::string ParseScriptAsAddressString(const CScript& scriptPubKey)
         return "Unknown address";
     }
 }
-void ParseTransactionDetails(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const UtxoOwnershipFilter& filter)
+void ParseTransactionDetails(
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
+    const CWallet& wallet,
+    const CWalletTx& wtx,
+    const string& strAccount,
+    int nMinDepth,
+    bool fLong,
+    Array& ret,
+    const UtxoOwnershipFilter& filter)
 {
     const SuperblockSubsidyContainer superblockSubsidies(Params(), GetSporkManager());
     const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
     const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
 
     string strSentAccount = wtx.strFromAccount;
     const std::string allAccounts = "*";
@@ -2137,7 +2144,7 @@ Value listtransactions(const Array& params, bool fHelp, CWallet* pwallet)
     // iterate backwards until we have nCount items to return:
     for (CWallet::TxItems::reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
         const CWalletTx* const pwtx = (*it).second;
-        ParseTransactionDetails(*pwallet, *pwtx, strAccount, 0, true, ret, filter);
+        ParseTransactionDetails(GetConfirmationsCalculator(), *pwallet, *pwtx, strAccount, 0, true, ret, filter);
         if ((int)ret.size() >= (nCount + nFrom)) break;
     }
     // ret is newest to oldest
@@ -2304,7 +2311,7 @@ Value listsinceblock(const Array& params, bool fHelp, CWallet* pwallet)
         CWalletTx tx = *(*it);
 
         if (depth == -1 || GetConfirmationsCalculator().GetNumberOfBlockConfirmations(tx) < depth)
-            ParseTransactionDetails(*pwallet, tx, "*", 0, true, transactions, filter);
+            ParseTransactionDetails(GetConfirmationsCalculator(), *pwallet, tx, "*", 0, true, transactions, filter);
     }
 
     const CBlockIndex* pblockLast = chain[chain.Height() + 1 - target_confirms];
@@ -2380,7 +2387,7 @@ Value gettransaction(const Array& params, bool fHelp, CWallet* pwallet)
     WalletTxToJSON(GetConfirmationsCalculator(), *pwallet,wtx, entry);
 
     Array details;
-    ParseTransactionDetails(*pwallet, wtx, "*", 0, false, details, filter);
+    ParseTransactionDetails(GetConfirmationsCalculator(), *pwallet, wtx, "*", 0, false, details, filter);
     entry.push_back(Pair("details", details));
 
     string strHex = EncodeHexTx(static_cast<CTransaction>(wtx));

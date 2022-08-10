@@ -1323,9 +1323,10 @@ Value getreceivedbyaddress(const Array& params, bool fHelp, CWallet* pwallet)
             continue;
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout)
-                if (txout.scriptPubKey == scriptPubKey)
-                if (GetConfirmationsCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
+        {
+            if (txout.scriptPubKey == scriptPubKey && GetConfirmationsCalculator().GetNumberOfBlockConfirmations(wtx) >= nMinDepth)
                 nAmount += txout.nValue;
+        }
     }
 
     return ValueFromAmount(nAmount);

@@ -1023,8 +1023,7 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         {
             strErrors << translate("Error loading wallet.dat: database load failure") << "\n";
         }
-        if(warningDetected && failOnWarning) return ERROR_LOADING_WALLET;
-        if(!warningDetected) return ERROR_LOADING_WALLET;
+        if(!warningDetected || (warningDetected && failOnWarning)) return ERROR_LOADING_WALLET;
     }
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }

@@ -1035,6 +1035,8 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     {
         case ERROR_LOADING_WALLET:
             return false;
+        case WARNING_LOADING_WALLET:
+            return false;
         case NEW_WALLET_CREATED: case EXISTING_WALLET_LOADED:
             break;
     }

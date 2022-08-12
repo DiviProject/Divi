@@ -971,6 +971,44 @@ void ExternalNotificationScript(const uint256& transactionHash,int status)
     }
 }
 
+LoadWalletResult ParseDbErrorsFromLoadingWallet(DBErrors dbError, std::ostringstream& strErrors)
+{
+    bool warningDetected = false;
+    const bool fFirstRun = dbError == DB_LOAD_OK_FIRST_RUN;
+    if(dbError != DB_LOAD_OK && (dbError==DB_LOAD_OK_FIRST_RUN || dbError == DB_LOAD_OK_RELOAD))
+        dbError = DB_LOAD_OK;
+
+    if (dbError != DB_LOAD_OK)
+    {
+        if (dbError == DB_CORRUPT)
+        {
+            strErrors << std::string("Error loading wallet.dat: Wallet corrupted");
+        }
+        else if (dbError == DB_NONCRITICAL_ERROR)
+        {
+            std::string msg("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
+                            " or address book entries might be missing or incorrect.");
+            strErrors << msg;
+            warningDetected = true;
+        }
+        else if (dbError == DB_TOO_NEW)
+        {
+            strErrors << std::string("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly");
+            warningDetected = true;
+        }
+        else if (dbError == DB_NEED_REWRITE || dbError == DB_REWRITTEN)
+        {
+            strErrors << std::string("Wallet needed to be rewritten: restart DIVI Core to complete");
+        }
+        else
+        {
+            strErrors << std::string("Error loading wallet.dat: database load failure") << "\n";
+        }
+        return warningDetected? WARNING_LOADING_WALLET: ERROR_LOADING_WALLET;
+    }
+    return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
+}
+
 LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream& strErrors)
 {
     InitializeWallet(strWalletFile);

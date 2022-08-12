@@ -1013,10 +1013,9 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
 {
     InitializeWallet(strWalletFile);
     pwalletMain->NotifyTransactionChanged.connect(&ExternalNotificationScript);
-    DBErrors nLoadWalletRet = DB_LOAD_OK;
     try
     {
-        nLoadWalletRet = pwalletMain->loadWallet();
+        return ParseDbErrorsFromLoadingWallet(pwalletMain->loadWallet(), strErrors);
     }
     catch(const std::exception& e)
     {
@@ -1025,8 +1024,6 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         strErrors << errorMessage;
         return ERROR_LOADING_WALLET;
     }
-
-    return ParseDbErrorsFromLoadingWallet(nLoadWalletRet, strErrors);
 }
 
 bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors, bool& errorMessageIsWarning)

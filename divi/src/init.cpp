@@ -1046,6 +1046,7 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     {
         InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
     }
+    RegisterValidationInterface(pwalletMain.get());
     return true;
 }
 
@@ -1371,9 +1372,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         }
 
         LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
-
-        RegisterValidationInterface(pwalletMain.get());
-
         ScanBlockchainForWalletUpdates();
         fVerifyingBlocks = false;
 

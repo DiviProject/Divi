@@ -55,6 +55,7 @@
 #include <ThreadManagementHelpers.h>
 #include <LoadWalletResult.h>
 #include <MultiWalletModule.h>
+#include <TransactionDiskAccessor.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
@@ -1174,6 +1175,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 2: parameter interactions
     // Set this early so that parameter interactions go to console
+    InitializeTransactionDiskAccessors(GetTransactionMemoryPool(),cs_main);
+
     UIMessenger uiMessenger(uiInterface);
     SetLoggingAndDebugSettings();
 

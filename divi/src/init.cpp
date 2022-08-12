@@ -1008,16 +1008,12 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
             strErrors << msg << "\n";
             InitWarning(msg);
             warningDetected = true;
-            if(failOnWarning)
-                return ERROR_LOADING_WALLET;
         }
         else if (nLoadWalletRet == DB_TOO_NEW)
         {
             strErrors << translate("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly") << "\n";
             InitWarning(strErrors.str());
             warningDetected = true;
-            if(failOnWarning)
-                return ERROR_LOADING_WALLET;
         }
         else if (nLoadWalletRet == DB_NEED_REWRITE || nLoadWalletRet == DB_REWRITTEN)
         {
@@ -1030,6 +1026,7 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
             strErrors << translate("Error loading wallet.dat: database load failure") << "\n";
             return ERROR_LOADING_WALLET;
         }
+        if(warningDetected && failOnWarning) return ERROR_LOADING_WALLET;
     }
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }

@@ -51,6 +51,7 @@ MultiWalletModule::MultiWalletModule(
             coinbaseConfirmationsForMaturity,
             transactionMemoryPool,
             mmainCriticalSection) )
+    , backedWalletsByName_()
     , walletDbEndpointFactoryByName_()
     , walletsByName_()
     , activeWallet_(nullptr)
@@ -62,6 +63,7 @@ MultiWalletModule::~MultiWalletModule()
     activeWallet_ = nullptr;
     walletsByName_.clear();
     walletDbEndpointFactoryByName_.clear();
+    backedWalletsByName_.clear();
     confirmationCalculator_.reset();
 }
 

@@ -984,7 +984,7 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
     {
         std::cerr << e.what() << '\n';
         std::string errorMessage = std::string("Error loading or creating wallet.dat, ")+ e.what();
-        strErrors << translate(errorMessage.c_str()) << "\n";
+        strErrors << errorMessage;
         return ERROR_LOADING_WALLET;
     }
 
@@ -997,27 +997,27 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
     {
         if (nLoadWalletRet == DB_CORRUPT)
         {
-            strErrors << translate("Error loading wallet.dat: Wallet corrupted") << "\n";
+            strErrors << std::string("Error loading wallet.dat: Wallet corrupted");
         }
         else if (nLoadWalletRet == DB_NONCRITICAL_ERROR)
         {
-            std::string msg(translate("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
-                            " or address book entries might be missing or incorrect."));
-            strErrors << msg << "\n";
+            std::string msg("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
+                            " or address book entries might be missing or incorrect.");
+            strErrors << msg;
             warningDetected = true;
         }
         else if (nLoadWalletRet == DB_TOO_NEW)
         {
-            strErrors << translate("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly") << "\n";
+            strErrors << std::string("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly");
             warningDetected = true;
         }
         else if (nLoadWalletRet == DB_NEED_REWRITE || nLoadWalletRet == DB_REWRITTEN)
         {
-            strErrors << translate("Wallet needed to be rewritten: restart DIVI Core to complete") << "\n";
+            strErrors << std::string("Wallet needed to be rewritten: restart DIVI Core to complete");
         }
         else
         {
-            strErrors << translate("Error loading wallet.dat: database load failure") << "\n";
+            strErrors << std::string("Error loading wallet.dat: database load failure") << "\n";
         }
         return warningDetected? WARNING_LOADING_WALLET: ERROR_LOADING_WALLET;
     }
@@ -1357,16 +1357,17 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         bool errorMessageIsWarning = false;
         if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors, errorMessageIsWarning))
         {
-            LogPrintf("Errors detected during wallet loading\n%s", strErrors.str());
+            const std::string sourceErrorMessage = strErrors.str();
+            std::string translatedErrorMessage = translate(sourceErrorMessage.c_str());
+            LogPrintf("%s\n%s\n", translate("Errors detected during wallet loading"), translatedErrorMessage );
             if(!errorMessageIsWarning)
-                return InitError(strErrors.str());
+                return InitError(translatedErrorMessage);
 
-            InitWarning(strErrors.str());
+            InitWarning(translatedErrorMessage);
             if(settings.GetArg("-dbloadfailexit",false))
                 return false;
         }
 
-        LogPrintf("%s", strErrors.str());
         LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
 
         RegisterValidationInterface(pwalletMain.get());

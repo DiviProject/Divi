@@ -108,7 +108,6 @@ std::unique_ptr<CSporkManager> sporkManagerInstance;
 std::unique_ptr<ChainstateManager> chainstateInstance;
 
 #ifdef ENABLE_WALLET
-std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
 std::unique_ptr<CWallet> pwalletMain(nullptr);
 constexpr int nWalletBackups = 20;
 #endif
@@ -132,8 +131,8 @@ void FinalizeMultiWalletModule()
 
 bool ManualBackupWallet(const std::string& strDest)
 {
-    assert(walletDatabaseEndpointFactory);
-    return walletDatabaseEndpointFactory->backupWalletFile(strDest);
+    assert(multiWalletModule);
+    return  multiWalletModule->getWalletDbEnpointFactory().backupWalletFile(strDest);
 }
 
 const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator()
@@ -148,8 +147,7 @@ void InitializeWallet(std::string strWalletFile)
     const ChainstateManager::Reference chainstate;
     const auto& chain = chainstate->ActiveChain();
     const auto& blockMap = chainstate->GetBlockMap();
-    walletDatabaseEndpointFactory.reset(new LegacyWalletDatabaseEndpointFactory(strWalletFile,settings));
-    pwalletMain.reset( new CWallet(*walletDatabaseEndpointFactory, chain, blockMap, GetConfirmationsCalculator() ) );
+    pwalletMain.reset( new CWallet(multiWalletModule->getWalletDbEnpointFactory(), chain, blockMap, GetConfirmationsCalculator() ) );
 #endif
 }
 CWallet* GetWallet()
@@ -242,7 +240,6 @@ void DeallocateWallet()
 {
 #ifdef ENABLE_WALLET
     pwalletMain.reset();
-    walletDatabaseEndpointFactory.reset();
 #endif
 }
 
@@ -1467,10 +1464,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         }
         // Run a thread to flush wallet periodically
         if (settings.GetBoolArg("-flushwallet", true))
-            walletDatabaseEndpointFactory->enableBackgroundDatabaseFlushing(threadGroup);
+            multiWalletModule->getWalletDbEnpointFactory().enableBackgroundDatabaseFlushing(threadGroup);
 
         if(settings.GetArg("-monthlybackups",12) > 0)
-            walletDatabaseEndpointFactory->enableBackgroundMonthlyWalletBackup(
+            multiWalletModule->getWalletDbEnpointFactory().enableBackgroundMonthlyWalletBackup(
                 threadGroup,
                 GetDataDir().string(),
                 Params().NetworkID() == CBaseChainParams::REGTEST);

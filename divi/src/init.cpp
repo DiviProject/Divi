@@ -1016,7 +1016,6 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         else if (nLoadWalletRet == DB_NEED_REWRITE || nLoadWalletRet == DB_REWRITTEN)
         {
             strErrors << translate("Wallet needed to be rewritten: restart DIVI Core to complete") << "\n";
-            LogPrintf("%s", strErrors.str());
         }
         else
         {
@@ -1360,6 +1359,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         bool errorMessageIsWarning = false;
         if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors, errorMessageIsWarning))
         {
+            LogPrintf("Errors detected during wallet loading\n%s", strErrors.str());
             if(!errorMessageIsWarning)
                 return InitError(strErrors.str());
 

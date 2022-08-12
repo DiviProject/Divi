@@ -15,12 +15,30 @@ class I_WalletDatabaseEndpointFactory;
 class LegacyWalletDatabaseEndpointFactory;
 class Settings;
 class CCriticalSection;
+class CChain;
+class BlockMap;
 
 namespace boost
 {
 class thread_group;
 } // namespace boost
 
+class DatabaseBackedWallet
+{
+private:
+    DatabaseBackedWallet& operator=(const DatabaseBackedWallet& other) = delete;
+public:
+    std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDbEndpointFactory_;
+    std::unique_ptr<CWallet> wallet_;
+    DatabaseBackedWallet(
+        const std::string walletFilename,
+        Settings& settings,
+        const CChain& activeChain,
+        const BlockMap& blockIndicesByHash,
+        const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
+    ~DatabaseBackedWallet();
+    DatabaseBackedWallet(DatabaseBackedWallet&& other);
+};
 class MultiWalletModule
 {
 private:

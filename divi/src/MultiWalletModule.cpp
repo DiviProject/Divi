@@ -5,6 +5,37 @@
 #include <Logging.h>
 #include <Settings.h>
 
+DatabaseBackedWallet::DatabaseBackedWallet(
+    const std::string walletFilename,
+    Settings& settings,
+    const CChain& activeChain,
+    const BlockMap& blockIndicesByHash,
+    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
+    ): walletDbEndpointFactory_(new LegacyWalletDatabaseEndpointFactory(walletFilename,settings))
+    , wallet_(
+        new CWallet(
+            *walletDbEndpointFactory_,
+            activeChain,
+            blockIndicesByHash,
+            confirmationsCalculator))
+{
+}
+
+DatabaseBackedWallet::~DatabaseBackedWallet()
+{
+    wallet_.reset();
+    walletDbEndpointFactory_.reset();
+}
+
+DatabaseBackedWallet::DatabaseBackedWallet(
+    DatabaseBackedWallet&& other
+    ): walletDbEndpointFactory_()
+    , wallet_()
+{
+    walletDbEndpointFactory_ = std::move(other.walletDbEndpointFactory_);
+    wallet_ = std::move(other.wallet_);
+}
+
 MultiWalletModule::MultiWalletModule(
     Settings& settings,
     CTxMemPool& transactionMemoryPool,

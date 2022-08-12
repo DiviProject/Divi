@@ -1027,16 +1027,16 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }
 
-bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors, bool& errorMessageIsForWarningOnly)
+bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors, bool& errorMessageIsWarning)
 {
     const LoadWalletResult loadResult = LoadWallet(strWalletFile, strErrors);
     switch(loadResult)
     {
         case ERROR_LOADING_WALLET:
-            errorMessageIsForWarningOnly = false;
+            errorMessageIsWarning = false;
             return false;
         case WARNING_LOADING_WALLET:
-            errorMessageIsForWarningOnly = true;
+            errorMessageIsWarning = true;
             return false;
         case NEW_WALLET_CREATED: case EXISTING_WALLET_LOADED:
             break;
@@ -1357,10 +1357,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         fVerifyingBlocks = true;
 
         nStart = GetTimeMillis();
-        bool errorMessageIsForWarningOnly = false;
-        if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors, errorMessageIsForWarningOnly))
+        bool errorMessageIsWarning = false;
+        if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors, errorMessageIsWarning))
         {
-            if(!errorMessageIsForWarningOnly)
+            if(!errorMessageIsWarning)
                 return InitError(strErrors.str());
 
             InitWarning(strErrors.str());

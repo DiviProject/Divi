@@ -984,6 +984,8 @@ LoadWalletResult ParseDbErrorsFromLoadingWallet(DBErrors dbError, std::ostringst
 
 LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream& strErrors)
 {
+    multiWalletModule->loadWallet(strWalletFile);
+    multiWalletModule->setActiveWallet(strWalletFile);
     GetWallet()->NotifyTransactionChanged.connect(&ExternalNotificationScript);
     try
     {

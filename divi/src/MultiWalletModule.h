@@ -27,10 +27,12 @@ private:
     ChainstateManager::Reference chainStateReference_;
     Settings& settings_;
     const bool walletIsDisabled_;
-    std::string walletFilename_;
     std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationCalculator_;
-    std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDbEndpointFactory_;
-    std::unique_ptr<CWallet> activeWallet_;
+    std::map< std::string, std::unique_ptr<LegacyWalletDatabaseEndpointFactory> > walletDbEndpointFactoryByName_;
+    std::map< std::string, std::unique_ptr<CWallet> > walletsByName_;
+
+    const LegacyWalletDatabaseEndpointFactory* activeWalletDbEndpoint_;
+    CWallet* activeWallet_;
 public:
     MultiWalletModule(
         Settings& settings,
@@ -39,6 +41,8 @@ public:
         const int coinbaseConfirmationsForMaturity);
     ~MultiWalletModule();
 
+    bool loadWallet(const std::string walletFilename);
+    bool setActiveWallet(const std::string walletFilename);
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationsCalculator() const;
     const LegacyWalletDatabaseEndpointFactory& getWalletDbEnpointFactory() const;
     CWallet* getActiveWallet() const;

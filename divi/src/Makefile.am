@@ -164,6 +164,7 @@ BITCOIN_CORE_H = \
   hash.h \
   hdchain.h \
   StartAndShutdownSignals.h \
+  LoadWalletResult.h \
   init.h \
   LicenseAndInfo.h \
   TransactionLocationReference.h \

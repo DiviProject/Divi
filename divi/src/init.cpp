@@ -53,6 +53,7 @@
 #include <MerkleTxConfirmationNumberCalculator.h>
 #include <I_BlockSubmitter.h>
 #include <ThreadManagementHelpers.h>
+#include <LoadWalletResult.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
@@ -969,13 +970,6 @@ void ExternalNotificationScript(const uint256& transactionHash,int status)
         boost::thread t(runCommand, strCmd); // thread runs free
     }
 }
-
-enum LoadWalletResult
-{
-    NEW_WALLET_CREATED,
-    EXISTING_WALLET_LOADED,
-    ERROR_LOADING_WALLET,
-};
 
 LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream& strErrors)
 {

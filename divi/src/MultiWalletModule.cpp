@@ -52,8 +52,6 @@ MultiWalletModule::MultiWalletModule(
             transactionMemoryPool,
             mmainCriticalSection) )
     , backedWalletsByName_()
-    , walletDbEndpointFactoryByName_()
-    , walletsByName_()
     , activeWallet_(nullptr)
 {
 }
@@ -61,8 +59,6 @@ MultiWalletModule::MultiWalletModule(
 MultiWalletModule::~MultiWalletModule()
 {
     activeWallet_ = nullptr;
-    walletsByName_.clear();
-    walletDbEndpointFactoryByName_.clear();
     backedWalletsByName_.clear();
     confirmationCalculator_.reset();
 }
@@ -70,27 +66,18 @@ MultiWalletModule::~MultiWalletModule()
 bool MultiWalletModule::loadWallet(const std::string walletFilename)
 {
     if(walletIsDisabled_) return false;
-    if(walletDbEndpointFactoryByName_.find(walletFilename) != walletDbEndpointFactoryByName_.end()) return true;
+    if(backedWalletsByName_.find(walletFilename) != backedWalletsByName_.end()) return true;
 
-    std::unique_ptr<LegacyWalletDatabaseEndpointFactory> dbEndpointFactory(new LegacyWalletDatabaseEndpointFactory(walletFilename,settings_));
-    walletDbEndpointFactoryByName_[walletFilename] = std::move(dbEndpointFactory);
-
-    std::unique_ptr<CWallet> wallet(
-        new CWallet(
-            *walletDbEndpointFactoryByName_[walletFilename],
-            chainStateReference_->ActiveChain(),
-            chainStateReference_->GetBlockMap(),
-            *confirmationCalculator_));
-    walletsByName_[walletFilename] = std::move(wallet);
-
+    std::unique_ptr<DatabaseBackedWallet> dbBackedWallet(
+        new DatabaseBackedWallet(walletFilename,settings_,chainStateReference_->ActiveChain(),chainStateReference_->GetBlockMap(),*confirmationCalculator_));
+    backedWalletsByName_.emplace(walletFilename, std::move(dbBackedWallet) );
     return true;
 }
 bool MultiWalletModule::setActiveWallet(const std::string walletFilename)
 {
-    if(walletIsDisabled_ || walletDbEndpointFactoryByName_.find(walletFilename) == walletDbEndpointFactoryByName_.end()) return false;
+    if(walletIsDisabled_ || backedWalletsByName_.find(walletFilename) == backedWalletsByName_.end()) return false;
 
-    activeWalletDbEndpoint_ = walletDbEndpointFactoryByName_.find(walletFilename)->second.get();
-    activeWallet_ = walletsByName_.find(walletFilename)->second.get();
+    activeWallet_ = backedWalletsByName_.find(walletFilename)->second.get();
     return true;
 }
 
@@ -101,9 +88,10 @@ const I_MerkleTxConfirmationNumberCalculator& MultiWalletModule::getConfirmation
 
 const LegacyWalletDatabaseEndpointFactory& MultiWalletModule::getWalletDbEnpointFactory() const
 {
-    return *activeWalletDbEndpoint_;
+    assert(activeWallet_);
+    return *(activeWallet_->walletDbEndpointFactory_);
 }
 CWallet* MultiWalletModule::getActiveWallet() const
 {
-    return activeWallet_;
+    return activeWallet_? activeWallet_->wallet_.get() : nullptr;
 }

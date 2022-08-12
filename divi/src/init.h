@@ -35,7 +35,5 @@ bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
 CTxMemPool& GetTransactionMemoryPool();
 bool ManualBackupWallet(const std::string& strDest);
 CWallet* GetWallet();
-void InitializeConfirmationsCalculator(const CChainParams& params, const CChain& chain, const BlockMap& blockMap);
-void DeallocateConfirmationsCalculator();
 const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator();
 #endif // BITCOIN_INIT_H

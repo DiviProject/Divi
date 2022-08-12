@@ -111,9 +111,9 @@ std::unique_ptr<ChainstateManager> chainstateInstance;
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
 std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
 std::unique_ptr<CWallet> pwalletMain(nullptr);
-std::unique_ptr<MultiWalletModule> multiWalletModule(nullptr);
 constexpr int nWalletBackups = 20;
 #endif
+std::unique_ptr<MultiWalletModule> multiWalletModule(nullptr);
 
 void InitializeMultiWalletModule()
 {
@@ -137,29 +137,10 @@ bool ManualBackupWallet(const std::string& strDest)
     return walletDatabaseEndpointFactory->backupWalletFile(strDest);
 }
 
-void InitializeConfirmationsCalculator(const CChainParams& params, const CChain& chain, const BlockMap& blockMap)
-{
-    if(!confirmationsCalculator)
-    {
-        confirmationsCalculator.reset(
-            new MerkleTxConfirmationNumberCalculator(
-                chain,
-                blockMap,
-                params.COINBASE_MATURITY(),
-                GetTransactionMemoryPool(),
-                cs_main));
-    }
-}
-void DeallocateConfirmationsCalculator()
-{
-    assert(!pwalletMain);
-    confirmationsCalculator.reset();
-}
-
 const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator()
 {
-    assert(confirmationsCalculator);
-    return *confirmationsCalculator;
+    assert(multiWalletModule);
+    return multiWalletModule->getConfirmationsCalculator();
 }
 
 void InitializeWallet(std::string strWalletFile)
@@ -168,7 +149,6 @@ void InitializeWallet(std::string strWalletFile)
     const ChainstateManager::Reference chainstate;
     const auto& chain = chainstate->ActiveChain();
     const auto& blockMap = chainstate->GetBlockMap();
-    InitializeConfirmationsCalculator(Params(), chain, blockMap);
     walletDatabaseEndpointFactory.reset(new LegacyWalletDatabaseEndpointFactory(strWalletFile,settings));
     pwalletMain.reset( new CWallet(*walletDatabaseEndpointFactory, chain, blockMap, GetConfirmationsCalculator() ) );
 #endif
@@ -264,7 +244,6 @@ void DeallocateWallet()
 #ifdef ENABLE_WALLET
     pwalletMain.reset();
     walletDatabaseEndpointFactory.reset();
-    DeallocateConfirmationsCalculator();
 #endif
 }
 

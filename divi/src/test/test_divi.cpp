@@ -63,7 +63,7 @@ struct TestingSetup {
         settings.SetParameter("-datadir", pathTemp.string());
         chainstateInstance.reset(new ChainstateManager(1 << 20, 1 << 23, 5000, true, false));
         sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
-        InitializeConfirmationsCalculator(Params(), chainstateInstance->ActiveChain(), chainstateInstance->GetBlockMap());
+        InitializeMultiWalletModule();
         InitBlockIndex(*chainstateInstance, *sporkManagerInstance);
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
         TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
@@ -75,7 +75,7 @@ struct TestingSetup {
         threadGroup.interrupt_all();
         threadGroup.join_all();
         UnregisterNodeSignals(GetNodeSignals());
-        DeallocateConfirmationsCalculator();
+        FinalizeMultiWalletModule();
         sporkManagerInstance.reset();
         chainstateInstance.reset();
 #ifdef ENABLE_WALLET

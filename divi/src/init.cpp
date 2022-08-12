@@ -108,7 +108,6 @@ std::unique_ptr<CSporkManager> sporkManagerInstance;
 std::unique_ptr<ChainstateManager> chainstateInstance;
 
 #ifdef ENABLE_WALLET
-std::unique_ptr<CWallet> pwalletMain(nullptr);
 constexpr int nWalletBackups = 20;
 #endif
 std::unique_ptr<MultiWalletModule> multiWalletModule(nullptr);
@@ -141,19 +140,10 @@ const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator()
     return multiWalletModule->getConfirmationsCalculator();
 }
 
-void InitializeWallet(std::string strWalletFile)
-{
-#ifdef ENABLE_WALLET
-    const ChainstateManager::Reference chainstate;
-    const auto& chain = chainstate->ActiveChain();
-    const auto& blockMap = chainstate->GetBlockMap();
-    pwalletMain.reset( new CWallet(multiWalletModule->getWalletDbEnpointFactory(), chain, blockMap, GetConfirmationsCalculator() ) );
-#endif
-}
 CWallet* GetWallet()
 {
 #ifdef ENABLE_WALLET
-    return pwalletMain.get();
+    return multiWalletModule->getActiveWallet();
 #else
     return nullptr;
 #endif
@@ -236,13 +226,6 @@ bool InitWarning(const std::string& str)
 
 } // anonymous namespace
 
-void DeallocateWallet()
-{
-#ifdef ENABLE_WALLET
-    pwalletMain.reset();
-#endif
-}
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Shutdown
@@ -289,7 +272,7 @@ bool MainShutdownRequested()
 
 
 #ifdef ENABLE_WALLET
-inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWrapper().Flush(shutdown);}
+inline void FlushWallet(bool shutdown = false) { if(GetWallet()) BerkleyDBEnvWrapper().Flush(shutdown);}
 #endif
 
 /** Preparing steps before shutting down or restarting the wallet */
@@ -322,7 +305,6 @@ void PrepareShutdown()
         UnregisterAllValidationInterfaces();
 #ifdef ENABLE_WALLET
         FlushWallet(true);
-        DeallocateWallet();
         FinalizeMultiWalletModule();
 #endif
         //record that client took the proper shutdown procedure
@@ -1002,11 +984,10 @@ LoadWalletResult ParseDbErrorsFromLoadingWallet(DBErrors dbError, std::ostringst
 
 LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream& strErrors)
 {
-    InitializeWallet(strWalletFile);
-    pwalletMain->NotifyTransactionChanged.connect(&ExternalNotificationScript);
+    GetWallet()->NotifyTransactionChanged.connect(&ExternalNotificationScript);
     try
     {
-        return ParseDbErrorsFromLoadingWallet(pwalletMain->loadWallet(), strErrors);
+        return ParseDbErrorsFromLoadingWallet(GetWallet()->loadWallet(), strErrors);
     }
     catch(const std::exception& e)
     {
@@ -1033,11 +1014,11 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     }
 
     // Warn user every time he starts non-encrypted HD wallet
-    if (!settings.GetBoolArg("-allowunencryptedwallet", false) && !pwalletMain->IsLocked())
+    if (!settings.GetBoolArg("-allowunencryptedwallet", false) && !GetWallet()->IsLocked())
     {
         InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
     }
-    RegisterValidationInterface(pwalletMain.get());
+    RegisterValidationInterface(GetWallet());
     return true;
 }
 
@@ -1046,17 +1027,17 @@ void ScanBlockchainForWalletUpdates()
     int64_t nStart = GetTimeMillis();
     uiInterface.InitMessage(translate("Scanning chain for wallet updates..."));
     BlockDiskDataReader reader;
-    pwalletMain->verifySyncToActiveChain(reader,settings.GetBoolArg("-rescan", false));
+    GetWallet()->verifySyncToActiveChain(reader,settings.GetBoolArg("-rescan", false));
     LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
 }
 
 void LockUpMasternodeCollateral()
 {
-    if (pwalletMain) {
+    if (GetWallet()) {
         LogPrintf("Locking Masternodes:\n");
-        LOCK(pwalletMain->getWalletCriticalSection());
+        LOCK(GetWallet()->getWalletCriticalSection());
 
-        CWallet& walletReference = *pwalletMain;
+        CWallet& walletReference = *GetWallet();
         LockUpMasternodeCollateral(
             settings,
             [&walletReference](const COutPoint& outpoint)
@@ -1342,7 +1323,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     const std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     if (fDisableWallet) {
-        pwalletMain.reset();
         LogPrintf("Wallet disabled!\n");
     } else {
         uiInterface.InitMessage(translate("Loading wallet..."));
@@ -1382,9 +1362,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (!ActivateBestChain(*chainstateInstance, *sporkManagerInstance, state))
         strErrors << "Failed to connect best block";
 #ifdef ENABLE_WALLET
-    if(pwalletMain && settings.ParameterIsSet("-prunewalletconfs"))
+    if(GetWallet() && settings.ParameterIsSet("-prunewalletconfs"))
     {
-        pwalletMain->PruneWallet();
+        GetWallet()->PruneWallet();
     }
 #endif
 
@@ -1403,7 +1383,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return false;
     }
     uiInterface.InitMessage(translate("Checking for active masternode..."));
-    if(!LookupMasternodeKey(settings,pwalletMain.get(),errorMessage))
+    if(!LookupMasternodeKey(settings,GetWallet(),errorMessage))
     {
         return InitError(errorMessage);
     }
@@ -1428,8 +1408,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("mapBlockIndex.size() = %u\n", blockMap.size());
     LogPrintf("chainActive.Height() = %d\n", chainActive.Height());
 #ifdef ENABLE_WALLET
-    LogPrintf("Key Pool size = %u\n", pwalletMain ? pwalletMain->GetKeyPoolSize() : 0);
-    LogPrintf("Address Book size = %u\n", pwalletMain ? pwalletMain->getAddressBookManager().getAddressBook().size() : 0);
+    {
+        auto pwallet = GetWallet();
+        LogPrintf("Key Pool size = %u\n", pwallet ? pwallet->GetKeyPoolSize() : 0);
+        LogPrintf("Address Book size = %u\n", pwallet ? pwallet->getAddressBookManager().getAddressBook().size() : 0);
+    }
 #endif
 
     if (settings.GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION))
@@ -1438,9 +1421,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
     StartNode(threadGroup);
 #ifdef ENABLE_WALLET
-    if (pwalletMain)
     {
-        StartCoinMintingModule(threadGroup,*pwalletMain);
+        auto pwallet = GetWallet();
+        if (pwallet) StartCoinMintingModule(threadGroup,*pwallet);
     }
 #endif
 
@@ -1450,12 +1433,13 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     uiInterface.InitMessage(translate("Done loading"));
 
 #ifdef ENABLE_WALLET
-    if (pwalletMain) {
+    auto pwallet = GetWallet();
+    if (pwallet) {
         // Add wallet transactions that aren't already in a block to mapTransactions
-        SubmitUnconfirmedWalletTransactionsToMempool(*pwalletMain);
+        SubmitUnconfirmedWalletTransactionsToMempool(*pwallet);
         if(settings.ParameterIsSet("-prunewalletconfs"))
         {
-            if(!pwalletMain->PruneWallet())
+            if(!pwallet->PruneWallet())
             {
                 StartShutdown();
                 LogPrintf("Failed to prune wallet correctly!");

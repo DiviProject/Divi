@@ -989,7 +989,6 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
     }
 
     bool warningDetected = false;
-    const bool failOnWarning = settings.GetArg("-dbloadfailexit",false);
     const bool fFirstRun = nLoadWalletRet == DB_LOAD_OK_FIRST_RUN;
     if(nLoadWalletRet != DB_LOAD_OK && (nLoadWalletRet==DB_LOAD_OK_FIRST_RUN || nLoadWalletRet == DB_LOAD_OK_RELOAD))
         nLoadWalletRet = DB_LOAD_OK;
@@ -1023,19 +1022,21 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         {
             strErrors << translate("Error loading wallet.dat: database load failure") << "\n";
         }
-        if(!warningDetected || (warningDetected && failOnWarning)) return ERROR_LOADING_WALLET;
+        return warningDetected? WARNING_LOADING_WALLET: ERROR_LOADING_WALLET;
     }
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }
 
-bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
+bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors, bool& errorMessageIsForWarningOnly)
 {
     const LoadWalletResult loadResult = LoadWallet(strWalletFile, strErrors);
     switch(loadResult)
     {
         case ERROR_LOADING_WALLET:
+            errorMessageIsForWarningOnly = false;
             return false;
         case WARNING_LOADING_WALLET:
+            errorMessageIsForWarningOnly = true;
             return false;
         case NEW_WALLET_CREATED: case EXISTING_WALLET_LOADED:
             break;
@@ -1356,9 +1357,15 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         fVerifyingBlocks = true;
 
         nStart = GetTimeMillis();
-        if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors))
+        bool errorMessageIsForWarningOnly = false;
+        if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors, errorMessageIsForWarningOnly))
         {
-            return InitError(strErrors.str());
+            if(!errorMessageIsForWarningOnly)
+                return InitError(strErrors.str());
+
+            InitWarning(strErrors.str());
+            if(settings.GetArg("-dbloadfailexit",false))
+                return false;
         }
 
         LogPrintf("%s", strErrors.str());

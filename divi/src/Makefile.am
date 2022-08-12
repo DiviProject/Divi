@@ -165,6 +165,7 @@ BITCOIN_CORE_H = \
   hdchain.h \
   StartAndShutdownSignals.h \
   LoadWalletResult.h \
+  MultiWalletModule.h \
   init.h \
   LicenseAndInfo.h \
   TransactionLocationReference.h \
@@ -422,6 +423,7 @@ libbitcoin_server_a_SOURCES = \
   FilteredBoostFileSystem.cpp \
   BlockScanner.cpp \
   StartAndShutdownSignals.cpp \
+  MultiWalletModule.cpp \
   init.cpp \
   TransactionLocationReference.cpp \
   IndexDatabaseUpdates.cpp \

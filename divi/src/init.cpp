@@ -54,6 +54,7 @@
 #include <I_BlockSubmitter.h>
 #include <ThreadManagementHelpers.h>
 #include <LoadWalletResult.h>
+#include <MultiWalletModule.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
@@ -110,12 +111,25 @@ std::unique_ptr<ChainstateManager> chainstateInstance;
 std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
 std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDatabaseEndpointFactory(nullptr);
 std::unique_ptr<CWallet> pwalletMain(nullptr);
+std::unique_ptr<MultiWalletModule> multiWalletModule(nullptr);
 constexpr int nWalletBackups = 20;
-
-/**
- * Wallet Settings
- */
 #endif
+
+void InitializeMultiWalletModule()
+{
+    if(multiWalletModule) return;
+    multiWalletModule.reset(
+        new MultiWalletModule(
+            settings,
+            GetTransactionMemoryPool(),
+            cs_main,
+            Params().COINBASE_MATURITY()));
+}
+void FinalizeMultiWalletModule()
+{
+    if(!multiWalletModule) return;
+    multiWalletModule.reset();
+}
 
 bool ManualBackupWallet(const std::string& strDest)
 {
@@ -334,6 +348,7 @@ void PrepareShutdown()
 #ifdef ENABLE_WALLET
         FlushWallet(true);
         DeallocateWallet();
+        FinalizeMultiWalletModule();
 #endif
         //record that client took the proper shutdown procedure
         chainstateInstance->BlockTree().WriteFlag("shutdown", true);
@@ -1298,6 +1313,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
     sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
+    InitializeMultiWalletModule();
 
     if(!SetSporkKey(*sporkManagerInstance))
         return false;

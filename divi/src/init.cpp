@@ -634,6 +634,7 @@ bool WalletIsDisabled()
 #ifdef ENABLE_WALLET
     return settings.GetBoolArg("-disablewallet", false);
 #else
+    settings.SetParameter("-disablewallet", true);
     return true;
 #endif
 }

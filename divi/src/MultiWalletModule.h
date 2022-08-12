@@ -46,6 +46,7 @@ private:
     Settings& settings_;
     const bool walletIsDisabled_;
     std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationCalculator_;
+    std::map<std::string, std::unique_ptr<DatabaseBackedWallet>> backedWalletsByName_;
     std::map< std::string, std::unique_ptr<LegacyWalletDatabaseEndpointFactory> > walletDbEndpointFactoryByName_;
     std::map< std::string, std::unique_ptr<CWallet> > walletsByName_;
 

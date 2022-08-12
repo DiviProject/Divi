@@ -12,9 +12,39 @@
 #include <clientversion.h>
 #include <Logging.h>
 
-extern CCriticalSection cs_main;
+class TransactionDiskAccessorHelperDependencies
+{
+private:
+    CTxMemPool& mempool_;
+    CCriticalSection& mainCriticalSection_;
 
-extern CTxMemPool& GetTransactionMemoryPool();
+
+public:
+    TransactionDiskAccessorHelperDependencies(
+        CTxMemPool& mempool,
+        CCriticalSection& mainCriticalSection
+        ): mempool_(mempool)
+        , mainCriticalSection_(mainCriticalSection)
+    {
+    }
+    CTxMemPool& getMemoryPool() const
+    {
+        return mempool_;
+    }
+    CCriticalSection& getMainCriticalSection() const
+    {
+        return mainCriticalSection_;
+    }
+};
+
+static std::unique_ptr<TransactionDiskAccessorHelperDependencies> dependencies;
+
+void InitializeTransactionDiskAccessors(CTxMemPool& mempool, CCriticalSection& mainCriticalSection)
+{
+    if(dependencies) return;
+    dependencies.reset(new TransactionDiskAccessorHelperDependencies(mempool,mainCriticalSection));
+}
+
 /** Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock */
 bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow)
 {
@@ -22,9 +52,9 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
 
     const CBlockIndex* pindexSlow = NULL;
     {
-        LOCK(cs_main);
+        LOCK(dependencies->getMainCriticalSection());
         {
-            CTxMemPool& mempool = GetTransactionMemoryPool();
+            CTxMemPool& mempool = dependencies->getMemoryPool();
             if (mempool.lookup(hash, txOut) || mempool.lookupBareTxid(hash, txOut)) {
                 return true;
             }
@@ -86,7 +116,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
 bool CollateralIsExpectedAmount(const COutPoint &outpoint, int64_t expectedAmount)
 {
     CCoins coins;
-    LOCK(cs_main);
+    LOCK(dependencies->getMainCriticalSection());
     const ChainstateManager::Reference chainstate;
     if (!chainstate->CoinsTip().GetCoins(outpoint.hash, coins))
         return false;

@@ -988,6 +988,7 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         return ERROR_LOADING_WALLET;
     }
 
+    bool warningDetected = false;
     const bool failOnWarning = settings.GetArg("-dbloadfailexit",false);
     const bool fFirstRun = nLoadWalletRet == DB_LOAD_OK_FIRST_RUN;
     if(nLoadWalletRet != DB_LOAD_OK && (nLoadWalletRet==DB_LOAD_OK_FIRST_RUN || nLoadWalletRet == DB_LOAD_OK_RELOAD))
@@ -1006,6 +1007,7 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
                             " or address book entries might be missing or incorrect."));
             strErrors << msg << "\n";
             InitWarning(msg);
+            warningDetected = true;
             if(failOnWarning)
                 return ERROR_LOADING_WALLET;
         }
@@ -1013,6 +1015,7 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         {
             strErrors << translate("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly") << "\n";
             InitWarning(strErrors.str());
+            warningDetected = true;
             if(failOnWarning)
                 return ERROR_LOADING_WALLET;
         }

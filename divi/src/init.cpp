@@ -1003,12 +1003,17 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         {
             std::string msg(translate("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
                             " or address book entries might be missing or incorrect."));
+            strErrors << msg << "\n";
             InitWarning(msg);
+            if(settings.GetArg("-dbloadfailexit",false))
+                return ERROR_LOADING_WALLET;
         }
         else if (nLoadWalletRet == DB_TOO_NEW)
         {
             strErrors << translate("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly") << "\n";
             InitWarning(strErrors.str());
+            if(settings.GetArg("-dbloadfailexit",false))
+                return ERROR_LOADING_WALLET;
         }
         else if (nLoadWalletRet == DB_NEED_REWRITE || nLoadWalletRet == DB_REWRITTEN)
         {

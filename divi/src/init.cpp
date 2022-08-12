@@ -999,7 +999,6 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         if (nLoadWalletRet == DB_CORRUPT)
         {
             strErrors << translate("Error loading wallet.dat: Wallet corrupted") << "\n";
-            return ERROR_LOADING_WALLET;
         }
         else if (nLoadWalletRet == DB_NONCRITICAL_ERROR)
         {
@@ -1019,14 +1018,13 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         {
             strErrors << translate("Wallet needed to be rewritten: restart DIVI Core to complete") << "\n";
             LogPrintf("%s", strErrors.str());
-            return ERROR_LOADING_WALLET;
         }
         else
         {
             strErrors << translate("Error loading wallet.dat: database load failure") << "\n";
-            return ERROR_LOADING_WALLET;
         }
         if(warningDetected && failOnWarning) return ERROR_LOADING_WALLET;
+        if(!warningDetected) return ERROR_LOADING_WALLET;
     }
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }

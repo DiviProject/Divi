@@ -103,6 +103,7 @@ BASE_SCRIPTS = [
     'mnstoredbroadcast.py',
     'mnvaults.py',
     'multisig.py',
+    'multiwallet.py',
     'NoBlocksForLongTime.py',
     'op_meta.py',
     'prune_wallet.py',

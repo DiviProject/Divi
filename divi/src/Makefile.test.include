@@ -119,6 +119,7 @@ BITCOIN_TESTS =\
   test/multi_wallet_tests.cpp \
   test/MockSignatureSizeEstimator.h \
   test/MinimumFeeCoinSelectionAlgorithm_tests.cpp \
+  test/WalletDB_tests.cpp \
   test/ZmqNotifierFactory_tests.cpp
 
 if ENABLE_WALLET

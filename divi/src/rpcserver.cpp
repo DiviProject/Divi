@@ -96,6 +96,7 @@ extern json_spirit::Value encryptwallet(const json_spirit::Array& params, bool f
 extern json_spirit::Value lockunspent(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value listlockunspent(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value getwalletinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value loadwallet(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
 extern json_spirit::Value getrawtransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rcprawtransaction.cpp
 extern json_spirit::Value listunspent(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
@@ -419,6 +420,7 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "gettransaction", &gettransaction, false, false, true, true},
         {"wallet", "getunconfirmedbalance", &getunconfirmedbalance, false, false, true, true},
         {"wallet", "getwalletinfo", &getwalletinfo, false, false, true, true},
+        {"wallet", "loadwallet", &loadwallet, false, false, false, false},
         {"wallet", "importprivkey", &importprivkey, true, false, true, true},
         {"wallet", "importaddress", &importaddress, true, false, true, true},
         {"wallet", "keypoolrefill", &keypoolrefill, true, false, true, true},

@@ -481,8 +481,19 @@ public:
 };
 
 
+Value loadwallet(const Array& params, bool fHelp, CWallet* pwallet)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+                "loadwallet \"walletFilename\"\n"
+                "\nLoads wallet into memory.\n"
+                "\nArguments:\n"
+                "1. \"walletFilename\"       (string, required) The filename of the wallet.dat to be loaded.\n");
 
-
+    if(!LoadAndSelectWallet(params[0].get_str(),true))
+        throw JSONRPCError(RPC_INVALID_PARAMETER,"Unable to load wallet!");
+    return Value::null;
+}
 
 Value getaccountaddress(const Array& params, bool fHelp, CWallet* pwallet)
 {

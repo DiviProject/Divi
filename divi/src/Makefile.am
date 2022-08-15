@@ -569,6 +569,7 @@ libbitcoin_wallet_a_SOURCES = \
   netfulfilledman.cpp \
   reservekey.cpp \
   rpcdump.cpp \
+  init.cpp \
   rpcwallet.cpp \
   VaultManagerDatabase.cpp \
   VaultManager.cpp \

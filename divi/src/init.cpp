@@ -111,6 +111,7 @@ std::unique_ptr<ChainstateManager> chainstateInstance;
 #ifdef ENABLE_WALLET
 constexpr int nWalletBackups = 20;
 #endif
+static boost::thread_group* globalThreadGroupRef = nullptr;
 std::unique_ptr<MultiWalletModule> multiWalletModule(nullptr);
 
 void InitializeMultiWalletModule()
@@ -1108,9 +1109,51 @@ void SubmitUnconfirmedWalletTransactionsToMempool(const CWallet& wallet)
 
 } // anonymous namespace
 
+void InitializeWalletBackendSettings(const LegacyWalletDatabaseEndpointFactory& dbEndpointFactory)
+{
+    if (settings.GetBoolArg("-flushwallet", true))
+        dbEndpointFactory.enableBackgroundDatabaseFlushing(*globalThreadGroupRef);
+
+    if(settings.GetArg("-monthlybackups",12) > 0)
+        dbEndpointFactory.enableBackgroundMonthlyWalletBackup(
+            *globalThreadGroupRef,
+            GetDataDir().string(),
+            Params().NetworkID() == CBaseChainParams::REGTEST);
+}
+
+bool LoadAndSelectWallet(const std::string& walletFilename, bool initializeBackendSettings)
+{
+    assert(multiWalletModule);
+    if(WalletIsDisabled()) return false;
+
+    int64_t nStart = GetTimeMillis();
+    std::ostringstream errors;
+    bool errorMessageIsWarning = false;
+    if(!CreateNewWalletIfOneIsNotAvailable(walletFilename,errors,errorMessageIsWarning))
+    {
+        const std::string sourceErrorMessage = errors.str();
+        std::string translatedErrorMessage = translate(sourceErrorMessage.c_str());
+        LogPrintf("%s\n%s\n", translate("Errors detected during wallet loading"), translatedErrorMessage );
+        if(!errorMessageIsWarning)
+            return InitError(translatedErrorMessage);
+
+        InitWarning(translatedErrorMessage);
+        if(settings.GetArg("-dbloadfailexit",false))
+            return false;
+    }
+
+    LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
+    ScanBlockchainForWalletUpdates();
+    if(initializeBackendSettings)
+        InitializeWalletBackendSettings(multiWalletModule->getWalletDbEnpointFactory());
+
+    return true;
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
+    globalThreadGroupRef = &threadGroup;
 #ifdef _MSC_VER
     // Turn off Microsoft heap dump noise
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -1332,24 +1375,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     } else {
         uiInterface.InitMessage(translate("Loading wallet..."));
         fVerifyingBlocks = true;
-
+        if(!LoadAndSelectWallet(strWalletFile,false))
+            return false;
         nStart = GetTimeMillis();
-        bool errorMessageIsWarning = false;
-        if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors, errorMessageIsWarning))
-        {
-            const std::string sourceErrorMessage = strErrors.str();
-            std::string translatedErrorMessage = translate(sourceErrorMessage.c_str());
-            LogPrintf("%s\n%s\n", translate("Errors detected during wallet loading"), translatedErrorMessage );
-            if(!errorMessageIsWarning)
-                return InitError(translatedErrorMessage);
-
-            InitWarning(translatedErrorMessage);
-            if(settings.GetArg("-dbloadfailexit",false))
-                return false;
-        }
-
-        LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
-        ScanBlockchainForWalletUpdates();
         fVerifyingBlocks = false;
 
     }  // (!fDisableWallet)

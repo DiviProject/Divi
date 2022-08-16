@@ -127,7 +127,6 @@ void InitializeMultiWalletModule()
 void FinalizeMultiWalletModule()
 {
     if(!multiWalletModule) return;
-    if(GetWallet()) BerkleyDBEnvWrapper().Flush(true);
     multiWalletModule.reset();
 }
 

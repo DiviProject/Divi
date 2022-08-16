@@ -1957,15 +1957,14 @@ DBErrors CWallet::loadWallet()
         }
         setMaxVersion(nMaxVersion);
 
+        if (!IsHDEnabled())
+        {
+            GenerateNewHDChain();
+        }
         if(!settings.ParameterIsSet("-hdseed") && !settings.ParameterIsSet("-mnemonic"))
         {
             LogPrintf("%s -- Setting the best chain for wallet to the active chain...\n",__func__);
             SetBestChain(activeChain_.GetLocator());
-        }
-
-        if (!IsHDEnabled())
-        {
-            GenerateNewHDChain();
         }
     }
     if(nLoadWalletRet == DB_LOAD_OK_RELOAD && !IsHDEnabled())

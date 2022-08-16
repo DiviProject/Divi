@@ -127,6 +127,7 @@ void InitializeMultiWalletModule()
 void FinalizeMultiWalletModule()
 {
     if(!multiWalletModule) return;
+    if(GetWallet()) BerkleyDBEnvWrapper().Flush(true);
     multiWalletModule.reset();
 }
 
@@ -272,11 +273,6 @@ bool MainShutdownRequested()
     return fRequestShutdown || fRestartRequested;
 }
 
-
-#ifdef ENABLE_WALLET
-inline void FlushWallet(bool shutdown = false) { if(GetWallet()) BerkleyDBEnvWrapper().Flush(shutdown);}
-#endif
-
 /** Preparing steps before shutting down or restarting the wallet */
 void PrepareShutdown()
 {
@@ -306,7 +302,6 @@ void PrepareShutdown()
         FlushStateToDisk();
         UnregisterAllValidationInterfaces();
 #ifdef ENABLE_WALLET
-        FlushWallet(true);
         FinalizeMultiWalletModule();
 #endif
         //record that client took the proper shutdown procedure

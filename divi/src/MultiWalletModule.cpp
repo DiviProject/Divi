@@ -5,15 +5,19 @@
 #include <Logging.h>
 #include <Settings.h>
 #include <sync.h>
+#include <dbenv.h>
 
 DatabaseBackedWallet::DatabaseBackedWallet(
     const std::string walletFilename,
     Settings& settings,
     const CChain& activeChain,
     const BlockMap& blockIndicesByHash,
-    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
-    ): underlyingWalletCriticalSection_(new CCriticalSection())
-    , walletDbEndpointFactory_(new LegacyWalletDatabaseEndpointFactory(walletFilename,settings))
+    const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
+    CCriticalSection* underlyingWalletCriticalSection
+    ): walletFilename_(walletFilename)
+    , underlyingWalletCriticalSection_( (!underlyingWalletCriticalSection)?new CCriticalSection() : underlyingWalletCriticalSection )
+    , walletDbEndpointFactory_(
+        new LegacyWalletDatabaseEndpointFactory(walletFilename,settings))
     , wallet_(
         new CWallet(
             *underlyingWalletCriticalSection_,
@@ -33,10 +37,12 @@ DatabaseBackedWallet::~DatabaseBackedWallet()
 
 DatabaseBackedWallet::DatabaseBackedWallet(
     DatabaseBackedWallet&& other
-    ): underlyingWalletCriticalSection_()
+    ): walletFilename_()
+    , underlyingWalletCriticalSection_()
     , walletDbEndpointFactory_()
     , wallet_()
 {
+    walletFilename_ = std::move(other.walletFilename_);
     underlyingWalletCriticalSection_ = std::move(other.underlyingWalletCriticalSection_);
     walletDbEndpointFactory_ = std::move(other.walletDbEndpointFactory_);
     wallet_ = std::move(other.wallet_);
@@ -64,6 +70,7 @@ MultiWalletModule::MultiWalletModule(
 
 MultiWalletModule::~MultiWalletModule()
 {
+    if(activeWallet_) BerkleyDBEnvWrapper().Flush(true);
     activeWallet_ = nullptr;
     backedWalletsByName_.clear();
     confirmationCalculator_.reset();
@@ -75,7 +82,13 @@ bool MultiWalletModule::loadWallet(const std::string walletFilename)
     if(backedWalletsByName_.find(walletFilename) != backedWalletsByName_.end()) return true;
 
     std::unique_ptr<DatabaseBackedWallet> dbBackedWallet(
-        new DatabaseBackedWallet(walletFilename,settings_,chainStateReference_->ActiveChain(),chainStateReference_->GetBlockMap(),*confirmationCalculator_));
+        new DatabaseBackedWallet(
+            walletFilename,
+            settings_,
+            chainStateReference_->ActiveChain(),
+            chainStateReference_->GetBlockMap(),
+            *confirmationCalculator_,
+            nullptr));
     backedWalletsByName_.emplace(walletFilename, std::move(dbBackedWallet) );
     return true;
 }

@@ -28,6 +28,7 @@ class DatabaseBackedWallet
 private:
     DatabaseBackedWallet& operator=(const DatabaseBackedWallet& other) = delete;
 public:
+    std::string walletFilename_;
     std::unique_ptr<CCriticalSection> underlyingWalletCriticalSection_;
     std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDbEndpointFactory_;
     std::unique_ptr<CWallet> wallet_;
@@ -36,7 +37,8 @@ public:
         Settings& settings,
         const CChain& activeChain,
         const BlockMap& blockIndicesByHash,
-        const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
+        const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
+        CCriticalSection* underlyingWalletCriticalSection);
     ~DatabaseBackedWallet();
     DatabaseBackedWallet(DatabaseBackedWallet&& other);
 };

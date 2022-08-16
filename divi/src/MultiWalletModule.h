@@ -28,6 +28,7 @@ class DatabaseBackedWallet
 private:
     DatabaseBackedWallet& operator=(const DatabaseBackedWallet& other) = delete;
 public:
+    std::unique_ptr<CCriticalSection> underlyingWalletCriticalSection_;
     std::unique_ptr<LegacyWalletDatabaseEndpointFactory> walletDbEndpointFactory_;
     std::unique_ptr<CWallet> wallet_;
     DatabaseBackedWallet(

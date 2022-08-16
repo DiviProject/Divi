@@ -11,7 +11,8 @@ DatabaseBackedWallet::DatabaseBackedWallet(
     const CChain& activeChain,
     const BlockMap& blockIndicesByHash,
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator
-    ): walletDbEndpointFactory_(new LegacyWalletDatabaseEndpointFactory(walletFilename,settings))
+    ): underlyingWalletCriticalSection_(new CCriticalSection())
+    , walletDbEndpointFactory_(new LegacyWalletDatabaseEndpointFactory(walletFilename,settings))
     , wallet_(
         new CWallet(
             *walletDbEndpointFactory_,
@@ -25,13 +26,16 @@ DatabaseBackedWallet::~DatabaseBackedWallet()
 {
     wallet_.reset();
     walletDbEndpointFactory_.reset();
+    underlyingWalletCriticalSection_.reset();
 }
 
 DatabaseBackedWallet::DatabaseBackedWallet(
     DatabaseBackedWallet&& other
-    ): walletDbEndpointFactory_()
+    ): underlyingWalletCriticalSection_()
+    , walletDbEndpointFactory_()
     , wallet_()
 {
+    underlyingWalletCriticalSection_ = std::move(other.underlyingWalletCriticalSection_);
     walletDbEndpointFactory_ = std::move(other.walletDbEndpointFactory_);
     wallet_ = std::move(other.wallet_);
 }

@@ -157,7 +157,7 @@ private:
      *   except for:
      *      strWalletFile (immutable after instantiation)
      */
-    mutable CCriticalSection cs_wallet;
+    CCriticalSection& cs_wallet;
 
     const std::string strWalletFile;
     bool vaultModeEnabled_;
@@ -255,6 +255,7 @@ protected:
 
 public:
     explicit CWallet(
+        CCriticalSection& walletCriticalSection,
         const I_WalletDatabaseEndpointFactory& walletDatabaseEndpointFactory,
         const CChain& chain,
         const BlockMap& blockMap,

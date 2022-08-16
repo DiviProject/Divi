@@ -15,6 +15,7 @@
 
 class CScript;
 class I_WalletDatabaseEndpointFactory;
+class CCriticalSection;
 
 /** A wallet with (mostly) real seed and keys, which can be used in tests
  *  that need to exercise wallet functions.
@@ -31,6 +32,7 @@ private:
   /** The fake chain that we use for the wallet.  */
   std::string walletFilename_;
   FakeBlockIndexWithHashes& fakeChain;
+  std::unique_ptr<CCriticalSection> underlyingWalletCriticalSection_;
   std::unique_ptr<I_WalletDatabaseEndpointFactory> databaseEndpointFactory_;
   std::unique_ptr<FakeMerkleTxConfirmationNumberCalculator> confirmationsCalculator_;
   mutable std::unique_ptr<CWallet> wrappedWallet_;

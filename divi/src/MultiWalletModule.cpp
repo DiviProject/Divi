@@ -4,6 +4,7 @@
 #include <wallet.h>
 #include <Logging.h>
 #include <Settings.h>
+#include <sync.h>
 
 DatabaseBackedWallet::DatabaseBackedWallet(
     const std::string walletFilename,
@@ -15,6 +16,7 @@ DatabaseBackedWallet::DatabaseBackedWallet(
     , walletDbEndpointFactory_(new LegacyWalletDatabaseEndpointFactory(walletFilename,settings))
     , wallet_(
         new CWallet(
+            *underlyingWalletCriticalSection_,
             *walletDbEndpointFactory_,
             activeChain,
             blockIndicesByHash,

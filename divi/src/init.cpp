@@ -211,6 +211,12 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
     }
 }
 
+void RestartCoinMintingModuleWithReloadedWallet()
+{
+    DestructCoinMintingModule();
+    StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
+}
+
 namespace
 {
 

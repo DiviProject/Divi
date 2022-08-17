@@ -37,4 +37,5 @@ bool ManualBackupWallet(const std::string& strDest);
 CWallet* GetWallet();
 const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator();
 bool LoadAndSelectWallet(const std::string& walletFilename, bool initializeBackendSettings);
+void RestartCoinMintingModuleWithReloadedWallet();
 #endif // BITCOIN_INIT_H

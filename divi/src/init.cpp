@@ -191,6 +191,8 @@ public:
   //Called by unique_ptr to destroy/free the Resource
   void operator()(T* r) {}
  };
+
+static std::string stakingWalletName = "";
 static std::unique_ptr<boost::thread, NonDeletionDeleter<boost::thread>> backgroundMintingThread(nullptr);
 
 void InterruptMintingThread()
@@ -238,14 +240,20 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
 void RestartCoinMintingModuleWithReloadedWallet()
 {
     AssertLockHeld(cs_main);
-    StopMinting();
-    InterruptMintingThread();
-    DestructCoinMintingModule();
+    const std::string activeWalletName = multiWalletModule->getActiveWalletName();
+    const bool restartMintingModule = stakingWalletName == activeWalletName;
+    if(restartMintingModule)
+    {
+        StopMinting();
+        InterruptMintingThread();
+        DestructCoinMintingModule();
+    }
     UnregisterValidationInterface(GetWallet());
     multiWalletModule->reloadActiveWallet();
     GetWallet()->LockFully();
-    LoadAndSelectWallet(multiWalletModule->getActiveWalletName(),true);
-    StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
+    LoadAndSelectWallet(activeWalletName, true);
+    if(restartMintingModule)
+        StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
 }
 
 namespace
@@ -1487,7 +1495,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     {
         auto pwallet = GetWallet();
-        if (pwallet) StartCoinMintingModule(threadGroup,*pwallet);
+        if (pwallet)
+        {
+            stakingWalletName = multiWalletModule->getActiveWalletName();
+            StartCoinMintingModule(threadGroup,*pwallet);
+        }
     }
 #endif
 

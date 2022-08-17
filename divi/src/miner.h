@@ -35,6 +35,7 @@ void InitializeCoinMintingModule(
     I_StakingWallet& stakingWallet);
 void DestructCoinMintingModule();
 const CoinMintingModule& GetCoinMintingModule();
+void StopMinting();
 
 /** Run the miner threads */
 void ThreadCoinMinter();

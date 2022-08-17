@@ -20,16 +20,11 @@ class WalletUnlockForStakingTest (BitcoinTestFramework):
         self.nodes = start_nodes(1, self.options.tmpdir)
 
     def run_test(self):
-        ## Encrypt wallet and wait to terminate
+        ## Encrypt wallet
         self.nodes[0].setgenerate(25)
         wallet_info = self.nodes[0].getwalletinfo()
         assert_equal(wallet_info["encryption_status"],"unencrypted")
         self.nodes[0].encryptwallet('test')
-        #self.nodes[0] = None
-        #wait_bitcoinds()
-
-        ## Restart nodes
-        #self.setup_network()
         node = self.nodes[0]
 
         ## Check wallet status is locked

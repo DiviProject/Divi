@@ -44,11 +44,8 @@ class KeypoolTest (BitcoinTestFramework):
         self.nodes = start_nodes(1, self.options.tmpdir)
 
     def run_test(self):
-        # Encrypt wallet and wait to terminate
+        # Encrypt wallet
         self.nodes[0].encryptwallet('test')
-        #wait_bitcoinds()
-        # Restart node 0
-        #self.setup_network()
         node = self.nodes[0]
 
         # Keep creating keys

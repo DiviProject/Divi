@@ -139,3 +139,8 @@ CWallet* MultiWalletModule::getActiveWallet() const
 {
     return activeWallet_? activeWallet_->wallet_.get() : nullptr;
 }
+
+std::string MultiWalletModule::getActiveWalletName() const
+{
+    return activeWallet_? activeWallet_->walletFilename_ : "";
+}

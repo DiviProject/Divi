@@ -216,8 +216,9 @@ void RestartCoinMintingModuleWithReloadedWallet()
     AssertLockHeld(cs_main);
     DestructCoinMintingModule();
     UnregisterValidationInterface(GetWallet());
-
-    RegisterValidationInterface(GetWallet());
+    multiWalletModule->reloadActiveWallet();
+    GetWallet()->LockFully();
+    LoadAndSelectWallet(multiWalletModule->getActiveWalletName(),true);
     StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
 }
 

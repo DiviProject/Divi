@@ -26,11 +26,11 @@ class WalletEncryptionTest (BitcoinTestFramework):
         balance_before = self.nodes[0].getbalance()
 
         self.nodes[0].encryptwallet('test')
-        stop_node(self.nodes[1],1)
-        self.nodes[1] = None
-        wait_bitcoinds()
+        #stop_node(self.nodes[1],1)
+        #self.nodes[1] = None
+        #wait_bitcoinds()
         # Restart nodes
-        self.setup_network()
+        #self.setup_network()
         node = self.nodes[0]
         balance_after = self.nodes[0].getbalance()
         assert_equal(balance_before,balance_after)

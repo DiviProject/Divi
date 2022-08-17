@@ -213,7 +213,11 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
 
 void RestartCoinMintingModuleWithReloadedWallet()
 {
+    AssertLockHeld(cs_main);
     DestructCoinMintingModule();
+    UnregisterValidationInterface(GetWallet());
+
+    RegisterValidationInterface(GetWallet());
     StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
 }
 

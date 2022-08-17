@@ -65,5 +65,6 @@ public:
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationsCalculator() const;
     const LegacyWalletDatabaseEndpointFactory& getWalletDbEnpointFactory() const;
     CWallet* getActiveWallet() const;
+    std::string getActiveWalletName() const;
 };
 #endif// MULTI_WALLET_MODULE_H

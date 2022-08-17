@@ -2616,11 +2616,13 @@ Value encryptwallet(const Array& params, bool fHelp, CWallet* pwallet)
         throw JSONRPCError(RPC_WALLET_ENCRYPTION_FAILED, "Error: Failed to encrypt the wallet.");
 
     RestartCoinMintingModuleWithReloadedWallet();
+    return "Wallet reloaded!";
+    /*
     // BDB seems to have a bad habit of writing old data into
     // slack space in .dat files; that is bad if the old data is
     // unencrypted private keys. So:
     StartShutdown();
-    return "wallet encrypted; divi server stopping, restart to run with encrypted wallet. The keypool has been flushed, you need to make a new backup.";
+    return "wallet encrypted; divi server stopping, restart to run with encrypted wallet. The keypool has been flushed, you need to make a new backup.";*/
 }
 
 Value lockunspent(const Array& params, bool fHelp, CWallet* pwallet)

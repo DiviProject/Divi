@@ -2615,6 +2615,7 @@ Value encryptwallet(const Array& params, bool fHelp, CWallet* pwallet)
     if (!pwallet->EncryptWallet(strWalletPass))
         throw JSONRPCError(RPC_WALLET_ENCRYPTION_FAILED, "Error: Failed to encrypt the wallet.");
 
+    RestartCoinMintingModuleWithReloadedWallet();
     // BDB seems to have a bad habit of writing old data into
     // slack space in .dat files; that is bad if the old data is
     // unencrypted private keys. So:

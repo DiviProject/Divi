@@ -56,6 +56,13 @@ void InitializeCoinMintingModule(
     moduleInitialized = true;
 }
 
+void StopMinting()
+{
+    if(coinMintingModule)
+    {
+        coinMintingModule->coinMinter().setMintingRequestStatus(false);
+    }
+}
 void DestructCoinMintingModule()
 {
     LOCK(cs_coinMintingModule);

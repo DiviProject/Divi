@@ -186,6 +186,28 @@ public:
     }
 };
 
+ template <typename T>
+ struct NonDeletionDeleter {
+  //Called by unique_ptr to destroy/free the Resource
+  void operator()(T* r) {}
+ };
+static std::unique_ptr<boost::thread, NonDeletionDeleter<boost::thread>> backgroundMintingThread(nullptr);
+
+void InterruptMintingThread()
+{
+    if(backgroundMintingThread)
+    {
+        try
+        {
+            backgroundMintingThread->interrupt();
+        }
+        catch(boost::thread_interrupted)
+        {
+        }
+        backgroundMintingThread.release();
+    }
+}
+
 void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& stakingWallet)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
@@ -203,17 +225,21 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if (!underRegressionTesting && settings.GetBoolArg("-staking", true))
     {
-        threadGroup.create_thread(
-            boost::bind(
-                &TraceThread<void (*)()>,
-                "coinmint",
-                &ThreadCoinMinter));
+        backgroundMintingThread.reset(
+            threadGroup.create_thread(
+                boost::bind(
+                    &TraceThread<void (*)()>,
+                    "coinmint",
+                    &ThreadCoinMinter))
+        );
     }
 }
 
 void RestartCoinMintingModuleWithReloadedWallet()
 {
     AssertLockHeld(cs_main);
+    StopMinting();
+    InterruptMintingThread();
     DestructCoinMintingModule();
     UnregisterValidationInterface(GetWallet());
     multiWalletModule->reloadActiveWallet();

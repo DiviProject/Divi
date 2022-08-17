@@ -76,6 +76,31 @@ MultiWalletModule::~MultiWalletModule()
     confirmationCalculator_.reset();
 }
 
+bool MultiWalletModule::reloadActiveWallet()
+{
+    if(walletIsDisabled_) return false;
+    if(!activeWallet_) return true;
+    std::string activeWalletFilename = activeWallet_->walletFilename_;
+    BerkleyDBEnvWrapper().Flush(false);
+    activeWallet_->wallet_.reset();
+    activeWallet_->walletDbEndpointFactory_.reset();
+
+    std::unique_ptr<DatabaseBackedWallet> dbBackedWallet(
+        new DatabaseBackedWallet(
+            activeWalletFilename,
+            settings_,
+            chainStateReference_->ActiveChain(),
+            chainStateReference_->GetBlockMap(),
+            *confirmationCalculator_,
+            activeWallet_->underlyingWalletCriticalSection_.release() ));
+
+    activeWallet_ = nullptr;
+    backedWalletsByName_.erase(activeWalletFilename);
+    backedWalletsByName_.emplace(activeWalletFilename, std::move(dbBackedWallet) );
+    activeWallet_ = backedWalletsByName_.find(activeWalletFilename)->second.get();
+    return true;
+}
+
 bool MultiWalletModule::loadWallet(const std::string walletFilename)
 {
     if(walletIsDisabled_) return false;

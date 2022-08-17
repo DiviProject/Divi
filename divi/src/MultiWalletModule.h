@@ -59,6 +59,7 @@ public:
         const int coinbaseConfirmationsForMaturity);
     ~MultiWalletModule();
 
+    bool reloadActiveWallet();
     bool loadWallet(const std::string walletFilename);
     bool setActiveWallet(const std::string walletFilename);
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationsCalculator() const;

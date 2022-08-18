@@ -186,33 +186,14 @@ public:
     }
 };
 
- template <typename T>
- struct NonDeletionDeleter {
-  //Called by unique_ptr to destroy/free the Resource
-  void operator()(T* r) {}
- };
-
 static std::string stakingWalletName = "";
-static std::unique_ptr<boost::thread, NonDeletionDeleter<boost::thread>> backgroundMintingThread(nullptr);
-
-void InterruptMintingThread()
-{
-    if(backgroundMintingThread)
-    {
-        try
-        {
-            backgroundMintingThread->interrupt();
-        }
-        catch(boost::thread_interrupted)
-        {
-        }
-        backgroundMintingThread.release();
-    }
-}
 
 void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& stakingWallet)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
+    const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
+    if(underRegressionTesting) settings.SetParameter("-staking", "0");
+
     InitializeCoinMintingModule(
         settings,
         Params(),
@@ -223,18 +204,8 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
         BlockSubmitter::instance(),
         cs_main,
         GetTransactionMemoryPool(),
-        stakingWallet);
-    const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
-    if (!underRegressionTesting && settings.GetBoolArg("-staking", true))
-    {
-        backgroundMintingThread.reset(
-            threadGroup.create_thread(
-                boost::bind(
-                    &TraceThread<void (*)()>,
-                    "coinmint",
-                    &ThreadCoinMinter))
-        );
-    }
+        stakingWallet,
+        threadGroup);
 }
 
 void RestartCoinMintingModuleWithReloadedWallet()
@@ -243,11 +214,7 @@ void RestartCoinMintingModuleWithReloadedWallet()
     const std::string activeWalletName = multiWalletModule->getActiveWalletName();
     const bool restartMintingModule = stakingWalletName == activeWalletName;
     if(restartMintingModule)
-    {
-        StopMinting();
-        InterruptMintingThread();
-        DestructCoinMintingModule();
-    }
+        ShutdownCoinMintingModule();
     UnregisterValidationInterface(GetWallet());
     multiWalletModule->reloadActiveWallet();
     GetWallet()->LockFully();
@@ -335,7 +302,7 @@ void PrepareShutdown()
     RenameThread("divi-shutoff");
     StopRPCThreads();
     StopNode();
-    DestructCoinMintingModule();
+    ShutdownCoinMintingModule();
     InterruptTorControl();
     StopTorControl();
     SaveMasternodeDataToDisk();

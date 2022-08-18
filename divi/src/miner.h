@@ -21,6 +21,11 @@ class I_BlockSubmitter;
 class CChainParams;
 class MasternodeModule;
 class CSporkManager;
+namespace boost
+{
+class thread_group;
+} // namespace boost
+
 
 void InitializeCoinMintingModule(
     const Settings& settings,
@@ -32,8 +37,9 @@ void InitializeCoinMintingModule(
     const I_BlockSubmitter& blockSubmitter,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
-    I_StakingWallet& stakingWallet);
-void DestructCoinMintingModule();
+    I_StakingWallet& stakingWallet,
+    boost::thread_group& backgroundThreadGroup);
+void ShutdownCoinMintingModule();
 const CoinMintingModule& GetCoinMintingModule();
 void StopMinting();
 

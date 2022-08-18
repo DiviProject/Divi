@@ -3798,12 +3798,12 @@ static void CollectBlockDataToRequest(int64_t nNow, CNode* pto, std::vector<CInv
         }
     }
 }
-void CollectNonBlockDataToRequestAndRequestIt(CNode* pto, int64_t nNow, std::vector<CInv>& vGetData)
+void CollectNonBlockDataToRequestAndRequestIt(const CTxMemPool& mempool, CNode* pto, int64_t nNow, std::vector<CInv>& vGetData)
 {
     while (!pto->IsFlaggedForDisconnection() && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow)
     {
         const CInv& inv = (*pto->mapAskFor.begin()).second;
-        if (!AlreadyHave(GetTransactionMemoryPool(), inv)) {
+        if (!AlreadyHave(mempool, inv)) {
             LogPrint("net", "Requesting %s peer=%d\n", inv, pto->id);
             vGetData.push_back(inv);
             if (vGetData.size() >= 1000) {
@@ -3898,7 +3898,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             RequestDisconnectionFromNodeIfStalling(nNow,pto);
             if(fFetch) CollectBlockDataToRequest(nNow,pto,vGetData);
         }
-        CollectNonBlockDataToRequestAndRequestIt(pto,nNow,vGetData);
+        CollectNonBlockDataToRequestAndRequestIt(GetTransactionMemoryPool(), pto,nNow,vGetData);
     }
     return true;
 }

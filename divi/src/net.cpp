@@ -16,7 +16,6 @@
 #include <bloom.h>
 #include "chainparams.h"
 #include "clientversion.h"
-#include "obfuscation.h"
 #include "primitives/transaction.h"
 #include "ui_interface.h"
 #include <timeIntervalConstants.h>

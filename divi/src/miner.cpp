@@ -14,6 +14,7 @@
 #include <ThreadManagementHelpers.h>
 #include <chain.h>
 #include <sync.h>
+#include <Settings.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -21,11 +22,32 @@
 namespace
 {
 
+ template <typename T>
+ struct NonDeletionDeleter {
+  void operator()(T* r) {}
+ };
+
 CCriticalSection cs_coinMintingModule;
 std::unique_ptr<CoinMintingModule> coinMintingModule;
+std::unique_ptr<boost::thread, NonDeletionDeleter<boost::thread>> backgroundMintingThread(nullptr);
 volatile bool moduleInitialized = false;
 
 } // anonymous namespace
+
+void InterruptMintingThread()
+{
+    if(backgroundMintingThread)
+    {
+        try
+        {
+            backgroundMintingThread->interrupt();
+        }
+        catch(boost::thread_interrupted)
+        {
+        }
+        backgroundMintingThread.release();
+    }
+}
 
 void InitializeCoinMintingModule(
     const Settings& settings,
@@ -37,7 +59,8 @@ void InitializeCoinMintingModule(
     const I_BlockSubmitter& blockSubmitter,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
-    I_StakingWallet& stakingWallet)
+    I_StakingWallet& stakingWallet,
+    boost::thread_group& backgroundThreadGroup)
 {
     LOCK(cs_coinMintingModule);
     assert(coinMintingModule == nullptr);
@@ -54,6 +77,16 @@ void InitializeCoinMintingModule(
             mempool,
             stakingWallet));
     moduleInitialized = true;
+    if (settings.GetBoolArg("-staking", true))
+    {
+        backgroundMintingThread.reset(
+            backgroundThreadGroup.create_thread(
+                boost::bind(
+                    &TraceThread<void (*)()>,
+                    "coinmint",
+                    &ThreadCoinMinter))
+        );
+    }
 }
 
 void StopMinting()
@@ -68,6 +101,13 @@ void DestructCoinMintingModule()
     LOCK(cs_coinMintingModule);
     assert(!moduleInitialized || coinMintingModule != nullptr);
     coinMintingModule.reset();
+}
+
+void ShutdownCoinMintingModule()
+{
+    StopMinting();
+    InterruptMintingThread();
+    DestructCoinMintingModule();
 }
 
 const CoinMintingModule& GetCoinMintingModule()

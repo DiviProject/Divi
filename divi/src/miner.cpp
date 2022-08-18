@@ -32,8 +32,6 @@ std::unique_ptr<CoinMintingModule> coinMintingModule;
 std::unique_ptr<boost::thread, NonDeletionDeleter<boost::thread>> backgroundMintingThread(nullptr);
 volatile bool moduleInitialized = false;
 
-} // anonymous namespace
-
 void InterruptMintingThread()
 {
     if(backgroundMintingThread)
@@ -62,6 +60,7 @@ void DestructCoinMintingModule()
     assert(!moduleInitialized || coinMintingModule != nullptr);
     coinMintingModule.reset();
 }
+} // anonymous namespace
 
 void InitializeCoinMintingModule(
     const Settings& settings,

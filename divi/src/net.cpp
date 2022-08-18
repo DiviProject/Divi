@@ -14,7 +14,6 @@
 #include "addrman.h"
 #include <alert.h>
 #include <bloom.h>
-#include <chain.h>
 #include "chainparams.h"
 #include "clientversion.h"
 #include "obfuscation.h"
@@ -453,8 +452,8 @@ void GetNodeStateStats(std::vector<std::pair<CNodeStats,CNodeStateStats>>& vstat
         if(stateStats.stateFound)
         {
             stateStats.nMisbehavior = state->GetMisbehaviourPenalty();
-            stateStats.nSyncHeight = state->pindexBestKnownBlock ? state->pindexBestKnownBlock->nHeight : -1;
-            stateStats.nCommonHeight = state->pindexLastCommonBlock ? state->pindexLastCommonBlock->nHeight : -1;
+            stateStats.nSyncHeight = state->GetSyncHeight();
+            stateStats.nCommonHeight = state->GetLastCommonBlockHeight();
             stateStats.vHeightInFlight = GetBlockHeightsInFlight(state->nodeId);
         }
         vstats.push_back(std::make_pair(CNodeStats(pnode),stateStats));

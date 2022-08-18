@@ -56,6 +56,8 @@ public:
     void ApplyMisbehavingPenalty(int penaltyAmount,std::string cause);
     int GetMisbehaviourPenalty() const;
     void SetBanScoreThreshold(int banThreshold);
+    int GetSyncHeight() const;
+    int GetLastCommonBlockHeight() const;
 };
 
 #endif// NODE_STATE_H

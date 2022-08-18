@@ -83,3 +83,12 @@ void CNodeState::SetBanScoreThreshold(int banThreshold)
 {
     banThreshold_ = banThreshold;
 }
+
+int CNodeState::GetSyncHeight() const
+{
+    return pindexBestKnownBlock ? pindexBestKnownBlock->nHeight : -1;
+}
+int CNodeState::GetLastCommonBlockHeight() const
+{
+    return pindexLastCommonBlock ? pindexLastCommonBlock->nHeight : -1;
+}

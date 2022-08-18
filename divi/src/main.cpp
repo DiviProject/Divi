@@ -1140,7 +1140,7 @@ bool static DisconnectTip(CValidationState& state, const bool updateCoinDatabase
          CCoinsViewCache view(&coinsTip);
          chainManager.DisconnectBlock(disconnectedBlock,state, pindexDelete, view, updateCoinDatabaseOnly);
          if(!disconnectedBlock.second)
-            return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash());
+            return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
          assert(view.Flush());
     }
     std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;

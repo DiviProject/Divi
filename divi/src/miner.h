@@ -41,7 +41,6 @@ void InitializeCoinMintingModule(
     boost::thread_group& backgroundThreadGroup);
 void ShutdownCoinMintingModule();
 const CoinMintingModule& GetCoinMintingModule();
-void StopMinting();
 
 /** Run the miner threads */
 void ThreadCoinMinter();

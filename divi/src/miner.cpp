@@ -49,6 +49,20 @@ void InterruptMintingThread()
     }
 }
 
+void StopMinting()
+{
+    if(coinMintingModule)
+    {
+        coinMintingModule->coinMinter().setMintingRequestStatus(false);
+    }
+}
+void DestructCoinMintingModule()
+{
+    LOCK(cs_coinMintingModule);
+    assert(!moduleInitialized || coinMintingModule != nullptr);
+    coinMintingModule.reset();
+}
+
 void InitializeCoinMintingModule(
     const Settings& settings,
     const CChainParams& chainParameters,
@@ -87,20 +101,6 @@ void InitializeCoinMintingModule(
                     &ThreadCoinMinter))
         );
     }
-}
-
-void StopMinting()
-{
-    if(coinMintingModule)
-    {
-        coinMintingModule->coinMinter().setMintingRequestStatus(false);
-    }
-}
-void DestructCoinMintingModule()
-{
-    LOCK(cs_coinMintingModule);
-    assert(!moduleInitialized || coinMintingModule != nullptr);
-    coinMintingModule.reset();
 }
 
 void ShutdownCoinMintingModule()

@@ -2646,12 +2646,12 @@ std::string GetWarnings(std::string strFor)
 //
 
 
-bool static AlreadyHave(const CInv& inv)
+bool static AlreadyHave(const CTxMemPool& mempool, const CInv& inv)
 {
     switch (inv.GetType()) {
     case MSG_TX: {
         bool txInMap = false;
-        txInMap = GetTransactionMemoryPool().exists(inv.GetHash());
+        txInMap = mempool.exists(inv.GetHash());
         return txInMap || OrphanTransactionIsKnown(inv.GetHash());
     }
 
@@ -3079,7 +3079,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             boost::this_thread::interruption_point();
             pfrom->AddInventoryKnown(inv);
 
-            bool fAlreadyHave = AlreadyHave(inv);
+            bool fAlreadyHave = AlreadyHave(GetTransactionMemoryPool(), inv);
             LogPrint("net", "got inv: %s  %s peer=%d\n", inv, fAlreadyHave ? "have" : "new", pfrom->id);
 
             if (!fAlreadyHave && !fImporting && !fReindex && inv.GetType() != MSG_BLOCK)
@@ -3803,7 +3803,7 @@ void CollectNonBlockDataToRequestAndRequestIt(CNode* pto, int64_t nNow, std::vec
     while (!pto->IsFlaggedForDisconnection() && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow)
     {
         const CInv& inv = (*pto->mapAskFor.begin()).second;
-        if (!AlreadyHave(inv)) {
+        if (!AlreadyHave(GetTransactionMemoryPool(), inv)) {
             LogPrint("net", "Requesting %s peer=%d\n", inv, pto->id);
             vGetData.push_back(inv);
             if (vGetData.size() >= 1000) {

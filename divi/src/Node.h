@@ -183,6 +183,10 @@ public:
 private:
     I_CommunicationChannel& channel_;
     QueuedMessageConnection messageConnection_;
+    std::deque<CInv> vRecvGetData;
+    bool RespondToRequestForData();
+    void RecordRequestForData(std::vector<CInv>& inventoryRequested);
+
 public:
     bool CommunicationChannelIsValid() const;
     void CloseCommsAndDisconnect();
@@ -198,11 +202,6 @@ public:
 
     void ProcessReceivedPing(CDataStream& receivedStream);
     void ProcessReceivedPong(CDataStream& receivedStream, int64_t nTimeReceived);
-
-private:
-    std::deque<CInv> vRecvGetData;
-    bool RespondToRequestForData();
-    void RecordRequestForData(std::vector<CInv>& inventoryRequested);
 
 public:
     uint64_t nServices;

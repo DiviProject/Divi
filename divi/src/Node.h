@@ -177,9 +177,8 @@ public:
 
 class CNode
 {
-public:
-    bool fSuccessfullyConnected;
 private:
+    bool fSuccessfullyConnected;
     CommunicationLogger dataLogger;
     I_CommunicationChannel& channel_;
     QueuedMessageConnection messageConnection_;
@@ -203,6 +202,8 @@ protected:
     std::unique_ptr<CNodeState> nodeState_;
 
 public:
+    bool IsSuccessfullyConnected() const;
+    void RecordSuccessfullConnection();
     const CommunicationLogger& GetCommunicationLogger() const;
     bool CommunicationChannelIsValid() const;
     void CloseCommsAndDisconnect();

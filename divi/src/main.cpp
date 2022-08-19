@@ -2880,8 +2880,6 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
         return false;
     }
 
-    if (pfrom->nVersion == 10300)
-        pfrom->nVersion = 300;
     if (!vRecv.empty())
         vRecv >> addrFrom >> nNonce;
     if (!vRecv.empty()) {

@@ -179,8 +179,8 @@ class CNode
 {
 public:
     bool fSuccessfullyConnected;
-    CommunicationLogger dataLogger;
 private:
+    CommunicationLogger dataLogger;
     I_CommunicationChannel& channel_;
     QueuedMessageConnection messageConnection_;
     std::deque<CInv> vRecvGetData;
@@ -203,6 +203,7 @@ protected:
     std::unique_ptr<CNodeState> nodeState_;
 
 public:
+    const CommunicationLogger& GetCommunicationLogger() const;
     bool CommunicationChannelIsValid() const;
     void CloseCommsAndDisconnect();
     CommsMode SelectCommunicationMode();

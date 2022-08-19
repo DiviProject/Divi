@@ -579,6 +579,11 @@ CNode::~CNode()
     nodeState_.reset();
 }
 
+const CommunicationLogger& CNode::GetCommunicationLogger() const
+{
+    return dataLogger;
+}
+
 bool CNode::CommunicationChannelIsValid() const
 {
     return channel_.isValid();

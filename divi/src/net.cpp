@@ -547,7 +547,7 @@ CNode* FindNode(const CService& addr)
     return NULL;
 }
 
-NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool weOpenedNetworkConnection = false)
+NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
 {
     if (pszDest == NULL) {
         // we clean masternode connections in CMasternodeMan::ProcessMasternodeConnections()
@@ -583,7 +583,7 @@ NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool
 
         // Add node
         CNode* pnode = CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addrConnect, pszDest ? pszDest : "", false,false);
-        if(weOpenedNetworkConnection) pnode->fNetworkNode = true;
+        pnode->fNetworkNode = true;
         return NodeReferenceFactory::makeUniqueNodeReference(pnode);
     } else if (!proxyConnectionFailed) {
         // If connecting to the node failed, and failure is not caused by a problem connecting to
@@ -595,7 +595,7 @@ NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool
 }
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo)
 {
-    NodeRef pnode = ConnectNode(addrToConnectTo, NULL, true);
+    NodeRef pnode = ConnectNode(addrToConnectTo, NULL);
     return static_cast<bool>(pnode);
 }
 
@@ -1333,7 +1333,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, const char* pszDest, boo
     } else if (FindNode(pszDest))
         return false;
 
-    NodeRef pnode = ConnectNode(addrConnect, pszDest,true);
+    NodeRef pnode = ConnectNode(addrConnect, pszDest);
     boost::this_thread::interruption_point();
 
     if (!pnode)

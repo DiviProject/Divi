@@ -190,6 +190,7 @@ private:
     uint64_t nServices;
     int64_t nTimeConnected;
     CAddress addr;
+    std::string addrName;
 
     bool RespondToRequestForData();
     void RecordRequestForData(std::vector<CInv>& inventoryRequested);
@@ -232,7 +233,7 @@ public:
     const int& GetVersion() const;
     const uint64_t& GetServices() const;
     const CAddress& GetCAddress() const;
-    std::string addrName;
+    const std::string& GetAddressName() const;
     CService addrLocal;
     // strSubVer is whatever byte array we read from the wire. However, this field is intended
     // to be printed out, displayed to humans in various forms and so on. So we sanitize it and

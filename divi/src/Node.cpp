@@ -541,10 +541,10 @@ CNode::CNode(
     , nServices(0)
     , nTimeConnected(GetTime())
     , addr(addrIn)
-    , nodeSignals_(nodeSignals)
-    , nodeState_(nullptr)
     , addrName(
         addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn)
+    , nodeSignals_(nodeSignals)
+    , nodeState_(nullptr)
     , strSubVer("")
     , cleanSubVer("")
     , fInbound(fInboundIn)
@@ -605,6 +605,10 @@ CNode::~CNode()
 const CAddress& CNode::GetCAddress() const
 {
     return addr;
+}
+const std::string& CNode::GetAddressName() const
+{
+    return addrName;
 }
 
 bool CNode::IsSuccessfullyConnected() const

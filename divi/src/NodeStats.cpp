@@ -15,7 +15,7 @@ CNodeStats::CNodeStats(const CNode* pnode)
     nTimeConnected = communicationLogger.GetTimeOfConnection();
     nServices = pnode->GetServices();
     nVersion = pnode->GetVersion();
-    X(addrName);
+    addrName = pnode->GetAddressName();
     X(cleanSubVer);
     X(fInbound);
     X(nStartingHeight);

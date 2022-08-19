@@ -508,6 +508,12 @@ void QueuedMessageConnection::SetOutboundSerializationVersion(int versionNumber)
     ssSend.SetVersion(versionNumber);
 }
 
+static NodeId GetNextNodeId()
+{
+    LOCK(cs_nLastNodeId);
+    return nLastNodeId++;
+}
+
 CNode::CNode(
     I_CommunicationChannel& channel,
     CNodeSignals* nodeSignals,
@@ -523,36 +529,42 @@ CNode::CNode(
     , vRecvGetData()
     , nodeSignals_(nodeSignals)
     , nodeState_(nullptr)
+    , nServices(0)
+    , nTimeConnected(GetTime())
+    , addr(addrIn)
+    , addrName(
+        addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn)
+    , nVersion(0)
+    , strSubVer("")
+    , cleanSubVer("")
     , fInbound(fInboundIn)
     , fWhitelisted(whitelisted)
+    , fOneShot(false)
+    , fClient(false)
+    , fNetworkNode(false)
+    , fRelayTxes(false)
+    , cs_filter()
+    , pfilter(new CBloomFilter())
+    , nRefCount(0)
+    , id(GetNextNodeId())
+    , nSporksCount(-1)
+    , hashContinue(0)
+    , nStartingHeight(-1)
+    , vAddrToSend()
     , setAddrKnown(5000)
+    , fGetAddr(false)
+    , setKnown()
+    , setInventoryKnown(MaxSendBufferSize() / 1000)
+    , vInventoryToSend()
+    , cs_inventory()
+    , mapAskFor()
+    , vBlockRequested()
+    , nPingNonceSent(0)
+    , nPingUsecStart(0)
+    , nPingUsecTime(0)
+    , fPingQueued(false)
+    , nSporksSynced(0)
 {
-    nServices = 0;
-    nTimeConnected = GetTime();
-    addr = addrIn;
-    addrName = addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn;
-    nVersion = 0;
-    strSubVer = "";
-    fOneShot = false;
-    fClient = false; // set by version message
-    fNetworkNode = false;
-    nRefCount = 0;
-    hashContinue = 0;
-    nStartingHeight = -1;
-    fGetAddr = false;
-    fRelayTxes = false;
-    setInventoryKnown.max_size(MaxSendBufferSize() / 1000);
-    pfilter = new CBloomFilter();
-    nPingNonceSent = 0;
-    nPingUsecStart = 0;
-    nPingUsecTime = 0;
-    fPingQueued = false;
-
-    {
-        LOCK(cs_nLastNodeId);
-        id = nLastNodeId++;
-    }
-
     if (ShouldLogPeerIPs())
         LogPrint("net", "Added connection to %s peer=%d\n", addrName, id);
     else

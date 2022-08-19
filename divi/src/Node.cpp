@@ -148,6 +148,7 @@ CommunicationLogger::CommunicationLogger(
     , nLastRecv(0)
     , nSendBytes(0)
     , nRecvBytes(0)
+    , nTimeConnected(0)
 {
 }
 void CommunicationLogger::RecordSentBytes(int additionalBytes)
@@ -178,6 +179,15 @@ uint64_t CommunicationLogger::GetTotalBytesSent() const
 {
     return nSendBytes;
 }
+void CommunicationLogger::RecordTimeOfConnection(int64_t timeOfConnection)
+{
+    nTimeConnected = timeOfConnection;
+}
+int64_t CommunicationLogger::GetTimeOfConnection() const
+{
+    return nTimeConnected;
+}
+
 
 NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
@@ -529,9 +539,9 @@ CNode::CNode(
     , vRecvGetData()
     , nVersion(0)
     , nServices(0)
+    , nTimeConnected(GetTime())
     , nodeSignals_(nodeSignals)
     , nodeState_(nullptr)
-    , nTimeConnected(GetTime())
     , addr(addrIn)
     , addrName(
         addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn)
@@ -570,6 +580,7 @@ CNode::CNode(
     else
         LogPrint("net", "Added connection peer=%d\n", id);
 
+    dataLogger.RecordTimeOfConnection(nTimeConnected);
     assert(nodeSignals_);
     nodeState_.reset(new CNodeState(id,addressMananger));
     nodeState_->name = addrName;

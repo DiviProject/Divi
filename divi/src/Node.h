@@ -83,15 +83,18 @@ private:
     int64_t nLastRecv;
     uint64_t nSendBytes;
     uint64_t nRecvBytes;
+    int64_t nTimeConnected;
 
 public:
     CommunicationLogger();
     void RecordSentBytes(int additionalBytes);
     void RecordReceivedBytes(int additionalBytes);
+    void RecordTimeOfConnection(int64_t timeOfConnection);
     int64_t GetLastTimeDataSent() const;
     int64_t GetLastTimeDataReceived() const;
     uint64_t GetTotalBytesReceived() const;
     uint64_t GetTotalBytesSent() const;
+    int64_t GetTimeOfConnection() const;
 };
 
 enum CommsMode
@@ -185,6 +188,7 @@ private:
     std::deque<CInv> vRecvGetData;
     int nVersion;
     uint64_t nServices;
+    int64_t nTimeConnected;
 
     bool RespondToRequestForData();
     void RecordRequestForData(std::vector<CInv>& inventoryRequested);
@@ -226,7 +230,6 @@ public:
     void SetVersionAndServices(int nodeVersionNumber, uint64_t bitmaskOfNodeServices);
     const int& GetVersion() const;
     const uint64_t& GetServices() const;
-    int64_t nTimeConnected;
     CAddress addr;
     std::string addrName;
     CService addrLocal;

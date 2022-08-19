@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     CNodeSignals& nodeSignals = GetNodeSignals();
     PeerBanningService::ClearBanned();
     CAddress addr1(ToIP(0xa0b0c001));
-    std::unique_ptr<CNode> dummyNode1( CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", true,false) );
+    std::unique_ptr<CNode> dummyNode1( CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", NodeConnectionFlags::INBOUND_CONN ) );
     dummyNode1->SetVersionAndServices(1, 1);
     Misbehaving(dummyNode1->GetNodeState(), 100); // Should get banned
     SendMessages(dummyNode1.get(), false);
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),ToIP(0xa0b0c001|0x0000ff00))); // Different IP, not banned
 
     CAddress addr2(ToIP(0xa0b0c002));
-    std::unique_ptr<CNode> dummyNode2( CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr2, "", true,false) );
+    std::unique_ptr<CNode> dummyNode2( CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr2, "", NodeConnectionFlags::INBOUND_CONN) );
     dummyNode2->SetVersionAndServices(1, 1);
     Misbehaving(dummyNode2->GetNodeState(), 50);
     SendMessages(dummyNode2.get(), false);
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(DoS_banscore)
     PeerBanningService::ClearBanned();
     settings.SetParameter("-banscore", "111"); // because 11 is my favorite number
     CAddress addr1(ToIP(0xa0b0c001));
-    std::unique_ptr<CNode> dummyNode1(CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", true,false));
+    std::unique_ptr<CNode> dummyNode1(CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", NodeConnectionFlags::INBOUND_CONN));
     dummyNode1->SetVersionAndServices(1, 1);
     Misbehaving(dummyNode1->GetNodeState(), 100);
     SendMessages(dummyNode1.get(), false);
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(DoS_bantime)
     SetMockTime(nStartTime); // Overrides future calls to GetTime()
 
     CAddress addr(ToIP(0xa0b0c001));
-    std::unique_ptr<CNode> dummyNode(CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr, "", true,false) );
+    std::unique_ptr<CNode> dummyNode(CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr, "", NodeConnectionFlags::INBOUND_CONN) );
     dummyNode->SetVersionAndServices(1, 1);
 
     Misbehaving(dummyNode->GetNodeState(), 100);

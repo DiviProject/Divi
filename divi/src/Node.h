@@ -178,6 +178,14 @@ public:
     std::deque<CNetMessage>& GetReceivedMessageQueue();
 };
 
+enum NodeConnectionFlags
+{
+    DEFAULT = 0,
+    INBOUND_CONN = 1 << 0,
+    WHITELISTED = 1 << 1,
+    ONE_SHOT = 1 << 2,
+};
+typedef uint8_t ConnectionFlagBitmask;
 class CNode
 {
 private:
@@ -201,8 +209,7 @@ private:
         CAddrMan& addressMananger,
         CAddress addrIn,
         std::string addrNameIn,
-        bool fInboundIn,
-        bool whiteListed);
+        ConnectionFlagBitmask connectionFlags);
 
     void LogMessageSize(unsigned int messageDataSize) const;
 
@@ -242,9 +249,9 @@ public:
     std::string strSubVer, cleanSubVer;
     const bool fInbound;
     const bool fWhitelisted; // This peer can bypass DoS banning.
-    bool fOneShot;
+    const bool fOneShot;
+    const bool fNetworkNode;
     bool fClient;
-    bool fNetworkNode;
     // We use fRelayTxes for two purposes -
     // a) it allows us to not relay tx invs before receiving the peer's version message
     // b) the peer may tell us in their version message that we should not relay tx invs

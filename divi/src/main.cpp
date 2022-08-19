@@ -3123,8 +3123,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             return error("message getdata size() = %u", vInv.size());
         }
 
-        pfrom->RecordRequestForData(vInv);
-        pfrom->RespondToRequestForData();
+        pfrom->HandleRequestForData(vInv);
     }
     else if (strCommand == "getblocks" || strCommand == "getheaders")
     {

@@ -306,6 +306,7 @@ public:
 
     bool RespondToRequestForData();
     void RecordRequestForData(std::vector<CInv>& inventoryRequested);
+    void HandleRequestForData(std::vector<CInv>& inventoryRequested);
     std::deque<CInv>& GetRequestForDataQueue();
 
     void CheckForInnactivity();

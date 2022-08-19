@@ -540,9 +540,9 @@ CNode::CNode(
     , nVersion(0)
     , nServices(0)
     , nTimeConnected(GetTime())
+    , addr(addrIn)
     , nodeSignals_(nodeSignals)
     , nodeState_(nullptr)
-    , addr(addrIn)
     , addrName(
         addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn)
     , strSubVer("")
@@ -600,6 +600,11 @@ CNode::~CNode()
     nodeSignals_->FinalizeNode(id);
     nodeState_->Finalize();
     nodeState_.reset();
+}
+
+const CAddress& CNode::GetCAddress() const
+{
+    return addr;
 }
 
 bool CNode::IsSuccessfullyConnected() const

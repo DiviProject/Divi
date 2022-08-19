@@ -189,6 +189,7 @@ private:
     int nVersion;
     uint64_t nServices;
     int64_t nTimeConnected;
+    CAddress addr;
 
     bool RespondToRequestForData();
     void RecordRequestForData(std::vector<CInv>& inventoryRequested);
@@ -230,7 +231,7 @@ public:
     void SetVersionAndServices(int nodeVersionNumber, uint64_t bitmaskOfNodeServices);
     const int& GetVersion() const;
     const uint64_t& GetServices() const;
-    CAddress addr;
+    const CAddress& GetCAddress() const;
     std::string addrName;
     CService addrLocal;
     // strSubVer is whatever byte array we read from the wire. However, this field is intended

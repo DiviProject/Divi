@@ -390,8 +390,8 @@ std::vector<std::string> BanOutdatedPeers()
         std::string subVersion = getSubVersion(pnode->cleanSubVer);
         if(versionToIndexConverter(subVersion) < referenceVersionIndex)
         {
-            PeerBanningService::LifetimeBan(pnode->addr);
-            bannedNodeAddresses.push_back(pnode->addr.ToString() );
+            PeerBanningService::LifetimeBan(pnode->GetCAddress());
+            bannedNodeAddresses.push_back(pnode->GetCAddress().ToString() );
             pnode->FlagForDisconnection();
         }
     }
@@ -402,9 +402,9 @@ bool BanSpecificPeer(const CNetAddr& address)
     LOCK(cs_vNodes);
     for (CNode* pnode: vNodes)
     {
-        if(strcmp(address.ToString().c_str(), pnode->addr.ToString().c_str() ) == 0)
+        if(strcmp(address.ToString().c_str(), pnode->GetCAddress().ToString().c_str() ) == 0)
         {
-            PeerBanningService::LifetimeBan(pnode->addr);
+            PeerBanningService::LifetimeBan(pnode->GetCAddress());
             pnode->FlagForDisconnection();
             return true;
         }
@@ -429,7 +429,7 @@ NodeConnectionStatus GetConnectionStatus(const CService& addrNode)
     LOCK(cs_vNodes);
     for(CNode* pnode: vNodes)
     {
-        if (pnode->addr == addrNode)
+        if (pnode->GetCAddress() == addrNode)
         {
             return (pnode->fInbound)? NodeConnectionStatus::INBOUND: NodeConnectionStatus::OUTBOUND;
         }
@@ -469,7 +469,7 @@ void AddOneShot(string strDest)
 // Is our peer's addrLocal potentially useful as an external IP source?
 bool PeersLocalAddressIsGood(CNode* pnode)
 {
-    return isDiscoverEnabled() && pnode->addr.IsRoutable() && pnode->addrLocal.IsRoutable() &&
+    return isDiscoverEnabled() && pnode->GetCAddress().IsRoutable() && pnode->addrLocal.IsRoutable() &&
            !IsLimited(pnode->addrLocal.GetNetwork());
 }
 
@@ -477,7 +477,7 @@ bool PeersLocalAddressIsGood(CNode* pnode)
 void AdvertizeLocal(CNode* pnode)
 {
     if (IsListening() && pnode->IsSuccessfullyConnected()) {
-        CAddress addrLocal = GetLocalAddress(&pnode->addr);
+        CAddress addrLocal = GetLocalAddress(&pnode->GetCAddress());
         // If discovery is enabled, sometimes give our peer the address it
         // tells us that it sees us as in case it has a better idea of our
         // address than we do.
@@ -517,7 +517,7 @@ CNode* FindNode(const CNetAddr& ip)
 {
     LOCK(cs_vNodes);
     BOOST_FOREACH (CNode* pnode, vNodes)
-        if ((CNetAddr)pnode->addr == ip)
+        if ((CNetAddr)pnode->GetCAddress() == ip)
             return (pnode);
     return NULL;
 }
@@ -537,10 +537,10 @@ CNode* FindNode(const CService& addr)
     BOOST_FOREACH (CNode* pnode, vNodes) {
         if (Params().NetworkID() == CBaseChainParams::REGTEST) {
             //if using regtest, just check the IP
-            if ((CNetAddr)pnode->addr == (CNetAddr)addr)
+            if ((CNetAddr)pnode->GetCAddress() == (CNetAddr)addr)
                 return (pnode);
         } else {
-            if (pnode->addr == addr)
+            if (pnode->GetCAddress() == addr)
                 return (pnode);
         }
     }
@@ -1185,7 +1185,7 @@ void ThreadOpenConnections()
             LOCK(cs_vNodes);
             BOOST_FOREACH (CNode* pnode, vNodes) {
                 if (!pnode->fInbound) {
-                    setConnected.insert(pnode->addr.GetGroup());
+                    setConnected.insert(pnode->GetCAddress().GetGroup());
                     nOutbound++;
                 }
             }
@@ -1304,7 +1304,7 @@ void ThreadOpenAddedConnections()
             BOOST_FOREACH (CNode* pnode, vNodes)
                 for (std::list<std::vector<CService> >::iterator it = lservAddressesToAdd.begin(); it != lservAddressesToAdd.end(); it++)
                     BOOST_FOREACH (CService& addrNode, *(it))
-                        if (pnode->addr == addrNode) {
+                        if (pnode->GetCAddress() == addrNode) {
                             it = lservAddressesToAdd.erase(it);
                             it--;
                             break;

@@ -468,7 +468,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     // use this as a peer
     CNetAddr addr("127.0.0.1");
     if (pfrom != nullptr)
-        addr = pfrom->addr;
+        addr = pfrom->GetCAddress();
     addressManager_.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
     masternodeSynchronization_.RecordMasternodeListUpdate(mnb.GetHash());
 

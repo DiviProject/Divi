@@ -633,7 +633,7 @@ void CNode::ProcessReceiveMessages(bool& shouldSleep)
     TRY_LOCK(messageConnection_.GetReceiveLock(), lockRecv);
     if (lockRecv)
     {
-        bool result = *(nodeSignals_->ProcessReceivedMessages(this));
+        bool result = (!RespondToRequestForData())? true: *(nodeSignals_->ProcessReceivedMessages(this));
         if (!result)
             CloseCommsAndDisconnect();
 

@@ -183,6 +183,9 @@ private:
     I_CommunicationChannel& channel_;
     QueuedMessageConnection messageConnection_;
     std::deque<CInv> vRecvGetData;
+    int nVersion;
+    uint64_t nServices;
+
     bool RespondToRequestForData();
     void RecordRequestForData(std::vector<CInv>& inventoryRequested);
 
@@ -220,12 +223,13 @@ public:
     void ProcessReceivedPing(CDataStream& receivedStream);
     void ProcessReceivedPong(CDataStream& receivedStream, int64_t nTimeReceived);
 
-    uint64_t nServices;
+    void SetVersionAndServices(int nodeVersionNumber, uint64_t bitmaskOfNodeServices);
+    const int& GetVersion() const;
+    const uint64_t& GetServices() const;
     int64_t nTimeConnected;
     CAddress addr;
     std::string addrName;
     CService addrLocal;
-    int nVersion;
     // strSubVer is whatever byte array we read from the wire. However, this field is intended
     // to be printed out, displayed to humans in various forms and so on. So we sanitize it and
     // store the sanitized version in cleanSubVer. The original should be used when dealing with

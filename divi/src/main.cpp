@@ -2863,7 +2863,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
 {
     // Each connection can only send one version message
     static const std::string lastCommand = std::string(NetworkMessageType_VERSION);
-    if (pfrom->nVersion != 0) {
+    if (pfrom->GetVersion() != 0) {
         pfrom->PushMessage("reject", lastCommand, REJECT_DUPLICATE, string("Duplicate version message"));
         Misbehaving(pfrom->GetNodeState(), 1,"Duplicated version message");
         return false;
@@ -2873,7 +2873,11 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
     CAddress addrMe;
     CAddress addrFrom;
     uint64_t nNonce = 1;
-    vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
+
+    int nodeVersion;
+    uint64_t bitmaskOfNodeServices;
+    vRecv >> nodeVersion >> bitmaskOfNodeServices >> nTime >> addrMe;
+    pfrom->SetVersionAndServices(nodeVersion,bitmaskOfNodeServices);
     if (pfrom->DisconnectOldProtocol(ActiveProtocol(), lastCommand))
     {
         PeerBanningService::Ban(GetTime(),pfrom->addr);
@@ -2910,7 +2914,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
     if (pfrom->fInbound)
         pfrom->PushVersion(GetHeight());
 
-    pfrom->fClient = !(pfrom->nServices & NODE_NETWORK);
+    pfrom->fClient = !(pfrom->GetServices() & NODE_NETWORK);
 
     // Potentially mark this peer as a preferred download peer.
     pfrom->UpdatePreferredDownloadStatus();
@@ -2922,7 +2926,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
         pfrom->PushMessage("sporkcount", GetSporkManager().GetActiveSporkCount());
     }
 
-    pfrom->SetOutboundSerializationVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+    pfrom->SetOutboundSerializationVersion(min(pfrom->GetVersion(), PROTOCOL_VERSION));
 
     if (!pfrom->fInbound) {
         // Advertise our address
@@ -2939,7 +2943,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
         }
 
         // Get recent addresses
-        if (pfrom->fOneShot || pfrom->nVersion >= CADDR_TIME_VERSION || addrman.size() < 1000) {
+        if (pfrom->fOneShot || pfrom->GetVersion() >= CADDR_TIME_VERSION || addrman.size() < 1000) {
             pfrom->PushMessage("getaddr");
             pfrom->fGetAddr = true;
         }
@@ -2961,7 +2965,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
         remoteAddr = ", peeraddr=" + pfrom->addr.ToString();
 
     LogPrintf("receive version message: %s: version %d, blocks=%d, us=%s, peer=%d%s\n",
-                pfrom->cleanSubVer, pfrom->nVersion,
+                pfrom->cleanSubVer, pfrom->GetVersion(),
                 pfrom->nStartingHeight, addrMe, pfrom->id,
                 remoteAddr);
 
@@ -2992,7 +2996,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         }
         return true;
     }
-    else if (pfrom->nVersion == 0)
+    else if (pfrom->GetVersion() == 0)
     {
         // Must have a version message before anything else
         Misbehaving(pfrom->GetNodeState(), 1,"Version message has not arrived before other handshake steps");
@@ -3000,7 +3004,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
     }
     else if (strCommand == "verack")
     {
-        pfrom->SetInboundSerializationVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+        pfrom->SetInboundSerializationVersion(min(pfrom->GetVersion(), PROTOCOL_VERSION));
 
         // Mark this node as currently connected, so we update its timestamp later.
         if (pfrom->fNetworkNode) {
@@ -3027,7 +3031,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         vRecv >> vAddr;
 
         // Don't want addr from older versions unless seeding
-        if (pfrom->nVersion < CADDR_TIME_VERSION && addrman.size() > 1000)
+        if (pfrom->GetVersion() < CADDR_TIME_VERSION && addrman.size() > 1000)
             return true;
         if (vAddr.size() > 1000) {
             Misbehaving(pfrom->GetNodeState(), 20,"Requested too many addresses");

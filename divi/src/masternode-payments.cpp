@@ -254,7 +254,7 @@ void CMasternodePayments::ProcessMasternodeWinners(CNode* pfrom, const std::stri
         CMasternodePaymentWinner winner;
         vRecv >> winner;
 
-        if(pfrom->nVersion < ActiveProtocol() || !CheckMasternodeWinnerCandidate(pfrom,winner))
+        if(pfrom->GetVersion() < ActiveProtocol() || !CheckMasternodeWinnerCandidate(pfrom,winner))
         {
             return;
         }

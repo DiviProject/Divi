@@ -476,7 +476,7 @@ bool PeersLocalAddressIsGood(CNode* pnode)
 // pushes our own address to a peer
 void AdvertizeLocal(CNode* pnode)
 {
-    if (IsListening() && pnode->fSuccessfullyConnected) {
+    if (IsListening() && pnode->IsSuccessfullyConnected()) {
         CAddress addrLocal = GetLocalAddress(&pnode->addr);
         // If discovery is enabled, sometimes give our peer the address it
         // tells us that it sees us as in case it has a better idea of our

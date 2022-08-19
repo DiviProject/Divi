@@ -579,6 +579,15 @@ CNode::~CNode()
     nodeState_.reset();
 }
 
+bool CNode::IsSuccessfullyConnected() const
+{
+    return fSuccessfullyConnected;
+}
+void CNode::RecordSuccessfullConnection()
+{
+    fSuccessfullyConnected = true;
+}
+
 const CommunicationLogger& CNode::GetCommunicationLogger() const
 {
     return dataLogger;

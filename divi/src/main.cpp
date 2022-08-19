@@ -2956,7 +2956,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
     // Relay alerts
     RelayAllAlertsTo(pfrom);
 
-    pfrom->fSuccessfullyConnected = true;
+    pfrom->RecordSuccessfullConnection();
 
     string remoteAddr;
     if (ShouldLogPeerIPs())

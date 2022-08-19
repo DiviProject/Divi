@@ -545,6 +545,7 @@ CNode::CNode(
         addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn)
     , nodeSignals_(nodeSignals)
     , nodeState_(nullptr)
+    , addrLocal()
     , strSubVer("")
     , cleanSubVer("")
     , fInbound(fInboundIn)

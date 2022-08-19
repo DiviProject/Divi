@@ -104,7 +104,7 @@ void CMasternodeSync::SyncMasternodeWinnersWithPeer(CNode* node, int nCountNeede
 
 void CMasternodeSync::DsegUpdate(CNode* pnode)
 {
-    if(networkMessageManager_.recordDsegUpdateAttempt(pnode->addr))
+    if(networkMessageManager_.recordDsegUpdateAttempt(pnode->GetCAddress()))
     {
         pnode->PushMessage("dseg", CTxIn());
     }
@@ -112,10 +112,10 @@ void CMasternodeSync::DsegUpdate(CNode* pnode)
 
 bool CMasternodeSync::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
 {
-    bool isLocal = (pfrom->addr.IsRFC1918() || pfrom->addr.IsLocal());
+    bool isLocal = (pfrom->GetCAddress().IsRFC1918() || pfrom->GetCAddress().IsLocal());
     if (!isLocal)
     {
-        if(networkMessageManager_.peerHasRequestedMasternodeListTooOften(pfrom->addr))
+        if(networkMessageManager_.peerHasRequestedMasternodeListTooOften(pfrom->GetCAddress()))
         {
             constexpr int penaltyForAskingTooManyTimes = 34;
             pfrom->GetNodeState()->ApplyMisbehavingPenalty(penaltyForAskingTooManyTimes,"Asked mn peer list too often");
@@ -158,14 +158,14 @@ void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strComma
         int nCountNeeded;
         vRecv >> nCountNeeded;
 
-        if (networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr, "mnget"))
+        if (networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->GetCAddress(), "mnget"))
         {
             LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
             pfrom->GetNodeState()->ApplyMisbehavingPenalty(20,"Too recently asked for mn peer list");
             return;
         }
 
-        networkFulfilledRequestManager_.AddFulfilledRequest(pfrom->addr, "mnget");
+        networkFulfilledRequestManager_.AddFulfilledRequest(pfrom->GetCAddress(), "mnget");
         SyncMasternodeWinnersWithPeer(pfrom, nCountNeeded);
         LogPrint("mnpayments", "mnget - Sent Masternode winners to peer %i\n", pfrom->GetId());
     }
@@ -201,8 +201,8 @@ void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strComma
         if (syncCode != currentMasternodeSyncStatus) return;
 
         const std::string requestName = syncCodeNameByCodeValue[syncCode];
-        if(networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->addr,requestName)) return;
-        if(!networkFulfilledRequestManager_.HasPendingRequest(pfrom->addr,requestName)) return;
+        if(networkFulfilledRequestManager_.HasFulfilledRequest(pfrom->GetCAddress(),requestName)) return;
+        if(!networkFulfilledRequestManager_.HasPendingRequest(pfrom->GetCAddress(),requestName)) return;
 
         //this means we will receive no further communication
         switch (syncCode) {
@@ -218,7 +218,7 @@ void CMasternodeSync::ProcessSyncUpdate(CNode* pfrom,const std::string& strComma
             break;
         }
 
-        networkFulfilledRequestManager_.FulfillPendingRequest(pfrom->addr,requestName);
+        networkFulfilledRequestManager_.FulfillPendingRequest(pfrom->GetCAddress(),requestName);
 
         LogPrint("masternode", "%s - ssc - got inventory count %d %d\n",__func__, syncCode, itemsSynced);
     }
@@ -362,7 +362,7 @@ bool CMasternodeSync::SyncMasternodeList(CNode* pnode, const int64_t now)
 {
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_LIST)
     {
-        const SyncStatus status = SyncAssets(pnode->addr,now,timestampOfLastMasternodeListUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_LIST]);
+        const SyncStatus status = SyncAssets(pnode->GetCAddress(),now,timestampOfLastMasternodeListUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_LIST]);
         switch(status)
         {
             case SyncStatus::FAIL: case SyncStatus::AT_PEER_SYNC_LIMIT:
@@ -396,7 +396,7 @@ bool CMasternodeSync::SyncMasternodeWinners(CNode* pnode, const int64_t now)
 {
     if (currentMasternodeSyncStatus == MasternodeSyncCode::MASTERNODE_SYNC_MNW)
     {
-        const SyncStatus status = SyncAssets(pnode->addr,now,timestampOfLastMasternodeWinnerUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_MNW]);
+        const SyncStatus status = SyncAssets(pnode->GetCAddress(),now,timestampOfLastMasternodeWinnerUpdate,syncCodeNameByCodeValue[MasternodeSyncCode::MASTERNODE_SYNC_MNW]);
         switch(status)
         {
             case SyncStatus::FAIL: case SyncStatus::AT_PEER_SYNC_LIMIT:

@@ -2880,7 +2880,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
     pfrom->SetVersionAndServices(nodeVersion,bitmaskOfNodeServices);
     if (pfrom->DisconnectOldProtocol(ActiveProtocol(), lastCommand))
     {
-        PeerBanningService::Ban(GetTime(),pfrom->addr);
+        PeerBanningService::Ban(GetTime(),pfrom->GetCAddress());
         return false;
     }
 
@@ -2900,7 +2900,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
     // Disconnect if we connected to ourself
     if (pfrom->IsSelfConnection(nNonce))
     {
-        LogPrintf("connected to self at %s, disconnecting\n", pfrom->addr);
+        LogPrintf("connected to self at %s, disconnecting\n", pfrom->GetCAddress());
         pfrom->FlagForDisconnection();
         return true;
     }
@@ -2931,7 +2931,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
     if (!pfrom->fInbound) {
         // Advertise our address
         if (IsListening() && !IsInitialBlockDownload()) {
-            CAddress addr = GetLocalAddress(&pfrom->addr);
+            CAddress addr = GetLocalAddress(&pfrom->GetCAddress());
             if (addr.IsRoutable()) {
                 LogPrintf("%s: advertizing address %s\n",__func__, addr);
                 pfrom->PushAddress(addr);
@@ -2947,9 +2947,9 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
             pfrom->PushMessage("getaddr");
             pfrom->fGetAddr = true;
         }
-        addrman.Good(pfrom->addr);
+        addrman.Good(pfrom->GetCAddress());
     } else {
-        if (((CNetAddr)pfrom->addr) == (CNetAddr)addrFrom) {
+        if (((CNetAddr)pfrom->GetCAddress()) == (CNetAddr)addrFrom) {
             addrman.Add(addrFrom, addrFrom);
             addrman.Good(addrFrom);
         }
@@ -2962,14 +2962,14 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
 
     string remoteAddr;
     if (ShouldLogPeerIPs())
-        remoteAddr = ", peeraddr=" + pfrom->addr.ToString();
+        remoteAddr = ", peeraddr=" + pfrom->GetCAddress().ToString();
 
     LogPrintf("receive version message: %s: version %d, blocks=%d, us=%s, peer=%d%s\n",
                 pfrom->cleanSubVer, pfrom->GetVersion(),
                 pfrom->nStartingHeight, addrMe, pfrom->id,
                 remoteAddr);
 
-    AddTimeData(pfrom->addr, nTime);
+    AddTimeData(pfrom->GetCAddress(), nTime);
     return true;
 }
 
@@ -3057,7 +3057,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             if (fReachable)
                 vAddrOk.push_back(addr);
         }
-        addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);
+        addrman.Add(vAddrOk, pfrom->GetCAddress(), 2 * 60 * 60);
         if (vAddr.size() < 1000)
             pfrom->fGetAddr = false;
         if (pfrom->fOneShot)
@@ -3411,7 +3411,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 //disconnect this node if its old protocol version
                 if(pfrom->DisconnectOldProtocol(ActiveProtocol(), strCommand))
                 {
-                    PeerBanningService::Ban(GetTime(),pfrom->addr);
+                    PeerBanningService::Ban(GetTime(),pfrom->GetCAddress());
                 }
             } else {
                 LogPrint("net", "%s : Already processed block %s, skipping ProcessNewBlock()\n", __func__, block.GetHash());
@@ -3673,18 +3673,18 @@ static void CheckForBanAndDisconnectIfNotWhitelisted(CNode* pto)
     if(!nodeState->fShouldBan) return;
     if (pto->fWhitelisted)
     {
-        LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr);
+        LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->GetCAddress());
     }
     else
     {
         pto->FlagForDisconnection();
-        if (pto->addr.IsLocal())
+        if (pto->GetCAddress().IsLocal())
         {
-            LogPrintf("Warning: not banning local peer %s!\n", pto->addr);
+            LogPrintf("Warning: not banning local peer %s!\n", pto->GetCAddress());
         }
         else
         {
-            PeerBanningService::Ban(GetTime(),pto->addr);
+            PeerBanningService::Ban(GetTime(),pto->GetCAddress());
         }
     }
     nodeState->fShouldBan = false;

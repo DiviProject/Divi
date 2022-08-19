@@ -547,7 +547,7 @@ CNode* FindNode(const CService& addr)
     return NULL;
 }
 
-NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
+NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool oneShot = false)
 {
     if (pszDest == NULL) {
         // we clean masternode connections in CMasternodeMan::ProcessMasternodeConnections()
@@ -582,8 +582,7 @@ NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL)
         addrman.Attempt(addrConnect);
 
         // Add node
-        CNode* pnode = CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addrConnect, pszDest ? pszDest : "", false,false);
-        pnode->fNetworkNode = true;
+        CNode* pnode = CreateNode(hSocket, &GetNodeSignals(), GetNetworkAddressManager(), addrConnect, pszDest ? pszDest : "", oneShot? NodeConnectionFlags::ONE_SHOT : NodeConnectionFlags::DEFAULT);
         return NodeReferenceFactory::makeUniqueNodeReference(pnode);
     } else if (!proxyConnectionFailed) {
         // If connecting to the node failed, and failure is not caused by a problem connecting to
@@ -814,7 +813,8 @@ public:
                     LogPrintf("connection from %s dropped (banned)\n", addr);
                     CloseSocket(hSocket);
                 } else {
-                    CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addr, "", true, whitelisted);
+                    ConnectionFlagBitmask flags = NodeConnectionFlags::INBOUND_CONN | (whitelisted? NodeConnectionFlags::WHITELISTED : NodeConnectionFlags::DEFAULT);
+                    CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addr, "", flags);
                 }
             }
         }
@@ -1333,13 +1333,11 @@ bool OpenNetworkConnection(const CAddress& addrConnect, const char* pszDest, boo
     } else if (FindNode(pszDest))
         return false;
 
-    NodeRef pnode = ConnectNode(addrConnect, pszDest);
+    NodeRef pnode = ConnectNode(addrConnect, pszDest, fOneShot);
     boost::this_thread::interruption_point();
 
     if (!pnode)
         return false;
-    if (fOneShot)
-        pnode->fOneShot = true;
 
     return true;
 }

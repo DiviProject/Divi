@@ -530,8 +530,7 @@ CNode::CNode(
     CAddrMan& addressMananger,
     CAddress addrIn,
     std::string addrNameIn,
-    bool fInboundIn,
-    bool whitelisted
+    ConnectionFlagBitmask connectionFlags
     ) : fSuccessfullyConnected(false)
     , dataLogger()
     , channel_(channel)
@@ -548,11 +547,11 @@ CNode::CNode(
     , addrLocal()
     , strSubVer("")
     , cleanSubVer("")
-    , fInbound(fInboundIn)
-    , fWhitelisted(whitelisted)
-    , fOneShot(false)
+    , fInbound( connectionFlags & NodeConnectionFlags::INBOUND_CONN )
+    , fWhitelisted( connectionFlags & NodeConnectionFlags::WHITELISTED )
+    , fOneShot( connectionFlags & NodeConnectionFlags::ONE_SHOT )
+    , fNetworkNode( !fInbound )
     , fClient(false)
-    , fNetworkNode(false)
     , fRelayTxes(false)
     , cs_filter()
     , pfilter(new CBloomFilter())

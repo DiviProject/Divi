@@ -1558,7 +1558,7 @@ void DeterministicallyRelayAddressToLimitedPeers(const CAddress& addr,int number
     hashRand = Hash(BEGIN(hashRand), END(hashRand));
     std::multimap<uint256, CNode*> mapMix;
     for(CNode* pnode: vNodes) {
-        if (pnode->nVersion < CADDR_TIME_VERSION)
+        if (pnode->GetVersion() < CADDR_TIME_VERSION)
             continue;
         unsigned int nPointer;
         memcpy(&nPointer, &pnode, sizeof(nPointer));
@@ -1575,11 +1575,11 @@ bool ShouldRelayAlertToPeer(const CAlert& alert, CNode* pnode)
     if (!alert.IsInEffect())
         return false;
     // don't relay to nodes which haven't sent their version message
-    if (pnode->nVersion == 0)
+    if (pnode->GetVersion() == 0)
         return false;
     // returns true if wasn't already contained in the set
     if (pnode->setKnown.insert(alert.GetHash()).second) {
-        if (alert.AppliesTo(pnode->nVersion, pnode->strSubVer) ||
+        if (alert.AppliesTo(pnode->GetVersion(), pnode->strSubVer) ||
             alert.AppliesToMe() ||
             GetAdjustedTime() < alert.nRelayUntil) {
             return true;
@@ -1667,7 +1667,7 @@ void RelayInv(CInv& inv)
 {
     LOCK(cs_vNodes);
     BOOST_FOREACH (CNode* pnode, vNodes){
-        if (pnode->nVersion >= ActiveProtocol())
+        if (pnode->GetVersion() >= ActiveProtocol())
             pnode->PushInventory(inv);
     }
 }

@@ -445,7 +445,7 @@ void CMasternodeSync::Process()
 
     for(NodeRef& pnode: vSporkSyncedNodes)
     {
-        if (pnode->nVersion >=  ActiveProtocol() &&
+        if (pnode->GetVersion() >=  ActiveProtocol() &&
             (!SyncMasternodeList(pnode.get(),now) || !SyncMasternodeWinners(pnode.get(),now)))
         {
             return;

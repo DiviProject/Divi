@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     PeerBanningService::ClearBanned();
     CAddress addr1(ToIP(0xa0b0c001));
     std::unique_ptr<CNode> dummyNode1( CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", true,false) );
-    dummyNode1->nVersion = 1;
+    dummyNode1->SetVersionAndServices(1, 1);
     Misbehaving(dummyNode1->GetNodeState(), 100); // Should get banned
     SendMessages(dummyNode1.get(), false);
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr1));
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
 
     CAddress addr2(ToIP(0xa0b0c002));
     std::unique_ptr<CNode> dummyNode2( CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr2, "", true,false) );
-    dummyNode2->nVersion = 1;
+    dummyNode2->SetVersionAndServices(1, 1);
     Misbehaving(dummyNode2->GetNodeState(), 50);
     SendMessages(dummyNode2.get(), false);
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),addr2)); // 2 not banned yet...
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(DoS_banscore)
     settings.SetParameter("-banscore", "111"); // because 11 is my favorite number
     CAddress addr1(ToIP(0xa0b0c001));
     std::unique_ptr<CNode> dummyNode1(CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", true,false));
-    dummyNode1->nVersion = 1;
+    dummyNode1->SetVersionAndServices(1, 1);
     Misbehaving(dummyNode1->GetNodeState(), 100);
     SendMessages(dummyNode1.get(), false);
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),addr1));
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(DoS_bantime)
 
     CAddress addr(ToIP(0xa0b0c001));
     std::unique_ptr<CNode> dummyNode(CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr, "", true,false) );
-    dummyNode->nVersion = 1;
+    dummyNode->SetVersionAndServices(1, 1);
 
     Misbehaving(dummyNode->GetNodeState(), 100);
     SendMessages(dummyNode.get(), false);

@@ -527,14 +527,14 @@ CNode::CNode(
     , channel_(channel)
     , messageConnection_(channel_,fSuccessfullyConnected,dataLogger)
     , vRecvGetData()
+    , nVersion(0)
+    , nServices(0)
     , nodeSignals_(nodeSignals)
     , nodeState_(nullptr)
-    , nServices(0)
     , nTimeConnected(GetTime())
     , addr(addrIn)
     , addrName(
         addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn)
-    , nVersion(0)
     , strSubVer("")
     , cleanSubVer("")
     , fInbound(fInboundIn)
@@ -943,6 +943,20 @@ void CNode::AskFor(const CInv& inv)
     else
         mapAlreadyAskedFor.insert(std::make_pair(inv, nRequestTime));
     mapAskFor.insert(std::make_pair(nRequestTime, inv));
+}
+
+void CNode::SetVersionAndServices(int nodeVersionNumber, uint64_t bitmaskOfNodeServices)
+{
+    nVersion = nodeVersionNumber;
+    nServices = bitmaskOfNodeServices;
+}
+const int& CNode::GetVersion() const
+{
+    return nVersion;
+}
+const uint64_t& CNode::GetServices() const
+{
+    return nServices;
 }
 
 bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand)

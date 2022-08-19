@@ -12,10 +12,10 @@ CNodeStats::CNodeStats(const CNode* pnode)
     nLastRecv = communicationLogger.GetLastTimeDataReceived();
     nSendBytes = communicationLogger.GetTotalBytesSent();
     nRecvBytes = communicationLogger.GetTotalBytesReceived();
-    X(nServices);
+    nServices = pnode->GetServices();
+    nVersion = pnode->GetVersion();
     X(nTimeConnected);
     X(addrName);
-    X(nVersion);
     X(cleanSubVer);
     X(fInbound);
     X(nStartingHeight);

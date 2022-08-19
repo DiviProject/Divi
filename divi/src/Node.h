@@ -198,6 +198,10 @@ private:
 
     void LogMessageSize(unsigned int messageDataSize) const;
 
+protected:
+    CNodeSignals* nodeSignals_;
+    std::unique_ptr<CNodeState> nodeState_;
+
 public:
     bool CommunicationChannelIsValid() const;
     void CloseCommsAndDisconnect();
@@ -247,10 +251,6 @@ public:
     NodeId id;
 
     int nSporksCount = -1;
-
-protected:
-    CNodeSignals* nodeSignals_;
-    std::unique_ptr<CNodeState> nodeState_;
 
 public:
     uint256 hashContinue;

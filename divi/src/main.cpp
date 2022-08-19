@@ -3582,10 +3582,6 @@ bool ProcessReceivedMessages(CNode* pfrom)
     //  (x) data
     //
     bool fOk = true;
-
-    // this maintains the order of responses
-    if(!pfrom->RespondToRequestForData()) return fOk;
-
     std::deque<CNetMessage>& receivedMessageQueue = pfrom->GetReceivedMessageQueue();
     std::deque<CNetMessage>::iterator iteratorToCurrentMessageToProcess = receivedMessageQueue.begin();
     std::deque<CNetMessage>::iterator iteratorToNextMessageToProcess = receivedMessageQueue.begin();

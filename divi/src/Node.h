@@ -251,7 +251,7 @@ public:
     std::atomic<int> nRefCount;
     NodeId id;
 
-    int nSporksCount = -1;
+    int nSporksCount;
 
     uint256 hashContinue;
     int nStartingHeight;
@@ -279,7 +279,7 @@ public:
     // Whether a ping is requested.
     bool fPingQueued;
 
-    int nSporksSynced = 0;
+    int nSporksSynced;
 
     template <typename ...Args>
     static CNode* CreateNode(Args&&... args)

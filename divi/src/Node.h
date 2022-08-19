@@ -201,6 +201,9 @@ public:
 
 private:
     std::deque<CInv> vRecvGetData;
+    bool RespondToRequestForData();
+    void RecordRequestForData(std::vector<CInv>& inventoryRequested);
+
 public:
     uint64_t nServices;
     int64_t nTimeConnected;
@@ -304,8 +307,6 @@ public:
     bool IsInUse();
     void MaybeSendPing();
 
-    bool RespondToRequestForData();
-    void RecordRequestForData(std::vector<CInv>& inventoryRequested);
     void HandleRequestForData(std::vector<CInv>& inventoryRequested);
     std::deque<CInv>& GetRequestForDataQueue();
 

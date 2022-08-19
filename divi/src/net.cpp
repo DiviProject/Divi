@@ -595,7 +595,7 @@ NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool
 }
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo)
 {
-    NodeRef pnode = ConnectNode(addrToConnectTo, NULL);
+    NodeRef pnode = ConnectNode(addrToConnectTo, NULL, true);
     return static_cast<bool>(pnode);
 }
 

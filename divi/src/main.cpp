@@ -3007,7 +3007,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         pfrom->SetInboundSerializationVersion(min(pfrom->GetVersion(), PROTOCOL_VERSION));
 
         // Mark this node as currently connected, so we update its timestamp later.
-        if (pfrom->fNetworkNode) {
+        if (!pfrom->fInbound) {
             LOCK(cs_main);
             pfrom->SetToCurrentlyConnected();
         }

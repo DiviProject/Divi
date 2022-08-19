@@ -247,7 +247,7 @@ public:
                 // close socket and cleanup
                 pnode->CloseCommsAndDisconnect();
 
-                if (pnode->fNetworkNode || pnode->fInbound) pnode->Release();
+                pnode->Release();
                 queueForDisconnection(pnode);
             }
         }

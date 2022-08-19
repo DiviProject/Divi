@@ -526,7 +526,7 @@ CNode* FindNode(const std::string& addrName)
 {
     LOCK(cs_vNodes);
     BOOST_FOREACH (CNode* pnode, vNodes)
-        if (pnode->addrName == addrName)
+        if (pnode->GetAddressName() == addrName)
             return (pnode);
     return NULL;
 }

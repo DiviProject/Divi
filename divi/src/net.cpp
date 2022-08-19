@@ -583,7 +583,6 @@ NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool
 
         // Add node
         CNode* pnode = CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addrConnect, pszDest ? pszDest : "", false,false);
-        pnode->nTimeConnected = GetTime();
         if(weOpenedNetworkConnection) pnode->fNetworkNode = true;
         return NodeReferenceFactory::makeUniqueNodeReference(pnode);
     } else if (!proxyConnectionFailed) {

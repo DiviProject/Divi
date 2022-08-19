@@ -250,7 +250,6 @@ public:
     const bool fInbound;
     const bool fWhitelisted; // This peer can bypass DoS banning.
     const bool fOneShot;
-    const bool fNetworkNode;
     bool fClient;
     // We use fRelayTxes for two purposes -
     // a) it allows us to not relay tx invs before receiving the peer's version message

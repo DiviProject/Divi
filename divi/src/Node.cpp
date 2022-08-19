@@ -550,7 +550,6 @@ CNode::CNode(
     , fInbound( connectionFlags & NodeConnectionFlags::INBOUND_CONN )
     , fWhitelisted( connectionFlags & NodeConnectionFlags::WHITELISTED )
     , fOneShot( connectionFlags & NodeConnectionFlags::ONE_SHOT )
-    , fNetworkNode( !fInbound )
     , fClient(false)
     , fRelayTxes(false)
     , cs_filter()

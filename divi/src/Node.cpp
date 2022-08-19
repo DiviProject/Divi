@@ -521,6 +521,8 @@ CNode::CNode(
     , channel_(channel)
     , messageConnection_(channel_,fSuccessfullyConnected,dataLogger)
     , vRecvGetData()
+    , nodeSignals_(nodeSignals)
+    , nodeState_(nullptr)
     , fInbound(fInboundIn)
     , fWhitelisted(whitelisted)
     , setAddrKnown(5000)
@@ -545,7 +547,6 @@ CNode::CNode(
     nPingUsecStart = 0;
     nPingUsecTime = 0;
     fPingQueued = false;
-    nodeSignals_ = nodeSignals;
 
     {
         LOCK(cs_nLastNodeId);

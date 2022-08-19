@@ -218,7 +218,6 @@ public:
     void ProcessReceivedPing(CDataStream& receivedStream);
     void ProcessReceivedPong(CDataStream& receivedStream, int64_t nTimeReceived);
 
-public:
     uint64_t nServices;
     int64_t nTimeConnected;
     CAddress addr;
@@ -252,7 +251,6 @@ public:
 
     int nSporksCount = -1;
 
-public:
     uint256 hashContinue;
     int nStartingHeight;
 
@@ -289,7 +287,6 @@ public:
 
     ~CNode();
 
-public:
     template <typename ...Args>
     void PushMessage(const char* pszCommand, Args&&... args)
     {

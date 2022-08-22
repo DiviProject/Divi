@@ -39,6 +39,8 @@ class RpcBindTest(BitcoinTestFramework):
         nodes = start_nodes(1, self.options.tmpdir, [base_args + binds], rpchost=connect_to)
         try:
             pid = bitcoind_processes[0].pid
+            if self.ipv6IsEnabled is False:
+                expected = [ x for x in expected if not str(x[0]).startswith('::') ]
             assert_equal(set(get_bind_addrs(pid)), set(expected))
         finally:
             stop_nodes(nodes)
@@ -63,6 +65,9 @@ class RpcBindTest(BitcoinTestFramework):
 
     def run_test(self):
         assert(sys.platform == 'linux') # due to OS-specific network stats queries, this test works only on Linux
+        ipv6SettingsFile = open("/sys/module/ipv6/parameters/disable","r")
+        self.ipv6IsEnabled = ipv6SettingsFile.readline() == "0\n"
+        ipv6SettingsFile.close()
         # find the first non-loopback interface for testing
         non_loopback_ip = None
         for name,ip in all_interfaces():
@@ -80,7 +85,7 @@ class RpcBindTest(BitcoinTestFramework):
             [('127.0.0.1', defaultport), ('::1', defaultport)])
         # check default with rpcallowip (IPv6 any)
         self.run_bind_test(['127.0.0.1'], '127.0.0.1', [],
-            [('::0', defaultport)])
+            [('::0', defaultport)] )
         # check only IPv4 localhost (explicit)
         self.run_bind_test(['127.0.0.1'], '127.0.0.1', ['127.0.0.1'],
             [('127.0.0.1', defaultport)])

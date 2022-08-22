@@ -36,6 +36,9 @@ addnode connect to generic DNS name
 
 class ProxyTest(BitcoinTestFramework):
     def __init__(self):
+        ipv6SettingsFile = open("/sys/module/ipv6/parameters/disable","r")
+        self.ipv6IsEnabled = ipv6SettingsFile.readline() == "0\n"
+        ipv6SettingsFile.close()
         # Create two proxies on different ports
         # ... one unauthenticated
         self.conf1 = Socks5Configuration()
@@ -49,8 +52,11 @@ class ProxyTest(BitcoinTestFramework):
         self.conf2.auth = True
         # ... one on IPv6 with similar configuration
         self.conf3 = Socks5Configuration()
-        self.conf3.af = socket.AF_INET6
-        self.conf3.addr = ('::1', 15000 + (os.getpid() % 1000))
+        if self.ipv6IsEnabled:
+            self.conf3.af = socket.AF_INET6
+            self.conf3.addr = ('::1', 15000 + (os.getpid() % 1000))
+        else:
+            self.conf3.addr = ('127.0.0.1', 15000 + (os.getpid() % 1000))
         self.conf3.unauth = True
         self.conf3.auth = True
 

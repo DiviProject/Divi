@@ -19,12 +19,16 @@ import re
 from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
-portseed = 0
+portSeedsByPID = {}
+
+def set_port_seed(port_seed):
+    portSeedsByPID[os.getpid()] = port_seed
 
 def p2p_port(n):
-    return 11000 + n + 10 * (portseed % 99)
+    return 11000 + n + 20 * ( portSeedsByPID[os.getpid()] % 100)
+
 def rpc_port(n):
-    return 12000 + n + 10 * (portseed % 99)
+    return 13000 + n + 20 * ( portSeedsByPID[os.getpid()] % 100)
 
 def check_json_precision():
     """Make sure json library being used does not lose precision converting BTC values"""

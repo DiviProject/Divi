@@ -111,7 +111,7 @@ class BitcoinTestFramework(object):
             logging.basicConfig(level=logging.DEBUG)
 
         import util
-        util.portseed = self.options.port_seed
+        util.set_port_seed(self.options.port_seed)
 
         os.environ['PATH'] = self.options.prior_binaries+":"+self.options.srcdir+":"+os.environ['PATH']
 

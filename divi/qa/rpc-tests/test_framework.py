@@ -96,6 +96,8 @@ class BitcoinTestFramework(object):
                           help="Print out all RPC calls as they are made")
         parser.add_option("--portseed", dest="port_seed", default=os.getpid(), type=int,
                           help="The seed to use for assigning port numbers (default: current process id)")
+        parser.add_option("--cli_timeout", dest="cli_timeout", default=60.0, type=float,
+                          help="The rpc timeout to use for making rpc calls to a node instance")
         self.add_options(parser)
         (self.options, self.args) = parser.parse_args()
 
@@ -111,7 +113,8 @@ class BitcoinTestFramework(object):
             logging.basicConfig(level=logging.DEBUG)
 
         import util
-        util.portseed = self.options.port_seed
+        util.set_port_seed(self.options.port_seed)
+        util.set_cli_timeout(self.options.cli_timeout)
 
         os.environ['PATH'] = self.options.prior_binaries+":"+self.options.srcdir+":"+os.environ['PATH']
 

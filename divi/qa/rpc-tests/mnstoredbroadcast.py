@@ -112,7 +112,8 @@ class MnStoredBroadcastTest (MnTestFramework):
     # is expired.  It should be auto-refreshed when starting the masternode.
     blk = self.nodes[0].getblock (self.nodes[0].getbestblockhash ())
     for i in range (100):
-      set_node_times (self.nodes, blk["time"] + i * 100)
+      self.time = blk["time"] + i * 100
+      set_node_times (self.nodes, self.time)
       time.sleep (0.01)
 
     print ("Starting masternode with stored broadcast...")
@@ -125,6 +126,7 @@ class MnStoredBroadcastTest (MnTestFramework):
     assert_equal (res["status"], 4)
     assert_equal (res["message"], "Masternode successfully started")
     time.sleep (1)
+    self.wait_for_mnsync_on_nodes(True)
     for n in self.nodes:
       lst = n.listmasternodes ()
       assert_equal (len (lst), 1)

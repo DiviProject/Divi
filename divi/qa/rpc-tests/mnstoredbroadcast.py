@@ -48,7 +48,7 @@ class MnStoredBroadcastTest (MnTestFramework):
   def setup_network (self, config_line=None):
     self.nodes = start_nodes(self.number_of_nodes, self.options.tmpdir, extra_args=[self.base_args]*2)
     self.setup = [None]*self.number_of_nodes
-    connect_nodes_bi (self.nodes, 0, 1)
+    connect_nodes(self.nodes[0],1)
     self.is_network_split = False
     self.sync_all ()
 
@@ -61,7 +61,7 @@ class MnStoredBroadcastTest (MnTestFramework):
     print ("Updating masternode.conf...")
     self.stop_masternode_daemons()
     self.start_masternode_daemons()
-    connect_nodes_bi(self.nodes,0,1)
+    connect_nodes(self.nodes[0],1)
 
     print ("Preparing the masternode broadcast...")
     cfg = self.setup[1].cfg
@@ -103,7 +103,7 @@ class MnStoredBroadcastTest (MnTestFramework):
     print ("Restarting node...")
     self.stop_masternode_daemons()
     self.start_masternode_daemons()
-    connect_nodes_bi(self.nodes,0,1)
+    connect_nodes(self.nodes[0],1)
 
     print ("Testing imported data...")
     assert_equal (self.nodes[1].listmnbroadcasts (), expected)
@@ -115,6 +115,7 @@ class MnStoredBroadcastTest (MnTestFramework):
       self.time = blk["time"] + i * 100
       set_node_times (self.nodes, self.time)
       time.sleep (0.01)
+    connect_nodes(self.nodes[0],1)
 
     print ("Starting masternode with stored broadcast...")
     for n in self.nodes:
@@ -126,7 +127,7 @@ class MnStoredBroadcastTest (MnTestFramework):
     assert_equal (res["status"], 4)
     assert_equal (res["message"], "Masternode successfully started")
     time.sleep (1)
-    self.wait_for_mnsync_on_nodes(True)
+    self.wait_for_mn_list_to_sync(self.nodes[0],1);
     for n in self.nodes:
       lst = n.listmasternodes ()
       assert_equal (len (lst), 1)

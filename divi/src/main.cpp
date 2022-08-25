@@ -2037,10 +2037,8 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     CBlockIndex* pindex = assignedBlockIndex.first;
     assert(pindex != nullptr);
 
-    if (!ActivateBestChain(chainstate, sporkManager, state, pblock, checked))
-        return error("%s : ActivateBestChain failed", __func__);
+    if(!blockValidator.connectActiveChain(pindex,*pblock,checked)) return false;
 
-    VoteForMasternodePayee(pindex);
     LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,
               pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));
 

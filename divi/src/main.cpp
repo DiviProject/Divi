@@ -74,6 +74,7 @@
 #include <ProofOfStakeModule.h>
 #include <BlockFileHelpers.h>
 #include <ThreadManagementHelpers.h>
+#include <MainNotificationRegistration.h>
 
 using namespace boost;
 using namespace std;

@@ -196,19 +196,19 @@ static bool UpdateDBIndicesForNewBlock(
 NotificationInterfaceRegistry registry;
 MainNotificationSignals& g_signals = registry.getSignals();
 
-void RegisterValidationInterface(NotificationInterface* pwalletIn)
+void RegisterMainNotificationInterface(NotificationInterface* pwalletIn)
 {
-    registry.RegisterValidationInterface(pwalletIn);
+    registry.RegisterMainNotificationInterface(pwalletIn);
 }
 
-void UnregisterValidationInterface(NotificationInterface* pwalletIn)
+void UnregisterMainNotificationInterface(NotificationInterface* pwalletIn)
 {
-    registry.UnregisterValidationInterface(pwalletIn);
+    registry.UnregisterMainNotificationInterface(pwalletIn);
 }
 
-void UnregisterAllValidationInterfaces()
+void UnregisterAllMainNotificationInterfaces()
 {
-    registry.UnregisterAllValidationInterfaces();
+    registry.UnregisterAllMainNotificationInterfaces();
 }
 
 //////////////////////////////////////////////////////////////////////////////

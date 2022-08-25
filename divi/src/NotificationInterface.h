@@ -48,11 +48,11 @@ private:
     std::unordered_set<NotificationInterface*> registeredInterfaces;
 public:
     /** Register a wallet to receive updates from core */
-    void RegisterValidationInterface(NotificationInterface* pwalletIn);
+    void RegisterMainNotificationInterface(NotificationInterface* pwalletIn);
     /** Unregister a wallet from core */
-    void UnregisterValidationInterface(NotificationInterface* pwalletIn);
+    void UnregisterMainNotificationInterface(NotificationInterface* pwalletIn);
     /** Unregister all wallets from core */
-    void UnregisterAllValidationInterfaces();
+    void UnregisterAllMainNotificationInterfaces();
 
     MainNotificationSignals& getSignals() const;
 };

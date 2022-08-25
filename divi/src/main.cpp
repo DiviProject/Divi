@@ -2032,24 +2032,9 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     bool checked = true;
     if(!blockValidator.checkBlockRequirements(*pblock,checked)) return false;
 
-    CBlockIndex* pindex = nullptr;
-    {
-        LOCK(cs_main);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
-
-        MarkBlockAsReceived (pblock->GetHash ());
-        if (!checked) {
-            return error ("%s : CheckBlock FAILED for block %s", __func__, pblock->GetHash());
-        }
-
-        // Store to disk
-        bool ret = AcceptBlock(*pblock, chainstate, sporkManager, state, &pindex, dbp, checked);
-        if (pindex && pfrom) {
-            mapBlockSource[pindex->GetBlockHash ()] = pfrom->GetId ();
-        }
-        CheckBlockIndex (chainstate);
-        if (!ret)
-            return error ("%s : AcceptBlock FAILED", __func__);
-    }
+    std::pair<CBlockIndex*,bool> assignedBlockIndex = blockValidator.validateAndAssignBlockIndex(*pblock,checked);
+    if(!assignedBlockIndex.second) return false;
+    CBlockIndex* pindex = assignedBlockIndex.first;
     assert(pindex != nullptr);
 
     if (!ActivateBestChain(chainstate, sporkManager, state, pblock, checked))

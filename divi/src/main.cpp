@@ -2027,6 +2027,8 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
 {
     // Preliminary checks
     int64_t nStartTime = GetTimeMillis();
+
+    AcceptBlockValidator blockValidator(Params(), chainstate,sporkManager,state,pfrom, dbp);
     bool checked = CheckBlock(*pblock, state);
 
     // NovaCoin: check proof-of-stake block signature

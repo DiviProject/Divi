@@ -56,6 +56,7 @@
 #include <LoadWalletResult.h>
 #include <MultiWalletModule.h>
 #include <TransactionDiskAccessor.h>
+#include <MainNotificationRegistration.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"

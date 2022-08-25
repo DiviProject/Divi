@@ -2029,22 +2029,8 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     int64_t nStartTime = GetTimeMillis();
 
     AcceptBlockValidator blockValidator(Params(), chainstate,sporkManager,state,pfrom, dbp);
-    bool checked = CheckBlock(*pblock, state);
-
-    // NovaCoin: check proof-of-stake block signature
-    if (!CheckBlockSignature(*pblock))
-        return error("%s : bad proof-of-stake block signature",__func__);
-
-    const auto& blockMap = chainstate.GetBlockMap();
-
-    if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
-        //if we get this far, check if the prev block is our prev block, if not then request sync and return false
-        const auto mi = blockMap.find(pblock->hashPrevBlock);
-        if (mi == blockMap.end()) {
-            pfrom->PushMessage("getblocks", chainstate.ActiveChain().GetLocator(), uint256(0));
-            return false;
-        }
-    }
+    bool checked = true;
+    if(!blockValidator.checkBlockRequirements(*pblock,checked)) return false;
 
     CBlockIndex* pindex = nullptr;
     {

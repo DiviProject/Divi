@@ -181,6 +181,12 @@ public:
 
         return true;
     }
+
+    bool loadBlockForChainExtension(CValidationState& state, CBlock& block, CDiskBlockPos* blockfilePositionData) const
+    {
+        ChainstateManager::Reference chainstate;
+        return ProcessNewBlock(*chainstate, GetSporkManager(), state, NULL, &block, blockfilePositionData);
+    }
 };
 
 static std::string stakingWalletName = "";
@@ -471,6 +477,7 @@ bool LoadExternalBlockFile(ChainstateManager& chainstate, const CSporkManager& s
     static std::multimap<uint256, CDiskBlockPos> mapBlocksUnknownParent;
     int64_t nStart = GetTimeMillis();
 
+    BlockSubmitter blockSubmitter;
     const auto& blockMap = chainstate.GetBlockMap();
 
     int nLoaded = 0;
@@ -526,7 +533,7 @@ bool LoadExternalBlockFile(ChainstateManager& chainstate, const CSporkManager& s
                 const auto mit = blockMap.find(hash);
                 if (mit == blockMap.end() || (mit->second->nStatus & BLOCK_HAVE_DATA) == 0) {
                     CValidationState state;
-                    if (ProcessNewBlock(chainstate, sporkManager, state, NULL, &block, dbp))
+                    if (blockSubmitter.loadBlockForChainExtension(state, block, dbp))
                         nLoaded++;
                     if (state.IsError())
                         break;
@@ -546,7 +553,7 @@ bool LoadExternalBlockFile(ChainstateManager& chainstate, const CSporkManager& s
                         if (ReadBlockFromDisk(block, it->second)) {
                             LogPrintf("%s: Processing out of order child %s of %s\n", __func__, block.GetHash(), head);
                             CValidationState dummy;
-                            if (ProcessNewBlock(chainstate, sporkManager, dummy, NULL, &block, &it->second)) {
+                            if (blockSubmitter.loadBlockForChainExtension(dummy, block, &it->second)) {
                                 nLoaded++;
                                 queue.push_back(block.GetHash());
                             }

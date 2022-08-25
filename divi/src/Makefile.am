@@ -226,6 +226,7 @@ BITCOIN_CORE_H = \
   BlockRejects.h\
   QueuedBlock.h \
   BlockFileHelpers.h \
+  MainNotificationRegistration.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \
@@ -447,6 +448,7 @@ libbitcoin_server_a_SOURCES = \
   BlocksInFlightRegistry.cpp \
   NodeStateRegistry.cpp \
   BlockFileHelpers.cpp \
+  MainNotificationRegistration.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \

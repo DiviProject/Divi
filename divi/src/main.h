@@ -60,8 +60,6 @@ int GetHeight();
  */
 bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
-/** Import blocks from an external file */
-bool LoadExternalBlockFile(ChainstateManager& chainstate, const CSporkManager& sporkManager, FILE* fileIn, CDiskBlockPos* dbp = NULL);
 /** Initialize a new block tree database + block data on disk */
 bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkManager);
 /** Load the block tree and coins database from disk */

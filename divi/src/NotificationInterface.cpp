@@ -7,18 +7,18 @@
 
 MainNotificationSignals NotificationInterfaceRegistry::g_signals;
 
-void NotificationInterfaceRegistry::RegisterValidationInterface(NotificationInterface* pwalletIn)
+void NotificationInterfaceRegistry::RegisterMainNotificationInterface(NotificationInterface* pwalletIn)
 {
     registeredInterfaces.insert(pwalletIn);
     pwalletIn->RegisterWith(g_signals);
 }
-void NotificationInterfaceRegistry::UnregisterValidationInterface(NotificationInterface* pwalletIn)
+void NotificationInterfaceRegistry::UnregisterMainNotificationInterface(NotificationInterface* pwalletIn)
 {
     registeredInterfaces.erase(pwalletIn);
     pwalletIn->UnregisterWith(g_signals);
 }
 
-void NotificationInterfaceRegistry::UnregisterAllValidationInterfaces() {
+void NotificationInterfaceRegistry::UnregisterAllMainNotificationInterfaces() {
     for(NotificationInterface* interfaceObj: registeredInterfaces)
     {
         interfaceObj->UnregisterWith(g_signals);

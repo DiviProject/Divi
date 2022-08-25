@@ -215,7 +215,7 @@ void RestartCoinMintingModuleWithReloadedWallet()
     const bool restartMintingModule = stakingWalletName == activeWalletName;
     if(restartMintingModule)
         ShutdownCoinMintingModule();
-    UnregisterValidationInterface(GetWallet());
+    UnregisterMainNotificationInterface(GetWallet());
     multiWalletModule->reloadActiveWallet();
     GetWallet()->LockFully();
     LoadAndSelectWallet(activeWalletName, true);
@@ -311,7 +311,7 @@ void PrepareShutdown()
     {
         LOCK(cs_main);
         FlushStateToDisk();
-        UnregisterAllValidationInterfaces();
+        UnregisterAllMainNotificationInterfaces();
 #ifdef ENABLE_WALLET
         FinalizeMultiWalletModule();
 #endif
@@ -1028,7 +1028,7 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     {
         InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
     }
-    RegisterValidationInterface(GetWallet());
+    RegisterMainNotificationInterface(GetWallet());
     return true;
 }
 
@@ -1310,7 +1310,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(settings);
 
     if (pzmqNotificationInterface) {
-        RegisterValidationInterface(pzmqNotificationInterface);
+        RegisterMainNotificationInterface(pzmqNotificationInterface);
     }
 #endif
 

@@ -172,6 +172,7 @@ BITCOIN_CORE_H = \
   IndexDatabaseUpdates.h \
   BlockTransactionChecker.h \
   FeeAndPriorityCalculator.h \
+  BlockSubmitter.h \
   I_BlockSubmitter.h \
   I_Filesystem.h \
   I_WalletLoader.h \
@@ -425,6 +426,7 @@ libbitcoin_server_a_SOURCES = \
   BlockScanner.cpp \
   StartAndShutdownSignals.cpp \
   MultiWalletModule.cpp \
+  BlockSubmitter.cpp \
   init.cpp \
   TransactionLocationReference.cpp \
   IndexDatabaseUpdates.cpp \
@@ -571,6 +573,7 @@ libbitcoin_wallet_a_SOURCES = \
   netfulfilledman.cpp \
   reservekey.cpp \
   rpcdump.cpp \
+  BlockSubmitter.cpp \
   init.cpp \
   rpcwallet.cpp \
   VaultManagerDatabase.cpp \

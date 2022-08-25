@@ -51,7 +51,7 @@
 #include <txmempool.h>
 #include <StartAndShutdownSignals.h>
 #include <MerkleTxConfirmationNumberCalculator.h>
-#include <I_BlockSubmitter.h>
+#include <BlockSubmitter.h>
 #include <ThreadManagementHelpers.h>
 #include <LoadWalletResult.h>
 #include <MultiWalletModule.h>
@@ -153,48 +153,12 @@ CWallet* GetWallet()
 #endif
 }
 
-class BlockSubmitter final: public I_BlockSubmitter
-{
-private:
-    bool IsBlockValidChainExtension(CBlock* pblock) const
-    {
-        {
-            LOCK(cs_main);
-            const ChainstateManager::Reference chainstate;
-            if (pblock->hashPrevBlock != chainstate->ActiveChain().Tip()->GetBlockHash())
-                return error("%s : generated block is stale",__func__);
-        }
-        return true;
-    }
-public:
-    bool submitBlockForChainExtension(CBlock& block) const override
-    {
-        LogPrintf("%s\n", block);
-        LogPrintf("generated %s\n", FormatMoney(block.vtx[0].vout[0].nValue));
-
-        ChainstateManager::Reference chainstate;
-
-        // Process this block the same as if we had received it from another node
-        CValidationState state;
-        if (!IsBlockValidChainExtension(&block) || !ProcessNewBlock(*chainstate, GetSporkManager(), state, NULL, &block))
-            return error("%s : block not accepted",__func__);
-
-        return true;
-    }
-
-    bool loadBlockForChainExtension(CValidationState& state, CBlock& block, CDiskBlockPos* blockfilePositionData) const
-    {
-        ChainstateManager::Reference chainstate;
-        return ProcessNewBlock(*chainstate, GetSporkManager(), state, NULL, &block, blockfilePositionData);
-    }
-};
-
 static std::string stakingWalletName = "";
 
 void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& stakingWallet)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
-    static BlockSubmitter blockSubmitter;
+    static BlockSubmitter blockSubmitter(GetSporkManager());
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if(underRegressionTesting) settings.SetParameter("-staking", "0");
 
@@ -477,7 +441,7 @@ bool LoadExternalBlockFile(ChainstateManager& chainstate, const CSporkManager& s
     static std::multimap<uint256, CDiskBlockPos> mapBlocksUnknownParent;
     int64_t nStart = GetTimeMillis();
 
-    BlockSubmitter blockSubmitter;
+    BlockSubmitter blockSubmitter(sporkManager);
     const auto& blockMap = chainstate.GetBlockMap();
 
     int nLoaded = 0;

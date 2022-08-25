@@ -5,22 +5,22 @@
 NotificationInterfaceRegistry registry;
 MainNotificationSignals& g_signals = registry.getSignals();
 
-void TemporaryMainNotifications::RegisterMainNotificationInterface(NotificationInterface* pwalletIn)
+void RegisterMainNotificationInterface(NotificationInterface* pwalletIn)
 {
     registry.RegisterMainNotificationInterface(pwalletIn);
 }
 
-void TemporaryMainNotifications::UnregisterMainNotificationInterface(NotificationInterface* pwalletIn)
+void UnregisterMainNotificationInterface(NotificationInterface* pwalletIn)
 {
     registry.UnregisterMainNotificationInterface(pwalletIn);
 }
 
-void TemporaryMainNotifications::UnregisterAllMainNotificationInterfaces()
+void UnregisterAllMainNotificationInterfaces()
 {
     registry.UnregisterAllMainNotificationInterfaces();
 }
 
-MainNotificationSignals& TemporaryMainNotifications::GetMainNotificationInterface()
+MainNotificationSignals& GetMainNotificationInterface()
 {
     return g_signals;
 }

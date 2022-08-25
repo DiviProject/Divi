@@ -44,13 +44,6 @@ enum FlushStateMode {
 /** Flush all state, indexes and buffers to disk. */
 void FlushStateToDisk(FlushStateMode mode = FlushStateMode::FLUSH_STATE_ALWAYS);
 
-/** Register a wallet to receive updates from core */
-void RegisterMainNotificationInterface(NotificationInterface* pwalletIn);
-/** Unregister a wallet from core */
-void UnregisterMainNotificationInterface(NotificationInterface* pwalletIn);
-/** Unregister all wallets from core */
-void UnregisterAllMainNotificationInterfaces();
-
 /** Get Current Chain Height with acquired lock **/
 int GetHeight();
 

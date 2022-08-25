@@ -192,26 +192,6 @@ static bool UpdateDBIndicesForNewBlock(
 // dispatching functions
 //
 
-// These functions dispatch to one or all registered wallets
-
-NotificationInterfaceRegistry registry;
-MainNotificationSignals& g_signals = registry.getSignals();
-
-void RegisterMainNotificationInterface(NotificationInterface* pwalletIn)
-{
-    registry.RegisterMainNotificationInterface(pwalletIn);
-}
-
-void UnregisterMainNotificationInterface(NotificationInterface* pwalletIn)
-{
-    registry.UnregisterMainNotificationInterface(pwalletIn);
-}
-
-void UnregisterAllMainNotificationInterfaces()
-{
-    registry.UnregisterAllMainNotificationInterfaces();
-}
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Registration of network node signals.
@@ -691,7 +671,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         pool.addUnchecked(hash, entry, view);
     }
 
-    g_signals.SyncTransactions(std::vector<CTransaction>({tx}), NULL,TransactionSyncType::MEMPOOL_TX_ADD);
+    GetMainNotificationInterface().SyncTransactions(std::vector<CTransaction>({tx}), NULL,TransactionSyncType::MEMPOOL_TX_ADD);
 
     return true;
 }
@@ -1067,7 +1047,7 @@ bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode)
                 return state.Abort("Failed to write to coin database");
             // Update best block in wallet (so we can detect restored wallets).
             if (mode != FLUSH_STATE_IF_NEEDED) {
-                g_signals.SetBestChain(chainstate->ActiveChain().GetLocator());
+                GetMainNotificationInterface().SetBestChain(chainstate->ActiveChain().GetLocator());
             }
             nLastWrite = GetTimeMicros();
         }
@@ -1163,7 +1143,7 @@ bool static DisconnectTip(CValidationState& state, const bool updateCoinDatabase
     UpdateTip(pindexDelete->pprev);
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
-    g_signals.SyncTransactions(blockTransactions, NULL,TransactionSyncType::BLOCK_DISCONNECT);
+    GetMainNotificationInterface().SyncTransactions(blockTransactions, NULL,TransactionSyncType::BLOCK_DISCONNECT);
     return true;
 }
 
@@ -1242,9 +1222,9 @@ bool static ConnectTip(ChainstateManager& chainstate, const CSporkManager& spork
     // Tell wallet about transactions that went from mempool
     // to conflicted:
     std::vector<CTransaction> conflictedTransactions(txConflicted.begin(),txConflicted.end());
-    g_signals.SyncTransactions(conflictedTransactions, NULL,TransactionSyncType::CONFLICTED_TX);
+    GetMainNotificationInterface().SyncTransactions(conflictedTransactions, NULL,TransactionSyncType::CONFLICTED_TX);
     // ... and about transactions that got confirmed:
-    g_signals.SyncTransactions(pblock->vtx, pblock, TransactionSyncType::NEW_BLOCK);
+    GetMainNotificationInterface().SyncTransactions(pblock->vtx, pblock, TransactionSyncType::NEW_BLOCK);
 
     int64_t nTime6 = GetTimeMicros();
     nTimePostConnect += nTime6 - nTime5;
@@ -1464,7 +1444,7 @@ bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& spork
             NotifyPeersOfNewChainTip(chain.Height(),hashNewTip,nBlockEstimate);
             // Notify external listeners about the new tip.
             uiInterface.NotifyBlockTip(hashNewTip);
-            g_signals.UpdatedBlockTip(pindexNewTip);
+            GetMainNotificationInterface().UpdatedBlockTip(pindexNewTip);
             timeOfLastChainTipUpdate = GetTime();
         }
     } while (pindexMostWork != chain.Tip());

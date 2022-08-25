@@ -10,6 +10,7 @@
 #include <ActiveChainManager.h>
 #include "addrman.h"
 #include "alert.h"
+#include <I_BlockValidator.h>
 #include <blockmap.h>
 #include "BlockFileOpener.h"
 #include "BlockDiskAccessor.h"
@@ -1947,6 +1948,80 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
 }
 
 } // anonymous namespace
+
+class AcceptBlockValidator final: public I_BlockValidator
+{
+private:
+    const CChainParams& chainParameters_;
+    ChainstateManager& chainstate_;
+    const CSporkManager& sporkManager_;
+    CValidationState& state_;
+    CNode* pfrom_;
+    CDiskBlockPos* dbp_;
+public:
+    AcceptBlockValidator(
+        const CChainParams& chainParameters,
+        ChainstateManager& chainstate,
+        const CSporkManager& sporkManager,
+        CValidationState& state,
+        CNode* pfrom,
+        CDiskBlockPos* dbp
+        ): chainParameters_(chainParameters)
+        , chainstate_(chainstate)
+        , sporkManager_(sporkManager)
+        , state_(state)
+        , pfrom_(pfrom)
+        , dbp_(dbp)
+    {
+    }
+
+    std::pair<CBlockIndex*, bool> validateAndAssignBlockIndex(CBlock& block, bool& blockChecked) const override
+    {
+        CBlockIndex* pindex = nullptr;
+        {
+            LOCK(cs_main);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
+
+            MarkBlockAsReceived (block.GetHash ());
+            if (!blockChecked) {
+                return std::make_pair(pindex,error ("%s : CheckBlock FAILED for block %s", __func__, block.GetHash()));
+            }
+
+            // Store to disk
+            bool ret = AcceptBlock(block, chainstate_, sporkManager_, state_, &pindex, dbp_, blockChecked);
+            if (pindex && pfrom_) {
+                mapBlockSource[pindex->GetBlockHash ()] = pfrom_->GetId ();
+            }
+            CheckBlockIndex(chainstate_);
+            return std::make_pair(pindex,ret);
+        }
+    }
+    bool connectActiveChain(CBlockIndex* blockIndex, const CBlock& block, bool& blockChecked) const override
+    {
+        if (!ActivateBestChain(chainstate_, sporkManager_, state_, &block, blockChecked))
+            return error("%s : ActivateBestChain failed", __func__);
+
+        VoteForMasternodePayee(blockIndex);
+        return true;
+    }
+    bool checkBlockRequirements(const CBlock& block, bool& checked) const override
+    {
+         checked = CheckBlock(block, state_);
+        if (!CheckBlockSignature(block))
+            return error("%s : bad proof-of-stake block signature",__func__);
+
+        const auto& blockMap = chainstate_.GetBlockMap();
+
+        if (block.GetHash() != chainParameters_.HashGenesisBlock() && pfrom_ != NULL) {
+            //if we get this far, check if the prev block is our prev block, if not then request sync and return false
+            const auto mi = blockMap.find(block.hashPrevBlock);
+            if (mi == blockMap.end()) {
+                pfrom_->PushMessage("getblocks", chainstate_.ActiveChain().GetLocator(), uint256(0));
+                return false;
+            }
+        }
+        return true;
+    }
+};
 
 bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {

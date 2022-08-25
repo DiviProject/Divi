@@ -181,11 +181,6 @@ public:
 
         return true;
     }
-    static const BlockSubmitter& instance()
-    {
-        static BlockSubmitter blockSubmitter;
-        return blockSubmitter;
-    }
 };
 
 static std::string stakingWalletName = "";
@@ -193,6 +188,7 @@ static std::string stakingWalletName = "";
 void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& stakingWallet)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
+    static BlockSubmitter blockSubmitter;
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if(underRegressionTesting) settings.SetParameter("-staking", "0");
 
@@ -203,7 +199,7 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
         GetSporkManager(),
         feeAndPriorityCalculator.getMinimumRelayFeeRate(),
         GetPeerBlockNotifyService(),
-        BlockSubmitter::instance(),
+        blockSubmitter,
         cs_main,
         GetTransactionMemoryPool(),
         stakingWallet,

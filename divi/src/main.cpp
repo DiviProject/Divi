@@ -1171,19 +1171,16 @@ bool DisconnectBlocksAndReprocess(int blocks)
 }
 
 /** Delete all entries in setBlockIndexCandidates that are worse than the current tip. */
-static void PruneBlockIndexCandidates()
+static void PruneBlockIndexCandidates(const CChain& chain, std::set<CBlockIndex*, CBlockIndexWorkComparator>& candidateBlockIndices)
 {
-    const ChainstateManager::Reference chainstate;
-    const auto& chain = chainstate->ActiveChain();
-
     // Note that we can't delete the current block itself, as we may need to return to it later in case a
     // reorganization to a better block fails.
-    auto it = setBlockIndexCandidates.begin();
-    while (it != setBlockIndexCandidates.end() && setBlockIndexCandidates.value_comp()(*it, chain.Tip())) {
-        setBlockIndexCandidates.erase(it++);
+    auto it = candidateBlockIndices.begin();
+    while (it != candidateBlockIndices.end() && candidateBlockIndices.value_comp()(*it, chain.Tip())) {
+        candidateBlockIndices.erase(it++);
     }
     // Either the current tip or a successor of it we're working towards is left in setBlockIndexCandidates.
-    assert(!setBlockIndexCandidates.empty());
+    assert(!candidateBlockIndices.empty());
 }
 
 /**
@@ -1241,7 +1238,7 @@ static bool ActivateBestChainStep(ChainstateManager& chainstate, const CSporkMan
                     return false;
                 }
             } else {
-                PruneBlockIndexCandidates();
+                PruneBlockIndexCandidates(chain,setBlockIndexCandidates);
                 if (!pindexOldTip || chain.Tip()->nChainWork > pindexOldTip->nChainWork) {
                     // We're in a better position than we were. Return temporarily to release the lock.
                     fContinue = false;
@@ -2025,7 +2022,7 @@ bool static LoadBlockIndexState(string& strError)
         return true;
     chain.SetTip(it->second);
 
-    PruneBlockIndexCandidates();
+    PruneBlockIndexCandidates(chain,setBlockIndexCandidates);
 
     LogPrintf("%s: hashBestChain=%s height=%d date=%s progress=%f\n",
             __func__,

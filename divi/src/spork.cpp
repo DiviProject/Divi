@@ -33,10 +33,6 @@
 #include <I_ChainExtensionService.h>
 
 extern CCriticalSection cs_main;
-extern std::map<uint256, int64_t> mapRejectedBlocks;
-
-extern bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex);
-extern bool DisconnectBlocksAndReprocess(int blocks);
 
 /* The spork manager global is defined in init.cpp.  */
 extern std::unique_ptr<CSporkManager> sporkManagerInstance;
@@ -282,91 +278,11 @@ void CSporkManager::ProcessSpork(const I_ChainExtensionService& chainExtensionSe
 
 }
 
-namespace
-{
-
-void ReprocessBlocks(const I_ChainExtensionService& chainExtensionService, ChainstateManager& chainstate, const CSporkManager& sporkManager, int nBlocks)
-{
-    std::map<uint256, int64_t>::iterator it = mapRejectedBlocks.begin();
-    while (it != mapRejectedBlocks.end()) {
-        //use a window twice as large as is usual for the nBlocks we want to reset
-        if ((*it).second > GetTime() - (nBlocks * 60 * 5)) {
-            const auto& blockMap = chainstate.GetBlockMap();
-            const auto mi = blockMap.find(it->first);
-            if (mi != blockMap.end() && mi->second) {
-                LOCK(cs_main);
-
-                CBlockIndex* pindex = (*mi).second;
-                LogPrintf("ReprocessBlocks - %s\n", (*it).first);
-
-                CValidationState state;
-                ReconsiderBlock(chainstate, state, pindex);
-            }
-        }
-        ++it;
-    }
-
-    CValidationState state;
-    {
-        LOCK(cs_main);
-        DisconnectBlocksAndReprocess(nBlocks);
-    }
-
-    if (state.IsValid()) {
-        chainExtensionService.updateActiveChain(chainstate,sporkManager,state,nullptr,false);
-    }
-}
-
-} // anonymous namespace
-
 void CSporkManager::ExecuteSpork(const I_ChainExtensionService& chainExtensionService, int nSporkID)
 {
 
     if(IsMultiValueSpork(nSporkID)) {
         ExecuteMultiValueSpork(nSporkID);
-    }
-    else
-    {
-        auto strValue = mapSporksActive.at(nSporkID).front().strValue;
-        //correct fork via spork technology
-        if(nSporkID == SPORK_12_RECONSIDER_BLOCKS) {
-
-            int64_t nValue = 0;
-            try
-            {
-                nValue = boost::lexical_cast<int64_t>(strValue);
-            }
-            catch(boost::bad_lexical_cast &)
-            {
-            }
-
-            if(nValue <= 0) {
-                return;
-            }
-
-            // allow to reprocess 24h of blocks max, which should be enough to resolve any issues
-            int64_t nMaxBlocks = 576;
-            // this potentially can be a heavy operation, so only allow this to be executed once per 10 minutes
-            int64_t nTimeout = 10 * 60;
-
-            static int64_t nTimeExecuted = 0; // i.e. it was never executed before
-
-            if(GetTime() - nTimeExecuted < nTimeout) {
-                LogPrint("spork", "CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider blocks, too soon - %d/%d\n", GetTime() - nTimeExecuted, nTimeout);
-                return;
-            }
-
-            if(nValue > nMaxBlocks) {
-                LogPrintf("CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider too many blocks %d/%d\n", strValue, nMaxBlocks);
-                return;
-            }
-
-
-            LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
-
-            ReprocessBlocks(chainExtensionService, chainstate_, *this, nValue);
-            nTimeExecuted = GetTime();
-        }
     }
 }
 

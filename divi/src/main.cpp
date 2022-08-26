@@ -1287,6 +1287,7 @@ public:
 };
 
 bool ActivateBestChainTemp(
+    const ChainActivationHelpers& chainActivationHelper,
     ChainstateManager& chainstate,
     const CSporkManager& sporkManager,
     CValidationState& state,
@@ -1308,7 +1309,7 @@ bool ActivateBestChainTemp(
                 continue;
             }
 
-            pindexMostWork = FindMostWorkChain(chainstate, mapBlocksUnlinked, setBlockIndexCandidates);
+            pindexMostWork = chainActivationHelper.findMostWorkChain();
 
             // Whether we have anything to do at all.
             if (pindexMostWork == NULL || pindexMostWork == chain.Tip())
@@ -1353,7 +1354,8 @@ bool ActivateBestChain(
     const CBlock* pblock,
     bool fAlreadyChecked)
 {
-    return ActivateBestChainTemp(chainstate,sporkManager,state,pblock,fAlreadyChecked);
+    ChainActivationHelpers helper(chainstate,mapBlocksUnlinked,setBlockIndexCandidates);
+    return ActivateBestChainTemp(helper, chainstate,sporkManager,state,pblock,fAlreadyChecked);
 }
 
 bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)

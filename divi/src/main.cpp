@@ -1267,7 +1267,8 @@ public:
             nHeight = nTargetHeight;
 
             // Connect new blocks.
-            BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect) {
+            BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect)
+            {
                 if (!ConnectTip(chainstate_, sporkManager, state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
                     if (state.IsInvalid()) {
                         // The block violates a consensus rule.

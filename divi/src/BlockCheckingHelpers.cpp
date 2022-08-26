@@ -167,8 +167,7 @@ void VerifyBlockIndexTree(
     std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
     BlockIndexCandidates& setBlockIndexCandidates)
 {
-    static const bool defaultConsistencyChecks = Params().DefaultConsistencyChecks();
-    if (!settings.GetBoolArg("-checkblockindex",defaultConsistencyChecks)) {
+    if (!settings.GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks())) {
         return;
     }
 

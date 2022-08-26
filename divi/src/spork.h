@@ -10,6 +10,7 @@
 #include "pubkey.h"
 #include <amount.h>
 
+class I_ChainExtensionService;
 class CDataStream;
 class CNode;
 
@@ -176,7 +177,7 @@ private:
 
     bool AddActiveSpork(const CSporkMessage &spork);
     bool IsNewerSpork(const CSporkMessage &spork) const;
-    void ExecuteSpork(int nSporkID);
+    void ExecuteSpork(const I_ChainExtensionService& chainExtensionService,int nSporkID);
     void ExecuteMultiValueSpork(int nSporkID);
     int64_t GetBlockTime(int nHeight) const;
 
@@ -186,7 +187,7 @@ public:
     ~CSporkManager();
 
     void LoadSporksFromDB();
-    void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
+    void ProcessSpork(const I_ChainExtensionService& chainExtensionService, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     bool UpdateSpork(int nSporkID, std::string strValue);
     int GetActiveSporkCount() const;
 

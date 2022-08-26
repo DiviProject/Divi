@@ -30,13 +30,13 @@
 #include <ValidationState.h>
 #include <NodeStateRegistry.h>
 #include <utilstrencodings.h>
+#include <I_ChainExtensionService.h>
 
 extern CCriticalSection cs_main;
 extern std::map<uint256, int64_t> mapRejectedBlocks;
 
 extern bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex);
 extern bool DisconnectBlocksAndReprocess(int blocks);
-extern bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
 
 /* The spork manager global is defined in init.cpp.  */
 extern std::unique_ptr<CSporkManager> sporkManagerInstance;
@@ -217,7 +217,7 @@ void CSporkManager::LoadSporksFromDB()
     }
 }
 
-void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
+void CSporkManager::ProcessSpork(const I_ChainExtensionService& chainExtensionService, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "spork") {
 
@@ -260,7 +260,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         if(AddActiveSpork(spork)) {
             //does a task if needed
             pSporkDB_->WriteSpork(spork.nSporkID, spork);
-            ExecuteSpork(spork.nSporkID);
+            ExecuteSpork(chainExtensionService, spork.nSporkID);
         }
 
         spork.Relay();
@@ -285,7 +285,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
 namespace
 {
 
-void ReprocessBlocks(ChainstateManager& chainstate, const CSporkManager& sporkManager, int nBlocks)
+void ReprocessBlocks(const I_ChainExtensionService& chainExtensionService, ChainstateManager& chainstate, const CSporkManager& sporkManager, int nBlocks)
 {
     std::map<uint256, int64_t>::iterator it = mapRejectedBlocks.begin();
     while (it != mapRejectedBlocks.end()) {
@@ -313,13 +313,13 @@ void ReprocessBlocks(ChainstateManager& chainstate, const CSporkManager& sporkMa
     }
 
     if (state.IsValid()) {
-        ActivateBestChain(chainstate, sporkManager, state);
+        chainExtensionService.updateActiveChain(chainstate,sporkManager,state,nullptr,false);
     }
 }
 
 } // anonymous namespace
 
-void CSporkManager::ExecuteSpork(int nSporkID)
+void CSporkManager::ExecuteSpork(const I_ChainExtensionService& chainExtensionService, int nSporkID)
 {
 
     if(IsMultiValueSpork(nSporkID)) {
@@ -364,7 +364,7 @@ void CSporkManager::ExecuteSpork(int nSporkID)
 
             LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
 
-            ReprocessBlocks(chainstate_, *this, nValue);
+            ReprocessBlocks(chainExtensionService, chainstate_, *this, nValue);
             nTimeExecuted = GetTime();
         }
     }

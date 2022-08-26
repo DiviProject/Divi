@@ -1358,7 +1358,8 @@ bool ActivateBestChain(
             if (pindexMostWork == NULL || pindexMostWork == chain.Tip())
                 return true;
 
-            if (!ActivateBestChainStep(chainstate, sporkManager, state, pindexMostWork, pblock && pblock->GetHash() == pindexMostWork->GetBlockHash() ? pblock : NULL, fAlreadyChecked))
+            const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
+            if (!ActivateBestChainStep(chainstate, sporkManager, state, pindexMostWork, connectingBlock, fAlreadyChecked))
                 return false;
 
             pindexNewTip = chain.Tip();

@@ -1263,6 +1263,29 @@ static bool ActivateBestChainStep(ChainstateManager& chainstate, const CSporkMan
  * or an activated best chain. pblock is either NULL or a pointer to a block
  * that is already loaded (to avoid loading it again from disk).
  */
+
+class ChainActivationHelpers
+{
+private:
+    const ChainstateManager& chainstate_;
+    std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks_;
+    BlockIndexCandidates& blockIndexCandidates_;
+public:
+    ChainActivationHelpers(
+        const ChainstateManager& chainstate,
+        std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
+        BlockIndexCandidates& setBlockIndexCandidates
+        ): chainstate_(chainstate)
+        , unlinkedBlocks_(mapBlocksUnlinked)
+        , blockIndexCandidates_(setBlockIndexCandidates)
+    {
+    }
+    CBlockIndex* findMostWorkChain() const
+    {
+        return FindMostWorkChain(chainstate_, unlinkedBlocks_, blockIndexCandidates_);
+    }
+};
+
 bool ActivateBestChainTemp(
     ChainstateManager& chainstate,
     const CSporkManager& sporkManager,

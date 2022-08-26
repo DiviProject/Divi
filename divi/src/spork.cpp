@@ -20,6 +20,7 @@
 #include <blockmap.h>
 #include <FeeRate.h>
 #include <FeeAndPriorityCalculator.h>
+#include <ChainstateManager.h>
 
 #include <numeric>
 #include <boost/algorithm/string/join.hpp>

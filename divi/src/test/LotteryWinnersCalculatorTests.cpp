@@ -8,6 +8,7 @@
 #include <map>
 #include <test/test_only.h>
 
+#include <ChainstateManager.h>
 #include <MockSuperblockHeightValidator.h>
 #include <memory>
 #include <random.h>

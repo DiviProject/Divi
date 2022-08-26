@@ -1612,18 +1612,8 @@ bool AcceptBlockHeader(const CBlock& block, ChainstateManager& chainstate, const
         if (mi == blockMap.end())
             return state.DoS(0, error("%s : prev block %s not found", __func__, block.hashPrevBlock), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
-        if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
-            //If this "invalid" block is an exact match from the checkpoints, then reconsider it
-            if (pindex && checkpointsVerifier.CheckBlock(pindex->nHeight - 1, block.hashPrevBlock, true)) {
-                LogPrintf("%s : Reconsidering block %s height %d\n", __func__, pindexPrev->GetBlockHash(), pindexPrev->nHeight);
-                CValidationState statePrev;
-                ReconsiderBlock(chainstate, statePrev, pindexPrev);
-                if (statePrev.IsValid()) {
-                    ActivateBestChain(chainstate, sporkManager, statePrev);
-                    return true;
-                }
-            }
-
+        if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
+        {
             return state.DoS(100, error("%s : prev block height=%d hash=%s is invalid, unable to add block %s", __func__, pindexPrev->nHeight, block.hashPrevBlock, block.GetHash()),
                              REJECT_INVALID, "bad-prevblk");
         }
@@ -1657,17 +1647,8 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
         if (mi == blockMap.end())
             return state.DoS(0, error("%s : prev block %s not found", __func__, block.hashPrevBlock), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
-        if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
-            //If this "invalid" block is an exact match from the checkpoints, then reconsider it
-            if (checkpointsVerifier.CheckBlock(pindexPrev->nHeight, block.hashPrevBlock, true)) {
-                LogPrintf("%s : Reconsidering block %s height %d\n", __func__, pindexPrev->GetBlockHash(), pindexPrev->nHeight);
-                CValidationState statePrev;
-                ReconsiderBlock(chainstate, statePrev, pindexPrev);
-                if (statePrev.IsValid()) {
-                    ActivateBestChain(chainstate, sporkManager, statePrev);
-                    return true;
-                }
-            }
+        if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
+        {
             return state.DoS(100, error("%s : prev block %s is invalid, unable to add block %s", __func__, block.hashPrevBlock, block.GetHash()),
                              REJECT_INVALID, "bad-prevblk");
         }

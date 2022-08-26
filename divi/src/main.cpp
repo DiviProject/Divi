@@ -1234,7 +1234,7 @@ public:
         if (pblock == NULL)
             fAlreadyChecked = false;
         bool fInvalidFound = false;
-        const CBlockIndex* pindexOldTip = chain.Tip();
+        const CBlockIndex* previousChainTip = chain.Tip();
         const CBlockIndex* pindexFork = chain.FindFork(pindexMostWork);
 
         // Disconnect active blocks which are no longer in the best chain.
@@ -1273,7 +1273,7 @@ public:
                     }
                 } else {
                     PruneBlockIndexCandidates(chain,setBlockIndexCandidates);
-                    if (!pindexOldTip || chain.Tip()->nChainWork > pindexOldTip->nChainWork) {
+                    if (!previousChainTip || chain.Tip()->nChainWork > previousChainTip->nChainWork) {
                         // We're in a better position than we were. Return temporarily to release the lock.
                         fContinue = false;
                         break;

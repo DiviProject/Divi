@@ -19,6 +19,7 @@
 #include <BlockRejects.h>
 #include "BlockRewards.h"
 #include "BlockSigning.h"
+#include <ChainstateManager.h>
 #include "chainparams.h"
 #include "checkpoints.h"
 #include "checkqueue.h"

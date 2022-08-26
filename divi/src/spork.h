@@ -7,7 +7,6 @@
 #define SPORK_H
 
 #include "key.h"
-#include <ChainstateManager.h>
 #include "pubkey.h"
 #include <amount.h>
 
@@ -19,6 +18,7 @@ class CSporkManager;
 class CSporkDB;
 class uint256;
 class CChainParams;
+class ChainstateManager;
 
 /*
     Don't ever reuse these IDs for other sporks

@@ -1201,6 +1201,20 @@ public:
     {
     }
 
+    void computeNextBlockIndicesToConnect(
+        CBlockIndex* pindexMostWork,
+        const int startingHeight,
+        const int maxHeightTarget,
+        std::vector<CBlockIndex*>& blockIndicesToConnect) const
+    {
+        blockIndicesToConnect.clear();
+        CBlockIndex* pindexIter = pindexMostWork->GetAncestor(maxHeightTarget);
+        while (pindexIter && pindexIter->nHeight != startingHeight) {
+            blockIndicesToConnect.push_back(pindexIter);
+            pindexIter = pindexIter->pprev;
+        }
+    }
+
     /**
      * Make the best chain active, in multiple steps. The result is either failure
      * or an activated best chain. pblock is either NULL or a pointer to a block
@@ -1231,19 +1245,15 @@ public:
 
         // Build list of new blocks to connect.
         std::vector<CBlockIndex*> vpindexToConnect;
+        vpindexToConnect.reserve(32);
         bool fContinue = true;
         int nHeight = pindexFork ? pindexFork->nHeight : -1;
+
         while (fContinue && nHeight != pindexMostWork->nHeight) {
             // Don't iterate the entire list of potential improvements toward the best tip, as we likely only need
             // a few blocks along the way.
             int nTargetHeight = std::min(nHeight + 32, pindexMostWork->nHeight);
-            vpindexToConnect.clear();
-            vpindexToConnect.reserve(nTargetHeight - nHeight);
-            CBlockIndex* pindexIter = pindexMostWork->GetAncestor(nTargetHeight);
-            while (pindexIter && pindexIter->nHeight != nHeight) {
-                vpindexToConnect.push_back(pindexIter);
-                pindexIter = pindexIter->pprev;
-            }
+            computeNextBlockIndicesToConnect(pindexMostWork,nHeight,nTargetHeight,vpindexToConnect);
             nHeight = nTargetHeight;
 
             // Connect new blocks.

@@ -1330,7 +1330,12 @@ static bool ActivateBestChainStep(ChainstateManager& chainstate, const CSporkMan
  * or an activated best chain. pblock is either NULL or a pointer to a block
  * that is already loaded (to avoid loading it again from disk).
  */
-bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, const CBlock* pblock, bool fAlreadyChecked)
+bool ActivateBestChain(
+    ChainstateManager& chainstate,
+    const CSporkManager& sporkManager,
+    CValidationState& state,
+    const CBlock* pblock,
+    bool fAlreadyChecked)
 {
     const auto& chain = chainstate.ActiveChain();
 

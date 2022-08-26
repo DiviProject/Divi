@@ -310,3 +310,64 @@ void VerifyBlockIndexTree(
     // Check that we actually traversed the entire map.
     assert(nNodes == forward.size());
 }
+
+CBlockIndex* FindMostWorkChain(
+    const ChainstateManager& chainstate,
+    const CBlockIndex** mostWorkInvalidBlockIndexRef,
+    std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
+    BlockIndexCandidates& setBlockIndexCandidates)
+{
+    const auto& chain = chainstate.ActiveChain();
+    const CBlockIndex*& pindexBestInvalid = *mostWorkInvalidBlockIndexRef;
+    do {
+        CBlockIndex* pindexNew = NULL;
+
+        // Find the best candidate header.
+        {
+            std::set<CBlockIndex*, CBlockIndexWorkComparator>::reverse_iterator it = setBlockIndexCandidates.rbegin();
+            if (it == setBlockIndexCandidates.rend())
+                return NULL;
+            pindexNew = *it;
+        }
+
+        // Check whether all blocks on the path between the currently active chain and the candidate are valid.
+        // Just going until the active chain is an optimization, as we know all blocks in it are valid already.
+        CBlockIndex* pindexTest = pindexNew;
+        bool fInvalidAncestor = false;
+        while (pindexTest && !chain.Contains(pindexTest)) {
+            assert(pindexTest->nChainTx || pindexTest->nHeight == 0);
+
+            // Pruned nodes may have entries in setBlockIndexCandidates for
+            // which block files have been deleted.  Remove those as candidates
+            // for the most work chain if we come across them; we can't switch
+            // to a chain unless we have all the non-active-chain parent blocks.
+            bool fFailedChain = pindexTest->nStatus & BLOCK_FAILED_MASK;
+            bool fMissingData = !(pindexTest->nStatus & BLOCK_HAVE_DATA);
+            if (fFailedChain || fMissingData) {
+                // Candidate chain is not usable (either invalid or missing data)
+                if (fFailedChain && (pindexBestInvalid == NULL || pindexNew->nChainWork > pindexBestInvalid->nChainWork))
+                    pindexBestInvalid = pindexNew;
+                CBlockIndex* pindexFailed = pindexNew;
+                // Remove the entire chain from the set.
+                while (pindexTest != pindexFailed) {
+                    if (fFailedChain) {
+                        pindexFailed->nStatus |= BLOCK_FAILED_CHILD;
+                    } else if (fMissingData) {
+                        // If we're missing data, then add back to mapBlocksUnlinked,
+                        // so that if the block arrives in the future we can try adding
+                        // to setBlockIndexCandidates again.
+                        mapBlocksUnlinked.insert(std::make_pair(pindexFailed->pprev, pindexFailed));
+                    }
+                    setBlockIndexCandidates.erase(pindexFailed);
+                    pindexFailed = pindexFailed->pprev;
+                }
+                setBlockIndexCandidates.erase(pindexTest);
+                fInvalidAncestor = true;
+                break;
+            }
+            pindexTest = pindexTest->pprev;
+        }
+        if (!fInvalidAncestor)
+            return pindexNew;
+    } while (true);
+}

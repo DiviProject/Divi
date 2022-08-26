@@ -3015,8 +3015,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             }
         }
     } else {
-        static ChainExtensionService chainExtensionService;
-        sporkManager.ProcessSpork(chainExtensionService, pfrom, strCommand, vRecv);
+        sporkManager.ProcessSpork(cs_main, pfrom, strCommand, vRecv);
         ProcessMasternodeMessages(pfrom,strCommand,vRecv);
     }
 

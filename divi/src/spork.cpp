@@ -30,9 +30,6 @@
 #include <ValidationState.h>
 #include <NodeStateRegistry.h>
 #include <utilstrencodings.h>
-#include <I_ChainExtensionService.h>
-
-extern CCriticalSection cs_main;
 
 /* The spork manager global is defined in init.cpp.  */
 extern std::unique_ptr<CSporkManager> sporkManagerInstance;
@@ -213,7 +210,7 @@ void CSporkManager::LoadSporksFromDB()
     }
 }
 
-void CSporkManager::ProcessSpork(const I_ChainExtensionService& chainExtensionService, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
+void CSporkManager::ProcessSpork(CCriticalSection& mainCriticalSection, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "spork") {
 
@@ -224,7 +221,7 @@ void CSporkManager::ProcessSpork(const I_ChainExtensionService& chainExtensionSe
 
         std::string strLogMsg;
         {
-            LOCK(cs_main);
+            LOCK(mainCriticalSection);
             if(!chainstate_.ActiveChain().Tip()) return;
             strLogMsg = strprintf("SPORK -- hash: %s id: %d value: %10d bestHeight: %d peer=%d", hash.ToString(), spork.nSporkID, spork.strValue, chainstate_.ActiveChain().Height(), pfrom->id);
         }
@@ -256,7 +253,7 @@ void CSporkManager::ProcessSpork(const I_ChainExtensionService& chainExtensionSe
         if(AddActiveSpork(spork)) {
             //does a task if needed
             pSporkDB_->WriteSpork(spork.nSporkID, spork);
-            ExecuteSpork(chainExtensionService, spork.nSporkID);
+            ExecuteSpork(spork.nSporkID);
         }
 
         spork.Relay();
@@ -278,7 +275,7 @@ void CSporkManager::ProcessSpork(const I_ChainExtensionService& chainExtensionSe
 
 }
 
-void CSporkManager::ExecuteSpork(const I_ChainExtensionService& chainExtensionService, int nSporkID)
+void CSporkManager::ExecuteSpork(int nSporkID)
 {
 
     if(IsMultiValueSpork(nSporkID)) {

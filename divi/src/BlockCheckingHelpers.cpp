@@ -318,7 +318,7 @@ CBlockIndex* FindMostWorkChain(
     BlockIndexCandidates& setBlockIndexCandidates)
 {
     const auto& chain = chainstate.ActiveChain();
-    const CBlockIndex*& pindexBestInvalid = *mostWorkInvalidBlockIndexRef;
+    const CBlockIndex*& mostWorkInvalidBlockIndex = *mostWorkInvalidBlockIndexRef;
     do {
         CBlockIndex* pindexNew = NULL;
 
@@ -345,8 +345,8 @@ CBlockIndex* FindMostWorkChain(
             bool fMissingData = !(pindexTest->nStatus & BLOCK_HAVE_DATA);
             if (fFailedChain || fMissingData) {
                 // Candidate chain is not usable (either invalid or missing data)
-                if (fFailedChain && (pindexBestInvalid == NULL || pindexNew->nChainWork > pindexBestInvalid->nChainWork))
-                    pindexBestInvalid = pindexNew;
+                if (fFailedChain && (mostWorkInvalidBlockIndex == NULL || pindexNew->nChainWork > mostWorkInvalidBlockIndex->nChainWork))
+                    mostWorkInvalidBlockIndex = pindexNew;
                 CBlockIndex* pindexFailed = pindexNew;
                 // Remove the entire chain from the set.
                 while (pindexTest != pindexFailed) {

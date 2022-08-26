@@ -34,7 +34,7 @@ typedef std::set<CBlockIndex*, CBlockIndexWorkComparator> BlockIndexCandidates;
 bool CheckBlock(const CBlock& block, CValidationState& state);
 bool CheckTransaction(const CTransaction& tx, CValidationState& state);
 bool CheckTransaction(const CTransaction& tx, CValidationState& state, std::set<COutPoint>& usedInputsSet);
-void CheckBlockIndex(
+void VerifyBlockIndexTree(
     const ChainstateManager& chainstate,
     CCriticalSection& mainCriticalSection,
     std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,

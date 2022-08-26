@@ -161,7 +161,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 }
 
 
-void CheckBlockIndex(
+void VerifyBlockIndexTree(
     const ChainstateManager& chainstate,
     CCriticalSection& mainCriticalSection,
     std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
@@ -177,7 +177,7 @@ void CheckBlockIndex(
     const auto& blockMap = chainstate.GetBlockMap();
     const auto& chain = chainstate.ActiveChain();
 
-    // During a reindex, we read the genesis block and call CheckBlockIndex before ActivateBestChain,
+    // During a reindex, we read the genesis block and call VerifyBlockIndexTree before ActivateBestChain,
     // so we have the genesis block in mapBlockIndex but no active chain.  (A few of the tests when
     // iterating the block tree require that chainActive has been initialized.)
     if (chain.Height() < 0) {

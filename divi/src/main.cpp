@@ -1373,7 +1373,7 @@ bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& spork
             timeOfLastChainTipUpdate = GetTime();
         }
     } while (pindexMostWork != chain.Tip());
-    CheckBlockIndex(chainstate,cs_main, mapBlocksUnlinked, setBlockIndexCandidates);
+    VerifyBlockIndexTree(chainstate,cs_main, mapBlocksUnlinked, setBlockIndexCandidates);
 
     // Write changes periodically to disk, after relay.
     if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
@@ -1832,7 +1832,7 @@ public:
             if (pindex && pfrom_) {
                 mapBlockSource[pindex->GetBlockHash ()] = pfrom_->GetId ();
             }
-            CheckBlockIndex(chainstate_,cs_main,mapBlocksUnlinked,setBlockIndexCandidates);
+            VerifyBlockIndexTree(chainstate_,cs_main,mapBlocksUnlinked,setBlockIndexCandidates);
             return std::make_pair(pindex,ret);
         }
     }
@@ -2990,7 +2990,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             pfrom->PushMessage("getheaders", chain.GetLocator(pindexLast), uint256(0));
         }
 
-        CheckBlockIndex(*chainstate,cs_main,mapBlocksUnlinked,setBlockIndexCandidates);
+        VerifyBlockIndexTree(*chainstate,cs_main,mapBlocksUnlinked,setBlockIndexCandidates);
     }
     else if (strCommand == "block" && !fImporting && !fReindex) // Ignore blocks received while importing
     {

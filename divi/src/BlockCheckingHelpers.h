@@ -46,7 +46,8 @@ void VerifyBlockIndexTree(
  */
 CBlockIndex* FindMostWorkChain(
     const ChainstateManager& chainstate,
-    const CBlockIndex** mostWorkInvalidBlockIndexRef,
     std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
     BlockIndexCandidates& setBlockIndexCandidates);
+uint256 getMostWorkForInvalidBlockIndex();
+void updateMostWorkInvalidBlockIndex(const CBlockIndex* invalidBlockIndex, bool reconsider = false);
 #endif// BLOCK_CHECKING_HELPERS_H

@@ -116,9 +116,6 @@ std::map<uint256, int64_t> mapRejectedBlocks;
 // Internal stuff
 namespace
 {
-
-const CBlockIndex* mostWorkInvalidBlockIndex;
-
 /**
      * The set of all CBlockIndex entries with BLOCK_VALID_TRANSACTIONS (for itself and all ancestors) and
      * as good as our current tip or better. Entries may be failed, though.
@@ -652,7 +649,7 @@ void CheckForkWarningConditions()
     if (pindexBestForkTip && chain.Height() - pindexBestForkTip->nHeight >= 72)
         pindexBestForkTip = NULL;
 
-    if (pindexBestForkTip || (mostWorkInvalidBlockIndex && mostWorkInvalidBlockIndex->nChainWork > chain.Tip()->nChainWork + (GetBlockProof(*chain.Tip()) * 6))) {
+    if (pindexBestForkTip || (getMostWorkForInvalidBlockIndex() > chain.Tip()->nChainWork + (GetBlockProof(*chain.Tip()) * 6))) {
         if (!fLargeWorkForkFound && pindexBestForkBase) {
             if (pindexBestForkBase->phashBlock) {
                 std::string warning = std::string("'Warning: Large-work fork detected, forking after block ") +
@@ -717,8 +714,8 @@ namespace
 
 void InvalidChainFound(CBlockIndex* pindexNew)
 {
-    if (!mostWorkInvalidBlockIndex || pindexNew->nChainWork > mostWorkInvalidBlockIndex->nChainWork)
-        mostWorkInvalidBlockIndex = pindexNew;
+    if (pindexNew->nChainWork > getMostWorkForInvalidBlockIndex())
+        updateMostWorkInvalidBlockIndex(pindexNew);
 
     const ChainstateManager::Reference chainstate;
     const auto& chain = chainstate->ActiveChain();
@@ -1180,7 +1177,7 @@ bool DisconnectBlocksAndReprocess(int blocks)
 static CBlockIndex* FindMostWorkChain()
 {
     const ChainstateManager::Reference chainstate;
-    return FindMostWorkChain(*chainstate, &mostWorkInvalidBlockIndex, mapBlocksUnlinked, setBlockIndexCandidates);
+    return FindMostWorkChain(*chainstate, mapBlocksUnlinked, setBlockIndexCandidates);
 }
 
 /** Delete all entries in setBlockIndexCandidates that are worse than the current tip. */
@@ -1391,10 +1388,7 @@ bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBl
             if (blk.IsValid(BLOCK_VALID_TRANSACTIONS) && blk.nChainTx && setBlockIndexCandidates.value_comp()(chain.Tip(), &blk)) {
                 setBlockIndexCandidates.insert(&blk);
             }
-            if (&blk == mostWorkInvalidBlockIndex) {
-                // Reset invalid block marker if it was pointing to one of those.
-                mostWorkInvalidBlockIndex = NULL;
-            }
+            updateMostWorkInvalidBlockIndex(&blk, true);
         }
     }
 
@@ -1829,8 +1823,8 @@ static void InitializeBlockIndexGlobalData(BlockMap& blockIndicesByHash)
         }
         if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && (pindex->nChainTx || pindex->pprev == NULL))
             setBlockIndexCandidates.insert(pindex);
-        if (pindex->nStatus & BLOCK_FAILED_MASK && (!mostWorkInvalidBlockIndex || pindex->nChainWork > mostWorkInvalidBlockIndex->nChainWork))
-            mostWorkInvalidBlockIndex = pindex;
+        if (pindex->nStatus & BLOCK_FAILED_MASK && (pindex->nChainWork >  getMostWorkForInvalidBlockIndex() ))
+            updateMostWorkInvalidBlockIndex(pindex);
         if (pindex->pprev){
             pindex->BuildSkip();
             CBlockIndex* pAncestor = pindex->GetAncestor(pindex->vLotteryWinnersCoinstakes.height());
@@ -2055,7 +2049,7 @@ bool static LoadBlockIndexState(string& strError)
 void UnloadBlockIndex(ChainstateManager* chainstate)
 {
     setBlockIndexCandidates.clear();
-    mostWorkInvalidBlockIndex = nullptr;
+    updateMostWorkInvalidBlockIndex(nullptr);
 
     if (chainstate != nullptr)
     {

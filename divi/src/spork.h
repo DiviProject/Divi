@@ -20,6 +20,7 @@ class CSporkDB;
 class uint256;
 class CChainParams;
 class ChainstateManager;
+class CCriticalSection;
 
 /*
     Don't ever reuse these IDs for other sporks
@@ -177,7 +178,7 @@ private:
 
     bool AddActiveSpork(const CSporkMessage &spork);
     bool IsNewerSpork(const CSporkMessage &spork) const;
-    void ExecuteSpork(const I_ChainExtensionService& chainExtensionService,int nSporkID);
+    void ExecuteSpork(int nSporkID);
     void ExecuteMultiValueSpork(int nSporkID);
     int64_t GetBlockTime(int nHeight) const;
 
@@ -187,7 +188,7 @@ public:
     ~CSporkManager();
 
     void LoadSporksFromDB();
-    void ProcessSpork(const I_ChainExtensionService& chainExtensionService, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
+    void ProcessSpork(CCriticalSection& mainCriticalSection, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     bool UpdateSpork(int nSporkID, std::string strValue);
     int GetActiveSporkCount() const;
 

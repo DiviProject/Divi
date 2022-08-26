@@ -20,6 +20,7 @@
 #include <blockmap.h>
 
 extern Settings& settings;
+const CBlockIndex* mostWorkInvalidBlockIndex = nullptr;
 
 bool CheckBlock(const CBlock& block, CValidationState& state)
 {
@@ -313,12 +314,10 @@ void VerifyBlockIndexTree(
 
 CBlockIndex* FindMostWorkChain(
     const ChainstateManager& chainstate,
-    const CBlockIndex** mostWorkInvalidBlockIndexRef,
     std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
     BlockIndexCandidates& setBlockIndexCandidates)
 {
     const auto& chain = chainstate.ActiveChain();
-    const CBlockIndex*& mostWorkInvalidBlockIndex = *mostWorkInvalidBlockIndexRef;
     do {
         CBlockIndex* pindexNew = NULL;
 
@@ -370,4 +369,19 @@ CBlockIndex* FindMostWorkChain(
         if (!fInvalidAncestor)
             return pindexNew;
     } while (true);
+}
+uint256 getMostWorkForInvalidBlockIndex()
+{
+    return mostWorkInvalidBlockIndex? mostWorkInvalidBlockIndex->nChainWork: 0;
+}
+void updateMostWorkInvalidBlockIndex(const CBlockIndex* invalidBlockIndex, bool reconsider)
+{
+    if(reconsider && invalidBlockIndex == mostWorkInvalidBlockIndex)
+    {
+        mostWorkInvalidBlockIndex = nullptr;
+    }
+    else if(!reconsider)
+    {
+        mostWorkInvalidBlockIndex = invalidBlockIndex;
+    }
 }

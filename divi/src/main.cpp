@@ -8,6 +8,7 @@
 #include "main.h"
 
 #include <ActiveChainManager.h>
+#include <AcceptBlockValidator.h>
 #include "addrman.h"
 #include "alert.h"
 #include <I_BlockValidator.h>
@@ -1790,77 +1791,29 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
 
 } // anonymous namespace
 
-class AcceptBlockValidator final: public I_BlockValidator
+class ChainExtensionService final: public I_ChainExtensionService
 {
-private:
-    const CChainParams& chainParameters_;
-    ChainstateManager& chainstate_;
-    const CSporkManager& sporkManager_;
-    CValidationState& state_;
-    CNode* pfrom_;
-    CDiskBlockPos* dbp_;
 public:
-    AcceptBlockValidator(
-        const CChainParams& chainParameters,
+    virtual bool assignBlockIndex(
+        CBlock& block,
         ChainstateManager& chainstate,
         const CSporkManager& sporkManager,
         CValidationState& state,
-        CNode* pfrom,
-        CDiskBlockPos* dbp
-        ): chainParameters_(chainParameters)
-        , chainstate_(chainstate)
-        , sporkManager_(sporkManager)
-        , state_(state)
-        , pfrom_(pfrom)
-        , dbp_(dbp)
+        CBlockIndex** ppindex,
+        CDiskBlockPos* dbp,
+        bool fAlreadyCheckedBlock) const override
     {
+        return AcceptBlock(block,chainstate,sporkManager,state,ppindex,dbp,fAlreadyCheckedBlock);
     }
 
-    std::pair<CBlockIndex*, bool> validateAndAssignBlockIndex(CBlock& block, bool& blockChecked) const override
+    virtual bool updateActiveChain(
+        ChainstateManager& chainstate,
+        const CSporkManager& sporkManager,
+        CValidationState& state,
+        const CBlock* pblock,
+        bool fAlreadyChecked) const override
     {
-        CBlockIndex* pindex = nullptr;
-        {
-            LOCK(cs_main);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
-
-            MarkBlockAsReceived (block.GetHash ());
-            if (!blockChecked) {
-                return std::make_pair(pindex,error ("%s : CheckBlock FAILED for block %s", __func__, block.GetHash()));
-            }
-
-            // Store to disk
-            bool ret = AcceptBlock(block, chainstate_, sporkManager_, state_, &pindex, dbp_, blockChecked);
-            if (pindex && pfrom_) {
-                mapBlockSource[pindex->GetBlockHash ()] = pfrom_->GetId ();
-            }
-            VerifyBlockIndexTree(chainstate_,cs_main,mapBlocksUnlinked,setBlockIndexCandidates);
-            return std::make_pair(pindex,ret);
-        }
-    }
-    bool connectActiveChain(CBlockIndex* blockIndex, const CBlock& block, bool& blockChecked) const override
-    {
-        if (!ActivateBestChain(chainstate_, sporkManager_, state_, &block, blockChecked))
-            return error("%s : ActivateBestChain failed", __func__);
-
-        VoteForMasternodePayee(blockIndex);
-        return true;
-    }
-    bool checkBlockRequirements(const CBlock& block, bool& checked) const override
-    {
-         checked = CheckBlock(block, state_);
-        if (!CheckBlockSignature(block))
-            return error("%s : bad proof-of-stake block signature",__func__);
-
-        const auto& blockMap = chainstate_.GetBlockMap();
-
-        if (block.GetHash() != chainParameters_.HashGenesisBlock() && pfrom_ != NULL) {
-            //if we get this far, check if the prev block is our prev block, if not then request sync and return false
-            const auto mi = blockMap.find(block.hashPrevBlock);
-            if (mi == blockMap.end()) {
-                pfrom_->PushMessage("getblocks", chainstate_.ActiveChain().GetLocator(), uint256(0));
-                return false;
-            }
-        }
-        return true;
+        return ActivateBestChain(chainstate,sporkManager,state,pblock,fAlreadyChecked);
     }
 };
 
@@ -1869,7 +1822,8 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     // Preliminary checks
     int64_t nStartTime = GetTimeMillis();
 
-    AcceptBlockValidator blockValidator(Params(), chainstate,sporkManager,state,pfrom, dbp);
+    ChainExtensionService chainExtensionService;
+    AcceptBlockValidator blockValidator(chainExtensionService, cs_main, Params(), mapBlockSource, chainstate,sporkManager,state,pfrom, dbp);
     bool checked = true;
     if(!blockValidator.checkBlockRequirements(*pblock,checked)) return false;
 
@@ -1880,6 +1834,7 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
 
     if(!blockValidator.connectActiveChain(pindex,*pblock,checked)) return false;
 
+    VerifyBlockIndexTree(chainstate,cs_main,mapBlocksUnlinked,setBlockIndexCandidates);
     LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,
               pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));
 

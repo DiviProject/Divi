@@ -230,6 +230,7 @@ BITCOIN_CORE_H = \
   BlockFileHelpers.h \
   MainNotificationRegistration.h \
   BlockCheckingHelpers.h \
+  AcceptBlockValidator.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \
@@ -454,6 +455,7 @@ libbitcoin_server_a_SOURCES = \
   BlockFileHelpers.cpp \
   MainNotificationRegistration.cpp \
   BlockCheckingHelpers.cpp \
+  AcceptBlockValidator.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \

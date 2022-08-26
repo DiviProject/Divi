@@ -1337,7 +1337,6 @@ bool ActivateBestChainTemp(
             timeOfLastChainTipUpdate = GetTime();
         }
     } while (pindexMostWork != chain.Tip());
-    VerifyBlockIndexTree(chainstate,cs_main, mapBlocksUnlinked, setBlockIndexCandidates);
 
     // Write changes periodically to disk, after relay.
     if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
@@ -1355,7 +1354,9 @@ bool ActivateBestChain(
     bool fAlreadyChecked)
 {
     ChainActivationHelpers helper(chainstate,mapBlocksUnlinked,setBlockIndexCandidates);
-    return ActivateBestChainTemp(helper, chainstate,sporkManager,state,pblock,fAlreadyChecked);
+    const bool result = ActivateBestChainTemp(helper, chainstate,sporkManager,state,pblock,fAlreadyChecked);
+    VerifyBlockIndexTree(chainstate,cs_main, mapBlocksUnlinked, setBlockIndexCandidates);
+    return result;
 }
 
 bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)

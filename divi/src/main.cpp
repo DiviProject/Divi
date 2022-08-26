@@ -1170,16 +1170,6 @@ bool DisconnectBlocksAndReprocess(int blocks)
     return true;
 }
 
-/**
- * Return the tip of the chain with the most work in it, that isn't
- * known to be invalid (it's however far from certain to be valid).
- */
-static CBlockIndex* FindMostWorkChain()
-{
-    const ChainstateManager::Reference chainstate;
-    return FindMostWorkChain(*chainstate, mapBlocksUnlinked, setBlockIndexCandidates);
-}
-
 /** Delete all entries in setBlockIndexCandidates that are worse than the current tip. */
 static void PruneBlockIndexCandidates()
 {
@@ -1297,7 +1287,7 @@ bool ActivateBestChain(
                 continue;
             }
 
-            pindexMostWork = FindMostWorkChain();
+            pindexMostWork = FindMostWorkChain(chainstate, mapBlocksUnlinked, setBlockIndexCandidates);
 
             // Whether we have anything to do at all.
             if (pindexMostWork == NULL || pindexMostWork == chain.Tip())

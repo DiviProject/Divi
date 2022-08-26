@@ -1184,101 +1184,101 @@ static void PruneBlockIndexCandidates(const CChain& chain, std::set<CBlockIndex*
     assert(!candidateBlockIndices.empty());
 }
 
-/**
- * Try to make some progress towards making pindexMostWork the active block.
- * pblock is either NULL or a pointer to a CBlock corresponding to pindexMostWork.
- */
-static bool ActivateBestChainStep(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CBlockIndex* pindexMostWork, const CBlock* pblock, bool fAlreadyChecked)
-{
-    AssertLockHeld(cs_main);
-
-    const auto& chain = chainstate.ActiveChain();
-
-    if (pblock == NULL)
-        fAlreadyChecked = false;
-    bool fInvalidFound = false;
-    const CBlockIndex* pindexOldTip = chain.Tip();
-    const CBlockIndex* pindexFork = chain.FindFork(pindexMostWork);
-
-    // Disconnect active blocks which are no longer in the best chain.
-    while (chain.Tip() && chain.Tip() != pindexFork) {
-        if (!DisconnectTip(state))
-            return false;
-    }
-
-    // Build list of new blocks to connect.
-    std::vector<CBlockIndex*> vpindexToConnect;
-    bool fContinue = true;
-    int nHeight = pindexFork ? pindexFork->nHeight : -1;
-    while (fContinue && nHeight != pindexMostWork->nHeight) {
-        // Don't iterate the entire list of potential improvements toward the best tip, as we likely only need
-        // a few blocks along the way.
-        int nTargetHeight = std::min(nHeight + 32, pindexMostWork->nHeight);
-        vpindexToConnect.clear();
-        vpindexToConnect.reserve(nTargetHeight - nHeight);
-        CBlockIndex* pindexIter = pindexMostWork->GetAncestor(nTargetHeight);
-        while (pindexIter && pindexIter->nHeight != nHeight) {
-            vpindexToConnect.push_back(pindexIter);
-            pindexIter = pindexIter->pprev;
-        }
-        nHeight = nTargetHeight;
-
-        // Connect new blocks.
-        BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect) {
-            if (!ConnectTip(chainstate, sporkManager, state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
-                if (state.IsInvalid()) {
-                    // The block violates a consensus rule.
-                    if (!state.CorruptionPossible())
-                        InvalidChainFound(vpindexToConnect.back());
-                    state = CValidationState();
-                    fInvalidFound = true;
-                    fContinue = false;
-                    break;
-                } else {
-                    // A system error occurred (disk space, database error, ...).
-                    return false;
-                }
-            } else {
-                PruneBlockIndexCandidates(chain,setBlockIndexCandidates);
-                if (!pindexOldTip || chain.Tip()->nChainWork > pindexOldTip->nChainWork) {
-                    // We're in a better position than we were. Return temporarily to release the lock.
-                    fContinue = false;
-                    break;
-                }
-            }
-        }
-    }
-
-    // Callbacks/notifications for a new best chain.
-    if (fInvalidFound)
-        CheckForkWarningConditionsOnNewFork(vpindexToConnect.back());
-    else
-        CheckForkWarningConditions();
-
-    return true;
-}
-
-/**
- * Make the best chain active, in multiple steps. The result is either failure
- * or an activated best chain. pblock is either NULL or a pointer to a block
- * that is already loaded (to avoid loading it again from disk).
- */
-
 class ChainActivationHelpers
 {
 private:
-    const ChainstateManager& chainstate_;
+    ChainstateManager& chainstate_;
     std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks_;
     BlockIndexCandidates& blockIndexCandidates_;
 public:
     ChainActivationHelpers(
-        const ChainstateManager& chainstate,
+        ChainstateManager& chainstate,
         std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
         BlockIndexCandidates& setBlockIndexCandidates
         ): chainstate_(chainstate)
         , unlinkedBlocks_(mapBlocksUnlinked)
         , blockIndexCandidates_(setBlockIndexCandidates)
     {
+    }
+
+    /**
+     * Make the best chain active, in multiple steps. The result is either failure
+     * or an activated best chain. pblock is either NULL or a pointer to a block
+     * that is already loaded (to avoid loading it again from disk).
+     */
+    bool activateBestChainStep(
+        const CSporkManager& sporkManager,
+        CValidationState& state,
+        CBlockIndex* pindexMostWork,
+        const CBlock* pblock,
+        bool fAlreadyChecked) const
+    {
+        AssertLockHeld(cs_main);
+
+        const auto& chain = chainstate_.ActiveChain();
+
+        if (pblock == NULL)
+            fAlreadyChecked = false;
+        bool fInvalidFound = false;
+        const CBlockIndex* pindexOldTip = chain.Tip();
+        const CBlockIndex* pindexFork = chain.FindFork(pindexMostWork);
+
+        // Disconnect active blocks which are no longer in the best chain.
+        while (chain.Tip() && chain.Tip() != pindexFork) {
+            if (!DisconnectTip(state))
+                return false;
+        }
+
+        // Build list of new blocks to connect.
+        std::vector<CBlockIndex*> vpindexToConnect;
+        bool fContinue = true;
+        int nHeight = pindexFork ? pindexFork->nHeight : -1;
+        while (fContinue && nHeight != pindexMostWork->nHeight) {
+            // Don't iterate the entire list of potential improvements toward the best tip, as we likely only need
+            // a few blocks along the way.
+            int nTargetHeight = std::min(nHeight + 32, pindexMostWork->nHeight);
+            vpindexToConnect.clear();
+            vpindexToConnect.reserve(nTargetHeight - nHeight);
+            CBlockIndex* pindexIter = pindexMostWork->GetAncestor(nTargetHeight);
+            while (pindexIter && pindexIter->nHeight != nHeight) {
+                vpindexToConnect.push_back(pindexIter);
+                pindexIter = pindexIter->pprev;
+            }
+            nHeight = nTargetHeight;
+
+            // Connect new blocks.
+            BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect) {
+                if (!ConnectTip(chainstate_, sporkManager, state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
+                    if (state.IsInvalid()) {
+                        // The block violates a consensus rule.
+                        if (!state.CorruptionPossible())
+                            InvalidChainFound(vpindexToConnect.back());
+                        state = CValidationState();
+                        fInvalidFound = true;
+                        fContinue = false;
+                        break;
+                    } else {
+                        // A system error occurred (disk space, database error, ...).
+                        return false;
+                    }
+                } else {
+                    PruneBlockIndexCandidates(chain,setBlockIndexCandidates);
+                    if (!pindexOldTip || chain.Tip()->nChainWork > pindexOldTip->nChainWork) {
+                        // We're in a better position than we were. Return temporarily to release the lock.
+                        fContinue = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Callbacks/notifications for a new best chain.
+        if (fInvalidFound)
+            CheckForkWarningConditionsOnNewFork(vpindexToConnect.back());
+        else
+            CheckForkWarningConditions();
+
+        return true;
     }
     CBlockIndex* findMostWorkChain() const
     {
@@ -1316,7 +1316,7 @@ bool ActivateBestChainTemp(
                 return true;
 
             const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
-            if (!ActivateBestChainStep(chainstate, sporkManager, state, pindexMostWork, connectingBlock, fAlreadyChecked))
+            if (!chainActivationHelper.activateBestChainStep(sporkManager, state, pindexMostWork, connectingBlock, fAlreadyChecked))
                 return false;
 
             pindexNewTip = chain.Tip();

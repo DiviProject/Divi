@@ -1215,6 +1215,20 @@ public:
         }
     }
 
+    bool rollBackChainTipToConnectToMostWorkChain(
+        const CChain& chain,
+        const CBlockIndex* mostWorkBlockIndex,
+        CValidationState& state) const
+    {
+        const CBlockIndex* pindexFork = chain.FindFork(mostWorkBlockIndex);
+        // Disconnect active blocks which are no longer in the best chain.
+        while (chain.Tip() && chain.Tip() != pindexFork) {
+            if (!DisconnectTip(state))
+                return false;
+        }
+        return true;
+    }
+
     /**
      * Make the best chain active, in multiple steps. The result is either failure
      * or an activated best chain. pblock is either NULL or a pointer to a block
@@ -1235,20 +1249,16 @@ public:
             fAlreadyChecked = false;
         bool fInvalidFound = false;
         const CBlockIndex* previousChainTip = chain.Tip();
-        const CBlockIndex* pindexFork = chain.FindFork(pindexMostWork);
 
         // Disconnect active blocks which are no longer in the best chain.
-        while (chain.Tip() && chain.Tip() != pindexFork) {
-            if (!DisconnectTip(state))
-                return false;
-        }
+        if(!rollBackChainTipToConnectToMostWorkChain(chain, pindexMostWork, state)) return false;
+        const CBlockIndex* rolledBackChainTip = chain.Tip();
+        int nHeight = rolledBackChainTip? rolledBackChainTip->nHeight : -1;
 
         // Build list of new blocks to connect.
         std::vector<CBlockIndex*> vpindexToConnect;
         vpindexToConnect.reserve(32);
         bool fContinue = true;
-        int nHeight = pindexFork ? pindexFork->nHeight : -1;
-
         while (fContinue && nHeight != pindexMostWork->nHeight) {
             // Don't iterate the entire list of potential improvements toward the best tip, as we likely only need
             // a few blocks along the way.

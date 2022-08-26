@@ -4,6 +4,7 @@
 #include <map>
 #include <NodeId.h>
 #include <uint256.h>
+#include <I_ChainExtensionService.h>
 
 class CChainParams;
 class ChainstateManager;
@@ -13,27 +14,6 @@ class CNode;
 class CDiskBlockPos;
 class CCriticalSection;
 
-class I_ChainExtensionService
-{
-public:
-    virtual ~I_ChainExtensionService(){}
-
-    virtual bool assignBlockIndex(
-        CBlock& block,
-        ChainstateManager& chainstate,
-        const CSporkManager& sporkManager,
-        CValidationState& state,
-        CBlockIndex** ppindex,
-        CDiskBlockPos* dbp,
-        bool fAlreadyCheckedBlock) const = 0;
-
-    virtual bool updateActiveChain(
-        ChainstateManager& chainstate,
-        const CSporkManager& sporkManager,
-        CValidationState& state,
-        const CBlock* pblock,
-        bool fAlreadyChecked) const = 0;
-};
 
 class AcceptBlockValidator final: public I_BlockValidator
 {

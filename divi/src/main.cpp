@@ -1263,7 +1263,7 @@ static bool ActivateBestChainStep(ChainstateManager& chainstate, const CSporkMan
  * or an activated best chain. pblock is either NULL or a pointer to a block
  * that is already loaded (to avoid loading it again from disk).
  */
-bool ActivateBestChain(
+bool ActivateBestChainTemp(
     ChainstateManager& chainstate,
     const CSporkManager& sporkManager,
     CValidationState& state,
@@ -1321,6 +1321,16 @@ bool ActivateBestChain(
     }
 
     return true;
+}
+
+bool ActivateBestChain(
+    ChainstateManager& chainstate,
+    const CSporkManager& sporkManager,
+    CValidationState& state,
+    const CBlock* pblock,
+    bool fAlreadyChecked)
+{
+    return ActivateBestChainTemp(chainstate,sporkManager,state,pblock,fAlreadyChecked);
 }
 
 bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)

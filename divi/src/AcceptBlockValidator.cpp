@@ -7,7 +7,6 @@
 #include <NodeStateRegistry.h>
 #include <map>
 #include <NodeId.h>
-#include <MasternodeModule.h>
 #include <chain.h>
 #include <BlockCheckingHelpers.h>
 #include <ChainstateManager.h>
@@ -61,7 +60,6 @@ bool AcceptBlockValidator::connectActiveChain(CBlockIndex* blockIndex, const CBl
     if (!chainExtensionService_.updateActiveChain(chainstate_, sporkManager_, state_, &block, blockChecked))
         return error("%s : updateActiveChain failed", __func__);
 
-    VoteForMasternodePayee(blockIndex);
     return true;
 }
 bool AcceptBlockValidator::checkBlockRequirements(const CBlock& block, bool& checked) const

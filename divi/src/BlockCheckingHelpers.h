@@ -39,4 +39,14 @@ void VerifyBlockIndexTree(
     CCriticalSection& mainCriticalSection,
     std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
     BlockIndexCandidates& setBlockIndexCandidates);
+
+/**
+ * Return the tip of the chain with the most work in it, that isn't
+ * known to be invalid (it's however far from certain to be valid).
+ */
+CBlockIndex* FindMostWorkChain(
+    const ChainstateManager& chainstate,
+    const CBlockIndex** mostWorkInvalidBlockIndexRef,
+    std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
+    BlockIndexCandidates& setBlockIndexCandidates);
 #endif// BLOCK_CHECKING_HELPERS_H

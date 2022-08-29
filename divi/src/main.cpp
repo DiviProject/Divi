@@ -1072,6 +1072,7 @@ private:
     std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks_;
     BlockIndexCandidates& blockIndexCandidates_;
     CValidationState& state_;
+    ChainTipManager chainTipManager_;
 public:
     ChainActivationHelpers(
         ChainstateManager& chainstate,
@@ -1082,6 +1083,7 @@ public:
         , unlinkedBlocks_(unlinkedBlocks)
         , blockIndexCandidates_(blockIndexCandidates)
         , state_(state)
+        , chainTipManager_(state_,false)
     {
     }
 
@@ -1106,7 +1108,7 @@ public:
         const CBlockIndex* pindexFork = chain.FindFork(mostWorkBlockIndex);
         // Disconnect active blocks which are no longer in the best chain.
         while (chain.Tip() && chain.Tip() != pindexFork) {
-            if (!DisconnectTip(state_))
+            if (!chainTipManager_.disconnectTip())
                 return false;
         }
         return true;

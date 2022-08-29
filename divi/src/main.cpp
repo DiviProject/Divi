@@ -1325,8 +1325,11 @@ public:
             nHeight = nTargetHeight;
 
             // Connect new blocks.
-            BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect)
+            for(std::vector<CBlockIndex*>::reverse_iterator it = vpindexToConnect.rbegin();
+                it != vpindexToConnect.rend();
+                ++it)
             {
+                CBlockIndex* pindexConnect = *it;
                 const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
                 const BlockConnectionResult result = tryToConnectNextBlock(
                     sporkManager,chain, blockToConnect, fAlreadyChecked,previousChainTip,vpindexToConnect.back(),pindexConnect,state);

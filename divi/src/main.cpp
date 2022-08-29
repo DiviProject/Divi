@@ -1234,6 +1234,25 @@ public:
      * or an activated best chain. pblock is either NULL or a pointer to a block
      * that is already loaded (to avoid loading it again from disk).
      */
+    bool checkBlockConnectionState(
+        CValidationState& state,
+        CBlockIndex* lastBlockIndex) const
+    {
+        if (state.IsInvalid())
+        {
+            // The block violates a consensus rule.
+            if (!state.CorruptionPossible())
+                InvalidChainFound(lastBlockIndex);
+            state = CValidationState();
+            return true;
+        }
+        else
+        {
+            // A system error occurred (disk space, database error, ...).
+            return false;
+        }
+    }
+
     bool activateBestChainStep(
         const CSporkManager& sporkManager,
         CValidationState& state,
@@ -1270,16 +1289,14 @@ public:
             BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect)
             {
                 if (!ConnectTip(chainstate_, sporkManager, state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
-                    if (state.IsInvalid()) {
-                        // The block violates a consensus rule.
-                        if (!state.CorruptionPossible())
-                            InvalidChainFound(vpindexToConnect.back());
-                        state = CValidationState();
+                    if(checkBlockConnectionState(state,vpindexToConnect.back() ))
+                    {
                         fInvalidFound = true;
                         fContinue = false;
                         break;
-                    } else {
-                        // A system error occurred (disk space, database error, ...).
+                    }
+                    else
+                    {
                         return false;
                     }
                 } else {

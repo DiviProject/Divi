@@ -70,13 +70,14 @@ bool InvalidateBlock(
     // Mark the block itself as invalid.
     pindex->nStatus |= BLOCK_FAILED_VALID;
     BlockFileHelpers::RecordDirtyBlockIndex(pindex);
-    setBlockIndexCandidates.erase(pindex);
+    std::set<CBlockIndex*, CBlockIndexWorkComparator>& candidateBlockIndices = GetBlockIndexCandidates();
+    candidateBlockIndices.erase(pindex);
 
     while (chain.Contains(pindex)) {
         CBlockIndex* pindexWalk = blockMap.at(chain.Tip()->GetBlockHash());
         pindexWalk->nStatus |= BLOCK_FAILED_CHILD;
         BlockFileHelpers::RecordDirtyBlockIndex(pindexWalk);
-        setBlockIndexCandidates.erase(pindexWalk);
+        candidateBlockIndices.erase(pindexWalk);
         // ActivateBestChain considers blocks already in chainActive
         // unconditionally valid already, so force disconnect away from it.
         if (!chainTipManager.disconnectTip()) {
@@ -84,11 +85,11 @@ bool InvalidateBlock(
         }
     }
 
-    // The resulting new best tip may not be in setBlockIndexCandidates anymore, so
+    // The resulting new best tip may not be in candidateBlockIndices anymore, so
     // add them again.
     for (const auto& entry : blockMap) {
-        if (entry.second->IsValid(BLOCK_VALID_TRANSACTIONS) && entry.second->nChainTx && !setBlockIndexCandidates.value_comp()(entry.second, chain.Tip())) {
-            setBlockIndexCandidates.insert(entry.second);
+        if (entry.second->IsValid(BLOCK_VALID_TRANSACTIONS) && entry.second->nChainTx && !candidateBlockIndices.value_comp()(entry.second, chain.Tip())) {
+            candidateBlockIndices.insert(entry.second);
         }
     }
 
@@ -114,9 +115,10 @@ void InvalidBlockFound(
         }
     }
     if (!state.CorruptionPossible()) {
+        std::set<CBlockIndex*, CBlockIndexWorkComparator>& candidateBlockIndices = GetBlockIndexCandidates();
         pindex->nStatus |= BLOCK_FAILED_VALID;
         BlockFileHelpers::RecordDirtyBlockIndex(pindex);
-        setBlockIndexCandidates.erase(pindex);
+        candidateBlockIndices.erase(pindex);
         InvalidChainFound(isInitialBlockDownload, settings, mainCriticalSection, pindex);
     }
 }

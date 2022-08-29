@@ -1305,7 +1305,6 @@ public:
 
         if (pblock == NULL)
             fAlreadyChecked = false;
-        bool fInvalidFound = false;
         const CBlockIndex* previousChainTip = chain.Tip();
 
         // Disconnect active blocks which are no longer in the best chain.
@@ -1336,7 +1335,6 @@ public:
                 switch (result)
                 {
                 case BlockConnectionResult::INVALID_BLOCK:
-                    fInvalidFound = true;
                     break;
                 case BlockConnectionResult::UNKNOWN_SYSTEM_ERROR:
                     break;
@@ -1351,7 +1349,7 @@ public:
         if(result == BlockConnectionResult::UNKNOWN_SYSTEM_ERROR) return false;
 
         // Callbacks/notifications for a new best chain.
-        if (fInvalidFound)
+        if (result == BlockConnectionResult::INVALID_BLOCK)
             CheckForkWarningConditionsOnNewFork(vpindexToConnect.back());
         else
             CheckForkWarningConditions();

@@ -1325,13 +1325,14 @@ public:
             nHeight = nTargetHeight;
 
             // Connect new blocks.
+            BlockConnectionResult result = BlockConnectionResult::TRY_NEXT_BLOCK;
             for(std::vector<CBlockIndex*>::reverse_iterator it = vpindexToConnect.rbegin();
-                it != vpindexToConnect.rend();
+                it != vpindexToConnect.rend() && result == BlockConnectionResult::TRY_NEXT_BLOCK;
                 ++it)
             {
                 CBlockIndex* pindexConnect = *it;
                 const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
-                const BlockConnectionResult result = tryToConnectNextBlock(
+                result = tryToConnectNextBlock(
                     sporkManager,chain, blockToConnect, fAlreadyChecked,previousChainTip,vpindexToConnect.back(),pindexConnect,state);
                 switch (result)
                 {

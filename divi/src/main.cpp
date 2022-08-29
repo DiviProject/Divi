@@ -1316,8 +1316,8 @@ public:
         // Build list of new blocks to connect.
         std::vector<CBlockIndex*> vpindexToConnect;
         vpindexToConnect.reserve(32);
-        bool fContinue = true;
-        while (fContinue && nHeight != pindexMostWork->nHeight) {
+        BlockConnectionResult result = BlockConnectionResult::TRY_NEXT_BLOCK;
+        while (nHeight != pindexMostWork->nHeight) {
             // Don't iterate the entire list of potential improvements toward the best tip, as we likely only need
             // a few blocks along the way.
             int nTargetHeight = std::min(nHeight + 32, pindexMostWork->nHeight);
@@ -1325,7 +1325,6 @@ public:
             nHeight = nTargetHeight;
 
             // Connect new blocks.
-            BlockConnectionResult result = BlockConnectionResult::TRY_NEXT_BLOCK;
             for(std::vector<CBlockIndex*>::reverse_iterator it = vpindexToConnect.rbegin();
                 it != vpindexToConnect.rend() && result == BlockConnectionResult::TRY_NEXT_BLOCK;
                 ++it)
@@ -1338,20 +1337,17 @@ public:
                 {
                 case BlockConnectionResult::INVALID_BLOCK:
                     fInvalidFound = true;
-                    fContinue = false;
                     break;
                 case BlockConnectionResult::UNKNOWN_SYSTEM_ERROR:
-                    fContinue = false;
                     return false;
                     break;
                 case BlockConnectionResult::CHAINWORK_IMPROVED:
-                    fContinue = false;
                     break;
                 case BlockConnectionResult::TRY_NEXT_BLOCK:
                     break;
                 }
-                if(!fContinue) break;
             }
+            if(result != BlockConnectionResult::TRY_NEXT_BLOCK) break;
         }
 
         // Callbacks/notifications for a new best chain.

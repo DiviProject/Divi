@@ -1328,28 +1328,24 @@ public:
             BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect)
             {
                 const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
-                const bool blockSuccessfullyConnected = ConnectTip(chainstate_, sporkManager, state, pindexConnect, blockToConnect, fAlreadyChecked);
-                if (!blockSuccessfullyConnected)
+                const BlockConnectionResult result = tryToConnectNextBlock(
+                    sporkManager,chain, blockToConnect, fAlreadyChecked,previousChainTip,vpindexToConnect.back(),pindexConnect,state);
+                switch (result)
                 {
-                    if(!checkBlockConnectionState(state,vpindexToConnect.back() ))
-                    {
-                        fInvalidFound = true;
-                        fContinue = false;
-                        break;
-                    }
-                    else
-                    {
-                        // A system error occurred (disk space, database error, ...)
-                        return false;
-                    }
-                } else {
-                    PruneBlockIndexCandidates(chain,setBlockIndexCandidates);
-                    if (!previousChainTip || chain.Tip()->nChainWork > previousChainTip->nChainWork) {
-                        // We're in a better position than we were. Return temporarily to release the lock.
-                        fContinue = false;
-                        break;
-                    }
+                case BlockConnectionResult::INVALID_BLOCK:
+                    fInvalidFound = true;
+                    fContinue = false;
+                    break;
+                case BlockConnectionResult::UNKNOWN_SYSTEM_ERROR:
+                    return false;
+                    break;
+                case BlockConnectionResult::CHAINWORK_IMPROVED:
+                    fContinue = false;
+                    break;
+                case BlockConnectionResult::TRY_NEXT_BLOCK:
+                    break;
                 }
+                if(!fContinue) break;
             }
         }
 

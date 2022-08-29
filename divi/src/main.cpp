@@ -1252,6 +1252,46 @@ public:
         }
     }
 
+    enum class BlockConnectionResult
+    {
+        TRY_NEXT_BLOCK,
+        UNKNOWN_SYSTEM_ERROR,
+        INVALID_BLOCK,
+        CHAINWORK_IMPROVED,
+    };
+
+    BlockConnectionResult tryToConnectNextBlock(
+        const CSporkManager& sporkManager,
+        const CChain& chain,
+        const CBlock* blockToConnect,
+        const bool fAlreadyChecked,
+        const CBlockIndex* previousChainTip,
+        CBlockIndex* proposedNewChainTip,
+        CBlockIndex* pindexConnect,
+        CValidationState& state) const
+    {
+        const bool blockSuccessfullyConnected = ConnectTip(chainstate_, sporkManager, state, pindexConnect, blockToConnect, fAlreadyChecked);
+        if (!blockSuccessfullyConnected)
+        {
+            if(!checkBlockConnectionState(state, proposedNewChainTip ))
+            {
+                return BlockConnectionResult::INVALID_BLOCK;
+            }
+            else
+            {
+                // A system error occurred (disk space, database error, ...)
+                return BlockConnectionResult::UNKNOWN_SYSTEM_ERROR;
+            }
+        } else {
+            PruneBlockIndexCandidates(chain,setBlockIndexCandidates);
+            if (!previousChainTip || chain.Tip()->nChainWork > previousChainTip->nChainWork) {
+                // We're in a better position than we were. Return temporarily to release the lock.
+                return BlockConnectionResult::CHAINWORK_IMPROVED;
+            }
+            return BlockConnectionResult::TRY_NEXT_BLOCK;
+        }
+    }
+
     bool activateBestChainStep(
         const CSporkManager& sporkManager,
         CValidationState& state,

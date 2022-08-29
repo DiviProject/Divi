@@ -1288,7 +1288,8 @@ public:
             // Connect new blocks.
             BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect)
             {
-                if (!ConnectTip(chainstate_, sporkManager, state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
+                const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
+                if (!ConnectTip(chainstate_, sporkManager, state, pindexConnect, blockToConnect, fAlreadyChecked)) {
                     if(!checkBlockConnectionState(state,vpindexToConnect.back() ))
                     {
                         fInvalidFound = true;

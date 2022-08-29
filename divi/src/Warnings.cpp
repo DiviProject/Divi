@@ -1,7 +1,6 @@
 #include <Warnings.h>
 
 #include <clientversion.h>
-#include <alert.h>
 
 static std::string miscellaneousWarnings;
 static bool fLargeWorkForkFound = false;

@@ -1313,25 +1313,25 @@ public:
         int nHeight = rolledBackChainTip? rolledBackChainTip->nHeight : -1;
 
         // Build list of new blocks to connect.
-        std::vector<CBlockIndex*> vpindexToConnect;
-        vpindexToConnect.reserve(32);
+        std::vector<CBlockIndex*> blockIndicesToConnect;
+        blockIndicesToConnect.reserve(32);
         BlockConnectionResult result = BlockConnectionResult::TRY_NEXT_BLOCK;
         while (nHeight != pindexMostWork->nHeight) {
             // Don't iterate the entire list of potential improvements toward the best tip, as we likely only need
             // a few blocks along the way.
             int nTargetHeight = std::min(nHeight + 32, pindexMostWork->nHeight);
-            computeNextBlockIndicesToConnect(pindexMostWork,nHeight,nTargetHeight,vpindexToConnect);
+            computeNextBlockIndicesToConnect(pindexMostWork,nHeight,nTargetHeight,blockIndicesToConnect);
             nHeight = nTargetHeight;
 
             // Connect new blocks.
-            for(std::vector<CBlockIndex*>::reverse_iterator it = vpindexToConnect.rbegin();
-                it != vpindexToConnect.rend() && result == BlockConnectionResult::TRY_NEXT_BLOCK;
+            for(std::vector<CBlockIndex*>::reverse_iterator it = blockIndicesToConnect.rbegin();
+                it != blockIndicesToConnect.rend() && result == BlockConnectionResult::TRY_NEXT_BLOCK;
                 ++it)
             {
                 CBlockIndex* pindexConnect = *it;
                 const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
                 result = tryToConnectNextBlock(
-                    sporkManager,chain, blockToConnect, fAlreadyChecked,previousChainTip,vpindexToConnect.back(),pindexConnect,state);
+                    sporkManager,chain, blockToConnect, fAlreadyChecked,previousChainTip,blockIndicesToConnect.back(),pindexConnect,state);
             }
             if(result != BlockConnectionResult::TRY_NEXT_BLOCK) break;
         }
@@ -1339,7 +1339,7 @@ public:
 
         // Callbacks/notifications for a new best chain.
         if (result == BlockConnectionResult::INVALID_BLOCK)
-            CheckForkWarningConditionsOnNewFork(vpindexToConnect.back());
+            CheckForkWarningConditionsOnNewFork(blockIndicesToConnect.back());
         else
             CheckForkWarningConditions();
 

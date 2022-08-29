@@ -1048,14 +1048,17 @@ private:
     ChainstateManager& chainstate_;
     std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks_;
     BlockIndexCandidates& blockIndexCandidates_;
+    CValidationState& state_;
 public:
     ChainActivationHelpers(
         ChainstateManager& chainstate,
         std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks,
-        BlockIndexCandidates& blockIndexCandidates
+        BlockIndexCandidates& blockIndexCandidates,
+        CValidationState& state
         ): chainstate_(chainstate)
         , unlinkedBlocks_(unlinkedBlocks)
         , blockIndexCandidates_(blockIndexCandidates)
+        , state_(state)
     {
     }
 
@@ -1075,13 +1078,12 @@ public:
 
     bool rollBackChainTipToConnectToMostWorkChain(
         const CChain& chain,
-        const CBlockIndex* mostWorkBlockIndex,
-        CValidationState& state) const
+        const CBlockIndex* mostWorkBlockIndex) const
     {
         const CBlockIndex* pindexFork = chain.FindFork(mostWorkBlockIndex);
         // Disconnect active blocks which are no longer in the best chain.
         while (chain.Tip() && chain.Tip() != pindexFork) {
-            if (!DisconnectTip(state))
+            if (!DisconnectTip(state_))
                 return false;
         }
         return true;
@@ -1093,15 +1095,14 @@ public:
      * that is already loaded (to avoid loading it again from disk).
      */
     bool checkBlockConnectionState(
-        CValidationState& state,
         CBlockIndex* lastBlockIndex) const
     {
-        if (state.IsInvalid())
+        if (state_.IsInvalid())
         {
             // The block violates a consensus rule.
-            if (!state.CorruptionPossible())
+            if (!state_.CorruptionPossible())
                 InvalidChainFound(IsInitialBlockDownload(),settings,cs_main,lastBlockIndex);
-            state = CValidationState();
+            state_ = CValidationState();
             return false;
         }
         else
@@ -1125,13 +1126,12 @@ public:
         const bool fAlreadyChecked,
         const CBlockIndex* previousChainTip,
         CBlockIndex* proposedNewChainTip,
-        CBlockIndex* pindexConnect,
-        CValidationState& state) const
+        CBlockIndex* pindexConnect) const
     {
-        const bool blockSuccessfullyConnected = ConnectTip(chainstate_, sporkManager, state, pindexConnect, blockToConnect, fAlreadyChecked);
+        const bool blockSuccessfullyConnected = ConnectTip(chainstate_, sporkManager, state_, pindexConnect, blockToConnect, fAlreadyChecked);
         if (!blockSuccessfullyConnected)
         {
-            if(!checkBlockConnectionState(state, proposedNewChainTip ))
+            if(!checkBlockConnectionState(proposedNewChainTip))
             {
                 return BlockConnectionResult::INVALID_BLOCK;
             }
@@ -1152,7 +1152,6 @@ public:
 
     bool activateBestChainStep(
         const CSporkManager& sporkManager,
-        CValidationState& state,
         CBlockIndex* pindexMostWork,
         const CBlock* pblock,
         bool fAlreadyChecked) const
@@ -1166,7 +1165,7 @@ public:
         const CBlockIndex* previousChainTip = chain.Tip();
 
         // Disconnect active blocks which are no longer in the best chain.
-        if(!rollBackChainTipToConnectToMostWorkChain(chain, pindexMostWork, state)) return false;
+        if(!rollBackChainTipToConnectToMostWorkChain(chain, pindexMostWork)) return false;
         const CBlockIndex* rolledBackChainTip = chain.Tip();
         int nHeight = rolledBackChainTip? rolledBackChainTip->nHeight : -1;
 
@@ -1189,7 +1188,7 @@ public:
                 CBlockIndex* pindexConnect = *it;
                 const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
                 result = tryToConnectNextBlock(
-                    sporkManager,chain, blockToConnect, fAlreadyChecked,previousChainTip,blockIndicesToConnect.back(),pindexConnect,state);
+                    sporkManager,chain, blockToConnect, fAlreadyChecked,previousChainTip,blockIndicesToConnect.back(),pindexConnect);
             }
             if(result != BlockConnectionResult::TRY_NEXT_BLOCK) break;
         }
@@ -1213,7 +1212,6 @@ bool ActivateBestChainTemp(
     const ChainActivationHelpers& chainActivationHelper,
     ChainstateManager& chainstate,
     const CSporkManager& sporkManager,
-    CValidationState& state,
     const CBlock* pblock,
     bool fAlreadyChecked)
 {
@@ -1239,7 +1237,7 @@ bool ActivateBestChainTemp(
                 return true;
 
             const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
-            if (!chainActivationHelper.activateBestChainStep(sporkManager, state, pindexMostWork, connectingBlock, fAlreadyChecked))
+            if (!chainActivationHelper.activateBestChainStep(sporkManager, pindexMostWork, connectingBlock, fAlreadyChecked))
                 return false;
 
             pindexNewTip = chain.Tip();
@@ -1260,11 +1258,6 @@ bool ActivateBestChainTemp(
             timeOfLastChainTipUpdate = GetTime();
         }
     } while (pindexMostWork != chain.Tip());
-
-    // Write changes periodically to disk, after relay.
-    if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
-        return false;
-    }
 
     return true;
 }
@@ -1299,8 +1292,13 @@ bool ActivateBestChain(
     const CBlock* pblock,
     bool fAlreadyChecked)
 {
-    ChainActivationHelpers helper(chainstate,mapBlocksUnlinked,GetBlockIndexCandidates());
-    const bool result = ActivateBestChainTemp(helper, chainstate,sporkManager,state,pblock,fAlreadyChecked);
+    ChainActivationHelpers helper(chainstate, mapBlocksUnlinked, GetBlockIndexCandidates(), state);
+    const bool result = ActivateBestChainTemp(helper, chainstate,sporkManager, pblock,fAlreadyChecked);
+
+    // Write changes periodically to disk, after relay.
+    if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
+        return false;
+    }
     VerifyBlockIndexTree(chainstate,cs_main, mapBlocksUnlinked, GetBlockIndexCandidates());
     return result;
 }

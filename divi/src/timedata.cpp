@@ -10,6 +10,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include <Warnings.h>
 
 #include <boost/foreach.hpp>
 
@@ -17,7 +18,6 @@ using namespace std;
 
 static CCriticalSection cs_nTimeOffset;
 static int64_t nTimeOffset = 0;
-extern std::string strMiscWarning;
 
 /**
  * "Never go to sea with two chronometers; take one or three."
@@ -94,7 +94,7 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
                 if (!fMatch) {
                     fDone = true;
                     string strMessage = translate("Warning: Please check that your computer's date and time are correct! If your clock is wrong DIVI Core will not work properly.");
-                    strMiscWarning = strMessage;
+                    Warnings::setMiscWarning(strMessage);
                     LogPrintf("*** %s\n", strMessage);
                     uiInterface.ThreadSafeMessageBox(strMessage, "", CClientUIInterface::MSG_WARNING);
                 }

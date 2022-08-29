@@ -1,5 +1,7 @@
 #include <ThreadManagementHelpers.h>
 
+#include <Warnings.h>
+
 #ifndef WIN32
 // for posix_fallocate
 #ifdef __linux__
@@ -65,8 +67,6 @@ std::string to_internal(const std::string&);
 } // namespace boost
 
 /* PrintException */
-std::string strMiscWarning;
-
 static std::string FormatException(std::exception* pex, const char* pszThread)
 {
 #ifdef WIN32
@@ -88,7 +88,7 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
     std::string message = FormatException(pex, pszThread);
     LogPrintf("\n\n************************\n%s\n", message);
     fprintf(stderr, "\n\n************************\n%s\n", message.c_str());
-    strMiscWarning = message;
+    Warnings::setMiscWarning(message);
 }
 
 void RenameThread(const char* name)

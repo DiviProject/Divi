@@ -1068,6 +1068,7 @@ public:
 class ChainActivationHelpers
 {
 private:
+    const CSporkManager& sporkManager_;
     ChainstateManager& chainstate_;
     std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks_;
     BlockIndexCandidates& blockIndexCandidates_;
@@ -1075,11 +1076,13 @@ private:
     ChainTipManager chainTipManager_;
 public:
     ChainActivationHelpers(
+        const CSporkManager& sporkManager,
         ChainstateManager& chainstate,
         std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks,
         BlockIndexCandidates& blockIndexCandidates,
         CValidationState& state
-        ): chainstate_(chainstate)
+        ): sporkManager_(sporkManager)
+        , chainstate_(chainstate)
         , unlinkedBlocks_(unlinkedBlocks)
         , blockIndexCandidates_(blockIndexCandidates)
         , state_(state)
@@ -1145,7 +1148,6 @@ public:
     };
 
     BlockConnectionResult tryToConnectNextBlock(
-        const CSporkManager& sporkManager,
         const CChain& chain,
         const CBlock* blockToConnect,
         const bool fAlreadyChecked,
@@ -1153,7 +1155,7 @@ public:
         CBlockIndex* proposedNewChainTip,
         CBlockIndex* pindexConnect) const
     {
-        const bool blockSuccessfullyConnected = ConnectTip(chainstate_, sporkManager, state_, pindexConnect, blockToConnect, fAlreadyChecked);
+        const bool blockSuccessfullyConnected = ConnectTip(chainstate_, sporkManager_, state_, pindexConnect, blockToConnect, fAlreadyChecked);
         if (!blockSuccessfullyConnected)
         {
             if(!checkBlockConnectionState(proposedNewChainTip))
@@ -1176,7 +1178,6 @@ public:
     }
 
     bool activateBestChainStep(
-        const CSporkManager& sporkManager,
         CBlockIndex* pindexMostWork,
         const CBlock* pblock,
         bool fAlreadyChecked) const
@@ -1213,7 +1214,7 @@ public:
                 CBlockIndex* pindexConnect = *it;
                 const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
                 result = tryToConnectNextBlock(
-                    sporkManager,chain, blockToConnect, fAlreadyChecked,previousChainTip,blockIndicesToConnect.back(),pindexConnect);
+                    chain, blockToConnect, fAlreadyChecked,previousChainTip,blockIndicesToConnect.back(),pindexConnect);
             }
             if(result != BlockConnectionResult::TRY_NEXT_BLOCK) break;
         }
@@ -1236,7 +1237,6 @@ public:
 bool ActivateBestChainTemp(
     const ChainActivationHelpers& chainActivationHelper,
     ChainstateManager& chainstate,
-    const CSporkManager& sporkManager,
     const CBlock* pblock,
     bool fAlreadyChecked)
 {
@@ -1262,7 +1262,7 @@ bool ActivateBestChainTemp(
                 return true;
 
             const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
-            if (!chainActivationHelper.activateBestChainStep(sporkManager, pindexMostWork, connectingBlock, fAlreadyChecked))
+            if (!chainActivationHelper.activateBestChainStep(pindexMostWork, connectingBlock, fAlreadyChecked))
                 return false;
 
             pindexNewTip = chain.Tip();
@@ -1294,8 +1294,8 @@ bool ActivateBestChain(
     const CBlock* pblock,
     bool fAlreadyChecked)
 {
-    ChainActivationHelpers helper(chainstate, mapBlocksUnlinked, GetBlockIndexCandidates(), state);
-    const bool result = ActivateBestChainTemp(helper, chainstate,sporkManager, pblock,fAlreadyChecked);
+    ChainActivationHelpers helper(sporkManager, chainstate, mapBlocksUnlinked, GetBlockIndexCandidates(), state);
+    const bool result = ActivateBestChainTemp(helper, chainstate, pblock,fAlreadyChecked);
 
     // Write changes periodically to disk, after relay.
     if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {

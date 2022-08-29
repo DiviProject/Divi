@@ -62,7 +62,6 @@ using namespace std;
  * Or alternatively, create a specific query method for the information.
  **/
 
-std::string GetWarnings(std::string strFor);
 
 Value ban(const Array& params, bool fHelp, CWallet* pwallet)
 {
@@ -155,7 +154,7 @@ Value getinfo(const Array& params, bool fHelp, CWallet* pwallet)
     obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate().GetFeePerK())));
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
-    obj.push_back(Pair("errors", GetWarnings("statusbar")));
+    obj.push_back(Pair("errors", GetWarningMessage("statusbar")));
     return obj;
 }
 

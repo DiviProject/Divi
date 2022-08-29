@@ -1069,28 +1069,23 @@ public:
 class ChainActivationHelpers
 {
 private:
-    const CSporkManager& sporkManager_;
     ChainstateManager& chainstate_;
     std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks_;
     BlockIndexCandidates& blockIndexCandidates_;
     CValidationState& state_;
-    const bool alreadyCheckedBlock_;
-    ChainTipManager chainTipManager_;
+    const I_ChainTipManager& chainTipManager_;
 public:
     ChainActivationHelpers(
-        const CSporkManager& sporkManager,
         ChainstateManager& chainstate,
         std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks,
         BlockIndexCandidates& blockIndexCandidates,
         CValidationState& state,
-        const bool alreadyCheckedBlock
-        ): sporkManager_(sporkManager)
-        , chainstate_(chainstate)
+        const I_ChainTipManager& chainTipManager
+        ): chainstate_(chainstate)
         , unlinkedBlocks_(unlinkedBlocks)
         , blockIndexCandidates_(blockIndexCandidates)
         , state_(state)
-        , alreadyCheckedBlock_(alreadyCheckedBlock)
-        , chainTipManager_(sporkManager_, chainstate_,alreadyCheckedBlock_, state_,false)
+        , chainTipManager_(chainTipManager)
     {
     }
 
@@ -1292,7 +1287,8 @@ bool ActivateBestChain(
     const CBlock* pblock,
     bool fAlreadyChecked)
 {
-    ChainActivationHelpers helper(sporkManager, chainstate, mapBlocksUnlinked, GetBlockIndexCandidates(), state,fAlreadyChecked);
+    ChainTipManager chainTipManager(sporkManager,chainstate,fAlreadyChecked,state,false);
+    ChainActivationHelpers helper(chainstate, mapBlocksUnlinked, GetBlockIndexCandidates(), state,chainTipManager);
     const bool result = ActivateBestChainTemp(helper, chainstate, pblock);
 
     // Write changes periodically to disk, after relay.

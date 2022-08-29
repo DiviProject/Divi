@@ -179,22 +179,17 @@ static boost::asio::io_service::work* rpc_dummy_work = NULL;
 static std::vector<CSubNet> rpc_allow_subnets; //!< List of subnets to allow RPC connections from
 static std::vector<boost::shared_ptr<ip::tcp::acceptor> > rpc_acceptors;
 
-std::string GetWarnings(std::string strFor)
+std::string GetWarningMessage(std::string category)
 {
     int alertPriorityValue = 0;
     std::pair<std::string,std::string> warningMessages = Warnings::GetWarnings(settings.GetBoolArg("-testsafemode",false),alertPriorityValue);
     CAlert::GetHighestPriorityWarning(alertPriorityValue, warningMessages.first);
-    if (strFor == "statusbar")
+    if (category == "statusbar")
         return translate(warningMessages.first.c_str());
-    else if (strFor == "rpc")
+    else if (category == "rpc")
         return translate(warningMessages.second.c_str());
 
     return translate("Error");
-}
-
-std::string GetWarningMessage(std::string category)
-{
-    return GetWarnings(category);
 }
 
 void RPCTypeCheck(const Array& params,

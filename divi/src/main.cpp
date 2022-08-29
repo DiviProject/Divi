@@ -1069,9 +1069,9 @@ public:
         , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
     {}
 
-    bool connectTip(CBlock& block, CBlockIndex* blockIndex) const override
+    bool connectTip(const CBlock* pblock, CBlockIndex* blockIndex) const override
     {
-        return false;
+        return ConnectTip(chainstate_, sporkManager_, state_, blockIndex, pblock, (!pblock)? false: defaultBlockChecking_ );
     }
     bool disconnectTip() const override
     {
@@ -1171,8 +1171,7 @@ public:
         CBlockIndex* proposedNewChainTip,
         CBlockIndex* pindexConnect) const
     {
-        const bool blockSuccessfullyConnected =
-            ConnectTip(chainstate_, sporkManager_, state_, pindexConnect, blockToConnect, (!blockToConnect)? false: alreadyCheckedBlock_ );
+        const bool blockSuccessfullyConnected = chainTipManager_.connectTip(blockToConnect,pindexConnect);
         if (!blockSuccessfullyConnected)
         {
             if(!checkBlockConnectionState(proposedNewChainTip))

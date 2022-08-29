@@ -1032,7 +1032,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
 #endif
 
     // Observe safe mode
-    string strWarning = GetWarnings("rpc");
+    string strWarning = GetWarningMessage("rpc");
     if (strWarning != "" && !settings.GetBoolArg("-disablesafemode", false) &&
         !pcmd->okSafeMode)
         throw JSONRPCError(RPC_FORBIDDEN_BY_SAFE_MODE, string("Safe mode: ") + strWarning);
@@ -1233,4 +1233,9 @@ std::string HelpExampleRpc(string methodname, string args)
     return "> curl --user myusername --data-binary '{\"jsonrpc\": \"1.0\", \"id\":\"curltest\", "
            "\"method\": \"" +
            methodname + "\", \"params\": [" + args + "] }' -H 'content-type: text/plain;' http://127.0.0.1:51473/\n";
+}
+
+std::string GetWarningMessage(std::string category)
+{
+    return GetWarnings(category);
 }

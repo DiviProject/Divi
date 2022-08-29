@@ -123,4 +123,5 @@ int64_t TimeTillWalletLock(CWallet* pwallet);
 std::string HelpRequiringPassphrase(CWallet* pwallet);
 std::string HelpExampleCli(std::string methodname, std::string args);
 std::string HelpExampleRpc(std::string methodname, std::string args);
+std::string GetWarningMessage(std::string category);
 #endif // BITCOIN_RPCSERVER_H

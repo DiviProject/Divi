@@ -1050,13 +1050,22 @@ bool DisconnectBlocksAndReprocess(int blocks)
 class ChainTipManager final: public I_ChainTipManager
 {
 private:
+    const CSporkManager& sporkManager_;
+    ChainstateManager& chainstate_;
+    const bool defaultBlockChecking_;
     CValidationState& state_;
     const bool updateCoinDatabaseOnly_;
 public:
     ChainTipManager(
+        const CSporkManager& sporkManager,
+        ChainstateManager& chainstate,
+        const bool defaultBlockChecking,
         CValidationState& state,
         const bool updateCoinDatabaseOnly
-        ): state_(state)
+        ): sporkManager_(sporkManager)
+        , chainstate_(chainstate)
+        , defaultBlockChecking_(defaultBlockChecking)
+        , state_(state)
         , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
     {}
 
@@ -1094,7 +1103,7 @@ public:
         , blockIndexCandidates_(blockIndexCandidates)
         , state_(state)
         , alreadyCheckedBlock_(alreadyCheckedBlock)
-        , chainTipManager_(state_,false)
+        , chainTipManager_(sporkManager_, chainstate_,alreadyCheckedBlock_, state_,false)
     {
     }
 
@@ -1310,7 +1319,7 @@ bool ActivateBestChain(
 
 bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)
 {
-    ChainTipManager chainTipManager(state,updateCoinDatabaseOnly);
+    ChainTipManager chainTipManager(GetSporkManager(),chainstate,true,state,updateCoinDatabaseOnly);
     return InvalidateBlock(chainTipManager, IsInitialBlockDownload(), settings, cs_main, chainstate, pindex);
 }
 

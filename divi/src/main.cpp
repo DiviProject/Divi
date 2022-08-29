@@ -653,23 +653,13 @@ bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAdd
 }
 
 //! List of asynchronously-determined block rejections to notify this peer about.
-CCriticalSection cs_RejectedBlocks;
-std::map<NodeId, std::vector<CBlockReject>> rejectedBlocksByNodeId;
 void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
 {
     int nDoS = 0;
     if (state.IsInvalid(nDoS)) {
         std::map<uint256, NodeId>::iterator it = mapBlockSource.find(pindex->GetBlockHash());
         if (it != mapBlockSource.end()) {
-            if(Misbehaving(it->second,nDoS,"Invalid block sourced from peer"))
-            {
-                LOCK(cs_RejectedBlocks);
-                std::vector<CBlockReject>& rejectedBlocks = rejectedBlocksByNodeId[it->second];
-                rejectedBlocks.emplace_back(
-                    state.GetRejectCode(),
-                    state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH),
-                    pindex->GetBlockHash());
-            }
+            Misbehaving(it->second,nDoS,"Invalid block sourced from peer");
         }
     }
     if (!state.CorruptionPossible()) {
@@ -3159,16 +3149,7 @@ static void CheckForBanAndDisconnectIfNotWhitelisted(CNode* pto)
     }
     nodeState->fShouldBan = false;
 }
-static void CommunicateRejectedBlocksToPeer(CNode* pto)
-{
-    LOCK(cs_RejectedBlocks);
-    std::vector<CBlockReject>& rejectedBlocks = rejectedBlocksByNodeId[pto->GetId()];
-    for(const CBlockReject& reject: rejectedBlocks)
-    {
-        pto->PushMessage("reject", (std::string) "block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
-    }
-    rejectedBlocks.clear();
-}
+
 static void BeginSyncingWithPeer(CNode* pto)
 {
     CNodeState* state = pto->GetNodeState();
@@ -3343,7 +3324,6 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         }
 
         CheckForBanAndDisconnectIfNotWhitelisted(pto);
-        CommunicateRejectedBlocksToPeer(pto);
 
         if (pindexBestHeader == nullptr)
             pindexBestHeader = chainstate->ActiveChain().Tip();

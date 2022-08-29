@@ -84,8 +84,6 @@ void RespondToRequestForDataFrom(CNode* pfrom);
 
 /** Check whether we are doing an initial block download (synchronizing from disk or network) */
 bool IsInitialBlockDownload();
-/** Format a string that describes several potential problems detected by the core */
-std::string GetWarnings(std::string strFor);
 /** Find the best known block, and make it the tip of the block chain */
 
 bool DisconnectBlocksAndReprocess(int blocks);

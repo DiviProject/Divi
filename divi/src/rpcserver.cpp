@@ -20,6 +20,8 @@
 #include "Settings.h"
 #include <utilmoneystr.h>
 #include <random.h>
+#include <alert.h>
+#include <Warnings.h>
 
 #include <deque>
 
@@ -176,6 +178,24 @@ static boost::thread_group* rpc_worker_group = NULL;
 static boost::asio::io_service::work* rpc_dummy_work = NULL;
 static std::vector<CSubNet> rpc_allow_subnets; //!< List of subnets to allow RPC connections from
 static std::vector<boost::shared_ptr<ip::tcp::acceptor> > rpc_acceptors;
+
+std::string GetWarnings(std::string strFor)
+{
+    int alertPriorityValue = 0;
+    std::pair<std::string,std::string> warningMessages = Warnings::GetWarnings(settings.GetBoolArg("-testsafemode",false),alertPriorityValue);
+    CAlert::GetHighestPriorityWarning(alertPriorityValue, warningMessages.first);
+    if (strFor == "statusbar")
+        return translate(warningMessages.first.c_str());
+    else if (strFor == "rpc")
+        return translate(warningMessages.second.c_str());
+
+    return translate("Error");
+}
+
+std::string GetWarningMessage(std::string category)
+{
+    return GetWarnings(category);
+}
 
 void RPCTypeCheck(const Array& params,
     const list<Value_type>& typesExpected,
@@ -1233,9 +1253,4 @@ std::string HelpExampleRpc(string methodname, string args)
     return "> curl --user myusername --data-binary '{\"jsonrpc\": \"1.0\", \"id\":\"curltest\", "
            "\"method\": \"" +
            methodname + "\", \"params\": [" + args + "] }' -H 'content-type: text/plain;' http://127.0.0.1:51473/\n";
-}
-
-std::string GetWarningMessage(std::string category)
-{
-    return GetWarnings(category);
 }

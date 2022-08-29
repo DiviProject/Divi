@@ -1014,7 +1014,6 @@ void static UpdateTip(const CBlockIndex* pindexNew)
         if (nUpgraded > 0)
             LogPrintf("SetBestChain: %d of last 100 blocks above version %d\n", nUpgraded, (int)CBlock::CURRENT_VERSION);
         if (nUpgraded > 100 / 2) {
-            // strMiscWarning is read by GetWarnings(), called by Qt and the JSON-RPC code to warn the user:
             std::string warningMessage = translate("Warning: This version is obsolete, upgrade required!");
             Warnings::setMiscWarning(warningMessage);
             CAlert::Notify(settings,warningMessage, true);
@@ -2193,19 +2192,6 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
 //
 // CAlert
 //
-
-std::string GetWarnings(std::string strFor)
-{
-    int alertPriorityValue = 0;
-    std::pair<std::string,std::string> warningMessages = Warnings::GetWarnings(settings.GetBoolArg("-testsafemode",false),alertPriorityValue);
-    CAlert::GetHighestPriorityWarning(alertPriorityValue, warningMessages.first);
-    if (strFor == "statusbar")
-        return translate(warningMessages.first.c_str());
-    else if (strFor == "rpc")
-        return translate(warningMessages.second.c_str());
-
-    return translate("Error");
-}
 
 
 //////////////////////////////////////////////////////////////////////////////

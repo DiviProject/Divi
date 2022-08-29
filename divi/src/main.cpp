@@ -79,6 +79,7 @@
 #include <BlockFileHelpers.h>
 #include <ThreadManagementHelpers.h>
 #include <MainNotificationRegistration.h>
+#include <Warnings.h>
 
 using namespace boost;
 using namespace std;
@@ -627,8 +628,6 @@ bool IsInitialBlockDownload()	//2446
 namespace
 {
 
-bool fLargeWorkForkFound = false;
-bool fLargeWorkInvalidChainFound = false;
 const CBlockIndex* pindexBestForkTip = nullptr;
 const CBlockIndex* pindexBestForkBase = nullptr;
 
@@ -651,7 +650,7 @@ void CheckForkWarningConditions()
         pindexBestForkTip = NULL;
 
     if (pindexBestForkTip || (getMostWorkForInvalidBlockIndex() > chain.Tip()->nChainWork + (GetBlockProof(*chain.Tip()) * 6))) {
-        if (!fLargeWorkForkFound && pindexBestForkBase) {
+        if (!Warnings::haveFoundLargeWorkFork() && pindexBestForkBase) {
             if (pindexBestForkBase->phashBlock) {
                 std::string warning = std::string("'Warning: Large-work fork detected, forking after block ") +
                         pindexBestForkBase->phashBlock->ToString() + std::string("'");
@@ -663,15 +662,15 @@ void CheckForkWarningConditions()
                 LogPrintf("CheckForkWarningConditions: Warning: Large valid fork found\n  forking the chain at height %d (%s)\n  lasting to height %d (%s).\nChain state database corruption likely.\n",
                           pindexBestForkBase->nHeight, *pindexBestForkBase->phashBlock,
                           pindexBestForkTip->nHeight, *pindexBestForkTip->phashBlock);
-                fLargeWorkForkFound = true;
+                Warnings::setLargeWorkForkFound(true);
             }
         } else {
             LogPrintf("CheckForkWarningConditions: Warning: Found invalid chain at least ~6 blocks longer than our best chain.\nChain state database corruption likely.\n");
-            fLargeWorkInvalidChainFound = true;
+            Warnings::setLargeWorkInvalidChainFound(true);
         }
     } else {
-        fLargeWorkForkFound = false;
-        fLargeWorkInvalidChainFound = false;
+        Warnings::setLargeWorkForkFound(false);
+        Warnings::setLargeWorkInvalidChainFound(false);
     }
 }
 
@@ -1016,8 +1015,9 @@ void static UpdateTip(const CBlockIndex* pindexNew)
             LogPrintf("SetBestChain: %d of last 100 blocks above version %d\n", nUpgraded, (int)CBlock::CURRENT_VERSION);
         if (nUpgraded > 100 / 2) {
             // strMiscWarning is read by GetWarnings(), called by Qt and the JSON-RPC code to warn the user:
-            strMiscWarning = translate("Warning: This version is obsolete, upgrade required!");
-            CAlert::Notify(settings,strMiscWarning, true);
+            std::string warningMessage = translate("Warning: This version is obsolete, upgrade required!");
+            Warnings::setMiscWarning(warningMessage);
+            CAlert::Notify(settings,warningMessage, true);
             fWarned = true;
         }
     }
@@ -2196,39 +2196,15 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
 
 std::string GetWarnings(std::string strFor)
 {
-    int nPriority = 0;
-    string strStatusBar;
-    string strRPC;
-
-    if (!CLIENT_VERSION_IS_RELEASE)
-        strStatusBar = translate("This is a pre-release test build - use at your own risk - do not use for staking or merchant applications!");
-
-    if (settings.GetBoolArg("-testsafemode", false))
-        strStatusBar = strRPC = "testsafemode enabled";
-
-    // Misc warnings like out of disk space and clock is wrong
-    if (strMiscWarning != "") {
-        nPriority = 1000;
-        strStatusBar = strMiscWarning;
-    }
-
-    if (fLargeWorkForkFound) {
-        nPriority = 2000;
-        strStatusBar = strRPC = translate("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.");
-    } else if (fLargeWorkInvalidChainFound) {
-        nPriority = 2000;
-        strStatusBar = strRPC = translate("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.");
-    }
-
-    // Alerts
-    CAlert::GetHighestPriorityWarning(nPriority,strStatusBar);
-
+    int alertPriorityValue = 0;
+    std::pair<std::string,std::string> warningMessages = Warnings::GetWarnings(settings.GetBoolArg("-testsafemode",false),alertPriorityValue);
+    CAlert::GetHighestPriorityWarning(alertPriorityValue, warningMessages.first);
     if (strFor == "statusbar")
-        return strStatusBar;
+        return translate(warningMessages.first.c_str());
     else if (strFor == "rpc")
-        return strRPC;
-    assert(!"GetWarnings() : invalid parameter");
-    return "error";
+        return translate(warningMessages.second.c_str());
+
+    return translate("Error");
 }
 
 

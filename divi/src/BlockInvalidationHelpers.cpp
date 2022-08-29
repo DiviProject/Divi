@@ -19,6 +19,19 @@ BlockIndexCandidates& GetBlockIndexCandidates()
     return setBlockIndexCandidates;
 }
 
+/** Delete all entries in setBlockIndexCandidates that are worse than the current tip. */
+void PruneBlockIndexCandidates(const CChain& chain)
+{
+    std::set<CBlockIndex*, CBlockIndexWorkComparator>& candidateBlockIndices = GetBlockIndexCandidates();
+    // Note that we can't delete the current block itself, as we may need to return to it later in case a
+    // reorganization to a better block fails.
+    auto it = candidateBlockIndices.begin();
+    while (it != candidateBlockIndices.end() && candidateBlockIndices.value_comp()(*it, chain.Tip())) {
+        candidateBlockIndices.erase(it++);
+    }
+    // Either the current tip or a successor of it we're working towards is left in setBlockIndexCandidates.
+    assert(!candidateBlockIndices.empty());
+}
 
 void InvalidChainFound(
     const bool isInitialBlockDownload,

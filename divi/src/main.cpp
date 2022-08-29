@@ -1042,19 +1042,6 @@ bool DisconnectBlocksAndReprocess(int blocks)
     return true;
 }
 
-/** Delete all entries in setBlockIndexCandidates that are worse than the current tip. */
-static void PruneBlockIndexCandidates(const CChain& chain, std::set<CBlockIndex*, CBlockIndexWorkComparator>& candidateBlockIndices)
-{
-    // Note that we can't delete the current block itself, as we may need to return to it later in case a
-    // reorganization to a better block fails.
-    auto it = candidateBlockIndices.begin();
-    while (it != candidateBlockIndices.end() && candidateBlockIndices.value_comp()(*it, chain.Tip())) {
-        candidateBlockIndices.erase(it++);
-    }
-    // Either the current tip or a successor of it we're working towards is left in setBlockIndexCandidates.
-    assert(!candidateBlockIndices.empty());
-}
-
 class ChainActivationHelpers
 {
 private:
@@ -1154,7 +1141,7 @@ public:
                 return BlockConnectionResult::UNKNOWN_SYSTEM_ERROR;
             }
         } else {
-            PruneBlockIndexCandidates(chain,GetBlockIndexCandidates());
+            PruneBlockIndexCandidates(chain);
             if (!previousChainTip || chain.Tip()->nChainWork > previousChainTip->nChainWork) {
                 // We're in a better position than we were. Return temporarily to release the lock.
                 return BlockConnectionResult::CHAINWORK_IMPROVED;
@@ -1969,7 +1956,7 @@ bool static LoadBlockIndexState(string& strError)
         return true;
     chain.SetTip(it->second);
 
-    PruneBlockIndexCandidates(chain,GetBlockIndexCandidates());
+    PruneBlockIndexCandidates(chain);
 
     LogPrintf("%s: hashBestChain=%s height=%d date=%s progress=%f\n",
             __func__,

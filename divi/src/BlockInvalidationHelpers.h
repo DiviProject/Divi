@@ -11,8 +11,10 @@ class CBlockIndex;
 class Settings;
 class CCriticalSection;
 class I_ChainTipManager;
+class CChain;
 
 BlockIndexCandidates& GetBlockIndexCandidates();
+void PruneBlockIndexCandidates(const CChain& chain);
 void InvalidChainFound(
     const bool isInitialBlockDownload,
     const Settings& settings,

@@ -1289,7 +1289,9 @@ public:
             BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect)
             {
                 const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
-                if (!ConnectTip(chainstate_, sporkManager, state, pindexConnect, blockToConnect, fAlreadyChecked)) {
+                const bool blockSuccessfullyConnected = ConnectTip(chainstate_, sporkManager, state, pindexConnect, blockToConnect, fAlreadyChecked);
+                if (!blockSuccessfullyConnected)
+                {
                     if(!checkBlockConnectionState(state,vpindexToConnect.back() ))
                     {
                         fInvalidFound = true;

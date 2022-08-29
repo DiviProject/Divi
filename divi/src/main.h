@@ -86,8 +86,6 @@ void RespondToRequestForDataFrom(CNode* pfrom);
 bool IsInitialBlockDownload();
 /** Find the best known block, and make it the tip of the block chain */
 
-bool DisconnectBlocksAndReprocess(int blocks);
-
 // ***TODO***
 bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
 
@@ -123,9 +121,6 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state);
 bool IsStandardTx(const CTransaction& tx, std::string& reason);
 
 /** Functions for validating blocks and updating the block tree */
-
-/** Reprocess a number of blocks to try and get on the correct chain again **/
-bool DisconnectBlocksAndReprocess(int blocks);
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, ChainstateManager& chainstate, const CSporkManager& sporkManager, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);

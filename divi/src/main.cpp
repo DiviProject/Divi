@@ -1034,19 +1034,6 @@ bool static ConnectTip(
     return true;
 }
 
-bool DisconnectBlocksAndReprocess(int blocks)
-{
-    LOCK(cs_main);
-
-    CValidationState state;
-
-    LogPrintf("DisconnectBlocksAndReprocess: Got command to replay %d blocks\n", blocks);
-    for (int i = 0; i <= blocks; i++)
-        DisconnectTip(state);
-
-    return true;
-}
-
 class ChainTipManager final: public I_ChainTipManager
 {
 private:

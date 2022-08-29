@@ -1244,12 +1244,12 @@ public:
             if (!state.CorruptionPossible())
                 InvalidChainFound(lastBlockIndex);
             state = CValidationState();
-            return true;
+            return false;
         }
         else
         {
             // A system error occurred (disk space, database error, ...).
-            return false;
+            return true;
         }
     }
 
@@ -1289,7 +1289,7 @@ public:
             BOOST_REVERSE_FOREACH (CBlockIndex* pindexConnect, vpindexToConnect)
             {
                 if (!ConnectTip(chainstate_, sporkManager, state, pindexConnect, pindexConnect == pindexMostWork ? pblock : NULL, fAlreadyChecked)) {
-                    if(checkBlockConnectionState(state,vpindexToConnect.back() ))
+                    if(!checkBlockConnectionState(state,vpindexToConnect.back() ))
                     {
                         fInvalidFound = true;
                         fContinue = false;

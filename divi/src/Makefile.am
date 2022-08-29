@@ -232,6 +232,7 @@ BITCOIN_CORE_H = \
   BlockCheckingHelpers.h \
   AcceptBlockValidator.h \
   Warnings.h \
+  ForkWarningHelpers.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \
@@ -459,6 +460,7 @@ libbitcoin_server_a_SOURCES = \
   BlockCheckingHelpers.cpp \
   AcceptBlockValidator.cpp \
   Warnings.cpp \
+  ForkWarningHelpers.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \

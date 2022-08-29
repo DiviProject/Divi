@@ -1332,17 +1332,6 @@ public:
                 const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
                 result = tryToConnectNextBlock(
                     sporkManager,chain, blockToConnect, fAlreadyChecked,previousChainTip,vpindexToConnect.back(),pindexConnect,state);
-                switch (result)
-                {
-                case BlockConnectionResult::INVALID_BLOCK:
-                    break;
-                case BlockConnectionResult::UNKNOWN_SYSTEM_ERROR:
-                    break;
-                case BlockConnectionResult::CHAINWORK_IMPROVED:
-                    break;
-                case BlockConnectionResult::TRY_NEXT_BLOCK:
-                    break;
-                }
             }
             if(result != BlockConnectionResult::TRY_NEXT_BLOCK) break;
         }

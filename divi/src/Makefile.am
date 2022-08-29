@@ -175,6 +175,7 @@ BITCOIN_CORE_H = \
   BlockSubmitter.h \
   I_BlockValidator.h \
   I_BlockSubmitter.h \
+  I_ChainTipManager.h \
   I_Filesystem.h \
   I_WalletLoader.h \
   I_WalletDatabase.h \
@@ -233,6 +234,7 @@ BITCOIN_CORE_H = \
   AcceptBlockValidator.h \
   Warnings.h \
   ForkWarningHelpers.h \
+  BlockInvalidationHelpers.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \
@@ -461,6 +463,7 @@ libbitcoin_server_a_SOURCES = \
   AcceptBlockValidator.cpp \
   Warnings.cpp \
   ForkWarningHelpers.cpp \
+  BlockInvalidationHelpers.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \

@@ -81,6 +81,8 @@
 #include <MainNotificationRegistration.h>
 #include <Warnings.h>
 #include <ForkWarningHelpers.h>
+#include <BlockInvalidationHelpers.h>
+#include <I_ChainTipManager.h>
 
 using namespace boost;
 using namespace std;
@@ -123,7 +125,6 @@ namespace
      * The set of all CBlockIndex entries with BLOCK_VALID_TRANSACTIONS (for itself and all ancestors) and
      * as good as our current tip or better. Entries may be failed, though.
      */
-std::set<CBlockIndex*, CBlockIndexWorkComparator> setBlockIndexCandidates;
 /** All pairs A->B, where A (or one if its ancestors) misses transactions, but B has transactions. */
 std::multimap<CBlockIndex*, CBlockIndex*> mapBlocksUnlinked;
 
@@ -629,45 +630,10 @@ bool IsInitialBlockDownload()	//2446
 namespace
 {
 
-void InvalidChainFound(CBlockIndex* pindexNew)
-{
-    updateMostWorkInvalidBlockIndex(pindexNew);
-
-    const ChainstateManager::Reference chainstate;
-    const auto& chain = chainstate->ActiveChain();
-
-    LogPrintf("InvalidChainFound: invalid block=%s  height=%d  log2_work=%.8g  date=%s\n",
-              pindexNew->GetBlockHash(), pindexNew->nHeight,
-              log(pindexNew->nChainWork.getdouble()) / log(2.0), DateTimeStrFormat("%Y-%m-%d %H:%M:%S",
-                                                                                   pindexNew->GetBlockTime()));
-    LogPrintf("InvalidChainFound:  current best=%s  height=%d  log2_work=%.8g  date=%s\n",
-              chain.Tip()->GetBlockHash(), chain.Height(), log(chain.Tip()->nChainWork.getdouble()) / log(2.0),
-              DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chain.Tip()->GetBlockTime()));
-    CheckForkWarningConditions(settings, cs_main,IsInitialBlockDownload());
-}
-
 bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
 {
     if(fKnown) return BlockFileHelpers::FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
     else return BlockFileHelpers::FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
-}
-
-//! List of asynchronously-determined block rejections to notify this peer about.
-void InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state)
-{
-    int nDoS = 0;
-    if (state.IsInvalid(nDoS)) {
-        std::map<uint256, NodeId>::iterator it = mapBlockSource.find(pindex->GetBlockHash());
-        if (it != mapBlockSource.end()) {
-            Misbehaving(it->second,nDoS,"Invalid block sourced from peer");
-        }
-    }
-    if (!state.CorruptionPossible()) {
-        pindex->nStatus |= BLOCK_FAILED_VALID;
-        BlockFileHelpers::RecordDirtyBlockIndex(pindex);
-        setBlockIndexCandidates.erase(pindex);
-        InvalidChainFound(pindex);
-    }
 }
 
 int64_t nTimeTotal = 0;
@@ -1019,7 +985,7 @@ bool static ConnectTip(ChainstateManager& chainstate, const CSporkManager& spork
         bool rv = ConnectBlock(*pblock, state, pindexNew, chainstate, sporkManager, view, false, fAlreadyChecked);
         if (!rv) {
             if (state.IsInvalid())
-                InvalidBlockFound(pindexNew, state);
+                InvalidBlockFound(mapBlockSource,IsInitialBlockDownload(),settings,cs_main,pindexNew, state);
             return error("%s : ConnectBlock %s failed",__func__, pindexNew->GetBlockHash());
         }
         mapBlockSource.erase(inv.GetHash());
@@ -1098,11 +1064,11 @@ private:
 public:
     ChainActivationHelpers(
         ChainstateManager& chainstate,
-        std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
-        BlockIndexCandidates& setBlockIndexCandidates
+        std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks,
+        BlockIndexCandidates& blockIndexCandidates
         ): chainstate_(chainstate)
-        , unlinkedBlocks_(mapBlocksUnlinked)
-        , blockIndexCandidates_(setBlockIndexCandidates)
+        , unlinkedBlocks_(unlinkedBlocks)
+        , blockIndexCandidates_(blockIndexCandidates)
     {
     }
 
@@ -1147,7 +1113,7 @@ public:
         {
             // The block violates a consensus rule.
             if (!state.CorruptionPossible())
-                InvalidChainFound(lastBlockIndex);
+                InvalidChainFound(IsInitialBlockDownload(),settings,cs_main,lastBlockIndex);
             state = CValidationState();
             return false;
         }
@@ -1188,7 +1154,7 @@ public:
                 return BlockConnectionResult::UNKNOWN_SYSTEM_ERROR;
             }
         } else {
-            PruneBlockIndexCandidates(chain,setBlockIndexCandidates);
+            PruneBlockIndexCandidates(chain,GetBlockIndexCandidates());
             if (!previousChainTip || chain.Tip()->nChainWork > previousChainTip->nChainWork) {
                 // We're in a better position than we were. Return temporarily to release the lock.
                 return BlockConnectionResult::CHAINWORK_IMPROVED;
@@ -1316,6 +1282,29 @@ bool ActivateBestChainTemp(
     return true;
 }
 
+class ChainTipManager final: public I_ChainTipManager
+{
+private:
+    CValidationState& state_;
+    const bool updateCoinDatabaseOnly_;
+public:
+    ChainTipManager(
+        CValidationState& state,
+        const bool updateCoinDatabaseOnly
+        ): state_(state)
+        , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
+    {}
+
+    bool connectTip(CBlock& block, CBlockIndex* blockIndex) const override
+    {
+        return false;
+    }
+    bool disconnectTip() const override
+    {
+        return DisconnectTip(state_,updateCoinDatabaseOnly_);
+    }
+};
+
 bool ActivateBestChain(
     ChainstateManager& chainstate,
     const CSporkManager& sporkManager,
@@ -1323,46 +1312,16 @@ bool ActivateBestChain(
     const CBlock* pblock,
     bool fAlreadyChecked)
 {
-    ChainActivationHelpers helper(chainstate,mapBlocksUnlinked,setBlockIndexCandidates);
+    ChainActivationHelpers helper(chainstate,mapBlocksUnlinked,GetBlockIndexCandidates());
     const bool result = ActivateBestChainTemp(helper, chainstate,sporkManager,state,pblock,fAlreadyChecked);
-    VerifyBlockIndexTree(chainstate,cs_main, mapBlocksUnlinked, setBlockIndexCandidates);
+    VerifyBlockIndexTree(chainstate,cs_main, mapBlocksUnlinked, GetBlockIndexCandidates());
     return result;
 }
 
 bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)
 {
-    AssertLockHeld(cs_main);
-
-    const auto& chain = chainstate.ActiveChain();
-    auto& blockMap = chainstate.GetBlockMap();
-
-    // Mark the block itself as invalid.
-    pindex->nStatus |= BLOCK_FAILED_VALID;
-    BlockFileHelpers::RecordDirtyBlockIndex(pindex);
-    setBlockIndexCandidates.erase(pindex);
-
-    while (chain.Contains(pindex)) {
-        CBlockIndex* pindexWalk = blockMap.at(chain.Tip()->GetBlockHash());
-        pindexWalk->nStatus |= BLOCK_FAILED_CHILD;
-        BlockFileHelpers::RecordDirtyBlockIndex(pindexWalk);
-        setBlockIndexCandidates.erase(pindexWalk);
-        // ActivateBestChain considers blocks already in chainActive
-        // unconditionally valid already, so force disconnect away from it.
-        if (!DisconnectTip(state,updateCoinDatabaseOnly)) {
-            return false;
-        }
-    }
-
-    // The resulting new best tip may not be in setBlockIndexCandidates anymore, so
-    // add them again.
-    for (const auto& entry : chainstate.GetBlockMap()) {
-        if (entry.second->IsValid(BLOCK_VALID_TRANSACTIONS) && entry.second->nChainTx && !setBlockIndexCandidates.value_comp()(entry.second, chain.Tip())) {
-            setBlockIndexCandidates.insert(entry.second);
-        }
-    }
-
-    InvalidChainFound(pindex);
-    return true;
+    ChainTipManager chainTipManager(state,updateCoinDatabaseOnly);
+    return InvalidateBlock(chainTipManager, IsInitialBlockDownload(), settings, cs_main, chainstate, pindex);
 }
 
 bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex)
@@ -1379,8 +1338,8 @@ bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBl
         if (!blk.IsValid() && blk.GetAncestor(nHeight) == pindex) {
             blk.nStatus &= ~BLOCK_FAILED_MASK;
             BlockFileHelpers::RecordDirtyBlockIndex(&blk);
-            if (blk.IsValid(BLOCK_VALID_TRANSACTIONS) && blk.nChainTx && setBlockIndexCandidates.value_comp()(chain.Tip(), &blk)) {
-                setBlockIndexCandidates.insert(&blk);
+            if (blk.IsValid(BLOCK_VALID_TRANSACTIONS) && blk.nChainTx && GetBlockIndexCandidates().value_comp()(chain.Tip(), &blk)) {
+                GetBlockIndexCandidates().insert(&blk);
             }
             updateMostWorkInvalidBlockIndex(&blk, true);
         }
@@ -1493,8 +1452,8 @@ bool ReceivedBlockTransactions(const CBlock& block, CValidationState& state, CBl
                 LOCK(cs_nBlockSequenceId);
                 pindex->nSequenceId = nBlockSequenceId++;
             }
-            if (chain.Tip() == NULL || !setBlockIndexCandidates.value_comp()(pindex, chain.Tip())) {
-                setBlockIndexCandidates.insert(pindex);
+            if (chain.Tip() == NULL || !GetBlockIndexCandidates().value_comp()(pindex, chain.Tip())) {
+                GetBlockIndexCandidates().insert(pindex);
             }
             auto range = mapBlocksUnlinked.equal_range(pindex);
             while (range.first != range.second) {
@@ -1758,7 +1717,7 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     if(!blockValidator.connectActiveChain(pindex,*pblock,checked)) return false;
 
     VoteForMasternodePayee(pindex);
-    VerifyBlockIndexTree(chainstate,cs_main,mapBlocksUnlinked,setBlockIndexCandidates);
+    VerifyBlockIndexTree(chainstate,cs_main,mapBlocksUnlinked,GetBlockIndexCandidates());
     LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,
               pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));
 
@@ -1797,7 +1756,7 @@ static void InitializeBlockIndexGlobalData(BlockMap& blockIndicesByHash)
             }
         }
         if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && (pindex->nChainTx || pindex->pprev == NULL))
-            setBlockIndexCandidates.insert(pindex);
+            GetBlockIndexCandidates().insert(pindex);
         if (pindex->nStatus & BLOCK_FAILED_MASK)
             updateMostWorkInvalidBlockIndex(pindex);
         if (pindex->pprev){
@@ -2010,7 +1969,7 @@ bool static LoadBlockIndexState(string& strError)
         return true;
     chain.SetTip(it->second);
 
-    PruneBlockIndexCandidates(chain,setBlockIndexCandidates);
+    PruneBlockIndexCandidates(chain,GetBlockIndexCandidates());
 
     LogPrintf("%s: hashBestChain=%s height=%d date=%s progress=%f\n",
             __func__,
@@ -2023,7 +1982,7 @@ bool static LoadBlockIndexState(string& strError)
 
 void UnloadBlockIndex(ChainstateManager* chainstate)
 {
-    setBlockIndexCandidates.clear();
+    GetBlockIndexCandidates().clear();
     updateMostWorkInvalidBlockIndex(nullptr);
 
     if (chainstate != nullptr)
@@ -2832,7 +2791,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             pfrom->PushMessage("getheaders", chain.GetLocator(pindexLast), uint256(0));
         }
 
-        VerifyBlockIndexTree(*chainstate,cs_main,mapBlocksUnlinked,setBlockIndexCandidates);
+        VerifyBlockIndexTree(*chainstate,cs_main,mapBlocksUnlinked,GetBlockIndexCandidates());
     }
     else if (strCommand == "block" && !fImporting && !fReindex) // Ignore blocks received while importing
     {

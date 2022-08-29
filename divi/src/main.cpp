@@ -631,8 +631,7 @@ namespace
 
 void InvalidChainFound(CBlockIndex* pindexNew)
 {
-    if (pindexNew->nChainWork > getMostWorkForInvalidBlockIndex())
-        updateMostWorkInvalidBlockIndex(pindexNew);
+    updateMostWorkInvalidBlockIndex(pindexNew);
 
     const ChainstateManager::Reference chainstate;
     const auto& chain = chainstate->ActiveChain();
@@ -1809,7 +1808,7 @@ static void InitializeBlockIndexGlobalData(BlockMap& blockIndicesByHash)
         }
         if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && (pindex->nChainTx || pindex->pprev == NULL))
             setBlockIndexCandidates.insert(pindex);
-        if (pindex->nStatus & BLOCK_FAILED_MASK && (pindex->nChainWork >  getMostWorkForInvalidBlockIndex() ))
+        if (pindex->nStatus & BLOCK_FAILED_MASK)
             updateMostWorkInvalidBlockIndex(pindex);
         if (pindex->pprev){
             pindex->BuildSkip();

@@ -382,6 +382,9 @@ void updateMostWorkInvalidBlockIndex(const CBlockIndex* invalidBlockIndex, bool 
     }
     else if(!reconsider)
     {
-        mostWorkInvalidBlockIndex = invalidBlockIndex;
+        if(!invalidBlockIndex || invalidBlockIndex->nChainWork > getMostWorkForInvalidBlockIndex())
+        {
+            mostWorkInvalidBlockIndex = invalidBlockIndex;
+        }
     }
 }

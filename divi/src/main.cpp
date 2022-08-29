@@ -1339,7 +1339,6 @@ public:
                     fInvalidFound = true;
                     break;
                 case BlockConnectionResult::UNKNOWN_SYSTEM_ERROR:
-                    return false;
                     break;
                 case BlockConnectionResult::CHAINWORK_IMPROVED:
                     break;
@@ -1349,6 +1348,7 @@ public:
             }
             if(result != BlockConnectionResult::TRY_NEXT_BLOCK) break;
         }
+        if(result == BlockConnectionResult::UNKNOWN_SYSTEM_ERROR) return false;
 
         // Callbacks/notifications for a new best chain.
         if (fInvalidFound)

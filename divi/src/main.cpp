@@ -1042,6 +1042,29 @@ bool DisconnectBlocksAndReprocess(int blocks)
     return true;
 }
 
+class ChainTipManager final: public I_ChainTipManager
+{
+private:
+    CValidationState& state_;
+    const bool updateCoinDatabaseOnly_;
+public:
+    ChainTipManager(
+        CValidationState& state,
+        const bool updateCoinDatabaseOnly
+        ): state_(state)
+        , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
+    {}
+
+    bool connectTip(CBlock& block, CBlockIndex* blockIndex) const override
+    {
+        return false;
+    }
+    bool disconnectTip() const override
+    {
+        return DisconnectTip(state_,updateCoinDatabaseOnly_);
+    }
+};
+
 class ChainActivationHelpers
 {
 private:
@@ -1261,29 +1284,6 @@ bool ActivateBestChainTemp(
 
     return true;
 }
-
-class ChainTipManager final: public I_ChainTipManager
-{
-private:
-    CValidationState& state_;
-    const bool updateCoinDatabaseOnly_;
-public:
-    ChainTipManager(
-        CValidationState& state,
-        const bool updateCoinDatabaseOnly
-        ): state_(state)
-        , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
-    {}
-
-    bool connectTip(CBlock& block, CBlockIndex* blockIndex) const override
-    {
-        return false;
-    }
-    bool disconnectTip() const override
-    {
-        return DisconnectTip(state_,updateCoinDatabaseOnly_);
-    }
-};
 
 bool ActivateBestChain(
     ChainstateManager& chainstate,

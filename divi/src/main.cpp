@@ -1248,7 +1248,6 @@ public:
         }
         else
         {
-            // A system error occurred (disk space, database error, ...).
             return true;
         }
     }
@@ -1300,6 +1299,7 @@ public:
                     }
                     else
                     {
+                        // A system error occurred (disk space, database error, ...)
                         return false;
                     }
                 } else {

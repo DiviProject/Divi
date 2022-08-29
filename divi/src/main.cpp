@@ -1340,6 +1340,7 @@ public:
                     fContinue = false;
                     break;
                 case BlockConnectionResult::UNKNOWN_SYSTEM_ERROR:
+                    fContinue = false;
                     return false;
                     break;
                 case BlockConnectionResult::CHAINWORK_IMPROVED:

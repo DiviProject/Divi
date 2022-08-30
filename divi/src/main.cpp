@@ -1473,7 +1473,6 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     if(!blockValidator.connectActiveChain(*pblock,checked)) return false;
 
     VoteForMasternodePayee(pindex);
-    VerifyBlockIndexTree(chainstate,cs_main,GetBlockIndexSuccessorsByPreviousBlockIndex(),GetBlockIndexCandidates());
     LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,
               pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));
 

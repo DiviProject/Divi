@@ -355,7 +355,7 @@ bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip)
         uiInterface,
         chainstate->GetNominalViewCacheSize(),
         &ShutdownRequested);
-    return dbVerifier.VerifyDB(&coinView, chainstate->CoinsTip().GetCacheSize(), nCheckLevel, nCheckDepth);
+    return dbVerifier.VerifyDB(nCheckLevel, nCheckDepth);
 }
 
 void EnableMainSignals()

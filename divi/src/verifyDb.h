@@ -45,7 +45,7 @@ public:
         const unsigned& coinsCacheSize,
         ShutdownListener shutdownListener);
     ~CVerifyDB();
-    bool VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize, int nCheckLevel, int nCheckDepth) const;
+    bool VerifyDB(int nCheckLevel, int nCheckDepth) const;
 };
 
 #endif

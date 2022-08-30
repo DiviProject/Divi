@@ -55,7 +55,7 @@ std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(
         return std::make_pair(pindex,ret);
     }
 }
-bool AcceptBlockValidator::connectActiveChain(CBlockIndex* blockIndex, const CBlock& block, bool blockChecked) const
+bool AcceptBlockValidator::connectActiveChain(const CBlock& block, bool blockChecked) const
 {
     if (!chainExtensionService_.updateActiveChain(chainstate_, sporkManager_, state_, &block, blockChecked))
         return error("%s : updateActiveChain failed", __func__);

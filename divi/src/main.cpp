@@ -128,14 +128,6 @@ namespace
 
 
 /**
-     * Every received block is assigned a unique and increasing identifier, so we
-     * know which one to give priority in case of a fork.
-     */
-CCriticalSection cs_nBlockSequenceId;
-/** Blocks loaded from disk are assigned id 0, so start the counter at 1. */
-uint32_t nBlockSequenceId = 1;
-
-/**
      * Sources of received blocks, to be able to send them reject messages or ban
      * them, if processing happens afterwards. Protected by cs_main.
      */
@@ -1414,42 +1406,9 @@ bool ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pindexNew, cons
     pindexNew->nStatus |= BLOCK_HAVE_DATA;
     pindexNew->RaiseValidity(BLOCK_VALID_TRANSACTIONS);
     BlockFileHelpers::RecordDirtyBlockIndex(pindexNew);
-    auto& blockIndexCandidates = GetBlockIndexCandidates();
-    auto& blockIndexSuccessorsByPrevBlockIndex = GetBlockIndexSuccessorsByPreviousBlockIndex();
-    if (pindexNew->pprev == NULL || pindexNew->pprev->nChainTx) {
-        const ChainstateManager::Reference chainstate;
-        const auto& chain = chainstate->ActiveChain();
-
-        // If pindexNew is the genesis block or all parents are BLOCK_VALID_TRANSACTIONS.
-        deque<CBlockIndex*> queue;
-        queue.push_back(pindexNew);
-
-        // Recursively process any descendant blocks that now may be eligible to be connected.
-        while (!queue.empty()) {
-            CBlockIndex* pindex = queue.front();
-            queue.pop_front();
-            pindex->nChainTx = (pindex->pprev ? pindex->pprev->nChainTx : 0) + pindex->nTx;
-            {
-                LOCK(cs_nBlockSequenceId);
-                pindex->nSequenceId = nBlockSequenceId++;
-            }
-            if (chain.Tip() == NULL || !blockIndexCandidates.value_comp()(pindex, chain.Tip())) {
-                blockIndexCandidates.insert(pindex);
-            }
-            auto range = blockIndexSuccessorsByPrevBlockIndex.equal_range(pindex);
-            while (range.first != range.second) {
-                auto it = range.first;
-                queue.push_back(it->second);
-                range.first++;
-                blockIndexSuccessorsByPrevBlockIndex.erase(it);
-            }
-        }
-    } else {
-        if (pindexNew->pprev && pindexNew->pprev->IsValid(BLOCK_VALID_TREE)) {
-            blockIndexSuccessorsByPrevBlockIndex.insert(std::make_pair(pindexNew->pprev, pindexNew));
-        }
-    }
-
+    const ChainstateManager::Reference chainstate;
+    const auto& chain = chainstate->ActiveChain();
+    UpdateBlockCandidatesAndSuccessors(chain,pindexNew);
     return true;
 }
 

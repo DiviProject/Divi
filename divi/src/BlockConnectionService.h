@@ -31,6 +31,12 @@ private:
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
 
+    bool DisconnectBlock(
+        const CBlock& block,
+        CValidationState& state,
+        const CBlockIndex* pindex,
+        CCoinsViewCache& coins,
+        bool fJustCheck) const;
 public:
     BlockConnectionService(
         CBlockTreeDB* blocktree,
@@ -38,12 +44,6 @@ public:
         const I_BlockDataReader& blockDataReader,
         const bool modifyCoinCacheInplace);
 
-    bool DisconnectBlock(
-        const CBlock& block,
-        CValidationState& state,
-        const CBlockIndex* pindex,
-        CCoinsViewCache& coins,
-        bool fJustCheck) const;
     /** Disconnects a block given by pindex, which is also first loaded from
      *  disk and returned as part of disconnectedBlockAndStatus.
      *  This method always fully disconnects (i.e. fJustCheck=false).  */

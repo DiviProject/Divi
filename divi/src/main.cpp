@@ -1363,7 +1363,6 @@ private:
             if (!fInitialDownload) {
                 const uint256 hashNewTip = pindexNewTip->GetBlockHash();
                 // Relay inventory, but don't relay old inventory during initial block download.
-                NotifyPeersOfNewChainTip(chain.Height(),hashNewTip,100);
                 // Notify external listeners about the new tip.
                 uiInterface.NotifyBlockTip(hashNewTip);
                 GetMainNotificationInterface().UpdatedBlockTip(pindexNewTip);

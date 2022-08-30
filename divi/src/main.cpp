@@ -1237,7 +1237,7 @@ public:
 };
 
 bool ActivateBestChainTemp(
-    const I_MostWorkChainTransitionMediator& chainActivationHelper,
+    const I_MostWorkChainTransitionMediator& chainTransitionMediator,
     ChainstateManager& chainstate,
     const CBlock* pblock)
 {
@@ -1256,14 +1256,14 @@ bool ActivateBestChainTemp(
                 continue;
             }
 
-            pindexMostWork = chainActivationHelper.findMostWorkChain();
+            pindexMostWork = chainTransitionMediator.findMostWorkChain();
 
             // Whether we have anything to do at all.
             if (pindexMostWork == NULL || pindexMostWork == chain.Tip())
                 return true;
 
             const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
-            if (!chainActivationHelper.transitionActiveChainToMostWorkChain(pindexMostWork, connectingBlock))
+            if (!chainTransitionMediator.transitionActiveChainToMostWorkChain(pindexMostWork, connectingBlock))
                 return false;
 
             pindexNewTip = chain.Tip();
@@ -1296,8 +1296,8 @@ bool ActivateBestChain(
     bool fAlreadyChecked)
 {
     ChainTipManager chainTipManager(sporkManager,chainstate,fAlreadyChecked,state,false);
-    MostWorkChainTransitionMediator helper(chainstate, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
-    const bool result = ActivateBestChainTemp(helper, chainstate, pblock);
+    MostWorkChainTransitionMediator chainTransitionMediator(chainstate, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
+    const bool result = ActivateBestChainTemp(chainTransitionMediator, chainstate, pblock);
 
     // Write changes periodically to disk, after relay.
     if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {

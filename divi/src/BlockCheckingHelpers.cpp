@@ -165,8 +165,8 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 void VerifyBlockIndexTree(
     const ChainstateManager& chainstate,
     CCriticalSection& mainCriticalSection,
-    BlockIndexSuccessorsByPreviousBlockIndex& mapBlocksUnlinked,
-    BlockIndexCandidates& setBlockIndexCandidates)
+    BlockIndexSuccessorsByPreviousBlockIndex& blockSuccessorsByPrevBlockIndex,
+    BlockIndexCandidates& blockIndexCandidates)
 {
     if (!settings.GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks())) {
         return;
@@ -240,14 +240,14 @@ void VerifyBlockIndexTree(
             assert((pindex->nStatus & BLOCK_FAILED_MASK) == 0); // The failed mask cannot be set for blocks without invalid parents.
         }
         if (!CBlockIndexWorkComparator()(pindex, chain.Tip()) && pindexFirstMissing == NULL) {
-            if (pindexFirstInvalid == NULL) { // If this block sorts at least as good as the current tip and is valid, it must be in setBlockIndexCandidates.
-                assert(setBlockIndexCandidates.count(pindex));
+            if (pindexFirstInvalid == NULL) { // If this block sorts at least as good as the current tip and is valid, it must be in blockIndexCandidates.
+                assert(blockIndexCandidates.count(pindex));
             }
-        } else { // If this block sorts worse than the current tip, it cannot be in setBlockIndexCandidates.
-            assert(setBlockIndexCandidates.count(pindex) == 0);
+        } else { // If this block sorts worse than the current tip, it cannot be in blockIndexCandidates.
+            assert(blockIndexCandidates.count(pindex) == 0);
         }
-        // Check whether this block is in mapBlocksUnlinked.
-        std::pair<BlockIndexSuccessorsByPreviousBlockIndex::iterator, BlockIndexSuccessorsByPreviousBlockIndex::iterator> rangeUnlinked = mapBlocksUnlinked.equal_range(pindex->pprev);
+        // Check whether this block is in blockSuccessorsByPrevBlockIndex.
+        std::pair<BlockIndexSuccessorsByPreviousBlockIndex::iterator, BlockIndexSuccessorsByPreviousBlockIndex::iterator> rangeUnlinked = blockSuccessorsByPrevBlockIndex.equal_range(pindex->pprev);
         bool foundInUnlinked = false;
         while (rangeUnlinked.first != rangeUnlinked.second) {
             assert(rangeUnlinked.first->first == pindex->pprev);
@@ -258,10 +258,10 @@ void VerifyBlockIndexTree(
             rangeUnlinked.first++;
         }
         if (pindex->pprev && pindex->nStatus & BLOCK_HAVE_DATA && pindexFirstMissing != NULL) {
-            if (pindexFirstInvalid == NULL) { // If this block has block data available, some parent doesn't, and has no invalid parents, it must be in mapBlocksUnlinked.
+            if (pindexFirstInvalid == NULL) { // If this block has block data available, some parent doesn't, and has no invalid parents, it must be in blockSuccessorsByPrevBlockIndex.
                 assert(foundInUnlinked);
             }
-        } else { // If this block does not have block data available, or all parents do, it cannot be in mapBlocksUnlinked.
+        } else { // If this block does not have block data available, or all parents do, it cannot be in blockSuccessorsByPrevBlockIndex.
             assert(!foundInUnlinked);
         }
         // assert(pindex->GetBlockHash() == pindex->GetBlockHeader().GetHash()); // Perhaps too slow
@@ -314,8 +314,8 @@ void VerifyBlockIndexTree(
 
 CBlockIndex* FindMostWorkChain(
     const ChainstateManager& chainstate,
-    BlockIndexSuccessorsByPreviousBlockIndex& mapBlocksUnlinked,
-    BlockIndexCandidates& setBlockIndexCandidates)
+    BlockIndexSuccessorsByPreviousBlockIndex& blockSuccessorsByPrevBlockIndex,
+    BlockIndexCandidates& blockIndexCandidates)
 {
     const auto& chain = chainstate.ActiveChain();
     do {
@@ -323,8 +323,8 @@ CBlockIndex* FindMostWorkChain(
 
         // Find the best candidate header.
         {
-            std::set<CBlockIndex*, CBlockIndexWorkComparator>::reverse_iterator it = setBlockIndexCandidates.rbegin();
-            if (it == setBlockIndexCandidates.rend())
+            std::set<CBlockIndex*, CBlockIndexWorkComparator>::reverse_iterator it = blockIndexCandidates.rbegin();
+            if (it == blockIndexCandidates.rend())
                 return NULL;
             pindexNew = *it;
         }
@@ -336,7 +336,7 @@ CBlockIndex* FindMostWorkChain(
         while (pindexTest && !chain.Contains(pindexTest)) {
             assert(pindexTest->nChainTx || pindexTest->nHeight == 0);
 
-            // Pruned nodes may have entries in setBlockIndexCandidates for
+            // Pruned nodes may have entries in blockIndexCandidates for
             // which block files have been deleted.  Remove those as candidates
             // for the most work chain if we come across them; we can't switch
             // to a chain unless we have all the non-active-chain parent blocks.
@@ -352,15 +352,15 @@ CBlockIndex* FindMostWorkChain(
                     if (fFailedChain) {
                         pindexFailed->nStatus |= BLOCK_FAILED_CHILD;
                     } else if (fMissingData) {
-                        // If we're missing data, then add back to mapBlocksUnlinked,
+                        // If we're missing data, then add back to blockSuccessorsByPrevBlockIndex,
                         // so that if the block arrives in the future we can try adding
-                        // to setBlockIndexCandidates again.
-                        mapBlocksUnlinked.insert(std::make_pair(pindexFailed->pprev, pindexFailed));
+                        // to blockIndexCandidates again.
+                        blockSuccessorsByPrevBlockIndex.insert(std::make_pair(pindexFailed->pprev, pindexFailed));
                     }
-                    setBlockIndexCandidates.erase(pindexFailed);
+                    blockIndexCandidates.erase(pindexFailed);
                     pindexFailed = pindexFailed->pprev;
                 }
-                setBlockIndexCandidates.erase(pindexTest);
+                blockIndexCandidates.erase(pindexTest);
                 fInvalidAncestor = true;
                 break;
             }

@@ -1021,7 +1021,7 @@ public:
         mempool.check(&coinsTip, blockMap);
         // Read block from disk.
         std::pair<CBlock,bool> disconnectedBlock =
-            blockConnectionService_.DisconnectBlock(state_, pindexDelete, updateCoinDatabaseOnly_);
+            blockConnectionService_.DisconnectBlock(state_, pindexDelete, updateCoinDatabaseOnly_,true);
         if(!disconnectedBlock.second)
             return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
         std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;

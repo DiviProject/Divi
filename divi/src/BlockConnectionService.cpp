@@ -120,7 +120,8 @@ bool BlockConnectionService::DisconnectBlock(
 std::pair<CBlock,bool> BlockConnectionService::DisconnectBlock(
     CValidationState& state,
     const CBlockIndex* pindex,
-    const bool updateCoinsCacheOnly) const
+    const bool updateCoinsCacheOnly,
+    const bool flushOnSuccess) const
 {
     std::pair<CBlock,bool> disconnectedBlockAndStatus;
     CBlock& block = disconnectedBlockAndStatus.first;
@@ -133,7 +134,7 @@ std::pair<CBlock,bool> BlockConnectionService::DisconnectBlock(
     int64_t nStart = GetTimeMicros();
     CCoinsViewCache coins(coinTip_);
     status = DisconnectBlock(block, state, pindex, coins, updateCoinsCacheOnly);
-    if(status) assert(coins.Flush());
+    if(flushOnSuccess && status) assert(coins.Flush());
     LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
     return disconnectedBlockAndStatus;
 }

@@ -48,6 +48,7 @@ public:
     std::pair<CBlock,bool> DisconnectBlock(
         CValidationState& state,
         const CBlockIndex* pindex,
-        const bool updateCoinsCacheOnly) const;
+        const bool updateCoinsCacheOnly,
+        const bool flushOnSuccess) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

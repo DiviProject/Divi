@@ -67,7 +67,7 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
         nCheckDepth = activeChain_.Height();
     nCheckLevel = std::max(0, std::min(4, nCheckLevel));
     LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
-    CCoinsViewCache coins(&coinView_);
+
     const CBlockIndex* pindexState = activeChain_.Tip();
     int nGoodTransactions = 0;
     CValidationState state;
@@ -96,12 +96,12 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
             }
         }
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
-        const unsigned int coinCacheSize = coins.GetCacheSize();
+        const unsigned int coinCacheSize = coinsViewCache_->GetCacheSize();
         if (nCheckLevel >= 3 &&
             pindex == pindexState &&
             (coinCacheSize + coinsTipCacheSize) <= coinsCacheSize_)
         {
-            if (!chainManager_->DisconnectBlock(block, state, pindex, coins, true))
+            if (!chainManager_->DisconnectBlock(state, pindex, true, false).second)
                 return error("VerifyDB() : *** inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             pindexState = pindex->pprev;
             nGoodTransactions += block.vtx.size();
@@ -136,7 +136,7 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
                apply ConnectBlock to a temporary copy, and verify later on
                that the fields computed match the ones we have already.  */
             CBlockIndex indexCopy(*pindex);
-            if (!ConnectBlock(block, state, &indexCopy, chainstate_, sporkManager_, coins, true))
+            if (!ConnectBlock(block, state, &indexCopy, chainstate_, sporkManager_, *coinsViewCache_, true))
                 return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             if (indexCopy.nUndoPos != pindex->nUndoPos
                   || indexCopy.nStatus != pindex->nStatus

@@ -1072,7 +1072,7 @@ public:
             CBlockIndex* pindexMostWork,
             const CBlock* pblock) const = 0;
 };
-class ChainActivationHelpers final: public I_MostWorkChainTransitionMediator
+class MostWorkChainTransitionMediator final: public I_MostWorkChainTransitionMediator
 {
 private:
     ChainstateManager& chainstate_;
@@ -1169,7 +1169,7 @@ private:
 
 
 public:
-    ChainActivationHelpers(
+    MostWorkChainTransitionMediator(
         ChainstateManager& chainstate,
         BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks,
         BlockIndexCandidates& blockIndexCandidates,
@@ -1237,7 +1237,7 @@ public:
 };
 
 bool ActivateBestChainTemp(
-    const ChainActivationHelpers& chainActivationHelper,
+    const MostWorkChainTransitionMediator& chainActivationHelper,
     ChainstateManager& chainstate,
     const CBlock* pblock)
 {
@@ -1296,7 +1296,7 @@ bool ActivateBestChain(
     bool fAlreadyChecked)
 {
     ChainTipManager chainTipManager(sporkManager,chainstate,fAlreadyChecked,state,false);
-    ChainActivationHelpers helper(chainstate, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
+    MostWorkChainTransitionMediator helper(chainstate, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
     const bool result = ActivateBestChainTemp(helper, chainstate, pblock);
 
     // Write changes periodically to disk, after relay.

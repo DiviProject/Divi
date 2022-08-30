@@ -1034,59 +1034,6 @@ public:
     }
 };
 
-
-bool ActivateBestChainTemp(
-    const I_MostWorkChainTransitionMediator& chainTransitionMediator,
-    ChainstateManager& chainstate,
-    const CBlock* pblock)
-{
-    const auto& chain = chainstate.ActiveChain();
-
-    const CBlockIndex* pindexNewTip = NULL;
-    CBlockIndex* pindexMostWork = NULL;
-    do {
-        boost::this_thread::interruption_point();
-
-        bool fInitialDownload;
-        while (true) {
-            TRY_LOCK(cs_main, lockMain);
-            if (!lockMain) {
-                MilliSleep(50);
-                continue;
-            }
-
-            pindexMostWork = chainTransitionMediator.findMostWorkChain();
-
-            // Whether we have anything to do at all.
-            if (pindexMostWork == NULL || pindexMostWork == chain.Tip())
-                return true;
-
-            const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
-            if (!chainTransitionMediator.transitionActiveChainToMostWorkChain(pindexMostWork, connectingBlock))
-                return false;
-
-            pindexNewTip = chain.Tip();
-            fInitialDownload = IsInitialBlockDownload();
-            break;
-        }
-        // When we reach this point, we switched to a new tip (stored in pindexNewTip).
-
-        // Notifications/callbacks that can run without cs_main
-        if (!fInitialDownload) {
-            const uint256 hashNewTip = pindexNewTip->GetBlockHash();
-            // Relay inventory, but don't relay old inventory during initial block download.
-            int nBlockEstimate = checkpointsVerifier.GetTotalBlocksEstimate();
-            NotifyPeersOfNewChainTip(chain.Height(),hashNewTip,nBlockEstimate);
-            // Notify external listeners about the new tip.
-            uiInterface.NotifyBlockTip(hashNewTip);
-            GetMainNotificationInterface().UpdatedBlockTip(pindexNewTip);
-            timeOfLastChainTipUpdate = GetTime();
-        }
-    } while (pindexMostWork != chain.Tip());
-
-    return true;
-}
-
 bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)
 {
     ChainTipManager chainTipManager(GetSporkManager(),chainstate,true,state,updateCoinDatabaseOnly);
@@ -1412,6 +1359,58 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
 
 class ChainExtensionService final: public I_ChainExtensionService
 {
+private:
+    bool ActivateBestChainTemp(
+        const I_MostWorkChainTransitionMediator& chainTransitionMediator,
+        ChainstateManager& chainstate,
+        const CBlock* pblock) const
+    {
+        const auto& chain = chainstate.ActiveChain();
+
+        const CBlockIndex* pindexNewTip = NULL;
+        CBlockIndex* pindexMostWork = NULL;
+        do {
+            boost::this_thread::interruption_point();
+
+            bool fInitialDownload;
+            while (true) {
+                TRY_LOCK(cs_main, lockMain);
+                if (!lockMain) {
+                    MilliSleep(50);
+                    continue;
+                }
+
+                pindexMostWork = chainTransitionMediator.findMostWorkChain();
+
+                // Whether we have anything to do at all.
+                if (pindexMostWork == NULL || pindexMostWork == chain.Tip())
+                    return true;
+
+                const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
+                if (!chainTransitionMediator.transitionActiveChainToMostWorkChain(pindexMostWork, connectingBlock))
+                    return false;
+
+                pindexNewTip = chain.Tip();
+                fInitialDownload = IsInitialBlockDownload();
+                break;
+            }
+            // When we reach this point, we switched to a new tip (stored in pindexNewTip).
+
+            // Notifications/callbacks that can run without cs_main
+            if (!fInitialDownload) {
+                const uint256 hashNewTip = pindexNewTip->GetBlockHash();
+                // Relay inventory, but don't relay old inventory during initial block download.
+                int nBlockEstimate = checkpointsVerifier.GetTotalBlocksEstimate();
+                NotifyPeersOfNewChainTip(chain.Height(),hashNewTip,nBlockEstimate);
+                // Notify external listeners about the new tip.
+                uiInterface.NotifyBlockTip(hashNewTip);
+                GetMainNotificationInterface().UpdatedBlockTip(pindexNewTip);
+                timeOfLastChainTipUpdate = GetTime();
+            }
+        } while (pindexMostWork != chain.Tip());
+
+        return true;
+    }
 public:
     virtual bool assignBlockIndex(
         CBlock& block,

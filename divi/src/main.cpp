@@ -1168,7 +1168,7 @@ public:
     {
     }
 
-    bool activateBestChainStep(
+    bool transitionActiveChainToMostWorkChain(
         CBlockIndex* pindexMostWork,
         const CBlock* pblock) const
     {
@@ -1248,7 +1248,7 @@ bool ActivateBestChainTemp(
                 return true;
 
             const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
-            if (!chainActivationHelper.activateBestChainStep(pindexMostWork, connectingBlock))
+            if (!chainActivationHelper.transitionActiveChainToMostWorkChain(pindexMostWork, connectingBlock))
                 return false;
 
             pindexNewTip = chain.Tip();

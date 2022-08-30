@@ -39,7 +39,7 @@ CVerifyDB::CVerifyDB(
     , coinView_(coinView)
     , chainstate_(chainstate)
     , coinsViewCache_(new CCoinsViewCache(&coinView_))
-    , chainManager_(new BlockConnectionService(&chainstate.BlockTree(), coinsViewCache_.get(), *blockDiskReader_))
+    , chainManager_(new BlockConnectionService(&chainstate.BlockTree(), coinsViewCache_.get(), *blockDiskReader_,true))
     , sporkManager_(sporkManager)
     , activeChain_(chainstate.ActiveChain())
     , clientInterface_(clientInterface)
@@ -101,7 +101,7 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
             pindex == pindexState &&
             (coinCacheSize + coinsTipCacheSize) <= coinsCacheSize_)
         {
-            if (!chainManager_->DisconnectBlock(state, pindex, true, false).second)
+            if (!chainManager_->DisconnectBlock(state, pindex, true).second)
                 return error("VerifyDB() : *** inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             pindexState = pindex->pprev;
             nGoodTransactions += block.vtx.size();

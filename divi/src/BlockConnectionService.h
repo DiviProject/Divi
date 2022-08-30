@@ -24,6 +24,7 @@ private:
     CBlockTreeDB* blocktree_;
     CCoinsViewCache* const coinTip_;
     const I_BlockDataReader& blockDataReader_;
+    const bool modifyCoinCacheInplace_;
 
     bool ApplyDisconnectionUpdateIndexToDBs(
         const uint256& bestBlockHash,
@@ -34,7 +35,8 @@ public:
     BlockConnectionService(
         CBlockTreeDB* blocktree,
         CCoinsViewCache* coinTip,
-        const I_BlockDataReader& blockDataReader);
+        const I_BlockDataReader& blockDataReader,
+        const bool modifyCoinCacheInplace);
 
     bool DisconnectBlock(
         const CBlock& block,
@@ -48,7 +50,6 @@ public:
     std::pair<CBlock,bool> DisconnectBlock(
         CValidationState& state,
         const CBlockIndex* pindex,
-        const bool updateCoinsCacheOnly,
-        const bool flushOnSuccess) const;
+        const bool updateCoinsCacheOnly) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

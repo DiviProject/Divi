@@ -891,92 +891,6 @@ static int64_t nTimeFlush = 0;
 static int64_t nTimeChainState = 0;
 static int64_t nTimePostConnect = 0;
 
-/**
- * Connect a new block to chainActive. pblock is either NULL or a pointer to a CBlock
- * corresponding to pindexNew, to bypass loading it again from disk.
- */
-bool static ConnectTip(
-    ChainstateManager& chainstate,
-    const CSporkManager& sporkManager,
-     CValidationState& state,
-     CBlockIndex* pindexNew,
-     const CBlock* pblock,
-     bool fAlreadyChecked)
-{
-    AssertLockHeld(cs_main);
-
-    auto& coinsTip = chainstate.CoinsTip();
-    const auto& blockMap = chainstate.GetBlockMap();
-
-    assert(pindexNew->pprev == chainstate.ActiveChain().Tip());
-    CTxMemPool& mempool = GetTransactionMemoryPool();
-    mempool.check(&coinsTip, blockMap);
-    CCoinsViewCache view(&coinsTip);
-
-    assert(pblock || !fAlreadyChecked);
-
-    // Read block from disk.
-    int64_t nTime1 = GetTimeMicros();
-    CBlock block;
-    if (!pblock) {
-        if (!ReadBlockFromDisk(block, pindexNew))
-            return state.Abort("Failed to read block");
-        pblock = &block;
-    }
-    // Apply the block atomically to the chain state.
-    int64_t nTime2 = GetTimeMicros();
-    nTimeReadFromDisk += nTime2 - nTime1;
-    int64_t nTime3;
-    LogPrint("bench", "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001, nTimeReadFromDisk * 0.000001);
-    {
-        CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
-        bool rv = ConnectBlock(*pblock, state, pindexNew, chainstate, sporkManager, view, false, fAlreadyChecked);
-        if (!rv) {
-            if (state.IsInvalid())
-                InvalidBlockFound(mapBlockSource,IsInitialBlockDownload(),settings,cs_main,pindexNew, state);
-            return error("%s : ConnectBlock %s failed",__func__, pindexNew->GetBlockHash());
-        }
-        mapBlockSource.erase(inv.GetHash());
-        nTime3 = GetTimeMicros();
-        nTimeConnectTotal += nTime3 - nTime2;
-        LogPrint("bench", "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001, nTimeConnectTotal * 0.000001);
-        assert(view.Flush());
-    }
-    int64_t nTime4 = GetTimeMicros();
-    nTimeFlush += nTime4 - nTime3;
-    LogPrint("bench", "  - Flush: %.2fms [%.2fs]\n", (nTime4 - nTime3) * 0.001, nTimeFlush * 0.000001);
-
-    // Write the chain state to disk, if necessary. Always write to disk if this is the first of a new file.
-    FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
-    if (pindexNew->pprev && (pindexNew->GetBlockPos().nFile != pindexNew->pprev->GetBlockPos().nFile))
-        flushMode = FLUSH_STATE_ALWAYS;
-    if (!FlushStateToDisk(state, flushMode))
-        return false;
-    int64_t nTime5 = GetTimeMicros();
-    nTimeChainState += nTime5 - nTime4;
-    LogPrint("bench", "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001, nTimeChainState * 0.000001);
-
-    // Remove conflicting transactions from the mempool.
-    std::list<CTransaction> txConflicted;
-    mempool.removeConfirmedTransactions(pblock->vtx, pindexNew->nHeight, txConflicted);
-    mempool.check(&coinsTip, blockMap);
-    // Update chainActive & related variables.
-    UpdateTip(pindexNew);
-    // Tell wallet about transactions that went from mempool
-    // to conflicted:
-    std::vector<CTransaction> conflictedTransactions(txConflicted.begin(),txConflicted.end());
-    GetMainNotificationInterface().SyncTransactions(conflictedTransactions, NULL,TransactionSyncType::CONFLICTED_TX);
-    // ... and about transactions that got confirmed:
-    GetMainNotificationInterface().SyncTransactions(pblock->vtx, pblock, TransactionSyncType::NEW_BLOCK);
-
-    int64_t nTime6 = GetTimeMicros();
-    nTimePostConnect += nTime6 - nTime5;
-    nTimeTotal += nTime6 - nTime1;
-    LogPrint("bench", "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001, nTimePostConnect * 0.000001);
-    LogPrint("bench", "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
-    return true;
-}
-
 class ChainTipManager final: public I_ChainTipManager
 {
 private:
@@ -1005,7 +919,78 @@ public:
 
     bool connectTip(const CBlock* pblock, CBlockIndex* blockIndex) const override
     {
-        return ConnectTip(chainstate_, sporkManager_, state_, blockIndex, pblock, (!pblock)? false: defaultBlockChecking_ );
+        AssertLockHeld(cs_main);
+        const bool fAlreadyChecked = (!pblock)? false: defaultBlockChecking_;
+        auto& coinsTip = chainstate_.CoinsTip();
+        const auto& blockMap = chainstate_.GetBlockMap();
+
+        assert(blockIndex->pprev == chainstate_.ActiveChain().Tip());
+        CTxMemPool& mempool = GetTransactionMemoryPool();
+        mempool.check(&coinsTip, blockMap);
+        CCoinsViewCache view(&coinsTip);
+
+        assert(pblock || !fAlreadyChecked);
+
+        // Read block from disk.
+        int64_t nTime1 = GetTimeMicros();
+        CBlock block;
+        if (!pblock) {
+            if (!ReadBlockFromDisk(block, blockIndex))
+                return state_.Abort("Failed to read block");
+            pblock = &block;
+        }
+        // Apply the block atomically to the chain state.
+        int64_t nTime2 = GetTimeMicros();
+        nTimeReadFromDisk += nTime2 - nTime1;
+        int64_t nTime3;
+        LogPrint("bench", "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001, nTimeReadFromDisk * 0.000001);
+        {
+            CInv inv(MSG_BLOCK, blockIndex->GetBlockHash());
+            bool rv = ConnectBlock(*pblock, state_, blockIndex, chainstate_, sporkManager_, view, false, fAlreadyChecked);
+            if (!rv) {
+                if (state_.IsInvalid())
+                    InvalidBlockFound(mapBlockSource,IsInitialBlockDownload(),settings,cs_main,blockIndex, state_);
+                return error("%s : ConnectBlock %s failed",__func__, blockIndex->GetBlockHash());
+            }
+            mapBlockSource.erase(inv.GetHash());
+            nTime3 = GetTimeMicros();
+            nTimeConnectTotal += nTime3 - nTime2;
+            LogPrint("bench", "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001, nTimeConnectTotal * 0.000001);
+            assert(view.Flush());
+        }
+        int64_t nTime4 = GetTimeMicros();
+        nTimeFlush += nTime4 - nTime3;
+        LogPrint("bench", "  - Flush: %.2fms [%.2fs]\n", (nTime4 - nTime3) * 0.001, nTimeFlush * 0.000001);
+
+        // Write the chain state to disk, if necessary. Always write to disk if this is the first of a new file.
+        FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
+        if (blockIndex->pprev && (blockIndex->GetBlockPos().nFile != blockIndex->pprev->GetBlockPos().nFile))
+            flushMode = FLUSH_STATE_ALWAYS;
+        if (!FlushStateToDisk(state_, flushMode))
+            return false;
+        int64_t nTime5 = GetTimeMicros();
+        nTimeChainState += nTime5 - nTime4;
+        LogPrint("bench", "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001, nTimeChainState * 0.000001);
+
+        // Remove conflicting transactions from the mempool.
+        std::list<CTransaction> txConflicted;
+        mempool.removeConfirmedTransactions(pblock->vtx, blockIndex->nHeight, txConflicted);
+        mempool.check(&coinsTip, blockMap);
+        // Update chainActive & related variables.
+        UpdateTip(blockIndex);
+        // Tell wallet about transactions that went from mempool
+        // to conflicted:
+        std::vector<CTransaction> conflictedTransactions(txConflicted.begin(),txConflicted.end());
+        GetMainNotificationInterface().SyncTransactions(conflictedTransactions, NULL,TransactionSyncType::CONFLICTED_TX);
+        // ... and about transactions that got confirmed:
+        GetMainNotificationInterface().SyncTransactions(pblock->vtx, pblock, TransactionSyncType::NEW_BLOCK);
+
+        int64_t nTime6 = GetTimeMicros();
+        nTimePostConnect += nTime6 - nTime5;
+        nTimeTotal += nTime6 - nTime1;
+        LogPrint("bench", "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001, nTimePostConnect * 0.000001);
+        LogPrint("bench", "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
+        return true;
     }
     bool disconnectTip() const override
     {

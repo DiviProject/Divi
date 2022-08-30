@@ -985,6 +985,8 @@ private:
     const bool defaultBlockChecking_;
     CValidationState& state_;
     const bool updateCoinDatabaseOnly_;
+    const BlockDiskDataReader blockDiskReader_;
+    const BlockConnectionService blockConnectionService_;
 public:
     ChainTipManager(
         const CSporkManager& sporkManager,
@@ -997,6 +999,8 @@ public:
         , defaultBlockChecking_(defaultBlockChecking)
         , state_(state)
         , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
+        , blockDiskReader_()
+        , blockConnectionService_(&chainstate_.BlockTree(), &chainstate_.CoinsTip(), blockDiskReader_)
     {}
 
     bool connectTip(const CBlock* pblock, CBlockIndex* blockIndex) const override
@@ -1016,11 +1020,9 @@ public:
         CTxMemPool& mempool = GetTransactionMemoryPool();
         mempool.check(&coinsTip, blockMap);
         // Read block from disk.
-        const BlockDiskDataReader blockDiskReader;
-        const BlockConnectionService blockConnectionService(&chainstate_.BlockTree(), &coinsTip, blockDiskReader);
         std::pair<CBlock,bool> disconnectedBlock;
         {
-            blockConnectionService.DisconnectBlock(disconnectedBlock,state_, pindexDelete, updateCoinDatabaseOnly_);
+            blockConnectionService_.DisconnectBlock(disconnectedBlock,state_, pindexDelete, updateCoinDatabaseOnly_);
             if(!disconnectedBlock.second)
                 return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
         }

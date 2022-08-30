@@ -1087,25 +1087,6 @@ bool ActivateBestChainTemp(
     return true;
 }
 
-bool ActivateBestChain(
-    ChainstateManager& chainstate,
-    const CSporkManager& sporkManager,
-    CValidationState& state,
-    const CBlock* pblock,
-    bool fAlreadyChecked)
-{
-    ChainTipManager chainTipManager(sporkManager,chainstate,fAlreadyChecked,state,false);
-    MostWorkChainTransitionMediator chainTransitionMediator(chainstate, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
-    const bool result = ActivateBestChainTemp(chainTransitionMediator, chainstate, pblock);
-
-    // Write changes periodically to disk, after relay.
-    if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
-        return false;
-    }
-    VerifyBlockIndexTree(chainstate,cs_main, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates());
-    return result;
-}
-
 bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)
 {
     ChainTipManager chainTipManager(GetSporkManager(),chainstate,true,state,updateCoinDatabaseOnly);
@@ -1451,7 +1432,17 @@ public:
         const CBlock* pblock,
         bool fAlreadyChecked) const override
     {
-        return ActivateBestChain(chainstate,sporkManager,state,pblock,fAlreadyChecked);
+        ChainTipManager chainTipManager(sporkManager,chainstate,fAlreadyChecked,state,false);
+        MostWorkChainTransitionMediator chainTransitionMediator(
+            chainstate, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
+        const bool result = ActivateBestChainTemp(chainTransitionMediator, chainstate, pblock);
+
+        // Write changes periodically to disk, after relay.
+        if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
+            return false;
+        }
+        VerifyBlockIndexTree(chainstate,cs_main, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates());
+        return result;
     }
 };
 static ChainExtensionService chainExtensionService;

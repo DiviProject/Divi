@@ -117,22 +117,23 @@ bool BlockConnectionService::DisconnectBlock(
     return true;
 }
 
-void BlockConnectionService::DisconnectBlock(
-    std::pair<CBlock,bool>& disconnectedBlockAndStatus,
+std::pair<CBlock,bool> BlockConnectionService::DisconnectBlock(
     CValidationState& state,
     const CBlockIndex* pindex,
     const bool updateCoinsCacheOnly) const
 {
+    std::pair<CBlock,bool> disconnectedBlockAndStatus;
     CBlock& block = disconnectedBlockAndStatus.first;
     bool& status = disconnectedBlockAndStatus.second;
     if (!blockDataReader_.ReadBlock(pindex,block))
     {
         status = state.Abort("Failed to read block");
-        return;
+        return disconnectedBlockAndStatus;
     }
     int64_t nStart = GetTimeMicros();
     CCoinsViewCache coins(coinTip_);
     status = DisconnectBlock(block, state, pindex, coins, updateCoinsCacheOnly);
     if(status) assert(coins.Flush());
     LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
+    return disconnectedBlockAndStatus;
 }

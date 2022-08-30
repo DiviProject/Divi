@@ -45,8 +45,7 @@ public:
     /** Disconnects a block given by pindex, which is also first loaded from
      *  disk and returned as part of disconnectedBlockAndStatus.
      *  This method always fully disconnects (i.e. fJustCheck=false).  */
-    void DisconnectBlock(
-        std::pair<CBlock,bool>& disconnectedBlockAndStatus,
+    std::pair<CBlock,bool> DisconnectBlock(
         CValidationState& state,
         const CBlockIndex* pindex,
         const bool updateCoinsCacheOnly) const;

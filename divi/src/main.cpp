@@ -885,54 +885,6 @@ void static UpdateTip(const CBlockIndex* pindexNew)
     }
 }
 
-/** Disconnect chainActive's tip. */
-bool static DisconnectTip(CValidationState& state, const bool updateCoinDatabaseOnly = false)
-{
-    AssertLockHeld(cs_main);
-
-    ChainstateManager::Reference chainstate;
-    auto& coinsTip = chainstate->CoinsTip();
-    const auto& blockMap = chainstate->GetBlockMap();
-    const auto& chain = chainstate->ActiveChain();
-
-    const CBlockIndex* pindexDelete = chain.Tip();
-    assert(pindexDelete);
-    CTxMemPool& mempool = GetTransactionMemoryPool();
-    mempool.check(&coinsTip, blockMap);
-    // Read block from disk.
-    const BlockDiskDataReader blockDiskReader;
-    const ActiveChainManager chainManager(&chainstate->BlockTree(), blockDiskReader);
-    std::pair<CBlock,bool> disconnectedBlock;
-    {
-         CCoinsViewCache view(&coinsTip);
-         chainManager.DisconnectBlock(disconnectedBlock,state, pindexDelete, view, updateCoinDatabaseOnly);
-         if(!disconnectedBlock.second)
-            return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
-         assert(view.Flush());
-    }
-    std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
-
-    // Write the chain state to disk, if necessary.
-    if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS))
-        return false;
-    // Resurrect mempool transactions from the disconnected block.
-    for(const CTransaction& tx: blockTransactions) {
-        // ignore validation errors in resurrected transactions
-        std::list<CTransaction> removed;
-        CValidationState stateDummy;
-        if (tx.IsCoinBase() || tx.IsCoinStake() || !AcceptToMemoryPool(mempool, stateDummy, tx, false))
-            mempool.remove(tx, removed, true);
-    }
-    mempool.removeCoinbaseSpends(&coinsTip, pindexDelete->nHeight);
-    mempool.check(&coinsTip, blockMap);
-    // Update chainActive and related variables.
-    UpdateTip(pindexDelete->pprev);
-    // Let wallets know transactions went from 1-confirmed to
-    // 0-confirmed or conflicted:
-    GetMainNotificationInterface().SyncTransactions(blockTransactions, NULL,TransactionSyncType::BLOCK_DISCONNECT);
-    return true;
-}
-
 static int64_t nTimeReadFromDisk = 0;
 static int64_t nTimeConnectTotal = 0;
 static int64_t nTimeFlush = 0;
@@ -1053,7 +1005,48 @@ public:
     }
     bool disconnectTip() const override
     {
-        return DisconnectTip(state_,updateCoinDatabaseOnly_);
+        AssertLockHeld(cs_main);
+
+        auto& coinsTip = chainstate_.CoinsTip();
+        const auto& blockMap = chainstate_.GetBlockMap();
+        const auto& chain = chainstate_.ActiveChain();
+
+        const CBlockIndex* pindexDelete = chain.Tip();
+        assert(pindexDelete);
+        CTxMemPool& mempool = GetTransactionMemoryPool();
+        mempool.check(&coinsTip, blockMap);
+        // Read block from disk.
+        const BlockDiskDataReader blockDiskReader;
+        const ActiveChainManager chainManager(&chainstate_.BlockTree(), blockDiskReader);
+        std::pair<CBlock,bool> disconnectedBlock;
+        {
+            CCoinsViewCache view(&coinsTip);
+            chainManager.DisconnectBlock(disconnectedBlock,state_, pindexDelete, view, updateCoinDatabaseOnly_);
+            if(!disconnectedBlock.second)
+                return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
+            assert(view.Flush());
+        }
+        std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
+
+        // Write the chain state to disk, if necessary.
+        if (!FlushStateToDisk(state_, FLUSH_STATE_ALWAYS))
+            return false;
+        // Resurrect mempool transactions from the disconnected block.
+        for(const CTransaction& tx: blockTransactions) {
+            // ignore validation errors in resurrected transactions
+            std::list<CTransaction> removed;
+            CValidationState stateDummy;
+            if (tx.IsCoinBase() || tx.IsCoinStake() || !AcceptToMemoryPool(mempool, stateDummy, tx, false))
+                mempool.remove(tx, removed, true);
+        }
+        mempool.removeCoinbaseSpends(&coinsTip, pindexDelete->nHeight);
+        mempool.check(&coinsTip, blockMap);
+        // Update chainActive and related variables.
+        UpdateTip(pindexDelete->pprev);
+        // Let wallets know transactions went from 1-confirmed to
+        // 0-confirmed or conflicted:
+        GetMainNotificationInterface().SyncTransactions(blockTransactions, NULL,TransactionSyncType::BLOCK_DISCONNECT);
+        return true;
     }
 };
 

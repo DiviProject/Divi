@@ -1470,7 +1470,7 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     CBlockIndex* pindex = assignedBlockIndex.first;
     assert(pindex != nullptr);
 
-    if(!blockValidator.connectActiveChain(pindex,*pblock,checked)) return false;
+    if(!blockValidator.connectActiveChain(*pblock,checked)) return false;
 
     VoteForMasternodePayee(pindex);
     VerifyBlockIndexTree(chainstate,cs_main,GetBlockIndexSuccessorsByPreviousBlockIndex(),GetBlockIndexCandidates());

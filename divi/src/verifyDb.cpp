@@ -81,7 +81,7 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
             break;
         CBlock block;
         // check level 0: read from disk
-        if (!ReadBlockFromDisk(block, pindex))
+        if (!blockDiskReader_->ReadBlock(pindex,block))
             return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
         // check level 1: verify block validity
         if (nCheckLevel >= 1 && !CheckBlock(block, state))
@@ -123,7 +123,7 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
 
             pindex = activeChain_.Next(pindex);
             CBlock block;
-            if (!ReadBlockFromDisk(block, pindex))
+            if (!blockDiskReader_->ReadBlock(pindex,block))
                 return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
 
             /* ConnectBlock may modify some fields in pindex as the block's

@@ -15,6 +15,7 @@ class CChain;
 
 BlockIndexCandidates& GetBlockIndexCandidates();
 BlockIndexSuccessorsByPreviousBlockIndex& GetBlockIndexSuccessorsByPreviousBlockIndex();
+void UpdateBlockCandidatesAndSuccessors(const CChain& chain, CBlockIndex* newlyConnectedBlockIndex);
 void PruneBlockIndexCandidates(const CChain& chain);
 void InvalidChainFound(
     const bool isInitialBlockDownload,

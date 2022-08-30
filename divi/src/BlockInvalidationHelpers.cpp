@@ -12,6 +12,17 @@
 #include <I_ChainTipManager.h>
 #include <ValidationState.h>
 
+#include <deque>
+
+/**
+     * Every received block is assigned a unique and increasing identifier, so we
+     * know which one to give priority in case of a fork.
+     */
+static CCriticalSection cs_nBlockSequenceId;
+/** Blocks loaded from disk are assigned id 0, so start the counter at 1. */
+static uint32_t nBlockSequenceId = 1;
+
+
 static BlockIndexCandidates setBlockIndexCandidates;
 
 /** All pairs A->B, where A (or one if its ancestors) misses transactions, but B has transactions. */
@@ -25,6 +36,42 @@ BlockIndexCandidates& GetBlockIndexCandidates()
 BlockIndexSuccessorsByPreviousBlockIndex& GetBlockIndexSuccessorsByPreviousBlockIndex()
 {
     return mapBlocksUnlinked;
+}
+void UpdateBlockCandidatesAndSuccessors(const CChain& chain, CBlockIndex* newlyConnectedBlockIndex)
+{
+    auto& blockIndexCandidates = GetBlockIndexCandidates();
+    auto& blockIndexSuccessorsByPrevBlockIndex = GetBlockIndexSuccessorsByPreviousBlockIndex();
+    if (newlyConnectedBlockIndex->pprev == NULL || newlyConnectedBlockIndex->pprev->nChainTx) {
+
+        // If newlyConnectedBlockIndex is the genesis block or all parents are BLOCK_VALID_TRANSACTIONS.
+        std::deque<CBlockIndex*> queue;
+        queue.push_back(newlyConnectedBlockIndex);
+
+        // Recursively process any descendant blocks that now may be eligible to be connected.
+        while (!queue.empty()) {
+            CBlockIndex* pindex = queue.front();
+            queue.pop_front();
+            pindex->nChainTx = (pindex->pprev ? pindex->pprev->nChainTx : 0) + pindex->nTx;
+            {
+                LOCK(cs_nBlockSequenceId);
+                pindex->nSequenceId = nBlockSequenceId++;
+            }
+            if (chain.Tip() == NULL || !blockIndexCandidates.value_comp()(pindex, chain.Tip())) {
+                blockIndexCandidates.insert(pindex);
+            }
+            auto range = blockIndexSuccessorsByPrevBlockIndex.equal_range(pindex);
+            while (range.first != range.second) {
+                auto it = range.first;
+                queue.push_back(it->second);
+                range.first++;
+                blockIndexSuccessorsByPrevBlockIndex.erase(it);
+            }
+        }
+    } else {
+        if (newlyConnectedBlockIndex->pprev && newlyConnectedBlockIndex->pprev->IsValid(BLOCK_VALID_TREE)) {
+            blockIndexSuccessorsByPrevBlockIndex.insert(std::make_pair(newlyConnectedBlockIndex->pprev, newlyConnectedBlockIndex));
+        }
+    }
 }
 
 /** Delete all entries in setBlockIndexCandidates that are worse than the current tip. */

@@ -27,8 +27,10 @@ public:
     typedef bool (*ShutdownListener)();
 private:
     std::unique_ptr<const BlockDiskDataReader> blockDiskReader_;
-    std::unique_ptr<const BlockConnectionService> chainManager_;
+    const CCoinsView& coinView_;
     ChainstateManager& chainstate_;
+    std::unique_ptr<CCoinsViewCache> coinsViewCache_;
+    std::unique_ptr<const BlockConnectionService> chainManager_;
     const CSporkManager& sporkManager_;
     const CChain& activeChain_;
     CClientUIInterface& clientInterface_;
@@ -37,6 +39,7 @@ private:
 public:
     CVerifyDB(
         ChainstateManager& chainstate,
+        const CCoinsView& coinView,
         const CSporkManager& sporkManager,
         CClientUIInterface& clientInterface,
         const unsigned& coinsCacheSize,

@@ -18,10 +18,12 @@
 
 BlockConnectionService::BlockConnectionService(
     CBlockTreeDB* blocktree,
+    CCoinsViewCache* coinTip,
     const I_BlockDataReader& blockDataReader
     ): addressIndexingIsEnabled_(blocktree->GetAddressIndexing())
     , spentIndexingIsEnabled_(blocktree->GetSpentIndexing())
     , blocktree_(blocktree)
+    , coinTip_(coinTip)
     , blockDataReader_(blockDataReader)
 {
 }
@@ -119,7 +121,6 @@ void BlockConnectionService::DisconnectBlock(
     std::pair<CBlock,bool>& disconnectedBlockAndStatus,
     CValidationState& state,
     const CBlockIndex* pindex,
-    CCoinsViewCache& coins,
     const bool updateCoinsCacheOnly) const
 {
     CBlock& block = disconnectedBlockAndStatus.first;
@@ -130,6 +131,8 @@ void BlockConnectionService::DisconnectBlock(
         return;
     }
     int64_t nStart = GetTimeMicros();
+    CCoinsViewCache coins(coinTip_);
     status = DisconnectBlock(block, state, pindex, coins, updateCoinsCacheOnly);
+    if(status) assert(coins.Flush());
     LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
 }

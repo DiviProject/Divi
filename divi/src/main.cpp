@@ -1017,14 +1017,12 @@ public:
         mempool.check(&coinsTip, blockMap);
         // Read block from disk.
         const BlockDiskDataReader blockDiskReader;
-        const BlockConnectionService blockConnectionService(&chainstate_.BlockTree(), blockDiskReader);
+        const BlockConnectionService blockConnectionService(&chainstate_.BlockTree(), &coinsTip, blockDiskReader);
         std::pair<CBlock,bool> disconnectedBlock;
         {
-            CCoinsViewCache view(&coinsTip);
-            blockConnectionService.DisconnectBlock(disconnectedBlock,state_, pindexDelete, view, updateCoinDatabaseOnly_);
+            blockConnectionService.DisconnectBlock(disconnectedBlock,state_, pindexDelete, updateCoinDatabaseOnly_);
             if(!disconnectedBlock.second)
                 return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
-            assert(view.Flush());
         }
         std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
 

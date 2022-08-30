@@ -344,16 +344,17 @@ bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip)
 {
     AssertLockHeld(cs_main);
     ChainstateManager::Reference chainstate;
-    const CVerifyDB dbVerifier(
-        *chainstate,
-        GetSporkManager(),
-        uiInterface,
-        chainstate->GetNominalViewCacheSize(),
-        &ShutdownRequested);
     const CCoinsView& coinView =
         useCoinTip
         ? static_cast<const CCoinsView&>(chainstate->CoinsTip())
         : static_cast<const CCoinsView&>(chainstate->GetNonCatchingCoinsView());
+    const CVerifyDB dbVerifier(
+        *chainstate,
+        coinView,
+        GetSporkManager(),
+        uiInterface,
+        chainstate->GetNominalViewCacheSize(),
+        &ShutdownRequested);
     return dbVerifier.VerifyDB(&coinView, chainstate->CoinsTip().GetCacheSize(), nCheckLevel, nCheckDepth);
 }
 

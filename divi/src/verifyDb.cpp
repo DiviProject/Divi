@@ -30,13 +30,16 @@ bool CheckBlock(const CBlock& block, CValidationState& state);
 
 CVerifyDB::CVerifyDB(
     ChainstateManager& chainstate,
+    const CCoinsView& coinView,
     const CSporkManager& sporkManager,
     CClientUIInterface& clientInterface,
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
     ): blockDiskReader_(new BlockDiskDataReader())
-    , chainManager_(new BlockConnectionService(&chainstate.BlockTree(), *blockDiskReader_))
+    , coinView_(coinView)
     , chainstate_(chainstate)
+    , coinsViewCache_(new CCoinsViewCache(&coinView_))
+    , chainManager_(new BlockConnectionService(&chainstate.BlockTree(), coinsViewCache_.get(), *blockDiskReader_))
     , sporkManager_(sporkManager)
     , activeChain_(chainstate.ActiveChain())
     , clientInterface_(clientInterface)

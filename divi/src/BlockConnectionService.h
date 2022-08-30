@@ -22,16 +22,20 @@ private:
     const bool addressIndexingIsEnabled_;
     const bool spentIndexingIsEnabled_;
     CBlockTreeDB* blocktree_;
+    CCoinsViewCache* const coinTip_;
     const I_BlockDataReader& blockDataReader_;
 
     bool ApplyDisconnectionUpdateIndexToDBs(
         const uint256& bestBlockHash,
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
+
 public:
     BlockConnectionService(
         CBlockTreeDB* blocktree,
+        CCoinsViewCache* coinTip,
         const I_BlockDataReader& blockDataReader);
+
     bool DisconnectBlock(
         const CBlock& block,
         CValidationState& state,
@@ -45,7 +49,6 @@ public:
         std::pair<CBlock,bool>& disconnectedBlockAndStatus,
         CValidationState& state,
         const CBlockIndex* pindex,
-        CCoinsViewCache& coins,
         const bool updateCoinsCacheOnly) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

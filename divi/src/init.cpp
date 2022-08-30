@@ -110,6 +110,17 @@ std::unique_ptr<CSporkManager> sporkManagerInstance;
  *  the startup/shutdown cycle.  */
 std::unique_ptr<ChainstateManager> chainstateInstance;
 
+class P2PNotifications final: public NotificationInterface
+{
+public:
+    void UpdatedBlockTip(const CBlockIndex *pindex) override
+    {
+        ChainstateManager::Reference chainStateRef;
+        NotifyPeersOfNewChainTip(chainStateRef->ActiveChain().Height(),pindex->GetBlockHash(), 100);
+    }
+};
+std::unique_ptr<P2PNotifications> p2pNotifications;
+
 #ifdef ENABLE_WALLET
 constexpr int nWalletBackups = 20;
 #endif
@@ -280,6 +291,7 @@ void PrepareShutdown()
         LOCK(cs_main);
         FlushStateToDisk();
         UnregisterAllMainNotificationInterfaces();
+        p2pNotifications.reset();
 #ifdef ENABLE_WALLET
         FinalizeMultiWalletModule();
 #endif
@@ -1374,6 +1386,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
+    p2pNotifications.reset(new P2PNotifications());
+    RegisterMainNotificationInterface(p2pNotifications.get());
 
     PruneHDSeedParameterInteraction();
 

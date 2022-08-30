@@ -165,7 +165,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 void VerifyBlockIndexTree(
     const ChainstateManager& chainstate,
     CCriticalSection& mainCriticalSection,
-    std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
+    BlockIndexSuccessorsByPreviousBlockIndex& mapBlocksUnlinked,
     BlockIndexCandidates& setBlockIndexCandidates)
 {
     if (!settings.GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks())) {
@@ -186,14 +186,14 @@ void VerifyBlockIndexTree(
     }
 
     // Build forward-pointing map of the entire block tree.
-    std::multimap<CBlockIndex*, CBlockIndex*> forward;
+    BlockIndexSuccessorsByPreviousBlockIndex forward;
     for (const auto& entry : blockMap) {
         forward.insert(std::make_pair(entry.second->pprev, entry.second));
     }
 
     assert(forward.size() == blockMap.size());
 
-    std::pair<std::multimap<CBlockIndex*, CBlockIndex*>::iterator, std::multimap<CBlockIndex*, CBlockIndex*>::iterator> rangeGenesis = forward.equal_range(NULL);
+    std::pair<BlockIndexSuccessorsByPreviousBlockIndex::iterator, BlockIndexSuccessorsByPreviousBlockIndex::iterator> rangeGenesis = forward.equal_range(NULL);
     CBlockIndex* pindex = rangeGenesis.first->second;
     rangeGenesis.first++;
     assert(rangeGenesis.first == rangeGenesis.second); // There is only one index entry with parent NULL.
@@ -247,7 +247,7 @@ void VerifyBlockIndexTree(
             assert(setBlockIndexCandidates.count(pindex) == 0);
         }
         // Check whether this block is in mapBlocksUnlinked.
-        std::pair<std::multimap<CBlockIndex*, CBlockIndex*>::iterator, std::multimap<CBlockIndex*, CBlockIndex*>::iterator> rangeUnlinked = mapBlocksUnlinked.equal_range(pindex->pprev);
+        std::pair<BlockIndexSuccessorsByPreviousBlockIndex::iterator, BlockIndexSuccessorsByPreviousBlockIndex::iterator> rangeUnlinked = mapBlocksUnlinked.equal_range(pindex->pprev);
         bool foundInUnlinked = false;
         while (rangeUnlinked.first != rangeUnlinked.second) {
             assert(rangeUnlinked.first->first == pindex->pprev);
@@ -268,7 +268,7 @@ void VerifyBlockIndexTree(
         // End: actual consistency checks.
 
         // Try descending into the first subnode.
-        std::pair<std::multimap<CBlockIndex*, CBlockIndex*>::iterator, std::multimap<CBlockIndex*, CBlockIndex*>::iterator> range = forward.equal_range(pindex);
+        std::pair<BlockIndexSuccessorsByPreviousBlockIndex::iterator, BlockIndexSuccessorsByPreviousBlockIndex::iterator> range = forward.equal_range(pindex);
         if (range.first != range.second) {
             // A subnode was found.
             pindex = range.first->second;
@@ -288,7 +288,7 @@ void VerifyBlockIndexTree(
             // Find our parent.
             CBlockIndex* pindexPar = pindex->pprev;
             // Find which child we just visited.
-            std::pair<std::multimap<CBlockIndex*, CBlockIndex*>::iterator, std::multimap<CBlockIndex*, CBlockIndex*>::iterator> rangePar = forward.equal_range(pindexPar);
+            std::pair<BlockIndexSuccessorsByPreviousBlockIndex::iterator, BlockIndexSuccessorsByPreviousBlockIndex::iterator> rangePar = forward.equal_range(pindexPar);
             while (rangePar.first->second != pindex) {
                 assert(rangePar.first != rangePar.second); // Our parent must have at least the node we're coming from as child.
                 rangePar.first++;
@@ -314,7 +314,7 @@ void VerifyBlockIndexTree(
 
 CBlockIndex* FindMostWorkChain(
     const ChainstateManager& chainstate,
-    std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
+    BlockIndexSuccessorsByPreviousBlockIndex& mapBlocksUnlinked,
     BlockIndexCandidates& setBlockIndexCandidates)
 {
     const auto& chain = chainstate.ActiveChain();

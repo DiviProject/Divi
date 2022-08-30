@@ -1020,12 +1020,10 @@ public:
         CTxMemPool& mempool = GetTransactionMemoryPool();
         mempool.check(&coinsTip, blockMap);
         // Read block from disk.
-        std::pair<CBlock,bool> disconnectedBlock;
-        {
-            blockConnectionService_.DisconnectBlock(disconnectedBlock,state_, pindexDelete, updateCoinDatabaseOnly_);
-            if(!disconnectedBlock.second)
-                return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
-        }
+        std::pair<CBlock,bool> disconnectedBlock =
+            blockConnectionService_.DisconnectBlock(state_, pindexDelete, updateCoinDatabaseOnly_);
+        if(!disconnectedBlock.second)
+            return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
         std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
 
         // Write the chain state to disk, if necessary.

@@ -7,7 +7,7 @@
 
 #include "main.h"
 
-#include <ActiveChainManager.h>
+#include <BlockConnectionService.h>
 #include <AcceptBlockValidator.h>
 #include "addrman.h"
 #include "alert.h"
@@ -1017,11 +1017,11 @@ public:
         mempool.check(&coinsTip, blockMap);
         // Read block from disk.
         const BlockDiskDataReader blockDiskReader;
-        const ActiveChainManager chainManager(&chainstate_.BlockTree(), blockDiskReader);
+        const BlockConnectionService blockConnectionService(&chainstate_.BlockTree(), blockDiskReader);
         std::pair<CBlock,bool> disconnectedBlock;
         {
             CCoinsViewCache view(&coinsTip);
-            chainManager.DisconnectBlock(disconnectedBlock,state_, pindexDelete, view, updateCoinDatabaseOnly_);
+            blockConnectionService.DisconnectBlock(disconnectedBlock,state_, pindexDelete, view, updateCoinDatabaseOnly_);
             if(!disconnectedBlock.second)
                 return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
             assert(view.Flush());

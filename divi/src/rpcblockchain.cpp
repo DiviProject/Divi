@@ -19,7 +19,6 @@
 #include "base58.h"
 #include <ValidationState.h>
 #include <txdb.h>
-#include <ActiveChainManager.h>
 #include <boost/foreach.hpp>
 #include <utilstrencodings.h>
 #include <txmempool.h>

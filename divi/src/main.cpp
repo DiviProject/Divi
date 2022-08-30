@@ -1237,7 +1237,7 @@ public:
 };
 
 bool ActivateBestChainTemp(
-    const MostWorkChainTransitionMediator& chainActivationHelper,
+    const I_MostWorkChainTransitionMediator& chainActivationHelper,
     ChainstateManager& chainstate,
     const CBlock* pblock)
 {

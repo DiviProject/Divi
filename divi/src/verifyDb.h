@@ -19,6 +19,7 @@ class CBlockTreeDB;
 class BlockConnectionService;
 class BlockDiskDataReader;
 class ChainstateManager;
+class I_BlockDataReader;
 
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB
@@ -26,7 +27,7 @@ class CVerifyDB
 public:
     typedef bool (*ShutdownListener)();
 private:
-    std::unique_ptr<const BlockDiskDataReader> blockDiskReader_;
+    std::unique_ptr<const I_BlockDataReader> blockDiskReader_;
     const CCoinsView& coinView_;
     ChainstateManager& chainstate_;
     std::unique_ptr<CCoinsViewCache> coinsViewCache_;

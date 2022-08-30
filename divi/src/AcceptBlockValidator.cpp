@@ -18,7 +18,6 @@ AcceptBlockValidator::AcceptBlockValidator(
         const I_ChainExtensionService& chainExtensionService,
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,
-        std::map<uint256, NodeId>& peerIdByBlockHash,
         ChainstateManager& chainstate,
         const CSporkManager& sporkManager,
         CValidationState& state,
@@ -27,7 +26,6 @@ AcceptBlockValidator::AcceptBlockValidator(
         ): chainExtensionService_(chainExtensionService)
         , mainCriticalSection_(mainCriticalSection)
         , chainParameters_(chainParameters)
-        , peerIdByBlockHash_(peerIdByBlockHash)
         , chainstate_(chainstate)
         , sporkManager_(sporkManager)
         , state_(state)

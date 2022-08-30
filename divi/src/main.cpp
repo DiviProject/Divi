@@ -1065,20 +1065,6 @@ private:
     BlockIndexCandidates& blockIndexCandidates_;
     CValidationState& state_;
     const I_ChainTipManager& chainTipManager_;
-public:
-    ChainActivationHelpers(
-        ChainstateManager& chainstate,
-        BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks,
-        BlockIndexCandidates& blockIndexCandidates,
-        CValidationState& state,
-        const I_ChainTipManager& chainTipManager
-        ): chainstate_(chainstate)
-        , unlinkedBlocks_(unlinkedBlocks)
-        , blockIndexCandidates_(blockIndexCandidates)
-        , state_(state)
-        , chainTipManager_(chainTipManager)
-    {
-    }
 
     void computeNextBlockIndicesToConnect(
         CBlockIndex* pindexMostWork,
@@ -1164,6 +1150,22 @@ public:
             }
             return BlockConnectionResult::TRY_NEXT_BLOCK;
         }
+    }
+
+
+public:
+    ChainActivationHelpers(
+        ChainstateManager& chainstate,
+        BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks,
+        BlockIndexCandidates& blockIndexCandidates,
+        CValidationState& state,
+        const I_ChainTipManager& chainTipManager
+        ): chainstate_(chainstate)
+        , unlinkedBlocks_(unlinkedBlocks)
+        , blockIndexCandidates_(blockIndexCandidates)
+        , state_(state)
+        , chainTipManager_(chainTipManager)
+    {
     }
 
     bool activateBestChainStep(

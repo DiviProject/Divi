@@ -27,6 +27,7 @@
 #include <init.h>
 #include <JsonBlockHelpers.h>
 #include <spork.h>
+#include <I_ChainExtensionService.h>
 
 using namespace json_spirit;
 using namespace std;
@@ -637,7 +638,7 @@ Value invalidateblock(const Array& params, bool fHelp, CWallet* pwallet)
     InvalidateBlock(*chainstate, state, pblockindex);
 
     if (state.IsValid()) {
-        ActivateBestChain(*chainstate, GetSporkManager(), state);
+        GetChainExtensionService().updateActiveChain(*chainstate, GetSporkManager(), state,nullptr,false);
     }
 
     if (!state.IsValid()) {
@@ -674,7 +675,7 @@ Value reconsiderblock(const Array& params, bool fHelp, CWallet* pwallet)
     ReconsiderBlock(*chainstate, state, pblockindex);
 
     if (state.IsValid()) {
-        ActivateBestChain(*chainstate, GetSporkManager(), state);
+        GetChainExtensionService().updateActiveChain(*chainstate, GetSporkManager(), state,nullptr,false);
     }
 
     if (!state.IsValid()) {

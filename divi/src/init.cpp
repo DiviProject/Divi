@@ -79,6 +79,7 @@
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/thread.hpp>
 #include <openssl/crypto.h>
+#include <I_ChainExtensionService.h>
 
 #if ENABLE_ZMQ
 #include "zmq/zmqnotificationinterface.h"
@@ -1470,7 +1471,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
     uiInterface.InitMessage(translate("Connecting best block..."));
     CValidationState state;
-    if (!ActivateBestChain(*chainstateInstance, *sporkManagerInstance, state))
+    if (!GetChainExtensionService().updateActiveChain(*chainstateInstance, *sporkManagerInstance, state,nullptr,false))
         strErrors << "Failed to connect best block";
 #ifdef ENABLE_WALLET
     if(GetWallet() && settings.ParameterIsSet("-prunewalletconfs"))

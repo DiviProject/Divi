@@ -14,9 +14,17 @@
 
 static BlockIndexCandidates setBlockIndexCandidates;
 
+/** All pairs A->B, where A (or one if its ancestors) misses transactions, but B has transactions. */
+static BlockIndexSuccessorsByPreviousBlockIndex mapBlocksUnlinked;
+
 BlockIndexCandidates& GetBlockIndexCandidates()
 {
     return setBlockIndexCandidates;
+}
+
+BlockIndexSuccessorsByPreviousBlockIndex& GetBlockIndexSuccessorsByPreviousBlockIndex()
+{
+    return mapBlocksUnlinked;
 }
 
 /** Delete all entries in setBlockIndexCandidates that are worse than the current tip. */

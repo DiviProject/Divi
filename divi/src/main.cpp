@@ -1057,7 +1057,22 @@ public:
     }
 };
 
-class ChainActivationHelpers
+class I_MostWorkChainTipLocator
+{
+public:
+    virtual ~I_MostWorkChainTipLocator(){}
+    virtual CBlockIndex* findMostWorkChain() const = 0;
+};
+
+class I_MostWorkChainTransitionMediator: public I_MostWorkChainTipLocator
+{
+public:
+    virtual ~I_MostWorkChainTransitionMediator(){}
+    virtual bool transitionActiveChainToMostWorkChain(
+            CBlockIndex* pindexMostWork,
+            const CBlock* pblock) const = 0;
+};
+class ChainActivationHelpers final: public I_MostWorkChainTransitionMediator
 {
 private:
     ChainstateManager& chainstate_;

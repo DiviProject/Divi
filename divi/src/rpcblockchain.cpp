@@ -6,7 +6,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <ChainstateManager.h>
-#include "checkpoints.h"
 #include "main.h"
 #include "BlockDiskAccessor.h"
 #include <rpcprotocol.h>
@@ -425,7 +424,6 @@ Value verifychain(const Array& params, bool fHelp, CWallet* pwallet)
 
 Value getblockchaininfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
-    static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
     if (fHelp || params.size() != 0)
         throw runtime_error(
             "getblockchaininfo\n"
@@ -437,7 +435,6 @@ Value getblockchaininfo(const Array& params, bool fHelp, CWallet* pwallet)
             "  \"headers\": xxxxxx,        (numeric) the current number of headers we have validated\n"
             "  \"bestblockhash\": \"...\", (string) the hash of the currently best block\n"
             "  \"difficulty\": xxxxxx,     (numeric) the current difficulty\n"
-            "  \"verificationprogress\": xxxx, (numeric) estimate of verification progress [0..1]\n"
             "  \"chainwork\": \"xxxx\"     (string) total amount of work in active chain, in hexadecimal\n"
             "}\n"
             "\nExamples:\n" +
@@ -451,7 +448,6 @@ Value getblockchaininfo(const Array& params, bool fHelp, CWallet* pwallet)
     obj.push_back(Pair("headers", GetBestHeaderBlockHeight()));
     obj.push_back(Pair("bestblockhash", chainstate->ActiveChain().Tip()->GetBlockHash().GetHex()));
     obj.push_back(Pair("difficulty", (double)GetDifficulty(chainstate->ActiveChain())));
-    obj.push_back(Pair("verificationprogress", checkpointsVerifier.GuessVerificationProgress(chainstate->ActiveChain().Tip())));
     obj.push_back(Pair("chainwork", chainstate->ActiveChain().Tip()->nChainWork.GetHex()));
     return obj;
 }

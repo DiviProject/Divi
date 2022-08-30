@@ -12,7 +12,6 @@
 
 #include <clientversion.h>
 #include <dbenv.h>
-#include "checkpoints.h"
 #include <chain.h>
 #include <chainparams.h>
 #include "net.h"

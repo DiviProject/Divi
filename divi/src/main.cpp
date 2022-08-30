@@ -21,7 +21,6 @@
 #include "BlockSigning.h"
 #include <ChainstateManager.h>
 #include "chainparams.h"
-#include "checkpoints.h"
 #include "checkqueue.h"
 #include "coins.h"
 #include <defaultValues.h>
@@ -114,8 +113,6 @@ bool fVerifyingBlocks = false;
 
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
-
-CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
 
 std::map<uint256, int64_t> mapRejectedBlocks;
@@ -591,7 +588,7 @@ bool IsInitialBlockDownload()	//2446
     const ChainstateManager::Reference chainstate;
     const int64_t height = chainstate->ActiveChain().Height();
 
-    if (fImporting || fReindex || fVerifyingBlocks || height < checkpointsVerifier.GetTotalBlocksEstimate())
+    if (fImporting || fReindex || fVerifyingBlocks)
         return true;
     static bool lockIBDState = false;
     if (lockIBDState)
@@ -842,10 +839,10 @@ void static UpdateTip(const CBlockIndex* pindexNew)
     chain.SetTip(pindexNew);
 
     // New best block
-    LogPrintf("UpdateTip: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s progress=%f  cache=%u\n",
+    LogPrintf("UpdateTip: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s cache=%u\n",
               chain.Tip()->GetBlockHash(), chain.Height(), log(chain.Tip()->nChainWork.getdouble()) / log(2.0), (unsigned long)chain.Tip()->nChainTx,
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chain.Tip()->GetBlockTime()),
-              checkpointsVerifier.GuessVerificationProgress(chain.Tip()), (unsigned int)chainstate->CoinsTip().GetCacheSize());
+               (unsigned int)chainstate->CoinsTip().GetCacheSize());
 
     cvBlockChange.notify_all();
 
@@ -1130,14 +1127,30 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     }
 
     // Check that the block chain matches the known block chain up to a checkpoint
-    if (!checkpointsVerifier.CheckBlock(nHeight, hash))
-        return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight),
-                         REJECT_CHECKPOINT, "checkpoint mismatch");
+    static const auto* blockHashCheckpointsByHeight = Params().Checkpoints().mapCheckpoints;
+    if(blockHashCheckpointsByHeight)
+    {
+        const auto it = blockHashCheckpointsByHeight->find(nHeight);
+        if (it != blockHashCheckpointsByHeight->end() && it->second != hash)
+            return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight),
+                            REJECT_CHECKPOINT, "checkpoint mismatch");
 
-    // Don't accept any forks from the main chain prior to last checkpoint
-    CBlockIndex* pcheckpoint = checkpointsVerifier.GetLastCheckpoint(chainstate->GetBlockMap());
-    if (pcheckpoint && nHeight < pcheckpoint->nHeight)
-        return state.DoS(0, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
+        // Don't accept any forks from the main chain prior to last checkpoint
+        const CBlockIndex* lastCheckpointRecordedInBlockMap = nullptr;
+        const BlockMap& blockIndicesByBlockHash = chainstate->GetBlockMap();
+
+        BOOST_REVERSE_FOREACH (const PAIRTYPE(int, uint256)& checkpointBlockHashByHeight, *blockHashCheckpointsByHeight)
+        {
+            const uint256& hash = checkpointBlockHashByHeight.second;
+            BlockMap::const_iterator locatedBlockIndex = blockIndicesByBlockHash.find(hash);
+            if (locatedBlockIndex != blockIndicesByBlockHash.end())
+                lastCheckpointRecordedInBlockMap = locatedBlockIndex->second;
+        }
+        if(lastCheckpointRecordedInBlockMap && lastCheckpointRecordedInBlockMap->nHeight > nHeight)
+        {
+            return state.DoS(0, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
+        }
+    }
 
     // All blocks on DIVI later than the genesis block must be at least version 3.
     // (In fact they are version 4, but we only enforce version >=3 as this is what
@@ -1350,8 +1363,7 @@ private:
             if (!fInitialDownload) {
                 const uint256 hashNewTip = pindexNewTip->GetBlockHash();
                 // Relay inventory, but don't relay old inventory during initial block download.
-                int nBlockEstimate = checkpointsVerifier.GetTotalBlocksEstimate();
-                NotifyPeersOfNewChainTip(chain.Height(),hashNewTip,nBlockEstimate);
+                NotifyPeersOfNewChainTip(chain.Height(),hashNewTip,100);
                 // Notify external listeners about the new tip.
                 uiInterface.NotifyBlockTip(hashNewTip);
                 GetMainNotificationInterface().UpdatedBlockTip(pindexNewTip);
@@ -1723,11 +1735,10 @@ bool static LoadBlockIndexState(string& strError)
 
     PruneBlockIndexCandidates(chain);
 
-    LogPrintf("%s: hashBestChain=%s height=%d date=%s progress=%f\n",
+    LogPrintf("%s: hashBestChain=%s height=%d date=%s\n",
             __func__,
             chain.Tip()->GetBlockHash(), chain.Height(),
-            DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chain.Tip()->GetBlockTime()),
-            checkpointsVerifier.GuessVerificationProgress(chain.Tip()));
+            DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chain.Tip()->GetBlockTime()));
 
     return true;
 }

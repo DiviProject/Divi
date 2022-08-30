@@ -126,7 +126,6 @@ BITCOIN_CORE_H = \
   chainparams.h \
   chainparamsbase.h \
   chainparamsseeds.h \
-  checkpoints.h \
   checkpoint_data.h\
   checkqueue.h \
   clientversion.h \
@@ -430,7 +429,6 @@ libbitcoin_server_a_SOURCES = \
   CachedBIP9ActivationStateTracker.cpp \
   bloom.cpp \
   chain.cpp \
-  checkpoints.cpp \
   FilteredBoostFileSystem.cpp \
   BlockScanner.cpp \
   StartAndShutdownSignals.cpp \

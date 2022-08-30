@@ -14,6 +14,7 @@ class I_ChainTipManager;
 class CChain;
 
 BlockIndexCandidates& GetBlockIndexCandidates();
+BlockIndexSuccessorsByPreviousBlockIndex& GetBlockIndexSuccessorsByPreviousBlockIndex();
 void PruneBlockIndexCandidates(const CChain& chain);
 void InvalidChainFound(
     const bool isInitialBlockDownload,

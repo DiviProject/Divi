@@ -125,8 +125,7 @@ namespace
      * The set of all CBlockIndex entries with BLOCK_VALID_TRANSACTIONS (for itself and all ancestors) and
      * as good as our current tip or better. Entries may be failed, though.
      */
-/** All pairs A->B, where A (or one if its ancestors) misses transactions, but B has transactions. */
-std::multimap<CBlockIndex*, CBlockIndex*> mapBlocksUnlinked;
+
 
 /**
      * Every received block is assigned a unique and increasing identifier, so we
@@ -1288,14 +1287,14 @@ bool ActivateBestChain(
     bool fAlreadyChecked)
 {
     ChainTipManager chainTipManager(sporkManager,chainstate,fAlreadyChecked,state,false);
-    ChainActivationHelpers helper(chainstate, mapBlocksUnlinked, GetBlockIndexCandidates(), state,chainTipManager);
+    ChainActivationHelpers helper(chainstate, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
     const bool result = ActivateBestChainTemp(helper, chainstate, pblock);
 
     // Write changes periodically to disk, after relay.
     if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
         return false;
     }
-    VerifyBlockIndexTree(chainstate,cs_main, mapBlocksUnlinked, GetBlockIndexCandidates());
+    VerifyBlockIndexTree(chainstate,cs_main, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates());
     return result;
 }
 
@@ -1415,7 +1414,8 @@ bool ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pindexNew, cons
     pindexNew->nStatus |= BLOCK_HAVE_DATA;
     pindexNew->RaiseValidity(BLOCK_VALID_TRANSACTIONS);
     BlockFileHelpers::RecordDirtyBlockIndex(pindexNew);
-
+    auto& blockIndexCandidates = GetBlockIndexCandidates();
+    auto& blockIndexSuccessorsByPrevBlockIndex = GetBlockIndexSuccessorsByPreviousBlockIndex();
     if (pindexNew->pprev == NULL || pindexNew->pprev->nChainTx) {
         const ChainstateManager::Reference chainstate;
         const auto& chain = chainstate->ActiveChain();
@@ -1433,20 +1433,20 @@ bool ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pindexNew, cons
                 LOCK(cs_nBlockSequenceId);
                 pindex->nSequenceId = nBlockSequenceId++;
             }
-            if (chain.Tip() == NULL || !GetBlockIndexCandidates().value_comp()(pindex, chain.Tip())) {
-                GetBlockIndexCandidates().insert(pindex);
+            if (chain.Tip() == NULL || !blockIndexCandidates.value_comp()(pindex, chain.Tip())) {
+                blockIndexCandidates.insert(pindex);
             }
-            auto range = mapBlocksUnlinked.equal_range(pindex);
+            auto range = blockIndexSuccessorsByPrevBlockIndex.equal_range(pindex);
             while (range.first != range.second) {
                 auto it = range.first;
                 queue.push_back(it->second);
                 range.first++;
-                mapBlocksUnlinked.erase(it);
+                blockIndexSuccessorsByPrevBlockIndex.erase(it);
             }
         }
     } else {
         if (pindexNew->pprev && pindexNew->pprev->IsValid(BLOCK_VALID_TREE)) {
-            mapBlocksUnlinked.insert(std::make_pair(pindexNew->pprev, pindexNew));
+            blockIndexSuccessorsByPrevBlockIndex.insert(std::make_pair(pindexNew->pprev, pindexNew));
         }
     }
 
@@ -1698,7 +1698,7 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     if(!blockValidator.connectActiveChain(pindex,*pblock,checked)) return false;
 
     VoteForMasternodePayee(pindex);
-    VerifyBlockIndexTree(chainstate,cs_main,mapBlocksUnlinked,GetBlockIndexCandidates());
+    VerifyBlockIndexTree(chainstate,cs_main,GetBlockIndexSuccessorsByPreviousBlockIndex(),GetBlockIndexCandidates());
     LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,
               pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));
 
@@ -1720,6 +1720,8 @@ static std::vector<std::pair<int, CBlockIndex*> > ComputeHeightSortedBlockIndice
 static void InitializeBlockIndexGlobalData(BlockMap& blockIndicesByHash)
 {
     const std::vector<std::pair<int, CBlockIndex*> > heightSortedBlockIndices = ComputeHeightSortedBlockIndices(blockIndicesByHash);
+    auto& blockIndexCandidates = GetBlockIndexCandidates();
+    auto& blockIndexSuccessorsByPrevBlockIndex = GetBlockIndexSuccessorsByPreviousBlockIndex();
     for(const PAIRTYPE(int, CBlockIndex*) & item: heightSortedBlockIndices)
     {
         CBlockIndex* pindex = item.second;
@@ -1730,14 +1732,14 @@ static void InitializeBlockIndexGlobalData(BlockMap& blockIndicesByHash)
                     pindex->nChainTx = pindex->pprev->nChainTx + pindex->nTx;
                 } else {
                     pindex->nChainTx = 0;
-                    mapBlocksUnlinked.insert(std::make_pair(pindex->pprev, pindex));
+                    blockIndexSuccessorsByPrevBlockIndex.insert(std::make_pair(pindex->pprev, pindex));
                 }
             } else {
                 pindex->nChainTx = pindex->nTx;
             }
         }
         if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && (pindex->nChainTx || pindex->pprev == NULL))
-            GetBlockIndexCandidates().insert(pindex);
+            blockIndexCandidates.insert(pindex);
         if (pindex->nStatus & BLOCK_FAILED_MASK)
             updateMostWorkInvalidBlockIndex(pindex);
         if (pindex->pprev){
@@ -2772,7 +2774,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             pfrom->PushMessage("getheaders", chain.GetLocator(pindexLast), uint256(0));
         }
 
-        VerifyBlockIndexTree(*chainstate,cs_main,mapBlocksUnlinked,GetBlockIndexCandidates());
+        VerifyBlockIndexTree(*chainstate,cs_main,GetBlockIndexSuccessorsByPreviousBlockIndex(),GetBlockIndexCandidates());
     }
     else if (strCommand == "block" && !fImporting && !fReindex) // Ignore blocks received while importing
     {

@@ -22,11 +22,11 @@
 #include <BlockDiskAccessor.h>
 #include <ChainstateManager.h>
 #include <spork.h>
+#include <BlockCheckingHelpers.h>
 
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, ChainstateManager& chainstate, const CSporkManager& sporkManager, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
-bool CheckBlock(const CBlock& block, CValidationState& state);
 
 CVerifyDB::CVerifyDB(
     ChainstateManager& chainstate,

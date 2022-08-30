@@ -21,7 +21,6 @@ private:
     const I_ChainExtensionService& chainExtensionService_;
     CCriticalSection& mainCriticalSection_;
     const CChainParams& chainParameters_;
-    std::map<uint256, NodeId>& peerIdByBlockHash_;
     ChainstateManager& chainstate_;
     const CSporkManager& sporkManager_;
     CValidationState& state_;
@@ -32,7 +31,6 @@ public:
         const I_ChainExtensionService& chainExtensionService,
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,
-        std::map<uint256, NodeId>& peerIdByBlockHash,
         ChainstateManager& chainstate,
         const CSporkManager& sporkManager,
         CValidationState& state,

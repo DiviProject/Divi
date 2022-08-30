@@ -1456,7 +1456,7 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     // Preliminary checks
     int64_t nStartTime = GetTimeMillis();
 
-    AcceptBlockValidator blockValidator(GetChainExtensionService(), cs_main, Params(), mapBlockSource, chainstate,sporkManager,state,pfrom, dbp);
+    AcceptBlockValidator blockValidator(GetChainExtensionService(), cs_main, Params(), chainstate,sporkManager,state,pfrom, dbp);
     bool checked = true;
     if(!blockValidator.checkBlockRequirements(*pblock,checked)) return false;
 

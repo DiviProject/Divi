@@ -50,7 +50,7 @@ std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(
         // Store to disk
         bool ret = chainExtensionService_.assignBlockIndex(block, chainstate_, sporkManager_, state_, &pindex, dbp_, blockChecked);
         if (pindex && pfrom_) {
-            peerIdByBlockHash_[pindex->GetBlockHash ()] = pfrom_->GetId ();
+            chainExtensionService_.recordBlockSource(pindex->GetBlockHash(), pfrom_->GetId());
         }
         return std::make_pair(pindex,ret);
     }

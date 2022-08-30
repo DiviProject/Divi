@@ -31,13 +31,14 @@ struct CBlockIndexWorkComparator {
     }
 };
 typedef std::set<CBlockIndex*, CBlockIndexWorkComparator> BlockIndexCandidates;
+typedef std::multimap<CBlockIndex*, CBlockIndex*> BlockIndexSuccessorsByPreviousBlockIndex;
 bool CheckBlock(const CBlock& block, CValidationState& state);
 bool CheckTransaction(const CTransaction& tx, CValidationState& state);
 bool CheckTransaction(const CTransaction& tx, CValidationState& state, std::set<COutPoint>& usedInputsSet);
 void VerifyBlockIndexTree(
     const ChainstateManager& chainstate,
     CCriticalSection& mainCriticalSection,
-    std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
+    BlockIndexSuccessorsByPreviousBlockIndex& mapBlocksUnlinked,
     BlockIndexCandidates& setBlockIndexCandidates);
 
 /**
@@ -46,7 +47,7 @@ void VerifyBlockIndexTree(
  */
 CBlockIndex* FindMostWorkChain(
     const ChainstateManager& chainstate,
-    std::multimap<CBlockIndex*, CBlockIndex*>& mapBlocksUnlinked,
+    BlockIndexSuccessorsByPreviousBlockIndex& mapBlocksUnlinked,
     BlockIndexCandidates& setBlockIndexCandidates);
 uint256 getMostWorkForInvalidBlockIndex();
 void updateMostWorkInvalidBlockIndex(const CBlockIndex* invalidBlockIndex, bool reconsider = false);

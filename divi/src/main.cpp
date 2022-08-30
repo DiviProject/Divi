@@ -1454,6 +1454,11 @@ public:
         return ActivateBestChain(chainstate,sporkManager,state,pblock,fAlreadyChecked);
     }
 };
+static ChainExtensionService chainExtensionService;
+I_ChainExtensionService& GetChainExtensionService()
+{
+    return chainExtensionService;
+}
 
 bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
@@ -1799,7 +1804,7 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
             CBlockIndex* pindex = AddToBlockIndex(block);
             if (!ReceivedBlockTransactions(block, pindex, blockPos))
                 return error("LoadBlockIndex() : genesis block not accepted");
-            if (!ActivateBestChain(chainstate, sporkManager, state, &block))
+            if (!GetChainExtensionService().updateActiveChain(chainstate, sporkManager, state, &block,false))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);

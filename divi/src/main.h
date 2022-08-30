@@ -35,6 +35,7 @@ class CDiskBlockPos;
 class CSporkManager;
 class CTransaction;
 class CLevelDBWrapper;
+class I_ChainExtensionService;
 
 enum FlushStateMode {
     FLUSH_STATE_IF_NEEDED,
@@ -46,6 +47,8 @@ void FlushStateToDisk(FlushStateMode mode = FlushStateMode::FLUSH_STATE_ALWAYS);
 
 /** Get Current Chain Height with acquired lock **/
 int GetHeight();
+
+I_ChainExtensionService& GetChainExtensionService();
 
 /**
  * Process an incoming block. This only returns after the best known valid
@@ -86,8 +89,6 @@ void RespondToRequestForDataFrom(CNode* pfrom);
 bool IsInitialBlockDownload();
 /** Find the best known block, and make it the tip of the block chain */
 
-// ***TODO***
-bool ActivateBestChain(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, const CBlock* pblock = nullptr, bool fAlreadyChecked = false);
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);

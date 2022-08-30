@@ -1360,7 +1360,7 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
-    bool ActivateBestChainTemp(
+    bool transitionToMostWorkChainTip(
         const I_MostWorkChainTransitionMediator& chainTransitionMediator,
         ChainstateManager& chainstate,
         const CBlock* pblock) const
@@ -1434,7 +1434,7 @@ public:
         ChainTipManager chainTipManager(sporkManager,chainstate,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
             chainstate, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
-        const bool result = ActivateBestChainTemp(chainTransitionMediator, chainstate, pblock);
+        const bool result = transitionToMostWorkChainTip(chainTransitionMediator, chainstate, pblock);
 
         // Write changes periodically to disk, after relay.
         if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {

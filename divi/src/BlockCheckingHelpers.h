@@ -38,8 +38,8 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state, std::set<
 void VerifyBlockIndexTree(
     const ChainstateManager& chainstate,
     CCriticalSection& mainCriticalSection,
-    BlockIndexSuccessorsByPreviousBlockIndex& mapBlocksUnlinked,
-    BlockIndexCandidates& setBlockIndexCandidates);
+    BlockIndexSuccessorsByPreviousBlockIndex& blockSuccessorsByPrevBlockIndex,
+    BlockIndexCandidates& blockIndexCandidates);
 
 /**
  * Return the tip of the chain with the most work in it, that isn't
@@ -47,8 +47,8 @@ void VerifyBlockIndexTree(
  */
 CBlockIndex* FindMostWorkChain(
     const ChainstateManager& chainstate,
-    BlockIndexSuccessorsByPreviousBlockIndex& mapBlocksUnlinked,
-    BlockIndexCandidates& setBlockIndexCandidates);
+    BlockIndexSuccessorsByPreviousBlockIndex& blockSuccessorsByPrevBlockIndex,
+    BlockIndexCandidates& blockIndexCandidates);
 uint256 getMostWorkForInvalidBlockIndex();
 void updateMostWorkInvalidBlockIndex(const CBlockIndex* invalidBlockIndex, bool reconsider = false);
 #endif// BLOCK_CHECKING_HELPERS_H

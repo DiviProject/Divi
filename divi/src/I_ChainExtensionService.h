@@ -6,12 +6,16 @@ class CSporkManager;
 class CValidationState;
 class CBlockIndex;
 class CDiskBlockPos;
+#include <NodeId.h>
 
 class I_ChainExtensionService
 {
 public:
     virtual ~I_ChainExtensionService(){}
 
+    virtual void recordBlockSource(
+        const uint256& blockHash,
+        NodeId nodeId) const =0;
     virtual bool assignBlockIndex(
         CBlock& block,
         ChainstateManager& chainstate,

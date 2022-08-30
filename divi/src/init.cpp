@@ -18,7 +18,6 @@
 #include <BlockDiskAccessor.h>
 #include <chain.h>
 #include <chainparams.h>
-#include "checkpoints.h"
 #include "compat/sanity.h"
 #include <DataDirectory.h>
 #include <defaultValues.h>
@@ -673,7 +672,6 @@ void SetConsistencyChecks()
 {
     // Checkmempool and checkblockindex default to true in regtest mode
     GetTransactionMemoryPool().setSanityCheck(settings.GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
-    CCheckpointServices::fEnabled = settings.GetBoolArg("-checkpoints", true);
 }
 
 void SetNumberOfThreadsToCheckScripts()

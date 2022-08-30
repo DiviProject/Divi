@@ -1061,14 +1061,14 @@ class ChainActivationHelpers
 {
 private:
     ChainstateManager& chainstate_;
-    std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks_;
+    BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks_;
     BlockIndexCandidates& blockIndexCandidates_;
     CValidationState& state_;
     const I_ChainTipManager& chainTipManager_;
 public:
     ChainActivationHelpers(
         ChainstateManager& chainstate,
-        std::multimap<CBlockIndex*, CBlockIndex*>& unlinkedBlocks,
+        BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks,
         BlockIndexCandidates& blockIndexCandidates,
         CValidationState& state,
         const I_ChainTipManager& chainTipManager

@@ -219,7 +219,7 @@ BITCOIN_CORE_H = \
   verifyDb.h \
   BlockUndo.h \
   ValidationState.h \
-  ActiveChainManager.h \
+  BlockConnectionService.h \
   ChainstateManager.h \
   IndexDatabaseUpdateCollector.h \
   NodeState.h \
@@ -451,7 +451,7 @@ libbitcoin_server_a_SOURCES = \
   TransactionOpCounting.cpp \
   TransactionInputChecker.cpp \
   UtxoCheckingAndUpdating.cpp\
-  ActiveChainManager.cpp \
+  BlockConnectionService.cpp \
   ChainstateManager.cpp \
   IndexDatabaseUpdateCollector.cpp \
   NodeState.cpp \

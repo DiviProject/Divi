@@ -18,7 +18,7 @@
 #include <BlockDiskAccessor.h>
 #include <ui_interface.h>
 #include <boost/thread.hpp>
-#include <ActiveChainManager.h>
+#include <BlockConnectionService.h>
 #include <BlockDiskAccessor.h>
 #include <ChainstateManager.h>
 #include <spork.h>
@@ -35,7 +35,7 @@ CVerifyDB::CVerifyDB(
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
     ): blockDiskReader_(new BlockDiskDataReader())
-    , chainManager_(new ActiveChainManager(&chainstate.BlockTree(), *blockDiskReader_))
+    , chainManager_(new BlockConnectionService(&chainstate.BlockTree(), *blockDiskReader_))
     , chainstate_(chainstate)
     , sporkManager_(sporkManager)
     , activeChain_(chainstate.ActiveChain())

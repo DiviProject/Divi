@@ -1,4 +1,4 @@
-#include <ActiveChainManager.h>
+#include <BlockConnectionService.h>
 
 #include <primitives/block.h>
 #include <ValidationState.h>
@@ -16,7 +16,7 @@
 #include <IndexDatabaseUpdateCollector.h>
 #include <UtxoCheckingAndUpdating.h>
 
-ActiveChainManager::ActiveChainManager(
+BlockConnectionService::BlockConnectionService(
     CBlockTreeDB* blocktree,
     const I_BlockDataReader& blockDataReader
     ): addressIndexingIsEnabled_(blocktree->GetAddressIndexing())
@@ -26,7 +26,7 @@ ActiveChainManager::ActiveChainManager(
 {
 }
 
-bool ActiveChainManager::ApplyDisconnectionUpdateIndexToDBs(
+bool BlockConnectionService::ApplyDisconnectionUpdateIndexToDBs(
     const uint256& bestBlockHash,
     IndexDatabaseUpdates& indexDBUpdates,
     CValidationState& state) const
@@ -70,7 +70,7 @@ static bool CheckTxReversalStatus(const TxReversalStatus status, bool& fClean)
  *  If fJustCheck is false, then updates to the address and spent indices are written
  *  to disk.  The coins view is always updated.
  *  Returns true on success and false if some error or inconsistency was discovered.  */
-bool ActiveChainManager::DisconnectBlock(
+bool BlockConnectionService::DisconnectBlock(
     const CBlock& block,
     CValidationState& state,
     const CBlockIndex* pindex,
@@ -115,7 +115,7 @@ bool ActiveChainManager::DisconnectBlock(
     return true;
 }
 
-void ActiveChainManager::DisconnectBlock(
+void BlockConnectionService::DisconnectBlock(
     std::pair<CBlock,bool>& disconnectedBlockAndStatus,
     CValidationState& state,
     const CBlockIndex* pindex,

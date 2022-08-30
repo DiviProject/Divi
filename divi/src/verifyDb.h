@@ -16,7 +16,7 @@ class CClientUIInterface;
 class CCoinsViewCache;
 class CSporkManager;
 class CBlockTreeDB;
-class ActiveChainManager;
+class BlockConnectionService;
 class BlockDiskDataReader;
 class ChainstateManager;
 
@@ -27,7 +27,7 @@ public:
     typedef bool (*ShutdownListener)();
 private:
     std::unique_ptr<const BlockDiskDataReader> blockDiskReader_;
-    std::unique_ptr<const ActiveChainManager> chainManager_;
+    std::unique_ptr<const BlockConnectionService> chainManager_;
     ChainstateManager& chainstate_;
     const CSporkManager& sporkManager_;
     const CChain& activeChain_;

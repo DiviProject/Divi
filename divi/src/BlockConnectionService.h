@@ -16,7 +16,7 @@ class CTransaction;
 struct TransactionLocationReference;
 class I_BlockDataReader;
 
-class ActiveChainManager
+class BlockConnectionService
 {
 private:
     const bool addressIndexingIsEnabled_;
@@ -29,7 +29,7 @@ private:
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
 public:
-    ActiveChainManager(
+    BlockConnectionService(
         CBlockTreeDB* blocktree,
         const I_BlockDataReader& blockDataReader);
     bool DisconnectBlock(

@@ -19,12 +19,14 @@
 BlockConnectionService::BlockConnectionService(
     CBlockTreeDB* blocktree,
     CCoinsViewCache* coinTip,
-    const I_BlockDataReader& blockDataReader
+    const I_BlockDataReader& blockDataReader,
+    const bool modifyCoinCacheInplace
     ): addressIndexingIsEnabled_(blocktree->GetAddressIndexing())
     , spentIndexingIsEnabled_(blocktree->GetSpentIndexing())
     , blocktree_(blocktree)
     , coinTip_(coinTip)
     , blockDataReader_(blockDataReader)
+    , modifyCoinCacheInplace_(modifyCoinCacheInplace)
 {
 }
 
@@ -120,8 +122,7 @@ bool BlockConnectionService::DisconnectBlock(
 std::pair<CBlock,bool> BlockConnectionService::DisconnectBlock(
     CValidationState& state,
     const CBlockIndex* pindex,
-    const bool updateCoinsCacheOnly,
-    const bool flushOnSuccess) const
+    const bool updateCoinsCacheOnly) const
 {
     std::pair<CBlock,bool> disconnectedBlockAndStatus;
     CBlock& block = disconnectedBlockAndStatus.first;
@@ -132,7 +133,7 @@ std::pair<CBlock,bool> BlockConnectionService::DisconnectBlock(
         return disconnectedBlockAndStatus;
     }
     int64_t nStart = GetTimeMicros();
-    if(flushOnSuccess)
+    if(!modifyCoinCacheInplace_)
     {
         CCoinsViewCache coins(coinTip_);
         status = DisconnectBlock(block, state, pindex, coins, updateCoinsCacheOnly);

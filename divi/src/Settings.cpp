@@ -256,3 +256,12 @@ bool CopyableSettings::reindexingWasRequested() const
 {
     return GetBoolArg("-reindex",false);
 }
+
+void CopyableSettings::setStartupBlockVerificationFlag(const bool updatedValue)
+{
+    startupBlockVerificationInProgress_ = updatedValue;
+}
+bool CopyableSettings::isStartupVerifyingBlocks() const
+{
+    return startupBlockVerificationInProgress_;
+}

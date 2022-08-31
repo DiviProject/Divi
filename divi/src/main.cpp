@@ -107,7 +107,6 @@ int64_t timeOfLastChainTipUpdate =0;
 const CBlockIndex* pindexBestHeader = nullptr;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
-bool fVerifyingBlocks = false;
 
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
@@ -586,7 +585,7 @@ bool IsInitialBlockDownload()	//2446
     const ChainstateManager::Reference chainstate;
     const int64_t height = chainstate->ActiveChain().Height();
 
-    if (settings.isImportingFiles() || settings.isReindexingBlocks() || fVerifyingBlocks)
+    if (settings.isImportingFiles() || settings.isReindexingBlocks() || settings.isStartupVerifyingBlocks())
         return true;
     static bool lockIBDState = false;
     if (lockIBDState)
@@ -751,7 +750,7 @@ bool ConnectBlock(
     if (!CheckMintTotalsAndBlockPayees(block,pindex,incentives,nExpectedMint,state))
         return false;
 
-    if (!fVerifyingBlocks) {
+    if (!settings.isStartupVerifyingBlocks()) {
         if (block.nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint)
             return state.DoS(100, error("%s : new accumulator checkpoint generated on a block that is not multiple of 10",__func__));
     }
@@ -1241,7 +1240,15 @@ bool AcceptBlockHeader(const CBlock& block, ChainstateManager& chainstate, const
     return true;
 }
 
-bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CBlockIndex** ppindex, CDiskBlockPos* dbp, bool fAlreadyCheckedBlock)
+bool AcceptBlock(
+    const I_ProofOfStakeGenerator& posGenerator,
+    CBlock& block,
+    ChainstateManager& chainstate,
+    const CSporkManager& sporkManager,
+    CValidationState& state,
+    CBlockIndex** ppindex,
+    CDiskBlockPos* dbp,
+    bool fAlreadyCheckedBlock)
 {
     AssertLockHeld(cs_main);
 
@@ -1262,9 +1269,6 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
                              REJECT_INVALID, "bad-prevblk");
         }
     }
-
-    const ProofOfStakeModule posModule(Params(), chainstate.ActiveChain(), blockMap);
-    const I_ProofOfStakeGenerator& posGenerator = posModule.proofOfStakeGenerator();
 
     const uint256 blockHash = block.GetHash();
     if (blockHash != Params().HashGenesisBlock())
@@ -1325,6 +1329,7 @@ private:
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors_;
     BlockIndexCandidates& blockIndexCandidates_;
+    const ProofOfStakeModule posModule_;
     bool transitionToMostWorkChainTip(
         const I_MostWorkChainTransitionMediator& chainTransitionMediator,
         ChainstateManager& chainstate,
@@ -1376,6 +1381,7 @@ private:
     }
 public:
     ChainExtensionService(
+        const CChainParams& chainParameters,
         const CSporkManager& sporkManager,
         BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
         BlockIndexCandidates& blockIndexCandidates
@@ -1384,6 +1390,7 @@ public:
         , peerIdByBlockHash_()
         , blockIndexSuccessors_(blockIndexSuccessors)
         , blockIndexCandidates_(blockIndexCandidates)
+        , posModule_(chainParameters, chainstateRef_->ActiveChain(), chainstateRef_->GetBlockMap())
     {
     }
 
@@ -1399,7 +1406,7 @@ public:
         CDiskBlockPos* dbp,
         bool fAlreadyCheckedBlock) const override
     {
-        return AcceptBlock(block,*chainstateRef_,sporkManager_,state,ppindex,dbp,fAlreadyCheckedBlock);
+        return AcceptBlock(posModule_.proofOfStakeGenerator(),block,*chainstateRef_,sporkManager_,state,ppindex,dbp,fAlreadyCheckedBlock);
     }
 
     virtual bool updateActiveChain(
@@ -1462,6 +1469,7 @@ void InitializeChainExtensionService()
     assert(chainExtensionService == nullptr);
     chainExtensionService.reset(
         new ChainExtensionService(
+            Params(),
             GetSporkManager(),
             GetBlockIndexSuccessorsByPreviousBlockIndex(),
             GetBlockIndexCandidates()));

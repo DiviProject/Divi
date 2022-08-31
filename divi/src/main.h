@@ -138,6 +138,6 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CB
 /** Find the last common block between the parameter chain and a locator. */
 const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
 
-/** Best header block height */
+void InitializeBestHeaderBlockIndex();
 int GetBestHeaderBlockHeight();
 #endif // BITCOIN_MAIN_H

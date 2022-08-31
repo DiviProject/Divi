@@ -1213,8 +1213,8 @@ public:
             if (!blk.IsValid() && blk.GetAncestor(nHeight) == pindex) {
                 blk.nStatus &= ~BLOCK_FAILED_MASK;
                 BlockFileHelpers::RecordDirtyBlockIndex(&blk);
-                if (blk.IsValid(BLOCK_VALID_TRANSACTIONS) && blk.nChainTx && GetBlockIndexCandidates().value_comp()(chain.Tip(), &blk)) {
-                    GetBlockIndexCandidates().insert(&blk);
+                if (blk.IsValid(BLOCK_VALID_TRANSACTIONS) && blk.nChainTx && blockIndexCandidates_.value_comp()(chain.Tip(), &blk)) {
+                    blockIndexCandidates_.insert(&blk);
                 }
                 updateMostWorkInvalidBlockIndex(&blk, true);
             }

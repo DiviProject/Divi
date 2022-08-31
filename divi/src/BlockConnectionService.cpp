@@ -20,6 +20,7 @@
 #include <UtxoCheckingAndUpdating.h>
 
 BlockConnectionService::BlockConnectionService(
+    const CChainParams& chainParameters,
     const MasternodeModule& masternodeModule,
     const BlockMap& blockIndicesByHash,
     CBlockTreeDB* blocktree,
@@ -35,7 +36,7 @@ BlockConnectionService::BlockConnectionService(
     , sporkManager_(sporkManager)
     , blockDataReader_(blockDataReader)
     , modifyCoinCacheInplace_(modifyCoinCacheInplace)
-    , chainParameters_(Params())
+    , chainParameters_(chainParameters)
     , blockSubsidies_(new SuperblockSubsidyContainer(chainParameters_,sporkManager_))
     , incentives_(
         new BlockIncentivesPopulator(

@@ -21,6 +21,7 @@ class BlockMap;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class MasternodeModule;
+class CChainParams;
 
 class BlockConnectionService
 {
@@ -32,10 +33,10 @@ private:
     CCoinsViewCache* const coinTip_;
     const CSporkManager& sporkManager_;
     const I_BlockDataReader& blockDataReader_;
+    const bool modifyCoinCacheInplace_;
     const CChainParams& chainParameters_;
     std::unique_ptr<const SuperblockSubsidyContainer> blockSubsidies_;
     std::unique_ptr<const BlockIncentivesPopulator> incentives_;
-    const bool modifyCoinCacheInplace_;
 
     bool ApplyDisconnectionUpdateIndexToDBs(
         const uint256& bestBlockHash,
@@ -50,6 +51,7 @@ private:
         bool fJustCheck) const;
 public:
     BlockConnectionService(
+        const CChainParams& chainParameters,
         const MasternodeModule& masternodeModule,
         const BlockMap& blockIndicesByHash,
         CBlockTreeDB* blocktree,

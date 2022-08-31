@@ -114,6 +114,7 @@ public:
     void UpdatedBlockTip(const CBlockIndex *pindex) override
     {
         ChainstateManager::Reference chainStateRef;
+        uiInterface.NotifyBlockTip(pindex->GetBlockHash());
         NotifyPeersOfNewChainTip(chainStateRef->ActiveChain().Height(),pindex->GetBlockHash(), 100);
     }
 };

@@ -1353,10 +1353,7 @@ private:
 
             // Notifications/callbacks that can run without cs_main
             if (!fInitialDownload) {
-                const uint256 hashNewTip = pindexNewTip->GetBlockHash();
-                // Relay inventory, but don't relay old inventory during initial block download.
                 // Notify external listeners about the new tip.
-                uiInterface.NotifyBlockTip(hashNewTip);
                 GetMainNotificationInterface().UpdatedBlockTip(pindexNewTip);
                 timeOfLastChainTipUpdate = GetTime();
             }

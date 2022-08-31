@@ -107,7 +107,6 @@ int64_t timeOfLastChainTipUpdate =0;
 const CBlockIndex* pindexBestHeader = nullptr;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
-bool fReindex = false;
 bool fVerifyingBlocks = false;
 
 
@@ -587,7 +586,7 @@ bool IsInitialBlockDownload()	//2446
     const ChainstateManager::Reference chainstate;
     const int64_t height = chainstate->ActiveChain().Height();
 
-    if (settings.isImportingFiles() || fReindex || fVerifyingBlocks)
+    if (settings.isImportingFiles() || settings.isReindexingBlocks() || fVerifyingBlocks)
         return true;
     static bool lockIBDState = false;
     if (lockIBDState)
@@ -1717,7 +1716,7 @@ bool static LoadBlockIndexState(string& strError)
     // Check whether we need to continue reindexing
     bool fReindexing = false;
     blockTree.ReadReindexing(fReindexing);
-    fReindex |= fReindexing;
+    settings.setReindexingFlag( settings.isReindexingBlocks() || fReindexing);
 
     // Check whether we have address, spent or tx indexing enabled
     blockTree.LoadIndexingFlags();
@@ -1762,7 +1761,7 @@ void UnloadBlockIndex(ChainstateManager* chainstate)
 bool LoadBlockIndex(string& strError)
 {
     // Load block index from databases
-    if (!fReindex && !LoadBlockIndexState(strError))
+    if (!settings.isReindexingBlocks() && !LoadBlockIndexState(strError))
         return false;
     return true;
 }
@@ -1789,7 +1788,7 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
     LogPrintf("Initializing databases...\n");
 
     // Only add the genesis block if not reindexing (in which case we reuse the one already on disk)
-    if (!fReindex) {
+    if (!settings.isReindexingBlocks()) {
         try {
             const CBlock& block = Params().GenesisBlock();
             // Start new block file
@@ -2265,13 +2264,13 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             bool fAlreadyHave = AlreadyHave(GetTransactionMemoryPool(), inv);
             LogPrint("net", "got inv: %s  %s peer=%d\n", inv, fAlreadyHave ? "have" : "new", pfrom->id);
 
-            if (!fAlreadyHave && !isImportingFiles && !fReindex && inv.GetType() != MSG_BLOCK)
+            if (!fAlreadyHave && !isImportingFiles && !settings.isReindexingBlocks() && inv.GetType() != MSG_BLOCK)
                 pfrom->AskFor(inv);
 
 
             if (inv.GetType() == MSG_BLOCK) {
                 UpdateBlockAvailability(blockMap, pfrom->GetNodeState(), inv.GetHash());
-                if (!fAlreadyHave && !isImportingFiles && !fReindex) {
+                if (!fAlreadyHave && !isImportingFiles && !settings.isReindexingBlocks()) {
                     // Add this to the list of blocks to request
                     blockInventory.push_back(&inv);
                 }
@@ -2498,7 +2497,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 Misbehaving(pfrom->GetNodeState(), nDoS, "Transaction from peer rejected by memory pool");
         }
     }
-    else if (strCommand == "block" && !settings.isImportingFiles() && !fReindex) // Ignore blocks received while importing
+    else if (strCommand == "block" && !settings.isImportingFiles() && !settings.isReindexingBlocks()) // Ignore blocks received while importing
     {
         CBlock block;
         vRecv >> block;
@@ -2817,7 +2816,7 @@ static void CheckForBanAndDisconnectIfNotWhitelisted(CNode* pto)
 static void BeginSyncingWithPeer(CNode* pto)
 {
     CNodeState* state = pto->GetNodeState();
-    if (!state->Syncing() && !pto->fClient && !fReindex) {
+    if (!state->Syncing() && !pto->fClient && !settings.isReindexingBlocks()) {
         const ChainstateManager::Reference chainstate;
         const auto& chain = chainstate->ActiveChain();
 
@@ -3000,7 +2999,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             BeginSyncingWithPeer(pto);
         }
         CTxMemPool& mempool = GetTransactionMemoryPool();
-        if(!fReindex) PeriodicallyRebroadcastMempoolTxs(mempool);
+        if(!settings.isReindexingBlocks()) PeriodicallyRebroadcastMempoolTxs(mempool);
         SendInventoryToPeer(pto,fSendTrickle);
         int64_t nNow = GetTimeMicros();
         std::vector<CInv> vGetData;

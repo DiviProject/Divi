@@ -90,7 +90,6 @@
 
 extern CCriticalSection cs_main;
 extern Settings& settings;
-extern bool fReindex;
 extern bool fVerifyingBlocks;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -570,7 +569,7 @@ void ReconstructBlockIndex(ChainstateManager& chainstate, const CSporkManager& s
         nFile++;
     }
     chainstate.BlockTree().WriteReindexing(false);
-    fReindex = false;
+    settings.setReindexingFlag(false);
     LogPrintf("Reindexing finished\n");
     // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
     InitBlockIndex(chainstate, sporkManager);
@@ -580,7 +579,7 @@ void ReindexAndImportBlockFiles(ChainstateManager* chainstate, const CSporkManag
 {
     RenameThread("divi-loadblk");
 
-    if(fReindex) ReconstructBlockIndex(*chainstate, *sporkManager);
+    if(settings.isReindexingBlocks()) ReconstructBlockIndex(*chainstate, *sporkManager);
     std::vector<boost::filesystem::path> vImportFiles;
     if(settings.ParameterIsSet("-loadblock"))
     {
@@ -885,7 +884,7 @@ void WarmUpRPCAndStartRPCThreads()
 
 void CreateHardlinksForBlocks()
 {
-    fReindex = settings.GetBoolArg("-reindex", false);
+    settings.setReindexingFlag(settings.GetBoolArg("-reindex", false));
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
     boost::filesystem::path blocksDir = GetDataDir() / "blocks";
     if (!boost::filesystem::exists(blocksDir)) {
@@ -906,8 +905,9 @@ void CreateHardlinksForBlocks()
                 break;
             }
         }
-        if (linked) {
-            fReindex = true;
+        if (linked)
+        {
+            settings.setReindexingFlag(true);
         }
     }
 }
@@ -954,21 +954,21 @@ enum class BlockLoadingStatus {RETRY_LOADING,FAILED_LOADING,SUCCESS_LOADING};
 
 BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& strLoadError)
 {
-    if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
+    if(settings.isReindexingBlocks()) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
         ChainstateManager::Reference chainstate;
         auto& blockMap = chainstate->GetBlockMap();
 
         UnloadBlockIndex(&*chainstate);
 
-        if (fReindex)
+        if (settings.isReindexingBlocks())
             chainstate->BlockTree().WriteReindexing(true);
 
         // DIVI: load previous sessions sporks if we have them.
         uiInterface.InitMessage(translate("Loading sporks..."));
         sporkManager.LoadSporksFromDB();
 
-        if(!fReindex) uiInterface.InitMessage(translate("Loading block index..."));
+        if(!settings.isReindexingBlocks()) uiInterface.InitMessage(translate("Loading block index..."));
         std::string strBlockIndexError = "";
         if (!LoadBlockIndex(strBlockIndexError)) {
             strLoadError = translate("Error loading block database");
@@ -986,7 +986,7 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
         }
 
         // Initialize the block index (no-op if non-empty database was already loaded)
-        if(!fReindex) uiInterface.InitMessage(translate("Initializing block index databases..."));
+        if(!settings.isReindexingBlocks()) uiInterface.InitMessage(translate("Initializing block index databases..."));
         if (!InitBlockIndex(*chainstate, sporkManager)) {
             strLoadError = translate("Error initializing block database");
             return BlockLoadingStatus::RETRY_LOADING;
@@ -1406,7 +1406,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(translate("Preparing databases..."));
     const auto cacheSizes = CalculateDBCacheSizes();
-    chainstateInstance.reset(new ChainstateManager (cacheSizes.nBlockTreeDBCache, cacheSizes.nCoinDBCache,cacheSizes.nCoinCacheSize, false, fReindex));
+    chainstateInstance.reset(
+        new ChainstateManager (cacheSizes.nBlockTreeDBCache, cacheSizes.nCoinDBCache,cacheSizes.nCoinCacheSize, false, settings.isReindexingBlocks()));
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
     sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
@@ -1418,7 +1419,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     bool fLoaded = false;
     int64_t nStart;
     while (!fLoaded) {
-        bool fReset = fReindex;
+        bool fReset = settings.isReindexingBlocks();
         std::string strLoadError;
 
         uiInterface.InitMessage(translate("Loading block index..."));
@@ -1438,7 +1439,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
                     strLoadError + ".\n\n" + translate("Do you want to rebuild the block database now?"),
                     "", CClientUIInterface::MSG_ERROR | CClientUIInterface::BTN_ABORT);
                 if (fRet) {
-                    fReindex = true;
+                    settings.setReindexingFlag(true);
                     fRequestShutdown = false;
                 } else {
                     LogPrintf("Aborted block database rebuild. Exiting.\n");

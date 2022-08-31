@@ -11,11 +11,16 @@ class CCriticalSection;
 class CBlockIndex;
 class ChainstateManager;
 struct CBlockIndexWorkComparator {
+private:
+    const bool compareByWorkOnly_;
+public:
+    CBlockIndexWorkComparator(bool defaultComparisonByWorkOnly = false): compareByWorkOnly_(defaultComparisonByWorkOnly) {}
     bool operator()(const CBlockIndex* pa, const CBlockIndex* pb) const
     {
         // First sort by most total work, ...
         if (pa->nChainWork > pb->nChainWork) return false;
         if (pa->nChainWork < pb->nChainWork) return true;
+        if(compareByWorkOnly_) return true;
 
         // ... then by earliest time received, ...
         if (pa->nSequenceId < pb->nSequenceId) return false;

@@ -8,7 +8,6 @@
 
 class CChainParams;
 class ChainstateManager;
-class CSporkManager;
 class CValidationState;
 class CNode;
 class CDiskBlockPos;
@@ -22,7 +21,6 @@ private:
     CCriticalSection& mainCriticalSection_;
     const CChainParams& chainParameters_;
     ChainstateManager& chainstate_;
-    const CSporkManager& sporkManager_;
     CValidationState& state_;
     CNode* pfrom_;
     CDiskBlockPos* dbp_;
@@ -32,7 +30,6 @@ public:
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,
         ChainstateManager& chainstate,
-        const CSporkManager& sporkManager,
         CValidationState& state,
         CNode* pfrom,
         CDiskBlockPos* dbp);

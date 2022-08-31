@@ -19,7 +19,6 @@ AcceptBlockValidator::AcceptBlockValidator(
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,
         ChainstateManager& chainstate,
-        const CSporkManager& sporkManager,
         CValidationState& state,
         CNode* pfrom,
         CDiskBlockPos* dbp
@@ -27,7 +26,6 @@ AcceptBlockValidator::AcceptBlockValidator(
         , mainCriticalSection_(mainCriticalSection)
         , chainParameters_(chainParameters)
         , chainstate_(chainstate)
-        , sporkManager_(sporkManager)
         , state_(state)
         , pfrom_(pfrom)
         , dbp_(dbp)

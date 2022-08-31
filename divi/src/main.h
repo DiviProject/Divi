@@ -48,7 +48,8 @@ void FlushStateToDisk(FlushStateMode mode = FlushStateMode::FLUSH_STATE_ALWAYS);
 /** Get Current Chain Height with acquired lock **/
 int GetHeight();
 
-void InitializeChainExtensionService();
+class MasternodeModule;
+void InitializeChainExtensionService(const MasternodeModule& masternodeModule);
 void FinalizeChainExtensionService();
 I_ChainExtensionService& GetChainExtensionService();
 

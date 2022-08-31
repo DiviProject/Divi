@@ -19,9 +19,11 @@
 #include "db.h"
 #include "wallet.h"
 #endif
+#include <MasternodeModule.h>
 #include <TransactionInputChecker.h>
 #include <chainparams.h>
 #include <Settings.h>
+#include <I_Clock.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
@@ -41,12 +43,23 @@ extern void noui_connect();
    make the instance part of the test class.  */
 extern std::unique_ptr<CSporkManager> sporkManagerInstance;
 
+class TestLocalClock final: public I_Clock
+{
+public:
+    virtual int64_t getTime() const
+    {
+        return 0;
+    }
+};
+
 struct TestingSetup {
     boost::filesystem::path pathTemp;
     boost::thread_group threadGroup;
     CDBEnv& bitdb_;
 
     std::unique_ptr<ChainstateManager> chainstateInstance;
+    std::unique_ptr<TestLocalClock> localClock;
+    std::unique_ptr<MasternodeModule> mnModule;
 
     TestingSetup(): pathTemp(), threadGroup(), bitdb_(BerkleyDBEnvWrapper())
     {
@@ -63,7 +76,9 @@ struct TestingSetup {
         settings.SetParameter("-datadir", pathTemp.string());
         chainstateInstance.reset(new ChainstateManager(1 << 20, 1 << 23, 5000, true, false));
         sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
-        InitializeChainExtensionService();
+        localClock.reset(new TestLocalClock());
+        mnModule.reset( new MasternodeModule(*localClock, GetPeerSyncQueryService(), *chainstateInstance, GetNetworkAddressManager()) );
+        InitializeChainExtensionService(*mnModule);
         InitializeMultiWalletModule();
         InitBlockIndex(*chainstateInstance, *sporkManagerInstance);
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
@@ -78,6 +93,8 @@ struct TestingSetup {
         UnregisterNodeSignals(GetNodeSignals());
         FinalizeMultiWalletModule();
         FinalizeChainExtensionService();
+        mnModule.reset();
+        localClock.reset();
         sporkManagerInstance.reset();
         chainstateInstance.reset();
 #ifdef ENABLE_WALLET

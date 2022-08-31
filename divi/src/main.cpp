@@ -1087,6 +1087,7 @@ bool AcceptBlock(
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
+    const MasternodeModule& masternodeModule_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
     const Settings& settings_;
@@ -1144,6 +1145,7 @@ private:
     }
 public:
     ChainExtensionService(
+        const MasternodeModule& masternodeModule,
         MainNotificationSignals& mainNotificationSignals,
         CCriticalSection& mainCriticalSection,
         const Settings& settings,
@@ -1151,7 +1153,8 @@ public:
         const CSporkManager& sporkManager,
         BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
         BlockIndexCandidates& blockIndexCandidates
-        ): mainNotificationSignals_(mainNotificationSignals)
+        ): masternodeModule_(masternodeModule)
+        , mainNotificationSignals_(mainNotificationSignals)
         , mainCriticalSection_(mainCriticalSection)
         , settings_(settings)
         , sporkManager_(sporkManager)
@@ -1183,7 +1186,7 @@ public:
         const CBlock* pblock,
         bool fAlreadyChecked) const override
     {
-        ChainTipManager chainTipManager(GetMasternodeModule(), peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
+        ChainTipManager chainTipManager(masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
             settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
@@ -1198,7 +1201,7 @@ public:
 
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
-        ChainTipManager chainTipManager(GetMasternodeModule(), peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
+        ChainTipManager chainTipManager(masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
         return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
@@ -1233,11 +1236,12 @@ public:
 };
 
 std::unique_ptr<ChainExtensionService> chainExtensionService;
-void InitializeChainExtensionService()
+void InitializeChainExtensionService(const MasternodeModule& masternodeModule)
 {
     assert(chainExtensionService == nullptr);
     chainExtensionService.reset(
         new ChainExtensionService(
+            masternodeModule,
             GetMainNotificationInterface(),
             cs_main,
             settings,

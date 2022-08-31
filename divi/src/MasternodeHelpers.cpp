@@ -13,7 +13,6 @@
 #include <Settings.h>
 
 extern CCriticalSection cs_main;
-extern bool fReindex;
 extern Settings& settings;
 
 static bool mnResyncRequested  = false;
@@ -45,7 +44,7 @@ bool IsBlockchainSynced()
 
     if (fBlockchainSynced) return true;
 
-    if (settings.isImportingFiles() || fReindex) return false;
+    if (settings.isImportingFiles() || settings.isReindexingBlocks()) return false;
 
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain) return false;
@@ -191,7 +190,7 @@ bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now)
 }
 bool ReindexingOrImportingIsActive()
 {
-    return (settings.isImportingFiles() || fReindex);
+    return (settings.isImportingFiles() || settings.isReindexingBlocks());
 }
 CMasternodePing createDelayedMasternodePing(const CMasternode& mn)
 {

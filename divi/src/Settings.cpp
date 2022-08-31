@@ -242,3 +242,12 @@ bool CopyableSettings::isImportingFiles() const
 {
     return importingFiles_;
 }
+
+void CopyableSettings::setReindexingFlag(const bool updatedValue)
+{
+    reindexingBlocks_ = updatedValue;
+}
+bool CopyableSettings::isReindexingBlocks() const
+{
+    return reindexingBlocks_;
+}

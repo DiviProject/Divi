@@ -11,11 +11,13 @@ protected:
     std::map<std::string, std::string> mapArgs_;
     std::map<std::string, std::vector<std::string> > mapMultiArgs_;
     bool importingFiles_;
+    bool reindexingBlocks_;
 public:
     CopyableSettings(
         ): mapArgs_()
         , mapMultiArgs_()
         , importingFiles_(false)
+        , reindexingBlocks_(false)
     {
     }
 
@@ -55,6 +57,9 @@ public:
 
     void setFileImportingFlag(const bool updatedValue);
     bool isImportingFiles() const;
+
+    void setReindexingFlag(const bool updatedValue);
+    bool isReindexingBlocks() const;
 };
 
 class Settings: public CopyableSettings

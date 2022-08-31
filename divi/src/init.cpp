@@ -1489,7 +1489,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
     uiInterface.InitMessage(translate("Connecting best block..."));
     CValidationState state;
-    if (!GetChainExtensionService().updateActiveChain(*sporkManagerInstance, state,nullptr,false))
+    if (!GetChainExtensionService().updateActiveChain(state,nullptr,false))
         strErrors << "Failed to connect best block";
 #ifdef ENABLE_WALLET
     if(GetWallet() && settings.ParameterIsSet("-prunewalletconfs"))

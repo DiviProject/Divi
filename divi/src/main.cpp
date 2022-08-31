@@ -83,6 +83,7 @@
 #include <BlockInvalidationHelpers.h>
 #include <I_ChainTipManager.h>
 #include <MostWorkChainTransitionMediator.h>
+#include <ChainSyncHelpers.h>
 
 using namespace boost;
 using namespace std;
@@ -576,48 +577,10 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 //
 // CBlock and CBlockIndex
 //
-const CBlockIndex* pindexBestHeader = nullptr;
-
-void InitializeBestHeaderBlockIndex()
+bool IsInitialBlockDownload()
 {
-    if(pindexBestHeader == nullptr)
-        pindexBestHeader = ChainstateManager::Reference()->ActiveChain().Tip();
+    return IsInitialBlockDownload(cs_main, settings);
 }
-void updateBestHeaderBlockIndex(const CBlockIndex* otherBlockIndex, bool compareByWorkOnly)
-{
-    if(pindexBestHeader == nullptr || ( otherBlockIndex != nullptr && CBlockIndexWorkComparator(compareByWorkOnly)(pindexBestHeader,otherBlockIndex)))
-    {
-        pindexBestHeader = otherBlockIndex;
-    }
-}
-int GetBestHeaderBlockHeight()
-{
-    return pindexBestHeader? pindexBestHeader->nHeight: -1;
-}
-int64_t GetBestHeaderBlocktime()
-{
-    return pindexBestHeader? pindexBestHeader->GetBlockTime(): 0;
-}
-
-bool IsInitialBlockDownload()	//2446
-{
-    LOCK(cs_main);
-
-    const ChainstateManager::Reference chainstate;
-    const int64_t height = chainstate->ActiveChain().Height();
-
-    if (settings.isImportingFiles() || settings.isReindexingBlocks() || settings.isStartupVerifyingBlocks())
-        return true;
-    static bool lockIBDState = false;
-    if (lockIBDState)
-        return false;
-    bool state = (height < GetBestHeaderBlockHeight() - 24 * 6 ||
-                  GetBestHeaderBlocktime() < GetTime() - 6 * 60 * 60); // ~144 blocks behind -> 2 x fork detection time
-    if (!state)
-        lockIBDState = true;
-    return state;
-}
-
 namespace
 {
 
@@ -866,7 +829,7 @@ void static UpdateTip(const CBlockIndex* pindexNew)
 
     // Check the version of the last 100 blocks to see if we need to upgrade:
     static bool fWarned = false;
-    if (!IsInitialBlockDownload() && !fWarned) {
+    if (!IsInitialBlockDownload(cs_main,settings) && !fWarned) {
         int nUpgraded = 0;
         const CBlockIndex* pindex = chain.Tip();
         for (int i = 0; i < 100 && pindex != NULL; i++) {
@@ -952,7 +915,7 @@ public:
             bool rv = ConnectBlock(*pblock, state_, blockIndex, chainstate_, sporkManager_, view, false, fAlreadyChecked);
             if (!rv) {
                 if (state_.IsInvalid())
-                    InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(),settings,cs_main,blockIndex, state_);
+                    InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(cs_main,settings),settings,cs_main,blockIndex, state_);
                 return error("%s : ConnectBlock %s failed",__func__, blockIndex->GetBlockHash());
             }
             peerIdByBlockHash_.erase(inv.GetHash());
@@ -1381,7 +1344,7 @@ private:
                     return false;
 
                 pindexNewTip = chain.Tip();
-                fInitialDownload = IsInitialBlockDownload();
+                fInitialDownload = IsInitialBlockDownload(cs_main,settings);
                 break;
             }
             // When we reach this point, we switched to a new tip (stored in pindexNewTip).
@@ -1450,7 +1413,7 @@ public:
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
         ChainTipManager chainTipManager(peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
-        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(), settings, cs_main, *chainstateRef_, blockIndex);
+        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(cs_main,settings), settings, cs_main, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
     {
@@ -2153,7 +2116,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
 
     if (!pfrom->fInbound) {
         // Advertise our address
-        if (IsListening() && !IsInitialBlockDownload()) {
+        if (IsListening() && !IsInitialBlockDownload(cs_main,settings)) {
             CAddress addr = GetLocalAddress(&pfrom->GetCAddress());
             if (addr.IsRoutable()) {
                 LogPrintf("%s: advertizing address %s\n",__func__, addr);
@@ -2404,7 +2367,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
         LOCK(cs_main);
 
-        if (IsInitialBlockDownload())
+        if (IsInitialBlockDownload(cs_main,settings))
             return true;
 
         const CBlockIndex* pindex = nullptr;

@@ -235,6 +235,7 @@ BITCOIN_CORE_H = \
   ForkWarningHelpers.h \
   BlockInvalidationHelpers.h \
   MostWorkChainTransitionMediator.h \
+  ChainSyncHelpers.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \
@@ -464,6 +465,7 @@ libbitcoin_server_a_SOURCES = \
   ForkWarningHelpers.cpp \
   BlockInvalidationHelpers.cpp \
   MostWorkChainTransitionMediator.cpp \
+  ChainSyncHelpers.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \

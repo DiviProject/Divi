@@ -1,6 +1,7 @@
 #ifndef MOST_WORK_CHAIN_TRANSITION_MEDIATOR_H
 #define MOST_WORK_CHAIN_TRANSITION_MEDIATOR_H
 #include <BlockCheckingHelpers.h>
+#include <I_MostWorkChainTransitionMediator.h>
 
 class CValidationState;
 class CBlock;
@@ -9,22 +10,6 @@ class ChainstateManager;
 class I_ChainTipManager;
 class CCriticalSections;
 class Settings;
-
-class I_MostWorkChainTipLocator
-{
-public:
-    virtual ~I_MostWorkChainTipLocator(){}
-    virtual CBlockIndex* findMostWorkChain() const = 0;
-};
-
-class I_MostWorkChainTransitionMediator: public I_MostWorkChainTipLocator
-{
-public:
-    virtual ~I_MostWorkChainTransitionMediator(){}
-    virtual bool transitionActiveChainToMostWorkChain(
-            CBlockIndex* pindexMostWork,
-            const CBlock* pblock) const = 0;
-};
 
 class MostWorkChainTransitionMediator final: public I_MostWorkChainTransitionMediator
 {

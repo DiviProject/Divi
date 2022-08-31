@@ -597,8 +597,9 @@ Value reverseblocktransactions(const Array& params, bool fHelp, CWallet* pwallet
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
         CBlockIndex* pblockindex = mit->second;
-        InvalidateBlock(*chainstate, state,pblockindex,true);
-        ReconsiderBlock(*chainstate, state, pblockindex);
+        const I_ChainExtensionService& chainExtensionService = GetChainExtensionService();
+        chainExtensionService.invalidateBlock(state,pblockindex,true);
+        chainExtensionService.reconsiderBlock(state, pblockindex);
     }
 
     if (!state.IsValid()) {
@@ -631,7 +632,8 @@ Value invalidateblock(const Array& params, bool fHelp, CWallet* pwallet)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
     CBlockIndex* pblockindex = mit->second;
-    InvalidateBlock(*chainstate, state, pblockindex);
+    const I_ChainExtensionService& chainExtensionService = GetChainExtensionService();
+    chainExtensionService.invalidateBlock(state, pblockindex,false);
 
     if (state.IsValid()) {
         GetChainExtensionService().updateActiveChain(*chainstate, GetSporkManager(), state,nullptr,false);
@@ -668,10 +670,11 @@ Value reconsiderblock(const Array& params, bool fHelp, CWallet* pwallet)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
     CBlockIndex* pblockindex = mit->second;
-    ReconsiderBlock(*chainstate, state, pblockindex);
+    const I_ChainExtensionService& chainExtensionService = GetChainExtensionService();
+    chainExtensionService.reconsiderBlock(state, pblockindex);
 
     if (state.IsValid()) {
-        GetChainExtensionService().updateActiveChain(*chainstate, GetSporkManager(), state,nullptr,false);
+        chainExtensionService.updateActiveChain(*chainstate, GetSporkManager(), state,nullptr,false);
     }
 
     if (!state.IsValid()) {

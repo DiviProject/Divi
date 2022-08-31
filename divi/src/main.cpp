@@ -1307,6 +1307,7 @@ bool AcceptBlock(
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
+    MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
     const Settings& settings_;
     const CSporkManager& sporkManager_;
@@ -1354,7 +1355,7 @@ private:
             // Notifications/callbacks that can run without cs_main
             if (!fInitialDownload) {
                 // Notify external listeners about the new tip.
-                GetMainNotificationInterface().UpdatedBlockTip(pindexNewTip);
+                mainNotificationSignals_.UpdatedBlockTip(pindexNewTip);
                 timeOfLastChainTipUpdate = GetTime();
             }
         } while (pindexMostWork != chain.Tip());
@@ -1363,13 +1364,15 @@ private:
     }
 public:
     ChainExtensionService(
+        MainNotificationSignals& mainNotificationSignals,
         CCriticalSection& mainCriticalSection,
         const Settings& settings,
         const CChainParams& chainParameters,
         const CSporkManager& sporkManager,
         BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
         BlockIndexCandidates& blockIndexCandidates
-        ): mainCriticalSection_(mainCriticalSection)
+        ): mainNotificationSignals_(mainNotificationSignals)
+        , mainCriticalSection_(mainCriticalSection)
         , settings_(settings)
         , sporkManager_(sporkManager)
         , chainstateRef_()
@@ -1455,6 +1458,7 @@ void InitializeChainExtensionService()
     assert(chainExtensionService == nullptr);
     chainExtensionService.reset(
         new ChainExtensionService(
+            GetMainNotificationInterface(),
             cs_main,
             settings,
             Params(),

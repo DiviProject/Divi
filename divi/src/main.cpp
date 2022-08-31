@@ -1323,6 +1323,8 @@ private:
     const CSporkManager& sporkManager_;
     mutable ChainstateManager::Reference chainstateRef_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
+    BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors_;
+    BlockIndexCandidates& blockIndexCandidates_;
     bool transitionToMostWorkChainTip(
         const I_MostWorkChainTransitionMediator& chainTransitionMediator,
         ChainstateManager& chainstate,
@@ -1374,10 +1376,14 @@ private:
     }
 public:
     ChainExtensionService(
-        const CSporkManager& sporkManager
+        const CSporkManager& sporkManager,
+        BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
+        BlockIndexCandidates& blockIndexCandidates
         ): sporkManager_(sporkManager)
         , chainstateRef_()
         , peerIdByBlockHash_()
+        , blockIndexSuccessors_(blockIndexSuccessors)
+        , blockIndexCandidates_(blockIndexCandidates)
     {
     }
 
@@ -1403,14 +1409,14 @@ public:
     {
         ChainTipManager chainTipManager(peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
-            *chainstateRef_, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
+            *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
 
         // Write changes periodically to disk, after relay.
         if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
             return false;
         }
-        VerifyBlockIndexTree(*chainstateRef_,cs_main, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates());
+        VerifyBlockIndexTree(*chainstateRef_,cs_main, blockIndexSuccessors_, blockIndexCandidates_);
         return result;
     }
 
@@ -1454,7 +1460,11 @@ std::unique_ptr<ChainExtensionService> chainExtensionService;
 void InitializeChainExtensionService()
 {
     assert(chainExtensionService == nullptr);
-    chainExtensionService.reset(new ChainExtensionService(GetSporkManager()));
+    chainExtensionService.reset(
+        new ChainExtensionService(
+            GetSporkManager(),
+            GetBlockIndexSuccessorsByPreviousBlockIndex(),
+            GetBlockIndexCandidates()));
 }
 void FinalizeChainExtensionService()
 {

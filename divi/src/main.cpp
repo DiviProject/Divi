@@ -700,7 +700,7 @@ public:
         // Read block from disk.
         CBlock block;
         if (!pblock) {
-            if (!ReadBlockFromDisk(block, blockIndex))
+            if (!blockDiskReader_.ReadBlock(blockIndex,block))
                 return state_.Abort("Failed to read block");
             pblock = &block;
         }

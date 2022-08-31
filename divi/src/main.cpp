@@ -1307,6 +1307,8 @@ bool AcceptBlock(
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
+    CCriticalSection& mainCriticalSection_;
+    const Settings& settings_;
     const CSporkManager& sporkManager_;
     mutable ChainstateManager::Reference chainstateRef_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
@@ -1327,7 +1329,7 @@ private:
 
             bool fInitialDownload;
             while (true) {
-                TRY_LOCK(cs_main, lockMain);
+                TRY_LOCK(mainCriticalSection_, lockMain);
                 if (!lockMain) {
                     MilliSleep(50);
                     continue;
@@ -1344,7 +1346,7 @@ private:
                     return false;
 
                 pindexNewTip = chain.Tip();
-                fInitialDownload = IsInitialBlockDownload(cs_main,settings);
+                fInitialDownload = IsInitialBlockDownload(mainCriticalSection_,settings_);
                 break;
             }
             // When we reach this point, we switched to a new tip (stored in pindexNewTip).
@@ -1364,11 +1366,15 @@ private:
     }
 public:
     ChainExtensionService(
+        CCriticalSection& mainCriticalSection,
+        const Settings& settings,
         const CChainParams& chainParameters,
         const CSporkManager& sporkManager,
         BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
         BlockIndexCandidates& blockIndexCandidates
-        ): sporkManager_(sporkManager)
+        ): mainCriticalSection_(mainCriticalSection)
+        , settings_(settings)
+        , sporkManager_(sporkManager)
         , chainstateRef_()
         , peerIdByBlockHash_()
         , blockIndexSuccessors_(blockIndexSuccessors)
@@ -1399,25 +1405,25 @@ public:
     {
         ChainTipManager chainTipManager(peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
-            settings, cs_main, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
+            settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
 
         // Write changes periodically to disk, after relay.
         if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
             return false;
         }
-        VerifyBlockIndexTree(*chainstateRef_,cs_main, blockIndexSuccessors_, blockIndexCandidates_);
+        VerifyBlockIndexTree(*chainstateRef_,mainCriticalSection_, blockIndexSuccessors_, blockIndexCandidates_);
         return result;
     }
 
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
         ChainTipManager chainTipManager(peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
-        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(cs_main,settings), settings, cs_main, *chainstateRef_, blockIndex);
+        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
     {
-        AssertLockHeld(cs_main);
+        AssertLockHeld(mainCriticalSection_);
         const auto& chain = chainstateRef_->ActiveChain();
         const int nHeight = pindex->nHeight;
 
@@ -1452,6 +1458,8 @@ void InitializeChainExtensionService()
     assert(chainExtensionService == nullptr);
     chainExtensionService.reset(
         new ChainExtensionService(
+            cs_main,
+            settings,
             Params(),
             GetSporkManager(),
             GetBlockIndexSuccessorsByPreviousBlockIndex(),

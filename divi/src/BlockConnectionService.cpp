@@ -305,10 +305,10 @@ bool BlockConnectionService::ConnectBlock(
     const CBlock& block,
     CValidationState& state,
     CBlockIndex* pindex,
+    CCoinsViewCache& view,
     const bool updateCoinsCacheOnly,
     const bool alreadyChecked) const
 {
-    CCoinsViewCache& view = *coinTip_;
     // Check it again in case a previous version let a bad block in
     if (!alreadyChecked && !CheckBlock(block, state))
         return false;
@@ -365,4 +365,25 @@ bool BlockConnectionService::ConnectBlock(
     view.SetBestBlock(pindex->GetBlockHash());
 
     return true;
+}
+
+bool BlockConnectionService::ConnectBlock(
+    const CBlock& block,
+    CValidationState& state,
+    CBlockIndex* pindex,
+    const bool updateCoinsCacheOnly,
+    const bool alreadyChecked) const
+{
+    bool connectBlockSucceeded = false;
+    if(!modifyCoinCacheInplace_)
+    {
+        CCoinsViewCache coins(coinTip_);
+        connectBlockSucceeded = ConnectBlock(block, state, pindex, coins, updateCoinsCacheOnly,alreadyChecked);
+        if(connectBlockSucceeded) assert(coins.Flush());
+    }
+    else
+    {
+        connectBlockSucceeded = ConnectBlock(block, state, pindex, *coinTip_, updateCoinsCacheOnly,alreadyChecked);
+    }
+    return connectBlockSucceeded;
 }

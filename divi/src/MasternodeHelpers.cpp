@@ -10,10 +10,11 @@
 #include <TransactionDiskAccessor.h>
 #include <MasternodePing.h>
 #include <Logging.h>
+#include <Settings.h>
 
 extern CCriticalSection cs_main;
-extern bool fImporting;
 extern bool fReindex;
+extern Settings& settings;
 
 static bool mnResyncRequested  = false;
 bool MasternodeResyncIsRequested()
@@ -44,7 +45,7 @@ bool IsBlockchainSynced()
 
     if (fBlockchainSynced) return true;
 
-    if (fImporting || fReindex) return false;
+    if (settings.isImportingFiles() || fReindex) return false;
 
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain) return false;
@@ -190,7 +191,7 @@ bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now)
 }
 bool ReindexingOrImportingIsActive()
 {
-    return (fImporting || fReindex);
+    return (settings.isImportingFiles() || fReindex);
 }
 CMasternodePing createDelayedMasternodePing(const CMasternode& mn)
 {

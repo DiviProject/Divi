@@ -107,7 +107,6 @@ int64_t timeOfLastChainTipUpdate =0;
 const CBlockIndex* pindexBestHeader = nullptr;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
-bool fImporting = false;
 bool fReindex = false;
 bool fVerifyingBlocks = false;
 
@@ -588,7 +587,7 @@ bool IsInitialBlockDownload()	//2446
     const ChainstateManager::Reference chainstate;
     const int64_t height = chainstate->ActiveChain().Height();
 
-    if (fImporting || fReindex || fVerifyingBlocks)
+    if (settings.isImportingFiles() || fReindex || fVerifyingBlocks)
         return true;
     static bool lockIBDState = false;
     if (lockIBDState)
@@ -2256,6 +2255,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         std::vector<CInv> vToFetch;
         std::vector<const CInv*> blockInventory;
         blockInventory.reserve(vInv.size());
+        const bool isImportingFiles = settings.isImportingFiles();
         for (unsigned int nInv = 0; nInv < vInv.size(); nInv++) {
             const CInv& inv = vInv[nInv];
 
@@ -2265,13 +2265,13 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             bool fAlreadyHave = AlreadyHave(GetTransactionMemoryPool(), inv);
             LogPrint("net", "got inv: %s  %s peer=%d\n", inv, fAlreadyHave ? "have" : "new", pfrom->id);
 
-            if (!fAlreadyHave && !fImporting && !fReindex && inv.GetType() != MSG_BLOCK)
+            if (!fAlreadyHave && !isImportingFiles && !fReindex && inv.GetType() != MSG_BLOCK)
                 pfrom->AskFor(inv);
 
 
             if (inv.GetType() == MSG_BLOCK) {
                 UpdateBlockAvailability(blockMap, pfrom->GetNodeState(), inv.GetHash());
-                if (!fAlreadyHave && !fImporting && !fReindex) {
+                if (!fAlreadyHave && !isImportingFiles && !fReindex) {
                     // Add this to the list of blocks to request
                     blockInventory.push_back(&inv);
                 }
@@ -2498,7 +2498,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 Misbehaving(pfrom->GetNodeState(), nDoS, "Transaction from peer rejected by memory pool");
         }
     }
-    else if (strCommand == "block" && !fImporting && !fReindex) // Ignore blocks received while importing
+    else if (strCommand == "block" && !settings.isImportingFiles() && !fReindex) // Ignore blocks received while importing
     {
         CBlock block;
         vRecv >> block;

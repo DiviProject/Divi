@@ -91,7 +91,6 @@
 extern CCriticalSection cs_main;
 extern Settings& settings;
 extern bool fReindex;
-extern bool fImporting;
 extern bool fVerifyingBlocks;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -435,16 +434,19 @@ void BlockNotifyCallback(const uint256& hashNewTip)
 }
 
 struct CImportingNow {
-    CImportingNow()
+private:
+    Settings& internalSettings_;
+public:
+    CImportingNow(Settings& settings): internalSettings_(settings)
     {
-        assert(fImporting == false);
-        fImporting = true;
+        assert(internalSettings_.isImportingFiles() == false);
+        internalSettings_.setFileImportingFlag(true);
     }
 
     ~CImportingNow()
     {
-        assert(fImporting == true);
-        fImporting = false;
+        assert(internalSettings_.isImportingFiles() == true);
+        internalSettings_.setFileImportingFlag(false);
     }
 };
 
@@ -554,7 +556,7 @@ bool LoadExternalBlockFile(ChainstateManager& chainstate, const CSporkManager& s
 void ReconstructBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkManager)
 {
     // -reindex
-    CImportingNow imp;
+    CImportingNow imp(settings);
     int nFile = 0;
     while (true) {
         CDiskBlockPos pos(nFile, 0);
@@ -574,7 +576,7 @@ void ReconstructBlockIndex(ChainstateManager& chainstate, const CSporkManager& s
     InitBlockIndex(chainstate, sporkManager);
 }
 
-void ReindexAndImportBlockFiles(ChainstateManager* chainstate, const CSporkManager* sporkManager, const Settings& settings)
+void ReindexAndImportBlockFiles(ChainstateManager* chainstate, const CSporkManager* sporkManager, Settings& settings)
 {
     RenameThread("divi-loadblk");
 
@@ -591,7 +593,7 @@ void ReindexAndImportBlockFiles(ChainstateManager* chainstate, const CSporkManag
     if (boost::filesystem::exists(pathBootstrap)) {
         FILE* file = fopen(pathBootstrap.string().c_str(), "rb");
         if (file) {
-            CImportingNow imp;
+            CImportingNow imp(settings);
             boost::filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
             LogPrintf("Importing bootstrap.dat...\n");
             LoadExternalBlockFile(*chainstate, *sporkManager, file);
@@ -605,7 +607,7 @@ void ReindexAndImportBlockFiles(ChainstateManager* chainstate, const CSporkManag
     BOOST_FOREACH (boost::filesystem::path& path, vImportFiles) {
         FILE* file = fopen(path.string().c_str(), "rb");
         if (file) {
-            CImportingNow imp;
+            CImportingNow imp(settings);
             LogPrintf("Importing blocks file %s...\n", path.string());
             LoadExternalBlockFile(*chainstate, *sporkManager, file);
         } else {

@@ -10,11 +10,12 @@ class CopyableSettings
 protected:
     std::map<std::string, std::string> mapArgs_;
     std::map<std::string, std::vector<std::string> > mapMultiArgs_;
-
+    bool importingFiles_;
 public:
     CopyableSettings(
         ): mapArgs_()
         , mapMultiArgs_()
+        , importingFiles_(false)
     {
     }
 
@@ -51,6 +52,9 @@ public:
     unsigned MaxNumberOfPoSCombinableInputs() const;
     int MaxFutureBlockDrift() const;
     bool debugModeIsEnabled() const;
+
+    void setFileImportingFlag(const bool updatedValue);
+    bool isImportingFiles() const;
 };
 
 class Settings: public CopyableSettings

@@ -147,6 +147,7 @@ void CopyableSettings::ParseParameters(int argc, const char* const argv[])
 
         SetParameter(str, strValue,false);
     }
+    reindexingBlocks_ = reindexingWasRequested();
 }
 
 boost::filesystem::path CopyableSettings::GetConfigFile() const
@@ -250,4 +251,8 @@ void CopyableSettings::setReindexingFlag(const bool updatedValue)
 bool CopyableSettings::isReindexingBlocks() const
 {
     return reindexingBlocks_;
+}
+bool CopyableSettings::reindexingWasRequested() const
+{
+    return GetBoolArg("-reindex",false);
 }

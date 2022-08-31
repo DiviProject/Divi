@@ -1702,7 +1702,7 @@ bool static LoadBlockIndexState(string& strError)
     LogPrintf("%s: Last shutdown was prepared: %s\n", __func__, fLastShutdownWasPrepared);
 
     //Check for inconsistency with block file info and internal state
-    if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.GetBoolArg("-reindex", false))
+    if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.reindexingWasRequested())
     {
         uint256 expectedBestBlockHash;
         if(!blockTree.ReadBestBlockHash(expectedBestBlockHash) || !ResolveConflictsBetweenCoinDBAndBlockDB(blockMap,expectedBestBlockHash,coinsTip,strError))

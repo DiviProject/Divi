@@ -8,10 +8,10 @@
 #include <Settings.h>
 #include <ForkWarningHelpers.h>
 #include <BlockInvalidationHelpers.h>
+#include <ChainSyncHelpers.h>
 
 extern CCriticalSection cs_main;
 extern Settings& settings;
-extern bool IsInitialBlockDownload();
 
 void MostWorkChainTransitionMediator::computeNextBlockIndicesToConnect(
     CBlockIndex* pindexMostWork,
@@ -52,7 +52,7 @@ bool MostWorkChainTransitionMediator::checkBlockConnectionState(
     {
         // The block violates a consensus rule.
         if (!state_.CorruptionPossible())
-            InvalidChainFound(IsInitialBlockDownload(),settings,cs_main,lastBlockIndex);
+            InvalidChainFound(IsInitialBlockDownload(cs_main,settings),settings,cs_main,lastBlockIndex);
         state_ = CValidationState();
         return false;
     }
@@ -148,9 +148,9 @@ bool MostWorkChainTransitionMediator::transitionActiveChainToMostWorkChain(
 
     // Callbacks/notifications for a new best chain.
     if (result == BlockConnectionResult::INVALID_BLOCK)
-        CheckForkWarningConditionsOnNewFork(settings, cs_main,blockIndicesToConnect.back(), IsInitialBlockDownload());
+        CheckForkWarningConditionsOnNewFork(settings, cs_main,blockIndicesToConnect.back(), IsInitialBlockDownload(cs_main,settings));
     else
-        CheckForkWarningConditions(settings, cs_main,IsInitialBlockDownload());
+        CheckForkWarningConditions(settings, cs_main,IsInitialBlockDownload(cs_main,settings));
 
     return true;
 }

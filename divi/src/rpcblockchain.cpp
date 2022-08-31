@@ -27,6 +27,7 @@
 #include <JsonBlockHelpers.h>
 #include <spork.h>
 #include <I_ChainExtensionService.h>
+#include <ChainSyncHelpers.h>
 
 using namespace json_spirit;
 using namespace std;

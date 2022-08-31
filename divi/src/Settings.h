@@ -12,12 +12,14 @@ protected:
     std::map<std::string, std::vector<std::string> > mapMultiArgs_;
     bool importingFiles_;
     bool reindexingBlocks_;
+    bool startupBlockVerificationInProgress_;
 public:
     CopyableSettings(
         ): mapArgs_()
         , mapMultiArgs_()
         , importingFiles_(false)
         , reindexingBlocks_(false)
+        , startupBlockVerificationInProgress_(false)
     {
     }
 
@@ -61,6 +63,9 @@ public:
     void setReindexingFlag(const bool updatedValue);
     bool isReindexingBlocks() const;
     bool reindexingWasRequested() const;
+
+    void setStartupBlockVerificationFlag(const bool updatedValue);
+    bool isStartupVerifyingBlocks() const;
 };
 
 class Settings: public CopyableSettings

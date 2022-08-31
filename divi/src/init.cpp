@@ -90,7 +90,6 @@
 
 extern CCriticalSection cs_main;
 extern Settings& settings;
-extern bool fVerifyingBlocks;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
@@ -447,6 +446,23 @@ public:
     {
         assert(internalSettings_.isImportingFiles() == true);
         internalSettings_.setFileImportingFlag(false);
+    }
+};
+
+struct CVerifyingNow {
+private:
+    Settings& internalSettings_;
+public:
+    CVerifyingNow(Settings& settings): internalSettings_(settings)
+    {
+        assert(internalSettings_.isStartupVerifyingBlocks() == false);
+        internalSettings_.setStartupBlockVerificationFlag(true);
+    }
+
+    ~CVerifyingNow()
+    {
+        assert(internalSettings_.isStartupVerifyingBlocks() == true);
+        internalSettings_.setStartupBlockVerificationFlag(false);
     }
 };
 
@@ -1003,26 +1019,22 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
         uiInterface.InitMessage(translate("Verifying blocks..."));
 
         // Flag sent to validation code to let it know it can skip certain checks
-        fVerifyingBlocks = true;
 
         {
-
             LOCK(cs_main);
+            CVerifyingNow chainVerificationInProgress(settings);
             if (!VerifyChain(4, settings.GetArg("-checkblocks", 100),false))
             {
                 strLoadError = translate("Corrupted block database detected");
-                fVerifyingBlocks = false;
                 return BlockLoadingStatus::RETRY_LOADING;
             }
         }
     } catch (std::exception& e) {
         if (settings.debugModeIsEnabled()) LogPrintf("%s\n", e.what());
         strLoadError = translate("Error opening block database");
-        fVerifyingBlocks = false;
         return BlockLoadingStatus::RETRY_LOADING;
     }
 
-    fVerifyingBlocks = false;
     return BlockLoadingStatus::SUCCESS_LOADING;
 }
 
@@ -1471,11 +1483,12 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         LogPrintf("Wallet disabled!\n");
     } else {
         uiInterface.InitMessage(translate("Loading wallet..."));
-        fVerifyingBlocks = true;
-        if(!LoadAndSelectWallet(strWalletFile,false))
-            return false;
-        nStart = GetTimeMillis();
-        fVerifyingBlocks = false;
+        {
+            CVerifyingNow chainVerificationInProgress(settings);
+            if(!LoadAndSelectWallet(strWalletFile,false))
+                return false;
+            nStart = GetTimeMillis();
+        }
 
     }  // (!fDisableWallet)
 #else  // ENABLE_WALLET

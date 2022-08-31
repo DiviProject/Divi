@@ -11,12 +11,16 @@
 #include <spentindex.h>
 #include <BlockDiskAccessor.h>
 #include <utiltime.h>
+#include <chainparams.h>
+#include <SuperblockSubsidyContainer.h>
+#include <BlockIncentivesPopulator.h>
 #include <I_BlockDataReader.h>
 #include <IndexDatabaseUpdates.h>
 #include <IndexDatabaseUpdateCollector.h>
 #include <UtxoCheckingAndUpdating.h>
 
 BlockConnectionService::BlockConnectionService(
+    const MasternodeModule& masternodeModule,
     const BlockMap& blockIndicesByHash,
     CBlockTreeDB* blocktree,
     CCoinsViewCache* coinTip,
@@ -31,7 +35,21 @@ BlockConnectionService::BlockConnectionService(
     , sporkManager_(sporkManager)
     , blockDataReader_(blockDataReader)
     , modifyCoinCacheInplace_(modifyCoinCacheInplace)
+    , chainParameters_(Params())
+    , blockSubsidies_(new SuperblockSubsidyContainer(chainParameters_,sporkManager_))
+    , incentives_(
+        new BlockIncentivesPopulator(
+            chainParameters_,
+            masternodeModule,
+            blockSubsidies_->superblockHeightValidator(),
+            blockSubsidies_->blockSubsidiesProvider()))
 {
+}
+
+BlockConnectionService::~BlockConnectionService()
+{
+    incentives_.reset();
+    blockSubsidies_.reset();
 }
 
 bool BlockConnectionService::ApplyDisconnectionUpdateIndexToDBs(

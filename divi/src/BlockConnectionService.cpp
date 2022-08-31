@@ -18,6 +18,137 @@
 #include <IndexDatabaseUpdates.h>
 #include <IndexDatabaseUpdateCollector.h>
 #include <UtxoCheckingAndUpdating.h>
+#include <BlockCheckingHelpers.h>
+#include <Logging.h>
+#include <ForkActivation.h>
+#include <BlockTransactionChecker.h>
+#include <Settings.h>
+#include <MasternodeModule.h>
+#include <utilmoneystr.h>
+#include <BlockFileHelpers.h>
+
+extern Settings& settings;
+
+namespace ConnectBlockHelpers
+{
+std::map<uint256, int64_t> mapRejectedBlocks;
+
+void VerifyBestBlockIsAtPreviousBlock(const CBlockIndex* pindex, CCoinsViewCache& view)
+{
+    const uint256 hashPrevBlock = pindex->pprev == NULL ? uint256(0) : pindex->pprev->GetBlockHash();
+    if (hashPrevBlock != view.GetBestBlock())
+        LogPrintf("%s: hashPrev=%s view=%s\n", __func__, hashPrevBlock, view.GetBestBlock());
+    assert(hashPrevBlock == view.GetBestBlock());
+}
+
+
+bool CheckEnforcedPoSBlocksAndBIP30(const CChainParams& chainParameters, const CBlock& block, CValidationState& state, const CBlockIndex* pindex, const CCoinsViewCache& view)
+{
+    if (pindex->nHeight <= chainParameters.LAST_POW_BLOCK() && block.IsProofOfStake())
+        return state.DoS(100, error("%s : PoS period not active",__func__),
+                         REJECT_INVALID, "PoS-early");
+
+    if (pindex->nHeight > chainParameters.LAST_POW_BLOCK() && block.IsProofOfWork())
+        return state.DoS(100, error("%s : PoW period ended",__func__),
+                         REJECT_INVALID, "PoW-ended");
+
+    // Enforce BIP30.
+    for (const auto& tx : block.vtx) {
+        const CCoins* coins = view.AccessCoins(tx.GetHash());
+        if (coins && !coins->IsPruned())
+            return state.DoS(100, error("%s : tried to overwrite transaction (%s)",__func__, tx.GetHash().ToString()),
+                             REJECT_INVALID, "bad-txns-BIP30");
+    }
+
+    return true;
+}
+
+void CalculateFees(bool isProofOfWork, const CBlockIndex* pindex, CBlockRewards& nExpectedMint)
+{
+    const CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
+    CAmount nFees = pindex->nMint - (pindex->nMoneySupply - nMoneySupplyPrev);
+    //PoW phase redistributed fees to miner. PoS stage destroys fees.
+    if (isProofOfWork)
+        nExpectedMint.nStakeReward += nFees;
+}
+
+bool CheckMintTotalsAndBlockPayees(
+    const CBlock& block,
+    const CBlockIndex* pindex,
+    const BlockIncentivesPopulator& incentives,
+    const CBlockRewards& nExpectedMint,
+    CValidationState& state)
+{
+    const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
+
+    if (!incentives.IsBlockValueValid(nExpectedMint, pindex->nMint, pindex->nHeight)) {
+        return state.DoS(100,
+                         error("%s : reward pays too much (actual=%s vs limit=%s)",
+                            __func__,
+                            FormatMoney(pindex->nMint), nExpectedMint),
+                         REJECT_INVALID, "bad-cb-amount");
+    }
+
+    if (!incentives.HasValidPayees(coinbaseTx,pindex)) {
+        mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
+        return state.DoS(0, error("%s: couldn't find masternode or superblock payments",__func__),
+                         REJECT_INVALID, "bad-cb-payee");
+    }
+    return true;
+}
+
+bool WriteUndoDataToDisk(CBlockIndex* pindex, CValidationState& state, CBlockUndo& blockundo)
+{
+    if (pindex->GetUndoPos().IsNull() || !pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
+        if (pindex->GetUndoPos().IsNull()) {
+            CDiskBlockPos pos;
+            if (!BlockFileHelpers::AllocateDiskSpaceForBlockUndo(pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
+            {
+                return state.Abort("Disk space is low!");
+            }
+            if (!blockundo.WriteToDisk(pos, pindex->pprev->GetBlockHash()))
+                return state.Abort("Failed to write undo data");
+
+            // update nUndoPos in block index
+            pindex->nUndoPos = pos.nPos;
+            pindex->nStatus |= BLOCK_HAVE_UNDO;
+        }
+
+        pindex->RaiseValidity(BLOCK_VALID_SCRIPTS);
+        BlockFileHelpers::RecordDirtyBlockIndex(pindex);
+    }
+    return true;
+}
+
+bool UpdateDBIndicesForNewBlock(
+    const IndexDatabaseUpdates& indexDatabaseUpdates,
+    const uint256& bestBlockHash,
+    CBlockTreeDB& blockTreeDatabase,
+    CValidationState& state)
+{
+    if (blockTreeDatabase.GetTxIndexing())
+        if (!blockTreeDatabase.WriteTxIndex(indexDatabaseUpdates.txLocationData))
+            return state.Abort("ConnectingBlock: Failed to write transaction index");
+
+    if (indexDatabaseUpdates.addressIndexingEnabled_) {
+        if (!blockTreeDatabase.WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
+            return state.Abort("ConnectingBlock: Failed to write address index");
+        }
+
+        if (!blockTreeDatabase.UpdateAddressUnspentIndex(indexDatabaseUpdates.addressUnspentIndex)) {
+            return state.Abort("ConnectingBlock: Failed to write address unspent index");
+        }
+    }
+
+    if (indexDatabaseUpdates.spentIndexingEnabled_)
+        if (!blockTreeDatabase.UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
+            return state.Abort("ConnectingBlock: Failed to write update spent index");
+
+    return blockTreeDatabase.WriteBestBlockHash(bestBlockHash);
+}
+
+}
+
 
 BlockConnectionService::BlockConnectionService(
     const CChainParams& chainParameters,
@@ -168,4 +299,70 @@ std::pair<CBlock,bool> BlockConnectionService::DisconnectBlock(
     }
     LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
     return disconnectedBlockAndStatus;
+}
+
+bool BlockConnectionService::ConnectBlock(
+    const CBlock& block,
+    CValidationState& state,
+    CBlockIndex* pindex,
+    const bool updateCoinsCacheOnly,
+    const bool alreadyChecked) const
+{
+    CCoinsViewCache& view = *coinTip_;
+    // Check it again in case a previous version let a bad block in
+    if (!alreadyChecked && !CheckBlock(block, state))
+        return false;
+
+    const CChainParams& chainParameters = Params();
+    ConnectBlockHelpers::VerifyBestBlockIsAtPreviousBlock(pindex,view);
+    if (block.GetHash() == Params().HashGenesisBlock())
+    {
+        view.SetBestBlock(pindex->GetBlockHash());
+        return true;
+    }
+    if(!ConnectBlockHelpers::CheckEnforcedPoSBlocksAndBIP30(chainParameters,block,state,pindex,view))
+    {
+        return false;
+    }
+
+
+    IndexDatabaseUpdates indexDatabaseUpdates(
+        blocktree_->GetAddressIndexing(),
+        blocktree_->GetSpentIndexing());
+    CBlockRewards nExpectedMint = blockSubsidies_->blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
+    if(ActivationState(pindex->pprev).IsActive(Fork::DeprecateMasternodes))
+    {
+        nExpectedMint.nStakeReward += nExpectedMint.nMasternodeReward;
+        nExpectedMint.nMasternodeReward = 0;
+    }
+    BlockTransactionChecker blockTxChecker(block, state, pindex, view, blockIndicesByHash_);
+
+    if(!blockTxChecker.Check(nExpectedMint, indexDatabaseUpdates))
+    {
+        return false;
+    }
+    ConnectBlockHelpers::CalculateFees(block.IsProofOfWork(),pindex,nExpectedMint);
+    if (!ConnectBlockHelpers::CheckMintTotalsAndBlockPayees(block,pindex,*incentives_,nExpectedMint,state))
+        return false;
+
+    if (!settings.isStartupVerifyingBlocks()) {
+        if (block.nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint)
+            return state.DoS(100, error("%s : new accumulator checkpoint generated on a block that is not multiple of 10",__func__));
+    }
+
+    if (!blockTxChecker.WaitForScriptsToBeChecked())
+        return state.DoS(100, false);
+
+    if (!updateCoinsCacheOnly) {
+        if(!ConnectBlockHelpers::WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
+           !ConnectBlockHelpers::UpdateDBIndicesForNewBlock(indexDatabaseUpdates, pindex->GetBlockHash(), *blocktree_, state))
+        {
+            return false;
+        }
+    }
+
+    // add this block to the view's block chain
+    view.SetBestBlock(pindex->GetBlockHash());
+
+    return true;
 }

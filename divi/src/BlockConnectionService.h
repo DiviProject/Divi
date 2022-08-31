@@ -68,5 +68,11 @@ public:
         CValidationState& state,
         const CBlockIndex* pindex,
         const bool updateCoinsCacheOnly) const;
+    bool ConnectBlock(
+        const CBlock& block,
+        CValidationState& state,
+        CBlockIndex* pindex,
+        const bool updateCoinsCacheOnly,
+        const bool alreadyChecked) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

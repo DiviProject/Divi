@@ -109,7 +109,6 @@ int64_t timeOfLastChainTipUpdate =0;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
 
-std::map<uint256, int64_t> mapRejectedBlocks;
 
 static bool UpdateDBIndicesForNewBlock(
     const IndexDatabaseUpdates& indexDatabaseUpdates,
@@ -668,7 +667,6 @@ bool CheckMintTotalsAndBlockPayees(
     }
 
     if (!incentives.HasValidPayees(coinbaseTx,pindex)) {
-        mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("%s: couldn't find masternode or superblock payments",__func__),
                          REJECT_INVALID, "bad-cb-payee");
     }

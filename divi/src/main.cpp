@@ -104,7 +104,6 @@ extern Settings& settings;
 CCriticalSection cs_main;
 std::map<uint256, uint256> mapProofOfStake;
 int64_t timeOfLastChainTipUpdate =0;
-const CBlockIndex* pindexBestHeader = nullptr;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
 
@@ -577,6 +576,28 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 //
 // CBlock and CBlockIndex
 //
+const CBlockIndex* pindexBestHeader = nullptr;
+
+void InitializeBestHeaderBlockIndex()
+{
+    if(pindexBestHeader == nullptr)
+        pindexBestHeader = ChainstateManager::Reference()->ActiveChain().Tip();
+}
+void updateBestHeaderBlockIndex(const CBlockIndex* otherBlockIndex, bool compareByWorkOnly)
+{
+    if(pindexBestHeader == nullptr || ( otherBlockIndex != nullptr && CBlockIndexWorkComparator(compareByWorkOnly)(pindexBestHeader,otherBlockIndex)))
+    {
+        pindexBestHeader = otherBlockIndex;
+    }
+}
+int GetBestHeaderBlockHeight()
+{
+    return pindexBestHeader? pindexBestHeader->nHeight: -1;
+}
+int64_t GetBestHeaderBlocktime()
+{
+    return pindexBestHeader? pindexBestHeader->GetBlockTime(): 0;
+}
 
 bool IsInitialBlockDownload()	//2446
 {
@@ -590,8 +611,8 @@ bool IsInitialBlockDownload()	//2446
     static bool lockIBDState = false;
     if (lockIBDState)
         return false;
-    bool state = (height < pindexBestHeader->nHeight - 24 * 6 ||
-                  pindexBestHeader->GetBlockTime() < GetTime() - 6 * 60 * 60); // ~144 blocks behind -> 2 x fork detection time
+    bool state = (height < GetBestHeaderBlockHeight() - 24 * 6 ||
+                  GetBestHeaderBlocktime() < GetTime() - 6 * 60 * 60); // ~144 blocks behind -> 2 x fork detection time
     if (!state)
         lockIBDState = true;
     return state;
@@ -1066,8 +1087,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
     }
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
-    if (pindexBestHeader == NULL || pindexBestHeader->nChainWork < pindexNew->nChainWork)
-        pindexBestHeader = pindexNew;
+    updateBestHeaderBlockIndex(pindexNew,true);
 
     //update previous block pointer
     if (pindexNew->nHeight)
@@ -1548,8 +1568,8 @@ static void InitializeBlockIndexGlobalData(BlockMap& blockIndicesByHash)
             CBlockIndex* pAncestor = pindex->GetAncestor(pindex->vLotteryWinnersCoinstakes.height());
             pindex->vLotteryWinnersCoinstakes.updateShallowDataStore(pAncestor->vLotteryWinnersCoinstakes);
         }
-        if (pindex->IsValid(BLOCK_VALID_TREE) && (pindexBestHeader == NULL || CBlockIndexWorkComparator()(pindexBestHeader, pindex)))
-            pindexBestHeader = pindex;
+        if (pindex->IsValid(BLOCK_VALID_TREE))
+            updateBestHeaderBlockIndex(pindex,false);
     }
 }
 static bool VerifyAllBlockFilesArePresent(const BlockMap& blockIndicesByHash)
@@ -1944,8 +1964,9 @@ static std::pair<const CBlockIndex*, bool> GetBlockIndexOfRequestedBlock(NodeId 
                 // To prevent fingerprinting attacks, only send blocks outside of the active
                 // chain if they are valid, and no more than a max reorg depth than the best header
                 // chain we know about.
-                send = mi->second->IsValid(BLOCK_VALID_SCRIPTS) && (pindexBestHeader != NULL) &&
-                        (chain.Height() - mi->second->nHeight < Params().MaxReorganizationDepth());
+                send = mi->second->IsValid(BLOCK_VALID_SCRIPTS) &&
+                    GetBestHeaderBlockHeight() > 0 &&
+                    (chain.Height() - mi->second->nHeight < Params().MaxReorganizationDepth());
                 if (!send) {
                     LogPrintf("%s: ignoring request from peer=%i for old block that isn't in the main chain\n",__func__, nodeId);
                 }
@@ -2311,7 +2332,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                 if(!BlockIsInFlight(blockInventoryReference->GetHash()))
                 {
                     vToFetch.push_back(*blockInventoryReference);
-                    LogPrint("net", "getblocks (%d) %s to peer=%d\n", pindexBestHeader->nHeight, blockInventoryReference->GetHash(), pfrom->id);
+                    LogPrint("net", "getblocks (%d) %s to peer=%d\n", GetBestHeaderBlockHeight(), blockInventoryReference->GetHash(), pfrom->id);
                 }
             }
         }
@@ -2844,7 +2865,7 @@ static void BeginSyncingWithPeer(CNode* pto)
         const auto& chain = chainstate->ActiveChain();
 
         // Only actively request headers from a single peer, unless we're close to end of initial download.
-        if ( !CNodeState::NodeSyncStarted() || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 6 * 60 * 60) { // NOTE: was "close to today" and 24h in Bitcoin
+        if ( !CNodeState::NodeSyncStarted() || GetBestHeaderBlocktime() > GetAdjustedTime() - 6 * 60 * 60) { // NOTE: was "close to today" and 24h in Bitcoin
             state->RecordNodeStartedToSync();
             pto->PushMessage("getblocks", chain.GetLocator(chain.Tip()), uint256(0));
         }
@@ -3011,9 +3032,6 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
         CheckForBanAndDisconnectIfNotWhitelisted(pto);
 
-        if (pindexBestHeader == nullptr)
-            pindexBestHeader = chainstate->ActiveChain().Tip();
-
         // Start block sync
         const CNodeState* state = pto->GetNodeState();
         bool fFetch = state->fPreferredDownload || (!CNodeState::HavePreferredDownloadPeers() && !pto->fClient && !pto->fOneShot); // Download if this is a nice peer, or we have no nice peers and this one might do.
@@ -3034,9 +3052,4 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         CollectNonBlockDataToRequestAndRequestIt(mempool, pto,nNow,vGetData);
     }
     return true;
-}
-
-int GetBestHeaderBlockHeight()
-{
-    return pindexBestHeader? pindexBestHeader->nHeight: -1;
 }

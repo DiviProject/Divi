@@ -1504,6 +1504,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     CValidationState state;
     if (!GetChainExtensionService().updateActiveChain(state,nullptr,false))
         strErrors << "Failed to connect best block";
+
+    InitializeBestHeaderBlockIndex();
 #ifdef ENABLE_WALLET
     if(GetWallet() && settings.ParameterIsSet("-prunewalletconfs"))
     {

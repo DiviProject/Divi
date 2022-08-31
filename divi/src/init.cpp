@@ -884,7 +884,8 @@ void WarmUpRPCAndStartRPCThreads()
 
 void CreateHardlinksForBlocks()
 {
-    settings.setReindexingFlag(settings.GetBoolArg("-reindex", false));
+    if(settings.reindexingWasRequested())
+        settings.setReindexingFlag(true);
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
     boost::filesystem::path blocksDir = GetDataDir() / "blocks";
     if (!boost::filesystem::exists(blocksDir)) {

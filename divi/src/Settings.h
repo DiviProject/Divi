@@ -60,6 +60,7 @@ public:
 
     void setReindexingFlag(const bool updatedValue);
     bool isReindexingBlocks() const;
+    bool reindexingWasRequested() const;
 };
 
 class Settings: public CopyableSettings

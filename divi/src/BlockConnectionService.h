@@ -15,6 +15,7 @@ class CBlockUndo;
 class CTransaction;
 struct TransactionLocationReference;
 class I_BlockDataReader;
+class CSporkManager;
 
 class BlockConnectionService
 {
@@ -23,6 +24,7 @@ private:
     const bool spentIndexingIsEnabled_;
     CBlockTreeDB* blocktree_;
     CCoinsViewCache* const coinTip_;
+    const CSporkManager& sporkManager_;
     const I_BlockDataReader& blockDataReader_;
     const bool modifyCoinCacheInplace_;
 
@@ -41,6 +43,7 @@ public:
     BlockConnectionService(
         CBlockTreeDB* blocktree,
         CCoinsViewCache* coinTip,
+        const CSporkManager& sporkManager,
         const I_BlockDataReader& blockDataReader,
         const bool modifyCoinCacheInplace);
 

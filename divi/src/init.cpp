@@ -43,7 +43,6 @@
 #include <MasternodeModule.h>
 #include <functional>
 #include <uiMessenger.h>
-#include <BlockConnectionService.h>
 #include <BlockDiskAccessor.h>
 #include <timeIntervalConstants.h>
 #include <TransactionInputChecker.h>

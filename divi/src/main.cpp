@@ -907,8 +907,7 @@ public:
         LogPrint("bench", "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001, nTimeReadFromDisk * 0.000001);
         {
             CInv inv(MSG_BLOCK, blockIndex->GetBlockHash());
-            CCoinsViewCache view(&coinsTip);
-            bool rv = ConnectBlock(*pblock, state_, blockIndex, chainstate_, sporkManager_, view, false, fAlreadyChecked);
+            bool rv = blockConnectionService_.ConnectBlock(*pblock,state_,blockIndex,false,fAlreadyChecked);
             if (!rv) {
                 if (state_.IsInvalid())
                     InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(cs_main,settings),settings,cs_main,blockIndex, state_);
@@ -918,7 +917,6 @@ public:
             nTime3 = GetTimeMicros();
             nTimeConnectTotal += nTime3 - nTime2;
             LogPrint("bench", "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001, nTimeConnectTotal * 0.000001);
-            assert(view.Flush());
         }
         int64_t nTime4 = GetTimeMicros();
         nTimeFlush += nTime4 - nTime3;

@@ -49,6 +49,14 @@ private:
         const CBlockIndex* pindex,
         CCoinsViewCache& coins,
         bool fJustCheck) const;
+
+    bool ConnectBlock(
+        const CBlock& block,
+        CValidationState& state,
+        CBlockIndex* pindex,
+        CCoinsViewCache& view,
+        const bool updateCoinsCacheOnly,
+        const bool alreadyChecked) const;
 public:
     BlockConnectionService(
         const CChainParams& chainParameters,

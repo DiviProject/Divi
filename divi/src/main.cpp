@@ -559,7 +559,6 @@ bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAdd
     else return BlockFileHelpers::FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
 }
 
-int64_t nTimeTotal = 0;
 } // anonymous namespace
 
 /**
@@ -654,11 +653,6 @@ void static UpdateTip(const CBlockIndex* pindexNew)
     }
 }
 
-static int64_t nTimeReadFromDisk = 0;
-static int64_t nTimeConnectTotal = 0;
-static int64_t nTimeFlush = 0;
-static int64_t nTimeChainState = 0;
-static int64_t nTimePostConnect = 0;
 
 class ChainTipManager final: public I_ChainTipManager
 {
@@ -704,7 +698,6 @@ public:
         assert(pblock || !fAlreadyChecked);
 
         // Read block from disk.
-        int64_t nTime1 = GetTimeMicros();
         CBlock block;
         if (!pblock) {
             if (!ReadBlockFromDisk(block, blockIndex))
@@ -712,10 +705,6 @@ public:
             pblock = &block;
         }
         // Apply the block atomically to the chain state.
-        int64_t nTime2 = GetTimeMicros();
-        nTimeReadFromDisk += nTime2 - nTime1;
-        int64_t nTime3;
-        LogPrint("bench", "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001, nTimeReadFromDisk * 0.000001);
         {
             CInv inv(MSG_BLOCK, blockIndex->GetBlockHash());
             bool rv = blockConnectionService_.ConnectBlock(*pblock,state_,blockIndex,false,fAlreadyChecked);
@@ -725,13 +714,7 @@ public:
                 return error("%s : ConnectBlock %s failed",__func__, blockIndex->GetBlockHash());
             }
             peerIdByBlockHash_.erase(inv.GetHash());
-            nTime3 = GetTimeMicros();
-            nTimeConnectTotal += nTime3 - nTime2;
-            LogPrint("bench", "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001, nTimeConnectTotal * 0.000001);
         }
-        int64_t nTime4 = GetTimeMicros();
-        nTimeFlush += nTime4 - nTime3;
-        LogPrint("bench", "  - Flush: %.2fms [%.2fs]\n", (nTime4 - nTime3) * 0.001, nTimeFlush * 0.000001);
 
         // Write the chain state to disk, if necessary. Always write to disk if this is the first of a new file.
         FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
@@ -739,9 +722,6 @@ public:
             flushMode = FLUSH_STATE_ALWAYS;
         if (!FlushStateToDisk(state_, flushMode))
             return false;
-        int64_t nTime5 = GetTimeMicros();
-        nTimeChainState += nTime5 - nTime4;
-        LogPrint("bench", "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001, nTimeChainState * 0.000001);
 
         // Remove conflicting transactions from the mempool.
         std::list<CTransaction> txConflicted;
@@ -756,11 +736,6 @@ public:
         // ... and about transactions that got confirmed:
         GetMainNotificationInterface().SyncTransactions(pblock->vtx, pblock, TransactionSyncType::NEW_BLOCK);
 
-        int64_t nTime6 = GetTimeMicros();
-        nTimePostConnect += nTime6 - nTime5;
-        nTimeTotal += nTime6 - nTime1;
-        LogPrint("bench", "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001, nTimePostConnect * 0.000001);
-        LogPrint("bench", "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
         return true;
     }
     bool disconnectTip() const override

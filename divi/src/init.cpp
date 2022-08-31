@@ -1428,7 +1428,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
     sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
-    InitializeChainExtensionService();
+    InitializeChainExtensionService(GetMasternodeModule());
     InitializeMultiWalletModule();
 
     if(!SetSporkKey(*sporkManagerInstance))

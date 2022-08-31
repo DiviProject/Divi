@@ -1320,7 +1320,7 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
-    std::map<uint256, NodeId>& peerIdByBlockHash_;
+    mutable std::map<uint256, NodeId> peerIdByBlockHash_;
     bool transitionToMostWorkChainTip(
         const I_MostWorkChainTransitionMediator& chainTransitionMediator,
         ChainstateManager& chainstate,
@@ -1371,9 +1371,7 @@ private:
         return true;
     }
 public:
-    ChainExtensionService(
-        std::map<uint256, NodeId>& peerIdByBlockHash
-        ): peerIdByBlockHash_(peerIdByBlockHash)
+    ChainExtensionService(): peerIdByBlockHash_()
     {
     }
 
@@ -1452,8 +1450,7 @@ public:
     }
 };
 
-static std::map<uint256, NodeId> mapBlockSource;
-static ChainExtensionService chainExtensionService(mapBlockSource);
+static ChainExtensionService chainExtensionService;
 I_ChainExtensionService& GetChainExtensionService()
 {
     return chainExtensionService;

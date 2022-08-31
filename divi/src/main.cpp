@@ -1399,7 +1399,7 @@ public:
     {
         ChainTipManager chainTipManager(peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
-            *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
+            settings, cs_main, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
 
         // Write changes periodically to disk, after relay.

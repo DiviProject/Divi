@@ -10,8 +10,6 @@
 #include <BlockInvalidationHelpers.h>
 #include <ChainSyncHelpers.h>
 
-extern CCriticalSection cs_main;
-extern Settings& settings;
 
 void MostWorkChainTransitionMediator::computeNextBlockIndicesToConnect(
     CBlockIndex* pindexMostWork,
@@ -52,7 +50,7 @@ bool MostWorkChainTransitionMediator::checkBlockConnectionState(
     {
         // The block violates a consensus rule.
         if (!state_.CorruptionPossible())
-            InvalidChainFound(IsInitialBlockDownload(cs_main,settings),settings,cs_main,lastBlockIndex);
+            InvalidChainFound(IsInitialBlockDownload(mainCriticalSection_,settings_),settings_,mainCriticalSection_,lastBlockIndex);
         state_ = CValidationState();
         return false;
     }
@@ -94,12 +92,16 @@ MostWorkChainTransitionMediator::BlockConnectionResult MostWorkChainTransitionMe
 
 
 MostWorkChainTransitionMediator::MostWorkChainTransitionMediator(
+    const Settings& settings,
+    CCriticalSection& mainCriticalSection,
     ChainstateManager& chainstate,
     BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks,
     BlockIndexCandidates& blockIndexCandidates,
     CValidationState& state,
     const I_ChainTipManager& chainTipManager
-    ): chainstate_(chainstate)
+    ): settings_(settings)
+    , mainCriticalSection_(mainCriticalSection)
+    , chainstate_(chainstate)
     , unlinkedBlocks_(unlinkedBlocks)
     , blockIndexCandidates_(blockIndexCandidates)
     , state_(state)
@@ -111,7 +113,7 @@ bool MostWorkChainTransitionMediator::transitionActiveChainToMostWorkChain(
     CBlockIndex* pindexMostWork,
     const CBlock* pblock) const
 {
-    AssertLockHeld(cs_main);
+    AssertLockHeld(mainCriticalSection_);
 
     const auto& chain = chainstate_.ActiveChain();
     const CBlockIndex* previousChainTip = chain.Tip();
@@ -148,9 +150,9 @@ bool MostWorkChainTransitionMediator::transitionActiveChainToMostWorkChain(
 
     // Callbacks/notifications for a new best chain.
     if (result == BlockConnectionResult::INVALID_BLOCK)
-        CheckForkWarningConditionsOnNewFork(settings, cs_main,blockIndicesToConnect.back(), IsInitialBlockDownload(cs_main,settings));
+        CheckForkWarningConditionsOnNewFork(settings_, mainCriticalSection_,blockIndicesToConnect.back(), IsInitialBlockDownload(mainCriticalSection_,settings_));
     else
-        CheckForkWarningConditions(settings, cs_main,IsInitialBlockDownload(cs_main,settings));
+        CheckForkWarningConditions(settings_, mainCriticalSection_,IsInitialBlockDownload(mainCriticalSection_,settings_));
 
     return true;
 }

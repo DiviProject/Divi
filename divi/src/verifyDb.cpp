@@ -25,9 +25,6 @@
 #include <BlockCheckingHelpers.h>
 
 
-/** Apply the effects of this block (with given index) on the UTXO set represented by coins */
-bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, ChainstateManager& chainstate, const CSporkManager& sporkManager, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
-
 CVerifyDB::CVerifyDB(
     const CChainParams& chainParameters,
     const MasternodeModule& masternodeModule,
@@ -138,7 +135,7 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
                apply ConnectBlock to a temporary copy, and verify later on
                that the fields computed match the ones we have already.  */
             CBlockIndex indexCopy(*pindex);
-            if (!ConnectBlock(block, state, &indexCopy, chainstate_, sporkManager_, *coinsViewCache_, true))
+            if (!chainManager_->ConnectBlock(block, state, &indexCopy, true, false))
                 return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             if (indexCopy.nUndoPos != pindex->nUndoPos
                   || indexCopy.nStatus != pindex->nStatus

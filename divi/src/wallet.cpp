@@ -55,9 +55,9 @@ const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator
 
 extern CCriticalSection cs_main;
 
-bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight, int64_t nBlockTime)
+bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, const CChain& activeChain, int nBlockHeight, int64_t nBlockTime)
 {
-    AssertLockHeld(cs_main);
+    AssertLockHeld(mainCriticalSection);
     // Time based nLockTime implemented in 0.1.6
     if (tx.nLockTime == 0)
         return true;
@@ -188,7 +188,8 @@ CWallet::CWallet(
             confirmationNumberCalculator_,
             *ownershipDetector_,
             *outputTracker_,
-            setLockedCoins))
+            setLockedCoins,
+            cs_main))
     , utxoBalanceCalculator_( new UtxoBalanceCalculator(*ownershipDetector_,*outputTracker_) )
     , cachedUtxoBalanceCalculator_( new CachedUtxoBalanceCalculator(*utxoBalanceCalculator_) )
     , balanceCalculator_(
@@ -1218,7 +1219,8 @@ bool CWallet::PruneWallet()
             confirmationNumberCalculator_,
             *ownershipDetector_,
             *outputTracker_,
-            setLockedCoins));
+            setLockedCoins,
+            cs_main));
     utxoBalanceCalculator_.reset( new UtxoBalanceCalculator(*ownershipDetector_,*outputTracker_) );
     cachedUtxoBalanceCalculator_.reset( new CachedUtxoBalanceCalculator(*utxoBalanceCalculator_) );
     balanceCalculator_.reset(

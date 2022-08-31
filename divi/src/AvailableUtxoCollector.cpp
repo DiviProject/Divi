@@ -14,7 +14,8 @@ AvailableUtxoCollector::AvailableUtxoCollector(
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
     const I_UtxoOwnershipDetector& ownershipDetector,
     const I_SpentOutputTracker& spentOutputTracker,
-    const LockedCoinsSet& lockedCoins
+    const LockedCoinsSet& lockedCoins,
+    CCriticalSection& mainCriticalSection
     ): availableUtxoCalculator_(
         blockIndexByHash,
         activeChain,
@@ -23,7 +24,8 @@ AvailableUtxoCollector::AvailableUtxoCollector(
         confsCalculator,
         ownershipDetector,
         spentOutputTracker,
-        lockedCoins)
+        lockedCoins,
+        mainCriticalSection)
     , filteredTransactions_(txRecord,confsCalculator,availableUtxoCalculator_)
 {
 }

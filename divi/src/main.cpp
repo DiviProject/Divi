@@ -109,7 +109,7 @@ CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
 
 
-bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+extern bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 
 std::map<uint256, int64_t> mapRejectedBlocks;
@@ -211,7 +211,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
     // Timestamps on the other hand don't get any special treatment, because we
     // can't know what timestamp the next block will have, and there aren't
     // timestamp applications where it matters.
-    if (!IsFinalTx(tx, chain, chain.Height() + 1)) {
+    if (!IsFinalTx(cs_main,tx, chain, chain.Height() + 1)) {
         reason = "non-final";
         return false;
     }
@@ -1152,7 +1152,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CB
     // Check that all transactions are finalized
     for (const auto& tx : block.vtx)
     {
-        if (!IsFinalTx(tx, chain, nHeight, block.GetBlockTime()))
+        if (!IsFinalTx(cs_main,tx, chain, nHeight, block.GetBlockTime()))
         {
             return state.DoS(10, error("%s : contains a non-final transaction", __func__), REJECT_INVALID, "bad-txns-nonfinal");
         }

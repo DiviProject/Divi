@@ -17,6 +17,7 @@ class CTxOut;
 class CWalletTx;
 class UtxoOwnershipFilter;
 enum class isminetype;
+class CCriticalSection;
 
 class AvailableUtxoCalculator final: public I_TransactionDetailCalculator<std::vector<COutput>>
 {
@@ -31,6 +32,7 @@ private:
     AvailableCoinsType coinType_;
     bool onlyConfirmedTxs_;
     bool requireInputsSpentByMe_;
+    CCriticalSection& mainCriticalSection_;
 
     bool IsAvailableType(const CTxOut& output, AvailableCoinsType coinType, isminetype& mine) const;
     bool allInputsAreSpendableByMe(const CWalletTx& walletTransaction, const UtxoOwnershipFilter& ownershipFilter) const;
@@ -44,7 +46,8 @@ public:
         const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
         const I_UtxoOwnershipDetector& ownershipDetector,
         const I_SpentOutputTracker& spentOutputTracker,
-        const LockedCoinsSet& lockedCoins);
+        const LockedCoinsSet& lockedCoins,
+        CCriticalSection& mainCriticalSection);
 
     ~AvailableUtxoCalculator() = default;
 

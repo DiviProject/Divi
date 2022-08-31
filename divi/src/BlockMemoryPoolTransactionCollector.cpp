@@ -14,7 +14,8 @@
 
 #include <Settings.h>
 
-bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+class CCriticalSection;
+extern bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 static unsigned int GetMaxBlockSize(const Settings& settings,unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
 {
@@ -199,7 +200,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTrans
     vecPriority.reserve(mempool_.mapTx.size());
     for (auto mi = mempool_.mapTx.begin(); mi != mempool_.mapTx.end(); ++mi) {
         const CTransaction& tx = mi->second.GetTx();
-        if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, activeChain_, nHeight)){
+        if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(mainCS_,tx, activeChain_, nHeight)){
             continue;
         }
 

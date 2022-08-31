@@ -401,7 +401,7 @@ CAmount GetAccountBalance(
     for (const CWalletTx* walletTxReference: walletTransactions)
     {
         const CWalletTx& wtx = *walletTxReference;
-        if (!IsFinalTx(wtx, chain) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
+        if (!IsFinalTx(cs_main,wtx, chain) || confsCalculator.GetBlocksToMaturity(wtx) > 0 || confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
             continue;
 
         CAmount nReceived, nSent, nFee;
@@ -1330,7 +1330,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp, CWallet* pwallet)
     for (const CWalletTx* walletTxReference : walletTransactions)
     {
         const CWalletTx& wtx = *walletTxReference;
-        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chain))
+        if (wtx.IsCoinBase() || !IsFinalTx(cs_main,wtx, chain))
             continue;
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout)
@@ -1396,7 +1396,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp, CWallet* pwallet)
     for (const CWalletTx* walletTxReference : walletTransactions)
     {
         const CWalletTx& wtx = *walletTxReference;
-        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chain))
+        if (wtx.IsCoinBase() || !IsFinalTx(cs_main,wtx, chain))
             continue;
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout) {
@@ -1678,7 +1678,7 @@ Value ListReceived(CWallet* pwallet,const I_MerkleTxConfirmationNumberCalculator
     {
         const CWalletTx& wtx = *walletTxReference;
 
-        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chain))
+        if (wtx.IsCoinBase() || !IsFinalTx(cs_main,wtx, chain))
             continue;
 
         int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);

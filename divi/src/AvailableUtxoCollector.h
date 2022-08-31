@@ -30,7 +30,8 @@ public:
         const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
         const I_UtxoOwnershipDetector& ownershipDetector,
         const I_SpentOutputTracker& spentOutputTracker,
-        const LockedCoinsSet& lockedCoins);
+        const LockedCoinsSet& lockedCoins,
+        CCriticalSection& mainCriticalSection);
     ~AvailableUtxoCollector() = default;
 
     void setCoinTypeAndGetAvailableUtxos(bool onlyConfirmed, AvailableCoinsType coinType, std::vector<COutput>& outputs) const;

@@ -19,12 +19,14 @@
 BlockConnectionService::BlockConnectionService(
     CBlockTreeDB* blocktree,
     CCoinsViewCache* coinTip,
+    const CSporkManager& sporkManager,
     const I_BlockDataReader& blockDataReader,
     const bool modifyCoinCacheInplace
     ): addressIndexingIsEnabled_(blocktree->GetAddressIndexing())
     , spentIndexingIsEnabled_(blocktree->GetSpentIndexing())
     , blocktree_(blocktree)
     , coinTip_(coinTip)
+    , sporkManager_(sporkManager)
     , blockDataReader_(blockDataReader)
     , modifyCoinCacheInplace_(modifyCoinCacheInplace)
 {

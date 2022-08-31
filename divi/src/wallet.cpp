@@ -68,8 +68,9 @@ bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, co
     if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
         return true;
     BOOST_FOREACH (const CTxIn& txin, tx.vin)
-            if (!txin.IsFinal())
-            return false;
+    {
+        if (!txin.IsFinal()) return false;
+    }
     return true;
 }
 

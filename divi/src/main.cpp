@@ -1413,6 +1413,43 @@ public:
         VerifyBlockIndexTree(chainstate,cs_main, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates());
         return result;
     }
+
+    bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
+    {
+        ChainstateManager::Reference chainstateRef;
+        ChainTipManager chainTipManager(peerIdByBlockHash_,GetSporkManager(),*chainstateRef,true,state,updateCoinDatabaseOnly);
+        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(), settings, cs_main, *chainstateRef, blockIndex);
+    }
+    bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
+    {
+        AssertLockHeld(cs_main);
+        ChainstateManager::Reference chainstateRef;
+        const auto& chain = chainstateRef->ActiveChain();
+        const int nHeight = pindex->nHeight;
+
+        // Remove the invalidity flag from this block and all its descendants.
+        for (auto& entry : chainstateRef->GetBlockMap()) {
+            CBlockIndex& blk = *entry.second;
+            if (!blk.IsValid() && blk.GetAncestor(nHeight) == pindex) {
+                blk.nStatus &= ~BLOCK_FAILED_MASK;
+                BlockFileHelpers::RecordDirtyBlockIndex(&blk);
+                if (blk.IsValid(BLOCK_VALID_TRANSACTIONS) && blk.nChainTx && GetBlockIndexCandidates().value_comp()(chain.Tip(), &blk)) {
+                    GetBlockIndexCandidates().insert(&blk);
+                }
+                updateMostWorkInvalidBlockIndex(&blk, true);
+            }
+        }
+
+        // Remove the invalidity flag from all ancestors too.
+        while (pindex != NULL) {
+            if (pindex->nStatus & BLOCK_FAILED_MASK) {
+                pindex->nStatus &= ~BLOCK_FAILED_MASK;
+                BlockFileHelpers::RecordDirtyBlockIndex(pindex);
+            }
+            pindex = pindex->pprev;
+        }
+        return true;
+    }
 };
 
 static std::map<uint256, NodeId> mapBlockSource;
@@ -1420,44 +1457,6 @@ static ChainExtensionService chainExtensionService(mapBlockSource);
 I_ChainExtensionService& GetChainExtensionService()
 {
     return chainExtensionService;
-}
-
-bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly)
-{
-    ChainTipManager chainTipManager(mapBlockSource,GetSporkManager(),chainstate,true,state,updateCoinDatabaseOnly);
-    return InvalidateBlock(chainTipManager, IsInitialBlockDownload(), settings, cs_main, chainstate, pindex);
-}
-
-bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex)
-{
-    AssertLockHeld(cs_main);
-
-    const auto& chain = chainstate.ActiveChain();
-
-    int nHeight = pindex->nHeight;
-
-    // Remove the invalidity flag from this block and all its descendants.
-    for (auto& entry : chainstate.GetBlockMap()) {
-        CBlockIndex& blk = *entry.second;
-        if (!blk.IsValid() && blk.GetAncestor(nHeight) == pindex) {
-            blk.nStatus &= ~BLOCK_FAILED_MASK;
-            BlockFileHelpers::RecordDirtyBlockIndex(&blk);
-            if (blk.IsValid(BLOCK_VALID_TRANSACTIONS) && blk.nChainTx && GetBlockIndexCandidates().value_comp()(chain.Tip(), &blk)) {
-                GetBlockIndexCandidates().insert(&blk);
-            }
-            updateMostWorkInvalidBlockIndex(&blk, true);
-        }
-    }
-
-    // Remove the invalidity flag from all ancestors too.
-    while (pindex != NULL) {
-        if (pindex->nStatus & BLOCK_FAILED_MASK) {
-            pindex->nStatus &= ~BLOCK_FAILED_MASK;
-            BlockFileHelpers::RecordDirtyBlockIndex(pindex);
-        }
-        pindex = pindex->pprev;
-    }
-    return true;
 }
 
 bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)

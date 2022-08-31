@@ -31,5 +31,8 @@ public:
         CValidationState& state,
         const CBlock* pblock,
         bool fAlreadyChecked) const = 0;
+
+    virtual bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const = 0;
+    virtual bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const = 0;
 };
 #endif// I_CHAIN_EXTENSION_SERVICE_H

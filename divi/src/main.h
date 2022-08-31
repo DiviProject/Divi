@@ -136,12 +136,6 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CB
 /** Find the last common block between the parameter chain and a locator. */
 const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
 
-/** Mark a block as invalid. */
-bool InvalidateBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex, const bool updateCoinDatabaseOnly = false);
-
-/** Remove invalidity status from a block and its descendants. */
-bool ReconsiderBlock(ChainstateManager& chainstate, CValidationState& state, CBlockIndex* pindex);
-
 /** Best header block height */
 int GetBestHeaderBlockHeight();
 #endif // BITCOIN_MAIN_H

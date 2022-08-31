@@ -295,6 +295,7 @@ void PrepareShutdown()
 #endif
         //record that client took the proper shutdown procedure
         chainstateInstance->BlockTree().WriteFlag("shutdown", true);
+        FinalizeChainExtensionService();
         sporkManagerInstance.reset();
         chainstateInstance.reset ();
     }
@@ -1412,6 +1413,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
     sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
+    InitializeChainExtensionService();
     InitializeMultiWalletModule();
 
     if(!SetSporkKey(*sporkManagerInstance))
@@ -1487,7 +1489,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
     uiInterface.InitMessage(translate("Connecting best block..."));
     CValidationState state;
-    if (!GetChainExtensionService().updateActiveChain(*chainstateInstance, *sporkManagerInstance, state,nullptr,false))
+    if (!GetChainExtensionService().updateActiveChain(*sporkManagerInstance, state,nullptr,false))
         strErrors << "Failed to connect best block";
 #ifdef ENABLE_WALLET
     if(GetWallet() && settings.ParameterIsSet("-prunewalletconfs"))

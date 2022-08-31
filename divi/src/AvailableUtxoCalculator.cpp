@@ -10,8 +10,9 @@
 #include <chain.h>
 #include <blockmap.h>
 #include <timedata.h>
+#include <sync.h>
 
-extern bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight, int64_t nBlockTime);
+extern bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 bool AvailableUtxoCalculator::IsAvailableType(const CTxOut& output, AvailableCoinsType coinType, isminetype& mine) const
 {
@@ -61,7 +62,8 @@ AvailableUtxoCalculator::AvailableUtxoCalculator(
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator,
     const I_UtxoOwnershipDetector& ownershipDetector,
     const I_SpentOutputTracker& spentOutputTracker,
-    const LockedCoinsSet& lockedCoins
+    const LockedCoinsSet& lockedCoins,
+    CCriticalSection& mainCriticalSection
     ): txRecord_(txRecord)
     , ownershipDetector_(ownershipDetector)
     , minimumVaultAmount_(minimumVaultAmount)
@@ -72,6 +74,7 @@ AvailableUtxoCalculator::AvailableUtxoCalculator(
     , coinType_(AvailableCoinsType::ALL_SPENDABLE_COINS)
     , onlyConfirmedTxs_(true)
     , requireInputsSpentByMe_(false)
+    , mainCriticalSection_(mainCriticalSection)
 {
 }
 
@@ -80,7 +83,7 @@ void AvailableUtxoCalculator::calculate(
     const UtxoOwnershipFilter& ownershipFilter,
     std::vector<COutput>& outputs) const
 {
-    if (!IsFinalTx(walletTransaction, activeChain_, activeChain_.Height() + (onlyConfirmedTxs_? 0:1), GetAdjustedTime())) return;
+    if (!IsFinalTx(mainCriticalSection_,walletTransaction, activeChain_, activeChain_.Height() + (onlyConfirmedTxs_? 0:1), GetAdjustedTime())) return;
     if(!onlyConfirmedTxs_ && requireInputsSpentByMe_ && !allInputsAreSpendableByMe(walletTransaction,ownershipFilter)) return;
     const uint256& txid = walletTransaction.GetHash();
     for(unsigned outputIndex = 0u; outputIndex < walletTransaction.vout.size(); ++outputIndex)

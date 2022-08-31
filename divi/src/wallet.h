@@ -69,7 +69,7 @@ template <typename T>
 class I_TransactionDetailCalculator;
 
 
-bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 
 /** (client) version numbers for particular wallet features */

@@ -233,3 +233,12 @@ bool CopyableSettings::debugModeIsEnabled() const
     bool debug = !(GetBoolArg("-nodebug", false) || anyNegativeDebugCategory) && !categories.empty();
     return debug;
 }
+
+void CopyableSettings::setFileImportingFlag(const bool updatedValue)
+{
+    importingFiles_ = updatedValue;
+}
+bool CopyableSettings::isImportingFiles() const
+{
+    return importingFiles_;
+}

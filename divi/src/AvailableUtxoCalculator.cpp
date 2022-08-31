@@ -10,9 +10,7 @@
 #include <chain.h>
 #include <blockmap.h>
 #include <timedata.h>
-#include <sync.h>
-
-extern bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+#include <TransactionFinalityHelpers.h>
 
 bool AvailableUtxoCalculator::IsAvailableType(const CTxOut& output, AvailableCoinsType coinType, isminetype& mine) const
 {

@@ -84,6 +84,7 @@
 #include <I_ChainTipManager.h>
 #include <MostWorkChainTransitionMediator.h>
 #include <ChainSyncHelpers.h>
+#include <TransactionFinalityHelpers.h>
 
 using namespace boost;
 using namespace std;
@@ -107,10 +108,6 @@ std::map<uint256, uint256> mapProofOfStake;
 int64_t timeOfLastChainTipUpdate =0;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
-
-
-extern bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
-
 
 std::map<uint256, int64_t> mapRejectedBlocks;
 

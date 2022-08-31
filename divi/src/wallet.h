@@ -69,9 +69,6 @@ template <typename T>
 class I_TransactionDetailCalculator;
 
 
-bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
-
-
 /** (client) version numbers for particular wallet features */
 enum WalletFeature {
     FEATURE_BASE = 10500, // the earliest version new wallets supports (only useful for getinfo's clientversion output)

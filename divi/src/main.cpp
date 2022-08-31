@@ -877,7 +877,7 @@ public:
         , state_(state)
         , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
         , blockDiskReader_()
-        , blockConnectionService_(&chainstate_.BlockTree(), &chainstate_.CoinsTip(),sporkManager_, blockDiskReader_,false)
+        , blockConnectionService_(chainstate_.GetBlockMap(), &chainstate_.BlockTree(), &chainstate_.CoinsTip(),sporkManager_, blockDiskReader_,false)
     {}
 
     bool connectTip(const CBlock* pblock, CBlockIndex* blockIndex) const override

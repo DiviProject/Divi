@@ -17,6 +17,7 @@
 #include <UtxoCheckingAndUpdating.h>
 
 BlockConnectionService::BlockConnectionService(
+    const BlockMap& blockIndicesByHash,
     CBlockTreeDB* blocktree,
     CCoinsViewCache* coinTip,
     const CSporkManager& sporkManager,
@@ -24,6 +25,7 @@ BlockConnectionService::BlockConnectionService(
     const bool modifyCoinCacheInplace
     ): addressIndexingIsEnabled_(blocktree->GetAddressIndexing())
     , spentIndexingIsEnabled_(blocktree->GetSpentIndexing())
+    , blockIndicesByHash_(blockIndicesByHash)
     , blocktree_(blocktree)
     , coinTip_(coinTip)
     , sporkManager_(sporkManager)

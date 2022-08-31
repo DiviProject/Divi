@@ -16,12 +16,14 @@ class CTransaction;
 struct TransactionLocationReference;
 class I_BlockDataReader;
 class CSporkManager;
+class BlockMap;
 
 class BlockConnectionService
 {
 private:
     const bool addressIndexingIsEnabled_;
     const bool spentIndexingIsEnabled_;
+    const BlockMap& blockIndicesByHash_;
     CBlockTreeDB* blocktree_;
     CCoinsViewCache* const coinTip_;
     const CSporkManager& sporkManager_;
@@ -41,6 +43,7 @@ private:
         bool fJustCheck) const;
 public:
     BlockConnectionService(
+        const BlockMap& blockIndicesByHash,
         CBlockTreeDB* blocktree,
         CCoinsViewCache* coinTip,
         const CSporkManager& sporkManager,

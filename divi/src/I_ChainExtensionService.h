@@ -18,7 +18,6 @@ public:
         NodeId nodeId) const =0;
     virtual bool assignBlockIndex(
         CBlock& block,
-        ChainstateManager& chainstate,
         const CSporkManager& sporkManager,
         CValidationState& state,
         CBlockIndex** ppindex,
@@ -26,7 +25,6 @@ public:
         bool fAlreadyCheckedBlock) const = 0;
 
     virtual bool updateActiveChain(
-        ChainstateManager& chainstate,
         const CSporkManager& sporkManager,
         CValidationState& state,
         const CBlock* pblock,

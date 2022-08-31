@@ -636,7 +636,7 @@ Value invalidateblock(const Array& params, bool fHelp, CWallet* pwallet)
     chainExtensionService.invalidateBlock(state, pblockindex,false);
 
     if (state.IsValid()) {
-        GetChainExtensionService().updateActiveChain(*chainstate, GetSporkManager(), state,nullptr,false);
+        chainExtensionService.updateActiveChain(GetSporkManager(), state,nullptr,false);
     }
 
     if (!state.IsValid()) {
@@ -674,7 +674,7 @@ Value reconsiderblock(const Array& params, bool fHelp, CWallet* pwallet)
     chainExtensionService.reconsiderBlock(state, pblockindex);
 
     if (state.IsValid()) {
-        chainExtensionService.updateActiveChain(*chainstate, GetSporkManager(), state,nullptr,false);
+        chainExtensionService.updateActiveChain(GetSporkManager(), state,nullptr,false);
     }
 
     if (!state.IsValid()) {

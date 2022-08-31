@@ -1320,6 +1320,7 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
+    mutable ChainstateManager::Reference chainstateRef_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
     bool transitionToMostWorkChainTip(
         const I_MostWorkChainTransitionMediator& chainTransitionMediator,
@@ -1371,7 +1372,9 @@ private:
         return true;
     }
 public:
-    ChainExtensionService(): peerIdByBlockHash_()
+    ChainExtensionService(
+        ): chainstateRef_()
+        ,  peerIdByBlockHash_()
     {
     }
 
@@ -1382,51 +1385,47 @@ public:
 
     virtual bool assignBlockIndex(
         CBlock& block,
-        ChainstateManager& chainstate,
         const CSporkManager& sporkManager,
         CValidationState& state,
         CBlockIndex** ppindex,
         CDiskBlockPos* dbp,
         bool fAlreadyCheckedBlock) const override
     {
-        return AcceptBlock(block,chainstate,sporkManager,state,ppindex,dbp,fAlreadyCheckedBlock);
+        return AcceptBlock(block,*chainstateRef_,sporkManager,state,ppindex,dbp,fAlreadyCheckedBlock);
     }
 
     virtual bool updateActiveChain(
-        ChainstateManager& chainstate,
         const CSporkManager& sporkManager,
         CValidationState& state,
         const CBlock* pblock,
         bool fAlreadyChecked) const override
     {
-        ChainTipManager chainTipManager(peerIdByBlockHash_, sporkManager,chainstate,fAlreadyChecked,state,false);
+        ChainTipManager chainTipManager(peerIdByBlockHash_, sporkManager,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
-            chainstate, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
-        const bool result = transitionToMostWorkChainTip(chainTransitionMediator, chainstate, pblock);
+            *chainstateRef_, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
+        const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
 
         // Write changes periodically to disk, after relay.
         if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
             return false;
         }
-        VerifyBlockIndexTree(chainstate,cs_main, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates());
+        VerifyBlockIndexTree(*chainstateRef_,cs_main, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates());
         return result;
     }
 
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
-        ChainstateManager::Reference chainstateRef;
-        ChainTipManager chainTipManager(peerIdByBlockHash_,GetSporkManager(),*chainstateRef,true,state,updateCoinDatabaseOnly);
-        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(), settings, cs_main, *chainstateRef, blockIndex);
+        ChainTipManager chainTipManager(peerIdByBlockHash_,GetSporkManager(),*chainstateRef_,true,state,updateCoinDatabaseOnly);
+        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(), settings, cs_main, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
     {
         AssertLockHeld(cs_main);
-        ChainstateManager::Reference chainstateRef;
-        const auto& chain = chainstateRef->ActiveChain();
+        const auto& chain = chainstateRef_->ActiveChain();
         const int nHeight = pindex->nHeight;
 
         // Remove the invalidity flag from this block and all its descendants.
-        for (auto& entry : chainstateRef->GetBlockMap()) {
+        for (auto& entry : chainstateRef_->GetBlockMap()) {
             CBlockIndex& blk = *entry.second;
             if (!blk.IsValid() && blk.GetAncestor(nHeight) == pindex) {
                 blk.nStatus &= ~BLOCK_FAILED_MASK;
@@ -1450,10 +1449,19 @@ public:
     }
 };
 
-static ChainExtensionService chainExtensionService;
+std::unique_ptr<ChainExtensionService> chainExtensionService;
+void InitializeChainExtensionService()
+{
+    assert(chainExtensionService == nullptr);
+    chainExtensionService.reset(new ChainExtensionService());
+}
+void FinalizeChainExtensionService()
+{
+    chainExtensionService.reset();
+}
 I_ChainExtensionService& GetChainExtensionService()
 {
-    return chainExtensionService;
+    return *chainExtensionService;
 }
 
 bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
@@ -1798,7 +1806,7 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
             CBlockIndex* pindex = AddToBlockIndex(block);
             if (!ReceivedBlockTransactions(block, pindex, blockPos))
                 return error("LoadBlockIndex() : genesis block not accepted");
-            if (!GetChainExtensionService().updateActiveChain(chainstate, sporkManager, state, &block,false))
+            if (!GetChainExtensionService().updateActiveChain(sporkManager, state, &block,false))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);

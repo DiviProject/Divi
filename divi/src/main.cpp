@@ -568,7 +568,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         }
 
         // Store transaction in memory
-        pool.addUnchecked(hash, entry, view);
+        pool.addUnchecked(hash, entry);
     }
 
     GetMainNotificationInterface().SyncTransactions(std::vector<CTransaction>({tx}), NULL,TransactionSyncType::MEMPOOL_TX_ADD);

@@ -65,7 +65,7 @@ void CTxMemPool::pruneSpent(const uint256& hashTx, CCoins& coins) const
     }
 }
 
-bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry, const CCoinsViewCache& view)
+bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry)
 {
     // Add to memory pool without checking anything.
     // Used by main.cpp AcceptToMemoryPool(), which DOES do

@@ -13,9 +13,7 @@
 #include <UtxoCheckingAndUpdating.h>
 
 #include <Settings.h>
-
-class CCriticalSection;
-extern bool IsFinalTx(CCriticalSection& mainCriticalSection, const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+#include <TransactionFinalityHelpers.h>
 
 static unsigned int GetMaxBlockSize(const Settings& settings,unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
 {

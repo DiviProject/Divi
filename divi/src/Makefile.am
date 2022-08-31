@@ -236,6 +236,7 @@ BITCOIN_CORE_H = \
   BlockInvalidationHelpers.h \
   MostWorkChainTransitionMediator.h \
   ChainSyncHelpers.h \
+  TransactionFinalityHelpers.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \
@@ -466,6 +467,7 @@ libbitcoin_server_a_SOURCES = \
   BlockInvalidationHelpers.cpp \
   MostWorkChainTransitionMediator.cpp \
   ChainSyncHelpers.cpp \
+  TransactionFinalityHelpers.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \
@@ -603,6 +605,7 @@ libbitcoin_wallet_a_SOURCES = \
   UtxoBalanceCalculator.cpp \
   WalletBalanceCalculator.cpp \
   AddressBookManager.cpp \
+  TransactionFinalityHelpers.cpp \
   AvailableUtxoCalculator.cpp \
   AvailableUtxoCollector.cpp \
   CachedTransactionDeltas.cpp \

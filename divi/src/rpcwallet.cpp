@@ -43,6 +43,7 @@
 #include <BlockDiskAccessor.h>
 #include <obfuscation.h>
 #include <Settings.h>
+#include <TransactionFinalityHelpers.h>
 
 #include <JsonTxHelpers.h>
 

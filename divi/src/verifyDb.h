@@ -20,6 +20,7 @@ class BlockConnectionService;
 class BlockDiskDataReader;
 class ChainstateManager;
 class I_BlockDataReader;
+class MasternodeModule;
 
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB
@@ -39,6 +40,7 @@ private:
     ShutdownListener shutdownListener_;
 public:
     CVerifyDB(
+        const MasternodeModule& masternodeModule,
         ChainstateManager& chainstate,
         const CCoinsView& coinView,
         const CSporkManager& sporkManager,

@@ -29,6 +29,7 @@
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, ChainstateManager& chainstate, const CSporkManager& sporkManager, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
 
 CVerifyDB::CVerifyDB(
+    const MasternodeModule& masternodeModule,
     ChainstateManager& chainstate,
     const CCoinsView& coinView,
     const CSporkManager& sporkManager,
@@ -40,7 +41,7 @@ CVerifyDB::CVerifyDB(
     , chainstate_(chainstate)
     , coinsViewCache_(new CCoinsViewCache(&coinView_))
     , sporkManager_(sporkManager)
-    , chainManager_(new BlockConnectionService(chainstate.GetBlockMap(),&chainstate.BlockTree(), coinsViewCache_.get(), sporkManager_, *blockDiskReader_,true))
+    , chainManager_(new BlockConnectionService(masternodeModule,chainstate.GetBlockMap(),&chainstate.BlockTree(), coinsViewCache_.get(), sporkManager_, *blockDiskReader_,true))
     , activeChain_(chainstate.ActiveChain())
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)

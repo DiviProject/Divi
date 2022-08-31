@@ -864,6 +864,7 @@ private:
     const BlockConnectionService blockConnectionService_;
 public:
     ChainTipManager(
+        const MasternodeModule& masternodeModule,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         const CSporkManager& sporkManager,
         ChainstateManager& chainstate,
@@ -877,7 +878,7 @@ public:
         , state_(state)
         , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
         , blockDiskReader_()
-        , blockConnectionService_(chainstate_.GetBlockMap(), &chainstate_.BlockTree(), &chainstate_.CoinsTip(),sporkManager_, blockDiskReader_,false)
+        , blockConnectionService_(masternodeModule, chainstate_.GetBlockMap(), &chainstate_.BlockTree(), &chainstate_.CoinsTip(),sporkManager_, blockDiskReader_,false)
     {}
 
     bool connectTip(const CBlock* pblock, CBlockIndex* blockIndex) const override
@@ -1400,7 +1401,7 @@ public:
         const CBlock* pblock,
         bool fAlreadyChecked) const override
     {
-        ChainTipManager chainTipManager(peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
+        ChainTipManager chainTipManager(GetMasternodeModule(), peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
             settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
@@ -1415,7 +1416,7 @@ public:
 
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
-        ChainTipManager chainTipManager(peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
+        ChainTipManager chainTipManager(GetMasternodeModule(), peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
         return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override

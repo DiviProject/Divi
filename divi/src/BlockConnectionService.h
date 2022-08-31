@@ -2,6 +2,7 @@
 #define ACTIVE_CHAIN_MANAGER_H
 #include <primitives/block.h>
 #include <utility>
+#include <memory>
 
 class CBlock;
 class CValidationState;
@@ -17,6 +18,9 @@ struct TransactionLocationReference;
 class I_BlockDataReader;
 class CSporkManager;
 class BlockMap;
+class SuperblockSubsidyContainer;
+class BlockIncentivesPopulator;
+class MasternodeModule;
 
 class BlockConnectionService
 {
@@ -28,6 +32,9 @@ private:
     CCoinsViewCache* const coinTip_;
     const CSporkManager& sporkManager_;
     const I_BlockDataReader& blockDataReader_;
+    const CChainParams& chainParameters_;
+    std::unique_ptr<const SuperblockSubsidyContainer> blockSubsidies_;
+    std::unique_ptr<const BlockIncentivesPopulator> incentives_;
     const bool modifyCoinCacheInplace_;
 
     bool ApplyDisconnectionUpdateIndexToDBs(
@@ -43,6 +50,7 @@ private:
         bool fJustCheck) const;
 public:
     BlockConnectionService(
+        const MasternodeModule& masternodeModule,
         const BlockMap& blockIndicesByHash,
         CBlockTreeDB* blocktree,
         CCoinsViewCache* coinTip,
@@ -50,6 +58,7 @@ public:
         const I_BlockDataReader& blockDataReader,
         const bool modifyCoinCacheInplace);
 
+    ~BlockConnectionService();
     /** Disconnects a block given by pindex, which is also first loaded from
      *  disk and returned as part of disconnectedBlockAndStatus.
      *  This method always fully disconnects (i.e. fJustCheck=false).  */

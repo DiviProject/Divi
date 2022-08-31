@@ -7,6 +7,8 @@ class CBlock;
 class CBlockIndex;
 class ChainstateManager;
 class I_ChainTipManager;
+class CCriticalSections;
+class Settings;
 
 class I_MostWorkChainTipLocator
 {
@@ -27,6 +29,8 @@ public:
 class MostWorkChainTransitionMediator final: public I_MostWorkChainTransitionMediator
 {
 private:
+    const Settings& settings_;
+    CCriticalSection& mainCriticalSection_;
     ChainstateManager& chainstate_;
     BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks_;
     BlockIndexCandidates& blockIndexCandidates_;
@@ -62,6 +66,8 @@ private:
 
 public:
     MostWorkChainTransitionMediator(
+        const Settings& settings,
+        CCriticalSection& mainCriticalSection,
         ChainstateManager& chainstate,
         BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks,
         BlockIndexCandidates& blockIndexCandidates,

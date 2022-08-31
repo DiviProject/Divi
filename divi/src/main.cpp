@@ -889,7 +889,6 @@ public:
         assert(blockIndex->pprev == chainstate_.ActiveChain().Tip());
         CTxMemPool& mempool = GetTransactionMemoryPool();
         mempool.check(&coinsTip, blockMap);
-        CCoinsViewCache view(&coinsTip);
 
         assert(pblock || !fAlreadyChecked);
 
@@ -908,6 +907,7 @@ public:
         LogPrint("bench", "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001, nTimeReadFromDisk * 0.000001);
         {
             CInv inv(MSG_BLOCK, blockIndex->GetBlockHash());
+            CCoinsViewCache view(&coinsTip);
             bool rv = ConnectBlock(*pblock, state_, blockIndex, chainstate_, sporkManager_, view, false, fAlreadyChecked);
             if (!rv) {
                 if (state_.IsInvalid())

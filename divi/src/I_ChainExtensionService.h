@@ -18,14 +18,12 @@ public:
         NodeId nodeId) const =0;
     virtual bool assignBlockIndex(
         CBlock& block,
-        const CSporkManager& sporkManager,
         CValidationState& state,
         CBlockIndex** ppindex,
         CDiskBlockPos* dbp,
         bool fAlreadyCheckedBlock) const = 0;
 
     virtual bool updateActiveChain(
-        const CSporkManager& sporkManager,
         CValidationState& state,
         const CBlock* pblock,
         bool fAlreadyChecked) const = 0;

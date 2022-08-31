@@ -1320,6 +1320,7 @@ bool AcceptBlock(CBlock& block, ChainstateManager& chainstate, const CSporkManag
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
+    const CSporkManager& sporkManager_;
     mutable ChainstateManager::Reference chainstateRef_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
     bool transitionToMostWorkChainTip(
@@ -1373,8 +1374,10 @@ private:
     }
 public:
     ChainExtensionService(
-        ): chainstateRef_()
-        ,  peerIdByBlockHash_()
+        const CSporkManager& sporkManager
+        ): sporkManager_(sporkManager)
+        , chainstateRef_()
+        , peerIdByBlockHash_()
     {
     }
 
@@ -1385,22 +1388,20 @@ public:
 
     virtual bool assignBlockIndex(
         CBlock& block,
-        const CSporkManager& sporkManager,
         CValidationState& state,
         CBlockIndex** ppindex,
         CDiskBlockPos* dbp,
         bool fAlreadyCheckedBlock) const override
     {
-        return AcceptBlock(block,*chainstateRef_,sporkManager,state,ppindex,dbp,fAlreadyCheckedBlock);
+        return AcceptBlock(block,*chainstateRef_,sporkManager_,state,ppindex,dbp,fAlreadyCheckedBlock);
     }
 
     virtual bool updateActiveChain(
-        const CSporkManager& sporkManager,
         CValidationState& state,
         const CBlock* pblock,
         bool fAlreadyChecked) const override
     {
-        ChainTipManager chainTipManager(peerIdByBlockHash_, sporkManager,*chainstateRef_,fAlreadyChecked,state,false);
+        ChainTipManager chainTipManager(peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
             *chainstateRef_, GetBlockIndexSuccessorsByPreviousBlockIndex(), GetBlockIndexCandidates(), state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
@@ -1415,7 +1416,7 @@ public:
 
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
-        ChainTipManager chainTipManager(peerIdByBlockHash_,GetSporkManager(),*chainstateRef_,true,state,updateCoinDatabaseOnly);
+        ChainTipManager chainTipManager(peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
         return InvalidateBlock(chainTipManager, IsInitialBlockDownload(), settings, cs_main, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
@@ -1453,7 +1454,7 @@ std::unique_ptr<ChainExtensionService> chainExtensionService;
 void InitializeChainExtensionService()
 {
     assert(chainExtensionService == nullptr);
-    chainExtensionService.reset(new ChainExtensionService());
+    chainExtensionService.reset(new ChainExtensionService(GetSporkManager()));
 }
 void FinalizeChainExtensionService()
 {
@@ -1806,7 +1807,7 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
             CBlockIndex* pindex = AddToBlockIndex(block);
             if (!ReceivedBlockTransactions(block, pindex, blockPos))
                 return error("LoadBlockIndex() : genesis block not accepted");
-            if (!GetChainExtensionService().updateActiveChain(sporkManager, state, &block,false))
+            if (!GetChainExtensionService().updateActiveChain(state, &block,false))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);

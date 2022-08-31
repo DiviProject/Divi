@@ -46,7 +46,7 @@ std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(
         }
 
         // Store to disk
-        bool ret = chainExtensionService_.assignBlockIndex(block, sporkManager_, state_, &pindex, dbp_, blockChecked);
+        bool ret = chainExtensionService_.assignBlockIndex(block, state_, &pindex, dbp_, blockChecked);
         if (pindex && pfrom_) {
             chainExtensionService_.recordBlockSource(pindex->GetBlockHash(), pfrom_->GetId());
         }
@@ -55,7 +55,7 @@ std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(
 }
 bool AcceptBlockValidator::connectActiveChain(const CBlock& block, bool blockChecked) const
 {
-    if (!chainExtensionService_.updateActiveChain(sporkManager_, state_, &block, blockChecked))
+    if (!chainExtensionService_.updateActiveChain(state_, &block, blockChecked))
         return error("%s : updateActiveChain failed", __func__);
 
     return true;

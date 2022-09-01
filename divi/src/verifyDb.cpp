@@ -15,11 +15,10 @@
 
 #include <BlockUndo.h>
 #include <ValidationState.h>
-#include <BlockDiskAccessor.h>
+#include <BlockDiskDataReader.h>
 #include <ui_interface.h>
 #include <boost/thread.hpp>
 #include <BlockConnectionService.h>
-#include <BlockDiskAccessor.h>
 #include <ChainstateManager.h>
 #include <spork.h>
 #include <BlockCheckingHelpers.h>

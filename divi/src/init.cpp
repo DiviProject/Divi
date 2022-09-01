@@ -44,6 +44,7 @@
 #include <functional>
 #include <uiMessenger.h>
 #include <BlockDiskAccessor.h>
+#include <BlockDiskDataReader.h>
 #include <timeIntervalConstants.h>
 #include <TransactionInputChecker.h>
 #include <txmempool.h>

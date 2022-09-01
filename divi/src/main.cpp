@@ -16,6 +16,7 @@
 #include <blockmap.h>
 #include "BlockFileOpener.h"
 #include "BlockDiskAccessor.h"
+#include <BlockDiskDataReader.h>
 #include <BlockRejects.h>
 #include "BlockRewards.h"
 #include "BlockSigning.h"

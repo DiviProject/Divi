@@ -159,9 +159,7 @@ BlockConnectionService::BlockConnectionService(
     const CSporkManager& sporkManager,
     const I_BlockDataReader& blockDataReader,
     const bool modifyCoinCacheInplace
-    ): addressIndexingIsEnabled_(blocktree->GetAddressIndexing())
-    , spentIndexingIsEnabled_(blocktree->GetSpentIndexing())
-    , blockIndicesByHash_(blockIndicesByHash)
+    ): blockIndicesByHash_(blockIndicesByHash)
     , blocktree_(blocktree)
     , coinTip_(coinTip)
     , sporkManager_(sporkManager)
@@ -245,7 +243,7 @@ bool BlockConnectionService::DisconnectBlock(
     if(blockUndo.vtxundo.size() + 1 != block.vtx.size())
         return error("%s: block and undo data inconsistent", __func__);
 
-    IndexDatabaseUpdates indexDBUpdates(addressIndexingIsEnabled_,spentIndexingIsEnabled_);
+    IndexDatabaseUpdates indexDBUpdates(blocktree_->GetAddressIndexing(), blocktree_->GetSpentIndexing());
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];

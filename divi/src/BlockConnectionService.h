@@ -26,8 +26,6 @@ class CChainParams;
 class BlockConnectionService
 {
 private:
-    const bool addressIndexingIsEnabled_;
-    const bool spentIndexingIsEnabled_;
     const BlockMap& blockIndicesByHash_;
     CBlockTreeDB* blocktree_;
     CCoinsViewCache* const coinTip_;

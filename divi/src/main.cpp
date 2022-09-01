@@ -898,6 +898,7 @@ private:
     BlockIndexCandidates& blockIndexCandidates_;
     const ProofOfStakeModule posModule_;
     bool transitionToMostWorkChainTip(
+        CValidationState& state,
         const I_MostWorkChainTransitionMediator& chainTransitionMediator,
         ChainstateManager& chainstate,
         const CBlock* pblock) const
@@ -924,7 +925,7 @@ private:
                     return true;
 
                 const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
-                if (!chainTransitionMediator.transitionActiveChainToMostWorkChain(pindexMostWork, connectingBlock))
+                if (!chainTransitionMediator.transitionActiveChainToMostWorkChain(state, pindexMostWork, connectingBlock))
                     return false;
 
                 pindexNewTip = chain.Tip();
@@ -992,10 +993,10 @@ public:
         bool fAlreadyChecked) const override
     {
         ChainTipManager chainTipManager(
-            chainParameters_, settings_,mainCriticalSection_, mempool_, mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
+            chainParameters_, settings_,mainCriticalSection_, mempool_, mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_);
         MostWorkChainTransitionMediator chainTransitionMediator(
-            settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
-        const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
+            settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, chainTipManager);
+        const bool result = transitionToMostWorkChainTip(state, chainTransitionMediator, *chainstateRef_, pblock);
 
         // Write changes periodically to disk, after relay.
         if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
@@ -1008,8 +1009,8 @@ public:
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
         ChainTipManager chainTipManager(
-            chainParameters_, settings_,mainCriticalSection_,mempool_, mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
-        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex, updateCoinDatabaseOnly);
+            chainParameters_, settings_,mainCriticalSection_,mempool_, mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_);
+        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, state, mainCriticalSection_, *chainstateRef_, blockIndex, updateCoinDatabaseOnly);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
     {

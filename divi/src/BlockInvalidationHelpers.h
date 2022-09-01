@@ -26,6 +26,7 @@ bool InvalidateBlock(
     const I_ChainTipManager& chainTipManager,
     const bool isInitialBlockDownload,
     const Settings& settings,
+    CValidationState& state,
     CCriticalSection& mainCriticalSection,
     ChainstateManager& chainstate,
     CBlockIndex* pindex,

@@ -9,7 +9,7 @@
 #include <boost/filesystem.hpp>
 #include <DataDirectory.h>
 #include <blockmap.h>
-#include <BlockDiskAccessor.h>
+#include <BlockDiskDataReader.h>
 #include <chain.h>
 #include "init.h"
 #include "main.h"

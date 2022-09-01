@@ -246,6 +246,7 @@ BITCOIN_CORE_H = \
   UtxoCheckingAndUpdating.h\
   BlockFileOpener.h \
   BlockDiskAccessor.h \
+  BlockDiskDataReader.h \
   TransactionDiskAccessor.h \
   BlockTemplate.h \
   I_BlockFactory.h \
@@ -476,6 +477,7 @@ libbitcoin_server_a_SOURCES = \
   ExtendedBlockFactory.cpp \
   BlockFileOpener.cpp \
   BlockDiskAccessor.cpp \
+  BlockDiskDataReader.cpp \
   TransactionDiskAccessor.cpp \
   merkleblock.cpp \
   merkletx.cpp \

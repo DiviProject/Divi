@@ -657,6 +657,7 @@ void static UpdateTip(const CBlockIndex* pindexNew)
 class ChainTipManager final: public I_ChainTipManager
 {
 private:
+    MainNotificationSignals& mainNotificationSignals_;
     std::map<uint256, NodeId>& peerIdByBlockHash_;
     const CSporkManager& sporkManager_;
     ChainstateManager& chainstate_;
@@ -667,6 +668,7 @@ private:
     const BlockConnectionService blockConnectionService_;
 public:
     ChainTipManager(
+        MainNotificationSignals& mainNotificationSignals,
         const MasternodeModule& masternodeModule,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         const CSporkManager& sporkManager,
@@ -674,7 +676,8 @@ public:
         const bool defaultBlockChecking,
         CValidationState& state,
         const bool updateCoinDatabaseOnly
-        ): peerIdByBlockHash_(peerIdByBlockHash)
+        ): mainNotificationSignals_(mainNotificationSignals)
+        , peerIdByBlockHash_(peerIdByBlockHash)
         , sporkManager_(sporkManager)
         , chainstate_(chainstate)
         , defaultBlockChecking_(defaultBlockChecking)
@@ -1186,7 +1189,8 @@ public:
         const CBlock* pblock,
         bool fAlreadyChecked) const override
     {
-        ChainTipManager chainTipManager(masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
+        ChainTipManager chainTipManager(
+            mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
             settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
@@ -1201,7 +1205,8 @@ public:
 
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
-        ChainTipManager chainTipManager(masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
+        ChainTipManager chainTipManager(
+            mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
         return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override

@@ -40,7 +40,6 @@
 #include <rest.h>
 
 extern CCriticalSection cs_main;
-extern CConditionVariable cvBlockChange;
 
 // RPC Endpoints
 extern json_spirit::Value getconnectioncount(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rpcnet.cpp
@@ -793,7 +792,6 @@ void StopRPCThreads()
     deadlineTimers.clear();
 
     rpc_io_service->stop();
-    cvBlockChange.notify_all();
     if (rpc_worker_group != NULL)
         rpc_worker_group->join_all();
     delete rpc_dummy_work;

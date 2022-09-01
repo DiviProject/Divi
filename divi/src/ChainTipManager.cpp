@@ -159,7 +159,7 @@ bool ChainTipManager::connectTip(const CBlock* pblock, CBlockIndex* blockIndex) 
 
     return true;
 }
-bool ChainTipManager::disconnectTip() const
+bool ChainTipManager::disconnectTip(const bool updateCoinDatabaseOnly) const
 {
     AssertLockHeld(mainCriticalSection_);
 
@@ -172,7 +172,7 @@ bool ChainTipManager::disconnectTip() const
     mempool_.check(&coinsTip, blockMap);
     // Read block from disk.
     std::pair<CBlock,bool> disconnectedBlock =
-        blockConnectionService_->DisconnectBlock(state_, pindexDelete, updateCoinDatabaseOnly_);
+        blockConnectionService_->DisconnectBlock(state_, pindexDelete, updateCoinDatabaseOnly);
     if(!disconnectedBlock.second)
         return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
     std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;

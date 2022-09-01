@@ -8,6 +8,6 @@ class I_ChainTipManager
 public:
     virtual ~I_ChainTipManager(){}
     virtual bool connectTip(const CBlock* block, CBlockIndex* blockIndex) const = 0;
-    virtual bool disconnectTip() const = 0;
+    virtual bool disconnectTip(const bool updateCoinDatabaseOnly) const = 0;
 };
 #endif// I_CHAIN_TIP_MANAGER_H

@@ -32,7 +32,7 @@ bool MostWorkChainTransitionMediator::rollBackChainTipToConnectToMostWorkChain(
     const CBlockIndex* pindexFork = chain.FindFork(mostWorkBlockIndex);
     // Disconnect active blocks which are no longer in the best chain.
     while (chain.Tip() && chain.Tip() != pindexFork) {
-        if (!chainTipManager_.disconnectTip())
+        if (!chainTipManager_.disconnectTip(false))
             return false;
     }
     return true;

@@ -28,7 +28,8 @@ bool InvalidateBlock(
     const Settings& settings,
     CCriticalSection& mainCriticalSection,
     ChainstateManager& chainstate,
-    CBlockIndex* pindex);
+    CBlockIndex* pindex,
+    const bool updateCoinDatabaseOnly);
 void InvalidBlockFound(
     const std::map<uint256, NodeId>& peerIdByBlockHash,
     const bool isInitialBlockDownload,

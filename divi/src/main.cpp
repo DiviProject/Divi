@@ -1009,7 +1009,7 @@ public:
     {
         ChainTipManager chainTipManager(
             chainParameters_, settings_,mainCriticalSection_,mempool_, mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
-        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex);
+        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex, updateCoinDatabaseOnly);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
     {

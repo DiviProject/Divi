@@ -50,6 +50,6 @@ public:
         const bool updateCoinDatabaseOnly);
     ~ChainTipManager();
     bool connectTip(const CBlock* pblock, CBlockIndex* blockIndex) const override;
-    bool disconnectTip() const override;
+    bool disconnectTip(const bool updateCoinDatabaseOnly) const override;
 };
 #endif// CHAIN_TIP_MANGER_H

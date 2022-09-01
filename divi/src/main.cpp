@@ -88,6 +88,7 @@
 #include <MostWorkChainTransitionMediator.h>
 #include <ChainSyncHelpers.h>
 #include <TransactionFinalityHelpers.h>
+#include <ChainExtensionService.h>
 
 using namespace boost;
 using namespace std;
@@ -550,17 +551,12 @@ bool IsInitialBlockDownload()
 {
     return IsInitialBlockDownload(cs_main, settings);
 }
-namespace
-{
 
 bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
 {
     if(fKnown) return BlockFileHelpers::FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
     else return BlockFileHelpers::FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
 }
-
-} // anonymous namespace
-
 /**
  * Update the on-disk chain state.
  * The caches and indexes are flushed if either they're too large, forceWrite is set, or
@@ -880,183 +876,6 @@ bool AcceptBlock(
 }
 
 } // anonymous namespace
-
-class ChainExtensionService final: public I_ChainExtensionService
-{
-private:
-    int64_t& timeOfLastChainTipUpdate_;
-    CTxMemPool& mempool_;
-    const MasternodeModule& masternodeModule_;
-    MainNotificationSignals& mainNotificationSignals_;
-    CCriticalSection& mainCriticalSection_;
-    const Settings& settings_;
-    const CChainParams& chainParameters_;
-    const CSporkManager& sporkManager_;
-    mutable ChainstateManager::Reference chainstateRef_;
-    mutable std::map<uint256, NodeId> peerIdByBlockHash_;
-    BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors_;
-    BlockIndexCandidates& blockIndexCandidates_;
-    std::unique_ptr<ChainTipManager> chainTipManager_;
-    std::unique_ptr<MostWorkChainTransitionMediator> chainTransitionMediator_;
-    const ProofOfStakeModule posModule_;
-
-    bool transitionToMostWorkChainTip(
-        CValidationState& state,
-        ChainstateManager& chainstate,
-        const CBlock* pblock) const
-    {
-        const auto& chain = chainstate.ActiveChain();
-
-        const CBlockIndex* pindexNewTip = NULL;
-        CBlockIndex* pindexMostWork = NULL;
-        do {
-            boost::this_thread::interruption_point();
-
-            bool fInitialDownload;
-            while (true) {
-                TRY_LOCK(mainCriticalSection_, lockMain);
-                if (!lockMain) {
-                    MilliSleep(50);
-                    continue;
-                }
-
-                pindexMostWork = chainTransitionMediator_->findMostWorkChain();
-
-                // Whether we have anything to do at all.
-                if (pindexMostWork == NULL || pindexMostWork == chain.Tip())
-                    return true;
-
-                const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
-                if (!chainTransitionMediator_->transitionActiveChainToMostWorkChain(state, pindexMostWork, connectingBlock))
-                    return false;
-
-                pindexNewTip = chain.Tip();
-                fInitialDownload = IsInitialBlockDownload(mainCriticalSection_,settings_);
-                break;
-            }
-            // When we reach this point, we switched to a new tip (stored in pindexNewTip).
-
-            // Notifications/callbacks that can run without cs_main
-            if (!fInitialDownload) {
-                // Notify external listeners about the new tip.
-                mainNotificationSignals_.UpdatedBlockTip(pindexNewTip);
-                timeOfLastChainTipUpdate_ = GetTime();
-            }
-        } while (pindexMostWork != chain.Tip());
-
-        return true;
-    }
-public:
-    ChainExtensionService(
-        int64_t& timeOfLastChainTipUpdate,
-        CTxMemPool& mempool,
-        const MasternodeModule& masternodeModule,
-        MainNotificationSignals& mainNotificationSignals,
-        CCriticalSection& mainCriticalSection,
-        const Settings& settings,
-        const CChainParams& chainParameters,
-        const CSporkManager& sporkManager,
-        BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
-        BlockIndexCandidates& blockIndexCandidates
-        ): timeOfLastChainTipUpdate_(timeOfLastChainTipUpdate)
-        , mempool_(mempool)
-        , masternodeModule_(masternodeModule)
-        , mainNotificationSignals_(mainNotificationSignals)
-        , mainCriticalSection_(mainCriticalSection)
-        , settings_(settings)
-        , chainParameters_(chainParameters)
-        , sporkManager_(sporkManager)
-        , chainstateRef_()
-        , peerIdByBlockHash_()
-        , blockIndexSuccessors_(blockIndexSuccessors)
-        , blockIndexCandidates_(blockIndexCandidates)
-        , chainTipManager_(
-            new ChainTipManager(
-                chainParameters_,
-                settings_,
-                mainCriticalSection_,
-                mempool_,
-                mainNotificationSignals_,
-                masternodeModule_,
-                peerIdByBlockHash_,
-                sporkManager_,
-                *chainstateRef_))
-        , chainTransitionMediator_(
-            new MostWorkChainTransitionMediator(
-                settings_,
-                mainCriticalSection_,
-                *chainstateRef_,
-                blockIndexSuccessors_,
-                blockIndexCandidates_,
-                *chainTipManager_))
-        , posModule_(chainParameters, chainstateRef_->ActiveChain(), chainstateRef_->GetBlockMap())
-    {
-    }
-
-    void recordBlockSource(const uint256& blockHash, NodeId nodeId) const override
-    {
-        peerIdByBlockHash_[blockHash] = nodeId;
-    }
-
-    virtual bool assignBlockIndex(
-        CBlock& block,
-        CValidationState& state,
-        CBlockIndex** ppindex,
-        CDiskBlockPos* dbp,
-        bool fAlreadyCheckedBlock) const override
-    {
-        return AcceptBlock(posModule_.proofOfStakeGenerator(),block,*chainstateRef_,sporkManager_,state,ppindex,dbp,fAlreadyCheckedBlock);
-    }
-
-    virtual bool updateActiveChain(
-        CValidationState& state,
-        const CBlock* pblock,
-        bool fAlreadyChecked) const override
-    {
-        const bool result = transitionToMostWorkChainTip(state, *chainstateRef_, pblock);
-        // Write changes periodically to disk, after relay.
-        if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
-            return false;
-        }
-        VerifyBlockIndexTree(*chainstateRef_,mainCriticalSection_, blockIndexSuccessors_, blockIndexCandidates_);
-        return result;
-    }
-
-    bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
-    {
-        AssertLockHeld(mainCriticalSection_);
-        return InvalidateBlock(*chainTipManager_, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, state, mainCriticalSection_, *chainstateRef_, blockIndex, updateCoinDatabaseOnly);
-    }
-    bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
-    {
-        AssertLockHeld(mainCriticalSection_);
-        const auto& chain = chainstateRef_->ActiveChain();
-        const int nHeight = pindex->nHeight;
-
-        // Remove the invalidity flag from this block and all its descendants.
-        for (auto& entry : chainstateRef_->GetBlockMap()) {
-            CBlockIndex& blk = *entry.second;
-            if (!blk.IsValid() && blk.GetAncestor(nHeight) == pindex) {
-                blk.nStatus &= ~BLOCK_FAILED_MASK;
-                BlockFileHelpers::RecordDirtyBlockIndex(&blk);
-                if (blk.IsValid(BLOCK_VALID_TRANSACTIONS) && blk.nChainTx && blockIndexCandidates_.value_comp()(chain.Tip(), &blk)) {
-                    blockIndexCandidates_.insert(&blk);
-                }
-                updateMostWorkInvalidBlockIndex(&blk, true);
-            }
-        }
-
-        // Remove the invalidity flag from all ancestors too.
-        while (pindex != NULL) {
-            if (pindex->nStatus & BLOCK_FAILED_MASK) {
-                pindex->nStatus &= ~BLOCK_FAILED_MASK;
-                BlockFileHelpers::RecordDirtyBlockIndex(pindex);
-            }
-            pindex = pindex->pprev;
-        }
-        return true;
-    }
-};
 
 static int64_t timeOfLastChainTipUpdate =0;
 std::unique_ptr<ChainExtensionService> chainExtensionService;

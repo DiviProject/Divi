@@ -106,8 +106,6 @@ extern Settings& settings;
 CCriticalSection cs_main;
 std::map<uint256, uint256> mapProofOfStake;
 int64_t timeOfLastChainTipUpdate =0;
-CWaitableCriticalSection csBestBlock;
-CConditionVariable cvBlockChange;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -630,7 +628,6 @@ void static UpdateTip(const CBlockIndex* pindexNew)
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chain.Tip()->GetBlockTime()),
                (unsigned int)chainstate->CoinsTip().GetCacheSize());
 
-    cvBlockChange.notify_all();
 
     // Check the version of the last 100 blocks to see if we need to upgrade:
     static bool fWarned = false;

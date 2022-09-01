@@ -107,10 +107,10 @@ ChainTipManager::~ChainTipManager()
     blockDiskReader_.reset();
 }
 
-bool ChainTipManager::connectTip(const CBlock* pblock, CBlockIndex* blockIndex) const
+bool ChainTipManager::connectTip(const CBlock* pblock, CBlockIndex* blockIndex, const bool defaultBlockChecking) const
 {
     AssertLockHeld(mainCriticalSection_);
-    const bool fAlreadyChecked = (!pblock)? false: defaultBlockChecking_;
+    const bool fAlreadyChecked = (!pblock)? false: defaultBlockChecking;
     auto& coinsTip = chainstate_.CoinsTip();
     const auto& blockMap = chainstate_.GetBlockMap();
 

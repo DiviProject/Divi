@@ -1025,9 +1025,8 @@ public:
 
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
-        ChainTipManager chainTipManager(
-            chainParameters_, settings_,mainCriticalSection_,mempool_, mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_);
-        return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, state, mainCriticalSection_, *chainstateRef_, blockIndex, updateCoinDatabaseOnly);
+        AssertLockHeld(mainCriticalSection_);
+        return InvalidateBlock(*chainTipManager_, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, state, mainCriticalSection_, *chainstateRef_, blockIndex, updateCoinDatabaseOnly);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
     {

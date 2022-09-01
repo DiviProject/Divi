@@ -735,9 +735,9 @@ public:
         // Tell wallet about transactions that went from mempool
         // to conflicted:
         std::vector<CTransaction> conflictedTransactions(txConflicted.begin(),txConflicted.end());
-        GetMainNotificationInterface().SyncTransactions(conflictedTransactions, NULL,TransactionSyncType::CONFLICTED_TX);
+        mainNotificationSignals_.SyncTransactions(conflictedTransactions, NULL,TransactionSyncType::CONFLICTED_TX);
         // ... and about transactions that got confirmed:
-        GetMainNotificationInterface().SyncTransactions(pblock->vtx, pblock, TransactionSyncType::NEW_BLOCK);
+        mainNotificationSignals_.SyncTransactions(pblock->vtx, pblock, TransactionSyncType::NEW_BLOCK);
 
         return true;
     }
@@ -777,7 +777,7 @@ public:
         UpdateTip(pindexDelete->pprev);
         // Let wallets know transactions went from 1-confirmed to
         // 0-confirmed or conflicted:
-        GetMainNotificationInterface().SyncTransactions(blockTransactions, NULL,TransactionSyncType::BLOCK_DISCONNECT);
+        mainNotificationSignals_.SyncTransactions(blockTransactions, NULL,TransactionSyncType::BLOCK_DISCONNECT);
         return true;
     }
 };

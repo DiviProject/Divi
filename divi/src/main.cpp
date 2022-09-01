@@ -653,6 +653,7 @@ void static UpdateTip(const CBlockIndex* pindexNew)
 class ChainTipManager final: public I_ChainTipManager
 {
 private:
+    CTxMemPool& mempool_;
     MainNotificationSignals& mainNotificationSignals_;
     std::map<uint256, NodeId>& peerIdByBlockHash_;
     const CSporkManager& sporkManager_;
@@ -664,6 +665,7 @@ private:
     const BlockConnectionService blockConnectionService_;
 public:
     ChainTipManager(
+        CTxMemPool& mempool,
         MainNotificationSignals& mainNotificationSignals,
         const MasternodeModule& masternodeModule,
         std::map<uint256, NodeId>& peerIdByBlockHash,
@@ -672,7 +674,8 @@ public:
         const bool defaultBlockChecking,
         CValidationState& state,
         const bool updateCoinDatabaseOnly
-        ): mainNotificationSignals_(mainNotificationSignals)
+        ): mempool_(mempool)
+        , mainNotificationSignals_(mainNotificationSignals)
         , peerIdByBlockHash_(peerIdByBlockHash)
         , sporkManager_(sporkManager)
         , chainstate_(chainstate)
@@ -691,8 +694,7 @@ public:
         const auto& blockMap = chainstate_.GetBlockMap();
 
         assert(blockIndex->pprev == chainstate_.ActiveChain().Tip());
-        CTxMemPool& mempool = GetTransactionMemoryPool();
-        mempool.check(&coinsTip, blockMap);
+        mempool_.check(&coinsTip, blockMap);
 
         assert(pblock || !fAlreadyChecked);
 
@@ -724,8 +726,8 @@ public:
 
         // Remove conflicting transactions from the mempool.
         std::list<CTransaction> txConflicted;
-        mempool.removeConfirmedTransactions(pblock->vtx, blockIndex->nHeight, txConflicted);
-        mempool.check(&coinsTip, blockMap);
+        mempool_.removeConfirmedTransactions(pblock->vtx, blockIndex->nHeight, txConflicted);
+        mempool_.check(&coinsTip, blockMap);
         // Update chainActive & related variables.
         UpdateTip(blockIndex);
         // Tell wallet about transactions that went from mempool
@@ -747,8 +749,7 @@ public:
 
         const CBlockIndex* pindexDelete = chain.Tip();
         assert(pindexDelete);
-        CTxMemPool& mempool = GetTransactionMemoryPool();
-        mempool.check(&coinsTip, blockMap);
+        mempool_.check(&coinsTip, blockMap);
         // Read block from disk.
         std::pair<CBlock,bool> disconnectedBlock =
             blockConnectionService_.DisconnectBlock(state_, pindexDelete, updateCoinDatabaseOnly_);
@@ -764,11 +765,11 @@ public:
             // ignore validation errors in resurrected transactions
             std::list<CTransaction> removed;
             CValidationState stateDummy;
-            if (tx.IsCoinBase() || tx.IsCoinStake() || !AcceptToMemoryPool(mempool, stateDummy, tx, false))
-                mempool.remove(tx, removed, true);
+            if (tx.IsCoinBase() || tx.IsCoinStake() || !AcceptToMemoryPool(mempool_, stateDummy, tx, false))
+                mempool_.remove(tx, removed, true);
         }
-        mempool.removeCoinbaseSpends(&coinsTip, pindexDelete->nHeight);
-        mempool.check(&coinsTip, blockMap);
+        mempool_.removeCoinbaseSpends(&coinsTip, pindexDelete->nHeight);
+        mempool_.check(&coinsTip, blockMap);
         // Update chainActive and related variables.
         UpdateTip(pindexDelete->pprev);
         // Let wallets know transactions went from 1-confirmed to
@@ -1087,6 +1088,7 @@ class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
     int64_t& timeOfLastChainTipUpdate_;
+    CTxMemPool& mempool_;
     const MasternodeModule& masternodeModule_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
@@ -1146,6 +1148,7 @@ private:
 public:
     ChainExtensionService(
         int64_t& timeOfLastChainTipUpdate,
+        CTxMemPool& mempool,
         const MasternodeModule& masternodeModule,
         MainNotificationSignals& mainNotificationSignals,
         CCriticalSection& mainCriticalSection,
@@ -1155,6 +1158,7 @@ public:
         BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
         BlockIndexCandidates& blockIndexCandidates
         ): timeOfLastChainTipUpdate_(timeOfLastChainTipUpdate)
+        , mempool_(mempool)
         , masternodeModule_(masternodeModule)
         , mainNotificationSignals_(mainNotificationSignals)
         , mainCriticalSection_(mainCriticalSection)
@@ -1189,7 +1193,7 @@ public:
         bool fAlreadyChecked) const override
     {
         ChainTipManager chainTipManager(
-            mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
+            mempool_, mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
             settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
@@ -1205,7 +1209,7 @@ public:
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
         ChainTipManager chainTipManager(
-            mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
+            mempool_, mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
         return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override
@@ -1247,6 +1251,7 @@ void InitializeChainExtensionService(const MasternodeModule& masternodeModule)
     chainExtensionService.reset(
         new ChainExtensionService(
             timeOfLastChainTipUpdate,
+            GetTransactionMemoryPool(),
             masternodeModule,
             GetMainNotificationInterface(),
             cs_main,

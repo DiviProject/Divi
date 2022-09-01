@@ -19,7 +19,6 @@ private:
     ChainstateManager& chainstate_;
     BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks_;
     BlockIndexCandidates& blockIndexCandidates_;
-    CValidationState& state_;
     const I_ChainTipManager& chainTipManager_;
 
     void computeNextBlockIndicesToConnect(
@@ -29,9 +28,12 @@ private:
         std::vector<CBlockIndex*>& blockIndicesToConnect) const;
 
     bool rollBackChainTipToConnectToMostWorkChain(
+        CValidationState& state,
         const CChain& chain,
         const CBlockIndex* mostWorkBlockIndex) const;
-    bool checkBlockConnectionState(CBlockIndex* lastBlockIndex) const;
+    bool checkBlockConnectionState(
+        CValidationState& state,
+        CBlockIndex* lastBlockIndex) const;
 
     enum class BlockConnectionResult
     {
@@ -42,6 +44,7 @@ private:
     };
 
     BlockConnectionResult tryToConnectNextBlock(
+        CValidationState& state,
         const CChain& chain,
         const CBlock* blockToConnect,
         const CBlockIndex* previousChainTip,
@@ -56,10 +59,10 @@ public:
         ChainstateManager& chainstate,
         BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks,
         BlockIndexCandidates& blockIndexCandidates,
-        CValidationState& state,
         const I_ChainTipManager& chainTipManager);
 
     bool transitionActiveChainToMostWorkChain(
+        CValidationState& state,
         CBlockIndex* pindexMostWork,
         const CBlock* pblock) const override;
     CBlockIndex* findMostWorkChain() const override;

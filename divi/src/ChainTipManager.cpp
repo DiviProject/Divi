@@ -74,10 +74,7 @@ ChainTipManager::ChainTipManager(
     const MasternodeModule& masternodeModule,
     std::map<uint256, NodeId>& peerIdByBlockHash,
     const CSporkManager& sporkManager,
-    ChainstateManager& chainstate,
-    const bool defaultBlockChecking,
-    CValidationState& state,
-    const bool updateCoinDatabaseOnly
+    ChainstateManager& chainstate
     ): settings_(settings)
     , mainCriticalSection_(mainCriticalSection)
     , mempool_(mempool)
@@ -85,9 +82,6 @@ ChainTipManager::ChainTipManager(
     , peerIdByBlockHash_(peerIdByBlockHash)
     , sporkManager_(sporkManager)
     , chainstate_(chainstate)
-    , defaultBlockChecking_(defaultBlockChecking)
-    , state_(state)
-    , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
     , blockDiskReader_(new BlockDiskDataReader() )
     , blockConnectionService_(
         new BlockConnectionService(
@@ -107,7 +101,7 @@ ChainTipManager::~ChainTipManager()
     blockDiskReader_.reset();
 }
 
-bool ChainTipManager::connectTip(const CBlock* pblock, CBlockIndex* blockIndex, const bool defaultBlockChecking) const
+bool ChainTipManager::connectTip(CValidationState& state,const CBlock* pblock, CBlockIndex* blockIndex, const bool defaultBlockChecking) const
 {
     AssertLockHeld(mainCriticalSection_);
     const bool fAlreadyChecked = (!pblock)? false: defaultBlockChecking;
@@ -123,15 +117,15 @@ bool ChainTipManager::connectTip(const CBlock* pblock, CBlockIndex* blockIndex, 
     CBlock block;
     if (!pblock) {
         if (!blockDiskReader_->ReadBlock(blockIndex,block))
-            return state_.Abort("Failed to read block");
+            return state.Abort("Failed to read block");
         pblock = &block;
     }
     // Apply the block atomically to the chain state.
     {
-        bool rv = blockConnectionService_->ConnectBlock(*pblock,state_,blockIndex,false,fAlreadyChecked);
+        bool rv = blockConnectionService_->ConnectBlock(*pblock,state,blockIndex,false,fAlreadyChecked);
         if (!rv) {
-            if (state_.IsInvalid())
-                InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(mainCriticalSection_,settings_),settings_,mainCriticalSection_,blockIndex, state_);
+            if (state.IsInvalid())
+                InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(mainCriticalSection_,settings_),settings_,mainCriticalSection_,blockIndex, state);
             return error("%s : ConnectBlock %s failed",__func__, blockIndex->GetBlockHash());
         }
         peerIdByBlockHash_.erase(blockIndex->GetBlockHash());
@@ -141,7 +135,7 @@ bool ChainTipManager::connectTip(const CBlock* pblock, CBlockIndex* blockIndex, 
     FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
     if (blockIndex->pprev && (blockIndex->GetBlockPos().nFile != blockIndex->pprev->GetBlockPos().nFile))
         flushMode = FLUSH_STATE_ALWAYS;
-    if (!FlushStateToDisk(state_, flushMode,mainNotificationSignals_,mainCriticalSection_))
+    if (!FlushStateToDisk(state, flushMode,mainNotificationSignals_,mainCriticalSection_))
         return false;
 
     // Remove conflicting transactions from the mempool.
@@ -159,7 +153,7 @@ bool ChainTipManager::connectTip(const CBlock* pblock, CBlockIndex* blockIndex, 
 
     return true;
 }
-bool ChainTipManager::disconnectTip(const bool updateCoinDatabaseOnly) const
+bool ChainTipManager::disconnectTip(CValidationState& state, const bool updateCoinDatabaseOnly) const
 {
     AssertLockHeld(mainCriticalSection_);
 
@@ -172,13 +166,13 @@ bool ChainTipManager::disconnectTip(const bool updateCoinDatabaseOnly) const
     mempool_.check(&coinsTip, blockMap);
     // Read block from disk.
     std::pair<CBlock,bool> disconnectedBlock =
-        blockConnectionService_->DisconnectBlock(state_, pindexDelete, updateCoinDatabaseOnly);
+        blockConnectionService_->DisconnectBlock(state, pindexDelete, updateCoinDatabaseOnly);
     if(!disconnectedBlock.second)
         return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
     std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
 
     // Write the chain state to disk, if necessary.
-    if (!FlushStateToDisk(state_, FLUSH_STATE_ALWAYS, mainNotificationSignals_,mainCriticalSection_))
+    if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS, mainNotificationSignals_,mainCriticalSection_))
         return false;
     // Resurrect mempool transactions from the disconnected block.
     for(const CTransaction& tx: blockTransactions) {

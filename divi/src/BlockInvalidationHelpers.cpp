@@ -113,6 +113,7 @@ bool InvalidateBlock(
     const I_ChainTipManager& chainTipManager,
     const bool isInitialBlockDownload,
     const Settings& settings,
+    CValidationState& state,
     CCriticalSection& mainCriticalSection,
     ChainstateManager& chainstate,
     CBlockIndex* pindex,
@@ -136,7 +137,7 @@ bool InvalidateBlock(
         candidateBlockIndices.erase(pindexWalk);
         // ActivateBestChain considers blocks already in chainActive
         // unconditionally valid already, so force disconnect away from it.
-        if (!chainTipManager.disconnectTip(updateCoinDatabaseOnly)) {
+        if (!chainTipManager.disconnectTip(state, updateCoinDatabaseOnly)) {
             return false;
         }
     }

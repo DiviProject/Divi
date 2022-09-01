@@ -26,13 +26,14 @@ void MostWorkChainTransitionMediator::computeNextBlockIndicesToConnect(
 }
 
 bool MostWorkChainTransitionMediator::rollBackChainTipToConnectToMostWorkChain(
+    CValidationState& state,
     const CChain& chain,
     const CBlockIndex* mostWorkBlockIndex) const
 {
     const CBlockIndex* pindexFork = chain.FindFork(mostWorkBlockIndex);
     // Disconnect active blocks which are no longer in the best chain.
     while (chain.Tip() && chain.Tip() != pindexFork) {
-        if (!chainTipManager_.disconnectTip(false))
+        if (!chainTipManager_.disconnectTip(state,false))
             return false;
     }
     return true;
@@ -44,14 +45,15 @@ bool MostWorkChainTransitionMediator::rollBackChainTipToConnectToMostWorkChain(
  * that is already loaded (to avoid loading it again from disk).
  */
 bool MostWorkChainTransitionMediator::checkBlockConnectionState(
+    CValidationState& state,
     CBlockIndex* lastBlockIndex) const
 {
-    if (state_.IsInvalid())
+    if (state.IsInvalid())
     {
         // The block violates a consensus rule.
-        if (!state_.CorruptionPossible())
+        if (!state.CorruptionPossible())
             InvalidChainFound(IsInitialBlockDownload(mainCriticalSection_,settings_),settings_,mainCriticalSection_,lastBlockIndex);
-        state_ = CValidationState();
+        state = CValidationState();
         return false;
     }
     else
@@ -62,16 +64,17 @@ bool MostWorkChainTransitionMediator::checkBlockConnectionState(
 
 
 MostWorkChainTransitionMediator::BlockConnectionResult MostWorkChainTransitionMediator::tryToConnectNextBlock(
+    CValidationState& state,
     const CChain& chain,
     const CBlock* blockToConnect,
     const CBlockIndex* previousChainTip,
     CBlockIndex* proposedNewChainTip,
     CBlockIndex* pindexConnect) const
 {
-    const bool blockSuccessfullyConnected = chainTipManager_.connectTip(blockToConnect,pindexConnect,false);
+    const bool blockSuccessfullyConnected = chainTipManager_.connectTip(state, blockToConnect,pindexConnect,false);
     if (!blockSuccessfullyConnected)
     {
-        if(!checkBlockConnectionState(proposedNewChainTip))
+        if(!checkBlockConnectionState(state, proposedNewChainTip))
         {
             return BlockConnectionResult::INVALID_BLOCK;
         }
@@ -97,19 +100,18 @@ MostWorkChainTransitionMediator::MostWorkChainTransitionMediator(
     ChainstateManager& chainstate,
     BlockIndexSuccessorsByPreviousBlockIndex& unlinkedBlocks,
     BlockIndexCandidates& blockIndexCandidates,
-    CValidationState& state,
     const I_ChainTipManager& chainTipManager
     ): settings_(settings)
     , mainCriticalSection_(mainCriticalSection)
     , chainstate_(chainstate)
     , unlinkedBlocks_(unlinkedBlocks)
     , blockIndexCandidates_(blockIndexCandidates)
-    , state_(state)
     , chainTipManager_(chainTipManager)
 {
 }
 
 bool MostWorkChainTransitionMediator::transitionActiveChainToMostWorkChain(
+    CValidationState& state,
     CBlockIndex* pindexMostWork,
     const CBlock* pblock) const
 {
@@ -119,7 +121,7 @@ bool MostWorkChainTransitionMediator::transitionActiveChainToMostWorkChain(
     const CBlockIndex* previousChainTip = chain.Tip();
 
     // Disconnect active blocks which are no longer in the best chain.
-    if(!rollBackChainTipToConnectToMostWorkChain(chain, pindexMostWork)) return false;
+    if(!rollBackChainTipToConnectToMostWorkChain(state, chain, pindexMostWork)) return false;
     const CBlockIndex* rolledBackChainTip = chain.Tip();
     int nHeight = rolledBackChainTip? rolledBackChainTip->nHeight : -1;
 
@@ -142,7 +144,7 @@ bool MostWorkChainTransitionMediator::transitionActiveChainToMostWorkChain(
             CBlockIndex* pindexConnect = *it;
             const CBlock* blockToConnect = pindexConnect == pindexMostWork ? pblock : nullptr;
             result = tryToConnectNextBlock(
-                chain, blockToConnect, previousChainTip,blockIndicesToConnect.back(),pindexConnect);
+                state, chain, blockToConnect, previousChainTip,blockIndicesToConnect.back(),pindexConnect);
         }
         if(result != BlockConnectionResult::TRY_NEXT_BLOCK) break;
     }

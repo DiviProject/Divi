@@ -29,9 +29,6 @@ private:
     std::map<uint256, NodeId>& peerIdByBlockHash_;
     const CSporkManager& sporkManager_;
     ChainstateManager& chainstate_;
-    const bool defaultBlockChecking_;
-    CValidationState& state_;
-    const bool updateCoinDatabaseOnly_;
     std::unique_ptr<I_BlockDataReader> blockDiskReader_;
     std::unique_ptr<const BlockConnectionService> blockConnectionService_;
 public:
@@ -44,12 +41,9 @@ public:
         const MasternodeModule& masternodeModule,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         const CSporkManager& sporkManager,
-        ChainstateManager& chainstate,
-        const bool defaultBlockChecking,
-        CValidationState& state,
-        const bool updateCoinDatabaseOnly);
+        ChainstateManager& chainstate);
     ~ChainTipManager();
-    bool connectTip(const CBlock* pblock, CBlockIndex* blockIndex, const bool defaultBlockChecking) const override;
-    bool disconnectTip(const bool updateCoinDatabaseOnly) const override;
+    bool connectTip(CValidationState& state, const CBlock* pblock, CBlockIndex* blockIndex, const bool defaultBlockChecking) const override;
+    bool disconnectTip(CValidationState& state, const bool updateCoinDatabaseOnly) const override;
 };
 #endif// CHAIN_TIP_MANGER_H

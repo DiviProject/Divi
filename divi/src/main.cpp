@@ -564,9 +564,13 @@ bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAdd
  * The caches and indexes are flushed if either they're too large, forceWrite is set, or
  * fast is not set and it's been a while since the last write.
  */
-bool static FlushStateToDisk(CValidationState& state, FlushStateMode mode, MainNotificationSignals& mainNotificationSignals)
+bool static FlushStateToDisk(
+    CValidationState& state,
+    FlushStateMode mode,
+    MainNotificationSignals& mainNotificationSignals,
+    CCriticalSection& mainCriticalSection)
 {
-    LOCK(cs_main);
+    LOCK(mainCriticalSection);
 
     ChainstateManager::Reference chainstate;
     auto& coinsTip = chainstate->CoinsTip();
@@ -613,7 +617,7 @@ void FlushStateToDisk(FlushStateMode mode)
 {
     static MainNotificationSignals& notificationSignals = GetMainNotificationInterface();
     CValidationState state;
-    FlushStateToDisk(state, mode, notificationSignals);
+    FlushStateToDisk(state, mode, notificationSignals,cs_main);
 }
 
 /** Update chainActive and related internal data structures. */
@@ -729,7 +733,7 @@ public:
         FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
         if (blockIndex->pprev && (blockIndex->GetBlockPos().nFile != blockIndex->pprev->GetBlockPos().nFile))
             flushMode = FLUSH_STATE_ALWAYS;
-        if (!FlushStateToDisk(state_, flushMode,mainNotificationSignals_))
+        if (!FlushStateToDisk(state_, flushMode,mainNotificationSignals_,mainCriticalSection_))
             return false;
 
         // Remove conflicting transactions from the mempool.
@@ -766,7 +770,7 @@ public:
         std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
 
         // Write the chain state to disk, if necessary.
-        if (!FlushStateToDisk(state_, FLUSH_STATE_ALWAYS, mainNotificationSignals_))
+        if (!FlushStateToDisk(state_, FLUSH_STATE_ALWAYS, mainNotificationSignals_,mainCriticalSection_))
             return false;
         // Resurrect mempool transactions from the disconnected block.
         for(const CTransaction& tx: blockTransactions) {
@@ -1207,7 +1211,7 @@ public:
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
 
         // Write changes periodically to disk, after relay.
-        if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC,mainNotificationSignals_)) {
+        if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
             return false;
         }
         VerifyBlockIndexTree(*chainstateRef_,mainCriticalSection_, blockIndexSuccessors_, blockIndexCandidates_);
@@ -1623,7 +1627,7 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
             if (!GetChainExtensionService().updateActiveChain(state, &block,false))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
-            return FlushStateToDisk(state, FLUSH_STATE_ALWAYS,GetMainNotificationInterface());
+            return FlushStateToDisk(state, FLUSH_STATE_ALWAYS,GetMainNotificationInterface(),cs_main);
         } catch (std::runtime_error& e) {
             return error("LoadBlockIndex() : failed to initialize block database: %s", e.what());
         }

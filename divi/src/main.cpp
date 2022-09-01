@@ -625,7 +625,7 @@ void static UpdateTip(const CBlockIndex* pindexNew)
     chain.SetTip(pindexNew);
 
     // New best block
-    LogPrintf("UpdateTip: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s cache=%u\n",
+    LogPrintf("%s: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s cache=%u\n", __func__,
               chain.Tip()->GetBlockHash(), chain.Height(), log(chain.Tip()->nChainWork.getdouble()) / log(2.0), (unsigned long)chain.Tip()->nChainTx,
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chain.Tip()->GetBlockTime()),
                (unsigned int)chainstate->CoinsTip().GetCacheSize());

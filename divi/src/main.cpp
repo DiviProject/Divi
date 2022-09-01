@@ -902,7 +902,6 @@ private:
 
     bool transitionToMostWorkChainTip(
         CValidationState& state,
-        const I_MostWorkChainTransitionMediator& chainTransitionMediator,
         ChainstateManager& chainstate,
         const CBlock* pblock) const
     {
@@ -921,14 +920,14 @@ private:
                     continue;
                 }
 
-                pindexMostWork = chainTransitionMediator.findMostWorkChain();
+                pindexMostWork = chainTransitionMediator_->findMostWorkChain();
 
                 // Whether we have anything to do at all.
                 if (pindexMostWork == NULL || pindexMostWork == chain.Tip())
                     return true;
 
                 const CBlock* connectingBlock = (pblock && pblock->GetHash() == pindexMostWork->GetBlockHash())? pblock : nullptr;
-                if (!chainTransitionMediator.transitionActiveChainToMostWorkChain(state, pindexMostWork, connectingBlock))
+                if (!chainTransitionMediator_->transitionActiveChainToMostWorkChain(state, pindexMostWork, connectingBlock))
                     return false;
 
                 pindexNewTip = chain.Tip();
@@ -1014,7 +1013,7 @@ public:
         const CBlock* pblock,
         bool fAlreadyChecked) const override
     {
-        const bool result = transitionToMostWorkChainTip(state, *chainTransitionMediator_, *chainstateRef_, pblock);
+        const bool result = transitionToMostWorkChainTip(state, *chainstateRef_, pblock);
         // Write changes periodically to disk, after relay.
         if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
             return false;

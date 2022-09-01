@@ -1014,12 +1014,7 @@ public:
         const CBlock* pblock,
         bool fAlreadyChecked) const override
     {
-        ChainTipManager chainTipManager(
-            chainParameters_, settings_,mainCriticalSection_, mempool_, mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_);
-        MostWorkChainTransitionMediator chainTransitionMediator(
-            settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, chainTipManager);
-        const bool result = transitionToMostWorkChainTip(state, chainTransitionMediator, *chainstateRef_, pblock);
-
+        const bool result = transitionToMostWorkChainTip(state, *chainTransitionMediator_, *chainstateRef_, pblock);
         // Write changes periodically to disk, after relay.
         if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
             return false;

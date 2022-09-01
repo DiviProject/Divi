@@ -105,7 +105,6 @@ extern Settings& settings;
 
 CCriticalSection cs_main;
 std::map<uint256, uint256> mapProofOfStake;
-int64_t timeOfLastChainTipUpdate =0;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1087,6 +1086,7 @@ bool AcceptBlock(
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
+    int64_t& timeOfLastChainTipUpdate_;
     const MasternodeModule& masternodeModule_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
@@ -1137,7 +1137,7 @@ private:
             if (!fInitialDownload) {
                 // Notify external listeners about the new tip.
                 mainNotificationSignals_.UpdatedBlockTip(pindexNewTip);
-                timeOfLastChainTipUpdate = GetTime();
+                timeOfLastChainTipUpdate_ = GetTime();
             }
         } while (pindexMostWork != chain.Tip());
 
@@ -1145,6 +1145,7 @@ private:
     }
 public:
     ChainExtensionService(
+        int64_t& timeOfLastChainTipUpdate,
         const MasternodeModule& masternodeModule,
         MainNotificationSignals& mainNotificationSignals,
         CCriticalSection& mainCriticalSection,
@@ -1153,7 +1154,8 @@ public:
         const CSporkManager& sporkManager,
         BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
         BlockIndexCandidates& blockIndexCandidates
-        ): masternodeModule_(masternodeModule)
+        ): timeOfLastChainTipUpdate_(timeOfLastChainTipUpdate)
+        , masternodeModule_(masternodeModule)
         , mainNotificationSignals_(mainNotificationSignals)
         , mainCriticalSection_(mainCriticalSection)
         , settings_(settings)
@@ -1237,12 +1239,14 @@ public:
     }
 };
 
+static int64_t timeOfLastChainTipUpdate =0;
 std::unique_ptr<ChainExtensionService> chainExtensionService;
 void InitializeChainExtensionService(const MasternodeModule& masternodeModule)
 {
     assert(chainExtensionService == nullptr);
     chainExtensionService.reset(
         new ChainExtensionService(
+            timeOfLastChainTipUpdate,
             masternodeModule,
             GetMainNotificationInterface(),
             cs_main,

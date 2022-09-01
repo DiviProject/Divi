@@ -653,6 +653,8 @@ void static UpdateTip(const CBlockIndex* pindexNew)
 class ChainTipManager final: public I_ChainTipManager
 {
 private:
+    const Settings& settings_;
+    CCriticalSection& mainCriticalSection_;
     CTxMemPool& mempool_;
     MainNotificationSignals& mainNotificationSignals_;
     std::map<uint256, NodeId>& peerIdByBlockHash_;
@@ -665,6 +667,8 @@ private:
     const BlockConnectionService blockConnectionService_;
 public:
     ChainTipManager(
+        const Settings& settings,
+        CCriticalSection& mainCriticalSection,
         CTxMemPool& mempool,
         MainNotificationSignals& mainNotificationSignals,
         const MasternodeModule& masternodeModule,
@@ -674,7 +678,9 @@ public:
         const bool defaultBlockChecking,
         CValidationState& state,
         const bool updateCoinDatabaseOnly
-        ): mempool_(mempool)
+        ): settings_(settings)
+        , mainCriticalSection_(mainCriticalSection)
+        , mempool_(mempool)
         , mainNotificationSignals_(mainNotificationSignals)
         , peerIdByBlockHash_(peerIdByBlockHash)
         , sporkManager_(sporkManager)
@@ -688,7 +694,7 @@ public:
 
     bool connectTip(const CBlock* pblock, CBlockIndex* blockIndex) const override
     {
-        AssertLockHeld(cs_main);
+        AssertLockHeld(mainCriticalSection_);
         const bool fAlreadyChecked = (!pblock)? false: defaultBlockChecking_;
         auto& coinsTip = chainstate_.CoinsTip();
         const auto& blockMap = chainstate_.GetBlockMap();
@@ -711,7 +717,7 @@ public:
             bool rv = blockConnectionService_.ConnectBlock(*pblock,state_,blockIndex,false,fAlreadyChecked);
             if (!rv) {
                 if (state_.IsInvalid())
-                    InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(cs_main,settings),settings,cs_main,blockIndex, state_);
+                    InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(mainCriticalSection_,settings_),settings_,mainCriticalSection_,blockIndex, state_);
                 return error("%s : ConnectBlock %s failed",__func__, blockIndex->GetBlockHash());
             }
             peerIdByBlockHash_.erase(inv.GetHash());
@@ -741,7 +747,7 @@ public:
     }
     bool disconnectTip() const override
     {
-        AssertLockHeld(cs_main);
+        AssertLockHeld(mainCriticalSection_);
 
         auto& coinsTip = chainstate_.CoinsTip();
         const auto& blockMap = chainstate_.GetBlockMap();
@@ -1193,7 +1199,7 @@ public:
         bool fAlreadyChecked) const override
     {
         ChainTipManager chainTipManager(
-            mempool_, mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
+            settings_,mainCriticalSection_, mempool_, mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
             settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
@@ -1209,7 +1215,7 @@ public:
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
         ChainTipManager chainTipManager(
-            mempool_, mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
+            settings_,mainCriticalSection_,mempool_, mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
         return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override

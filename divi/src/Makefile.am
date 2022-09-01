@@ -240,6 +240,7 @@ BITCOIN_CORE_H = \
   ChainSyncHelpers.h \
   TransactionFinalityHelpers.h \
   ChainTipManager.h \
+  ChainExtensionService.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \
@@ -474,6 +475,7 @@ libbitcoin_server_a_SOURCES = \
   ChainSyncHelpers.cpp \
   TransactionFinalityHelpers.cpp \
   ChainTipManager.cpp \
+  ChainExtensionService.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \

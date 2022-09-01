@@ -20,6 +20,7 @@
 #include <BlockRejects.h>
 #include "BlockRewards.h"
 #include "BlockSigning.h"
+#include <ChainTipManager.h>
 #include <ChainstateManager.h>
 #include "chainparams.h"
 #include "checkqueue.h"
@@ -574,176 +575,6 @@ void FlushStateToDisk()
     FlushStateToDisk(state, FlushStateMode::FLUSH_STATE_ALWAYS, notificationSignals,cs_main);
 }
 
-/** Update chainActive and related internal data structures. */
-void static UpdateTip(const CBlockIndex* pindexNew)
-{
-    ChainstateManager::Reference chainstate;
-    auto& chain = chainstate->ActiveChain();
-    chain.SetTip(pindexNew);
-
-    // New best block
-    LogPrintf("%s: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s cache=%u\n", __func__,
-              chain.Tip()->GetBlockHash(), chain.Height(), log(chain.Tip()->nChainWork.getdouble()) / log(2.0), (unsigned long)chain.Tip()->nChainTx,
-              DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chain.Tip()->GetBlockTime()),
-               (unsigned int)chainstate->CoinsTip().GetCacheSize());
-
-
-    // Check the version of the last 100 blocks to see if we need to upgrade:
-    static bool fWarned = false;
-    if (!IsInitialBlockDownload(cs_main,settings) && !fWarned) {
-        int nUpgraded = 0;
-        const CBlockIndex* pindex = chain.Tip();
-        for (int i = 0; i < 100 && pindex != NULL; i++) {
-            if (pindex->nVersion > CBlock::CURRENT_VERSION)
-                ++nUpgraded;
-            pindex = pindex->pprev;
-        }
-        if (nUpgraded > 0)
-            LogPrintf("SetBestChain: %d of last 100 blocks above version %d\n", nUpgraded, (int)CBlock::CURRENT_VERSION);
-        if (nUpgraded > 100 / 2) {
-            std::string warningMessage = translate("Warning: This version is obsolete, upgrade required!");
-            Warnings::setMiscWarning(warningMessage);
-            CAlert::Notify(settings,warningMessage, true);
-            fWarned = true;
-        }
-    }
-}
-
-
-class ChainTipManager final: public I_ChainTipManager
-{
-private:
-    const Settings& settings_;
-    CCriticalSection& mainCriticalSection_;
-    CTxMemPool& mempool_;
-    MainNotificationSignals& mainNotificationSignals_;
-    std::map<uint256, NodeId>& peerIdByBlockHash_;
-    const CSporkManager& sporkManager_;
-    ChainstateManager& chainstate_;
-    const bool defaultBlockChecking_;
-    CValidationState& state_;
-    const bool updateCoinDatabaseOnly_;
-    const BlockDiskDataReader blockDiskReader_;
-    const BlockConnectionService blockConnectionService_;
-public:
-    ChainTipManager(
-        const Settings& settings,
-        CCriticalSection& mainCriticalSection,
-        CTxMemPool& mempool,
-        MainNotificationSignals& mainNotificationSignals,
-        const MasternodeModule& masternodeModule,
-        std::map<uint256, NodeId>& peerIdByBlockHash,
-        const CSporkManager& sporkManager,
-        ChainstateManager& chainstate,
-        const bool defaultBlockChecking,
-        CValidationState& state,
-        const bool updateCoinDatabaseOnly
-        ): settings_(settings)
-        , mainCriticalSection_(mainCriticalSection)
-        , mempool_(mempool)
-        , mainNotificationSignals_(mainNotificationSignals)
-        , peerIdByBlockHash_(peerIdByBlockHash)
-        , sporkManager_(sporkManager)
-        , chainstate_(chainstate)
-        , defaultBlockChecking_(defaultBlockChecking)
-        , state_(state)
-        , updateCoinDatabaseOnly_(updateCoinDatabaseOnly)
-        , blockDiskReader_()
-        , blockConnectionService_(Params(),masternodeModule, chainstate_.GetBlockMap(), &chainstate_.BlockTree(), &chainstate_.CoinsTip(),sporkManager_, blockDiskReader_,false)
-    {}
-
-    bool connectTip(const CBlock* pblock, CBlockIndex* blockIndex) const override
-    {
-        AssertLockHeld(mainCriticalSection_);
-        const bool fAlreadyChecked = (!pblock)? false: defaultBlockChecking_;
-        auto& coinsTip = chainstate_.CoinsTip();
-        const auto& blockMap = chainstate_.GetBlockMap();
-
-        assert(blockIndex->pprev == chainstate_.ActiveChain().Tip());
-        mempool_.check(&coinsTip, blockMap);
-
-        assert(pblock || !fAlreadyChecked);
-
-        // Read block from disk.
-        CBlock block;
-        if (!pblock) {
-            if (!blockDiskReader_.ReadBlock(blockIndex,block))
-                return state_.Abort("Failed to read block");
-            pblock = &block;
-        }
-        // Apply the block atomically to the chain state.
-        {
-            CInv inv(MSG_BLOCK, blockIndex->GetBlockHash());
-            bool rv = blockConnectionService_.ConnectBlock(*pblock,state_,blockIndex,false,fAlreadyChecked);
-            if (!rv) {
-                if (state_.IsInvalid())
-                    InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(mainCriticalSection_,settings_),settings_,mainCriticalSection_,blockIndex, state_);
-                return error("%s : ConnectBlock %s failed",__func__, blockIndex->GetBlockHash());
-            }
-            peerIdByBlockHash_.erase(inv.GetHash());
-        }
-
-        // Write the chain state to disk, if necessary. Always write to disk if this is the first of a new file.
-        FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
-        if (blockIndex->pprev && (blockIndex->GetBlockPos().nFile != blockIndex->pprev->GetBlockPos().nFile))
-            flushMode = FLUSH_STATE_ALWAYS;
-        if (!FlushStateToDisk(state_, flushMode,mainNotificationSignals_,mainCriticalSection_))
-            return false;
-
-        // Remove conflicting transactions from the mempool.
-        std::list<CTransaction> txConflicted;
-        mempool_.removeConfirmedTransactions(pblock->vtx, blockIndex->nHeight, txConflicted);
-        mempool_.check(&coinsTip, blockMap);
-        // Update chainActive & related variables.
-        UpdateTip(blockIndex);
-        // Tell wallet about transactions that went from mempool
-        // to conflicted:
-        std::vector<CTransaction> conflictedTransactions(txConflicted.begin(),txConflicted.end());
-        mainNotificationSignals_.SyncTransactions(conflictedTransactions, NULL,TransactionSyncType::CONFLICTED_TX);
-        // ... and about transactions that got confirmed:
-        mainNotificationSignals_.SyncTransactions(pblock->vtx, pblock, TransactionSyncType::NEW_BLOCK);
-
-        return true;
-    }
-    bool disconnectTip() const override
-    {
-        AssertLockHeld(mainCriticalSection_);
-
-        auto& coinsTip = chainstate_.CoinsTip();
-        const auto& blockMap = chainstate_.GetBlockMap();
-        const auto& chain = chainstate_.ActiveChain();
-
-        const CBlockIndex* pindexDelete = chain.Tip();
-        assert(pindexDelete);
-        mempool_.check(&coinsTip, blockMap);
-        // Read block from disk.
-        std::pair<CBlock,bool> disconnectedBlock =
-            blockConnectionService_.DisconnectBlock(state_, pindexDelete, updateCoinDatabaseOnly_);
-        if(!disconnectedBlock.second)
-            return error("%s : DisconnectBlock %s failed", __func__, pindexDelete->GetBlockHash());
-        std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
-
-        // Write the chain state to disk, if necessary.
-        if (!FlushStateToDisk(state_, FLUSH_STATE_ALWAYS, mainNotificationSignals_,mainCriticalSection_))
-            return false;
-        // Resurrect mempool transactions from the disconnected block.
-        for(const CTransaction& tx: blockTransactions) {
-            // ignore validation errors in resurrected transactions
-            std::list<CTransaction> removed;
-            CValidationState stateDummy;
-            if (tx.IsCoinBase() || tx.IsCoinStake() || !AcceptToMemoryPool(mempool_, stateDummy, tx, false))
-                mempool_.remove(tx, removed, true);
-        }
-        mempool_.removeCoinbaseSpends(&coinsTip, pindexDelete->nHeight);
-        mempool_.check(&coinsTip, blockMap);
-        // Update chainActive and related variables.
-        UpdateTip(pindexDelete->pprev);
-        // Let wallets know transactions went from 1-confirmed to
-        // 0-confirmed or conflicted:
-        mainNotificationSignals_.SyncTransactions(blockTransactions, NULL,TransactionSyncType::BLOCK_DISCONNECT);
-        return true;
-    }
-};
 
 CBlockIndex* AddToBlockIndex(const CBlock& block)
 {
@@ -1059,6 +890,7 @@ private:
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
     const Settings& settings_;
+    const CChainParams& chainParameters_;
     const CSporkManager& sporkManager_;
     mutable ChainstateManager::Reference chainstateRef_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
@@ -1129,6 +961,7 @@ public:
         , mainNotificationSignals_(mainNotificationSignals)
         , mainCriticalSection_(mainCriticalSection)
         , settings_(settings)
+        , chainParameters_(chainParameters)
         , sporkManager_(sporkManager)
         , chainstateRef_()
         , peerIdByBlockHash_()
@@ -1159,7 +992,7 @@ public:
         bool fAlreadyChecked) const override
     {
         ChainTipManager chainTipManager(
-            settings_,mainCriticalSection_, mempool_, mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
+            chainParameters_, settings_,mainCriticalSection_, mempool_, mainNotificationSignals_,masternodeModule_, peerIdByBlockHash_, sporkManager_,*chainstateRef_,fAlreadyChecked,state,false);
         MostWorkChainTransitionMediator chainTransitionMediator(
             settings_, mainCriticalSection_, *chainstateRef_, blockIndexSuccessors_, blockIndexCandidates_, state,chainTipManager);
         const bool result = transitionToMostWorkChainTip(chainTransitionMediator, *chainstateRef_, pblock);
@@ -1175,7 +1008,7 @@ public:
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override
     {
         ChainTipManager chainTipManager(
-            settings_,mainCriticalSection_,mempool_, mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
+            chainParameters_, settings_,mainCriticalSection_,mempool_, mainNotificationSignals_, masternodeModule_, peerIdByBlockHash_,sporkManager_,*chainstateRef_,true,state,updateCoinDatabaseOnly);
         return InvalidateBlock(chainTipManager, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, mainCriticalSection_, *chainstateRef_, blockIndex);
     }
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override

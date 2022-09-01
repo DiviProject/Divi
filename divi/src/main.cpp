@@ -896,7 +896,10 @@ private:
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors_;
     BlockIndexCandidates& blockIndexCandidates_;
+    std::unique_ptr<ChainTipManager> chainTipManager_;
+    std::unique_ptr<MostWorkChainTransitionMediator> chainTransitionMediator_;
     const ProofOfStakeModule posModule_;
+
     bool transitionToMostWorkChainTip(
         CValidationState& state,
         const I_MostWorkChainTransitionMediator& chainTransitionMediator,
@@ -968,6 +971,25 @@ public:
         , peerIdByBlockHash_()
         , blockIndexSuccessors_(blockIndexSuccessors)
         , blockIndexCandidates_(blockIndexCandidates)
+        , chainTipManager_(
+            new ChainTipManager(
+                chainParameters_,
+                settings_,
+                mainCriticalSection_,
+                mempool_,
+                mainNotificationSignals_,
+                masternodeModule_,
+                peerIdByBlockHash_,
+                sporkManager_,
+                *chainstateRef_))
+        , chainTransitionMediator_(
+            new MostWorkChainTransitionMediator(
+                settings_,
+                mainCriticalSection_,
+                *chainstateRef_,
+                blockIndexSuccessors_,
+                blockIndexCandidates_,
+                *chainTipManager_))
         , posModule_(chainParameters, chainstateRef_->ActiveChain(), chainstateRef_->GetBlockMap())
     {
     }

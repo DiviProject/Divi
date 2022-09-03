@@ -37,7 +37,7 @@ std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(
         LOCK(mainCriticalSection_);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
         MarkBlockAsReceived(block.GetHash());
         // Store to disk
-        bool ret = chainExtensionService_.assignBlockIndex(block, state, &pindex, dbp_, true);
+        bool ret = chainExtensionService_.assignBlockIndex(block, state, &pindex, dbp_);
         if (pindex && pfrom_) {
             chainExtensionService_.recordBlockSource(pindex->GetBlockHash(), pfrom_->GetId());
         }

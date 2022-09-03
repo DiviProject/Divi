@@ -65,8 +65,7 @@ public:
         CBlock& block,
         CValidationState& state,
         CBlockIndex** ppindex,
-        CDiskBlockPos* dbp,
-        bool fAlreadyCheckedBlock) const override;
+        CDiskBlockPos* dbp) const override;
     virtual bool updateActiveChain(
         CValidationState& state,
         const CBlock* pblock,

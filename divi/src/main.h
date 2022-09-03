@@ -59,7 +59,7 @@ I_ChainExtensionService& GetChainExtensionService();
  * @param[out]  dbp     If pblock is stored to disk (or already there), this will be set to its location.
  * @return True if state.IsValid()
  */
-bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
+bool ProcessNewBlock(ChainstateManager& chainstate, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
 /** Initialize a new block tree database + block data on disk */
 bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkManager);

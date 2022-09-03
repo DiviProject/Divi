@@ -682,7 +682,7 @@ I_ChainExtensionService& GetChainExtensionService()
     return *chainExtensionService;
 }
 
-bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
+bool ProcessNewBlock(ChainstateManager& chainstate, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
     // Preliminary checks
     int64_t nStartTime = GetTimeMillis();
@@ -1743,7 +1743,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
             CValidationState state;
             if (!blockMap.count(block.GetHash())) {
-                ProcessNewBlock(*chainstate, sporkManager, state, pfrom, &block);
+                ProcessNewBlock(*chainstate, state, pfrom, &block);
                 int nDoS;
                 if(state.IsInvalid(nDoS)) {
                     pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),

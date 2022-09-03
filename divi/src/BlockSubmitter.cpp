@@ -12,9 +12,8 @@
 
 extern CCriticalSection cs_main;
 
-BlockSubmitter::BlockSubmitter(const CSporkManager& sporkManager): sporkManager_(sporkManager)
+BlockSubmitter::BlockSubmitter()
 {
-
 }
 
 bool BlockSubmitter::IsBlockValidChainExtension(CBlock* pblock) const
@@ -37,7 +36,7 @@ bool BlockSubmitter::submitBlockForChainExtension(CBlock& block) const
 
     // Process this block the same as if we had received it from another node
     CValidationState state;
-    if (!IsBlockValidChainExtension(&block) || !ProcessNewBlock(*chainstate, sporkManager_, state, NULL, &block))
+    if (!IsBlockValidChainExtension(&block) || !ProcessNewBlock(*chainstate, state, NULL, &block))
         return error("%s : block not accepted",__func__);
 
     return true;
@@ -46,5 +45,5 @@ bool BlockSubmitter::submitBlockForChainExtension(CBlock& block) const
 bool BlockSubmitter::loadBlockForChainExtension(CValidationState& state, CBlock& block, CDiskBlockPos* blockfilePositionData) const
 {
     ChainstateManager::Reference chainstate;
-    return ProcessNewBlock(*chainstate, sporkManager_, state, NULL, &block, blockfilePositionData);
+    return ProcessNewBlock(*chainstate, state, NULL, &block, blockfilePositionData);
 }

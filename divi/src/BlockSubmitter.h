@@ -3,14 +3,12 @@
 #include <I_BlockSubmitter.h>
 class CValidationState;
 class CDiskBlockPos;
-class CSporkManager;
 class BlockSubmitter final: public I_BlockSubmitter
 {
 private:
-    const CSporkManager& sporkManager_;
     bool IsBlockValidChainExtension(CBlock* pblock) const;
 public:
-    BlockSubmitter(const CSporkManager& sporkManager);
+    BlockSubmitter();
     bool submitBlockForChainExtension(CBlock& block) const override;
     bool loadBlockForChainExtension(
         CValidationState& state,

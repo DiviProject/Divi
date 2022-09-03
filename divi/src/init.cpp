@@ -168,7 +168,7 @@ static std::string stakingWalletName = "";
 void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& stakingWallet)
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
-    static BlockSubmitter blockSubmitter(GetSporkManager());
+    static BlockSubmitter blockSubmitter;
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
     if(underRegressionTesting) settings.SetParameter("-staking", "0");
 
@@ -470,13 +470,13 @@ public:
     }
 };
 
-bool LoadExternalBlockFile(ChainstateManager& chainstate, const CSporkManager& sporkManager, FILE* fileIn, CDiskBlockPos* dbp = NULL)
+bool LoadExternalBlockFile(ChainstateManager& chainstate, FILE* fileIn, CDiskBlockPos* dbp = NULL)
 {
     // Map of disk positions for blocks with unknown parent (only used for reindex)
     static std::multimap<uint256, CDiskBlockPos> mapBlocksUnknownParent;
     int64_t nStart = GetTimeMillis();
 
-    BlockSubmitter blockSubmitter(sporkManager);
+    BlockSubmitter blockSubmitter;
     const auto& blockMap = chainstate.GetBlockMap();
 
     int nLoaded = 0;
@@ -586,7 +586,7 @@ void ReconstructBlockIndex(ChainstateManager& chainstate, const CSporkManager& s
         if (!file)
             break; // This error is logged in OpenBlockFile
         LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
-        LoadExternalBlockFile(chainstate, sporkManager, file, &pos);
+        LoadExternalBlockFile(chainstate, file, &pos);
         nFile++;
     }
     chainstate.BlockTree().WriteReindexing(false);
@@ -616,7 +616,7 @@ void ReindexAndImportBlockFiles(ChainstateManager* chainstate, const CSporkManag
             CImportingNow imp(settings);
             boost::filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
             LogPrintf("Importing bootstrap.dat...\n");
-            LoadExternalBlockFile(*chainstate, *sporkManager, file);
+            LoadExternalBlockFile(*chainstate, file);
             RenameOver(pathBootstrap, pathBootstrapOld);
         } else {
             LogPrintf("Warning: Could not open bootstrap file %s\n", pathBootstrap.string());
@@ -629,7 +629,7 @@ void ReindexAndImportBlockFiles(ChainstateManager* chainstate, const CSporkManag
         if (file) {
             CImportingNow imp(settings);
             LogPrintf("Importing blocks file %s...\n", path.string());
-            LoadExternalBlockFile(*chainstate, *sporkManager, file);
+            LoadExternalBlockFile(*chainstate, file);
         } else {
             LogPrintf("Warning: Could not open blocks file %s\n", path.string());
         }

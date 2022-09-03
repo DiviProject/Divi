@@ -30,35 +30,30 @@ AcceptBlockValidator::AcceptBlockValidator(
 {
 }
 
-std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(CBlock& block, bool blockChecked, CValidationState& state) const
+std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(CBlock& block, CValidationState& state) const
 {
     CBlockIndex* pindex = nullptr;
     {
         LOCK(mainCriticalSection_);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
-
-        MarkBlockAsReceived (block.GetHash ());
-        if (!blockChecked) {
-            return std::make_pair(pindex,error ("%s : CheckBlock FAILED for block %s", __func__, block.GetHash()));
-        }
-
+        MarkBlockAsReceived(block.GetHash());
         // Store to disk
-        bool ret = chainExtensionService_.assignBlockIndex(block, state, &pindex, dbp_, blockChecked);
+        bool ret = chainExtensionService_.assignBlockIndex(block, state, &pindex, dbp_, true);
         if (pindex && pfrom_) {
             chainExtensionService_.recordBlockSource(pindex->GetBlockHash(), pfrom_->GetId());
         }
         return std::make_pair(pindex,ret);
     }
 }
-bool AcceptBlockValidator::connectActiveChain(const CBlock& block, bool blockChecked, CValidationState& state) const
+bool AcceptBlockValidator::connectActiveChain(const CBlock& block, CValidationState& state) const
 {
-    if (!chainExtensionService_.updateActiveChain(state, &block, blockChecked))
+    if (!chainExtensionService_.updateActiveChain(state, &block, true))
         return error("%s : updateActiveChain failed", __func__);
 
     return true;
 }
-bool AcceptBlockValidator::checkBlockRequirements(const CBlock& block, bool& checked, CValidationState& state) const
+bool AcceptBlockValidator::checkBlockRequirements(const CBlock& block, CValidationState& state) const
 {
-    checked = CheckBlock(block, state);
+    const bool checked = CheckBlock(block, state);
     if (!CheckBlockSignature(block))
         return error("%s : bad proof-of-stake block signature",__func__);
 
@@ -71,6 +66,12 @@ bool AcceptBlockValidator::checkBlockRequirements(const CBlock& block, bool& che
             pfrom_->PushMessage("getblocks", chainstate_.ActiveChain().GetLocator(), uint256(0));
             return false;
         }
+    }
+    if(!checked)
+    {
+        LOCK(mainCriticalSection_);
+        MarkBlockAsReceived(block.GetHash());
+        return error("%s : CheckBlock FAILED for block %s", __func__, block.GetHash());
     }
     return true;
 }

@@ -20,8 +20,7 @@ public:
         CBlock& block,
         CValidationState& state,
         CBlockIndex** ppindex,
-        CDiskBlockPos* dbp,
-        bool fAlreadyCheckedBlock) const = 0;
+        CDiskBlockPos* dbp) const = 0;
 
     virtual bool updateActiveChain(
         CValidationState& state,

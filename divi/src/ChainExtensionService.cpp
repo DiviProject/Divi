@@ -361,10 +361,9 @@ bool ChainExtensionService::assignBlockIndex(
     CBlock& block,
     CValidationState& state,
     CBlockIndex** ppindex,
-    CDiskBlockPos* dbp,
-    bool fAlreadyCheckedBlock) const
+    CDiskBlockPos* dbp) const
 {
-    return AcceptBlock(mainCriticalSection_,settings_, posModule_->proofOfStakeGenerator(),block,*chainstateRef_,sporkManager_,state,ppindex,dbp,fAlreadyCheckedBlock);
+    return AcceptBlock(mainCriticalSection_,settings_, posModule_->proofOfStakeGenerator(),block,*chainstateRef_,sporkManager_,state,ppindex,dbp,true);
 }
 
 bool ChainExtensionService::updateActiveChain(

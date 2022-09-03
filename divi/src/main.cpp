@@ -1023,7 +1023,7 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
             CBlockIndex* pindex = AddToBlockIndex(block);
             if (!ReceivedBlockTransactions(block, pindex, blockPos))
                 return error("LoadBlockIndex() : genesis block not accepted");
-            if (!GetChainExtensionService().updateActiveChain(state, &block,false))
+            if (!GetChainExtensionService().updateActiveChain(state, &block))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS,GetMainNotificationInterface(),cs_main);

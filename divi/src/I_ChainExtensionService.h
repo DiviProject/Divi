@@ -24,8 +24,7 @@ public:
 
     virtual bool updateActiveChain(
         CValidationState& state,
-        const CBlock* pblock,
-        bool fAlreadyChecked) const = 0;
+        const CBlock* pblock) const = 0;
 
     virtual bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const = 0;
     virtual bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const = 0;

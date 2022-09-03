@@ -46,7 +46,7 @@ std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(
 }
 bool AcceptBlockValidator::connectActiveChain(const CBlock& block, CValidationState& state) const
 {
-    if (!chainExtensionService_.updateActiveChain(state, &block, true))
+    if (!chainExtensionService_.updateActiveChain(state, &block))
         return error("%s : updateActiveChain failed", __func__);
 
     return true;

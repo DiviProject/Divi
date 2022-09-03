@@ -21,7 +21,6 @@ private:
     CCriticalSection& mainCriticalSection_;
     const CChainParams& chainParameters_;
     ChainstateManager& chainstate_;
-    CValidationState& state_;
     CNode* pfrom_;
     CDiskBlockPos* dbp_;
 public:
@@ -30,12 +29,11 @@ public:
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,
         ChainstateManager& chainstate,
-        CValidationState& state,
         CNode* pfrom,
         CDiskBlockPos* dbp);
 
-    std::pair<CBlockIndex*, bool> validateAndAssignBlockIndex(CBlock& block, bool blockChecked) const override;
-    bool connectActiveChain(const CBlock& block, bool blockChecked) const override;
-    bool checkBlockRequirements(const CBlock& block, bool& checked) const override;
+    std::pair<CBlockIndex*, bool> validateAndAssignBlockIndex(CBlock& block, bool blockChecked, CValidationState& state) const override;
+    bool connectActiveChain(const CBlock& block, bool blockChecked, CValidationState& state) const override;
+    bool checkBlockRequirements(const CBlock& block, bool& checked, CValidationState& state) const override;
 };
 #endif// ACCEPT_BLOCK_VALIDATOR_H

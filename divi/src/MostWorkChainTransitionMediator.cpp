@@ -71,7 +71,7 @@ MostWorkChainTransitionMediator::BlockConnectionResult MostWorkChainTransitionMe
     CBlockIndex* proposedNewChainTip,
     CBlockIndex* pindexConnect) const
 {
-    const bool blockSuccessfullyConnected = chainTipManager_.connectTip(state, blockToConnect,pindexConnect,false);
+    const bool blockSuccessfullyConnected = chainTipManager_.connectTip(state, blockToConnect,pindexConnect);
     if (!blockSuccessfullyConnected)
     {
         if(!checkBlockConnectionState(state, proposedNewChainTip))

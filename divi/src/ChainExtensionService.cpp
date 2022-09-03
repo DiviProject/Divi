@@ -184,8 +184,7 @@ bool AcceptBlock(
     const CSporkManager& sporkManager,
     CValidationState& state,
     CBlockIndex** ppindex,
-    CDiskBlockPos* dbp,
-    bool fAlreadyCheckedBlock)
+    CDiskBlockPos* dbp)
 {
     AssertLockHeld(mainCriticalSection);
 
@@ -226,7 +225,8 @@ bool AcceptBlock(
         return true;
     }
 
-    if ((!fAlreadyCheckedBlock && !CheckBlock(block, state)) || !ContextualCheckBlock(mainCriticalSection, block, state, pindex->pprev)) {
+    if (!ContextualCheckBlock(mainCriticalSection, block, state, pindex->pprev))
+    {
         if (state.IsInvalid() && !state.CorruptionPossible()) {
             pindex->nStatus |= BLOCK_FAILED_VALID;
             BlockFileHelpers::RecordDirtyBlockIndex(pindex);
@@ -363,7 +363,7 @@ bool ChainExtensionService::assignBlockIndex(
     CBlockIndex** ppindex,
     CDiskBlockPos* dbp) const
 {
-    return AcceptBlock(mainCriticalSection_,settings_, posModule_->proofOfStakeGenerator(),block,*chainstateRef_,sporkManager_,state,ppindex,dbp,true);
+    return AcceptBlock(mainCriticalSection_,settings_, posModule_->proofOfStakeGenerator(),block,*chainstateRef_,sporkManager_,state,ppindex,dbp);
 }
 
 bool ChainExtensionService::updateActiveChain(

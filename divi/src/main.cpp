@@ -687,16 +687,16 @@ bool ProcessNewBlock(ChainstateManager& chainstate, const CSporkManager& sporkMa
     // Preliminary checks
     int64_t nStartTime = GetTimeMillis();
 
-    AcceptBlockValidator blockValidator(GetChainExtensionService(), cs_main, Params(), chainstate, state,pfrom, dbp);
+    AcceptBlockValidator blockValidator(GetChainExtensionService(), cs_main, Params(), chainstate, pfrom, dbp);
     bool checked = true;
-    if(!blockValidator.checkBlockRequirements(*pblock,checked)) return false;
+    if(!blockValidator.checkBlockRequirements(*pblock,checked,state)) return false;
 
-    std::pair<CBlockIndex*,bool> assignedBlockIndex = blockValidator.validateAndAssignBlockIndex(*pblock,checked);
+    std::pair<CBlockIndex*,bool> assignedBlockIndex = blockValidator.validateAndAssignBlockIndex(*pblock,checked,state);
     if(!assignedBlockIndex.second) return false;
     CBlockIndex* pindex = assignedBlockIndex.first;
     assert(pindex != nullptr);
 
-    if(!blockValidator.connectActiveChain(*pblock,checked)) return false;
+    if(!blockValidator.connectActiveChain(*pblock,checked,state)) return false;
 
     VoteForMasternodePayee(pindex);
     LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,

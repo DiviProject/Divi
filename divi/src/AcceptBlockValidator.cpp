@@ -19,20 +19,18 @@ AcceptBlockValidator::AcceptBlockValidator(
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,
         ChainstateManager& chainstate,
-        CValidationState& state,
         CNode* pfrom,
         CDiskBlockPos* dbp
         ): chainExtensionService_(chainExtensionService)
         , mainCriticalSection_(mainCriticalSection)
         , chainParameters_(chainParameters)
         , chainstate_(chainstate)
-        , state_(state)
         , pfrom_(pfrom)
         , dbp_(dbp)
 {
 }
 
-std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(CBlock& block, bool blockChecked) const
+std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(CBlock& block, bool blockChecked, CValidationState& state) const
 {
     CBlockIndex* pindex = nullptr;
     {
@@ -44,23 +42,23 @@ std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(
         }
 
         // Store to disk
-        bool ret = chainExtensionService_.assignBlockIndex(block, state_, &pindex, dbp_, blockChecked);
+        bool ret = chainExtensionService_.assignBlockIndex(block, state, &pindex, dbp_, blockChecked);
         if (pindex && pfrom_) {
             chainExtensionService_.recordBlockSource(pindex->GetBlockHash(), pfrom_->GetId());
         }
         return std::make_pair(pindex,ret);
     }
 }
-bool AcceptBlockValidator::connectActiveChain(const CBlock& block, bool blockChecked) const
+bool AcceptBlockValidator::connectActiveChain(const CBlock& block, bool blockChecked, CValidationState& state) const
 {
-    if (!chainExtensionService_.updateActiveChain(state_, &block, blockChecked))
+    if (!chainExtensionService_.updateActiveChain(state, &block, blockChecked))
         return error("%s : updateActiveChain failed", __func__);
 
     return true;
 }
-bool AcceptBlockValidator::checkBlockRequirements(const CBlock& block, bool& checked) const
+bool AcceptBlockValidator::checkBlockRequirements(const CBlock& block, bool& checked, CValidationState& state) const
 {
-    checked = CheckBlock(block, state_);
+    checked = CheckBlock(block, state);
     if (!CheckBlockSignature(block))
         return error("%s : bad proof-of-stake block signature",__func__);
 

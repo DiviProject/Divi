@@ -43,7 +43,7 @@ public:
         const CSporkManager& sporkManager,
         ChainstateManager& chainstate);
     ~ChainTipManager();
-    bool connectTip(CValidationState& state, const CBlock* pblock, CBlockIndex* blockIndex, const bool defaultBlockChecking) const override;
+    bool connectTip(CValidationState& state, const CBlock* pblock, CBlockIndex* blockIndex) const override;
     bool disconnectTip(CValidationState& state, const bool updateCoinDatabaseOnly) const override;
 };
 #endif// CHAIN_TIP_MANGER_H

@@ -101,17 +101,14 @@ ChainTipManager::~ChainTipManager()
     blockDiskReader_.reset();
 }
 
-bool ChainTipManager::connectTip(CValidationState& state,const CBlock* pblock, CBlockIndex* blockIndex, const bool defaultBlockChecking) const
+bool ChainTipManager::connectTip(CValidationState& state,const CBlock* pblock, CBlockIndex* blockIndex) const
 {
     AssertLockHeld(mainCriticalSection_);
-    const bool fAlreadyChecked = (!pblock)? false: defaultBlockChecking;
     auto& coinsTip = chainstate_.CoinsTip();
     const auto& blockMap = chainstate_.GetBlockMap();
 
     assert(blockIndex->pprev == chainstate_.ActiveChain().Tip());
     mempool_.check(&coinsTip, blockMap);
-
-    assert(pblock || !fAlreadyChecked);
 
     // Read block from disk.
     CBlock block;
@@ -122,7 +119,7 @@ bool ChainTipManager::connectTip(CValidationState& state,const CBlock* pblock, C
     }
     // Apply the block atomically to the chain state.
     {
-        bool rv = blockConnectionService_->ConnectBlock(*pblock,state,blockIndex,false,fAlreadyChecked);
+        bool rv = blockConnectionService_->ConnectBlock(*pblock,state,blockIndex,false,false);
         if (!rv) {
             if (state.IsInvalid())
                 InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(mainCriticalSection_,settings_),settings_,mainCriticalSection_,blockIndex, state);

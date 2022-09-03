@@ -1506,7 +1506,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
     uiInterface.InitMessage(translate("Connecting best block..."));
     CValidationState state;
-    if (!GetChainExtensionService().updateActiveChain(state,nullptr,false))
+    if (!GetChainExtensionService().updateActiveChain(state,nullptr))
         strErrors << "Failed to connect best block";
 
     InitializeBestHeaderBlockIndex();

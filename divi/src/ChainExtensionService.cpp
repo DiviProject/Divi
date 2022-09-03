@@ -368,8 +368,7 @@ bool ChainExtensionService::assignBlockIndex(
 
 bool ChainExtensionService::updateActiveChain(
     CValidationState& state,
-    const CBlock* pblock,
-    bool fAlreadyChecked) const
+    const CBlock* pblock) const
 {
     const bool result = transitionToMostWorkChainTip(state, *chainstateRef_, pblock);
     // Write changes periodically to disk, after relay.

@@ -68,8 +68,7 @@ public:
         CDiskBlockPos* dbp) const override;
     virtual bool updateActiveChain(
         CValidationState& state,
-        const CBlock* pblock,
-        bool fAlreadyChecked) const override;
+        const CBlock* pblock) const override;
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override;
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override;
 };

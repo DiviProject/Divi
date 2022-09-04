@@ -239,6 +239,7 @@ BITCOIN_CORE_H = \
   MostWorkChainTransitionMediator.h \
   ChainSyncHelpers.h \
   TransactionFinalityHelpers.h \
+  MempoolConsensus.h \
   ChainTipManager.h \
   ChainExtensionService.h \
   main.h \
@@ -474,6 +475,7 @@ libbitcoin_server_a_SOURCES = \
   MostWorkChainTransitionMediator.cpp \
   ChainSyncHelpers.cpp \
   TransactionFinalityHelpers.cpp \
+  MempoolConsensus.cpp \
   ChainTipManager.cpp \
   ChainExtensionService.cpp \
   main.cpp \

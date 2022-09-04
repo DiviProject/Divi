@@ -14,6 +14,7 @@
 #include "version.h"
 #include <UtxoCheckingAndUpdating.h>
 #include <chainparams.h>
+#include <MempoolConsensus.h>
 
 #include <boost/circular_buffer.hpp>
 
@@ -406,7 +407,7 @@ bool CCoinsViewMemPool::GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins)
 bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx, CValidationState& state)
 {
     constexpr const bool limitFreeTxProcessing = false;
-    bool fAccepted = ::AcceptToMemoryPool(mempool, state, tx, limitFreeTxProcessing);
+    bool fAccepted = MempoolConsensus::AcceptToMemoryPool(mempool, state, tx, limitFreeTxProcessing);
     if (!fAccepted)
         LogPrintf("%s : %s\n", __func__, state.GetRejectReason());
     return fAccepted;

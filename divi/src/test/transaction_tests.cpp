@@ -13,6 +13,7 @@
 #include "script/script_error.h"
 #include "core_io.h"
 #include <defaultValues.h>
+#include <MempoolConsensus.h>
 
 #include <map>
 #include <string>
@@ -337,16 +338,16 @@ BOOST_AUTO_TEST_CASE(test_Get)
     t1.vout[0].nValue = 90*CENT;
     t1.vout[0].scriptPubKey << OP_1;
 
-    BOOST_CHECK(AreInputsStandard(t1, coins));
+    BOOST_CHECK(MempoolConsensus::AreInputsStandard(t1, coins));
     BOOST_CHECK_EQUAL(coins.GetValueIn(t1), (50+21+22)*CENT);
 
     // Adding extra junk to the scriptSig should make it non-standard:
     t1.vin[0].scriptSig << OP_11;
-    BOOST_CHECK(!AreInputsStandard(t1, coins));
+    BOOST_CHECK(!MempoolConsensus::AreInputsStandard(t1, coins));
 
     // ... as should not having enough:
     t1.vin[0].scriptSig = CScript();
-    BOOST_CHECK(!AreInputsStandard(t1, coins));
+    BOOST_CHECK(!MempoolConsensus::AreInputsStandard(t1, coins));
 }
 
 BOOST_AUTO_TEST_CASE(test_IsStandard)
@@ -368,21 +369,21 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     t.vout[0].scriptPubKey = GetScriptForDestination(key.GetPubKey().GetID());
 
     string reason;
-    BOOST_CHECK(IsStandardTx(t, reason));
+    BOOST_CHECK(MempoolConsensus::IsStandardTx(t, reason));
 
     t.vout[0].nValue = 5011; // dust
-    BOOST_CHECK(!IsStandardTx(t, reason));
+    BOOST_CHECK(!MempoolConsensus::IsStandardTx(t, reason));
 
     t.vout[0].nValue = 6011; // not dust
-    BOOST_CHECK(IsStandardTx(t, reason));
+    BOOST_CHECK(MempoolConsensus::IsStandardTx(t, reason));
 
     t.vout[0].scriptPubKey = CScript() << OP_1;
-    BOOST_CHECK(!IsStandardTx(t, reason));
+    BOOST_CHECK(!MempoolConsensus::IsStandardTx(t, reason));
 
     // MAX_OP_META_RELAY-byte TX_NULL_DATA (standard)
     t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3804678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38");
     BOOST_CHECK(MAX_OP_META_RELAY > t.vout[0].scriptPubKey.size());
-    BOOST_CHECK(IsStandardTx(t, reason));
+    BOOST_CHECK(MempoolConsensus::IsStandardTx(t, reason));
 
     // MaxString is used to test the max size of scriptPubKey while using MAX_OP_META_RELAY
     string MaxString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore ve";
@@ -390,46 +391,46 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     // MAX_OP_META_RELAY-byte TX_NULL_DATA (standard MAX SIZE)
     t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex(HexStr(MaxString));
     BOOST_CHECK_EQUAL(MAX_OP_META_RELAY, t.vout[0].scriptPubKey.size());
-    BOOST_CHECK(IsStandardTx(t, reason));
+    BOOST_CHECK(MempoolConsensus::IsStandardTx(t, reason));
 
     // MAX_OP_META_RELAY+1-byte TX_NULL_DATA (non-standard MAX SIZE)
     t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex(HexStr(MaxString + "1"));
     BOOST_CHECK_EQUAL(MAX_OP_META_RELAY + 1, t.vout[0].scriptPubKey.size());
-    BOOST_CHECK(!IsStandardTx(t, reason));
+    BOOST_CHECK(!MempoolConsensus::IsStandardTx(t, reason));
 
     // Data payload can be encoded in any way...
     t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex("");
-    BOOST_CHECK(IsStandardTx(t, reason));
+    BOOST_CHECK(MempoolConsensus::IsStandardTx(t, reason));
     t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex("00") << ParseHex("01");
-    BOOST_CHECK(IsStandardTx(t, reason));
+    BOOST_CHECK(MempoolConsensus::IsStandardTx(t, reason));
     // OP_RESERVED *is* considered to be a PUSHDATA type opcode by IsPushOnly()!
     t.vout[0].scriptPubKey = CScript() << OP_META << OP_RESERVED << -1 << 0 << ParseHex("01") << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 << 10 << 11 << 12 << 13 << 14 << 15 << 16;
-    BOOST_CHECK(IsStandardTx(t, reason));
+    BOOST_CHECK(MempoolConsensus::IsStandardTx(t, reason));
     t.vout[0].scriptPubKey = CScript() << OP_META << 0 << ParseHex("01") << 2 << ParseHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-    BOOST_CHECK(IsStandardTx(t, reason));
+    BOOST_CHECK(MempoolConsensus::IsStandardTx(t, reason));
 
     // ...so long as it only contains PUSHDATA's
     t.vout[0].scriptPubKey = CScript() << OP_META << OP_META;
-    BOOST_CHECK(!IsStandardTx(t, reason));
+    BOOST_CHECK(!MempoolConsensus::IsStandardTx(t, reason));
 
     // TX_NULL_DATA w/o PUSHDATA
     t.vout.resize(1);
     t.vout[0].scriptPubKey = CScript() << OP_META;
-    BOOST_CHECK(IsStandardTx(t, reason));
+    BOOST_CHECK(MempoolConsensus::IsStandardTx(t, reason));
 
     // Only one TX_NULL_DATA permitted in all cases
     t.vout.resize(2);
     t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38");
     t.vout[1].scriptPubKey = CScript() << OP_META << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38");
-    BOOST_CHECK(!IsStandardTx(t, reason));
+    BOOST_CHECK(!MempoolConsensus::IsStandardTx(t, reason));
 
     t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38");
     t.vout[1].scriptPubKey = CScript() << OP_META;
-    BOOST_CHECK(!IsStandardTx(t, reason));
+    BOOST_CHECK(!MempoolConsensus::IsStandardTx(t, reason));
 
     t.vout[0].scriptPubKey = CScript() << OP_META;
     t.vout[1].scriptPubKey = CScript() << OP_META;
-    BOOST_CHECK(!IsStandardTx(t, reason));
+    BOOST_CHECK(!MempoolConsensus::IsStandardTx(t, reason));
 
 
 }

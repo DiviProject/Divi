@@ -21,8 +21,7 @@
 #include <Warnings.h>
 #include <utiltime.h>
 #include <BlockInvalidationHelpers.h>
-
-extern bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
+#include <MempoolConsensus.h>
 
 namespace
 {
@@ -176,7 +175,7 @@ bool ChainTipManager::disconnectTip(CValidationState& state, const bool updateCo
         // ignore validation errors in resurrected transactions
         std::list<CTransaction> removed;
         CValidationState stateDummy;
-        if (tx.IsCoinBase() || tx.IsCoinStake() || !AcceptToMemoryPool(mempool_, stateDummy, tx, false))
+        if (tx.IsCoinBase() || tx.IsCoinStake() || !MempoolConsensus::AcceptToMemoryPool(mempool_, stateDummy, tx, false))
             mempool_.remove(tx, removed, true);
     }
     mempool_.removeCoinbaseSpends(&coinsTip, pindexDelete->nHeight);

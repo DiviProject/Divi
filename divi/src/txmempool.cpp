@@ -7,7 +7,6 @@
 #include "txmempool.h"
 
 #include "clientversion.h"
-#include "main.h"
 #include "streams.h"
 #include "Logging.h"
 #include "utilmoneystr.h"

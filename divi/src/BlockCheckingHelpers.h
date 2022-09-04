@@ -38,6 +38,7 @@ public:
 typedef std::set<CBlockIndex*, CBlockIndexWorkComparator> BlockIndexCandidates;
 typedef std::multimap<CBlockIndex*, CBlockIndex*> BlockIndexSuccessorsByPreviousBlockIndex;
 bool CheckBlock(const CBlock& block, CValidationState& state);
+/** Context-independent validity checks */
 bool CheckTransaction(const CTransaction& tx, CValidationState& state);
 bool CheckTransaction(const CTransaction& tx, CValidationState& state, std::set<COutPoint>& usedInputsSet);
 void VerifyBlockIndexTree(

@@ -10,6 +10,7 @@
 #include "script/interpreter.h"
 #include "version.h"
 #include <primitives/transaction.h>
+#include <BlockCheckingHelpers.h>
 
 #include <iostream>
 

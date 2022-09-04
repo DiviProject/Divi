@@ -14,6 +14,7 @@
 #include "core_io.h"
 #include <defaultValues.h>
 #include <MempoolConsensus.h>
+#include <BlockCheckingHelpers.h>
 
 #include <map>
 #include <string>

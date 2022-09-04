@@ -87,9 +87,6 @@ void RespondToRequestForDataFrom(CNode* pfrom);
 bool IsInitialBlockDownload();
 /** Find the best known block, and make it the tip of the block chain */
 
-/** Context-independent validity checks */
-bool CheckTransaction(const CTransaction& tx, CValidationState& state);
-
 /** Functions for validating blocks and updating the block tree */
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */

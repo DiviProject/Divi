@@ -1568,7 +1568,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         StartTorControl(threadGroup);
 
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
-    StartNode(threadGroup);
+    StartNode(settings, cs_main, threadGroup);
 #ifdef ENABLE_WALLET
     {
         auto pwallet = GetWallet();

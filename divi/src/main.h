@@ -80,17 +80,4 @@ bool ProcessReceivedMessages(CNode* pfrom);
  */
 bool SendMessages(CNode* pto, bool fSendTrickle);
 void RespondToRequestForDataFrom(CNode* pfrom);
-
-/** Apply the effects of this block (with given index) on the UTXO set represented by coins */
-bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, ChainstateManager& chainstate, const CSporkManager& sporkManager, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
-
-/** Context-independent validity checks */
-bool CheckBlock(const CBlock& block, CValidationState& state);
-
-/** Context-dependent validity checks */
-bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const CBlockIndex* const pindexPrev);
-bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CBlockIndex* const pindexPrev);
-
-/** Find the last common block between the parameter chain and a locator. */
-const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
 #endif // BITCOIN_MAIN_H

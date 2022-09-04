@@ -12,6 +12,7 @@
 #include <primitives/block.h>
 #include "main.h"
 #include "utiltime.h"
+#include <BlockCheckingHelpers.h>
 
 #include <cstdio>
 

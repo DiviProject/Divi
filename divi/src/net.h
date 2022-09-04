@@ -35,6 +35,8 @@ class CDataStream;
 class uint256;
 class CNodeStats;
 class CNodeStateStats;
+class CCriticalSection;
+class Settings;
 
 namespace boost
 {
@@ -46,7 +48,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, const char* strDest = NU
 bool addNode(const std::string& strNode, const std::string& strCommand);
 std::vector<std::string> getAddedNodeList();
 
-void StartNode(boost::thread_group& threadGroup);
+void StartNode(const Settings& settings, CCriticalSection& mainCriticalSection, boost::thread_group& threadGroup);
 bool StopNode();
 void CleanupP2PConnections();
 

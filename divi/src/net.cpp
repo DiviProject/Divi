@@ -44,6 +44,7 @@
 #include <I_CommunicationRegistrar.h>
 #include <NodeState.h>
 #include <SocketChannel.h>
+#include <ChainSyncHelpers.h>
 
 #ifdef WIN32
 #include <string.h>
@@ -885,7 +886,12 @@ void ThreadSocketHandler()
     }
 }
 
-void ThreadMessageHandler()
+struct MessageHandlerDependencies
+{
+    const Settings& settings_;
+    CCriticalSection& mainCriticalSection_;
+};
+void ThreadMessageHandler(MessageHandlerDependencies& dependencies)
 {
     boost::mutex condition_mutex;
     boost::unique_lock<boost::mutex> lock(condition_mutex);
@@ -899,7 +905,7 @@ void ThreadMessageHandler()
         ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
         const std::vector<NodeRef>& vNodesCopy = safeNodesCopy.Nodes();
 
-        bool rebroadcast = (!IsInitialBlockDownload() && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
+        bool rebroadcast = (!IsInitialBlockDownload(dependencies.mainCriticalSection_,dependencies.settings_) && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
 
         // Poll the connected nodes for messages
         CNode* pnodeTrickle = vNodesCopy.empty()? nullptr: vNodesCopy[GetRand(vNodesCopy.size())].get();
@@ -1472,7 +1478,7 @@ void static Discover(boost::thread_group& threadGroup)
 #endif
 }
 
-void StartNode(boost::thread_group& threadGroup)
+void StartNode(const Settings& settings, CCriticalSection& mainCriticalSection, boost::thread_group& threadGroup)
 {
     uiInterface.InitMessage(translate("Loading addresses..."));
     // Load addresses for peers.dat
@@ -1510,8 +1516,9 @@ void StartNode(boost::thread_group& threadGroup)
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "opencon", &ThreadOpenConnections));
 
     // Process messages
+    static MessageHandlerDependencies messageDependencies{settings,mainCriticalSection};
     threadGroup.create_thread(
-        boost::bind(&TraceThread<void (*)()>, "msghand", &ThreadMessageHandler) );
+        boost::bind(&TraceThread<void (*)(MessageHandlerDependencies&), MessageHandlerDependencies&>, "msghand", &ThreadMessageHandler, messageDependencies) );
 
     // Dump network addresses
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));

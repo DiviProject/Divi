@@ -80,14 +80,6 @@ bool ProcessReceivedMessages(CNode* pfrom);
  */
 bool SendMessages(CNode* pto, bool fSendTrickle);
 void RespondToRequestForDataFrom(CNode* pfrom);
-// ***TODO*** probably not the right place for these 2
-/** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
-
-/** Check whether we are doing an initial block download (synchronizing from disk or network) */
-bool IsInitialBlockDownload();
-/** Find the best known block, and make it the tip of the block chain */
-
-/** Functions for validating blocks and updating the block tree */
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, ChainstateManager& chainstate, const CSporkManager& sporkManager, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);

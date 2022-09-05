@@ -590,53 +590,6 @@ bool LoadBlockIndex(string& strError)
     return true;
 }
 
-
-bool ConnectGenesisBlock(ChainstateManager& chainstate)
-{
-    LOCK(cs_main);
-
-    auto& blockTree = chainstate.BlockTree();
-
-    // Check whether we're already initialized
-    if (chainstate.ActiveChain().Genesis() != nullptr)
-        return true;
-
-    // Use the provided setting for transaciton search indices
-    blockTree.WriteIndexingFlags(
-        settings.GetBoolArg("-addressindex", DEFAULT_ADDRESSINDEX),
-        settings.GetBoolArg("-spentindex", DEFAULT_SPENTINDEX),
-        settings.GetBoolArg("-txindex", true)
-    );
-
-
-    LogPrintf("Connecting genesis block...\n");
-
-    // Only add the genesis block if not reindexing (in which case we reuse the one already on disk)
-    if (!settings.isReindexingBlocks()) {
-        try {
-            const CBlock& block = Params().GenesisBlock();
-            // Start new block file
-            unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
-            CDiskBlockPos blockPos;
-            CValidationState state;
-            if (!FindBlockPos(state, blockPos, nBlockSize + 8, 0, block.GetBlockTime()))
-                return error("%s : FindBlockPos failed",__func__);
-            if (!WriteBlockToDisk(block, blockPos))
-                return error("%s : writing genesis block to disk failed",__func__);
-            CBlockIndex* pindex = AddToBlockIndex(block);
-            if (!ReceivedBlockTransactions(block, pindex, blockPos))
-                return error("%s : genesis block not accepted",__func__);
-            if (!GetChainExtensionService().updateActiveChain(state, &block))
-                return error("%s : genesis block cannot be activated",__func__);
-            // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
-            return FlushStateToDisk(state, FLUSH_STATE_ALWAYS,GetMainNotificationInterface(),cs_main);
-        } catch (std::runtime_error& e) {
-            return error("%s : failed to initialize block database: %s", __func__, e.what());
-        }
-    }
-    return true;
-}
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // CAlert

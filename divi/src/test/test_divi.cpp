@@ -24,6 +24,7 @@
 #include <chainparams.h>
 #include <Settings.h>
 #include <I_Clock.h>
+#include <I_ChainExtensionService.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
@@ -80,7 +81,7 @@ struct TestingSetup {
         mnModule.reset( new MasternodeModule(*localClock, GetPeerSyncQueryService(), *chainstateInstance, GetNetworkAddressManager()) );
         InitializeChainExtensionService(*mnModule);
         InitializeMultiWalletModule();
-        ConnectGenesisBlock(*chainstateInstance);
+        GetChainExtensionService().connectGenesisBlock();
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
         TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
         RegisterNodeSignals(GetNodeSignals());

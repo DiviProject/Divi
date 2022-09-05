@@ -71,5 +71,6 @@ public:
         const CBlock* pblock) const override;
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override;
     bool reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const override;
+    bool connectGenesisBlock() const override;
 };
 #endif// CHAIN_EXTENSION_SERVICE_H

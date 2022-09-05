@@ -20,6 +20,7 @@
 #include <clientversion.h>
 #include <Settings.h>
 #include <NotificationInterface.h>
+#include <txdb.h>
 
 
 extern bool ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pindexNew, const CDiskBlockPos& pos);
@@ -411,6 +412,52 @@ bool ChainExtensionService::reconsiderBlock(CValidationState& state, CBlockIndex
             BlockFileHelpers::RecordDirtyBlockIndex(pindex);
         }
         pindex = pindex->pprev;
+    }
+    return true;
+}
+
+bool ChainExtensionService::connectGenesisBlock() const
+{
+    LOCK(mainCriticalSection_);
+
+    auto& blockTree = chainstateRef_->BlockTree();
+
+    // Check whether we're already initialized
+    if (chainstateRef_->ActiveChain().Genesis() != nullptr)
+        return true;
+
+    // Use the provided setting for transaciton search indices
+    blockTree.WriteIndexingFlags(
+        settings_.GetBoolArg("-addressindex", DEFAULT_ADDRESSINDEX),
+        settings_.GetBoolArg("-spentindex", DEFAULT_SPENTINDEX),
+        settings_.GetBoolArg("-txindex", true)
+    );
+
+
+    LogPrintf("Connecting genesis block...\n");
+
+    // Only add the genesis block if not reindexing (in which case we reuse the one already on disk)
+    if (!settings_.isReindexingBlocks()) {
+        try {
+            const CBlock& block = Params().GenesisBlock();
+            // Start new block file
+            unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
+            CDiskBlockPos blockPos;
+            CValidationState state;
+            if (!FindBlockPos(state, blockPos, nBlockSize + 8, 0, block.GetBlockTime()))
+                return error("%s : FindBlockPos failed",__func__);
+            if (!WriteBlockToDisk(block, blockPos))
+                return error("%s : writing genesis block to disk failed",__func__);
+            CBlockIndex* pindex = AddToBlockIndex(block);
+            if (!ReceivedBlockTransactions(block, pindex, blockPos))
+                return error("%s : genesis block not accepted",__func__);
+            if (!updateActiveChain(state, &block))
+                return error("%s : genesis block cannot be activated",__func__);
+            // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
+            return FlushStateToDisk(state, FLUSH_STATE_ALWAYS,mainNotificationSignals_,mainCriticalSection_);
+        } catch (std::runtime_error& e) {
+            return error("%s : failed to initialize block database: %s", __func__, e.what());
+        }
     }
     return true;
 }

@@ -593,7 +593,7 @@ void ReconstructBlockIndex(ChainstateManager& chainstate)
     settings.setReindexingFlag(false);
     LogPrintf("Reindexing finished\n");
     // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
-    ConnectGenesisBlock(chainstate);
+    GetChainExtensionService().connectGenesisBlock();
 }
 
 void ReindexAndImportBlockFiles(ChainstateManager* chainstate, Settings& settings)
@@ -1009,7 +1009,7 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
 
         // Initialize the block index (no-op if non-empty database was already loaded)
         if(!settings.isReindexingBlocks()) uiInterface.InitMessage(translate("Initializing block index databases..."));
-        if (!ConnectGenesisBlock(*chainstate)) {
+        if (!GetChainExtensionService().connectGenesisBlock()) {
             strLoadError = translate("Error initializing block database");
             return BlockLoadingStatus::RETRY_LOADING;
         }

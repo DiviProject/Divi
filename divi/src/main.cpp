@@ -591,7 +591,7 @@ bool LoadBlockIndex(string& strError)
 }
 
 
-bool ConnectGenesisBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager)
+bool ConnectGenesisBlock(ChainstateManager& chainstate)
 {
     LOCK(cs_main);
 

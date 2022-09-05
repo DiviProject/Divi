@@ -80,7 +80,7 @@ struct TestingSetup {
         mnModule.reset( new MasternodeModule(*localClock, GetPeerSyncQueryService(), *chainstateInstance, GetNetworkAddressManager()) );
         InitializeChainExtensionService(*mnModule);
         InitializeMultiWalletModule();
-        ConnectGenesisBlock(*chainstateInstance, *sporkManagerInstance);
+        ConnectGenesisBlock(*chainstateInstance);
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
         TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
         RegisterNodeSignals(GetNodeSignals());

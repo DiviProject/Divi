@@ -62,7 +62,7 @@ I_ChainExtensionService& GetChainExtensionService();
 bool ProcessNewBlock(ChainstateManager& chainstate, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
 /** Initialize a new block tree database + block data on disk */
-bool ConnectGenesisBlock(ChainstateManager& chainstate, const CSporkManager& sporkManager);
+bool ConnectGenesisBlock(ChainstateManager& chainstate);
 /** Load the block tree and coins database from disk */
 bool LoadBlockIndex(std::string& strError);
 /** Unload database information.  If a ChainstateManager is present,

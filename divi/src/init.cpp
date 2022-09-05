@@ -573,7 +573,7 @@ bool LoadExternalBlockFile(ChainstateManager& chainstate, FILE* fileIn, CDiskBlo
     return nLoaded > 0;
 }
 
-void ReconstructBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkManager)
+void ReconstructBlockIndex(ChainstateManager& chainstate)
 {
     // -reindex
     CImportingNow imp(settings);
@@ -593,14 +593,14 @@ void ReconstructBlockIndex(ChainstateManager& chainstate, const CSporkManager& s
     settings.setReindexingFlag(false);
     LogPrintf("Reindexing finished\n");
     // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
-    ConnectGenesisBlock(chainstate, sporkManager);
+    ConnectGenesisBlock(chainstate);
 }
 
-void ReindexAndImportBlockFiles(ChainstateManager* chainstate, const CSporkManager* sporkManager, Settings& settings)
+void ReindexAndImportBlockFiles(ChainstateManager* chainstate, Settings& settings)
 {
     RenameThread("divi-loadblk");
 
-    if(settings.isReindexingBlocks()) ReconstructBlockIndex(*chainstate, *sporkManager);
+    if(settings.isReindexingBlocks()) ReconstructBlockIndex(*chainstate);
     std::vector<boost::filesystem::path> vImportFiles;
     if(settings.ParameterIsSet("-loadblock"))
     {
@@ -1009,7 +1009,7 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
 
         // Initialize the block index (no-op if non-empty database was already loaded)
         if(!settings.isReindexingBlocks()) uiInterface.InitMessage(translate("Initializing block index databases..."));
-        if (!ConnectGenesisBlock(*chainstate, sporkManager)) {
+        if (!ConnectGenesisBlock(*chainstate)) {
             strLoadError = translate("Error initializing block database");
             return BlockLoadingStatus::RETRY_LOADING;
         }
@@ -1517,7 +1517,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 #endif
 
-    threadGroup.create_thread(boost::bind(&ReindexAndImportBlockFiles, chainstateInstance.get(), sporkManagerInstance.get(), settings));
+    threadGroup.create_thread(boost::bind(&ReindexAndImportBlockFiles, chainstateInstance.get(), settings));
 
     if (chainActive.Tip() == NULL) {
         LogPrintf("Waiting for genesis block to be imported...\n");

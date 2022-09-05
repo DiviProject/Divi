@@ -61,12 +61,12 @@ public:
     void recordBlockSource(
         const uint256& blockHash,
         NodeId nodeId) const override;
-    virtual bool assignBlockIndex(
+    bool assignBlockIndex(
         CBlock& block,
         CValidationState& state,
         CBlockIndex** ppindex,
         CDiskBlockPos* dbp) const override;
-    virtual bool updateActiveChain(
+    bool updateActiveChain(
         CValidationState& state,
         const CBlock* pblock) const override;
     bool invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const override;

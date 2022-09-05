@@ -212,12 +212,12 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
 
         // ppcoin: compute stake entropy bit for stake modifier
         if (!pindexNew->SetStakeEntropyBit(pindexNew->GetStakeEntropyBit()))
-            LogPrintf("AddToBlockIndex() : SetStakeEntropyBit() failed \n");
+            LogPrintf("%s : SetStakeEntropyBit() failed \n",__func__);
 
         // ppcoin: record proof-of-stake hash value
         if (pindexNew->IsProofOfStake()) {
             if (!mapProofOfStake.count(hash))
-                LogPrintf("AddToBlockIndex() : hashProofOfStake not found in map \n");
+                LogPrintf("%s : hashProofOfStake not found in map \n",__func__);
             pindexNew->hashProofOfStake = mapProofOfStake[hash];
         }
 
@@ -620,18 +620,18 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
             CDiskBlockPos blockPos;
             CValidationState state;
             if (!FindBlockPos(state, blockPos, nBlockSize + 8, 0, block.GetBlockTime()))
-                return error("LoadBlockIndex() : FindBlockPos failed");
+                return error("%s : FindBlockPos failed",__func__);
             if (!WriteBlockToDisk(block, blockPos))
-                return error("LoadBlockIndex() : writing genesis block to disk failed");
+                return error("%s : writing genesis block to disk failed",__func__);
             CBlockIndex* pindex = AddToBlockIndex(block);
             if (!ReceivedBlockTransactions(block, pindex, blockPos))
-                return error("LoadBlockIndex() : genesis block not accepted");
+                return error("%s : genesis block not accepted",__func__);
             if (!GetChainExtensionService().updateActiveChain(state, &block))
-                return error("LoadBlockIndex() : genesis block cannot be activated");
+                return error("%s : genesis block cannot be activated",__func__);
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS,GetMainNotificationInterface(),cs_main);
         } catch (std::runtime_error& e) {
-            return error("LoadBlockIndex() : failed to initialize block database: %s", e.what());
+            return error("%s : failed to initialize block database: %s", __func__, e.what());
         }
     }
     return true;

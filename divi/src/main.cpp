@@ -609,7 +609,7 @@ bool InitBlockIndex(ChainstateManager& chainstate, const CSporkManager& sporkMan
     );
 
 
-    LogPrintf("Initializing databases...\n");
+    LogPrintf("Connecting genesis block...\n");
 
     // Only add the genesis block if not reindexing (in which case we reuse the one already on disk)
     if (!settings.isReindexingBlocks()) {

@@ -112,13 +112,9 @@ CCriticalSection cs_main;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// dispatching functions
+// Helper functions
 //
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// Registration of network node signals.
-//
 int GetHeight()
 {
     const ChainstateManager::Reference chainstate;
@@ -175,6 +171,11 @@ bool ProcessNewBlock(ChainstateManager& chainstate, CValidationState& state, CNo
 
     return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CBlockIndex loading from disk
+//
 
 static std::vector<std::pair<int, CBlockIndex*> > ComputeHeightSortedBlockIndices(BlockMap& blockIndicesByHash)
 {
@@ -458,12 +459,6 @@ bool LoadBlockIndex(string& strError)
         return false;
     return true;
 }
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CAlert
-//
-
 
 //////////////////////////////////////////////////////////////////////////////
 //

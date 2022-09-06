@@ -154,20 +154,6 @@ const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocato
 // CBlock and CBlockIndex
 //
 
-/**
- * Update the on-disk chain state.
- * The caches and indexes are flushed if either they're too large, forceWrite is set, or
- * fast is not set and it's been a while since the last write.
- */
-
-
-void FlushStateToDisk()
-{
-    static MainNotificationSignals& notificationSignals = GetMainNotificationInterface();
-    CValidationState state;
-    FlushStateToDisk(state, FlushStateMode::FLUSH_STATE_ALWAYS, notificationSignals,cs_main);
-}
-
 bool ProcessNewBlock(ChainstateManager& chainstate, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
     // Preliminary checks

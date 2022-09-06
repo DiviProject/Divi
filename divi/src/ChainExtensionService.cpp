@@ -21,6 +21,7 @@
 #include <Settings.h>
 #include <NotificationInterface.h>
 #include <txdb.h>
+#include <BlockIndexLotteryUpdater.h>
 
 extern void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBlockIndex* pindexNew);
 
@@ -32,6 +33,72 @@ extern CBlockIndex* AddToBlockIndex(
 extern std::map<uint256, uint256> mapProofOfStake;
 namespace
 {
+CBlockIndex* AddToBlockIndex(
+    ChainstateManager& chainstate,
+    const CChainParams& chainParameters,
+    const CSporkManager& sporkManager,
+    const CBlock& block)
+{
+    auto& blockMap = chainstate.GetBlockMap();
+
+    const BlockIndexLotteryUpdater lotteryUpdater(chainParameters, chainstate.ActiveChain(), sporkManager);
+    // Check for duplicate
+    const uint256 hash = block.GetHash();
+    const auto it = blockMap.find(hash);
+    if (it != blockMap.end())
+        return it->second;
+
+    // Construct new block index object
+    CBlockIndex* pindexNew = new CBlockIndex(block);
+    assert(pindexNew);
+    // We assign the sequence id to blocks only when the full data is available,
+    // to avoid miners withholding blocks but broadcasting headers, to get a
+    // competitive advantage.
+    pindexNew->nSequenceId = 0;
+    const auto mi = blockMap.insert(std::make_pair(hash, pindexNew)).first;
+
+    pindexNew->phashBlock = &((*mi).first);
+    const auto miPrev = blockMap.find(block.hashPrevBlock);
+    if (miPrev != blockMap.end()) {
+        pindexNew->pprev = (*miPrev).second;
+        pindexNew->nHeight = pindexNew->pprev->nHeight + 1;
+        pindexNew->BuildSkip();
+
+        //update previous block pointer
+        pindexNew->pprev->pnext = pindexNew;
+
+        // ppcoin: compute chain trust score
+        pindexNew->bnChainTrust = (pindexNew->pprev ? pindexNew->pprev->bnChainTrust : 0) + pindexNew->GetBlockTrust();
+
+        // ppcoin: compute stake entropy bit for stake modifier
+        if (!pindexNew->SetStakeEntropyBit(pindexNew->GetStakeEntropyBit()))
+            LogPrintf("%s : SetStakeEntropyBit() failed \n",__func__);
+
+        // ppcoin: record proof-of-stake hash value
+        if (pindexNew->IsProofOfStake()) {
+            if (!mapProofOfStake.count(hash))
+                LogPrintf("%s : hashProofOfStake not found in map \n",__func__);
+            pindexNew->hashProofOfStake = mapProofOfStake[hash];
+        }
+
+        // ppcoin: compute stake modifier
+        SetStakeModifiersForNewBlockIndex(blockMap, pindexNew);
+    }
+    pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
+    pindexNew->RaiseValidity(BLOCK_VALID_TREE);
+    updateBestHeaderBlockIndex(pindexNew,true);
+
+    //update previous block pointer
+    if (pindexNew->nHeight)
+        pindexNew->pprev->pnext = pindexNew;
+
+    lotteryUpdater.UpdateBlockIndexLotteryWinners(block,pindexNew);
+
+    BlockFileHelpers::RecordDirtyBlockIndex(pindexNew);
+
+    return pindexNew;
+}
+
 bool ReceivedBlockTransactions(const CChain& chain, const CBlock& block, CBlockIndex* pindexNew, const CDiskBlockPos& pos)
 {
     if (block.IsProofOfStake())

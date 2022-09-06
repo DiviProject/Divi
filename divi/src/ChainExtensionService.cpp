@@ -24,12 +24,6 @@
 #include <BlockIndexLotteryUpdater.h>
 
 extern void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBlockIndex* pindexNew);
-
-extern CBlockIndex* AddToBlockIndex(
-    ChainstateManager& chainstate,
-    const CChainParams& chainParameters,
-    const CSporkManager& sporkManager,
-    const CBlock& block);
 extern std::map<uint256, uint256> mapProofOfStake;
 namespace
 {

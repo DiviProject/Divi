@@ -24,7 +24,6 @@ class ProofOfStakeModule;
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
-    int64_t& timeOfLastChainTipUpdate_;
     CTxMemPool& mempool_;
     const MasternodeModule& masternodeModule_;
     MainNotificationSignals& mainNotificationSignals_;
@@ -47,7 +46,6 @@ private:
 
 public:
     ChainExtensionService(
-        int64_t& timeOfLastChainTipUpdate,
         CTxMemPool& mempool,
         const MasternodeModule& masternodeModule,
         MainNotificationSignals& mainNotificationSignals,

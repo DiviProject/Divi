@@ -388,7 +388,6 @@ bool ChainExtensionService::transitionToMostWorkChainTip(
         if (!fInitialDownload) {
             // Notify external listeners about the new tip.
             mainNotificationSignals_.UpdatedBlockTip(pindexNewTip);
-            timeOfLastChainTipUpdate_ = GetTime();
         }
     } while (pindexMostWork != chain.Tip());
 
@@ -396,7 +395,6 @@ bool ChainExtensionService::transitionToMostWorkChainTip(
 }
 
 ChainExtensionService::ChainExtensionService(
-    int64_t& timeOfLastChainTipUpdate,
     CTxMemPool& mempool,
     const MasternodeModule& masternodeModule,
     MainNotificationSignals& mainNotificationSignals,
@@ -406,8 +404,7 @@ ChainExtensionService::ChainExtensionService(
     const CSporkManager& sporkManager,
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
     BlockIndexCandidates& blockIndexCandidates
-    ): timeOfLastChainTipUpdate_(timeOfLastChainTipUpdate)
-    , mempool_(mempool)
+    ): mempool_(mempool)
     , masternodeModule_(masternodeModule)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)

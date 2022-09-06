@@ -170,13 +170,12 @@ void FlushStateToDisk()
 }
 
 
-CBlockIndex* AddToBlockIndex(const CBlock& block)
+CBlockIndex* AddToBlockIndex(ChainstateManager& chainstate, const CBlock& block)
 {
-    ChainstateManager::Reference chainstate;
-    auto& blockMap = chainstate->GetBlockMap();
+    auto& blockMap = chainstate.GetBlockMap();
 
     const auto& sporkManager = GetSporkManager();
-    const BlockIndexLotteryUpdater lotteryUpdater(Params(), chainstate->ActiveChain(), sporkManager);
+    const BlockIndexLotteryUpdater lotteryUpdater(Params(), chainstate.ActiveChain(), sporkManager);
     // Check for duplicate
     const uint256 hash = block.GetHash();
     const auto it = blockMap.find(hash);

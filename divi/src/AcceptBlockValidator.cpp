@@ -32,17 +32,14 @@ AcceptBlockValidator::AcceptBlockValidator(
 
 std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(CBlock& block, CValidationState& state) const
 {
-    CBlockIndex* pindex = nullptr;
-    {
-        LOCK(mainCriticalSection_);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
-        MarkBlockAsReceived(block.GetHash());
-        // Store to disk
-        bool ret = chainExtensionService_.assignBlockIndex(block, state, &pindex, dbp_);
-        if (pindex && pfrom_) {
-            chainExtensionService_.recordBlockSource(pindex->GetBlockHash(), pfrom_->GetId());
-        }
-        return std::make_pair(pindex,ret);
+    LOCK(mainCriticalSection_);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
+    MarkBlockAsReceived(block.GetHash());
+    // Store to disk
+    std::pair<CBlockIndex*,bool> assignmentResult = chainExtensionService_.assignBlockIndex(block, state, dbp_);
+    if (assignmentResult.first && pfrom_) {
+        chainExtensionService_.recordBlockSource(assignmentResult.first->GetBlockHash(), pfrom_->GetId());
     }
+    return assignmentResult;
 }
 bool AcceptBlockValidator::connectActiveChain(const CBlock& block, CValidationState& state) const
 {

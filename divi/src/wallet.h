@@ -187,7 +187,6 @@ private:
     CPubKey vchDefaultKey;
     int64_t nTimeFirstKey;
 
-    int64_t timeOfLastChainTipUpdate;
     std::set<int64_t> setInternalKeyPool;
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
@@ -199,7 +198,7 @@ private:
 
     // Notification interface methods
     void SetBestChain(const CBlockLocator& loc) override;
-    void UpdatedBlockTip(const CBlockIndex *pindex) override;
+    void UpdatedBlockTip(const CBlockIndex *pindex) override {};
     void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override;
 
     bool addToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate, const TransactionSyncType syncType);

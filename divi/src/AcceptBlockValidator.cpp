@@ -18,15 +18,11 @@ AcceptBlockValidator::AcceptBlockValidator(
         const I_ChainExtensionService& chainExtensionService,
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,
-        ChainstateManager& chainstate,
-        CNode* pfrom,
-        CDiskBlockPos* dbp
+        ChainstateManager& chainstate
         ): chainExtensionService_(chainExtensionService)
         , mainCriticalSection_(mainCriticalSection)
         , chainParameters_(chainParameters)
         , chainstate_(chainstate)
-        , pfrom_(pfrom)
-        , dbp_(dbp)
 {
 }
 
@@ -35,9 +31,9 @@ std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(
     LOCK(mainCriticalSection_);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
     MarkBlockAsReceived(block.GetHash());
     // Store to disk
-    std::pair<CBlockIndex*,bool> assignmentResult = chainExtensionService_.assignBlockIndex(block, state, dbp_);
-    if (assignmentResult.first && pfrom_) {
-        chainExtensionService_.recordBlockSource(assignmentResult.first->GetBlockHash(), pfrom_->GetId());
+    std::pair<CBlockIndex*,bool> assignmentResult = chainExtensionService_.assignBlockIndex(block, state, nodeAndBlockDisk.blockDiskPosition);
+    if (assignmentResult.first && nodeAndBlockDisk.dataSource) {
+        chainExtensionService_.recordBlockSource(assignmentResult.first->GetBlockHash(), nodeAndBlockDisk.dataSource->GetId());
     }
     return assignmentResult;
 }
@@ -56,11 +52,11 @@ bool AcceptBlockValidator::checkBlockRequirements(const NodeAndBlockDiskPosition
 
     const auto& blockMap = chainstate_.GetBlockMap();
 
-    if (block.GetHash() != chainParameters_.HashGenesisBlock() && pfrom_ != NULL) {
+    if (block.GetHash() != chainParameters_.HashGenesisBlock() && nodeAndBlockDisk.dataSource != NULL) {
         //if we get this far, check if the prev block is our prev block, if not then request sync and return false
         const auto mi = blockMap.find(block.hashPrevBlock);
         if (mi == blockMap.end()) {
-            pfrom_->PushMessage("getblocks", chainstate_.ActiveChain().GetLocator(), uint256(0));
+            nodeAndBlockDisk.dataSource->PushMessage("getblocks", chainstate_.ActiveChain().GetLocator(), uint256(0));
             return false;
         }
     }

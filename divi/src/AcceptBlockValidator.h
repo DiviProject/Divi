@@ -21,16 +21,12 @@ private:
     CCriticalSection& mainCriticalSection_;
     const CChainParams& chainParameters_;
     ChainstateManager& chainstate_;
-    CNode* pfrom_;
-    CDiskBlockPos* dbp_;
 public:
     AcceptBlockValidator(
         const I_ChainExtensionService& chainExtensionService,
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,
-        ChainstateManager& chainstate,
-        CNode* pfrom,
-        CDiskBlockPos* dbp);
+        ChainstateManager& chainstate);
 
     std::pair<CBlockIndex*, bool> validateAndAssignBlockIndex(const NodeAndBlockDiskPosition& nodeAndBlockDisk, CBlock& block, CValidationState& state) const override;
     bool connectActiveChain(const CBlock& block, CValidationState& state) const override;

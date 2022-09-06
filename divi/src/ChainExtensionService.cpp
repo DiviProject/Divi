@@ -22,6 +22,7 @@
 #include <NotificationInterface.h>
 #include <txdb.h>
 
+extern void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBlockIndex* pindexNew);
 
 extern CBlockIndex* AddToBlockIndex(
     ChainstateManager& chainstate,

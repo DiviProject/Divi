@@ -10,16 +10,16 @@
 #include <chain.h>
 #include <ValidationState.h>
 
-extern CCriticalSection cs_main;
-
-BlockSubmitter::BlockSubmitter()
+BlockSubmitter::BlockSubmitter(
+    CCriticalSection& mainCriticalSection
+    ): mainCriticalSection_(mainCriticalSection)
 {
 }
 
 bool BlockSubmitter::IsBlockValidChainExtension(CBlock* pblock) const
 {
     {
-        LOCK(cs_main);
+        LOCK(mainCriticalSection_);
         const ChainstateManager::Reference chainstate;
         if (pblock->hashPrevBlock != chainstate->ActiveChain().Tip()->GetBlockHash())
             return error("%s : generated block is stale",__func__);

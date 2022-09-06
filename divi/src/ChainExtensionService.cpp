@@ -91,11 +91,8 @@ bool ContextualCheckBlockHeader(const Settings& settings, const CBlockHeader& bl
     return true;
 }
 
-bool ContextualCheckBlock(CCriticalSection& mainCriticalSection, const CBlock& block, CValidationState& state, const CBlockIndex* const pindexPrev)
+bool ContextualCheckBlock(CCriticalSection& mainCriticalSection,const CChain& chain, const CBlock& block, CValidationState& state, const CBlockIndex* const pindexPrev)
 {
-    const ChainstateManager::Reference chainstate;
-    const auto& chain = chainstate->ActiveChain();
-
     const int nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
 
     // Check that all transactions are finalized
@@ -227,7 +224,7 @@ bool AcceptBlock(
         return true;
     }
 
-    if (!ContextualCheckBlock(mainCriticalSection, block, state, pindex->pprev))
+    if (!ContextualCheckBlock(mainCriticalSection,chainstate.ActiveChain(), block, state, pindex->pprev))
     {
         if (state.IsInvalid() && !state.CorruptionPossible()) {
             pindex->nStatus |= BLOCK_FAILED_VALID;

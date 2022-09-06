@@ -56,6 +56,8 @@ public:
         BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
         BlockIndexCandidates& blockIndexCandidates);
 
+    ~ChainExtensionService();
+
     void recordBlockSource(
         const uint256& blockHash,
         NodeId nodeId) const override;

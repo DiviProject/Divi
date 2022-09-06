@@ -155,11 +155,6 @@ const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocato
 // CBlock and CBlockIndex
 //
 
-bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
-{
-    if(fKnown) return BlockFileHelpers::FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
-    else return BlockFileHelpers::FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
-}
 /**
  * Update the on-disk chain state.
  * The caches and indexes are flushed if either they're too large, forceWrite is set, or

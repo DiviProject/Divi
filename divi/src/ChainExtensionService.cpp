@@ -24,11 +24,15 @@
 
 
 extern bool ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pindexNew, const CDiskBlockPos& pos);
-extern bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false);
 extern CBlockIndex* AddToBlockIndex(const CBlock& block);
 extern std::map<uint256, uint256> mapProofOfStake;
 namespace
 {
+bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
+{
+    if(fKnown) return BlockFileHelpers::FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
+    else return BlockFileHelpers::FindUnknownBlockPos(state,pos,nAddSize,nHeight,nTime);
+}
 
 bool ContextualCheckBlockHeader(
     const ChainstateManager& chainstate,

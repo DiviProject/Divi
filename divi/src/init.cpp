@@ -116,6 +116,7 @@ public:
         ChainstateManager::Reference chainStateRef;
         uiInterface.NotifyBlockTip(pindex->GetBlockHash());
         NotifyPeersOfNewChainTip(chainStateRef->ActiveChain().Height(),pindex->GetBlockHash(), 100);
+        GetTransactionMemoryPool().setLastTimeOfChainTipUpdate(GetTime());
     }
 };
 std::unique_ptr<P2PNotifications> p2pNotifications;

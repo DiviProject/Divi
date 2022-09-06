@@ -168,14 +168,12 @@ void FlushStateToDisk()
     FlushStateToDisk(state, FlushStateMode::FLUSH_STATE_ALWAYS, notificationSignals,cs_main);
 }
 
-static int64_t timeOfLastChainTipUpdate =0;
 std::unique_ptr<ChainExtensionService> chainExtensionService;
 void InitializeChainExtensionService(const MasternodeModule& masternodeModule)
 {
     assert(chainExtensionService == nullptr);
     chainExtensionService.reset(
         new ChainExtensionService(
-            timeOfLastChainTipUpdate,
             GetTransactionMemoryPool(),
             masternodeModule,
             GetMainNotificationInterface(),
@@ -1659,6 +1657,8 @@ void PeriodicallyRebroadcastMempoolTxs(CTxMemPool& mempool)
     bool nextTimeBroadcastNeedsToBeInitialized = (timeOfNextBroadcast == 0);
     timeOfNextBroadcast = GetTime() + GetRand(30*60);
     if(nextTimeBroadcastNeedsToBeInitialized) return;
+
+    const int64_t timeOfLastChainTipUpdate = mempool.getLastTimeOfChainTipUpdate();
     if(timeOfLastChainTipUpdate < timeOfLastBroadcast) return;
     timeOfLastBroadcast = GetTime();
     if(timeOfLastChainTipUpdate > 0)

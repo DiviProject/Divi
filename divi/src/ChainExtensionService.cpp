@@ -23,7 +23,11 @@
 #include <txdb.h>
 
 
-extern CBlockIndex* AddToBlockIndex(ChainstateManager& chainstate, const CBlock& block);
+extern CBlockIndex* AddToBlockIndex(
+    ChainstateManager& chainstate,
+    const CChainParams& chainParameters,
+    const CSporkManager& sporkManager,
+    const CBlock& block);
 extern std::map<uint256, uint256> mapProofOfStake;
 namespace
 {
@@ -189,7 +193,7 @@ bool AcceptBlockHeader(
         return false;
 
     if (pindex == NULL)
-        pindex = AddToBlockIndex(chainstate, block);
+        pindex = AddToBlockIndex(chainstate,chainParameters,sporkManager, block);
 
     if (ppindex)
         *ppindex = pindex;
@@ -470,7 +474,7 @@ bool ChainExtensionService::connectGenesisBlock() const
                 return error("%s : FindBlockPos failed",__func__);
             if (!WriteBlockToDisk(block, blockPos))
                 return error("%s : writing genesis block to disk failed",__func__);
-            CBlockIndex* pindex = AddToBlockIndex(*chainstateRef_,block);
+            CBlockIndex* pindex = AddToBlockIndex(*chainstateRef_, chainParameters_,sporkManager_,block);
             if (!ReceivedBlockTransactions(chainstateRef_->ActiveChain(),block, pindex, blockPos))
                 return error("%s : genesis block not accepted",__func__);
             if (!updateActiveChain(state, &block))

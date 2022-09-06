@@ -155,10 +155,11 @@ bool ProcessNewBlock(ChainstateManager& chainstate, CValidationState& state, CNo
     // Preliminary checks
     int64_t nStartTime = GetTimeMillis();
 
+    NodeAndBlockDiskPosition nodeAndBlockDiskPosition{pfrom,dbp};
     AcceptBlockValidator blockValidator(GetChainExtensionService(), cs_main, Params(), chainstate, pfrom, dbp);
-    if(!blockValidator.checkBlockRequirements(*pblock,state)) return false;
+    if(!blockValidator.checkBlockRequirements(nodeAndBlockDiskPosition, *pblock,state)) return false;
 
-    std::pair<CBlockIndex*,bool> assignedBlockIndex = blockValidator.validateAndAssignBlockIndex(*pblock,state);
+    std::pair<CBlockIndex*,bool> assignedBlockIndex = blockValidator.validateAndAssignBlockIndex(nodeAndBlockDiskPosition,*pblock,state);
     if(!assignedBlockIndex.second) return false;
     CBlockIndex* pindex = assignedBlockIndex.first;
     assert(pindex != nullptr);

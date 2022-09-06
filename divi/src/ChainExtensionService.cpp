@@ -180,6 +180,7 @@ bool AcceptBlock(
     CCriticalSection& mainCriticalSection,
     const Settings& settings,
     const I_ProofOfStakeGenerator& posGenerator,
+    const CChainParams& chainParameters,
     CBlock& block,
     ChainstateManager& chainstate,
     const CSporkManager& sporkManager,
@@ -195,7 +196,7 @@ bool AcceptBlock(
 
     // Get prev block index
     CBlockIndex* pindexPrev = NULL;
-    if (block.GetHash() != Params().HashGenesisBlock()) {
+    if (block.GetHash() != chainParameters.HashGenesisBlock()) {
         const auto mi = blockMap.find(block.hashPrevBlock);
         if (mi == blockMap.end())
             return state.DoS(0, error("%s : prev block %s not found", __func__, block.hashPrevBlock), 0, "bad-prevblk");
@@ -208,9 +209,9 @@ bool AcceptBlock(
     }
 
     const uint256 blockHash = block.GetHash();
-    if (blockHash != Params().HashGenesisBlock())
+    if (blockHash != chainParameters.HashGenesisBlock())
     {
-        if(!CheckWork(Params(), posGenerator, blockMap, settings, block, mapProofOfStake, pindexPrev))
+        if(!CheckWork(chainParameters, posGenerator, blockMap, settings, block, mapProofOfStake, pindexPrev))
         {
             LogPrintf("WARNING: %s: check difficulty check failed for %s block %s\n",__func__, block.IsProofOfWork()?"PoW":"PoS", blockHash);
             return false;
@@ -364,7 +365,7 @@ bool ChainExtensionService::assignBlockIndex(
     CBlockIndex** ppindex,
     CDiskBlockPos* dbp) const
 {
-    return AcceptBlock(mainCriticalSection_,settings_, posModule_->proofOfStakeGenerator(),block,*chainstateRef_,sporkManager_,state,ppindex,dbp);
+    return AcceptBlock(mainCriticalSection_,settings_, posModule_->proofOfStakeGenerator(),chainParameters_,block,*chainstateRef_,sporkManager_,state,ppindex,dbp);
 }
 
 bool ChainExtensionService::updateActiveChain(

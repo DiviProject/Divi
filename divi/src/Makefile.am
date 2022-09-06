@@ -243,6 +243,7 @@ BITCOIN_CORE_H = \
   ChainTipManager.h \
   ChainExtensionService.h \
   BlockIndexWork.h \
+  ChainExtensionModule.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \
@@ -479,6 +480,7 @@ libbitcoin_server_a_SOURCES = \
   MempoolConsensus.cpp \
   ChainTipManager.cpp \
   ChainExtensionService.cpp \
+  ChainExtensionModule.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \

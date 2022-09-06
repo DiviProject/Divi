@@ -57,7 +57,7 @@
 #include <TransactionDiskAccessor.h>
 #include <MainNotificationRegistration.h>
 #include <ChainSyncHelpers.h>
-#include <ChainExtensionService.h>
+#include <ChainExtensionModule.h>
 #include <BlockInvalidationHelpers.h>
 #include <FlushChainState.h>
 
@@ -153,12 +153,12 @@ void FinalizeMultiWalletModule()
     multiWalletModule.reset();
 }
 
-std::unique_ptr<ChainExtensionService> chainExtensionService;
-void InitializeChainExtensionService(const MasternodeModule& masternodeModule)
+std::unique_ptr<ChainExtensionModule> chainExtensionModule;
+void InitializeChainExtensionModule(const MasternodeModule& masternodeModule)
 {
-    assert(chainExtensionService == nullptr);
-    chainExtensionService.reset(
-        new ChainExtensionService(
+    assert(chainExtensionModule == nullptr);
+    chainExtensionModule.reset(
+        new ChainExtensionModule(
             ChainstateManager::Get(),
             GetTransactionMemoryPool(),
             masternodeModule,
@@ -170,13 +170,13 @@ void InitializeChainExtensionService(const MasternodeModule& masternodeModule)
             GetBlockIndexSuccessorsByPreviousBlockIndex(),
             GetBlockIndexCandidates()));
 }
-void FinalizeChainExtensionService()
+void FinalizeChainExtensionModule()
 {
-    chainExtensionService.reset();
+    chainExtensionModule.reset();
 }
-I_ChainExtensionService& GetChainExtensionService()
+const I_ChainExtensionService& GetChainExtensionService()
 {
-    return *chainExtensionService;
+    return chainExtensionModule->getChainExtensionService();
 }
 
 bool ManualBackupWallet(const std::string& strDest)
@@ -333,7 +333,7 @@ void PrepareShutdown()
 #endif
         //record that client took the proper shutdown procedure
         chainstateInstance->BlockTree().WriteFlag("shutdown", true);
-        FinalizeChainExtensionService();
+        FinalizeChainExtensionModule();
         sporkManagerInstance.reset();
         chainstateInstance.reset ();
     }
@@ -1466,7 +1466,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
     sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
-    InitializeChainExtensionService(GetMasternodeModule());
+    InitializeChainExtensionModule(GetMasternodeModule());
     InitializeMultiWalletModule();
 
     if(!SetSporkKey(*sporkManagerInstance))

@@ -38,9 +38,9 @@ void FinalizeMultiWalletModule();
 
 class MasternodeModule;
 class I_ChainExtensionService;
-void InitializeChainExtensionService(const MasternodeModule& masternodeModule);
-void FinalizeChainExtensionService();
-I_ChainExtensionService& GetChainExtensionService();
+void InitializeChainExtensionModule(const MasternodeModule& masternodeModule);
+void FinalizeChainExtensionModule();
+const I_ChainExtensionService& GetChainExtensionService();
 
 bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
 CTxMemPool& GetTransactionMemoryPool();

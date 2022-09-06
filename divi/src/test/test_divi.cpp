@@ -79,7 +79,7 @@ struct TestingSetup {
         sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
         localClock.reset(new TestLocalClock());
         mnModule.reset( new MasternodeModule(*localClock, GetPeerSyncQueryService(), *chainstateInstance, GetNetworkAddressManager()) );
-        InitializeChainExtensionService(*mnModule);
+        InitializeChainExtensionModule(*mnModule);
         InitializeMultiWalletModule();
         GetChainExtensionService().connectGenesisBlock();
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
@@ -93,7 +93,7 @@ struct TestingSetup {
         threadGroup.join_all();
         UnregisterNodeSignals(GetNodeSignals());
         FinalizeMultiWalletModule();
-        FinalizeChainExtensionService();
+        FinalizeChainExtensionModule();
         mnModule.reset();
         localClock.reset();
         sporkManagerInstance.reset();

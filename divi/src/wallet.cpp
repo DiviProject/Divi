@@ -187,7 +187,6 @@ CWallet::CWallet(
     , nMasterKeyMaxID(0)
     , vchDefaultKey()
     , nTimeFirstKey(0)
-    , timeOfLastChainTipUpdate(0)
     , setInternalKeyPool()
     , setExternalKeyPool()
     , walletStakingOnly(false)
@@ -1337,11 +1336,6 @@ void CWallet::SyncTransactions(const TransactionVector& txs, const CBlock* pbloc
 void CWallet::SetBestChain(const CBlockLocator& loc)
 {
     walletDatabaseEndpointFactory_.getDatabaseEndpoint()->WriteBestBlock(loc);
-}
-
-void CWallet::UpdatedBlockTip(const CBlockIndex *pindex)
-{
-    timeOfLastChainTipUpdate = GetTime();
 }
 
 bool CWallet::IsChange(const CTxOut& txout) const

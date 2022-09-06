@@ -30,7 +30,7 @@ AcceptBlockValidator::AcceptBlockValidator(
 {
 }
 
-std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(CBlock& block, CValidationState& state) const
+std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(const NodeAndBlockDiskPosition& nodeAndBlockDisk, CBlock& block, CValidationState& state) const
 {
     LOCK(mainCriticalSection_);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
     MarkBlockAsReceived(block.GetHash());
@@ -48,7 +48,7 @@ bool AcceptBlockValidator::connectActiveChain(const CBlock& block, CValidationSt
 
     return true;
 }
-bool AcceptBlockValidator::checkBlockRequirements(const CBlock& block, CValidationState& state) const
+bool AcceptBlockValidator::checkBlockRequirements(const NodeAndBlockDiskPosition& nodeAndBlockDisk, const CBlock& block, CValidationState& state) const
 {
     const bool checked = CheckBlock(block, state);
     if (!CheckBlockSignature(block))

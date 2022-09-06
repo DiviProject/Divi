@@ -32,8 +32,8 @@ public:
         CNode* pfrom,
         CDiskBlockPos* dbp);
 
-    std::pair<CBlockIndex*, bool> validateAndAssignBlockIndex(CBlock& block, CValidationState& state) const override;
+    std::pair<CBlockIndex*, bool> validateAndAssignBlockIndex(const NodeAndBlockDiskPosition& nodeAndBlockDisk, CBlock& block, CValidationState& state) const override;
     bool connectActiveChain(const CBlock& block, CValidationState& state) const override;
-    bool checkBlockRequirements(const CBlock& block, CValidationState& state) const override;
+    bool checkBlockRequirements(const NodeAndBlockDiskPosition& nodeAndBlockDisk, const CBlock& block, CValidationState& state) const override;
 };
 #endif// ACCEPT_BLOCK_VALIDATOR_H

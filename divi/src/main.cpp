@@ -234,25 +234,6 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
     return pindexNew;
 }
 
-/** Mark a block as having its data received and checked (up to BLOCK_VALID_TRANSACTIONS). */
-bool ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pindexNew, const CDiskBlockPos& pos)
-{
-    if (block.IsProofOfStake())
-        pindexNew->SetProofOfStake();
-    pindexNew->nTx = block.vtx.size();
-    pindexNew->nChainTx = 0;
-    pindexNew->nFile = pos.nFile;
-    pindexNew->nDataPos = pos.nPos;
-    pindexNew->nUndoPos = 0;
-    pindexNew->nStatus |= BLOCK_HAVE_DATA;
-    pindexNew->RaiseValidity(BLOCK_VALID_TRANSACTIONS);
-    BlockFileHelpers::RecordDirtyBlockIndex(pindexNew);
-    const ChainstateManager::Reference chainstate;
-    const auto& chain = chainstate->ActiveChain();
-    UpdateBlockCandidatesAndSuccessors(chain,pindexNew);
-    return true;
-}
-
 static int64_t timeOfLastChainTipUpdate =0;
 std::unique_ptr<ChainExtensionService> chainExtensionService;
 void InitializeChainExtensionService(const MasternodeModule& masternodeModule)

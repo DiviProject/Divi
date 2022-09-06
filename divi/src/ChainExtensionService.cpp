@@ -30,21 +30,25 @@ extern std::map<uint256, uint256> mapProofOfStake;
 namespace
 {
 
-bool ContextualCheckBlockHeader(const Settings& settings, const CBlockHeader& block, CValidationState& state, const CBlockIndex* const pindexPrev)
+bool ContextualCheckBlockHeader(
+    const ChainstateManager& chainstate,
+    const CChainParams& chainParameters,
+    const Settings& settings,
+    const CBlockHeader& block,
+    CValidationState& state,
+    const CBlockIndex* const pindexPrev)
 {
     const uint256 hash = block.GetHash();
 
-    if (hash == Params().HashGenesisBlock())
+    if (hash == chainParameters.HashGenesisBlock())
         return true;
 
     assert(pindexPrev);
-
-    const ChainstateManager::Reference chainstate;
     int nHeight = pindexPrev->nHeight + 1;
 
     //If this is a reorg, check that it is not too deep
-    int nMaxReorgDepth = settings.GetArg("-maxreorg", Params().MaxReorganizationDepth());
-    if (chainstate->ActiveChain().Height() - nHeight >= nMaxReorgDepth)
+    int nMaxReorgDepth = settings.GetArg("-maxreorg", chainParameters.MaxReorganizationDepth());
+    if (chainstate.ActiveChain().Height() - nHeight >= nMaxReorgDepth)
         return state.DoS(1, error("%s: forked chain older than max reorganization depth (height %d)", __func__, nHeight));
 
     // Check timestamp against prev
@@ -55,7 +59,7 @@ bool ContextualCheckBlockHeader(const Settings& settings, const CBlockHeader& bl
     }
 
     // Check that the block chain matches the known block chain up to a checkpoint
-    static const auto* blockHashCheckpointsByHeight = Params().Checkpoints().mapCheckpoints;
+    static const auto* blockHashCheckpointsByHeight = chainParameters.Checkpoints().mapCheckpoints;
     if(blockHashCheckpointsByHeight)
     {
         const auto it = blockHashCheckpointsByHeight->find(nHeight);
@@ -65,7 +69,7 @@ bool ContextualCheckBlockHeader(const Settings& settings, const CBlockHeader& bl
 
         // Don't accept any forks from the main chain prior to last checkpoint
         const CBlockIndex* lastCheckpointRecordedInBlockMap = nullptr;
-        const BlockMap& blockIndicesByBlockHash = chainstate->GetBlockMap();
+        const BlockMap& blockIndicesByBlockHash = chainstate.GetBlockMap();
 
         for(auto it = blockHashCheckpointsByHeight->rbegin(); it != blockHashCheckpointsByHeight->rend(); ++it)
         {
@@ -161,7 +165,7 @@ bool AcceptBlockHeader(
 
     }
 
-    if (!ContextualCheckBlockHeader(settings,block, state, pindexPrev))
+    if (!ContextualCheckBlockHeader(chainstate, Params(), settings,block, state, pindexPrev))
         return false;
 
     if (pindex == NULL)

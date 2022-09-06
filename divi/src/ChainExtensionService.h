@@ -31,7 +31,7 @@ private:
     const Settings& settings_;
     const CChainParams& chainParameters_;
     const CSporkManager& sporkManager_;
-    mutable ChainstateManager::Reference chainstateRef_;
+    ChainstateManager* chainstateRef_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors_;
     BlockIndexCandidates& blockIndexCandidates_;
@@ -46,6 +46,7 @@ private:
 
 public:
     ChainExtensionService(
+        ChainstateManager& chainstateManager,
         CTxMemPool& mempool,
         const MasternodeModule& masternodeModule,
         MainNotificationSignals& mainNotificationSignals,

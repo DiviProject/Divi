@@ -159,6 +159,7 @@ void InitializeChainExtensionService(const MasternodeModule& masternodeModule)
     assert(chainExtensionService == nullptr);
     chainExtensionService.reset(
         new ChainExtensionService(
+            ChainstateManager::Get(),
             GetTransactionMemoryPool(),
             masternodeModule,
             GetMainNotificationInterface(),

@@ -12,6 +12,7 @@ class Settings;
 class CChainParams;
 class CSporkManager;
 class ChainstateManager;
+class I_BlockSubmitter;
 
 class ChainExtensionModule
 {
@@ -19,6 +20,7 @@ private:
     ChainstateManager& chainstateManager_;
     std::unique_ptr<I_ChainExtensionService> chainExtensionService_;
     std::unique_ptr<I_BlockValidator> blockValidator_;
+    std::unique_ptr<I_BlockSubmitter> blockSubmitter_;
 public:
     ChainExtensionModule(
         ChainstateManager& chainstateManager,
@@ -35,5 +37,6 @@ public:
     ~ChainExtensionModule();
     const I_ChainExtensionService& getChainExtensionService() const;
     const I_BlockValidator& getBlockValidator() const;
+    const I_BlockSubmitter& getBlockSubmitter() const;
 };
 #endif// CHAIN_EXTENSION_MODULE_H

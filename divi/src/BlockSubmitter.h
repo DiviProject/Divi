@@ -4,13 +4,17 @@
 class CValidationState;
 class CDiskBlockPos;
 class CCriticalSection;
+class ChainstateManager;
 class BlockSubmitter final: public I_BlockSubmitter
 {
 private:
     CCriticalSection& mainCriticalSection_;
+    ChainstateManager& chainstate_;
     bool IsBlockValidChainExtension(CBlock* pblock) const;
 public:
-    BlockSubmitter(CCriticalSection& mainCriticalSection);
+    BlockSubmitter(
+        CCriticalSection& mainCriticalSection,
+        ChainstateManager& chainstate);
     bool submitBlockForChainExtension(CBlock& block) const override;
     bool loadBlockForChainExtension(
         CValidationState& state,

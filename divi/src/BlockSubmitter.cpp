@@ -41,6 +41,11 @@ bool BlockSubmitter::submitBlockForChainExtension(CBlock& block) const
     return true;
 }
 
+bool BlockSubmitter::acceptBlockForChainExtension(CValidationState& state, CBlock& block, CNode* blockSourceNode) const
+{
+    return ProcessNewBlock(chainstate_, state, blockSourceNode, &block);
+}
+
 bool BlockSubmitter::loadBlockForChainExtension(CValidationState& state, CBlock& block, CDiskBlockPos* blockfilePositionData) const
 {
     return ProcessNewBlock(chainstate_, state, NULL, &block, blockfilePositionData);

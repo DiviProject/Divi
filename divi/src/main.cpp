@@ -109,7 +109,6 @@ extern Settings& settings;
  */
 
 CCriticalSection cs_main;
-std::map<uint256, uint256> mapProofOfStake;
 
 //////////////////////////////////////////////////////////////////////////////
 //

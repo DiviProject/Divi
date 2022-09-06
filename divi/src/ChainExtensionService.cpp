@@ -24,9 +24,9 @@
 #include <BlockIndexLotteryUpdater.h>
 
 extern void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBlockIndex* pindexNew);
-extern std::map<uint256, uint256> mapProofOfStake;
 namespace
 {
+std::map<uint256, uint256> mapProofOfStake;
 CBlockIndex* AddToBlockIndex(
     ChainstateManager& chainstate,
     const CChainParams& chainParameters,

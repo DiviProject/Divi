@@ -7,6 +7,7 @@ class CValidationState;
 class CBlockIndex;
 class CDiskBlockPos;
 #include <NodeId.h>
+#include <utility>
 
 class I_ChainExtensionService
 {
@@ -16,10 +17,9 @@ public:
     virtual void recordBlockSource(
         const uint256& blockHash,
         NodeId nodeId) const =0;
-    virtual bool assignBlockIndex(
+    virtual std::pair<CBlockIndex*, bool> assignBlockIndex(
         CBlock& block,
         CValidationState& state,
-        CBlockIndex** ppindex,
         CDiskBlockPos* dbp) const = 0;
 
     virtual bool updateActiveChain(

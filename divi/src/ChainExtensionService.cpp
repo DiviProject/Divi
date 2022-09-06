@@ -450,13 +450,15 @@ void ChainExtensionService::recordBlockSource(const uint256& blockHash, NodeId n
     peerIdByBlockHash_[blockHash] = nodeId;
 }
 
-bool ChainExtensionService::assignBlockIndex(
+std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
     CBlock& block,
     CValidationState& state,
-    CBlockIndex** ppindex,
     CDiskBlockPos* dbp) const
 {
-    return AcceptBlock(mainCriticalSection_,settings_, posModule_->proofOfStakeGenerator(),chainParameters_,block,*chainstateRef_,sporkManager_,state,ppindex,dbp);
+    std::pair<CBlockIndex*, bool> result(nullptr,false);
+    result.second = AcceptBlock(
+        mainCriticalSection_,settings_, posModule_->proofOfStakeGenerator(),chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
+    return result;
 }
 
 bool ChainExtensionService::updateActiveChain(

@@ -61,10 +61,9 @@ public:
     void recordBlockSource(
         const uint256& blockHash,
         NodeId nodeId) const override;
-    bool assignBlockIndex(
+    std::pair<CBlockIndex*, bool> assignBlockIndex(
         CBlock& block,
         CValidationState& state,
-        CBlockIndex** ppindex,
         CDiskBlockPos* dbp) const override;
     bool updateActiveChain(
         CValidationState& state,

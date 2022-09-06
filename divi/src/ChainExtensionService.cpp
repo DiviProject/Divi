@@ -442,7 +442,7 @@ bool ChainExtensionService::connectGenesisBlock() const
     // Only add the genesis block if not reindexing (in which case we reuse the one already on disk)
     if (!settings_.isReindexingBlocks()) {
         try {
-            const CBlock& block = Params().GenesisBlock();
+            const CBlock& block = chainParameters_.GenesisBlock();
             // Start new block file
             unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
             CDiskBlockPos blockPos;

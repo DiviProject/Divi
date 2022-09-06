@@ -23,11 +23,26 @@
 #include <txdb.h>
 
 
-extern bool ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pindexNew, const CDiskBlockPos& pos);
 extern CBlockIndex* AddToBlockIndex(const CBlock& block);
 extern std::map<uint256, uint256> mapProofOfStake;
 namespace
 {
+bool ReceivedBlockTransactions(const CChain& chain, const CBlock& block, CBlockIndex* pindexNew, const CDiskBlockPos& pos)
+{
+    if (block.IsProofOfStake())
+        pindexNew->SetProofOfStake();
+    pindexNew->nTx = block.vtx.size();
+    pindexNew->nChainTx = 0;
+    pindexNew->nFile = pos.nFile;
+    pindexNew->nDataPos = pos.nPos;
+    pindexNew->nUndoPos = 0;
+    pindexNew->nStatus |= BLOCK_HAVE_DATA;
+    pindexNew->RaiseValidity(BLOCK_VALID_TRANSACTIONS);
+    BlockFileHelpers::RecordDirtyBlockIndex(pindexNew);
+    UpdateBlockCandidatesAndSuccessors(chain,pindexNew);
+    return true;
+}
+
 bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAddSize, unsigned int nHeight, uint64_t nTime, bool fKnown = false)
 {
     if(fKnown) return BlockFileHelpers::FindKnownBlockPos(state,pos,nAddSize,nHeight,nTime);
@@ -255,7 +270,7 @@ bool AcceptBlock(
         if (dbp == NULL)
             if (!WriteBlockToDisk(block, blockPos))
                 return state.Abort("Failed to write block");
-        if (!ReceivedBlockTransactions(block, pindex, blockPos))
+        if (!ReceivedBlockTransactions(chainstate.ActiveChain(), block, pindex, blockPos))
             return error("AcceptBlock() : ReceivedBlockTransactions failed");
     } catch (std::runtime_error& e) {
         return state.Abort(std::string("System error: ") + e.what());
@@ -456,7 +471,7 @@ bool ChainExtensionService::connectGenesisBlock() const
             if (!WriteBlockToDisk(block, blockPos))
                 return error("%s : writing genesis block to disk failed",__func__);
             CBlockIndex* pindex = AddToBlockIndex(block);
-            if (!ReceivedBlockTransactions(block, pindex, blockPos))
+            if (!ReceivedBlockTransactions(chainstateRef_->ActiveChain(),block, pindex, blockPos))
                 return error("%s : genesis block not accepted",__func__);
             if (!updateActiveChain(state, &block))
                 return error("%s : genesis block cannot be activated",__func__);

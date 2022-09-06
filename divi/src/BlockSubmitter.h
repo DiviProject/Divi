@@ -3,12 +3,14 @@
 #include <I_BlockSubmitter.h>
 class CValidationState;
 class CDiskBlockPos;
+class CCriticalSection;
 class BlockSubmitter final: public I_BlockSubmitter
 {
 private:
+    CCriticalSection& mainCriticalSection_;
     bool IsBlockValidChainExtension(CBlock* pblock) const;
 public:
-    BlockSubmitter();
+    BlockSubmitter(CCriticalSection& mainCriticalSection);
     bool submitBlockForChainExtension(CBlock& block) const override;
     bool loadBlockForChainExtension(
         CValidationState& state,

@@ -34,7 +34,7 @@ ChainExtensionModule::ChainExtensionModule(
             mainCriticalSection,
             chainParameters,
             chainstateManager_))
-    , blockSubmitter_(new BlockSubmitter())
+    , blockSubmitter_(new BlockSubmitter(mainCriticalSection))
 {
 }
 

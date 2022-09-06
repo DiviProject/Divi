@@ -438,6 +438,13 @@ ChainExtensionService::ChainExtensionService(
 {
 }
 
+ChainExtensionService::~ChainExtensionService()
+{
+    posModule_.reset();
+    chainTransitionMediator_.reset();
+    chainTipManager_.reset();
+}
+
 void ChainExtensionService::recordBlockSource(const uint256& blockHash, NodeId nodeId) const
 {
     peerIdByBlockHash_[blockHash] = nodeId;

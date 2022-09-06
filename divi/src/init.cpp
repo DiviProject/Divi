@@ -57,6 +57,8 @@
 #include <TransactionDiskAccessor.h>
 #include <MainNotificationRegistration.h>
 #include <ChainSyncHelpers.h>
+#include <ChainExtensionService.h>
+#include <BlockInvalidationHelpers.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
@@ -141,6 +143,31 @@ void FinalizeMultiWalletModule()
 {
     if(!multiWalletModule) return;
     multiWalletModule.reset();
+}
+
+std::unique_ptr<ChainExtensionService> chainExtensionService;
+void InitializeChainExtensionService(const MasternodeModule& masternodeModule)
+{
+    assert(chainExtensionService == nullptr);
+    chainExtensionService.reset(
+        new ChainExtensionService(
+            GetTransactionMemoryPool(),
+            masternodeModule,
+            GetMainNotificationInterface(),
+            cs_main,
+            settings,
+            Params(),
+            GetSporkManager(),
+            GetBlockIndexSuccessorsByPreviousBlockIndex(),
+            GetBlockIndexCandidates()));
+}
+void FinalizeChainExtensionService()
+{
+    chainExtensionService.reset();
+}
+I_ChainExtensionService& GetChainExtensionService()
+{
+    return *chainExtensionService;
 }
 
 bool ManualBackupWallet(const std::string& strDest)

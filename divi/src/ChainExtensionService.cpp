@@ -123,6 +123,7 @@ bool ContextualCheckBlock(CCriticalSection& mainCriticalSection,const CChain& ch
 
 bool AcceptBlockHeader(
     CCriticalSection& mainCriticalSection,
+    const CChainParams& chainParameters,
     const Settings& settings,
     const CBlock& block,
     ChainstateManager& chainstate,
@@ -152,7 +153,7 @@ bool AcceptBlockHeader(
 
     // Get prev block index
     CBlockIndex* pindexPrev = NULL;
-    if (hash != Params().HashGenesisBlock()) {
+    if (hash != chainParameters.HashGenesisBlock()) {
         const auto mi = blockMap.find(block.hashPrevBlock);
         if (mi == blockMap.end())
             return state.DoS(0, error("%s : prev block %s not found", __func__, block.hashPrevBlock), 0, "bad-prevblk");
@@ -165,7 +166,7 @@ bool AcceptBlockHeader(
 
     }
 
-    if (!ContextualCheckBlockHeader(chainstate, Params(), settings,block, state, pindexPrev))
+    if (!ContextualCheckBlockHeader(chainstate, chainParameters, settings,block, state, pindexPrev))
         return false;
 
     if (pindex == NULL)
@@ -219,7 +220,7 @@ bool AcceptBlock(
         }
     }
 
-    if (!AcceptBlockHeader(mainCriticalSection, settings, block, chainstate, sporkManager, state, &pindex))
+    if (!AcceptBlockHeader(mainCriticalSection, chainParameters, settings, block, chainstate, sporkManager, state, &pindex))
         return false;
 
     if (pindex->nStatus & BLOCK_HAVE_DATA) {

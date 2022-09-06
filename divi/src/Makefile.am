@@ -242,6 +242,7 @@ BITCOIN_CORE_H = \
   MempoolConsensus.h \
   ChainTipManager.h \
   ChainExtensionService.h \
+  BlockIndexWork.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \

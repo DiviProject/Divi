@@ -59,6 +59,7 @@
 #include <ChainSyncHelpers.h>
 #include <ChainExtensionService.h>
 #include <BlockInvalidationHelpers.h>
+#include <FlushChainState.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
@@ -128,6 +129,13 @@ constexpr int nWalletBackups = 20;
 #endif
 static boost::thread_group* globalThreadGroupRef = nullptr;
 std::unique_ptr<MultiWalletModule> multiWalletModule(nullptr);
+
+void FlushStateToDisk()
+{
+    MainNotificationSignals& notificationSignals = GetMainNotificationInterface();
+    CValidationState state;
+    FlushStateToDisk(state, FlushStateMode::FLUSH_STATE_ALWAYS, notificationSignals,cs_main);
+}
 
 void InitializeMultiWalletModule()
 {

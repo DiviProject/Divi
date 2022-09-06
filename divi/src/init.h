@@ -29,6 +29,10 @@ void Shutdown();
 void EnableMainSignals();
 void EnableUnitTestSignals();
 bool InitializeDivi(boost::thread_group& threadGroup);
+
+/** Flush all state, indexes and buffers to disk. */
+void FlushStateToDisk();
+
 void InitializeMultiWalletModule();
 void FinalizeMultiWalletModule();
 

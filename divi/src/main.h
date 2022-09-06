@@ -37,9 +37,6 @@ class CTransaction;
 class CLevelDBWrapper;
 class I_ChainExtensionService;
 
-/** Flush all state, indexes and buffers to disk. */
-void FlushStateToDisk();
-
 /** Get Current Chain Height with acquired lock **/
 int GetHeight();
 

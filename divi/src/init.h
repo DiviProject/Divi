@@ -31,6 +31,13 @@ void EnableUnitTestSignals();
 bool InitializeDivi(boost::thread_group& threadGroup);
 void InitializeMultiWalletModule();
 void FinalizeMultiWalletModule();
+
+class MasternodeModule;
+class I_ChainExtensionService;
+void InitializeChainExtensionService(const MasternodeModule& masternodeModule);
+void FinalizeChainExtensionService();
+I_ChainExtensionService& GetChainExtensionService();
+
 bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
 CTxMemPool& GetTransactionMemoryPool();
 bool ManualBackupWallet(const std::string& strDest);

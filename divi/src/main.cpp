@@ -168,31 +168,6 @@ void FlushStateToDisk()
     FlushStateToDisk(state, FlushStateMode::FLUSH_STATE_ALWAYS, notificationSignals,cs_main);
 }
 
-std::unique_ptr<ChainExtensionService> chainExtensionService;
-void InitializeChainExtensionService(const MasternodeModule& masternodeModule)
-{
-    assert(chainExtensionService == nullptr);
-    chainExtensionService.reset(
-        new ChainExtensionService(
-            GetTransactionMemoryPool(),
-            masternodeModule,
-            GetMainNotificationInterface(),
-            cs_main,
-            settings,
-            Params(),
-            GetSporkManager(),
-            GetBlockIndexSuccessorsByPreviousBlockIndex(),
-            GetBlockIndexCandidates()));
-}
-void FinalizeChainExtensionService()
-{
-    chainExtensionService.reset();
-}
-I_ChainExtensionService& GetChainExtensionService()
-{
-    return *chainExtensionService;
-}
-
 bool ProcessNewBlock(ChainstateManager& chainstate, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
     // Preliminary checks

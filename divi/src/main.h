@@ -43,11 +43,6 @@ void FlushStateToDisk();
 /** Get Current Chain Height with acquired lock **/
 int GetHeight();
 
-class MasternodeModule;
-void InitializeChainExtensionService(const MasternodeModule& masternodeModule);
-void FinalizeChainExtensionService();
-I_ChainExtensionService& GetChainExtensionService();
-
 /**
  * Process an incoming block. This only returns after the best known valid
  * block is made active. Note that it does not, however, guarantee that the

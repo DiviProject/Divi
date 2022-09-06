@@ -32,6 +32,8 @@ CTxMemPool::CTxMemPool(
     ): fSanityCheck_(false)
     , mapDeltas()
     , mapBareTxid()
+    , timeOfLastChainTipUpdate_(0)
+    , cs()
     , mapTx()
     , mapNextTx()
 {

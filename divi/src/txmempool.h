@@ -66,11 +66,21 @@ private:
     std::map<uint256, const CTxMemPoolEntry*> mapBareTxid;
 
     void removeConflicts(const CTransaction& tx, std::list<CTransaction>& removed);
+
+    int64_t timeOfLastChainTipUpdate_;
 public:
     mutable CCriticalSection cs;
     std::map<uint256, CTxMemPoolEntry> mapTx;
     std::map<COutPoint, CInPoint> mapNextTx;
 
+    int64_t getLastTimeOfChainTipUpdate() const
+    {
+        return timeOfLastChainTipUpdate_;
+    }
+    void setLastTimeOfChainTipUpdate(int64_t currentTime)
+    {
+        timeOfLastChainTipUpdate_ = currentTime;
+    }
     explicit CTxMemPool();
     ~CTxMemPool();
 

@@ -22,19 +22,15 @@
 #include "compat/sanity.h"
 #include <DataDirectory.h>
 #include <defaultValues.h>
-#include <dbenv.h>
-#include "key.h"
 #include "main.h"
-#include "obfuscation.h"
 #include <WalletBackupFeatureContainer.h>
 #include <miner.h>
 #include "net.h"
 #include "rpcserver.h"
-#include "script/standard.h"
 #include "spork.h"
 #include "sporkdb.h"
-#include "txdb.h"
 #include "torcontrol.h"
+#include <txdb.h>
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
@@ -48,7 +44,7 @@
 #include <TransactionInputChecker.h>
 #include <txmempool.h>
 #include <StartAndShutdownSignals.h>
-#include <MerkleTxConfirmationNumberCalculator.h>
+#include <I_MerkleTxConfirmationNumberCalculator.h>
 #include <BlockSubmitter.h>
 #include <ThreadManagementHelpers.h>
 #include <LoadWalletResult.h>
@@ -911,7 +907,6 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     LogPrintf("DIVI version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
-    if(!fDisableWallet) LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
     if (!ShouldLogTimestamps()) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", dataDirectoryInUse);

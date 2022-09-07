@@ -15,27 +15,8 @@
 #include "amount.h"
 #include <string>
 
-class CChain;
-class CBlock;
-struct CBlockLocator;
-class CBlockHeader;
-class CBlockIndex;
-class CBlockTreeDB;
 class ChainstateManager;
-class CSporkDB;
-class CInv;
-class CScriptCheck;
-class NotificationInterface;
-class CValidationState;
 class CNode;
-struct CNodeSignals;
-class CTxMemPool;
-class CCoinsViewCache;
-class CDiskBlockPos;
-class CSporkManager;
-class CTransaction;
-class CLevelDBWrapper;
-class I_ChainExtensionService;
 
 /** Get Current Chain Height with acquired lock **/
 int GetHeight();

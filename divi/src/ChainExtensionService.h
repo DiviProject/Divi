@@ -24,7 +24,6 @@ class ProofOfStakeModule;
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
-    std::map<uint256, NodeId>& peerIdByBlockHash_;
     CTxMemPool& mempool_;
     const MasternodeModule& masternodeModule_;
     MainNotificationSignals& mainNotificationSignals_;

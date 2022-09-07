@@ -6,7 +6,6 @@
 #include "activemasternode.h"
 #include <ChainstateManager.h>
 #include "init.h"
-#include "main.h"
 #include <chain.h>
 #include "masternode-payments.h"
 #include "activemasternode.h"

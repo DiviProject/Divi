@@ -8,7 +8,6 @@
 #include <chain.h>
 #include <ChainstateManager.h>
 #include <init.h>
-#include "main.h"
 #include "net.h"
 #include "spork.h"
 #include "random.h"

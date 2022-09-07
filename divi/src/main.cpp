@@ -1552,9 +1552,9 @@ void CollectNonBlockDataToRequestAndRequestIt(const CTxMemPool& mempool, CNode* 
         pto->PushMessage("getdata", vGetData);
 }
 
-void RebroadcastSomeMempoolTxs(CTxMemPool& mempool)
+void RebroadcastSomeMempoolTxs(CCriticalSection& mainCriticalSection, CTxMemPool& mempool)
 {
-    TRY_LOCK(cs_main,mainLockAcquired);
+    TRY_LOCK(mainCriticalSection,mainLockAcquired);
     constexpr int maxNumberOfRebroadcastableTransactions = 32;
     if(mainLockAcquired)
     {
@@ -1587,7 +1587,7 @@ void RebroadcastSomeMempoolTxs(CTxMemPool& mempool)
     }
 }
 
-void PeriodicallyRebroadcastMempoolTxs(CTxMemPool& mempool)
+void PeriodicallyRebroadcastMempoolTxs(CCriticalSection& mainCriticalSection, CTxMemPool& mempool)
 {
     static int64_t timeOfLastBroadcast = 0;
     static int64_t timeOfNextBroadcast = 0;
@@ -1600,7 +1600,7 @@ void PeriodicallyRebroadcastMempoolTxs(CTxMemPool& mempool)
     if(timeOfLastChainTipUpdate < timeOfLastBroadcast) return;
     timeOfLastBroadcast = GetTime();
     if(timeOfLastChainTipUpdate > 0)
-        RebroadcastSomeMempoolTxs(mempool);
+        RebroadcastSomeMempoolTxs(mainCriticalSection, mempool);
 }
 
 bool SendMessages(CNode* pto, bool fSendTrickle)
@@ -1622,7 +1622,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             BeginSyncingWithPeer(pto);
         }
         CTxMemPool& mempool = GetTransactionMemoryPool();
-        if(!settings.isReindexingBlocks()) PeriodicallyRebroadcastMempoolTxs(mempool);
+        if(!settings.isReindexingBlocks()) PeriodicallyRebroadcastMempoolTxs(cs_main, mempool);
         SendInventoryToPeer(pto,fSendTrickle);
         int64_t nNow = GetTimeMicros();
         std::vector<CInv> vGetData;

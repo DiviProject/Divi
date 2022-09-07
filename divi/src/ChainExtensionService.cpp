@@ -406,8 +406,7 @@ ChainExtensionService::ChainExtensionService(
     const CSporkManager& sporkManager,
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
     BlockIndexCandidates& blockIndexCandidates
-    ): peerIdByBlockHash_(peerIdByBlockHash)
-    , mempool_(mempool)
+    ): mempool_(mempool)
     , masternodeModule_(masternodeModule)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)
@@ -425,7 +424,7 @@ ChainExtensionService::ChainExtensionService(
             mempool_,
             mainNotificationSignals_,
             masternodeModule_,
-            peerIdByBlockHash_,
+            peerIdByBlockHash,
             sporkManager_,
             *chainstateRef_))
     , chainTransitionMediator_(

@@ -9,11 +9,14 @@
 #include <spork.h>
 #include <chain.h>
 #include <ValidationState.h>
+#include <I_BlockValidator.h>
 
 BlockSubmitter::BlockSubmitter(
+    const I_BlockValidator& blockValidator,
     CCriticalSection& mainCriticalSection,
     ChainstateManager& chainstate
-    ): mainCriticalSection_(mainCriticalSection)
+    ): blockValidator_(blockValidator)
+    , mainCriticalSection_(mainCriticalSection)
     , chainstate_(chainstate)
 {
 }

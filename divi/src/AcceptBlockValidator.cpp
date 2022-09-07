@@ -15,11 +15,13 @@
 #include <chainparams.h>
 
 AcceptBlockValidator::AcceptBlockValidator(
+        std::map<uint256, NodeId>& peerIdByBlockHash,
         const I_ChainExtensionService& chainExtensionService,
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,
         ChainstateManager& chainstate
-        ): chainExtensionService_(chainExtensionService)
+        ): peerIdByBlockHash_(peerIdByBlockHash)
+        , chainExtensionService_(chainExtensionService)
         , mainCriticalSection_(mainCriticalSection)
         , chainParameters_(chainParameters)
         , chainstate_(chainstate)

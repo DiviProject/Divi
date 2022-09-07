@@ -32,6 +32,7 @@ ChainExtensionModule::ChainExtensionModule(
             blockIndexCandidates))
     , blockValidator_(
         new AcceptBlockValidator(
+            peerIdByBlockHash_,
             *chainExtensionService_,
             mainCriticalSection,
             chainParameters,

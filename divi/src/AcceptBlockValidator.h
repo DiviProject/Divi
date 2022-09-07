@@ -17,12 +17,14 @@ class CCriticalSection;
 class AcceptBlockValidator final: public I_BlockValidator
 {
 private:
+    std::map<uint256, NodeId>& peerIdByBlockHash_;
     const I_ChainExtensionService& chainExtensionService_;
     CCriticalSection& mainCriticalSection_;
     const CChainParams& chainParameters_;
     ChainstateManager& chainstate_;
 public:
     AcceptBlockValidator(
+        std::map<uint256, NodeId>& peerIdByBlockHash,
         const I_ChainExtensionService& chainExtensionService,
         CCriticalSection& mainCriticalSection,
         const CChainParams& chainParameters,

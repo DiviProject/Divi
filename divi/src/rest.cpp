@@ -5,7 +5,6 @@
 
 #include <rest.h>
 
-#include "main.h"
 #include "BlockDiskAccessor.h"
 #include "ChainstateManager.h"
 #include "primitives/block.h"

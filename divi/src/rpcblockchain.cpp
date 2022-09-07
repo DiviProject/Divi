@@ -6,7 +6,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <ChainstateManager.h>
-#include "main.h"
 #include "BlockDiskAccessor.h"
 #include <rpcprotocol.h>
 #include <rpcserver.h>

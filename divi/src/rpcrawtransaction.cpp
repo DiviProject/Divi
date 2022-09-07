@@ -14,7 +14,6 @@
 #include <FeeAndPriorityCalculator.h>
 #include "init.h"
 #include "keystore.h"
-#include "main.h"
 #include "net.h"
 #include "primitives/transaction.h"
 #include <rpcprotocol.h>

@@ -12,7 +12,6 @@
 #include <BlockDiskDataReader.h>
 #include <chain.h>
 #include "init.h"
-#include "main.h"
 #include <rpcprotocol.h>
 #include "rpcserver.h"
 #include "script/script.h"

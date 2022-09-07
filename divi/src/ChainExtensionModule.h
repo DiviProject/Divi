@@ -1,6 +1,10 @@
 #ifndef CHAIN_EXTENSION_MODULE_H
 #define CHAIN_EXTENSION_MODULE_H
 #include <memory>
+#include <map>
+
+#include <NodeId.h>
+#include <uint256.h>
 #include <BlockIndexWork.h>
 class I_ChainExtensionService;
 class I_BlockValidator;
@@ -18,6 +22,7 @@ class ChainExtensionModule
 {
 private:
     ChainstateManager& chainstateManager_;
+    mutable std::map<uint256, NodeId> peerIdByBlockHash_;
     std::unique_ptr<I_ChainExtensionService> chainExtensionService_;
     std::unique_ptr<I_BlockValidator> blockValidator_;
     std::unique_ptr<I_BlockSubmitter> blockSubmitter_;

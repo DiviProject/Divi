@@ -36,6 +36,7 @@ ChainExtensionModule::ChainExtensionModule(
             chainstateManager_))
     , blockSubmitter_(
         new BlockSubmitter(
+            *blockValidator_,
             mainCriticalSection,
             chainstateManager_))
 {

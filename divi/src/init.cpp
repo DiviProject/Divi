@@ -178,6 +178,10 @@ const I_ChainExtensionService& GetChainExtensionService()
 {
     return chainExtensionModule->getChainExtensionService();
 }
+const I_BlockSubmitter& GetBlockSubmitter()
+{
+    return chainExtensionModule->getBlockSubmitter();
+}
 
 bool ManualBackupWallet(const std::string& strDest)
 {

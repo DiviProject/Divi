@@ -90,6 +90,7 @@
 #include <TransactionFinalityHelpers.h>
 #include <ChainExtensionService.h>
 #include <MempoolConsensus.h>
+#include <I_BlockSubmitter.h>
 
 using namespace boost;
 using namespace std;
@@ -150,28 +151,6 @@ const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocato
 // CBlock and CBlockIndex
 //
 
-bool ProcessNewBlock(ChainstateManager& chainstate, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
-{
-    // Preliminary checks
-    int64_t nStartTime = GetTimeMillis();
-
-    NodeAndBlockDiskPosition nodeAndBlockDiskPosition{pfrom,dbp};
-    AcceptBlockValidator blockValidator(GetChainExtensionService(), cs_main, Params(), chainstate);
-    if(!blockValidator.checkBlockRequirements(nodeAndBlockDiskPosition, *pblock,state)) return false;
-
-    std::pair<CBlockIndex*,bool> assignedBlockIndex = blockValidator.validateAndAssignBlockIndex(nodeAndBlockDiskPosition,*pblock,state);
-    if(!assignedBlockIndex.second) return false;
-    CBlockIndex* pindex = assignedBlockIndex.first;
-    assert(pindex != nullptr);
-
-    if(!blockValidator.connectActiveChain(*pblock,state)) return false;
-
-    VoteForMasternodePayee(pindex);
-    LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,
-              pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));
-
-    return true;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1164,7 +1143,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
             CValidationState state;
             if (!blockMap.count(block.GetHash())) {
-                ProcessNewBlock(*chainstate, state, pfrom, &block);
+                GetBlockSubmitter().acceptBlockForChainExtension(state,block,pfrom);
                 int nDoS;
                 if(state.IsInvalid(nDoS)) {
                     pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),
@@ -1180,7 +1159,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                     PeerBanningService::Ban(GetTime(),pfrom->GetCAddress());
                 }
             } else {
-                LogPrint("net", "%s : Already processed block %s, skipping ProcessNewBlock()\n", __func__, block.GetHash());
+                LogPrint("net", "%s : Already processed block %s, skipping block processing()\n", __func__, block.GetHash());
             }
         }
     }

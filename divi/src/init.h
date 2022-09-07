@@ -16,6 +16,7 @@ class I_MerkleTxConfirmationNumberCalculator;
 class CChainParams;
 class CChain;
 class BlockMap;
+class I_BlockSubmitter;
 
 namespace boost
 {
@@ -41,6 +42,7 @@ class I_ChainExtensionService;
 void InitializeChainExtensionModule(const MasternodeModule& masternodeModule);
 void FinalizeChainExtensionModule();
 const I_ChainExtensionService& GetChainExtensionService();
+const I_BlockSubmitter& GetBlockSubmitter();
 
 bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
 CTxMemPool& GetTransactionMemoryPool();

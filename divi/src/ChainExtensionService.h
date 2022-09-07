@@ -60,9 +60,6 @@ public:
 
     ~ChainExtensionService();
 
-    void recordBlockSource(
-        const uint256& blockHash,
-        NodeId nodeId) const override;
     std::pair<CBlockIndex*, bool> assignBlockIndex(
         CBlock& block,
         CValidationState& state,

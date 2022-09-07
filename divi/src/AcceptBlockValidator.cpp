@@ -35,7 +35,7 @@ std::pair<CBlockIndex*, bool> AcceptBlockValidator::validateAndAssignBlockIndex(
     // Store to disk
     std::pair<CBlockIndex*,bool> assignmentResult = chainExtensionService_.assignBlockIndex(block, state, nodeAndBlockDisk.blockDiskPosition);
     if (assignmentResult.first && nodeAndBlockDisk.dataSource) {
-        chainExtensionService_.recordBlockSource(assignmentResult.first->GetBlockHash(), nodeAndBlockDisk.dataSource->GetId());
+        peerIdByBlockHash_[assignmentResult.first->GetBlockHash()] = nodeAndBlockDisk.dataSource->GetId();
     }
     return assignmentResult;
 }

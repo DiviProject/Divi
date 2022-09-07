@@ -447,11 +447,6 @@ ChainExtensionService::~ChainExtensionService()
     chainTipManager_.reset();
 }
 
-void ChainExtensionService::recordBlockSource(const uint256& blockHash, NodeId nodeId) const
-{
-    peerIdByBlockHash_[blockHash] = nodeId;
-}
-
 std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
     CBlock& block,
     CValidationState& state,

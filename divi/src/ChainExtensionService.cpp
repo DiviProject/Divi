@@ -395,6 +395,7 @@ bool ChainExtensionService::transitionToMostWorkChainTip(
 }
 
 ChainExtensionService::ChainExtensionService(
+    std::map<uint256, NodeId>& peerIdByBlockHash,
     ChainstateManager& chainstateManager,
     CTxMemPool& mempool,
     const MasternodeModule& masternodeModule,
@@ -405,7 +406,8 @@ ChainExtensionService::ChainExtensionService(
     const CSporkManager& sporkManager,
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
     BlockIndexCandidates& blockIndexCandidates
-    ): mempool_(mempool)
+    ): peerIdByBlockHash_(peerIdByBlockHash)
+    , mempool_(mempool)
     , masternodeModule_(masternodeModule)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)
@@ -413,7 +415,6 @@ ChainExtensionService::ChainExtensionService(
     , chainParameters_(chainParameters)
     , sporkManager_(sporkManager)
     , chainstateRef_(&chainstateManager)
-    , peerIdByBlockHash_()
     , blockIndexSuccessors_(blockIndexSuccessors)
     , blockIndexCandidates_(blockIndexCandidates)
     , chainTipManager_(

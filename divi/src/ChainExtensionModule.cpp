@@ -16,6 +16,7 @@ ChainExtensionModule::ChainExtensionModule(
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
     BlockIndexCandidates& blockIndexCandidates
     ): chainstateManager_(chainstateManager)
+    , peerIdByBlockHash_()
     , chainExtensionService_(
         new ChainExtensionService(
             chainstateManager_,

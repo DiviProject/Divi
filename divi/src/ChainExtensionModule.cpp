@@ -19,6 +19,7 @@ ChainExtensionModule::ChainExtensionModule(
     , peerIdByBlockHash_()
     , chainExtensionService_(
         new ChainExtensionService(
+            peerIdByBlockHash_,
             chainstateManager_,
             mempool,
             masternodeModule,

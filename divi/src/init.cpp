@@ -16,6 +16,7 @@
 #include <base58.h>
 #include "BlockFileOpener.h"
 #include <BlockDiskAccessor.h>
+#include <BlockDiskDataReader.h>
 #include <chain.h>
 #include <chainparams.h>
 #include "compat/sanity.h"
@@ -43,8 +44,6 @@
 #include <MasternodeModule.h>
 #include <functional>
 #include <uiMessenger.h>
-#include <BlockDiskAccessor.h>
-#include <BlockDiskDataReader.h>
 #include <timeIntervalConstants.h>
 #include <TransactionInputChecker.h>
 #include <txmempool.h>

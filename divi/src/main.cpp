@@ -520,12 +520,15 @@ static bool PushKnownInventory(CNode* pfrom, const CInv& inv)
     return pushed;
 }
 
-static std::pair<const CBlockIndex*, bool> GetBlockIndexOfRequestedBlock(NodeId nodeId, const uint256& blockHash)
+static std::pair<const CBlockIndex*, bool> GetBlockIndexOfRequestedBlock(
+    CCriticalSection& mainCriticalSection,
+    NodeId nodeId,
+    const uint256& blockHash)
 {
     bool send = false;
     CBlockIndex* pindex = nullptr;
     {
-        LOCK(cs_main);
+        LOCK(mainCriticalSection);
 
         const ChainstateManager::Reference chainstate;
         const auto& blockMap = chainstate->GetBlockMap();
@@ -606,7 +609,7 @@ void static ProcessGetData(CNode* pfrom, std::deque<CInv>& requestsForData)
 
             if (inv.GetType() == MSG_BLOCK || inv.GetType() == MSG_FILTERED_BLOCK)
             {
-                std::pair<const CBlockIndex*, bool> blockIndexAndSendStatus = GetBlockIndexOfRequestedBlock(pfrom->GetId(),inv.GetHash());
+                std::pair<const CBlockIndex*, bool> blockIndexAndSendStatus = GetBlockIndexOfRequestedBlock(cs_main, pfrom->GetId(),inv.GetHash());
                 // Don't send not-validated blocks
                 if (blockIndexAndSendStatus.second &&
                     (blockIndexAndSendStatus.first->nStatus & BLOCK_HAVE_DATA))

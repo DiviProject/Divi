@@ -590,7 +590,7 @@ static void PushCorrespondingBlockToPeer(CNode* pfrom, const CBlockIndex* blockT
     }
 }
 
-void static ProcessGetData(CNode* pfrom, std::deque<CInv>& requestsForData)
+void static ProcessGetData(CCriticalSection& mainCriticalSection, CNode* pfrom, std::deque<CInv>& requestsForData)
 {
     const ChainstateManager::Reference chainstate;
 
@@ -609,7 +609,7 @@ void static ProcessGetData(CNode* pfrom, std::deque<CInv>& requestsForData)
 
             if (inv.GetType() == MSG_BLOCK || inv.GetType() == MSG_FILTERED_BLOCK)
             {
-                std::pair<const CBlockIndex*, bool> blockIndexAndSendStatus = GetBlockIndexOfRequestedBlock(cs_main, pfrom->GetId(),inv.GetHash());
+                std::pair<const CBlockIndex*, bool> blockIndexAndSendStatus = GetBlockIndexOfRequestedBlock(mainCriticalSection, pfrom->GetId(),inv.GetHash());
                 // Don't send not-validated blocks
                 if (blockIndexAndSendStatus.second &&
                     (blockIndexAndSendStatus.first->nStatus & BLOCK_HAVE_DATA))
@@ -658,7 +658,7 @@ void static ProcessGetData(CNode* pfrom, std::deque<CInv>& requestsForData)
 
 void RespondToRequestForDataFrom(CNode* pfrom)
 {
-    ProcessGetData(pfrom, pfrom->GetRequestForDataQueue());
+    ProcessGetData(cs_main, pfrom, pfrom->GetRequestForDataQueue());
 }
 
 constexpr const char* NetworkMessageType_VERSION = "version";

@@ -13,6 +13,9 @@
 #include <clientversion.h>
 #include <utiltime.h>
 
+#include <boost/variant/apply_visitor.hpp>
+#include <boost/variant/static_visitor.hpp>
+
 /**
  * Process an incoming block. This only returns after the best known valid
  * block is made active. Note that it does not, however, guarantee that the
@@ -44,6 +47,30 @@ bool ProcessNewBlock(const I_BlockValidator& blockValidator, CValidationState& s
               pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));
 
     return true;
+}
+
+namespace
+{
+class BlockProcessingVisitor : public boost::static_visitor<bool>
+{
+public:
+    const I_BlockValidator& blockValidator_;
+    CValidationState& state_;
+    CBlock& block_;
+public:
+    BlockProcessingVisitor(
+        const I_BlockValidator& blockValidator,
+        CValidationState& state,
+        CBlock& block
+        ): blockValidator_(blockValidator)
+        , state_(state)
+        , block_(block)
+    {
+    }
+    bool operator()(CNode* node) const { return ProcessNewBlock(blockValidator_, state_, node, &block_); }
+    bool operator()(CDiskBlockPos* blockDiskPosition) const { return ProcessNewBlock(blockValidator_, state_, nullptr, &block_, blockDiskPosition); }
+};
+
 }
 
 BlockSubmitter::BlockSubmitter(
@@ -79,9 +106,9 @@ bool BlockSubmitter::submitBlockForChainExtension(CBlock& block) const
     return true;
 }
 
-bool BlockSubmitter::acceptBlockForChainExtension(CValidationState& state, CBlock& block, CNode* blockSourceNode) const
+bool BlockSubmitter::acceptBlockForChainExtension(CValidationState& state, CBlock& block, BlockDataSource blockDataSource) const
 {
-    return ProcessNewBlock(blockValidator_, state, blockSourceNode, &block);
+    return boost::apply_visitor(BlockProcessingVisitor(blockValidator_,state,block), blockDataSource);
 }
 
 bool BlockSubmitter::loadBlockForChainExtension(CValidationState& state, CBlock& block, CDiskBlockPos* blockfilePositionData) const

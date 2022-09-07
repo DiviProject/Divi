@@ -662,7 +662,7 @@ void RespondToRequestForDataFrom(CNode* pfrom)
 }
 
 constexpr const char* NetworkMessageType_VERSION = "version";
-static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStream& vRecv)
+static bool SetPeerVersionAndServices(CCriticalSection& mainCriticalSection, CNode* pfrom, CAddrMan& addrman, CDataStream& vRecv)
 {
     // Each connection can only send one version message
     static const std::string lastCommand = std::string(NetworkMessageType_VERSION);
@@ -733,7 +733,7 @@ static bool SetPeerVersionAndServices(CNode* pfrom, CAddrMan& addrman, CDataStre
 
     if (!pfrom->fInbound) {
         // Advertise our address
-        if (IsListening() && !IsInitialBlockDownload(cs_main,settings)) {
+        if (IsListening() && !IsInitialBlockDownload(mainCriticalSection,settings)) {
             CAddress addr = GetLocalAddress(&pfrom->GetCAddress());
             if (addr.IsRoutable()) {
                 LogPrintf("%s: advertizing address %s\n",__func__, addr);
@@ -793,7 +793,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
     if (strCommand == std::string(NetworkMessageType_VERSION))
     {
-        if(!SetPeerVersionAndServices(pfrom,addrman,vRecv))
+        if(!SetPeerVersionAndServices(cs_main, pfrom,addrman,vRecv))
         {
             return false;
         }

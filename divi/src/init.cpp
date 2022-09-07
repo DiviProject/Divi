@@ -45,7 +45,7 @@
 #include <txmempool.h>
 #include <StartAndShutdownSignals.h>
 #include <I_MerkleTxConfirmationNumberCalculator.h>
-#include <BlockSubmitter.h>
+#include <I_BlockSubmitter.h>
 #include <ThreadManagementHelpers.h>
 #include <LoadWalletResult.h>
 #include <MultiWalletModule.h>
@@ -511,9 +511,7 @@ bool LoadExternalBlockFile(ChainstateManager& chainstate, FILE* fileIn, CDiskBlo
     static std::multimap<uint256, CDiskBlockPos> mapBlocksUnknownParent;
     int64_t nStart = GetTimeMillis();
 
-    const auto* blockSubmitterRef = dynamic_cast<const BlockSubmitter*>(&chainExtensionModule->getBlockSubmitter());
-    assert(blockSubmitterRef);
-    const auto& blockSubmitter = *blockSubmitterRef;
+    const auto& blockSubmitter = chainExtensionModule->getBlockSubmitter();
     const auto& blockMap = chainstate.GetBlockMap();
 
     int nLoaded = 0;
@@ -569,7 +567,7 @@ bool LoadExternalBlockFile(ChainstateManager& chainstate, FILE* fileIn, CDiskBlo
                 const auto mit = blockMap.find(hash);
                 if (mit == blockMap.end() || (mit->second->nStatus & BLOCK_HAVE_DATA) == 0) {
                     CValidationState state;
-                    if (blockSubmitter.loadBlockForChainExtension(state, block, dbp))
+                    if (blockSubmitter.acceptBlockForChainExtension(state, block, dbp))
                         nLoaded++;
                     if (state.IsError())
                         break;
@@ -589,7 +587,7 @@ bool LoadExternalBlockFile(ChainstateManager& chainstate, FILE* fileIn, CDiskBlo
                         if (ReadBlockFromDisk(block, it->second)) {
                             LogPrintf("%s: Processing out of order child %s of %s\n", __func__, block.GetHash(), head);
                             CValidationState dummy;
-                            if (blockSubmitter.loadBlockForChainExtension(dummy, block, &it->second)) {
+                            if (blockSubmitter.acceptBlockForChainExtension(dummy, block, &it->second)) {
                                 nLoaded++;
                                 queue.push_back(block.GetHash());
                             }

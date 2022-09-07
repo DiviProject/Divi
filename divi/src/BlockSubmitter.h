@@ -19,7 +19,7 @@ public:
         CCriticalSection& mainCriticalSection,
         ChainstateManager& chainstate);
     bool submitBlockForChainExtension(CBlock& block) const override;
-    bool acceptBlockForChainExtension(CValidationState& state, CBlock& block, CNode* blockSourceNode) const override;
+    bool acceptBlockForChainExtension(CValidationState& state, CBlock& block, BlockDataSource blockDataSource) const override;
     bool loadBlockForChainExtension(
         CValidationState& state,
         CBlock& block,

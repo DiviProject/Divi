@@ -11,7 +11,6 @@
 #include <clientversion.h>
 #include <BlockRewards.h>
 #include <UtxoCheckingAndUpdating.h>
-#include <kernel.h>
 #include <IndexDatabaseUpdateCollector.h>
 #include <script/StakingVaultScript.h>
 #include <utilmoneystr.h>

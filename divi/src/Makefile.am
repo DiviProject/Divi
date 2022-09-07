@@ -198,7 +198,6 @@ BITCOIN_CORE_H = \
   I_BlockDataReader.h \
   ProofOfStakeCalculator.h \
   uiMessenger.h \
-  kernel.h \
   I_StakingCoinSelector.h \
   I_ProofOfStakeGenerator.h \
   ProofOfStakeGenerator.h \
@@ -496,7 +495,6 @@ libbitcoin_server_a_SOURCES = \
   CoinMinter.cpp \
   CoinMintingModule.cpp \
   PoSTransactionCreator.cpp \
-  kernel.cpp \
   ProofOfStakeGenerator.cpp \
   ProofOfStakeModule.cpp \
   ProofOfStakeCalculator.cpp \

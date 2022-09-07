@@ -110,8 +110,3 @@ bool BlockSubmitter::acceptBlockForChainExtension(CValidationState& state, CBloc
 {
     return boost::apply_visitor(BlockProcessingVisitor(blockValidator_,state,block), blockDataSource);
 }
-
-bool BlockSubmitter::loadBlockForChainExtension(CValidationState& state, CBlock& block, CDiskBlockPos* blockfilePositionData) const
-{
-    return ProcessNewBlock(blockValidator_, state, NULL, &block, blockfilePositionData);
-}

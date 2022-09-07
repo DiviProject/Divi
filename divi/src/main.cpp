@@ -776,7 +776,7 @@ static bool SetPeerVersionAndServices(CCriticalSection& mainCriticalSection, CNo
     return true;
 }
 
-bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vRecv, int64_t nTimeReceived)
+bool static ProcessMessage(CCriticalSection& mainCriticalSection, CNode* pfrom, std::string strCommand, CDataStream& vRecv, int64_t nTimeReceived)
 {
     static CAddrMan& addrman = GetNetworkAddressManager();
     LogPrint("net","received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
@@ -793,7 +793,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
     if (strCommand == std::string(NetworkMessageType_VERSION))
     {
-        if(!SetPeerVersionAndServices(cs_main, pfrom,addrman,vRecv))
+        if(!SetPeerVersionAndServices(mainCriticalSection, pfrom,addrman,vRecv))
         {
             return false;
         }
@@ -811,7 +811,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
         // Mark this node as currently connected, so we update its timestamp later.
         if (!pfrom->fInbound) {
-            LOCK(cs_main);
+            LOCK(mainCriticalSection);
             pfrom->SetToCurrentlyConnected();
         }
         return true;
@@ -906,7 +906,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             }
         }
         {
-            LOCK(cs_main);
+            LOCK(mainCriticalSection);
             for(const CInv* blockInventoryReference: blockInventory)
             {
                 if(!BlockIsInFlight(blockInventoryReference->GetHash()))
@@ -943,7 +943,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         std::vector<CInv> vInv;
 
         {
-        LOCK(cs_main);
+        LOCK(mainCriticalSection);
 
         // Find the last block the caller has in the main chain
         const CBlockIndex* pindex = FindForkInGlobalIndex(chain, locator);
@@ -982,9 +982,9 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         uint256 hashStop;
         vRecv >> locator >> hashStop;
 
-        LOCK(cs_main);
+        LOCK(mainCriticalSection);
 
-        if (IsInitialBlockDownload(cs_main,settings))
+        if (IsInitialBlockDownload(mainCriticalSection,settings))
             return true;
 
         const CBlockIndex* pindex = nullptr;
@@ -1033,7 +1033,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
         CValidationState state;
 
         {
-        LOCK(cs_main);
+        LOCK(mainCriticalSection);
 
         CNode::ClearInventoryItem(inv);
 
@@ -1151,7 +1151,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
                     pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),
                                        state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.GetHash());
                     if(nDoS > 0) {
-                        TRY_LOCK(cs_main, lockMain);
+                        TRY_LOCK(mainCriticalSection, lockMain);
                         if(lockMain) Misbehaving(pfrom->GetNodeState(), nDoS, "Bad block processed");
                     }
                 }
@@ -1271,7 +1271,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
             }
         }
     } else {
-        sporkManager.ProcessSpork(cs_main, pfrom, strCommand, vRecv);
+        sporkManager.ProcessSpork(mainCriticalSection, pfrom, strCommand, vRecv);
         ProcessMasternodeMessages(pfrom,strCommand,vRecv);
     }
 
@@ -1358,7 +1358,7 @@ bool ProcessReceivedMessages(CNode* pfrom)
         // Process message
         bool fRet = false;
         try {
-            fRet = ProcessMessage(pfrom, strCommand, msg.vRecv, msg.nTime);
+            fRet = ProcessMessage(cs_main, pfrom, strCommand, msg.vRecv, msg.nTime);
             boost::this_thread::interruption_point();
         } catch (std::ios_base::failure& e) {
             pfrom->PushMessage("reject", strCommand, REJECT_MALFORMED, string("error parsing message"));

@@ -29,7 +29,6 @@
 #include "FeeRate.h"
 #include <FlushChainState.h>
 #include "init.h"
-#include "kernel.h"
 #include "masternode-payments.h"
 #include "masternodeman.h"
 #include "merkleblock.h"

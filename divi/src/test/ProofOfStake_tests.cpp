@@ -1,6 +1,5 @@
 #include <test_only.h>
 
-#include <kernel.h>
 #include <random.h>
 #include <memory>
 #include <amount.h>

@@ -620,7 +620,6 @@ ChainExtensionService::ChainExtensionService(
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
     BlockIndexCandidates& blockIndexCandidates
     ): mempool_(mempool)
-    , masternodeModule_(masternodeModule)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)
     , settings_(settings)
@@ -636,7 +635,7 @@ ChainExtensionService::ChainExtensionService(
             mainCriticalSection_,
             mempool_,
             mainNotificationSignals_,
-            masternodeModule_,
+            masternodeModule,
             peerIdByBlockHash,
             sporkManager_,
             *chainstateRef_))

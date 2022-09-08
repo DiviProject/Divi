@@ -25,7 +25,6 @@ class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
     CTxMemPool& mempool_;
-    const MasternodeModule& masternodeModule_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
     const Settings& settings_;

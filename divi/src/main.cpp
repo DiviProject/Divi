@@ -16,14 +16,8 @@
 
 #include <addrman.h>
 #include <alert.h>
-#include <BlockCheckingHelpers.h>
 #include <BlockDiskAccessor.h>
-#include <BlockDiskDataReader.h>
-#include <BlockFileHelpers.h>
-#include <BlockFileOpener.h>
-#include <BlockInvalidationHelpers.h>
 #include <blockmap.h>
-#include <BlockUndo.h>
 #include <chainparams.h>
 #include <ChainstateManager.h>
 #include <ChainSyncHelpers.h>
@@ -46,7 +40,6 @@
 #include <sync.h>
 #include <ThreadManagementHelpers.h>
 #include <primitives/transaction.h>
-#include <txdb.h>
 #include <txmempool.h>
 #include <tinyformat.h>
 #include <utilstrencodings.h>

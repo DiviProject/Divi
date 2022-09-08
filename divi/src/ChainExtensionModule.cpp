@@ -25,7 +25,7 @@ ChainExtensionModule::ChainExtensionModule(
             settings,
             masternodeModule,
             sporkManager,
-            *proofOfStakeModule_,
+            proofOfStakeModule_->proofOfStakeGenerator(),
             peerIdByBlockHash_,
             chainstateManager_,
             mempool,

@@ -11,7 +11,7 @@
 #include <Logging.h>
 #include <chain.h>
 #include <blockmap.h>
-#include <ProofOfStakeModule.h>
+#include <I_ProofOfStakeGenerator.h>
 #include <BlockFileHelpers.h>
 #include <sync.h>
 #include <BlockInvalidationHelpers.h>
@@ -612,7 +612,7 @@ ChainExtensionService::ChainExtensionService(
     const Settings& settings,
     const MasternodeModule& masternodeModule,
     const CSporkManager& sporkManager,
-    const ProofOfStakeModule& posModule,
+    const I_ProofOfStakeGenerator& proofGenerator,
     std::map<uint256, NodeId>& peerIdByBlockHash,
     ChainstateManager& chainstateManager,
     CTxMemPool& mempool,
@@ -623,7 +623,7 @@ ChainExtensionService::ChainExtensionService(
     ): chainParameters_(chainParameters)
     , settings_(settings)
     , sporkManager_(sporkManager)
-    , posModule_(posModule)
+    , proofGenerator_(proofGenerator)
     , mempool_(mempool)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)
@@ -665,7 +665,7 @@ std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
 {
     std::pair<CBlockIndex*, bool> result(nullptr,false);
     result.second = AcceptBlock(
-        mainCriticalSection_,settings_, posModule_.proofOfStakeGenerator(),chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
+        mainCriticalSection_,settings_, proofGenerator_,chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
     return result;
 }
 

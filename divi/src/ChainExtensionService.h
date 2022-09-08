@@ -19,7 +19,7 @@ class CChainParams;
 class CSporkManager;
 class I_ChainTipManager;
 class I_MostWorkChainTransitionMediator;
-class ProofOfStakeModule;
+class I_ProofOfStakeGenerator;
 
 class ChainExtensionService final: public I_ChainExtensionService
 {
@@ -27,7 +27,7 @@ private:
     const CChainParams& chainParameters_;
     const Settings& settings_;
     const CSporkManager& sporkManager_;
-    const ProofOfStakeModule& posModule_;
+    const I_ProofOfStakeGenerator& proofGenerator_;
     CTxMemPool& mempool_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
@@ -47,7 +47,7 @@ public:
         const Settings& settings,
         const MasternodeModule& masternodeModule,
         const CSporkManager& sporkManager,
-        const ProofOfStakeModule& posModule,
+        const I_ProofOfStakeGenerator& proofGenerator,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         ChainstateManager& chainstateManager,
         CTxMemPool& mempool,

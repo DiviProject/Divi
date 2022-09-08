@@ -53,10 +53,6 @@ bool StopNode();
 void CleanupP2PConnections();
 
 CAddrMan& GetNetworkAddressManager();
-CNodeSignals& GetNodeSignals();
-void RegisterNodeSignals(CNodeSignals& nodeSignals);
-void UnregisterNodeSignals(CNodeSignals& nodeSignals);
-
 bool PeersLocalAddressIsGood(CNode* pnode);
 void AdvertizeLocal(CNode* pnode);
 
@@ -107,4 +103,5 @@ bool AlertsAreEnabled();
 bool SetNumberOfFileDescriptors(UIMessenger& uiMessenger, int& nFD);
 void SetNetworkingParameters();
 bool InitializeP2PNetwork(UIMessenger& uiMessenger);
+void FinalizeP2PNetwork();
 #endif // BITCOIN_NET_H

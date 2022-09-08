@@ -99,6 +99,40 @@ const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocato
     return chain.Genesis();
 }
 
+
+
+/** Register with a network node to receive its signals */
+static CNodeSignals globalNodeSignals;
+CNodeSignals& GetNodeSignals()
+{
+    return globalNodeSignals;
+}
+// Is our peer's addrLocal potentially useful as an external IP source?
+bool PeersLocalAddressIsGood(CNode* pnode)
+{
+    return isDiscoverEnabled() && pnode->GetCAddress().IsRoutable() && pnode->addrLocal.IsRoutable() &&
+           !IsLimited(pnode->addrLocal.GetNetwork());
+}
+
+// pushes our own address to a peer
+void AdvertizeLocal(CNode* pnode)
+{
+    if (IsListening() && pnode->IsSuccessfullyConnected()) {
+        CAddress addrLocal = GetLocalAddress(&pnode->GetCAddress());
+        // If discovery is enabled, sometimes give our peer the address it
+        // tells us that it sees us as in case it has a better idea of our
+        // address than we do.
+        if (PeersLocalAddressIsGood(pnode) && (!addrLocal.IsRoutable() ||
+                                              GetRand((GetnScore(addrLocal) > LOCAL_MANUAL) ? 8 : 2) == 0)) {
+            addrLocal.SetIP(pnode->addrLocal);
+        }
+        if (addrLocal.IsRoutable()) {
+            LogPrintf("AdvertizeLocal: advertizing address %s\n", addrLocal);
+            pnode->PushAddress(addrLocal);
+        }
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Messages
@@ -1294,4 +1328,26 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         CollectNonBlockDataToRequestAndRequestIt(mempool, pto,nNow,vGetData);
     }
     return true;
+}
+
+void RegisterNodeSignals()
+{
+    CNodeSignals& nodeSignals = GetNodeSignals();
+    nodeSignals.InitializeNode.connect(&InitializeNode);
+    nodeSignals.FinalizeNode.connect(&FinalizeNode);
+    nodeSignals.ProcessReceivedMessages.connect(&ProcessReceivedMessages);
+    nodeSignals.SendMessages.connect(&SendMessages);
+    nodeSignals.RespondToRequestForDataFrom.connect(&RespondToRequestForDataFrom);
+    nodeSignals.AdvertizeLocalAddress.connect(&AdvertizeLocal);
+}
+/** Unregister a network node */
+void UnregisterNodeSignals()
+{
+    CNodeSignals& nodeSignals = GetNodeSignals();
+    nodeSignals.InitializeNode.disconnect(&InitializeNode);
+    nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
+    nodeSignals.ProcessReceivedMessages.disconnect(&ProcessReceivedMessages);
+    nodeSignals.SendMessages.disconnect(&SendMessages);
+    nodeSignals.RespondToRequestForDataFrom.connect(&RespondToRequestForDataFrom);
+    nodeSignals.AdvertizeLocalAddress.connect(&AdvertizeLocal);
 }

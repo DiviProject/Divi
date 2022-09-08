@@ -17,18 +17,11 @@
 
 class ChainstateManager;
 class CNode;
+class CNodeSignals;
 
 /** Get Current Chain Height with acquired lock **/
 int GetHeight();
-
-/** Process protocol messages received from a given node */
-bool ProcessReceivedMessages(CNode* pfrom);
-/**
- * Send queued protocol messages to be sent to a give node.
- *
- * @param[in]   pto             The node which we are sending messages to.
- * @param[in]   fSendTrickle    When true send the trickled data, otherwise trickle the data until true.
- */
-bool SendMessages(CNode* pto, bool fSendTrickle);
-void RespondToRequestForDataFrom(CNode* pfrom);
+void RegisterNodeSignals();
+void UnregisterNodeSignals();
+CNodeSignals& GetNodeSignals();
 #endif // BITCOIN_MAIN_H

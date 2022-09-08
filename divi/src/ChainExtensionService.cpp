@@ -564,10 +564,9 @@ bool AcceptBlock(
 
 bool ChainExtensionService::transitionToMostWorkChainTip(
     CValidationState& state,
-    ChainstateManager& chainstate,
     const CBlock* pblock) const
 {
-    const auto& chain = chainstate.ActiveChain();
+    const auto& chain = chainstateRef_->ActiveChain();
 
     const CBlockIndex* pindexNewTip = NULL;
     CBlockIndex* pindexMostWork = NULL;
@@ -675,7 +674,7 @@ bool ChainExtensionService::updateActiveChain(
     CValidationState& state,
     const CBlock* pblock) const
 {
-    const bool result = transitionToMostWorkChainTip(state, *chainstateRef_, pblock);
+    const bool result = transitionToMostWorkChainTip(state, pblock);
     // Write changes periodically to disk, after relay.
     if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
         return false;

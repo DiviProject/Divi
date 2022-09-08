@@ -40,7 +40,6 @@ private:
 
     bool transitionToMostWorkChainTip(
         CValidationState& state,
-        ChainstateManager& chainstate,
         const CBlock* pblock) const;
 
 public:

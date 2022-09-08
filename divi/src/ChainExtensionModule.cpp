@@ -56,9 +56,9 @@ ChainExtensionModule::~ChainExtensionModule()
     proofOfStakeModule_.reset();
 }
 
-const ProofOfStakeModule& ChainExtensionModule::getProofOfStakeModule() const
+const I_ProofOfStakeGenerator& ChainExtensionModule::getProofOfStakeGenerator() const
 {
-    return *proofOfStakeModule_;
+    return proofOfStakeModule_->proofOfStakeGenerator();
 }
 
 const I_ChainExtensionService& ChainExtensionModule::getChainExtensionService() const

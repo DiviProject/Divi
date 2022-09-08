@@ -212,6 +212,7 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
         Params(),
         GetMasternodeModule(),
         GetSporkManager(),
+        chainExtensionModule->getProofOfStakeGenerator(),
         feeAndPriorityCalculator.getMinimumRelayFeeRate(),
         GetPeerBlockNotifyService(),
         chainExtensionModule->getBlockSubmitter(),

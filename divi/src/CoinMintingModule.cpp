@@ -59,6 +59,7 @@ CoinMintingModule::CoinMintingModule(
     const Settings& settings,
     const CChainParams& chainParameters,
     const MasternodeModule& masternodeModule,
+    const I_ProofOfStakeGenerator& proofGenerator,
     const CFeeRate& relayTxFeeCalculator,
     const I_PeerBlockNotifyService& peerNotifier,
     const I_BlockSubmitter& blockSubmitter,
@@ -68,7 +69,6 @@ CoinMintingModule::CoinMintingModule(
     I_StakingWallet& wallet
     ): mapHashedBlocks_()
     , chainstate_(new ChainstateManagerReference())
-    , posModule_(new ProofOfStakeModule(chainParameters, (*chainstate_)->ActiveChain(), (*chainstate_)->GetBlockMap()))
     , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters, sporkManager))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
         chainParameters,
@@ -90,7 +90,7 @@ CoinMintingModule::CoinMintingModule(
         (*chainstate_)->GetBlockMap(),
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockIncentivesPopulator_,
-        posModule_->proofOfStakeGenerator(),
+        proofGenerator,
         wallet,
         mapHashedBlocks_))
     , blockFactory_(
@@ -121,7 +121,6 @@ CoinMintingModule::~CoinMintingModule()
     blockTransactionCollector_.reset();
     blockIncentivesPopulator_.reset();
     blockSubsidyContainer_.reset();
-    posModule_.reset();
 }
 
 I_BlockFactory& CoinMintingModule::blockFactory() const

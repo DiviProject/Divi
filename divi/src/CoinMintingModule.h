@@ -17,7 +17,6 @@ class I_PoSTransactionCreator;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class CMasternodePayments;
-class ProofOfStakeModule;
 class CSporkManager;
 class Settings;
 class CCoinsViewCache;
@@ -25,6 +24,7 @@ class CFeeRate;
 class MasternodeModule;
 class I_PeerBlockNotifyService;
 class I_BlockSubmitter;
+class I_ProofOfStakeGenerator;
 
 class CoinMintingModule
 {
@@ -35,7 +35,6 @@ private:
     class ChainstateManagerReference;
     LastExtensionTimestampByBlockHeight mapHashedBlocks_;
     std::unique_ptr<const ChainstateManagerReference> chainstate_;
-    std::unique_ptr<ProofOfStakeModule> posModule_;
     std::unique_ptr<SuperblockSubsidyContainer> blockSubsidyContainer_;
     std::unique_ptr<BlockIncentivesPopulator> blockIncentivesPopulator_;
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
@@ -47,6 +46,7 @@ public:
         const Settings& settings,
         const CChainParams& chainParameters,
         const MasternodeModule& masternodeModule,
+        const I_ProofOfStakeGenerator& proofGenerator,
         const CFeeRate& relayTxFeeCalculator,
         const I_PeerBlockNotifyService& peers,
         const I_BlockSubmitter& blockSubmitter,

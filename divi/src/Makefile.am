@@ -219,6 +219,7 @@ BITCOIN_CORE_H = \
   BlockUndo.h \
   ValidationState.h \
   BlockConnectionService.h \
+  BlockIndexLoading.h \
   ChainstateManager.h \
   IndexDatabaseUpdateCollector.h \
   NodeState.h \
@@ -442,6 +443,7 @@ libbitcoin_server_a_SOURCES = \
   StartAndShutdownSignals.cpp \
   MultiWalletModule.cpp \
   BlockSubmitter.cpp \
+  BlockIndexLoading.cpp \
   init.cpp \
   TransactionLocationReference.cpp \
   IndexDatabaseUpdates.cpp \

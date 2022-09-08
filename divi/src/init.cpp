@@ -17,6 +17,7 @@
 #include "BlockFileOpener.h"
 #include <BlockDiskAccessor.h>
 #include <BlockDiskDataReader.h>
+#include <BlockIndexLoading.h>
 #include <chain.h>
 #include <chainparams.h>
 #include "compat/sanity.h"

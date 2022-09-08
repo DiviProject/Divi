@@ -17,12 +17,14 @@ class CChainParams;
 class CSporkManager;
 class ChainstateManager;
 class I_BlockSubmitter;
+class ProofOfStakeModule;
 
 class ChainExtensionModule
 {
 private:
     ChainstateManager& chainstateManager_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
+    std::unique_ptr<const ProofOfStakeModule> proofOfStakeModule_;
     std::unique_ptr<I_ChainExtensionService> chainExtensionService_;
     std::unique_ptr<I_BlockValidator> blockValidator_;
     std::unique_ptr<I_BlockSubmitter> blockSubmitter_;
@@ -40,6 +42,7 @@ public:
         BlockIndexCandidates& blockIndexCandidates);
 
     ~ChainExtensionModule();
+    const ProofOfStakeModule& getProofOfStakeModule() const;
     const I_ChainExtensionService& getChainExtensionService() const;
     const I_BlockValidator& getBlockValidator() const;
     const I_BlockSubmitter& getBlockSubmitter() const;

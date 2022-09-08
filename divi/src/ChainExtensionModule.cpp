@@ -3,6 +3,7 @@
 #include <ChainExtensionService.h>
 #include <AcceptBlockValidator.h>
 #include <BlockSubmitter.h>
+#include <ProofOfStakeModule.h>
 
 ChainExtensionModule::ChainExtensionModule(
     ChainstateManager& chainstateManager,
@@ -17,6 +18,7 @@ ChainExtensionModule::ChainExtensionModule(
     BlockIndexCandidates& blockIndexCandidates
     ): chainstateManager_(chainstateManager)
     , peerIdByBlockHash_()
+    , proofOfStakeModule_(new ProofOfStakeModule(chainParameters,chainstateManager.ActiveChain(),chainstateManager.GetBlockMap()))
     , chainExtensionService_(
         new ChainExtensionService(
             chainParameters,
@@ -50,6 +52,12 @@ ChainExtensionModule::~ChainExtensionModule()
     blockSubmitter_.reset();
     blockValidator_.reset();
     chainExtensionService_.reset();
+    proofOfStakeModule_.reset();
+}
+
+const ProofOfStakeModule& ChainExtensionModule::getProofOfStakeModule() const
+{
+    return *proofOfStakeModule_;
 }
 
 const I_ChainExtensionService& ChainExtensionModule::getChainExtensionService() const

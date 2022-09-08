@@ -23,7 +23,6 @@
 #include "compat/sanity.h"
 #include <DataDirectory.h>
 #include <defaultValues.h>
-#include "main.h"
 #include <WalletBackupFeatureContainer.h>
 #include <miner.h>
 #include "net.h"

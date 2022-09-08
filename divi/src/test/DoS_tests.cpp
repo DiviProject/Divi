@@ -24,6 +24,7 @@
 #include <random.h>
 #include <NodeStateRegistry.h>
 #include <SocketChannel.h>
+#include <NodeSignals.h>
 
 
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
@@ -74,7 +75,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     std::unique_ptr<CNode> dummyNode1( CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", NodeConnectionFlags::INBOUND_CONN ) );
     dummyNode1->SetVersionAndServices(1, 1);
     Misbehaving(dummyNode1->GetNodeState(), 100); // Should get banned
-    SendMessages(dummyNode1.get(), false);
+    nodeSignals.SendMessages(dummyNode1.get(), false);
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr1));
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),ToIP(0xa0b0c001|0x0000ff00))); // Different IP, not banned
 
@@ -82,11 +83,11 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     std::unique_ptr<CNode> dummyNode2( CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr2, "", NodeConnectionFlags::INBOUND_CONN) );
     dummyNode2->SetVersionAndServices(1, 1);
     Misbehaving(dummyNode2->GetNodeState(), 50);
-    SendMessages(dummyNode2.get(), false);
+    nodeSignals.SendMessages(dummyNode2.get(), false);
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),addr2)); // 2 not banned yet...
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr1));  // ... but 1 still should be
     Misbehaving(dummyNode2->GetNodeState(), 50);
-    SendMessages(dummyNode2.get(), false);
+    nodeSignals.SendMessages(dummyNode2.get(), false);
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr2));
 }
 
@@ -99,13 +100,13 @@ BOOST_AUTO_TEST_CASE(DoS_banscore)
     std::unique_ptr<CNode> dummyNode1(CNode::CreateNode(InvalidSocketChannel(),&nodeSignals,GetNetworkAddressManager(), addr1, "", NodeConnectionFlags::INBOUND_CONN));
     dummyNode1->SetVersionAndServices(1, 1);
     Misbehaving(dummyNode1->GetNodeState(), 100);
-    SendMessages(dummyNode1.get(), false);
+    nodeSignals.SendMessages(dummyNode1.get(), false);
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),addr1));
     Misbehaving(dummyNode1->GetNodeState(), 10);
-    SendMessages(dummyNode1.get(), false);
+    nodeSignals.SendMessages(dummyNode1.get(), false);
     BOOST_CHECK(!PeerBanningService::IsBanned(GetTime(),addr1));
     Misbehaving(dummyNode1->GetNodeState(), 1);
-    SendMessages(dummyNode1.get(), false);
+    nodeSignals.SendMessages(dummyNode1.get(), false);
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr1));
     settings.ForceRemoveArg("-banscore");
 }
@@ -122,7 +123,7 @@ BOOST_AUTO_TEST_CASE(DoS_bantime)
     dummyNode->SetVersionAndServices(1, 1);
 
     Misbehaving(dummyNode->GetNodeState(), 100);
-    SendMessages(dummyNode.get(), false);
+    nodeSignals.SendMessages(dummyNode.get(), false);
     BOOST_CHECK(PeerBanningService::IsBanned(GetTime(),addr));
 
     SetMockTime(nStartTime+60*60);

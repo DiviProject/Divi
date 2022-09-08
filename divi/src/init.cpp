@@ -320,7 +320,7 @@ void PrepareShutdown()
     InterruptTorControl();
     StopTorControl();
     SaveMasternodeDataToDisk();
-    UnregisterNodeSignals(GetNodeSignals());
+    FinalizeP2PNetwork();
 
     {
         LOCK(cs_main);

@@ -42,7 +42,8 @@ extern void noui_connect();
    FIXME: Get rid of GetSporkManager(), pass the instance everywhere, and then
    make the instance part of the test class.  */
 extern std::unique_ptr<CSporkManager> sporkManagerInstance;
-
+extern void RegisterNodeSignals();
+extern void UnregisterNodeSignals();
 class TestLocalClock final: public I_Clock
 {
 public:
@@ -83,14 +84,14 @@ struct TestingSetup {
         GetChainExtensionService().connectGenesisBlock();
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
         TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
-        RegisterNodeSignals(GetNodeSignals());
+        RegisterNodeSignals();
         EnableUnitTestSignals();
     }
     ~TestingSetup()
     {
         threadGroup.interrupt_all();
         threadGroup.join_all();
-        UnregisterNodeSignals(GetNodeSignals());
+        UnregisterNodeSignals();
         FinalizeMultiWalletModule();
         FinalizeChainExtensionModule();
         mnModule.reset();

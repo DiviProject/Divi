@@ -11,14 +11,7 @@
 #if defined(HAVE_CONFIG_H)
 #include "config/divi-config.h"
 #endif
-
-#include "amount.h"
-#include <string>
-
-class ChainstateManager;
-class CNode;
 class CNodeSignals;
-
 /** Get Current Chain Height with acquired lock **/
 int GetHeight();
 void RegisterNodeSignals();

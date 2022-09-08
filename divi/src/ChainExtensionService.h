@@ -27,6 +27,7 @@ private:
     const CChainParams& chainParameters_;
     const Settings& settings_;
     const CSporkManager& sporkManager_;
+    const ProofOfStakeModule& posModule_;
     CTxMemPool& mempool_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
@@ -35,7 +36,6 @@ private:
     BlockIndexCandidates& blockIndexCandidates_;
     std::unique_ptr<I_ChainTipManager> chainTipManager_;
     std::unique_ptr<I_MostWorkChainTransitionMediator> chainTransitionMediator_;
-    std::unique_ptr<const ProofOfStakeModule> posModule_;
 
     bool transitionToMostWorkChainTip(
         CValidationState& state,
@@ -47,6 +47,7 @@ public:
         const Settings& settings,
         const MasternodeModule& masternodeModule,
         const CSporkManager& sporkManager,
+        const ProofOfStakeModule& posModule,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         ChainstateManager& chainstateManager,
         CTxMemPool& mempool,

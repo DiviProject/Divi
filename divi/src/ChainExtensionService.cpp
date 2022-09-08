@@ -612,6 +612,7 @@ ChainExtensionService::ChainExtensionService(
     const Settings& settings,
     const MasternodeModule& masternodeModule,
     const CSporkManager& sporkManager,
+    const ProofOfStakeModule& posModule,
     std::map<uint256, NodeId>& peerIdByBlockHash,
     ChainstateManager& chainstateManager,
     CTxMemPool& mempool,
@@ -622,6 +623,7 @@ ChainExtensionService::ChainExtensionService(
     ): chainParameters_(chainParameters)
     , settings_(settings)
     , sporkManager_(sporkManager)
+    , posModule_(posModule)
     , mempool_(mempool)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)
@@ -647,13 +649,11 @@ ChainExtensionService::ChainExtensionService(
             blockIndexSuccessors_,
             blockIndexCandidates_,
             *chainTipManager_))
-    , posModule_( new ProofOfStakeModule(chainParameters, chainstateRef_->ActiveChain(), chainstateRef_->GetBlockMap()) )
 {
 }
 
 ChainExtensionService::~ChainExtensionService()
 {
-    posModule_.reset();
     chainTransitionMediator_.reset();
     chainTipManager_.reset();
 }
@@ -665,7 +665,7 @@ std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
 {
     std::pair<CBlockIndex*, bool> result(nullptr,false);
     result.second = AcceptBlock(
-        mainCriticalSection_,settings_, posModule_->proofOfStakeGenerator(),chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
+        mainCriticalSection_,settings_, posModule_.proofOfStakeGenerator(),chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
     return result;
 }
 

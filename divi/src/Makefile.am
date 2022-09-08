@@ -225,7 +225,6 @@ BITCOIN_CORE_H = \
   NodeStateRegistry.h \
   BlocksInFlightRegistry.h \
   NodeSignals.h \
-  BlockRejects.h\
   QueuedBlock.h \
   BlockFileHelpers.h \
   MainNotificationRegistration.h \

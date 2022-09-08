@@ -9,7 +9,6 @@
 #include <PoSTransactionCreator.h>
 #include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
-#include <ProofOfStakeModule.h>
 #include <MasternodeModule.h>
 
 namespace

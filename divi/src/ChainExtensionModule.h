@@ -18,6 +18,7 @@ class CSporkManager;
 class ChainstateManager;
 class I_BlockSubmitter;
 class ProofOfStakeModule;
+class I_ProofOfStakeGenerator;
 
 class ChainExtensionModule
 {
@@ -42,7 +43,7 @@ public:
         BlockIndexCandidates& blockIndexCandidates);
 
     ~ChainExtensionModule();
-    const ProofOfStakeModule& getProofOfStakeModule() const;
+    const I_ProofOfStakeGenerator& getProofOfStakeGenerator() const;
     const I_ChainExtensionService& getChainExtensionService() const;
     const I_BlockValidator& getBlockValidator() const;
     const I_BlockSubmitter& getBlockSubmitter() const;

@@ -19,15 +19,15 @@ ChainExtensionModule::ChainExtensionModule(
     , peerIdByBlockHash_()
     , chainExtensionService_(
         new ChainExtensionService(
+            chainParameters,
+            settings,
+            masternodeModule,
+            sporkManager,
             peerIdByBlockHash_,
             chainstateManager_,
             mempool,
-            masternodeModule,
             mainNotificationSignals,
             mainCriticalSection,
-            settings,
-            chainParameters,
-            sporkManager,
             blockIndexSuccessors,
             blockIndexCandidates))
     , blockValidator_(

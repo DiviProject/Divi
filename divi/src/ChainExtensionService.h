@@ -24,12 +24,12 @@ class ProofOfStakeModule;
 class ChainExtensionService final: public I_ChainExtensionService
 {
 private:
+    const CChainParams& chainParameters_;
+    const Settings& settings_;
+    const CSporkManager& sporkManager_;
     CTxMemPool& mempool_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
-    const Settings& settings_;
-    const CChainParams& chainParameters_;
-    const CSporkManager& sporkManager_;
     ChainstateManager* chainstateRef_;
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors_;
     BlockIndexCandidates& blockIndexCandidates_;
@@ -43,15 +43,15 @@ private:
 
 public:
     ChainExtensionService(
+        const CChainParams& chainParameters,
+        const Settings& settings,
+        const MasternodeModule& masternodeModule,
+        const CSporkManager& sporkManager,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         ChainstateManager& chainstateManager,
         CTxMemPool& mempool,
-        const MasternodeModule& masternodeModule,
         MainNotificationSignals& mainNotificationSignals,
         CCriticalSection& mainCriticalSection,
-        const Settings& settings,
-        const CChainParams& chainParameters,
-        const CSporkManager& sporkManager,
         BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
         BlockIndexCandidates& blockIndexCandidates);
 

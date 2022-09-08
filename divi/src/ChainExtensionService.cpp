@@ -608,23 +608,23 @@ bool ChainExtensionService::transitionToMostWorkChainTip(
 }
 
 ChainExtensionService::ChainExtensionService(
+    const CChainParams& chainParameters,
+    const Settings& settings,
+    const MasternodeModule& masternodeModule,
+    const CSporkManager& sporkManager,
     std::map<uint256, NodeId>& peerIdByBlockHash,
     ChainstateManager& chainstateManager,
     CTxMemPool& mempool,
-    const MasternodeModule& masternodeModule,
     MainNotificationSignals& mainNotificationSignals,
     CCriticalSection& mainCriticalSection,
-    const Settings& settings,
-    const CChainParams& chainParameters,
-    const CSporkManager& sporkManager,
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
     BlockIndexCandidates& blockIndexCandidates
-    ): mempool_(mempool)
+    ): chainParameters_(chainParameters)
+    , settings_(settings)
+    , sporkManager_(sporkManager)
+    , mempool_(mempool)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)
-    , settings_(settings)
-    , chainParameters_(chainParameters)
-    , sporkManager_(sporkManager)
     , chainstateRef_(&chainstateManager)
     , blockIndexSuccessors_(blockIndexSuccessors)
     , blockIndexCandidates_(blockIndexCandidates)

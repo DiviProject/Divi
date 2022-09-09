@@ -82,11 +82,8 @@ int GetHeight()
     }
 }
 
-const CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator)
+const CBlockIndex* FindForkInGlobalIndex(const BlockMap& blockMap, const CChain& chain, const CBlockLocator& locator)
 {
-    const ChainstateManager::Reference chainstate;
-    const auto& blockMap = chainstate->GetBlockMap();
-
     // Find the first block the caller has in the main chain
     for(const uint256& hash: locator.vHave) {
         const auto mi = blockMap.find(hash);
@@ -640,7 +637,7 @@ bool static ProcessMessage(CCriticalSection& mainCriticalSection, CNode* pfrom, 
         LOCK(mainCriticalSection);
 
         // Find the last block the caller has in the main chain
-        const CBlockIndex* pindex = FindForkInGlobalIndex(chain, locator);
+        const CBlockIndex* pindex = FindForkInGlobalIndex(blockMap,chain, locator);
 
         // Send the rest of the chain
         if (pindex)
@@ -690,7 +687,7 @@ bool static ProcessMessage(CCriticalSection& mainCriticalSection, CNode* pfrom, 
             pindex = (*mi).second;
         } else {
             // Find the last block the caller has in the main chain
-            pindex = FindForkInGlobalIndex(chain, locator);
+            pindex = FindForkInGlobalIndex(blockMap, chain, locator);
             if (pindex)
                 pindex = chain.Next(pindex);
         }

@@ -9,20 +9,13 @@
 #include <ChainstateManager.h>
 #include <init.h>
 #include "net.h"
-#include "spork.h"
 #include "random.h"
 #include "txdb.h"
 #include "ui_interface.h"
 #include "util.h"
-#ifdef ENABLE_WALLET
-#include "db.h"
-#include "wallet.h"
-#endif
-#include <MasternodeModule.h>
 #include <TransactionInputChecker.h>
 #include <chainparams.h>
 #include <Settings.h>
-#include <I_Clock.h>
 #include <I_ChainExtensionService.h>
 
 #include <boost/filesystem.hpp>

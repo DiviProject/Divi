@@ -17,6 +17,7 @@ class CChainParams;
 class CChain;
 class BlockMap;
 class I_BlockSubmitter;
+class I_ChainExtensionService;
 
 namespace boost
 {
@@ -40,10 +41,6 @@ void FlushStateToDisk();
 void InitializeMultiWalletModule();
 void FinalizeMultiWalletModule();
 
-class MasternodeModule;
-class I_ChainExtensionService;
-void InitializeChainExtensionModule(const MasternodeModule& masternodeModule);
-void FinalizeChainExtensionModule();
 const I_ChainExtensionService& GetChainExtensionService();
 const I_BlockSubmitter& GetBlockSubmitter();
 

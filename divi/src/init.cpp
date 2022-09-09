@@ -87,7 +87,6 @@
 #include <verifyDb.h>
 #include <stdio.h>
 
-extern CCriticalSection cs_main;
 extern Settings& settings;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -124,6 +123,7 @@ constexpr int nWalletBackups = 20;
 #endif
 static boost::thread_group* globalThreadGroupRef = nullptr;
 std::unique_ptr<MultiWalletModule> multiWalletModule(nullptr);
+CCriticalSection cs_main;
 
 void FlushStateToDisk()
 {

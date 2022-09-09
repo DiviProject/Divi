@@ -41,26 +41,13 @@ extern void noui_connect();
 
    FIXME: Get rid of GetSporkManager(), pass the instance everywhere, and then
    make the instance part of the test class.  */
-extern std::unique_ptr<CSporkManager> sporkManagerInstance;
 extern void RegisterNodeSignals();
 extern void UnregisterNodeSignals();
-class TestLocalClock final: public I_Clock
-{
-public:
-    virtual int64_t getTime() const
-    {
-        return 0;
-    }
-};
 
 struct TestingSetup {
     boost::filesystem::path pathTemp;
     boost::thread_group threadGroup;
     CDBEnv& bitdb_;
-
-    std::unique_ptr<ChainstateManager> chainstateInstance;
-    std::unique_ptr<TestLocalClock> localClock;
-    std::unique_ptr<MasternodeModule> mnModule;
 
     TestingSetup(): pathTemp(), threadGroup(), bitdb_(BerkleyDBEnvWrapper())
     {
@@ -75,11 +62,7 @@ struct TestingSetup {
         pathTemp = GetTempPath() / strprintf("test_divi_%lu_%i", (unsigned long)GetTime(), (int)(GetRand(100000)));
         boost::filesystem::create_directories(pathTemp);
         settings.SetParameter("-datadir", pathTemp.string());
-        chainstateInstance.reset(new ChainstateManager(1 << 20, 1 << 23, 5000, true, false));
-        sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
-        localClock.reset(new TestLocalClock());
-        mnModule.reset( new MasternodeModule(*localClock, GetPeerSyncQueryService(), *chainstateInstance, GetNetworkAddressManager()) );
-        InitializeChainExtensionModule(*mnModule);
+        InitializeMainBlockchainModules();
         InitializeMultiWalletModule();
         GetChainExtensionService().connectGenesisBlock();
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
@@ -93,11 +76,7 @@ struct TestingSetup {
         threadGroup.join_all();
         UnregisterNodeSignals();
         FinalizeMultiWalletModule();
-        FinalizeChainExtensionModule();
-        mnModule.reset();
-        localClock.reset();
-        sporkManagerInstance.reset();
-        chainstateInstance.reset();
+        FinalizeMainBlockchainModules();
 #ifdef ENABLE_WALLET
         bitdb_.Flush(true);
 #endif

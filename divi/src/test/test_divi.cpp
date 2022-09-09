@@ -4,27 +4,24 @@
 
 #define BOOST_TEST_MODULE Divi Test Suite
 
-#include <dbenv.h>
-#include <chain.h>
-#include <ChainstateManager.h>
-#include <init.h>
-#include "net.h"
-#include "random.h"
-#include "txdb.h"
-#include "ui_interface.h"
-#include "util.h"
-#include <TransactionInputChecker.h>
 #include <chainparams.h>
-#include <Settings.h>
+#include <dbenv.h>
+#include <init.h>
 #include <I_ChainExtensionService.h>
+#include <Logging.h>
+#include <noui.h>
+#include <random.h>
+#include <Settings.h>
+#include <tinyformat.h>
+#include <TransactionInputChecker.h>
+#include <util.h>
+#include <utiltime.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
 
-extern CClientUIInterface uiInterface;
 extern Settings& settings;
-extern void noui_connect();
 
 /* The global spork-manager instance is normally managed by init.cpp (where it
    is also defined).  For unit tests, we override the init sequence, and

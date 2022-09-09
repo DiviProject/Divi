@@ -1294,6 +1294,27 @@ bool LoadAndSelectWallet(const std::string& walletFilename, bool initializeBacke
     return true;
 }
 
+void InitializeMainBlockchainModules()
+{
+    const auto cacheSizes = CalculateDBCacheSizes();
+    const bool unitTestMode = Params().NetworkID() == CBaseChainParams::UNITTEST;
+    chainstateInstance.reset(
+        new ChainstateManager (
+            unitTestMode? (1 << 20) : cacheSizes.nBlockTreeDBCache,
+            unitTestMode? (1 << 23) : cacheSizes.nCoinDBCache,
+            unitTestMode? (  5000 ) : cacheSizes.nCoinCacheSize,
+            unitTestMode?      true : false,
+            unitTestMode?     false : settings.isReindexingBlocks()));
+    sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
+    InitializeChainExtensionModule(GetMasternodeModule());
+}
+void FinalizeMainBlockchainModules()
+{
+    FinalizeChainExtensionModule();
+    sporkManagerInstance.reset();
+    chainstateInstance.reset();
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1459,12 +1480,14 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(translate("Preparing databases..."));
     const auto cacheSizes = CalculateDBCacheSizes();
+
     chainstateInstance.reset(
         new ChainstateManager (cacheSizes.nBlockTreeDBCache, cacheSizes.nCoinDBCache,cacheSizes.nCoinCacheSize, false, settings.isReindexingBlocks()));
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
     sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
     InitializeChainExtensionModule(GetMasternodeModule());
+
     InitializeMultiWalletModule();
 
     if(!SetSporkKey(*sporkManagerInstance))

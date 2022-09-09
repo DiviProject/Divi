@@ -628,7 +628,7 @@ bool static ProcessMessage(CCriticalSection& mainCriticalSection, CNode* pfrom, 
         uint256 hashStop;
         vRecv >> locator >> hashStop;
 
-        /* We build up the inventory while holding cs_main (since we access
+        /* We build up the inventory while holding the main critical section (since we access
            a lot of global state, especially chainActive), but then send it
            to the peer without holding onto the lock anymore.  */
         std::vector<CInv> vInv;
@@ -799,7 +799,7 @@ bool static ProcessMessage(CCriticalSection& mainCriticalSection, CNode* pfrom, 
 
             RelayTransactionToAllPeers(tx);
         }
-        } // cs_main
+        } // main critical section lock
 
         int nDoS = 0;
         if (state.IsInvalid(nDoS)) {

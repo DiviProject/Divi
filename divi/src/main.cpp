@@ -62,7 +62,7 @@ extern Settings& settings;
  * Global state
  */
 
-CCriticalSection cs_main;
+extern CCriticalSection cs_main;
 
 //////////////////////////////////////////////////////////////////////////////
 //

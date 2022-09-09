@@ -29,6 +29,9 @@ void Shutdown();
 
 void EnableMainSignals();
 void EnableUnitTestSignals();
+
+void InitializeMainBlockchainModules();
+void FinalizeMainBlockchainModules();
 bool InitializeDivi(boost::thread_group& threadGroup);
 
 /** Flush all state, indexes and buffers to disk. */

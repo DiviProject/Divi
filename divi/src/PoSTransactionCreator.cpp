@@ -315,10 +315,11 @@ void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
 
 bool PoSTransactionCreator::CreateProofOfStake(
     const CBlockIndex* chainTip,
-    uint32_t blockBits,
+    CBlock& block,
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
 {
+    uint32_t blockBits = block.nBits;
     MarkTransactionAsCoinstake(txCoinStake);
 
     if(!SelectCoins()) return false;

@@ -74,7 +74,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
     unsigned int nTxNewTime = block.nTime;
     if(coinstakeCreator_.CreateProofOfStake(
             pBlockTemplate.previousBlockIndex,
-            block.nBits,
+            block,
             txCoinStake,
             nTxNewTime))
     {

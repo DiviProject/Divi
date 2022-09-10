@@ -90,7 +90,9 @@ protected:
    *  fake wallet's chain tip and regtest difficulty.  */
   bool CreatePoS(CMutableTransaction& txCoinStake, unsigned& nTxNewTime)
   {
-    return txCreator.CreateProofOfStake(fakeChain.activeChain->Tip(), 0x207fffff, txCoinStake, nTxNewTime);
+    CBlock block;
+    block.nBits = 0x207fffff;
+    return txCreator.CreateProofOfStake(fakeChain.activeChain->Tip(), block, txCoinStake, nTxNewTime);
   }
 
   bool CreatePoS()

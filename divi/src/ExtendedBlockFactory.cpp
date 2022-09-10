@@ -61,16 +61,14 @@ public:
 
     bool CreateProofOfStake(
         const CBlockIndex* chainTip,
-        CBlock& block,
-        CMutableTransaction& txCoinStake,
-        unsigned int& nTxNewTime) override
+        CBlock& block) override
     {
-        bool coinstakeCreated = transactionCreator_.CreateProofOfStake(chainTip,block,txCoinStake,nTxNewTime);
+        bool coinstakeCreated = transactionCreator_.CreateProofOfStake(chainTip,block);
         if (customCoinstake_ != nullptr)
         {
             if (!customCoinstake_->IsCoinStake())
                 throw std::runtime_error("trying to use non-coinstake to set custom coinstake in block");
-            txCoinStake = CMutableTransaction(*customCoinstake_);
+            block.vtx[1] = CMutableTransaction(*customCoinstake_);
             return true;
         }
         else

@@ -11,8 +11,6 @@ public:
     virtual ~I_PoSTransactionCreator(){}
     virtual bool CreateProofOfStake(
         const CBlockIndex* chainTip,
-        CBlock& block,
-        CMutableTransaction& txCoinStake,
-        unsigned int& nTxNewTime) = 0;
+        CBlock& block) = 0;
 };
 #endif// I_POS_TRANSACTION_CREATOR_H

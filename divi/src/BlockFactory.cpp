@@ -66,24 +66,11 @@ static CMutableTransaction CreateDummyCoinstakeTransaction()
     assert(CTransaction(txNew).IsCoinStake());
     return txNew;
 }
-bool BlockFactory::AppendProofOfStakeToBlock(
-    CBlockTemplate& pBlockTemplate)
+bool BlockFactory::AppendProofOfStakeToBlock(CBlockTemplate& pBlockTemplate)
 {
     CBlock& block = pBlockTemplate.block;
-    CMutableTransaction txCoinStake;
-    unsigned int nTxNewTime = block.nTime;
-    if(coinstakeCreator_.CreateProofOfStake(
-            pBlockTemplate.previousBlockIndex,
-            block,
-            txCoinStake,
-            nTxNewTime))
-    {
-        block.nTime = nTxNewTime;
-        block.vtx[1]=txCoinStake;
-        return true;
-    }
-
-    return false;
+    const CBlockIndex* chainTip = pBlockTemplate.previousBlockIndex;
+    return coinstakeCreator_.CreateProofOfStake(chainTip, block);
 }
 
 void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev) const

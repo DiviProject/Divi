@@ -86,10 +86,8 @@ public:
         I_StakingWallet& wallet,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     ~PoSTransactionCreator();
-    virtual bool CreateProofOfStake(
+    bool CreateProofOfStake(
         const CBlockIndex* chainTip,
-        CBlock& block,
-        CMutableTransaction& txCoinStake,
-        unsigned int& nTxNewTime);
+        CBlock& block) override;
 };
 #endif // COINSTAKE_CREATOR_H

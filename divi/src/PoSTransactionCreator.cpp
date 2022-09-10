@@ -315,10 +315,11 @@ void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
 
 bool PoSTransactionCreator::CreateProofOfStake(
     const CBlockIndex* chainTip,
-    CBlock& block,
-    CMutableTransaction& txCoinStake,
-    unsigned int& nTxNewTime)
+    CBlock& block)
 {
+    CMutableTransaction txCoinStake;
+    unsigned int nTxNewTime = block.nTime;
+
     uint32_t blockBits = block.nBits;
     MarkTransactionAsCoinstake(txCoinStake);
 
@@ -367,6 +368,8 @@ bool PoSTransactionCreator::CreateProofOfStake(
             return error("CreateCoinStake : failed to sign coinstake");
     }
 
+    block.nTime = nTxNewTime;
+    block.vtx[1] = txCoinStake;
     stakedCoins_->resetTimestamp(); //this will trigger stake set to repopulate next round
     return true;
 }

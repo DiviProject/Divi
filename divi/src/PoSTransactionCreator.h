@@ -88,7 +88,7 @@ public:
     ~PoSTransactionCreator();
     virtual bool CreateProofOfStake(
         const CBlockIndex* chainTip,
-        uint32_t blockBits,
+        CBlock& block,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime);
 };

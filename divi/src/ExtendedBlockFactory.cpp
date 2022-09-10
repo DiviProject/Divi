@@ -61,11 +61,11 @@ public:
 
     bool CreateProofOfStake(
         const CBlockIndex* chainTip,
-        uint32_t blockBits,
+        CBlock& block,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime) override
     {
-        bool coinstakeCreated = transactionCreator_.CreateProofOfStake(chainTip,blockBits,txCoinStake,nTxNewTime);
+        bool coinstakeCreated = transactionCreator_.CreateProofOfStake(chainTip,block,txCoinStake,nTxNewTime);
         if (customCoinstake_ != nullptr)
         {
             if (!customCoinstake_->IsCoinStake())

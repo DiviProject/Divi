@@ -38,9 +38,6 @@ private:
     void SetBlockHeader(
         CBlockHeader& block,
         const CBlockIndex* pindexPrev) const;
-    void FinalizeBlock (
-        CBlockTemplate& pblocktemplate,
-        const bool& fProofOfStake) const;
     bool AppendProofOfWorkToBlock(
         CBlockTemplate& blocktemplate);
 

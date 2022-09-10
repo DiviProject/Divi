@@ -57,10 +57,6 @@ protected:
   /** A script from the wallet for convenience.  */
   const CScript walletScript;
 
-  /* Convenience variables for tests to use in calls to CreatePoS.  */
-  CMutableTransaction mtx;
-  unsigned txTime;
-
   /* Convenience variable for the wallet's AddDefaultTx.  */
   unsigned outputIndex;
 
@@ -88,18 +84,13 @@ protected:
 
   /** Calls CreateProofOfStake on our PoSTransactionCreator with the
    *  fake wallet's chain tip and regtest difficulty.  */
-  bool CreatePoS(CMutableTransaction& txCoinStake, unsigned& nTxNewTime)
-  {
-    CBlock block;
-    block.nBits = 0x207fffff;
-    return txCreator.CreateProofOfStake(fakeChain.activeChain->Tip(), block, txCoinStake, nTxNewTime);
-  }
-
   bool CreatePoS()
   {
-    return CreatePoS(mtx, txTime);
+    CBlock block;
+    block.vtx.resize(2);
+    block.nBits = 0x207fffff;
+    return txCreator.CreateProofOfStake(fakeChain.activeChain->Tip(), block);
   }
-
 };
 
 BOOST_FIXTURE_TEST_SUITE(PoSTransactionCreator_tests, PoSTransactionCreatorTestFixture)

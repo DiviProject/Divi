@@ -1296,8 +1296,6 @@ void PeriodicallyRebroadcastMempoolTxs(CCriticalSection& mainCriticalSection, CT
 
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
-    const ChainstateManager::Reference chainstate;
-
     {
         if (fSendTrickle) {
             SendAddresses(pto);

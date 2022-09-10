@@ -10,16 +10,12 @@
 #include <memory>
 #include <I_PoSTransactionCreator.h>
 
-class CWallet;
 class CBlock;
 class CMutableTransaction;
-class CKeyStore;
 class CTransaction;
 class CChainParams;
-class I_SuperblockSubsidyContainer;
 class I_BlockIncentivesPopulator;
 class CChain;
-class I_PoSStakeModifierService;
 class I_ProofOfStakeGenerator;
 class I_BlockSubsidyProvider;
 class BlockMap;

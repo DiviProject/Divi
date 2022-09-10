@@ -113,14 +113,6 @@ static void SetCoinbaseTransactionAndRewards(
     assert(block.vtx.size()==1);
 }
 
-void BlockFactory::FinalizeBlock (
-    CBlockTemplate& blocktemplate,
-    const bool& fProofOfStake) const
-{
-    CBlock& block = blocktemplate.block;
-    block.hashMerkleRoot = block.BuildMerkleTree();
-}
-
 bool BlockFactory::AppendProofOfWorkToBlock(
     CBlockTemplate& blocktemplate)
 {

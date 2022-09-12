@@ -44,6 +44,8 @@ CVerifyDB::CVerifyDB(
         new BlockConnectionService(
             chainParameters,
             masternodeModule,
+            blockSubsidies,
+            incentives,
             chainstate.GetBlockMap(),
             &chainstate.BlockTree(),
             coinsViewCache_.get(),

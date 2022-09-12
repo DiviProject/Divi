@@ -153,6 +153,8 @@ bool UpdateDBIndicesForNewBlock(
 BlockConnectionService::BlockConnectionService(
     const CChainParams& chainParameters,
     const MasternodeModule& masternodeModule,
+    const SuperblockSubsidyContainer& blockSubsidies,
+    const BlockIncentivesPopulator& incentives,
     const BlockMap& blockIndicesByHash,
     CBlockTreeDB* blocktree,
     CCoinsViewCache* coinTip,
@@ -166,20 +168,13 @@ BlockConnectionService::BlockConnectionService(
     , blockDataReader_(blockDataReader)
     , modifyCoinCacheInplace_(modifyCoinCacheInplace)
     , chainParameters_(chainParameters)
-    , blockSubsidies_(new SuperblockSubsidyContainer(chainParameters_,sporkManager_))
-    , incentives_(
-        new BlockIncentivesPopulator(
-            chainParameters_,
-            masternodeModule,
-            blockSubsidies_->superblockHeightValidator(),
-            blockSubsidies_->blockSubsidiesProvider()))
+    , blockSubsidies_(blockSubsidies)
+    , incentives_(incentives)
 {
 }
 
 BlockConnectionService::~BlockConnectionService()
 {
-    incentives_.reset();
-    blockSubsidies_.reset();
 }
 
 bool BlockConnectionService::ApplyDisconnectionUpdateIndexToDBs(
@@ -327,7 +322,7 @@ bool BlockConnectionService::ConnectBlock(
     IndexDatabaseUpdates indexDatabaseUpdates(
         blocktree_->GetAddressIndexing(),
         blocktree_->GetSpentIndexing());
-    CBlockRewards nExpectedMint = blockSubsidies_->blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
+    CBlockRewards nExpectedMint = blockSubsidies_.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
     if(ActivationState(pindex->pprev).IsActive(Fork::DeprecateMasternodes))
     {
         nExpectedMint.nStakeReward += nExpectedMint.nMasternodeReward;
@@ -340,7 +335,7 @@ bool BlockConnectionService::ConnectBlock(
         return false;
     }
     ConnectBlockHelpers::CalculateFees(block.IsProofOfWork(),pindex,nExpectedMint);
-    if (!ConnectBlockHelpers::CheckMintTotalsAndBlockPayees(block,pindex,*incentives_,nExpectedMint,state))
+    if (!ConnectBlockHelpers::CheckMintTotalsAndBlockPayees(block,pindex,incentives_,nExpectedMint,state))
         return false;
 
     if (!settings.isStartupVerifyingBlocks()) {

@@ -88,6 +88,8 @@ ChainTipManager::ChainTipManager(
         new BlockConnectionService(
             chainParameters,
             masternodeModule,
+            blockSubsidies,
+            incentives,
             chainstate_.GetBlockMap(),
             &chainstate_.BlockTree(),
             &chainstate_.CoinsTip(),

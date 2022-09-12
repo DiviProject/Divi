@@ -33,8 +33,8 @@ private:
     const I_BlockDataReader& blockDataReader_;
     const bool modifyCoinCacheInplace_;
     const CChainParams& chainParameters_;
-    std::unique_ptr<const SuperblockSubsidyContainer> blockSubsidies_;
-    std::unique_ptr<const BlockIncentivesPopulator> incentives_;
+    const SuperblockSubsidyContainer& blockSubsidies_;
+    const BlockIncentivesPopulator& incentives_;
 
     bool ApplyDisconnectionUpdateIndexToDBs(
         const uint256& bestBlockHash,
@@ -59,6 +59,8 @@ public:
     BlockConnectionService(
         const CChainParams& chainParameters,
         const MasternodeModule& masternodeModule,
+        const SuperblockSubsidyContainer& blockSubsidies,
+        const BlockIncentivesPopulator& incentives,
         const BlockMap& blockIndicesByHash,
         CBlockTreeDB* blocktree,
         CCoinsViewCache* coinTip,

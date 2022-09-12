@@ -72,6 +72,16 @@ ChainExtensionModule::~ChainExtensionModule()
     blockSubsidies_.reset();
 }
 
+const SuperblockSubsidyContainer& ChainExtensionModule::getBlockSubsidies() const
+{
+    return *blockSubsidies_;
+}
+
+const BlockIncentivesPopulator& ChainExtensionModule::getBlockIncentivesPopulator() const
+{
+    return *incentives_;
+}
+
 const I_ProofOfStakeGenerator& ChainExtensionModule::getProofOfStakeGenerator() const
 {
     return proofOfStakeModule_->proofOfStakeGenerator();

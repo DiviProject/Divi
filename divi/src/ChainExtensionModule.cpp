@@ -68,6 +68,8 @@ ChainExtensionModule::~ChainExtensionModule()
     blockValidator_.reset();
     chainExtensionService_.reset();
     proofOfStakeModule_.reset();
+    incentives_.reset();
+    blockSubsidies_.reset();
 }
 
 const I_ProofOfStakeGenerator& ChainExtensionModule::getProofOfStakeGenerator() const

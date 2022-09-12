@@ -29,10 +29,10 @@ class I_ProofOfStakeGenerator
 public:
     static const int nHashDrift = 45;
     virtual ~I_ProofOfStakeGenerator(){}
-    virtual HashproofCreationResult CreateHashproofTimestamp(
+    virtual HashproofCreationResult createHashproofTimestamp(
         const StakingData& stakingData,
         const unsigned initialTimestamp) const = 0;
-    virtual bool ComputeAndVerifyProofOfStake(
+    virtual bool computeAndVerifyProofOfStake(
         const StakingData& stakingData,
         const unsigned int& hashproofTimestamp,
         uint256& hashProofOfStake) const = 0;

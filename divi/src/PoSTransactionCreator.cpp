@@ -227,7 +227,7 @@ bool PoSTransactionCreator::FindHashproof(
         stakeData.utxo,
         stakeData.GetTxOut().nValue,
         chainTip->GetBlockHash());
-    HashproofCreationResult hashproofResult = proofGenerator_.CreateHashproofTimestamp(stakingData,nTxNewTime);
+    HashproofCreationResult hashproofResult = proofGenerator_.createHashproofTimestamp(stakingData,nTxNewTime);
     if(!hashproofResult.failedAtSetup())
     {
         hashedBlockTimestamps_.clear();

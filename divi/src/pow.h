@@ -52,6 +52,6 @@ bool CheckWork(
     const BlockMap& blockIndicesByHash,
     const Settings& settings,
     const CBlock& block,
-    std::map<uint256, uint256>& mapProofOfStake,
+    uint256& hashProofOfStake,
     CBlockIndex* const pindexPrev);
 #endif // BITCOIN_POW_H

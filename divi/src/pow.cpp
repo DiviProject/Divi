@@ -259,7 +259,7 @@ bool CheckWork(
     const BlockMap& blockIndicesByHash,
     const Settings& settings,
     const CBlock& block,
-    std::map<uint256, uint256>& mapProofOfStake,
+    uint256& hashProofOfStake,
     CBlockIndex* const pindexPrev)
 {
     if (pindexPrev == NULL)
@@ -282,15 +282,13 @@ bool CheckWork(
         return error("%s : incorrect proof of work at %d", __func__, pindexPrev->nHeight + 1);
 
     if (block.IsProofOfStake()) {
-        uint256 hashProofOfStake;
+        hashProofOfStake = uint256(0);
         uint256 hash = block.GetHash();
 
         if(!CheckProofOfStake(posGenerator,settings,blockIndicesByHash,block,pindexPrev, hashProofOfStake)) {
             LogPrintf("WARNING: ProcessBlock(): check proof-of-stake failed for block %s\n", hash);
             return false;
         }
-        if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
-            mapProofOfStake.insert(std::make_pair(hash, hashProofOfStake));
     }
 
     return true;

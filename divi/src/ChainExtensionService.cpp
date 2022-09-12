@@ -30,8 +30,6 @@
 
 namespace
 {
-std::map<uint256, uint256> mapProofOfStake;
-
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of(0, 0xfd11f4e7u);
@@ -243,6 +241,7 @@ void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBloc
 
 CBlockIndex* AddToBlockIndex(
     ChainstateManager& chainstate,
+    const uint256 hashproof,
     const BlockIndexLotteryUpdater& lotteryUpdater,
     const CChainParams& chainParameters,
     const CSporkManager& sporkManager,
@@ -284,9 +283,7 @@ CBlockIndex* AddToBlockIndex(
 
         // ppcoin: record proof-of-stake hash value
         if (pindexNew->IsProofOfStake()) {
-            if (!mapProofOfStake.count(hash))
-                LogPrintf("%s : hashProofOfStake not found in map \n",__func__);
-            pindexNew->hashProofOfStake = mapProofOfStake[hash];
+            pindexNew->hashProofOfStake = hashproof;
         }
 
         // ppcoin: compute stake modifier
@@ -422,6 +419,7 @@ bool ContextualCheckBlock(CCriticalSection& mainCriticalSection,const CChain& ch
 
 bool AcceptBlockHeader(
     CCriticalSection& mainCriticalSection,
+    const uint256 hashproof,
     const BlockIndexLotteryUpdater& blockIndexLotteryUpdater,
     const CChainParams& chainParameters,
     const Settings& settings,
@@ -470,7 +468,7 @@ bool AcceptBlockHeader(
         return false;
 
     if (pindex == NULL)
-        pindex = AddToBlockIndex(chainstate, blockIndexLotteryUpdater,chainParameters,sporkManager, block);
+        pindex = AddToBlockIndex(chainstate, hashproof, blockIndexLotteryUpdater,chainParameters,sporkManager, block);
 
     if (ppindex)
         *ppindex = pindex;
@@ -512,16 +510,17 @@ bool AcceptBlock(
     }
 
     const uint256 blockHash = block.GetHash();
+    uint256 hashproof = uint256(0);
     if (blockHash != chainParameters.HashGenesisBlock())
     {
-        if(!CheckWork(chainParameters, posGenerator, blockMap, settings, block, mapProofOfStake, pindexPrev))
+        if(!CheckWork(chainParameters, posGenerator, blockMap, settings, block,hashproof, pindexPrev))
         {
             LogPrintf("WARNING: %s: check difficulty check failed for %s block %s\n",__func__, block.IsProofOfWork()?"PoW":"PoS", blockHash);
             return false;
         }
     }
 
-    if (!AcceptBlockHeader(mainCriticalSection, blockIndexLotteryUpdater, chainParameters, settings, block, chainstate, sporkManager, state, &pindex))
+    if (!AcceptBlockHeader(mainCriticalSection, hashproof, blockIndexLotteryUpdater, chainParameters, settings, block, chainstate, sporkManager, state, &pindex))
         return false;
 
     if (pindex->nStatus & BLOCK_HAVE_DATA) {
@@ -763,7 +762,7 @@ bool ChainExtensionService::connectGenesisBlock() const
                 return error("%s : FindBlockPos failed",__func__);
             if (!WriteBlockToDisk(block, blockPos))
                 return error("%s : writing genesis block to disk failed",__func__);
-            CBlockIndex* pindex = AddToBlockIndex(*chainstateRef_, *blockIndexLotteryUpdater_, chainParameters_,sporkManager_,block);
+            CBlockIndex* pindex = AddToBlockIndex(*chainstateRef_, uint256(0), *blockIndexLotteryUpdater_, chainParameters_,sporkManager_,block);
             if (!ReceivedBlockTransactions(chainstateRef_->ActiveChain(),block, pindex, blockPos))
                 return error("%s : genesis block not accepted",__func__);
             if (!updateActiveChain(state, &block))

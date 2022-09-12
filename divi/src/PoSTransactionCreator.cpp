@@ -18,6 +18,7 @@
 #include <StakableCoin.h>
 #include <timedata.h>
 #include <ForkActivation.h>
+#include <BlockSigning.h>
 
 class StakedCoins
 {
@@ -370,6 +371,15 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     block.nTime = nTxNewTime;
     block.vtx[1] = txCoinStake;
+
+    block.hashMerkleRoot = block.BuildMerkleTree();
+    LogPrintf("%s: proof-of-stake block found %s \n",__func__, block.GetHash());
+    if (!SignBlock(wallet_, block)) {
+        LogPrintf("%s: Signing new block failed \n",__func__);
+        return false;
+    }
+    LogPrintf("%s: proof-of-stake block was signed %s \n", __func__, block.GetHash());
+
     stakedCoins_->resetTimestamp(); //this will trigger stake set to repopulate next round
     return true;
 }

@@ -70,12 +70,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(CBlockTemplate& pBlockTemplate)
 {
     CBlock& block = pBlockTemplate.block;
     const CBlockIndex* chainTip = pBlockTemplate.previousBlockIndex;
-    if(coinstakeCreator_.CreateProofOfStake(chainTip, block))
-    {
-        block.hashMerkleRoot = block.BuildMerkleTree();
-        return true;
-    }
-    return false;
+    return coinstakeCreator_.CreateProofOfStake(chainTip, block);
 }
 
 void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev) const

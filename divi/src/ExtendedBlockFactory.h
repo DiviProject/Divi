@@ -17,6 +17,7 @@ class I_BlockSubsidyProvider;
 class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
 class Settings;
+class I_StakingWallet;
 
 class ExtendedBlockFactory : public I_BlockFactory
 {
@@ -34,6 +35,7 @@ private:
     void VerifyBlockWithIsCompatibleWithCustomCoinstake(const CBlock& block);
 public:
     ExtendedBlockFactory(
+        const I_StakingWallet& wallet,
         const I_BlockSubsidyProvider& blockSubsidies,
         I_BlockTransactionCollector& blockTransactionCollector,
         I_PoSTransactionCreator& coinstakeCreator,

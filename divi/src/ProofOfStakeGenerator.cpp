@@ -110,7 +110,7 @@ bool ProofOfStakeGenerator::CreateProofOfStakeCalculator(
     return true;
 }
 
-bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(
+bool ProofOfStakeGenerator::computeAndVerifyProofOfStake(
     const StakingData& stakingData,
     const unsigned int& hashproofTimestamp,
     uint256& hashProofOfStake) const
@@ -121,7 +121,7 @@ bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(
     return calculator->computeProofOfStakeAndCheckItMeetsTarget(
         hashproofTimestamp, hashProofOfStake,false);
 }
-HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
+HashproofCreationResult ProofOfStakeGenerator::createHashproofTimestamp(
     const StakingData& stakingData,
     const unsigned initialTimestamp) const
 {

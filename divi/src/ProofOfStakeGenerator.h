@@ -25,10 +25,10 @@ public:
     ProofOfStakeGenerator(
         const I_PoSStakeModifierService& stakeModifierService,
         unsigned minimumCoinAgeForStaking);
-    HashproofCreationResult CreateHashproofTimestamp(
+    HashproofCreationResult createHashproofTimestamp(
         const StakingData& stakingData,
         const unsigned initialTimestamp) const;
-    bool ComputeAndVerifyProofOfStake(
+    bool computeAndVerifyProofOfStake(
         const StakingData& stakingData,
         const unsigned int& hashproofTimestamp,
         uint256& hashProofOfStake) const;

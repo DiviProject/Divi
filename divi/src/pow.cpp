@@ -227,7 +227,7 @@ bool CheckProofOfStake(
     StakingData stakingData;
     if(!CheckProofOfStakeContextAndRecoverStakingData(settings,blockIndicesByHash,block,pindexPrev,stakingData))
         return false;
-    if (!posGenerator.ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
+    if (!posGenerator.computeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",
             block.vtx[1].ToStringShort(), hashProofOfStake); // may occur during initial download or if behind on block chain sync
 

@@ -35,8 +35,8 @@ private:
     class ChainstateManagerReference;
     LastExtensionTimestampByBlockHeight mapHashedBlocks_;
     std::unique_ptr<const ChainstateManagerReference> chainstate_;
-    std::unique_ptr<SuperblockSubsidyContainer> blockSubsidyContainer_;
-    std::unique_ptr<BlockIncentivesPopulator> blockIncentivesPopulator_;
+    const SuperblockSubsidyContainer& blockSubsidyContainer_;
+    const BlockIncentivesPopulator& blockIncentivesPopulator_;
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
     std::unique_ptr<I_PoSTransactionCreator> coinstakeTransactionCreator_;
     std::unique_ptr<I_BlockFactory> blockFactory_;
@@ -46,6 +46,8 @@ public:
         const Settings& settings,
         const CChainParams& chainParameters,
         const MasternodeModule& masternodeModule,
+        const SuperblockSubsidyContainer& blockSubsidies,
+        const BlockIncentivesPopulator& incentives,
         const I_ProofOfStakeGenerator& proofGenerator,
         const CFeeRate& relayTxFeeCalculator,
         const I_PeerBlockNotifyService& peers,

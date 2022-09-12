@@ -34,46 +34,46 @@ private:
     const I_BlockSubsidyProvider& blockSubsidies_;
     const I_BlockIncentivesPopulator& incentives_;
     const I_ProofOfStakeGenerator& proofGenerator_;
-    std::unique_ptr<StakedCoins> stakedCoins_;
+    mutable std::unique_ptr<StakedCoins> stakedCoins_;
     I_StakingWallet& wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
-    int64_t hashproofTimestampMinimumValue_;
+    mutable int64_t hashproofTimestampMinimumValue_;
 
     void CombineUtxos(
         const CAmount& stakeSplit,
         CMutableTransaction& txNew,
         CAmount& nCredit,
-        std::vector<const CTransaction*>& walletTransactions);
+        std::vector<const CTransaction*>& walletTransactions) const;
 
     bool SetSuportedStakingScript(
         const StakableCoin& stakableCoin,
-        CMutableTransaction& txNew);
+        CMutableTransaction& txNew) const;
 
-    bool SelectCoins();
+    bool SelectCoins() const;
 
     bool FindHashproof(
         const CBlockIndex* chainTip,
         unsigned int nBits,
         unsigned int& nTxNewTime,
         const StakableCoin& stakeData,
-        CMutableTransaction& txNew);
+        CMutableTransaction& txNew) const;
 
     const StakableCoin* FindProofOfStake(
         const CBlockIndex* chainTip,
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime,
-        bool& isVaultScript);
+        bool& isVaultScript) const;
 
     void AppendBlockRewardPayoutsToTransaction(
         const CBlockIndex* chainTip,
-        CMutableTransaction& txCoinStake);
+        CMutableTransaction& txCoinStake) const;
     void SplitOrCombineUTXOS(
         const CAmount stakeSplit,
         const CBlockIndex* chainTip,
         CMutableTransaction& txCoinStake,
         const StakableCoin& stakeData,
-        std::vector<const CTransaction*>& vwtxPrev);
+        std::vector<const CTransaction*>& vwtxPrev) const;
 public:
     PoSTransactionCreator(
         const Settings& settings,
@@ -88,6 +88,6 @@ public:
     ~PoSTransactionCreator();
     bool CreateProofOfStake(
         const CBlockIndex* chainTip,
-        CBlock& block) override;
+        CBlock& block) const override;
 };
 #endif // COINSTAKE_CREATOR_H

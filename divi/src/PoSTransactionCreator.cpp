@@ -109,7 +109,7 @@ PoSTransactionCreator::~PoSTransactionCreator()
     stakedCoins_.reset();
 }
 
-bool PoSTransactionCreator::SelectCoins()
+bool PoSTransactionCreator::SelectCoins() const
 {
     if (chainParameters_.NetworkID() == CBaseChainParams::REGTEST ||
         GetTime() - stakedCoins_->timestamp() > settings_.GetArg("-stakeupdatetime",300))
@@ -160,7 +160,7 @@ bool IsSupportedScript(
 
 bool PoSTransactionCreator::SetSuportedStakingScript(
     const StakableCoin& stakableCoin,
-    CMutableTransaction& txNew)
+    CMutableTransaction& txNew) const
 {
     txNew.vin.emplace_back(stakableCoin.utxo);
     txNew.vout.emplace_back(0, stakableCoin.GetTxOut().scriptPubKey);
@@ -172,7 +172,7 @@ void PoSTransactionCreator::CombineUtxos(
     const CAmount& stakeSplit,
     CMutableTransaction& txNew,
     CAmount& nCredit,
-    std::vector<const CTransaction*>& walletTransactions)
+    std::vector<const CTransaction*>& walletTransactions) const
 {
     static const unsigned maxInputs = settings_.MaxNumberOfPoSCombinableInputs();
     const CAmount nCombineThreshold = stakeSplit / 2;
@@ -212,7 +212,7 @@ bool PoSTransactionCreator::FindHashproof(
     unsigned int nBits,
     unsigned int& nTxNewTime,
     const StakableCoin& stakeData,
-    CMutableTransaction& txNew)
+    CMutableTransaction& txNew) const
 {
     BlockMap::const_iterator it = blockIndexByHash_.find(stakeData.blockHashOfFirstConfirmation);
     if (it == blockIndexByHash_.end())
@@ -255,7 +255,7 @@ const StakableCoin* PoSTransactionCreator::FindProofOfStake(
     uint32_t blockBits,
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime,
-    bool& isVaultScript)
+    bool& isVaultScript) const
 {
     for (const StakableCoin* const pcoin: stakedCoins_->getShuffledSet())
     {
@@ -282,7 +282,7 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
     const CBlockIndex* chainTip,
     CMutableTransaction& txCoinStake,
     const StakableCoin& stakeData,
-    std::vector<const CTransaction*>& vwtxPrev)
+    std::vector<const CTransaction*>& vwtxPrev) const
 {
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
     CAmount nCredit = stakeData.GetTxOut().nValue + blockSubdidy.nStakeReward + (ActivationState(chainTip).IsActive(Fork::DeprecateMasternodes)? blockSubdidy.nMasternodeReward : 0);
@@ -308,7 +308,7 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
 
 void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
     const CBlockIndex* chainTip,
-    CMutableTransaction& txCoinStake)
+    CMutableTransaction& txCoinStake) const
 {
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
     incentives_.FillBlockPayee(txCoinStake,blockSubdidy,chainTip);
@@ -316,7 +316,7 @@ void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
 
 bool PoSTransactionCreator::CreateProofOfStake(
     const CBlockIndex* chainTip,
-    CBlock& block)
+    CBlock& block) const
 {
     CMutableTransaction txCoinStake;
     unsigned int nTxNewTime = block.nTime;

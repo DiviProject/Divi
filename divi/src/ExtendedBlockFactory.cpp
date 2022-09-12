@@ -66,7 +66,7 @@ public:
 
     bool CreateProofOfStake(
         const CBlockIndex* chainTip,
-        CBlock& block) override
+        CBlock& block) const override
     {
         bool coinstakeCreated = transactionCreator_.CreateProofOfStake(chainTip,block);
         if (customCoinstake_ != nullptr)

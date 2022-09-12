@@ -70,7 +70,12 @@ bool BlockFactory::AppendProofOfStakeToBlock(CBlockTemplate& pBlockTemplate)
 {
     CBlock& block = pBlockTemplate.block;
     const CBlockIndex* chainTip = pBlockTemplate.previousBlockIndex;
-    return coinstakeCreator_.CreateProofOfStake(chainTip, block);
+    if(coinstakeCreator_.CreateProofOfStake(chainTip, block))
+    {
+        block.hashMerkleRoot = block.BuildMerkleTree();
+        return true;
+    }
+    return false;
 }
 
 void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev) const
@@ -104,6 +109,7 @@ bool BlockFactory::AppendProofOfWorkToBlock(
     CBlockTemplate& blocktemplate)
 {
     CBlock& block = blocktemplate.block;
+    block.hashMerkleRoot = block.BuildMerkleTree();
     const CBlockIndex* const previousBlockIndex = blocktemplate.previousBlockIndex;
     UpdateTime(block, previousBlockIndex);
     int64_t nStart = GetTime();
@@ -193,14 +199,11 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     }
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
-
         if (!AppendProofOfStakeToBlock(*pblocktemplate))
             return NULL;
-        pblocktemplate->block.hashMerkleRoot = pblocktemplate->block.BuildMerkleTree();
     }
     else
     {
-        pblocktemplate->block.hashMerkleRoot = pblocktemplate->block.BuildMerkleTree();
         boost::this_thread::interruption_point();
         if (!AppendProofOfWorkToBlock(*pblocktemplate))
             return NULL;

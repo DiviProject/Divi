@@ -47,6 +47,8 @@ public:
         BlockIndexCandidates& blockIndexCandidates);
 
     ~ChainExtensionModule();
+    const SuperblockSubsidyContainer& getBlockSubsidies() const;
+    const BlockIncentivesPopulator& getBlockIncentivesPopulator() const;
     const I_ProofOfStakeGenerator& getProofOfStakeGenerator() const;
     const I_ChainExtensionService& getChainExtensionService() const;
     const I_BlockValidator& getBlockValidator() const;

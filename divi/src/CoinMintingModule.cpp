@@ -60,6 +60,8 @@ CoinMintingModule::CoinMintingModule(
     const Settings& settings,
     const CChainParams& chainParameters,
     const MasternodeModule& masternodeModule,
+    const SuperblockSubsidyContainer& blockSubsidies,
+    const BlockIncentivesPopulator& incentives,
     const I_ProofOfStakeGenerator& proofGenerator,
     const CFeeRate& relayTxFeeCalculator,
     const I_PeerBlockNotifyService& peerNotifier,
@@ -70,12 +72,8 @@ CoinMintingModule::CoinMintingModule(
     I_StakingWallet& wallet
     ): mapHashedBlocks_()
     , chainstate_(new ChainstateManagerReference())
-    , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters, sporkManager))
-    , blockIncentivesPopulator_(new BlockIncentivesPopulator(
-        chainParameters,
-        masternodeModule,
-        blockSubsidyContainer_->superblockHeightValidator(),
-        blockSubsidyContainer_->blockSubsidiesProvider()))
+    , blockSubsidyContainer_(blockSubsidies)
+    , blockIncentivesPopulator_(incentives)
     , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(
         settings,
         &(*chainstate_)->CoinsTip(),
@@ -89,15 +87,15 @@ CoinMintingModule::CoinMintingModule(
         chainParameters,
         (*chainstate_)->ActiveChain(),
         (*chainstate_)->GetBlockMap(),
-        blockSubsidyContainer_->blockSubsidiesProvider(),
-        *blockIncentivesPopulator_,
+        blockSubsidyContainer_.blockSubsidiesProvider(),
+        blockIncentivesPopulator_,
         proofGenerator,
         wallet,
         mapHashedBlocks_))
     , blockFactory_(
         BlockFactorySelector(
             wallet,
-            blockSubsidyContainer_->blockSubsidiesProvider(),
+            blockSubsidyContainer_.blockSubsidiesProvider(),
             *blockTransactionCollector_,
             *coinstakeTransactionCreator_,
             settings,
@@ -121,8 +119,6 @@ CoinMintingModule::~CoinMintingModule()
     blockFactory_.reset();
     coinstakeTransactionCreator_.reset();
     blockTransactionCollector_.reset();
-    blockIncentivesPopulator_.reset();
-    blockSubsidyContainer_.reset();
 }
 
 I_BlockFactory& CoinMintingModule::blockFactory() const

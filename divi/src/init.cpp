@@ -399,6 +399,8 @@ bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip)
     const CVerifyDB dbVerifier(
         Params(),
         GetMasternodeModule(),
+        chainExtensionModule->getBlockSubsidies(),
+        chainExtensionModule->getBlockIncentivesPopulator(),
         *chainstate,
         coinView,
         GetSporkManager(),

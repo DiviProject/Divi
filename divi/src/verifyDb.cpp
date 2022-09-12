@@ -27,6 +27,8 @@
 CVerifyDB::CVerifyDB(
     const CChainParams& chainParameters,
     const MasternodeModule& masternodeModule,
+    const SuperblockSubsidyContainer& blockSubsidies,
+    const BlockIncentivesPopulator& incentives,
     ChainstateManager& chainstate,
     const CCoinsView& coinView,
     const CSporkManager& sporkManager,

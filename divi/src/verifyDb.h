@@ -22,6 +22,8 @@ class ChainstateManager;
 class I_BlockDataReader;
 class MasternodeModule;
 class CChainParams;
+class SuperblockSubsidyContainer;
+class BlockIncentivesPopulator;
 
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB
@@ -43,6 +45,8 @@ public:
     CVerifyDB(
         const CChainParams& chainParameters,
         const MasternodeModule& masternodeModule,
+        const SuperblockSubsidyContainer& blockSubsidies,
+        const BlockIncentivesPopulator& incentives,
         ChainstateManager& chainstate,
         const CCoinsView& coinView,
         const CSporkManager& sporkManager,

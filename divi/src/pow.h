@@ -43,7 +43,7 @@ bool CheckProofOfStake(
     const Settings& settings,
     const BlockMap& mapBlockIndex,
     const CBlock& block,
-    CBlockIndex* pindexPrev,
+    const CBlockIndex* pindexPrev,
     uint256& hashProofOfStake);
 
 bool CheckWork(

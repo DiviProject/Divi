@@ -157,7 +157,7 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
     const Settings& settings,
     const BlockMap& blockIndicesByHash,
     const CBlock& block,
-    CBlockIndex* pindexPrev,
+    const CBlockIndex* pindexPrev,
     StakingData& stakingData)
 {
     static const unsigned maxInputs = settings.MaxNumberOfPoSCombinableInputs();
@@ -221,7 +221,7 @@ bool CheckProofOfStake(
     const Settings& settings,
     const BlockMap& blockIndicesByHash,
     const CBlock& block,
-    CBlockIndex* pindexPrev,
+    const CBlockIndex* pindexPrev,
     uint256& hashProofOfStake)
 {
     StakingData stakingData;

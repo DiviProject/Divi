@@ -19,12 +19,16 @@ class ChainstateManager;
 class I_BlockSubmitter;
 class ProofOfStakeModule;
 class I_ProofOfStakeGenerator;
+class SuperblockSubsidyContainer;
+class BlockIncentivesPopulator;
 
 class ChainExtensionModule
 {
 private:
     ChainstateManager& chainstateManager_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
+    std::unique_ptr<const SuperblockSubsidyContainer> blockSubsidies_;
+    std::unique_ptr<const BlockIncentivesPopulator> incentives_;
     std::unique_ptr<const ProofOfStakeModule> proofOfStakeModule_;
     std::unique_ptr<I_ChainExtensionService> chainExtensionService_;
     std::unique_ptr<I_BlockValidator> blockValidator_;

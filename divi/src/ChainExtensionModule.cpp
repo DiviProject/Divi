@@ -4,6 +4,8 @@
 #include <AcceptBlockValidator.h>
 #include <BlockSubmitter.h>
 #include <ProofOfStakeModule.h>
+#include <SuperblockSubsidyContainer.h>
+#include <BlockIncentivesPopulator.h>
 
 ChainExtensionModule::ChainExtensionModule(
     ChainstateManager& chainstateManager,
@@ -18,6 +20,16 @@ ChainExtensionModule::ChainExtensionModule(
     BlockIndexCandidates& blockIndexCandidates
     ): chainstateManager_(chainstateManager)
     , peerIdByBlockHash_()
+    , blockSubsidies_(
+        new SuperblockSubsidyContainer(
+            chainParameters,
+            sporkManager))
+    , incentives_(
+        new BlockIncentivesPopulator(
+            chainParameters,
+            masternodeModule,
+            blockSubsidies_->superblockHeightValidator(),
+            blockSubsidies_->blockSubsidiesProvider() ))
     , proofOfStakeModule_(new ProofOfStakeModule(chainParameters,chainstateManager.ActiveChain(),chainstateManager.GetBlockMap()))
     , chainExtensionService_(
         new ChainExtensionService(

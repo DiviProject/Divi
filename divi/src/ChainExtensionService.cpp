@@ -636,6 +636,8 @@ ChainExtensionService::ChainExtensionService(
         new ChainTipManager(
             chainParameters_,
             settings_,
+            blockSubsidies,
+            incentives,
             mainCriticalSection_,
             mempool_,
             mainNotificationSignals_,

@@ -163,10 +163,10 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
     static const unsigned maxInputs = settings.MaxNumberOfPoSCombinableInputs();
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())
-        return error("CheckProofOfStake() : called on non-coinstake %s", tx.ToStringShort());
+        return error("%s : called on non-coinstake %s", __func__, tx.ToStringShort());
 
     if(tx.vin.size() > maxInputs) {
-        return error("CheckProofOfStake() : invalid amount of stake inputs, current: %d, max: %d", tx.vin.size(), maxInputs);
+        return error("%s : invalid amount of stake inputs, current: %d, max: %d", __func__, tx.vin.size(), maxInputs);
     }
 
     // Kernel (input 0) must match the stake hash target per coin age (nBits)
@@ -176,7 +176,7 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
     uint256 hashBlock;
     CTransaction txPrev;
     if (!GetTransaction(txin.prevout.hash, txPrev, hashBlock, true))
-        return error("CheckProofOfStake() : INFO: read txPrev failed");
+        return error("%s : INFO: read txPrev failed", __func__);
 
     const CScript &kernelScript = txPrev.vout[txin.prevout.n].scriptPubKey;
 
@@ -185,26 +185,26 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
         CTransaction txPrev2;
         uint256 hashBlock2;
         if (!GetTransaction(tx.vin[i].prevout.hash, txPrev2, hashBlock2, true))
-            return error("CheckProofOfStake() : INFO: read txPrev failed for input %u", i);
+            return error("%s : INFO: read txPrev failed for input %u",__func__, i);
         if (txPrev2.vout[tx.vin[i].prevout.n].scriptPubKey != kernelScript)
-            return error("CheckProofOfStake() : Stake input %u pays to different script", i);
+            return error("%s : Stake input %u pays to different script", __func__, i);
     }
 
     //verify signature and script
     if (!VerifyScript(txin.scriptSig, txPrev.vout[txin.prevout.n], POS_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&tx, 0)))
-        return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.ToStringShort());
+        return error("%s : VerifySignature failed on coinstake %s", __func__, tx.ToStringShort());
 
     CBlockIndex* pindex = NULL;
     BlockMap::const_iterator it = blockIndicesByHash.find(hashBlock);
     if (it != blockIndicesByHash.end())
         pindex = it->second;
     else
-        return error("CheckProofOfStake() : read block failed");
+        return error("%s : read block failed",__func__);
 
     // Read block header
     CBlock blockprev;
     if (!ReadBlockFromDisk(blockprev, pindex->GetBlockPos()))
-        return error("CheckProofOfStake(): INFO: failed to find block");
+        return error("%s : INFO: failed to find block",__func__);
 
     stakingData = StakingData(
         block.nBits,

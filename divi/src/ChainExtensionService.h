@@ -22,6 +22,7 @@ class I_MostWorkChainTransitionMediator;
 class I_ProofOfStakeGenerator;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
+class BlockIndexLotteryUpdater;
 
 class ChainExtensionService final: public I_ChainExtensionService
 {
@@ -36,6 +37,7 @@ private:
     ChainstateManager* chainstateRef_;
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors_;
     BlockIndexCandidates& blockIndexCandidates_;
+    std::unique_ptr<BlockIndexLotteryUpdater> blockIndexLotteryUpdater_;
     std::unique_ptr<I_ChainTipManager> chainTipManager_;
     std::unique_ptr<I_MostWorkChainTransitionMediator> chainTransitionMediator_;
 

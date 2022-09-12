@@ -243,13 +243,13 @@ void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBloc
 
 CBlockIndex* AddToBlockIndex(
     ChainstateManager& chainstate,
+    const BlockIndexLotteryUpdater& lotteryUpdater,
     const CChainParams& chainParameters,
     const CSporkManager& sporkManager,
     const CBlock& block)
 {
     auto& blockMap = chainstate.GetBlockMap();
 
-    const BlockIndexLotteryUpdater lotteryUpdater(chainParameters, chainstate.ActiveChain(), sporkManager);
     // Check for duplicate
     const uint256 hash = block.GetHash();
     const auto it = blockMap.find(hash);
@@ -422,6 +422,7 @@ bool ContextualCheckBlock(CCriticalSection& mainCriticalSection,const CChain& ch
 
 bool AcceptBlockHeader(
     CCriticalSection& mainCriticalSection,
+    const BlockIndexLotteryUpdater& blockIndexLotteryUpdater,
     const CChainParams& chainParameters,
     const Settings& settings,
     const CBlock& block,
@@ -469,7 +470,7 @@ bool AcceptBlockHeader(
         return false;
 
     if (pindex == NULL)
-        pindex = AddToBlockIndex(chainstate,chainParameters,sporkManager, block);
+        pindex = AddToBlockIndex(chainstate, blockIndexLotteryUpdater,chainParameters,sporkManager, block);
 
     if (ppindex)
         *ppindex = pindex;
@@ -481,6 +482,7 @@ bool AcceptBlock(
     CCriticalSection& mainCriticalSection,
     const Settings& settings,
     const I_ProofOfStakeGenerator& posGenerator,
+    const BlockIndexLotteryUpdater& blockIndexLotteryUpdater,
     const CChainParams& chainParameters,
     CBlock& block,
     ChainstateManager& chainstate,
@@ -519,7 +521,7 @@ bool AcceptBlock(
         }
     }
 
-    if (!AcceptBlockHeader(mainCriticalSection, chainParameters, settings, block, chainstate, sporkManager, state, &pindex))
+    if (!AcceptBlockHeader(mainCriticalSection, blockIndexLotteryUpdater, chainParameters, settings, block, chainstate, sporkManager, state, &pindex))
         return false;
 
     if (pindex->nStatus & BLOCK_HAVE_DATA) {
@@ -632,6 +634,12 @@ ChainExtensionService::ChainExtensionService(
     , chainstateRef_(&chainstateManager)
     , blockIndexSuccessors_(blockIndexSuccessors)
     , blockIndexCandidates_(blockIndexCandidates)
+    , blockIndexLotteryUpdater_(
+        new BlockIndexLotteryUpdater(
+            chainParameters,
+            blockSubsidies,
+            chainstateManager.ActiveChain(),
+            sporkManager_))
     , chainTipManager_(
         new ChainTipManager(
             chainParameters_,
@@ -660,6 +668,7 @@ ChainExtensionService::~ChainExtensionService()
 {
     chainTransitionMediator_.reset();
     chainTipManager_.reset();
+    blockIndexLotteryUpdater_.reset();
 }
 
 std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
@@ -669,7 +678,7 @@ std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
 {
     std::pair<CBlockIndex*, bool> result(nullptr,false);
     result.second = AcceptBlock(
-        mainCriticalSection_,settings_, proofGenerator_,chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
+        mainCriticalSection_,settings_, proofGenerator_, *blockIndexLotteryUpdater_, chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
     return result;
 }
 
@@ -754,7 +763,7 @@ bool ChainExtensionService::connectGenesisBlock() const
                 return error("%s : FindBlockPos failed",__func__);
             if (!WriteBlockToDisk(block, blockPos))
                 return error("%s : writing genesis block to disk failed",__func__);
-            CBlockIndex* pindex = AddToBlockIndex(*chainstateRef_, chainParameters_,sporkManager_,block);
+            CBlockIndex* pindex = AddToBlockIndex(*chainstateRef_, *blockIndexLotteryUpdater_, chainParameters_,sporkManager_,block);
             if (!ReceivedBlockTransactions(chainstateRef_->ActiveChain(),block, pindex, blockPos))
                 return error("%s : genesis block not accepted",__func__);
             if (!updateActiveChain(state, &block))

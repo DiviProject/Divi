@@ -8,18 +8,17 @@
 
 BlockIndexLotteryUpdater::BlockIndexLotteryUpdater(
     const CChainParams& chainParameters,
+    const SuperblockSubsidyContainer& subsidyContainer,
     const CChain& activeChain,
     const CSporkManager& sporkManager
     ): chainParameters_(chainParameters)
-    , subsidyContainer_(new SuperblockSubsidyContainer(chainParameters_, sporkManager))
-    , lotteryCalculator_(new LotteryWinnersCalculator(chainParameters_.GetLotteryBlockStartBlock(),activeChain,sporkManager, subsidyContainer_->superblockHeightValidator()) )
+    , lotteryCalculator_(new LotteryWinnersCalculator(chainParameters_.GetLotteryBlockStartBlock(), activeChain,sporkManager, subsidyContainer.superblockHeightValidator()) )
 {
 }
 
 BlockIndexLotteryUpdater::~BlockIndexLotteryUpdater()
 {
     lotteryCalculator_.reset();
-    subsidyContainer_.reset();
 }
 
 void BlockIndexLotteryUpdater::UpdateBlockIndexLotteryWinners(const CBlock &block, CBlockIndex *newestBlockIndex) const

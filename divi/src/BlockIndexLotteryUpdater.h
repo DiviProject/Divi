@@ -13,11 +13,11 @@ class BlockIndexLotteryUpdater
 {
 private:
     const CChainParams& chainParameters_;
-    std::unique_ptr<SuperblockSubsidyContainer> subsidyContainer_;
     std::unique_ptr<LotteryWinnersCalculator> lotteryCalculator_;
 public:
     BlockIndexLotteryUpdater(
         const CChainParams& chainParameters,
+        const SuperblockSubsidyContainer& subsidyContainer,
         const CChain& activeChain,
         const CSporkManager& sporkManager);
     ~BlockIndexLotteryUpdater();

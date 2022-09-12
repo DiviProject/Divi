@@ -38,7 +38,16 @@ CVerifyDB::CVerifyDB(
     , chainstate_(chainstate)
     , coinsViewCache_(new CCoinsViewCache(&coinView_))
     , sporkManager_(sporkManager)
-    , chainManager_(new BlockConnectionService(chainParameters,masternodeModule,chainstate.GetBlockMap(),&chainstate.BlockTree(), coinsViewCache_.get(), sporkManager_, *blockDiskReader_,true))
+    , chainManager_(
+        new BlockConnectionService(
+            chainParameters,
+            masternodeModule,
+            chainstate.GetBlockMap(),
+            &chainstate.BlockTree(),
+            coinsViewCache_.get(),
+            sporkManager_,
+            *blockDiskReader_,
+            true))
     , activeChain_(chainstate.ActiveChain())
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)

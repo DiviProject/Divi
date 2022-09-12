@@ -612,6 +612,8 @@ ChainExtensionService::ChainExtensionService(
     const Settings& settings,
     const MasternodeModule& masternodeModule,
     const CSporkManager& sporkManager,
+    const SuperblockSubsidyContainer& blockSubsidies,
+    const BlockIncentivesPopulator& incentives,
     const I_ProofOfStakeGenerator& proofGenerator,
     std::map<uint256, NodeId>& peerIdByBlockHash,
     ChainstateManager& chainstateManager,

@@ -20,6 +20,8 @@ class CSporkManager;
 class I_ChainTipManager;
 class I_MostWorkChainTransitionMediator;
 class I_ProofOfStakeGenerator;
+class SuperblockSubsidyContainer;
+class BlockIncentivesPopulator;
 
 class ChainExtensionService final: public I_ChainExtensionService
 {
@@ -47,6 +49,8 @@ public:
         const Settings& settings,
         const MasternodeModule& masternodeModule,
         const CSporkManager& sporkManager,
+        const SuperblockSubsidyContainer& blockSubsidies,
+        const BlockIncentivesPopulator& incentives,
         const I_ProofOfStakeGenerator& proofGenerator,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         ChainstateManager& chainstateManager,

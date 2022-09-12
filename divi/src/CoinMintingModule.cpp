@@ -15,6 +15,7 @@ namespace
 {
 
 I_BlockFactory* BlockFactorySelector(
+    const I_StakingWallet& wallet,
     const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
@@ -25,6 +26,7 @@ I_BlockFactory* BlockFactorySelector(
     if(chainParameters.NetworkID()==CBaseChainParams::Network::REGTEST)
     {
         return new ExtendedBlockFactory(
+            wallet,
             blockSubsidies,
             blockTransactionCollector,
             coinstakeCreator,
@@ -94,6 +96,7 @@ CoinMintingModule::CoinMintingModule(
         mapHashedBlocks_))
     , blockFactory_(
         BlockFactorySelector(
+            wallet,
             blockSubsidyContainer_->blockSubsidiesProvider(),
             *blockTransactionCollector_,
             *coinstakeTransactionCreator_,

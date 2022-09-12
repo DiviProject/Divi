@@ -6,6 +6,8 @@
 #include <I_BlockTransactionCollector.h>
 #include <I_PoSTransactionCreator.h>
 #include <sync.h>
+#include <BlockSigning.h>
+#include <I_StakingCoinSelector.h>
 
 class ExtendedBlockTransactionCollector final: public I_BlockTransactionCollector
 {
@@ -48,13 +50,16 @@ public:
 class ExtendedPoSTransactionCreator final: public I_PoSTransactionCreator
 {
 private:
+    const I_StakingWallet& wallet_;
     const std::unique_ptr<CTransaction>& customCoinstake_;
     I_PoSTransactionCreator& transactionCreator_;
 public:
     ExtendedPoSTransactionCreator(
+        const I_StakingWallet& wallet,
         const std::unique_ptr<CTransaction>& customCoinstake,
         I_PoSTransactionCreator& transactionCreator
-        ): customCoinstake_(customCoinstake)
+        ): wallet_(wallet)
+        , customCoinstake_(customCoinstake)
         , transactionCreator_(transactionCreator)
     {
     }
@@ -69,7 +74,8 @@ public:
             if (!customCoinstake_->IsCoinStake())
                 throw std::runtime_error("trying to use non-coinstake to set custom coinstake in block");
             block.vtx[1] = CMutableTransaction(*customCoinstake_);
-            return true;
+            block.hashMerkleRoot = block.BuildMerkleTree();
+            return SignBlock(wallet_,block);
         }
         else
         {
@@ -79,6 +85,7 @@ public:
 };
 
 ExtendedBlockFactory::ExtendedBlockFactory(
+    const I_StakingWallet& wallet,
     const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
@@ -89,7 +96,7 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     , customCoinstake_()
     , ignoreMempool_(false)
     , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,ignoreMempool_,blockTransactionCollector))
-    , extendedCoinstakeCreator_(new ExtendedPoSTransactionCreator(customCoinstake_,coinstakeCreator))
+    , extendedCoinstakeCreator_(new ExtendedPoSTransactionCreator(wallet,customCoinstake_,coinstakeCreator))
     , blockFactory_(new BlockFactory(blockSubsidies,*extendedTransactionCollector_,*extendedCoinstakeCreator_, settings, chain,chainParameters))
 {
 }

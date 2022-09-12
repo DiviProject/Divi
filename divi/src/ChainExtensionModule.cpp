@@ -37,6 +37,8 @@ ChainExtensionModule::ChainExtensionModule(
             settings,
             masternodeModule,
             sporkManager,
+            *blockSubsidies_,
+            *incentives_,
             proofOfStakeModule_->proofOfStakeGenerator(),
             peerIdByBlockHash_,
             chainstateManager_,

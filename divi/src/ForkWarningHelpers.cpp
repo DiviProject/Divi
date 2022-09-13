@@ -6,7 +6,6 @@
 #include <ChainstateManager.h>
 
 #include <BlockCheckingHelpers.h>
-#include <pow.h>
 #include <Logging.h>
 #include <sync.h>
 

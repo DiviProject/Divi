@@ -15,7 +15,6 @@
 #include <ChainstateManager.h>
 #include <ChainSyncHelpers.h>
 #include <coins.h>
-#include <pow.h>
 #include <Settings.h>
 #include <streams.h>
 #include <TransactionLocationReference.h>

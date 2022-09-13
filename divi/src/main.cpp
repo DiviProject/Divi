@@ -34,7 +34,6 @@
 #include <NodeStateRegistry.h>
 #include <OrphanTransactions.h>
 #include <PeerBanningService.h>
-#include <pow.h>
 #include <Settings.h>
 #include <spork.h>
 #include <sync.h>

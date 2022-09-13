@@ -28,7 +28,6 @@ BITCOIN_TESTS =\
   test/BIP9ActivationManager_tests.cpp \
   test/BlockSignature_tests.cpp \
   test/CachedBIP9ActivationStateTracker_tests.cpp \
-  test/checkblock_tests.cpp \
   test/coins_tests.cpp \
   test/compress_tests.cpp \
   test/crypto_tests.cpp \

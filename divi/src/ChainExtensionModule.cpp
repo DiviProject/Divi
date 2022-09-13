@@ -113,10 +113,6 @@ const I_ChainExtensionService& ChainExtensionModule::getChainExtensionService() 
     return *chainExtensionService_;
 }
 
-const I_BlockValidator& ChainExtensionModule::getBlockValidator() const
-{
-    return *blockValidator_;
-}
 const I_BlockSubmitter& ChainExtensionModule::getBlockSubmitter() const
 {
     return *blockSubmitter_;

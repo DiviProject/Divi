@@ -440,7 +440,7 @@ bool AcceptBlockHeader(
 
 bool AcceptBlock(
     CCriticalSection& mainCriticalSection,
-    const I_DifficultyAdjuster& difficultyAdjuster,
+    const I_BlockProofVerifier& blockProofVerifier,
     const Settings& settings,
     const I_ProofOfStakeGenerator& posGenerator,
     const BlockIndexLotteryUpdater& blockIndexLotteryUpdater,
@@ -475,7 +475,7 @@ bool AcceptBlock(
     const uint256 blockHash = block.GetHash();
     if (blockHash != chainParameters.HashGenesisBlock())
     {
-        if(!CheckWork(chainParameters,difficultyAdjuster, posGenerator, blockMap, settings, block, pindexPrev))
+        if(!blockProofVerifier.verifyBlockProof(pindexPrev,block))
         {
             LogPrintf("WARNING: %s: check difficulty check failed for %s block %s\n",__func__, block.IsProofOfWork()?"PoW":"PoS", blockHash);
             return false;
@@ -597,6 +597,13 @@ ChainExtensionService::ChainExtensionService(
     , chainstateRef_(&chainstateManager)
     , blockIndexSuccessors_(blockIndexSuccessors)
     , blockIndexCandidates_(blockIndexCandidates)
+    , blockProofVerifier_(
+        new BlockProofVerifier(
+            chainParameters_,
+            difficultyAdjuster_,
+            proofGenerator_,
+            chainstateRef_->GetBlockMap(),
+            settings_))
     , blockIndexLotteryUpdater_(
         new BlockIndexLotteryUpdater(
             chainParameters,
@@ -641,7 +648,7 @@ std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
 {
     std::pair<CBlockIndex*, bool> result(nullptr,false);
     result.second = AcceptBlock(
-        mainCriticalSection_, difficultyAdjuster_, settings_, proofGenerator_, *blockIndexLotteryUpdater_, chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
+        mainCriticalSection_, *blockProofVerifier_, settings_, proofGenerator_, *blockIndexLotteryUpdater_, chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
     return result;
 }
 

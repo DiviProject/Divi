@@ -5,6 +5,7 @@
 
 #ifndef BITCOIN_POW_H
 #define BITCOIN_POW_H
+#include <I_BlockProofVerifier.h>
 class CChainParams;
 class I_DifficultyAdjuster;
 class I_ProofOfStakeGenerator;
@@ -13,12 +14,23 @@ class Settings;
 class CBlock;
 class CBlockIndex;
 
-bool CheckWork(
-    const CChainParams& chainParameters,
-    const I_DifficultyAdjuster& difficultyAdjuster,
-    const I_ProofOfStakeGenerator& posGenerator,
-    const BlockMap& blockIndicesByHash,
-    const Settings& settings,
-    const CBlock& block,
-    const CBlockIndex* const pindexPrev);
+class BlockProofVerifier final: public I_BlockProofVerifier
+{
+private:
+    const CChainParams& chainParameters_;
+    const I_DifficultyAdjuster& difficultyAdjuster_;
+    const I_ProofOfStakeGenerator& posGenerator_;
+    const BlockMap& blockIndicesByHash_;
+    const Settings& settings_;
+public:
+    BlockProofVerifier(
+        const CChainParams& chainParameters,
+        const I_DifficultyAdjuster& difficultyAdjuster,
+        const I_ProofOfStakeGenerator& posGenerator,
+        const BlockMap& blockIndicesByHash,
+        const Settings& settings);
+    bool verifyBlockProof(
+        const CBlockIndex* chainTip,
+        const CBlock& block) const override;
+};
 #endif // BITCOIN_POW_H

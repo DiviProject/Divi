@@ -33,7 +33,7 @@ void CheckForkWarningConditions(const Settings& settings, CCriticalSection& main
     if (pindexBestForkTip && chain.Height() - pindexBestForkTip->nHeight >= 72)
         pindexBestForkTip = NULL;
 
-    if (pindexBestForkTip || (getMostWorkForInvalidBlockIndex() > chain.Tip()->nChainWork + (GetBlockProof(*chain.Tip()) * 6))) {
+    if (pindexBestForkTip || (getMostWorkForInvalidBlockIndex() > chain.Tip()->nChainWork + (chain.Tip()->getBlockProof() * 6))) {
         if (!Warnings::haveFoundLargeWorkFork() && pindexBestForkBase) {
             if (pindexBestForkBase->phashBlock) {
                 std::string warning = std::string("'Warning: Large-work fork detected, forking after block ") +
@@ -84,7 +84,7 @@ void CheckForkWarningConditionsOnNewFork(const Settings& settings, CCriticalSect
     // We define it this way because it allows us to only store the highest fork tip (+ base) which meets
     // the 7-block condition and from this always have the most-likely-to-cause-warning fork
     if (pfork && (!pindexBestForkTip || (pindexBestForkTip && pindexNewForkTip->nHeight > pindexBestForkTip->nHeight)) &&
-            pindexNewForkTip->nChainWork - pfork->nChainWork > (GetBlockProof(*pfork) * 7) &&
+            pindexNewForkTip->nChainWork - pfork->nChainWork > (pfork->getBlockProof() * 7) &&
             chain.Height() - pindexNewForkTip->nHeight < 72) {
         pindexBestForkTip = pindexNewForkTip;
         pindexBestForkBase = pfork;

@@ -56,6 +56,7 @@ ChainExtensionModule::ChainExtensionModule(
             *blockSubsidies_,
             *incentives_,
             proofOfStakeModule_->proofOfStakeGenerator(),
+            *difficultyAdjuster_,
             peerIdByBlockHash_,
             chainstateManager_,
             mempool,

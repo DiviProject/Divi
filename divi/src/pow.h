@@ -25,6 +25,7 @@ class CBlock;
 class BlockMap;
 class Settings;
 class CChain;
+class I_DifficultyAdjuster;
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return
@@ -38,6 +39,7 @@ bool CheckProofOfStake(
 
 bool CheckWork(
     const CChainParams& chainParameters,
+    const I_DifficultyAdjuster& difficultyAdjuster,
     const I_ProofOfStakeGenerator& posGenerator,
     const BlockMap& blockIndicesByHash,
     const Settings& settings,

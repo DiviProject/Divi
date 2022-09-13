@@ -23,6 +23,7 @@ class I_ProofOfStakeGenerator;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class BlockIndexLotteryUpdater;
+class I_DifficultyAdjuster;
 
 class ChainExtensionService final: public I_ChainExtensionService
 {
@@ -31,6 +32,7 @@ private:
     const Settings& settings_;
     const CSporkManager& sporkManager_;
     const I_ProofOfStakeGenerator& proofGenerator_;
+    const I_DifficultyAdjuster& difficultyAdjuster_;
     CTxMemPool& mempool_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
@@ -54,6 +56,7 @@ public:
         const SuperblockSubsidyContainer& blockSubsidies,
         const BlockIncentivesPopulator& incentives,
         const I_ProofOfStakeGenerator& proofGenerator,
+        const I_DifficultyAdjuster& difficultyAdjuster,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         ChainstateManager& chainstateManager,
         CTxMemPool& mempool,

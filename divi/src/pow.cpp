@@ -138,10 +138,11 @@ bool CheckWork(
         return error("%s : null pindexPrev for block %s", __func__, block.GetHash());
 
     const unsigned int nBitsRequired = difficultyAdjuster.computeNextBlockDifficulty(pindexPrev);
+    if(block.nBits != nBitsRequired) return false;
+    if(block.IsProofOfWork()) return CheckProofOfWork(block.GetHash(),block.nBits,chainParameters);
 
-    if(block.IsProofOfWork()) return CheckProofOfWork(block.GetHash(),block.nBits,chainParameters) && block.nBits == nBitsRequired;
-
-    if (block.IsProofOfStake()) {
+    if (block.IsProofOfStake())
+    {
         if(!CheckProofOfStake(posGenerator,settings,blockIndicesByHash,block,pindexPrev)) {
             return error("%s check proof-of-stake failed for block %s\n",__func__, block.GetHash());
         }

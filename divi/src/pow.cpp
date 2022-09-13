@@ -112,9 +112,9 @@ bool CheckProofOfStake(
     const Settings& settings,
     const BlockMap& blockIndicesByHash,
     const CBlock& block,
-    const CBlockIndex* pindexPrev,
-    uint256& hashProofOfStake)
+    const CBlockIndex* pindexPrev)
 {
+    uint256 hashProofOfStake(0);
     StakingData stakingData;
     if(!CheckProofOfStakeContextAndRecoverStakingData(settings,blockIndicesByHash,block,pindexPrev,stakingData))
         return false;
@@ -142,11 +142,8 @@ bool CheckWork(
     if(block.IsProofOfWork()) return CheckProofOfWork(block.GetHash(),block.nBits,chainParameters) && block.nBits == nBitsRequired;
 
     if (block.IsProofOfStake()) {
-        uint256 hashProofOfStake = uint256(0);
-        uint256 hash = block.GetHash();
-
-        if(!CheckProofOfStake(posGenerator,settings,blockIndicesByHash,block,pindexPrev, hashProofOfStake)) {
-            return error("%s check proof-of-stake failed for block %s\n",__func__, hash);
+        if(!CheckProofOfStake(posGenerator,settings,blockIndicesByHash,block,pindexPrev)) {
+            return error("%s check proof-of-stake failed for block %s\n",__func__, block.GetHash());
         }
         return true;
     }

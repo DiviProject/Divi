@@ -5,24 +5,13 @@
 
 #ifndef BITCOIN_POW_H
 #define BITCOIN_POW_H
-
-#include <stdint.h>
-#include <map>
-#include <uint256.h>
-
-class CBlockHeader;
-class CBlockIndex;
-class uint256;
-class arith_uint256;
 class CChainParams;
-
-
+class I_DifficultyAdjuster;
 class I_ProofOfStakeGenerator;
-class CBlock;
 class BlockMap;
 class Settings;
-class CChain;
-class I_DifficultyAdjuster;
+class CBlock;
+class CBlockIndex;
 
 bool CheckWork(
     const CChainParams& chainParameters,

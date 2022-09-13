@@ -202,6 +202,7 @@ BITCOIN_CORE_H = \
   I_ProofOfStakeGenerator.h \
   I_BlockProofProver.h \
   I_BlockProofVerifier.h \
+  I_DifficultyAdjuster.h \
   ProofOfStakeGenerator.h \
   ProofOfStakeModule.h \
   StakeModifierIntervalHelpers.h \

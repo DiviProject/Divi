@@ -3,8 +3,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_POW_H
-#define BITCOIN_POW_H
+#ifndef BLOCK_PROOF_VERIFIER_H
+#define BLOCK_PROOF_VERIFIER_H
 #include <I_BlockProofVerifier.h>
 class CChainParams;
 class I_DifficultyAdjuster;
@@ -33,4 +33,4 @@ public:
         const CBlockIndex* chainTip,
         const CBlock& block) const override;
 };
-#endif // BITCOIN_POW_H
+#endif // BLOCK_PROOF_VERIFIER_H

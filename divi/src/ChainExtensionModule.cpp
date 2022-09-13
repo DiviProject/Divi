@@ -34,7 +34,11 @@ ChainExtensionModule::ChainExtensionModule(
             masternodeModule,
             blockSubsidies_->superblockHeightValidator(),
             blockSubsidies_->blockSubsidiesProvider() ))
-    , proofOfStakeModule_(new ProofOfStakeModule(chainParameters,chainstateManager.ActiveChain(),chainstateManager.GetBlockMap()))
+    , proofOfStakeModule_(
+        new ProofOfStakeModule(
+            chainParameters,
+            chainstateManager.ActiveChain(),
+            chainstateManager.GetBlockMap()))
     , blockProofVerifier_(
         new BlockProofVerifier(
             chainParameters,

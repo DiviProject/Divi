@@ -56,7 +56,6 @@ public:
     const BlockIncentivesPopulator& getBlockIncentivesPopulator() const;
     const I_ProofOfStakeGenerator& getProofOfStakeGenerator() const;
     const I_ChainExtensionService& getChainExtensionService() const;
-    const I_BlockValidator& getBlockValidator() const;
     const I_BlockSubmitter& getBlockSubmitter() const;
 };
 #endif// CHAIN_EXTENSION_MODULE_H

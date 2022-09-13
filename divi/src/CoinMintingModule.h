@@ -28,12 +28,9 @@ class I_ProofOfStakeGenerator;
 
 class CoinMintingModule
 {
-public:
-    using LastExtensionTimestampByBlockHeight = std::map<unsigned int, unsigned int>;
-
 private:
     class ChainstateManagerReference;
-    LastExtensionTimestampByBlockHeight mapHashedBlocks_;
+    std::map<unsigned int, unsigned int>& mapHashedBlocks_;
     std::unique_ptr<const ChainstateManagerReference> chainstate_;
     const SuperblockSubsidyContainer& blockSubsidyContainer_;
     const BlockIncentivesPopulator& blockIncentivesPopulator_;
@@ -53,6 +50,7 @@ public:
         const I_PeerBlockNotifyService& peers,
         const I_BlockSubmitter& blockSubmitter,
         const CSporkManager& sporkManager,
+        std::map<unsigned int, unsigned int>& mapHashedBlocks,
         CCriticalSection& mainCS,
         CTxMemPool& mempool,
         I_StakingWallet& wallet);
@@ -60,7 +58,6 @@ public:
 
     I_BlockFactory& blockFactory() const;
     I_CoinMinter& coinMinter() const;
-    const LastExtensionTimestampByBlockHeight& GetBlockTimestampsByHeight() const;
 };
 
 #endif// COIN_MINTING_MODULE_H

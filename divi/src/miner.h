@@ -41,6 +41,7 @@ void InitializeCoinMintingModule(
     const CFeeRate& minimumRelayFeeRate,
     const I_PeerBlockNotifyService& peerNotificationService,
     const I_BlockSubmitter& blockSubmitter,
+    std::map<unsigned int, unsigned int>& mapHashedBlocks,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
     I_StakingWallet& stakingWallet,
@@ -52,7 +53,4 @@ const CoinMintingModule& GetCoinMintingModule();
 void ThreadCoinMinter();
 
 void MintCoins(I_CoinMinter& minter);
-bool HasRecentlyAttemptedToGenerateProofOfStake();
-
-
 #endif // BITCOIN_MINER_H

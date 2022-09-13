@@ -148,6 +148,27 @@ void FinalizeMultiWalletModule()
     multiWalletModule.reset();
 }
 
+typedef std::map<unsigned int, unsigned int> LastExtensionTimestampByBlockHeight;
+static LastExtensionTimestampByBlockHeight hashedBlocksByHeight;
+bool CheckHeightForRecentProofOfStakeGeneration(const int blockHeight)
+{
+    constexpr int64_t fiveMinutes = 5*60;
+    const auto it = hashedBlocksByHeight.find(blockHeight);
+    return it != hashedBlocksByHeight.end() && GetTime() - it->second < fiveMinutes;
+}
+
+bool HasRecentlyAttemptedToGenerateProofOfStake()
+{
+    const ChainstateManager::Reference chainstate;
+    int currentChainHeight = chainstate->ActiveChain().Tip()->nHeight;
+    for(int offset =0 ; offset < 4; offset++ )
+    {
+        if(currentChainHeight - offset < 0) break;
+        if(CheckHeightForRecentProofOfStakeGeneration(currentChainHeight-offset)) return true;
+    }
+    return false;
+}
+
 std::unique_ptr<ChainExtensionModule> chainExtensionModule;
 void InitializeChainExtensionModule(const MasternodeModule& masternodeModule)
 {
@@ -218,6 +239,7 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
         feeAndPriorityCalculator.getMinimumRelayFeeRate(),
         GetPeerBlockNotifyService(),
         chainExtensionModule->getBlockSubmitter(),
+        hashedBlocksByHeight,
         cs_main,
         GetTransactionMemoryPool(),
         stakingWallet,

@@ -73,6 +73,7 @@ void InitializeCoinMintingModule(
     const CFeeRate& minimumRelayFeeRate,
     const I_PeerBlockNotifyService& peerNotificationService,
     const I_BlockSubmitter& blockSubmitter,
+    std::map<unsigned int, unsigned int>& mapHashedBlocks,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
     I_StakingWallet& stakingWallet,
@@ -92,6 +93,7 @@ void InitializeCoinMintingModule(
             peerNotificationService,
             blockSubmitter,
             sporkManager,
+            mapHashedBlocks,
             mainCS,
             mempool,
             stakingWallet));
@@ -166,27 +168,6 @@ void MinterThread(I_CoinMinter& minter)
         LogPrintf("%s -- runtime error: %s\n", __func__, e.what());
         return;
     }
-}
-
-bool CheckHeightForRecentProofOfStakeGeneration(const int blockHeight)
-{
-    if(!moduleInitialized) return false;
-    const auto& mapHashedBlocks = GetCoinMintingModule().GetBlockTimestampsByHeight();
-    constexpr int64_t fiveMinutes = 5*60;
-    const auto it = mapHashedBlocks.find(blockHeight);
-    return it != mapHashedBlocks.end() && GetTime() - it->second < fiveMinutes;
-}
-
-bool HasRecentlyAttemptedToGenerateProofOfStake()
-{
-    const ChainstateManager::Reference chainstate;
-    int currentChainHeight = chainstate->ActiveChain().Tip()->nHeight;
-    for(int offset =0 ; offset < 4; offset++ )
-    {
-        if(currentChainHeight - offset < 0) break;
-        if(CheckHeightForRecentProofOfStakeGeneration(currentChainHeight-offset)) return true;
-    }
-    return false;
 }
 
 // ppcoin: stake minter thread

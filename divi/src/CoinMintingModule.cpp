@@ -67,10 +67,11 @@ CoinMintingModule::CoinMintingModule(
     const I_PeerBlockNotifyService& peerNotifier,
     const I_BlockSubmitter& blockSubmitter,
     const CSporkManager& sporkManager,
+    std::map<unsigned int, unsigned int>& mapHashedBlocks,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
     I_StakingWallet& wallet
-    ): mapHashedBlocks_()
+    ): mapHashedBlocks_(mapHashedBlocks)
     , chainstate_(new ChainstateManagerReference())
     , blockSubsidyContainer_(blockSubsidies)
     , blockIncentivesPopulator_(incentives)
@@ -129,9 +130,4 @@ I_BlockFactory& CoinMintingModule::blockFactory() const
 I_CoinMinter& CoinMintingModule::coinMinter() const
 {
     return *coinMinter_;
-}
-
-const CoinMintingModule::LastExtensionTimestampByBlockHeight& CoinMintingModule::GetBlockTimestampsByHeight() const
-{
-    return mapHashedBlocks_;
 }

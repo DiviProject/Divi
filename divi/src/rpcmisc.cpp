@@ -13,7 +13,6 @@
 #include "spork.h"
 #include "timedata.h"
 #include "util.h"
-#include "miner.h"
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif

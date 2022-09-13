@@ -80,28 +80,6 @@ void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev
     block.nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
 }
 
-void BlockFactory::SetBlockHeader(
-    CBlockHeader& block,
-    const CBlockIndex* previousBlockIndex) const
-{
-    // Fill in header
-    block.nBits = difficultyAdjuster_.computeNextBlockDifficulty(previousBlockIndex);
-    block.nTime = GetAdjustedTime();
-    block.hashPrevBlock = previousBlockIndex->GetBlockHash();
-    block.nNonce = 0;
-    block.nAccumulatorCheckpoint = static_cast<uint256>(0);
-}
-
-static void SetCoinbaseTransactionAndRewards(
-    CBlock& block,
-    CMutableTransaction& coinbaseTx,
-    const CAmount reward)
-{
-    coinbaseTx.vout[0].nValue = reward;
-    block.vtx.push_back(coinbaseTx);
-    assert(block.vtx.size()==1);
-}
-
 bool BlockFactory::AppendProofOfWorkToBlock(
     CBlockTemplate& blocktemplate)
 {
@@ -149,6 +127,28 @@ bool BlockFactory::AppendProofOfWorkToBlock(
         }
     }
     return false;
+}
+
+void BlockFactory::SetBlockHeader(
+    CBlockHeader& block,
+    const CBlockIndex* previousBlockIndex) const
+{
+    // Fill in header
+    block.nBits = difficultyAdjuster_.computeNextBlockDifficulty(previousBlockIndex);
+    block.nTime = GetAdjustedTime();
+    block.hashPrevBlock = previousBlockIndex->GetBlockHash();
+    block.nNonce = 0;
+    block.nAccumulatorCheckpoint = static_cast<uint256>(0);
+}
+
+static void SetCoinbaseTransactionAndRewards(
+    CBlock& block,
+    CMutableTransaction& coinbaseTx,
+    const CAmount reward)
+{
+    coinbaseTx.vout[0].nValue = reward;
+    block.vtx.push_back(coinbaseTx);
+    assert(block.vtx.size()==1);
 }
 
 CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake)

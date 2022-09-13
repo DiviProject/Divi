@@ -7,6 +7,7 @@
 #include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
 #include <DifficultyAdjuster.h>
+#include <pow.h>
 
 
 ChainExtensionModule::ChainExtensionModule(
@@ -34,6 +35,13 @@ ChainExtensionModule::ChainExtensionModule(
             blockSubsidies_->superblockHeightValidator(),
             blockSubsidies_->blockSubsidiesProvider() ))
     , proofOfStakeModule_(new ProofOfStakeModule(chainParameters,chainstateManager.ActiveChain(),chainstateManager.GetBlockMap()))
+    , blockProofVerifier_(
+        new BlockProofVerifier(
+            chainParameters,
+            *difficultyAdjuster_,
+            proofOfStakeModule_->proofOfStakeGenerator(),
+            chainstateManager.GetBlockMap(),
+            settings))
     , chainExtensionService_(
         new ChainExtensionService(
             chainParameters,
@@ -42,8 +50,7 @@ ChainExtensionModule::ChainExtensionModule(
             sporkManager,
             *blockSubsidies_,
             *incentives_,
-            proofOfStakeModule_->proofOfStakeGenerator(),
-            *difficultyAdjuster_,
+            *blockProofVerifier_,
             peerIdByBlockHash_,
             chainstateManager_,
             mempool,

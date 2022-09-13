@@ -442,7 +442,6 @@ bool AcceptBlock(
     CCriticalSection& mainCriticalSection,
     const I_BlockProofVerifier& blockProofVerifier,
     const Settings& settings,
-    const I_ProofOfStakeGenerator& posGenerator,
     const BlockIndexLotteryUpdater& blockIndexLotteryUpdater,
     const CChainParams& chainParameters,
     CBlock& block,
@@ -577,8 +576,7 @@ ChainExtensionService::ChainExtensionService(
     const CSporkManager& sporkManager,
     const SuperblockSubsidyContainer& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
-    const I_ProofOfStakeGenerator& proofGenerator,
-    const I_DifficultyAdjuster& difficultyAdjuster,
+    const I_BlockProofVerifier& blockProofVerifier,
     std::map<uint256, NodeId>& peerIdByBlockHash,
     ChainstateManager& chainstateManager,
     CTxMemPool& mempool,
@@ -589,21 +587,13 @@ ChainExtensionService::ChainExtensionService(
     ): chainParameters_(chainParameters)
     , settings_(settings)
     , sporkManager_(sporkManager)
-    , proofGenerator_(proofGenerator)
-    , difficultyAdjuster_(difficultyAdjuster)
+    , blockProofVerifier_(blockProofVerifier)
     , mempool_(mempool)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)
     , chainstateRef_(&chainstateManager)
     , blockIndexSuccessors_(blockIndexSuccessors)
     , blockIndexCandidates_(blockIndexCandidates)
-    , blockProofVerifier_(
-        new BlockProofVerifier(
-            chainParameters_,
-            difficultyAdjuster_,
-            proofGenerator_,
-            chainstateRef_->GetBlockMap(),
-            settings_))
     , blockIndexLotteryUpdater_(
         new BlockIndexLotteryUpdater(
             chainParameters,
@@ -648,7 +638,7 @@ std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
 {
     std::pair<CBlockIndex*, bool> result(nullptr,false);
     result.second = AcceptBlock(
-        mainCriticalSection_, *blockProofVerifier_, settings_, proofGenerator_, *blockIndexLotteryUpdater_, chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
+        mainCriticalSection_, blockProofVerifier_, settings_, *blockIndexLotteryUpdater_, chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
     return result;
 }
 

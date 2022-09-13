@@ -23,7 +23,6 @@ class I_ProofOfStakeGenerator;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class BlockIndexLotteryUpdater;
-class I_DifficultyAdjuster;
 class I_BlockProofVerifier;
 
 class ChainExtensionService final: public I_ChainExtensionService
@@ -32,15 +31,13 @@ private:
     const CChainParams& chainParameters_;
     const Settings& settings_;
     const CSporkManager& sporkManager_;
-    const I_ProofOfStakeGenerator& proofGenerator_;
-    const I_DifficultyAdjuster& difficultyAdjuster_;
+    const I_BlockProofVerifier& blockProofVerifier_;
     CTxMemPool& mempool_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
     ChainstateManager* chainstateRef_;
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors_;
     BlockIndexCandidates& blockIndexCandidates_;
-    std::unique_ptr<I_BlockProofVerifier> blockProofVerifier_;
     std::unique_ptr<BlockIndexLotteryUpdater> blockIndexLotteryUpdater_;
     std::unique_ptr<I_ChainTipManager> chainTipManager_;
     std::unique_ptr<I_MostWorkChainTransitionMediator> chainTransitionMediator_;
@@ -57,8 +54,7 @@ public:
         const CSporkManager& sporkManager,
         const SuperblockSubsidyContainer& blockSubsidies,
         const BlockIncentivesPopulator& incentives,
-        const I_ProofOfStakeGenerator& proofGenerator,
-        const I_DifficultyAdjuster& difficultyAdjuster,
+        const I_BlockProofVerifier& blockProofVerifier,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         ChainstateManager& chainstateManager,
         CTxMemPool& mempool,

@@ -16,14 +16,6 @@ class uint256;
 class arith_uint256;
 class CChainParams;
 
-// Define difficulty retarget algorithms
-enum DiffMode {
-    DIFF_DEFAULT = 0, // Default to invalid 0
-    DIFF_BTC = 1,     // Retarget every x blocks (Bitcoin style)
-    DIFF_KGW = 2,     // Retarget using Kimoto Gravity Well
-    DIFF_DGW = 3,     // Retarget using Dark Gravity Wave v3
-};
-
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CChainParams& chainParameters);
 
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */

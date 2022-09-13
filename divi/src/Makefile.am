@@ -200,7 +200,8 @@ BITCOIN_CORE_H = \
   uiMessenger.h \
   I_StakingCoinSelector.h \
   I_ProofOfStakeGenerator.h \
-  I_BlockProofGenerator.h \
+  I_BlockProofProver.h \
+  I_BlockProofVerifier.h \
   ProofOfStakeGenerator.h \
   ProofOfStakeModule.h \
   StakeModifierIntervalHelpers.h \

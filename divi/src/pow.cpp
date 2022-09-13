@@ -150,3 +150,23 @@ bool CheckWork(
 
     return false;
 }
+
+BlockProofVerifier::BlockProofVerifier(
+    const CChainParams& chainParameters,
+    const I_DifficultyAdjuster& difficultyAdjuster,
+    const I_ProofOfStakeGenerator& posGenerator,
+    const BlockMap& blockIndicesByHash,
+    const Settings& settings
+    ): chainParameters_(chainParameters)
+    , difficultyAdjuster_(difficultyAdjuster)
+    , posGenerator_(posGenerator)
+    , blockIndicesByHash_(blockIndicesByHash)
+    , settings_(settings)
+{
+}
+bool BlockProofVerifier::verifyBlockProof(
+    const CBlockIndex* chainTip,
+    const CBlock& block) const
+{
+    return CheckWork(chainParameters_,difficultyAdjuster_,posGenerator_,blockIndicesByHash_,settings_,block,chainTip);
+}

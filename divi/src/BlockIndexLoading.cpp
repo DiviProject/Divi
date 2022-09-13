@@ -50,7 +50,7 @@ static void InitializeBlockIndexGlobalData(BlockMap& blockIndicesByHash)
     for(const PAIRTYPE(int, CBlockIndex*) & item: heightSortedBlockIndices)
     {
         CBlockIndex* pindex = item.second;
-        pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
+        pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + pindex->getBlockProof();
         if (pindex->nStatus & BLOCK_HAVE_DATA) {
             if (pindex->pprev) {
                 if (pindex->pprev->nChainTx) {

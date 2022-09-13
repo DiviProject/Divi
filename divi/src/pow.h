@@ -18,7 +18,6 @@ class CChainParams;
 
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const CChainParams& chainParameters);
-uint256 GetBlockProof(const CBlockIndex& block);
 
 class I_ProofOfStakeGenerator;
 class CBlock;

@@ -289,7 +289,7 @@ CBlockIndex* AddToBlockIndex(
         // ppcoin: compute stake modifier
         SetStakeModifiersForNewBlockIndex(blockMap, pindexNew);
     }
-    pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
+    pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + pindexNew->getBlockProof();
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
     updateBestHeaderBlockIndex(pindexNew,true);
 

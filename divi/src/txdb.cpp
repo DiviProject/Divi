@@ -295,7 +295,6 @@ bool CBlockTreeDB::LoadBlockIndices(BlockMap& blockIndicesByHash) const
                 pindexNew->nStakeModifier = diskindex.nStakeModifier;
                 pindexNew->prevoutStake = diskindex.prevoutStake;
                 pindexNew->nStakeTime = diskindex.nStakeTime;
-                pindexNew->hashProofOfStake = diskindex.hashProofOfStake;
 
                 pindexNew->vLotteryWinnersCoinstakes = diskindex.vLotteryWinnersCoinstakes;
                 pcursor->Next();

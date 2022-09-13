@@ -30,10 +30,6 @@
 
 namespace
 {
-// Hard checkpoints of stake modifiers to ensure they are deterministic
-static std::map<int, unsigned int> mapStakeModifierCheckpoints =
-        boost::assign::map_list_of(0, 0xfd11f4e7u);
-
 // Get the last stake modifier and its generation time from a given block
 const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex* pindex)
 {
@@ -203,30 +199,6 @@ bool ComputeNextStakeModifier(
     return true;
 }
 
-
-// Get stake modifier checksum
-unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex)
-{
-    assert(pindex->pprev || pindex->GetBlockHash() == Params().HashGenesisBlock());
-    // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
-    CDataStream ss(SER_GETHASH, 0);
-    if (pindex->pprev)
-        ss << pindex->pprev->nStakeModifierChecksum;
-    ss << pindex->nFlags << pindex->hashProofOfStake << pindex->nStakeModifier;
-    uint256 hashChecksum = Hash(ss.begin(), ss.end());
-    hashChecksum >>= (256 - 32);
-    return hashChecksum.Get64();
-}
-
-// Check stake modifier hard checkpoints
-bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum)
-{
-    if (mapStakeModifierCheckpoints.count(nHeight)) {
-        return nStakeModifierChecksum == mapStakeModifierCheckpoints[nHeight];
-    }
-    return true;
-}
-
 void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBlockIndex* pindexNew)
 {
     uint64_t nextStakeModifier = 0;
@@ -234,9 +206,6 @@ void SetStakeModifiersForNewBlockIndex(const BlockMap& blockIndicesByHash, CBloc
     if (!ComputeNextStakeModifier(blockIndicesByHash, pindexNew->pprev, nextStakeModifier, fGeneratedStakeModifier))
         LogPrintf("%s : ComputeNextStakeModifier() failed \n",__func__);
     pindexNew->SetStakeModifier(nextStakeModifier, fGeneratedStakeModifier);
-    pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
-    if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
-        LogPrintf("%s : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", __func__, pindexNew->nHeight, boost::lexical_cast<std::string>(nextStakeModifier));
 }
 
 CBlockIndex* AddToBlockIndex(
@@ -280,11 +249,6 @@ CBlockIndex* AddToBlockIndex(
         // ppcoin: compute stake entropy bit for stake modifier
         if (!pindexNew->SetStakeEntropyBit(pindexNew->GetStakeEntropyBit()))
             LogPrintf("%s : SetStakeEntropyBit() failed \n",__func__);
-
-        // ppcoin: record proof-of-stake hash value
-        if (pindexNew->IsProofOfStake()) {
-            pindexNew->hashProofOfStake = hashproof;
-        }
 
         // ppcoin: compute stake modifier
         SetStakeModifiersForNewBlockIndex(blockMap, pindexNew);

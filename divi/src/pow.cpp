@@ -22,6 +22,7 @@
 #include <script/SignatureCheckers.h>
 #include <blockmap.h>
 #include <script/standard.h>
+#include <I_DifficultyAdjuster.h>
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CChainParams& chainParameters)
 {
@@ -255,6 +256,7 @@ double ConvertBitsToDouble(unsigned int nBits)
 
 bool CheckWork(
     const CChainParams& chainParameters,
+    const I_DifficultyAdjuster& difficultyAdjuster,
     const I_ProofOfStakeGenerator& posGenerator,
     const BlockMap& blockIndicesByHash,
     const Settings& settings,
@@ -265,7 +267,7 @@ bool CheckWork(
     if (pindexPrev == NULL)
         return error("%s : null pindexPrev for block %s", __func__, block.GetHash());
 
-    unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev,chainParameters);
+    const unsigned int nBitsRequired = difficultyAdjuster.computeNextBlockDifficulty(pindexPrev);
 
     if(block.IsProofOfWork()) return CheckProofOfWork(block.GetHash(),block.nBits,chainParameters) && block.nBits == nBitsRequired;
 

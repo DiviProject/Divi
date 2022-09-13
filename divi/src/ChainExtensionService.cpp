@@ -478,6 +478,7 @@ bool AcceptBlockHeader(
 
 bool AcceptBlock(
     CCriticalSection& mainCriticalSection,
+    const I_DifficultyAdjuster& difficultyAdjuster,
     const Settings& settings,
     const I_ProofOfStakeGenerator& posGenerator,
     const BlockIndexLotteryUpdater& blockIndexLotteryUpdater,
@@ -513,7 +514,7 @@ bool AcceptBlock(
     uint256 hashproof = uint256(0);
     if (blockHash != chainParameters.HashGenesisBlock())
     {
-        if(!CheckWork(chainParameters, posGenerator, blockMap, settings, block,hashproof, pindexPrev))
+        if(!CheckWork(chainParameters,difficultyAdjuster, posGenerator, blockMap, settings, block,hashproof, pindexPrev))
         {
             LogPrintf("WARNING: %s: check difficulty check failed for %s block %s\n",__func__, block.IsProofOfWork()?"PoW":"PoS", blockHash);
             return false;
@@ -616,6 +617,7 @@ ChainExtensionService::ChainExtensionService(
     const SuperblockSubsidyContainer& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
     const I_ProofOfStakeGenerator& proofGenerator,
+    const I_DifficultyAdjuster& difficultyAdjuster,
     std::map<uint256, NodeId>& peerIdByBlockHash,
     ChainstateManager& chainstateManager,
     CTxMemPool& mempool,
@@ -627,6 +629,7 @@ ChainExtensionService::ChainExtensionService(
     , settings_(settings)
     , sporkManager_(sporkManager)
     , proofGenerator_(proofGenerator)
+    , difficultyAdjuster_(difficultyAdjuster)
     , mempool_(mempool)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)
@@ -677,7 +680,7 @@ std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
 {
     std::pair<CBlockIndex*, bool> result(nullptr,false);
     result.second = AcceptBlock(
-        mainCriticalSection_,settings_, proofGenerator_, *blockIndexLotteryUpdater_, chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
+        mainCriticalSection_, difficultyAdjuster_, settings_, proofGenerator_, *blockIndexLotteryUpdater_, chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
     return result;
 }
 

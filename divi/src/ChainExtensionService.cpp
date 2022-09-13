@@ -548,12 +548,12 @@ bool AcceptBlock(
         if (dbp != NULL)
             blockPos = *dbp;
         if (!FindBlockPos(state, blockPos, nBlockSize + 8, nHeight, block.GetBlockTime(), dbp != NULL))
-            return error("AcceptBlock() : FindBlockPos failed");
+            return error("%s : FindBlockPos failed",__func__);
         if (dbp == NULL)
             if (!WriteBlockToDisk(block, blockPos))
                 return state.Abort("Failed to write block");
         if (!ReceivedBlockTransactions(chainstate.ActiveChain(), block, pindex, blockPos))
-            return error("AcceptBlock() : ReceivedBlockTransactions failed");
+            return error("%s : ReceivedBlockTransactions failed",__func__);
     } catch (std::runtime_error& e) {
         return state.Abort(std::string("System error: ") + e.what());
     }

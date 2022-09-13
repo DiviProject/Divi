@@ -17,6 +17,7 @@ class CChainParams;
 class Settings;
 class CBlockIndex;
 class CBlockHeader;
+class I_DifficultyAdjuster;
 
 class BlockFactory: public I_BlockFactory
 {
@@ -24,6 +25,7 @@ private:
     const Settings& settings_;
     const CChain& chain_;
     const CChainParams& chainParameters_;
+    const I_DifficultyAdjuster& difficultyAdjuster_;
 
     const I_BlockSubsidyProvider& blockSubsidies_;
     I_BlockTransactionCollector& blockTransactionCollector_;
@@ -45,6 +47,7 @@ private:
 public:
     BlockFactory(
         const I_BlockSubsidyProvider& blockSubsidies,
+        const I_DifficultyAdjuster& difficultyAdjuster,
         I_BlockTransactionCollector& blockTransactionCollector,
         I_PoSTransactionCreator& coinstakeCreator,
         const Settings& settings,

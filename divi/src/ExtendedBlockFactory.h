@@ -18,6 +18,7 @@ class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
 class Settings;
 class I_StakingWallet;
+class I_DifficultyAdjuster;
 
 class ExtendedBlockFactory : public I_BlockFactory
 {
@@ -37,6 +38,7 @@ public:
     ExtendedBlockFactory(
         const I_StakingWallet& wallet,
         const I_BlockSubsidyProvider& blockSubsidies,
+        const I_DifficultyAdjuster& difficultyAdjuster,
         I_BlockTransactionCollector& blockTransactionCollector,
         I_PoSTransactionCreator& coinstakeCreator,
         const Settings& settings,

@@ -239,6 +239,7 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
         feeAndPriorityCalculator.getMinimumRelayFeeRate(),
         GetPeerBlockNotifyService(),
         chainExtensionModule->getBlockSubmitter(),
+        chainExtensionModule->getDifficultyAdjuster(),
         hashedBlocksByHeight,
         cs_main,
         GetTransactionMemoryPool(),

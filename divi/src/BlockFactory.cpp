@@ -6,7 +6,6 @@
 #include <I_PoSTransactionCreator.h>
 #include <timedata.h>
 #include <boost/thread.hpp>
-#include <pow.h>
 #include <chain.h>
 #include <chainparams.h>
 #include <sync.h>
@@ -15,10 +14,12 @@
 #include <Settings.h>
 #include <utiltime.h>
 #include <ThreadManagementHelpers.h>
+#include <I_DifficultyAdjuster.h>
 
 // Actual mining functions
 BlockFactory::BlockFactory(
     const I_BlockSubsidyProvider& blockSubsidies,
+    const I_DifficultyAdjuster& difficultyAdjuster,
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
     const Settings& settings,
@@ -27,6 +28,7 @@ BlockFactory::BlockFactory(
     ): settings_(settings)
     , chain_(chain)
     , chainParameters_(chainParameters)
+    , difficultyAdjuster_(difficultyAdjuster)
     , blockSubsidies_(blockSubsidies)
     , blockTransactionCollector_(blockTransactionCollector)
     , coinstakeCreator_( coinstakeCreator)
@@ -83,7 +85,7 @@ void BlockFactory::SetBlockHeader(
     const CBlockIndex* previousBlockIndex) const
 {
     // Fill in header
-    block.nBits = GetNextWorkRequired(previousBlockIndex, chainParameters_);
+    block.nBits = difficultyAdjuster_.computeNextBlockDifficulty(previousBlockIndex);
     block.nTime = GetAdjustedTime();
     block.hashPrevBlock = previousBlockIndex->GetBlockHash();
     block.nNonce = 0;

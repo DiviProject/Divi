@@ -9,13 +9,13 @@
 #include <I_DifficultyAdjuster.h>
 
 
-extern unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CChainParams& chainParameters)
-class DifficultyAdjuster final: public DifficultyAdjuster
+extern unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CChainParams& chainParameters);
+class DifficultyAdjuster final: public I_DifficultyAdjuster
 {
 private:
     const CChainParams& chainParameters_;
 public:
-    DifficultyAdjuster(const CChainParams& chainParameters): chainParameters_()
+    DifficultyAdjuster(const CChainParams& chainParameters): chainParameters_(chainParameters) {}
     unsigned computeNextBlockDifficulty(const CBlockIndex* chainTip) const override
     {
         return GetNextWorkRequired(chainTip,chainParameters_);

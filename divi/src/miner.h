@@ -24,6 +24,7 @@ class CSporkManager;
 class I_ProofOfStakeGenerator;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
+class I_DifficultyAdjuster;
 namespace boost
 {
 class thread_group;
@@ -41,6 +42,7 @@ void InitializeCoinMintingModule(
     const CFeeRate& minimumRelayFeeRate,
     const I_PeerBlockNotifyService& peerNotificationService,
     const I_BlockSubmitter& blockSubmitter,
+    const I_DifficultyAdjuster& difficultyAdjuster,
     std::map<unsigned int, unsigned int>& mapHashedBlocks,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,

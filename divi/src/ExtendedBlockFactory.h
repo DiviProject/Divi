@@ -25,6 +25,7 @@ class ExtendedBlockFactory : public I_BlockFactory
 private:
     std::vector<std::shared_ptr<CTransaction>> extraTransactions_;
     std::unique_ptr<CTransaction> customCoinstake_;
+    std::unique_ptr<unsigned> blockBitsShift_;
     /** If set to true, then the generated block will not use any
      *  mempool transactions.  */
     bool ignoreMempool_;
@@ -51,6 +52,7 @@ public:
     void addExtraTransaction(const CTransaction& tx);
     void setCustomCoinstake(const CTransaction& tx);
     void setIgnoreMempool(bool val);
+    void setCustomBits(unsigned bits);
     void reset();
 };
 #endif// EXTENDED_BLOCK_FACTORY_H

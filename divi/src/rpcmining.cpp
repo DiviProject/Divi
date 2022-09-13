@@ -132,6 +132,7 @@ Value generateblock(const Array& params, bool fHelp, CWallet* pwallet)
             "      \"extratx\" : [\"hex\", ...],   (array of strings, optional) transactions to include as hex\n"
             "      \"coinstake\" : \"hex\",        (string, optional) coinstake transaction to use as hex\n"
             "      \"ignoreMempool\" : true,       (bool, optional) if set, do not include mempool transactions\n"
+            "      \"blockBitsShift\" : unsigned (integer, optional) if set, use custom block bits\n"
             "    }\n"
             "\nResult\n"
             "blockhash     (string) hash of the generated block\n"
@@ -142,7 +143,7 @@ Value generateblock(const Array& params, bool fHelp, CWallet* pwallet)
     Object options;
     if (params.size() > 0)
         options = params[0].get_obj();
-    RPCTypeCheck(options, map_list_of("extratx", array_type)("coinstake", str_type)("ignoreMempool", bool_type), true);
+    RPCTypeCheck(options, map_list_of("extratx", array_type)("coinstake", str_type)("ignoreMempool", bool_type)("blockBitsShift",int_type), true);
 
     int nHeight = 0;
 
@@ -196,6 +197,10 @@ Value generateblock(const Array& params, bool fHelp, CWallet* pwallet)
     const Value& ignoreMempool = find_value(options, "ignoreMempool");
     if (ignoreMempool.type() != null_type)
         blockFactory->setIgnoreMempool(ignoreMempool.get_bool());
+
+    const Value& blockBitsShift = find_value(options, "blockBitsShift");
+    if(blockBitsShift.type() != null_type)
+        blockFactory->setCustomBits(blockBitsShift.get_int());
 
     const bool newBlockAdded = minter.createNewBlock();
 

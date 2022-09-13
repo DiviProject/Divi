@@ -267,29 +267,17 @@ bool CheckWork(
 
     unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev,chainParameters);
 
-    if (block.IsProofOfWork() && (pindexPrev->nHeight + 1 <= 68589)) {
-        double n1 = ConvertBitsToDouble(block.nBits);
-        double n2 = ConvertBitsToDouble(nBitsRequired);
-
-        const double absoluteDifference = std::abs(n1 - n2);
-        if (absoluteDifference > n1 * 0.5)
-            return error("%s : incorrect proof of work (DGW pre-fork) - %f %f %f at %d", __func__, absoluteDifference, n1, n2, pindexPrev->nHeight + 1);
-
-        return true;
-    }
-
-    if (block.nBits != nBitsRequired)
-        return error("%s : incorrect proof of work at %d", __func__, pindexPrev->nHeight + 1);
+    if(block.IsProofOfWork()) return CheckProofOfWork(block.GetHash(),block.nBits,chainParameters) && block.nBits == nBitsRequired;
 
     if (block.IsProofOfStake()) {
         hashProofOfStake = uint256(0);
         uint256 hash = block.GetHash();
 
         if(!CheckProofOfStake(posGenerator,settings,blockIndicesByHash,block,pindexPrev, hashProofOfStake)) {
-            LogPrintf("WARNING: ProcessBlock(): check proof-of-stake failed for block %s\n", hash);
-            return false;
+            return error("%s check proof-of-stake failed for block %s\n",__func__, hash);
         }
+        return true;
     }
 
-    return true;
+    return false;
 }

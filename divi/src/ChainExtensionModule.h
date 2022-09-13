@@ -22,6 +22,7 @@ class I_ProofOfStakeGenerator;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class I_DifficultyAdjuster;
+class I_BlockProofVerifier;
 
 class ChainExtensionModule
 {
@@ -32,6 +33,7 @@ private:
     std::unique_ptr<const SuperblockSubsidyContainer> blockSubsidies_;
     std::unique_ptr<const BlockIncentivesPopulator> incentives_;
     std::unique_ptr<const ProofOfStakeModule> proofOfStakeModule_;
+    std::unique_ptr<I_BlockProofVerifier> blockProofVerifier_;
     std::unique_ptr<I_ChainExtensionService> chainExtensionService_;
     std::unique_ptr<I_BlockValidator> blockValidator_;
     std::unique_ptr<I_BlockSubmitter> blockSubmitter_;

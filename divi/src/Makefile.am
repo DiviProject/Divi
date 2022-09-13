@@ -311,7 +311,7 @@ BITCOIN_CORE_H = \
   OutputEntry.h \
   noui.h \
   rest.h \
-  pow.h \
+  BlockProofVerifier.h \
   protocol.h \
   pubkey.h \
   random.h \
@@ -523,7 +523,7 @@ libbitcoin_server_a_SOURCES = \
   PeerBanningService.cpp \
   netfulfilledman.cpp \
   noui.cpp \
-  pow.cpp \
+  BlockProofVerifier.cpp \
   rest.cpp \
   JsonTxHelpers.cpp \
   JsonBlockHelpers.cpp \

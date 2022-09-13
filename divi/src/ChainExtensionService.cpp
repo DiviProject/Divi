@@ -5,7 +5,6 @@
 #include <ChainTipManager.h>
 #include <MostWorkChainTransitionMediator.h>
 #include <ChainSyncHelpers.h>
-#include <pow.h>
 #include <chainparams.h>
 #include <ValidationState.h>
 #include <Logging.h>
@@ -22,6 +21,7 @@
 #include <NotificationInterface.h>
 #include <txdb.h>
 #include <BlockIndexLotteryUpdater.h>
+#include <I_BlockProofVerifier.h>
 
 #include <StakeModifierIntervalHelpers.h>
 #include <ForkActivation.h>

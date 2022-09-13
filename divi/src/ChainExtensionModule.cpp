@@ -7,7 +7,7 @@
 #include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
 #include <DifficultyAdjuster.h>
-#include <pow.h>
+#include <BlockProofVerifier.h>
 
 
 ChainExtensionModule::ChainExtensionModule(

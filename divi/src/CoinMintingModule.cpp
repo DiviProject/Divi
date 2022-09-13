@@ -79,24 +79,26 @@ CoinMintingModule::CoinMintingModule(
     , chainstate_(new ChainstateManagerReference())
     , blockSubsidyContainer_(blockSubsidies)
     , blockIncentivesPopulator_(incentives)
-    , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(
-        settings,
-        &(*chainstate_)->CoinsTip(),
-        (*chainstate_)->ActiveChain(),
-        (*chainstate_)->GetBlockMap(),
-        mempool,
-        mainCS,
-        relayTxFeeCalculator))
-    , coinstakeTransactionCreator_( new PoSTransactionCreator(
-        settings,
-        chainParameters,
-        (*chainstate_)->ActiveChain(),
-        (*chainstate_)->GetBlockMap(),
-        blockSubsidyContainer_.blockSubsidiesProvider(),
-        blockIncentivesPopulator_,
-        proofGenerator,
-        wallet,
-        mapHashedBlocks_))
+    , blockTransactionCollector_(
+        new BlockMemoryPoolTransactionCollector(
+            settings,
+            &(*chainstate_)->CoinsTip(),
+            (*chainstate_)->ActiveChain(),
+            (*chainstate_)->GetBlockMap(),
+            mempool,
+            mainCS,
+            relayTxFeeCalculator))
+    , coinstakeTransactionCreator_(
+        new PoSTransactionCreator(
+            settings,
+            chainParameters,
+            (*chainstate_)->ActiveChain(),
+            (*chainstate_)->GetBlockMap(),
+            blockSubsidyContainer_.blockSubsidiesProvider(),
+            blockIncentivesPopulator_,
+            proofGenerator,
+            wallet,
+            mapHashedBlocks_))
     , blockFactory_(
         BlockFactorySelector(
             wallet,
@@ -107,15 +109,16 @@ CoinMintingModule::CoinMintingModule(
             settings,
             (*chainstate_)->ActiveChain(),
             chainParameters))
-    , coinMinter_( new CoinMinter(
-        (*chainstate_)->ActiveChain(),
-        chainParameters,
-        peerNotifier,
-        blockSubmitter,
-        masternodeModule.getMasternodeSynchronization(),
-        *blockFactory_,
-        wallet,
-        mapHashedBlocks_))
+    , coinMinter_(
+        new CoinMinter(
+            (*chainstate_)->ActiveChain(),
+            chainParameters,
+            peerNotifier,
+            blockSubmitter,
+            masternodeModule.getMasternodeSynchronization(),
+            *blockFactory_,
+            wallet,
+            mapHashedBlocks_))
 {
 }
 

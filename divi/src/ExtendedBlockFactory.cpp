@@ -87,6 +87,7 @@ public:
 ExtendedBlockFactory::ExtendedBlockFactory(
     const I_StakingWallet& wallet,
     const I_BlockSubsidyProvider& blockSubsidies,
+    const I_DifficultyAdjuster& difficultyAdjuster,
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
     const Settings& settings,
@@ -97,7 +98,7 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     , ignoreMempool_(false)
     , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,ignoreMempool_,blockTransactionCollector))
     , extendedCoinstakeCreator_(new ExtendedPoSTransactionCreator(wallet,customCoinstake_,coinstakeCreator))
-    , blockFactory_(new BlockFactory(blockSubsidies,*extendedTransactionCollector_,*extendedCoinstakeCreator_, settings, chain,chainParameters))
+    , blockFactory_(new BlockFactory(blockSubsidies,difficultyAdjuster,*extendedTransactionCollector_,*extendedCoinstakeCreator_, settings, chain,chainParameters))
 {
 }
 ExtendedBlockFactory::~ExtendedBlockFactory()

@@ -17,6 +17,7 @@ namespace
 I_BlockFactory* BlockFactorySelector(
     const I_StakingWallet& wallet,
     const I_BlockSubsidyProvider& blockSubsidies,
+    const I_DifficultyAdjuster& difficultyAdjuster,
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
     const Settings& settings,
@@ -28,6 +29,7 @@ I_BlockFactory* BlockFactorySelector(
         return new ExtendedBlockFactory(
             wallet,
             blockSubsidies,
+            difficultyAdjuster,
             blockTransactionCollector,
             coinstakeCreator,
             settings,
@@ -38,6 +40,7 @@ I_BlockFactory* BlockFactorySelector(
     {
         return new BlockFactory(
             blockSubsidies,
+            difficultyAdjuster,
             blockTransactionCollector,
             coinstakeCreator,
             settings,
@@ -67,6 +70,7 @@ CoinMintingModule::CoinMintingModule(
     const I_PeerBlockNotifyService& peerNotifier,
     const I_BlockSubmitter& blockSubmitter,
     const CSporkManager& sporkManager,
+    const I_DifficultyAdjuster& difficultyAdjuster,
     std::map<unsigned int, unsigned int>& mapHashedBlocks,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
@@ -97,6 +101,7 @@ CoinMintingModule::CoinMintingModule(
         BlockFactorySelector(
             wallet,
             blockSubsidyContainer_.blockSubsidiesProvider(),
+            difficultyAdjuster,
             *blockTransactionCollector_,
             *coinstakeTransactionCreator_,
             settings,

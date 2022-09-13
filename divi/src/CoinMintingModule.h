@@ -25,6 +25,7 @@ class MasternodeModule;
 class I_PeerBlockNotifyService;
 class I_BlockSubmitter;
 class I_ProofOfStakeGenerator;
+class I_DifficultyAdjuster;
 
 class CoinMintingModule
 {
@@ -50,6 +51,7 @@ public:
         const I_PeerBlockNotifyService& peers,
         const I_BlockSubmitter& blockSubmitter,
         const CSporkManager& sporkManager,
+        const I_DifficultyAdjuster& difficultyAdjuster,
         std::map<unsigned int, unsigned int>& mapHashedBlocks,
         CCriticalSection& mainCS,
         CTxMemPool& mempool,

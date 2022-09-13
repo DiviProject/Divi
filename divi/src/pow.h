@@ -16,8 +16,6 @@ class uint256;
 class arith_uint256;
 class CChainParams;
 
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CChainParams& chainParameters);
-
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const CChainParams& chainParameters);
 uint256 GetBlockProof(const CBlockIndex& block);

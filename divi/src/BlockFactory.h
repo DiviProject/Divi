@@ -33,10 +33,6 @@ private:
 
     bool AppendProofOfStakeToBlock(
         CBlockTemplate& pBlockTemplate);
-
-    void UpdateTime(
-        CBlockHeader& block,
-        const CBlockIndex* pindexPrev) const;
     void SetBlockHeader(
         CBlockHeader& block,
         const CBlockIndex* pindexPrev) const;

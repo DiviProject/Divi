@@ -133,7 +133,7 @@ bool CheckWork(
     const Settings& settings,
     const CBlock& block,
     uint256& hashProofOfStake,
-    CBlockIndex* const pindexPrev)
+    const CBlockIndex* const pindexPrev)
 {
     if (pindexPrev == NULL)
         return error("%s : null pindexPrev for block %s", __func__, block.GetHash());

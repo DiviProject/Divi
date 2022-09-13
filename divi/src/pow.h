@@ -16,8 +16,6 @@ class uint256;
 class arith_uint256;
 class CChainParams;
 
-/** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
-bool CheckProofOfWork(uint256 hash, unsigned int nBits, const CChainParams& chainParameters);
 
 class I_ProofOfStakeGenerator;
 class CBlock;

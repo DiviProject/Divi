@@ -9,7 +9,6 @@
 #include <chainparams.h>
 #include <Logging.h>
 #include <BlockUndo.h>
-#include <pow.h>
 
 /** Check whether enough disk space is available for an incoming block */
 bool CheckDiskSpace(uint64_t nAdditionalBytes)
@@ -60,12 +59,6 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos)
         filein >> block;
     } catch (std::exception& e) {
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
-    }
-
-    // Check the header
-    if (block.IsProofOfWork()) {
-        if (!CheckProofOfWork(block.GetHash(), block.nBits, Params()))
-            return error("ReadBlockFromDisk : Errors in block header");
     }
 
     return true;

@@ -6,7 +6,6 @@
 #include <Logging.h>
 #include <ValidationState.h>
 #include <Settings.h>
-#include <pow.h>
 #include <utiltime.h>
 #include <defaultValues.h>
 #include <version.h>
@@ -25,14 +24,6 @@ const CBlockIndex* mostWorkInvalidBlockIndex = nullptr;
 bool CheckBlock(const CBlock& block, CValidationState& state)
 {
     // These are checks that are independent of context.
-
-    // Check that the header is valid (particularly PoW).  This is mostly
-    // redundant with the call in AcceptBlockHeader.
-    if (block.IsProofOfWork() && !CheckProofOfWork(block.GetHash(), block.nBits, Params()))
-    {
-        return state.DoS(150, error("%s : proof of work failed",__func__),
-                         REJECT_INVALID, "bad-header: high-hash", true);
-    }
 
     // Check timestamp
     LogPrint("debug", "%s: block=%s  is proof of stake=%d\n", __func__, block.GetHash(), block.IsProofOfStake());

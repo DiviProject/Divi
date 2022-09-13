@@ -1505,16 +1505,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     CreateHardlinksForBlocks();
 
     uiInterface.InitMessage(translate("Preparing databases..."));
-    const auto cacheSizes = CalculateDBCacheSizes();
+    InitializeMainBlockchainModules();
+    InitializeMultiWalletModule();
 
-    chainstateInstance.reset(
-        new ChainstateManager (cacheSizes.nBlockTreeDBCache, cacheSizes.nCoinDBCache,cacheSizes.nCoinCacheSize, false, settings.isReindexingBlocks()));
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();
-    sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
-    InitializeChainExtensionModule(GetMasternodeModule());
-
-    InitializeMultiWalletModule();
 
     if(!SetSporkKey(*sporkManagerInstance))
         return false;

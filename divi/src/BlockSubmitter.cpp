@@ -27,7 +27,7 @@
  * @param[out]  dbp     If pblock is stored to disk (or already there), this will be set to its location.
  * @return True if state.IsValid()
  */
-bool ProcessNewBlock(const I_BlockValidator& blockValidator, CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = nullptr)
+bool ProcessNewBlock(const I_BlockValidator& blockValidator, CValidationState& state, CBlock* pblock, CNode* pfrom, CDiskBlockPos* dbp)
 {
     // Preliminary checks
     int64_t nStartTime = GetTimeMillis();
@@ -67,8 +67,8 @@ public:
         , block_(block)
     {
     }
-    bool operator()(CNode* node) const { return ProcessNewBlock(blockValidator_, state_, node, &block_); }
-    bool operator()(CDiskBlockPos* blockDiskPosition) const { return ProcessNewBlock(blockValidator_, state_, nullptr, &block_, blockDiskPosition); }
+    bool operator()(CNode* node) const { return ProcessNewBlock(blockValidator_, state_, &block_, node, nullptr); }
+    bool operator()(CDiskBlockPos* blockDiskPosition) const { return ProcessNewBlock(blockValidator_, state_, &block_, nullptr, blockDiskPosition); }
 };
 
 }
@@ -100,7 +100,7 @@ bool BlockSubmitter::submitBlockForChainExtension(CBlock& block) const
 
     // Process this block the same as if we had received it from another node
     CValidationState state;
-    if (!IsBlockValidChainExtension(&block) || !ProcessNewBlock(blockValidator_, state, NULL, &block))
+    if (!IsBlockValidChainExtension(&block) || !ProcessNewBlock(blockValidator_, state, &block, nullptr, nullptr))
         return error("%s : block not accepted",__func__);
 
     return true;

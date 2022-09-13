@@ -6,6 +6,21 @@
 #include <ProofOfStakeModule.h>
 #include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
+#include <I_DifficultyAdjuster.h>
+
+
+extern unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CChainParams& chainParameters)
+class DifficultyAdjuster final: public DifficultyAdjuster
+{
+private:
+    const CChainParams& chainParameters_;
+public:
+    DifficultyAdjuster(const CChainParams& chainParameters): chainParameters_()
+    unsigned computeNextBlockDifficulty(const CBlockIndex* chainTip) const override
+    {
+        return GetNextWorkRequired(chainTip,chainParameters_);
+    }
+};
 
 ChainExtensionModule::ChainExtensionModule(
     ChainstateManager& chainstateManager,
@@ -20,6 +35,7 @@ ChainExtensionModule::ChainExtensionModule(
     BlockIndexCandidates& blockIndexCandidates
     ): chainstateManager_(chainstateManager)
     , peerIdByBlockHash_()
+    , difficultyAdjuster_(new DifficultyAdjuster(chainParameters))
     , blockSubsidies_(
         new SuperblockSubsidyContainer(
             chainParameters,
@@ -70,6 +86,12 @@ ChainExtensionModule::~ChainExtensionModule()
     proofOfStakeModule_.reset();
     incentives_.reset();
     blockSubsidies_.reset();
+    difficultyAdjuster_.reset();
+}
+
+const I_DifficultyAdjuster& ChainExtensionModule::getDifficultyAdjuster() const
+{
+    return *difficultyAdjuster_;
 }
 
 const SuperblockSubsidyContainer& ChainExtensionModule::getBlockSubsidies() const

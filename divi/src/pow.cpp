@@ -132,7 +132,6 @@ bool CheckWork(
     const BlockMap& blockIndicesByHash,
     const Settings& settings,
     const CBlock& block,
-    uint256& hashProofOfStake,
     const CBlockIndex* const pindexPrev)
 {
     if (pindexPrev == NULL)
@@ -143,7 +142,7 @@ bool CheckWork(
     if(block.IsProofOfWork()) return CheckProofOfWork(block.GetHash(),block.nBits,chainParameters) && block.nBits == nBitsRequired;
 
     if (block.IsProofOfStake()) {
-        hashProofOfStake = uint256(0);
+        uint256 hashProofOfStake = uint256(0);
         uint256 hash = block.GetHash();
 
         if(!CheckProofOfStake(posGenerator,settings,blockIndicesByHash,block,pindexPrev, hashProofOfStake)) {

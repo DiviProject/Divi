@@ -31,6 +31,5 @@ bool CheckWork(
     const BlockMap& blockIndicesByHash,
     const Settings& settings,
     const CBlock& block,
-    uint256& hashProofOfStake,
     const CBlockIndex* const pindexPrev);
 #endif // BITCOIN_POW_H

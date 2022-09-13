@@ -75,18 +75,13 @@ bool BlockFactory::AppendProofOfStakeToBlock(CBlockTemplate& pBlockTemplate)
     return coinstakeCreator_.CreateProofOfStake(chainTip, block);
 }
 
-void BlockFactory::UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev) const
-{
-    block.nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
-}
-
 bool BlockFactory::AppendProofOfWorkToBlock(
     CBlockTemplate& blocktemplate)
 {
     CBlock& block = blocktemplate.block;
     block.hashMerkleRoot = block.BuildMerkleTree();
     const CBlockIndex* const previousBlockIndex = blocktemplate.previousBlockIndex;
-    UpdateTime(block, previousBlockIndex);
+    block.nTime = std::max(previousBlockIndex->GetMedianTimePast() + 1, GetAdjustedTime());
     int64_t nStart = GetTime();
     uint256 hashTarget = uint256().SetCompact(block.nBits);
     while (true)
@@ -119,7 +114,7 @@ bool BlockFactory::AppendProofOfWorkToBlock(
             break;
 
         // Update nTime every few seconds
-        UpdateTime(block, previousBlockIndex);
+        block.nTime = std::max(previousBlockIndex->GetMedianTimePast() + 1, GetAdjustedTime());
         if (chainParameters_.AllowMinDifficultyBlocks())
         {
             // Changing block->nTime can change work required on testnet:

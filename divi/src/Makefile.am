@@ -245,6 +245,7 @@ BITCOIN_CORE_H = \
   ChainTipManager.h \
   ChainExtensionService.h \
   BlockIndexWork.h \
+  DifficultyAdjuster.h \
   ChainExtensionModule.h \
   main.h \
   TransactionSearchIndexes.h \
@@ -483,6 +484,7 @@ libbitcoin_server_a_SOURCES = \
   MempoolConsensus.cpp \
   ChainTipManager.cpp \
   ChainExtensionService.cpp \
+  DifficultyAdjuster.cpp \
   ChainExtensionModule.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \

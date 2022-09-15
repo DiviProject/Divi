@@ -264,6 +264,7 @@ BITCOIN_CORE_H = \
   I_PoSTransactionCreator.h \
   I_ChainExtensionService.h \
   ExtendedBlockFactory.h \
+  BlockProofProver.h \
   BlockFactory.h \
   masternode.h \
   MasternodePing.h \
@@ -489,6 +490,7 @@ libbitcoin_server_a_SOURCES = \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \
+  BlockProofProver.cpp \
   BlockFactory.cpp \
   ExtendedBlockFactory.cpp \
   BlockFileOpener.cpp \

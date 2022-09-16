@@ -7,14 +7,17 @@
 #include <timedata.h>
 #include <utiltime.h>
 #include <I_PoSTransactionCreator.h>
+#include <I_BlockSubsidyProvider.h>
 
 #include <boost/thread.hpp>
 
 BlockProofProver::BlockProofProver(
     const CChainParams& chainParameters,
+    const I_BlockSubsidyProvider& blockSubsidies,
     const I_PoSTransactionCreator& posTransactionCreator,
     const CChain& chain
     ): chainParameters_(chainParameters)
+    , blockSubsidies_(blockSubsidies)
     , posTransactionCreator_(posTransactionCreator)
     , chain_(chain)
 {
@@ -25,6 +28,10 @@ bool BlockProofProver::attachProofOfWorkToBlock(
     const CBlockIndex* const previousBlockIndex,
     CBlock& block) const
 {
+    CMutableTransaction modifiableCoinbaseTx(block.vtx[0]);
+    modifiableCoinbaseTx.vout[0].nValue = blockSubsidies_.GetBlockSubsidity(previousBlockIndex->nHeight+1).nStakeReward;
+    block.vtx[0] = modifiableCoinbaseTx;
+
     block.hashMerkleRoot = block.BuildMerkleTree();
     block.nTime = std::max(previousBlockIndex->GetMedianTimePast() + 1, GetAdjustedTime());
     int64_t nStart = GetTime();

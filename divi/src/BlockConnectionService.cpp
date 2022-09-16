@@ -75,7 +75,7 @@ void CalculateFees(bool isProofOfWork, const CBlockIndex* pindex, CBlockRewards&
 bool CheckMintTotalsAndBlockPayees(
     const CBlock& block,
     const CBlockIndex* pindex,
-    const BlockIncentivesPopulator& incentives,
+    const I_BlockIncentivesPopulator& incentives,
     const CBlockRewards& nExpectedMint,
     CValidationState& state)
 {
@@ -153,8 +153,8 @@ bool UpdateDBIndicesForNewBlock(
 BlockConnectionService::BlockConnectionService(
     const CChainParams& chainParameters,
     const MasternodeModule& masternodeModule,
-    const SuperblockSubsidyContainer& blockSubsidies,
-    const BlockIncentivesPopulator& incentives,
+    const I_SuperblockSubsidyContainer& blockSubsidies,
+    const I_BlockIncentivesPopulator& incentives,
     const BlockMap& blockIndicesByHash,
     CBlockTreeDB* blocktree,
     CCoinsViewCache* coinTip,

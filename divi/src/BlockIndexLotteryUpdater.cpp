@@ -3,12 +3,12 @@
 #include <LotteryCoinstakes.h>
 #include <chainparams.h>
 #include <chain.h>
-#include <SuperblockSubsidyContainer.h>
+#include <I_SuperblockSubsidyContainer.h>
 #include <LotteryWinnersCalculator.h>
 
 BlockIndexLotteryUpdater::BlockIndexLotteryUpdater(
     const CChainParams& chainParameters,
-    const SuperblockSubsidyContainer& subsidyContainer,
+    const I_SuperblockSubsidyContainer& subsidyContainer,
     const CChain& activeChain,
     const CSporkManager& sporkManager
     ): chainParameters_(chainParameters)

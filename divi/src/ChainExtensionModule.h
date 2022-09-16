@@ -19,8 +19,8 @@ class ChainstateManager;
 class I_BlockSubmitter;
 class ProofOfStakeModule;
 class I_ProofOfStakeGenerator;
-class SuperblockSubsidyContainer;
-class BlockIncentivesPopulator;
+class I_SuperblockSubsidyContainer;
+class I_BlockIncentivesPopulator;
 class I_DifficultyAdjuster;
 class I_BlockProofVerifier;
 
@@ -30,8 +30,8 @@ private:
     ChainstateManager& chainstateManager_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
     std::unique_ptr<I_DifficultyAdjuster> difficultyAdjuster_;
-    std::unique_ptr<const SuperblockSubsidyContainer> blockSubsidies_;
-    std::unique_ptr<const BlockIncentivesPopulator> incentives_;
+    std::unique_ptr<const I_SuperblockSubsidyContainer> blockSubsidies_;
+    std::unique_ptr<const I_BlockIncentivesPopulator> incentives_;
     std::unique_ptr<const ProofOfStakeModule> proofOfStakeModule_;
     std::unique_ptr<I_BlockProofVerifier> blockProofVerifier_;
     std::unique_ptr<I_ChainExtensionService> chainExtensionService_;
@@ -52,8 +52,8 @@ public:
 
     ~ChainExtensionModule();
     const I_DifficultyAdjuster& getDifficultyAdjuster() const;
-    const SuperblockSubsidyContainer& getBlockSubsidies() const;
-    const BlockIncentivesPopulator& getBlockIncentivesPopulator() const;
+    const I_SuperblockSubsidyContainer& getBlockSubsidies() const;
+    const I_BlockIncentivesPopulator& getBlockIncentivesPopulator() const;
     const I_ProofOfStakeGenerator& getProofOfStakeGenerator() const;
     const I_ChainExtensionService& getChainExtensionService() const;
     const I_BlockSubmitter& getBlockSubmitter() const;

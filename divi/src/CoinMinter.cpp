@@ -150,12 +150,9 @@ bool CoinMinter::createProofOfStakeBlock() const
     if (!pblocktemplate.get())
         return false;
 
-    //Stake miner main
-    CBlock* block = &(pblocktemplate->block);
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-    blockSuccessfullyCreated = ProcessBlockFound(block, nullptr);
+    blockSuccessfullyCreated = ProcessBlockFound(&(pblocktemplate->block), nullptr);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-
     return blockSuccessfullyCreated;
 }
 
@@ -172,10 +169,8 @@ bool CoinMinter::createProofOfWorkBlock() const
     if (!pblocktemplate.get())
         return false;
 
-    CBlock* block = &pblocktemplate->block;
-
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-    blockSuccessfullyCreated = ProcessBlockFound(block, &reserveKey);
+    blockSuccessfullyCreated = ProcessBlockFound(&(pblocktemplate->block), &reserveKey);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     return blockSuccessfullyCreated;
 }

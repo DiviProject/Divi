@@ -38,13 +38,13 @@ private:
     void VerifyBlockWithIsCompatibleWithCustomCoinstake(const CBlock& block);
 public:
     ExtendedBlockFactory(
-        const I_StakingWallet& wallet,
-        const I_DifficultyAdjuster& difficultyAdjuster,
-        I_BlockTransactionCollector& blockTransactionCollector,
-        const I_BlockProofProver& blockProofProver,
         const Settings& settings,
+        const CChainParams& chainParameters,
         const CChain& chain,
-        const CChainParams& chainParameters);
+        const I_DifficultyAdjuster& difficultyAdjuster,
+        const I_BlockProofProver& blockProofProver,
+        const I_StakingWallet& wallet,
+        I_BlockTransactionCollector& blockTransactionCollector);
     ~ExtendedBlockFactory();
 
     CBlockTemplate* CreateNewPoWBlock(const CScript& scriptPubKey) override;

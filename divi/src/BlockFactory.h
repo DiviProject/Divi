@@ -24,12 +24,11 @@ class BlockFactory final: public I_BlockFactory
 {
 private:
     const Settings& settings_;
-    const CChain& chain_;
     const CChainParams& chainParameters_;
+    const CChain& chain_;
     const I_DifficultyAdjuster& difficultyAdjuster_;
-
-    I_BlockTransactionCollector& blockTransactionCollector_;
     const I_BlockProofProver& blockProofProver_;
+    I_BlockTransactionCollector& blockTransactionCollector_;
 
     void SetBlockHeader(
         CBlockHeader& block,
@@ -38,12 +37,12 @@ private:
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
     BlockFactory(
-        const I_DifficultyAdjuster& difficultyAdjuster,
-        I_BlockTransactionCollector& blockTransactionCollector,
-        const I_BlockProofProver& blockProofProver,
         const Settings& settings,
+        const CChainParams& chainParameters,
         const CChain& chain,
-        const CChainParams& chainParameters);
+        const I_DifficultyAdjuster& difficultyAdjuster,
+        const I_BlockProofProver& blockProofProver,
+        I_BlockTransactionCollector& blockTransactionCollector);
 
     CBlockTemplate* CreateNewPoWBlock(const CScript& scriptPubKey) override;
     CBlockTemplate* CreateNewPoSBlock() override;

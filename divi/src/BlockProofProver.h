@@ -4,10 +4,12 @@
 class I_PoSTransactionCreator;
 class CChainParams;
 class CChain;
+class I_BlockSubsidyProvider;
 class BlockProofProver final: public I_BlockProofProver
 {
 private:
     const CChainParams& chainParameters_;
+    const I_BlockSubsidyProvider& blockSubsidies_;
     const I_PoSTransactionCreator& posTransactionCreator_;
     const CChain& chain_;
     bool attachProofOfWorkToBlock(
@@ -19,6 +21,7 @@ private:
 public:
     BlockProofProver(
         const CChainParams& chainParameters,
+        const I_BlockSubsidyProvider& blockSubsidies,
         const I_PoSTransactionCreator& posTransactionCreator,
         const CChain& chain);
     bool attachBlockProof(

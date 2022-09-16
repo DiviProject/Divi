@@ -103,6 +103,7 @@ CoinMintingModule::CoinMintingModule(
     , blockProofProver_(
         new BlockProofProver(
             chainParameters,
+            blockSubsidyContainer_.blockSubsidiesProvider(),
             *coinstakeTransactionCreator_,
             (*chainstate_)->ActiveChain() ))
     , blockFactory_(

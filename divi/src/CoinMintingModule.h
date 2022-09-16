@@ -4,29 +4,26 @@
 #include <memory>
 #include <vector>
 #include <boost/thread/recursive_mutex.hpp>
-class I_StakingWallet;
-class CChainParams;
-class CNode;
-class CMasternodeSync;
 class I_BlockFactory;
-class CTxMemPool;
-class CCriticalSection;
-class I_CoinMinter;
 class I_BlockTransactionCollector;
-class I_PoSTransactionCreator;
-class SuperblockSubsidyContainer;
-class BlockIncentivesPopulator;
-class CMasternodePayments;
-class CSporkManager;
-class Settings;
-class CCoinsViewCache;
-class CFeeRate;
-class MasternodeModule;
-class I_PeerBlockNotifyService;
 class I_BlockSubmitter;
+class I_BlockProofProver;
+class I_BlockIncentivesPopulator;
+class I_CoinMinter;
+class I_SuperblockSubsidyContainer;
+class I_PoSTransactionCreator;
+class I_PeerBlockNotifyService;
 class I_ProofOfStakeGenerator;
 class I_DifficultyAdjuster;
-class I_BlockProofProver;
+class I_StakingWallet;
+
+class CChainParams;
+class CMasternodeSync;
+class CTxMemPool;
+class CCriticalSection;
+class CSporkManager;
+class Settings;
+class CFeeRate;
 class ChainstateManagerReference;
 
 class CoinMintingModule
@@ -34,8 +31,8 @@ class CoinMintingModule
 private:
     std::map<unsigned int, unsigned int>& mapHashedBlocks_;
     std::unique_ptr<const ChainstateManagerReference> chainstateRef_;
-    const SuperblockSubsidyContainer& blockSubsidyContainer_;
-    const BlockIncentivesPopulator& blockIncentivesPopulator_;
+    const I_SuperblockSubsidyContainer& blockSubsidyContainer_;
+    const I_BlockIncentivesPopulator& blockIncentivesPopulator_;
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
     std::unique_ptr<I_PoSTransactionCreator> coinstakeTransactionCreator_;
     std::unique_ptr<I_BlockProofProver> blockProofProver_;
@@ -46,8 +43,8 @@ public:
         const Settings& settings,
         const CChainParams& chainParameters,
         const CMasternodeSync& masternodeSynchronization,
-        const SuperblockSubsidyContainer& blockSubsidies,
-        const BlockIncentivesPopulator& incentives,
+        const I_SuperblockSubsidyContainer& blockSubsidies,
+        const I_BlockIncentivesPopulator& incentives,
         const I_ProofOfStakeGenerator& proofGenerator,
         const CFeeRate& relayTxFeeCalculator,
         const I_PeerBlockNotifyService& peers,

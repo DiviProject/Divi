@@ -1,15 +1,17 @@
 #include <CoinMintingModule.h>
 
+#include <I_BlockIncentivesPopulator.h>
+#include <I_SuperblockSubsidyContainer.h>
+
 #include <BlockFactory.h>
+#include <BlockMemoryPoolTransactionCollector.h>
+#include <BlockProofProver.h>
+#include <chainparams.h>
 #include <ChainstateManager.h>
 #include <CoinMinter.h>
 #include <ExtendedBlockFactory.h>
-#include <chainparams.h>
-#include <BlockMemoryPoolTransactionCollector.h>
 #include <PoSTransactionCreator.h>
-#include <SuperblockSubsidyContainer.h>
-#include <BlockIncentivesPopulator.h>
-#include <BlockProofProver.h>
+
 
 namespace
 {
@@ -73,8 +75,8 @@ CoinMintingModule::CoinMintingModule(
     const Settings& settings,
     const CChainParams& chainParameters,
     const CMasternodeSync& masternodeSynchronization,
-    const SuperblockSubsidyContainer& blockSubsidies,
-    const BlockIncentivesPopulator& incentives,
+    const I_SuperblockSubsidyContainer& blockSubsidies,
+    const I_BlockIncentivesPopulator& incentives,
     const I_ProofOfStakeGenerator& proofGenerator,
     const CFeeRate& relayTxFeeCalculator,
     const I_PeerBlockNotifyService& peerNotifier,

@@ -27,13 +27,13 @@ class I_BlockSubmitter;
 class I_ProofOfStakeGenerator;
 class I_DifficultyAdjuster;
 class I_BlockProofProver;
+class ChainstateManagerReference;
 
 class CoinMintingModule
 {
 private:
-    class ChainstateManagerReference;
     std::map<unsigned int, unsigned int>& mapHashedBlocks_;
-    std::unique_ptr<const ChainstateManagerReference> chainstate_;
+    std::unique_ptr<const ChainstateManagerReference> chainstateRef_;
     const SuperblockSubsidyContainer& blockSubsidyContainer_;
     const BlockIncentivesPopulator& blockIncentivesPopulator_;
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;

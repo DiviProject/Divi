@@ -4,10 +4,10 @@
 #include <primitives/transaction.h>
 #include <BlockTemplate.h>
 #include <I_BlockTransactionCollector.h>
-#include <I_PoSTransactionCreator.h>
 #include <sync.h>
 #include <BlockSigning.h>
 #include <I_StakingCoinSelector.h>
+#include <I_BlockProofProver.h>
 
 class ExtendedBlockTransactionCollector final: public I_BlockTransactionCollector
 {
@@ -47,31 +47,32 @@ public:
     }
 };
 
-class ExtendedPoSTransactionCreator final: public I_PoSTransactionCreator
+class ExtendedBlockProofProver final: public I_BlockProofProver
 {
 private:
     const I_StakingWallet& wallet_;
     const std::unique_ptr<CTransaction>& customCoinstake_;
     const std::unique_ptr<unsigned>& blockBitsShift_;
-    I_PoSTransactionCreator& transactionCreator_;
+    const I_BlockProofProver& blockProofProver_;
 public:
-    ExtendedPoSTransactionCreator(
+    ExtendedBlockProofProver(
         const I_StakingWallet& wallet,
         const std::unique_ptr<CTransaction>& customCoinstake,
         const std::unique_ptr<unsigned>& blockBitsShift,
-        I_PoSTransactionCreator& transactionCreator
+        const I_BlockProofProver& blockProofProver
         ): wallet_(wallet)
         , customCoinstake_(customCoinstake)
         , blockBitsShift_(blockBitsShift)
-        , transactionCreator_(transactionCreator)
+        , blockProofProver_(blockProofProver)
     {
     }
 
-    bool CreateProofOfStake(
+    bool attachBlockProof(
         const CBlockIndex* chainTip,
+        const bool proofOfStake,
         CBlock& block) const override
     {
-        bool coinstakeCreated = transactionCreator_.CreateProofOfStake(chainTip,block);
+        bool coinstakeCreated = blockProofProver_.attachBlockProof(chainTip,proofOfStake,block);
         bool blockWasCustomized = false;
         if(customCoinstake_ != nullptr)
         {
@@ -103,7 +104,7 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     const I_BlockSubsidyProvider& blockSubsidies,
     const I_DifficultyAdjuster& difficultyAdjuster,
     I_BlockTransactionCollector& blockTransactionCollector,
-    I_PoSTransactionCreator& coinstakeCreator,
+    const I_BlockProofProver& blockProofProver,
     const Settings& settings,
     const CChain& chain,
     const CChainParams& chainParameters
@@ -112,8 +113,8 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     , blockBitsShift_()
     , ignoreMempool_(false)
     , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,ignoreMempool_,blockTransactionCollector))
-    , extendedCoinstakeCreator_(new ExtendedPoSTransactionCreator(wallet,customCoinstake_,blockBitsShift_,coinstakeCreator))
-    , blockFactory_(new BlockFactory(blockSubsidies,difficultyAdjuster,*extendedTransactionCollector_,*extendedCoinstakeCreator_, settings, chain,chainParameters))
+    , blockProofProver_(new ExtendedBlockProofProver(wallet,customCoinstake_,blockBitsShift_, blockProofProver))
+    , blockFactory_(new BlockFactory(blockSubsidies,difficultyAdjuster,*extendedTransactionCollector_,*blockProofProver_, settings, chain,chainParameters))
 {
 }
 ExtendedBlockFactory::~ExtendedBlockFactory()

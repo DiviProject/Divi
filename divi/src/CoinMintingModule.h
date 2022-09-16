@@ -26,6 +26,7 @@ class I_PeerBlockNotifyService;
 class I_BlockSubmitter;
 class I_ProofOfStakeGenerator;
 class I_DifficultyAdjuster;
+class I_BlockProofProver;
 
 class CoinMintingModule
 {
@@ -37,6 +38,7 @@ private:
     const BlockIncentivesPopulator& blockIncentivesPopulator_;
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
     std::unique_ptr<I_PoSTransactionCreator> coinstakeTransactionCreator_;
+    std::unique_ptr<I_BlockProofProver> blockProofProver_;
     std::unique_ptr<I_BlockFactory> blockFactory_;
     std::unique_ptr<I_CoinMinter> coinMinter_;
 public:

@@ -19,6 +19,7 @@ class I_PoSTransactionCreator;
 class Settings;
 class I_StakingWallet;
 class I_DifficultyAdjuster;
+class I_BlockProofProver;
 
 class ExtendedBlockFactory : public I_BlockFactory
 {
@@ -31,7 +32,7 @@ private:
     bool ignoreMempool_;
 
     std::unique_ptr<I_BlockTransactionCollector> extendedTransactionCollector_;
-    std::unique_ptr<I_PoSTransactionCreator> extendedCoinstakeCreator_;
+    std::unique_ptr<I_BlockProofProver> blockProofProver_;
     std::unique_ptr<BlockFactory> blockFactory_;
 
     void VerifyBlockWithIsCompatibleWithCustomCoinstake(const CBlock& block);
@@ -41,7 +42,7 @@ public:
         const I_BlockSubsidyProvider& blockSubsidies,
         const I_DifficultyAdjuster& difficultyAdjuster,
         I_BlockTransactionCollector& blockTransactionCollector,
-        I_PoSTransactionCreator& coinstakeCreator,
+        const I_BlockProofProver& blockProofProver,
         const Settings& settings,
         const CChain& chain,
         const CChainParams& chainParameters);

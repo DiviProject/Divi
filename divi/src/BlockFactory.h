@@ -18,8 +18,9 @@ class Settings;
 class CBlockIndex;
 class CBlockHeader;
 class I_DifficultyAdjuster;
+class I_BlockProofProver;
 
-class BlockFactory: public I_BlockFactory
+class BlockFactory final: public I_BlockFactory
 {
 private:
     const Settings& settings_;
@@ -29,15 +30,11 @@ private:
 
     const I_BlockSubsidyProvider& blockSubsidies_;
     I_BlockTransactionCollector& blockTransactionCollector_;
-    I_PoSTransactionCreator& coinstakeCreator_;
+    const I_BlockProofProver& blockProofProver_;
 
-    bool AppendProofOfStakeToBlock(
-        CBlockTemplate& pBlockTemplate);
     void SetBlockHeader(
         CBlockHeader& block,
         const CBlockIndex* pindexPrev) const;
-    bool AppendProofOfWorkToBlock(
-        CBlockTemplate& blocktemplate);
 
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
@@ -45,7 +42,7 @@ public:
         const I_BlockSubsidyProvider& blockSubsidies,
         const I_DifficultyAdjuster& difficultyAdjuster,
         I_BlockTransactionCollector& blockTransactionCollector,
-        I_PoSTransactionCreator& coinstakeCreator,
+        const I_BlockProofProver& blockProofProver,
         const Settings& settings,
         const CChain& chain,
         const CChainParams& chainParameters);

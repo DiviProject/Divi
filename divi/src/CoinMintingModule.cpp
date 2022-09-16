@@ -16,34 +16,34 @@ namespace
 {
 
 I_BlockFactory* BlockFactorySelector(
-    const I_StakingWallet& wallet,
-    const I_DifficultyAdjuster& difficultyAdjuster,
-    I_BlockTransactionCollector& blockTransactionCollector,
-    const I_BlockProofProver& blockProofProver,
     const Settings& settings,
+    const CChainParams& chainParameters,
     const CChain& activeChain,
-    const CChainParams& chainParameters)
+    const I_DifficultyAdjuster& difficultyAdjuster,
+    const I_BlockProofProver& blockProofProver,
+    const I_StakingWallet& wallet,
+    I_BlockTransactionCollector& blockTransactionCollector)
 {
     if(chainParameters.NetworkID()==CBaseChainParams::Network::REGTEST)
     {
         return new ExtendedBlockFactory(
-            wallet,
-            difficultyAdjuster,
-            blockTransactionCollector,
-            blockProofProver,
             settings,
+            chainParameters,
             activeChain,
-            chainParameters);
+            difficultyAdjuster,
+            blockProofProver,
+            wallet,
+            blockTransactionCollector);
     }
     else
     {
         return new BlockFactory(
-            difficultyAdjuster,
-            blockTransactionCollector,
-            blockProofProver,
             settings,
+            chainParameters,
             activeChain,
-            chainParameters);
+            difficultyAdjuster,
+            blockProofProver,
+            blockTransactionCollector);
     }
     assert(false);
 }
@@ -105,13 +105,13 @@ CoinMintingModule::CoinMintingModule(
             (*chainstate_)->ActiveChain() ))
     , blockFactory_(
         BlockFactorySelector(
-            wallet,
-            difficultyAdjuster,
-            *blockTransactionCollector_,
-            *blockProofProver_,
             settings,
+            chainParameters,
             (*chainstate_)->ActiveChain(),
-            chainParameters))
+            difficultyAdjuster,
+            *blockProofProver_,
+            wallet,
+            *blockTransactionCollector_))
     , coinMinter_(
         new CoinMinter(
             (*chainstate_)->ActiveChain(),

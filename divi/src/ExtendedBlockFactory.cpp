@@ -100,20 +100,20 @@ public:
 };
 
 ExtendedBlockFactory::ExtendedBlockFactory(
-    const I_StakingWallet& wallet,
-    const I_DifficultyAdjuster& difficultyAdjuster,
-    I_BlockTransactionCollector& blockTransactionCollector,
-    const I_BlockProofProver& blockProofProver,
     const Settings& settings,
+    const CChainParams& chainParameters,
     const CChain& chain,
-    const CChainParams& chainParameters
+    const I_DifficultyAdjuster& difficultyAdjuster,
+    const I_BlockProofProver& blockProofProver,
+    const I_StakingWallet& wallet,
+    I_BlockTransactionCollector& blockTransactionCollector
     ): extraTransactions_()
     , customCoinstake_()
     , blockBitsShift_()
     , ignoreMempool_(false)
     , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,ignoreMempool_,blockTransactionCollector))
     , blockProofProver_(new ExtendedBlockProofProver(wallet,customCoinstake_,blockBitsShift_, blockProofProver))
-    , blockFactory_(new BlockFactory(difficultyAdjuster,*extendedTransactionCollector_,*blockProofProver_, settings, chain,chainParameters))
+    , blockFactory_(new BlockFactory(settings,chainParameters,chain,difficultyAdjuster,*blockProofProver_,*extendedTransactionCollector_))
 {
 }
 ExtendedBlockFactory::~ExtendedBlockFactory()

@@ -18,18 +18,18 @@
 
 // Actual mining functions
 BlockFactory::BlockFactory(
-    const I_DifficultyAdjuster& difficultyAdjuster,
-    I_BlockTransactionCollector& blockTransactionCollector,
-    const I_BlockProofProver& blockProofProver,
     const Settings& settings,
+    const CChainParams& chainParameters,
     const CChain& chain,
-    const CChainParams& chainParameters
+    const I_DifficultyAdjuster& difficultyAdjuster,
+    const I_BlockProofProver& blockProofProver,
+    I_BlockTransactionCollector& blockTransactionCollector
     ): settings_(settings)
-    , chain_(chain)
     , chainParameters_(chainParameters)
+    , chain_(chain)
     , difficultyAdjuster_(difficultyAdjuster)
-    , blockTransactionCollector_(blockTransactionCollector)
     , blockProofProver_( blockProofProver)
+    , blockTransactionCollector_(blockTransactionCollector)
 {
 
 }

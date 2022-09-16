@@ -73,7 +73,7 @@ public:
 CoinMintingModule::CoinMintingModule(
     const Settings& settings,
     const CChainParams& chainParameters,
-    const MasternodeModule& masternodeModule,
+    const CMasternodeSync& masternodeSynchronization,
     const SuperblockSubsidyContainer& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
     const I_ProofOfStakeGenerator& proofGenerator,
@@ -131,7 +131,7 @@ CoinMintingModule::CoinMintingModule(
             chainParameters,
             peerNotifier,
             blockSubmitter,
-            masternodeModule.getMasternodeSynchronization(),
+            masternodeSynchronization,
             *blockFactory_,
             wallet,
             mapHashedBlocks_))

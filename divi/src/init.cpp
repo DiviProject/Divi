@@ -231,7 +231,7 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
     InitializeCoinMintingModule(
         settings,
         Params(),
-        GetMasternodeModule(),
+        GetMasternodeModule().getMasternodeSynchronization(),
         chainExtensionModule->getBlockSubsidies(),
         chainExtensionModule->getBlockIncentivesPopulator(),
         GetSporkManager(),

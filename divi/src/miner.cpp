@@ -65,7 +65,7 @@ void DestructCoinMintingModule()
 void InitializeCoinMintingModule(
     const Settings& settings,
     const CChainParams& chainParameters,
-    const MasternodeModule& masternodeModule,
+    const CMasternodeSync& masternodeSynchronization,
     const SuperblockSubsidyContainer& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
     const CSporkManager& sporkManager,
@@ -86,7 +86,7 @@ void InitializeCoinMintingModule(
         new CoinMintingModule(
             settings,
             chainParameters,
-            masternodeModule,
+            masternodeSynchronization,
             blockSubsidies,
             incentives,
             proofGenerator,

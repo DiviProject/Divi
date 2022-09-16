@@ -19,7 +19,7 @@ class Settings;
 class CFeeRate;
 class I_BlockSubmitter;
 class CChainParams;
-class MasternodeModule;
+class CMasternodeSync;
 class CSporkManager;
 class I_ProofOfStakeGenerator;
 class SuperblockSubsidyContainer;
@@ -34,7 +34,7 @@ class thread_group;
 void InitializeCoinMintingModule(
     const Settings& settings,
     const CChainParams& chainParameters,
-    const MasternodeModule& masternodeModule,
+    const CMasternodeSync& masternodeSynchronization,
     const SuperblockSubsidyContainer& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
     const CSporkManager& sporkManager,

@@ -45,7 +45,7 @@ public:
     CoinMintingModule(
         const Settings& settings,
         const CChainParams& chainParameters,
-        const MasternodeModule& masternodeModule,
+        const CMasternodeSync& masternodeSynchronization,
         const SuperblockSubsidyContainer& blockSubsidies,
         const BlockIncentivesPopulator& incentives,
         const I_ProofOfStakeGenerator& proofGenerator,

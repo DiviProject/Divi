@@ -54,8 +54,21 @@ I_BlockFactory* BlockFactorySelector(
  *  us to hold such a reference (with RAII life cycle) inside the
  *  CoinMintingModule without having to include ChainstateManager.h
  *  directly in CoinMintingModule.h.  */
-class CoinMintingModule::ChainstateManagerReference : public ChainstateManager::Reference
-{};
+class ChainstateManagerReference
+{
+private:
+    ChainstateManager::Reference chainstateRef_;
+public:
+    ChainstateManagerReference(): chainstateRef_()
+    {
+    }
+    ~ChainstateManagerReference(){}
+
+    const ChainstateManager& getChainstateManager() const
+    {
+        return *chainstateRef_;
+    }
+};
 
 CoinMintingModule::CoinMintingModule(
     const Settings& settings,
@@ -74,15 +87,15 @@ CoinMintingModule::CoinMintingModule(
     CTxMemPool& mempool,
     I_StakingWallet& wallet
     ): mapHashedBlocks_(mapHashedBlocks)
-    , chainstate_(new ChainstateManagerReference())
+    , chainstateRef_(new ChainstateManagerReference())
     , blockSubsidyContainer_(blockSubsidies)
     , blockIncentivesPopulator_(incentives)
     , blockTransactionCollector_(
         new BlockMemoryPoolTransactionCollector(
             settings,
-            &(*chainstate_)->CoinsTip(),
-            (*chainstate_)->ActiveChain(),
-            (*chainstate_)->GetBlockMap(),
+            &chainstateRef_->getChainstateManager().CoinsTip(),
+            chainstateRef_->getChainstateManager().ActiveChain(),
+            chainstateRef_->getChainstateManager().GetBlockMap(),
             mempool,
             mainCS,
             relayTxFeeCalculator))
@@ -90,8 +103,8 @@ CoinMintingModule::CoinMintingModule(
         new PoSTransactionCreator(
             settings,
             chainParameters,
-            (*chainstate_)->ActiveChain(),
-            (*chainstate_)->GetBlockMap(),
+            chainstateRef_->getChainstateManager().ActiveChain(),
+            chainstateRef_->getChainstateManager().GetBlockMap(),
             blockSubsidyContainer_.blockSubsidiesProvider(),
             blockIncentivesPopulator_,
             proofGenerator,
@@ -102,19 +115,19 @@ CoinMintingModule::CoinMintingModule(
             chainParameters,
             blockSubsidyContainer_.blockSubsidiesProvider(),
             *coinstakeTransactionCreator_,
-            (*chainstate_)->ActiveChain() ))
+            chainstateRef_->getChainstateManager().ActiveChain() ))
     , blockFactory_(
         BlockFactorySelector(
             settings,
             chainParameters,
-            (*chainstate_)->ActiveChain(),
+            chainstateRef_->getChainstateManager().ActiveChain(),
             difficultyAdjuster,
             *blockProofProver_,
             wallet,
             *blockTransactionCollector_))
     , coinMinter_(
         new CoinMinter(
-            (*chainstate_)->ActiveChain(),
+            chainstateRef_->getChainstateManager().ActiveChain(),
             chainParameters,
             peerNotifier,
             blockSubmitter,
@@ -132,7 +145,7 @@ CoinMintingModule::~CoinMintingModule()
     blockProofProver_.reset();
     coinstakeTransactionCreator_.reset();
     blockTransactionCollector_.reset();
-    chainstate_.reset();
+    chainstateRef_.reset();
 }
 
 I_BlockFactory& CoinMintingModule::blockFactory() const

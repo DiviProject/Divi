@@ -129,6 +129,7 @@ CoinMintingModule::~CoinMintingModule()
 {
     coinMinter_.reset();
     blockFactory_.reset();
+    blockProofProver_.reset();
     coinstakeTransactionCreator_.reset();
     blockTransactionCollector_.reset();
 }

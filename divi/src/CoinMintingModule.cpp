@@ -10,6 +10,7 @@
 #include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
 #include <MasternodeModule.h>
+#include <BlockProofProver.h>
 
 namespace
 {
@@ -19,7 +20,7 @@ I_BlockFactory* BlockFactorySelector(
     const I_BlockSubsidyProvider& blockSubsidies,
     const I_DifficultyAdjuster& difficultyAdjuster,
     I_BlockTransactionCollector& blockTransactionCollector,
-    I_PoSTransactionCreator& coinstakeCreator,
+    const I_BlockProofProver& blockProofProver,
     const Settings& settings,
     const CChain& activeChain,
     const CChainParams& chainParameters)
@@ -31,7 +32,7 @@ I_BlockFactory* BlockFactorySelector(
             blockSubsidies,
             difficultyAdjuster,
             blockTransactionCollector,
-            coinstakeCreator,
+            blockProofProver,
             settings,
             activeChain,
             chainParameters);
@@ -42,7 +43,7 @@ I_BlockFactory* BlockFactorySelector(
             blockSubsidies,
             difficultyAdjuster,
             blockTransactionCollector,
-            coinstakeCreator,
+            blockProofProver,
             settings,
             activeChain,
             chainParameters);
@@ -99,13 +100,18 @@ CoinMintingModule::CoinMintingModule(
             proofGenerator,
             wallet,
             mapHashedBlocks_))
+    , blockProofProver_(
+        new BlockProofProver(
+            chainParameters,
+            *coinstakeTransactionCreator_,
+            (*chainstate_)->ActiveChain() ))
     , blockFactory_(
         BlockFactorySelector(
             wallet,
             blockSubsidyContainer_.blockSubsidiesProvider(),
             difficultyAdjuster,
             *blockTransactionCollector_,
-            *coinstakeTransactionCreator_,
+            *blockProofProver_,
             settings,
             (*chainstate_)->ActiveChain(),
             chainParameters))

@@ -3,7 +3,7 @@
 #include <BlockTemplate.h>
 #include <I_BlockSubsidyProvider.h>
 #include <I_BlockTransactionCollector.h>
-#include <I_PoSTransactionCreator.h>
+#include <I_BlockProofProver.h>
 #include <timedata.h>
 #include <boost/thread.hpp>
 #include <chain.h>
@@ -21,7 +21,7 @@ BlockFactory::BlockFactory(
     const I_BlockSubsidyProvider& blockSubsidies,
     const I_DifficultyAdjuster& difficultyAdjuster,
     I_BlockTransactionCollector& blockTransactionCollector,
-    I_PoSTransactionCreator& coinstakeCreator,
+    const I_BlockProofProver& blockProofProver,
     const Settings& settings,
     const CChain& chain,
     const CChainParams& chainParameters
@@ -31,7 +31,7 @@ BlockFactory::BlockFactory(
     , difficultyAdjuster_(difficultyAdjuster)
     , blockSubsidies_(blockSubsidies)
     , blockTransactionCollector_(blockTransactionCollector)
-    , coinstakeCreator_( coinstakeCreator)
+    , blockProofProver_( blockProofProver)
 {
 
 }
@@ -67,61 +67,6 @@ static CMutableTransaction CreateDummyCoinstakeTransaction()
     txNew.vout[0].SetEmpty();
     assert(CTransaction(txNew).IsCoinStake());
     return txNew;
-}
-bool BlockFactory::AppendProofOfStakeToBlock(CBlockTemplate& pBlockTemplate)
-{
-    CBlock& block = pBlockTemplate.block;
-    const CBlockIndex* chainTip = pBlockTemplate.previousBlockIndex;
-    return coinstakeCreator_.CreateProofOfStake(chainTip, block);
-}
-
-bool BlockFactory::AppendProofOfWorkToBlock(
-    CBlockTemplate& blocktemplate)
-{
-    CBlock& block = blocktemplate.block;
-    block.hashMerkleRoot = block.BuildMerkleTree();
-    const CBlockIndex* const previousBlockIndex = blocktemplate.previousBlockIndex;
-    block.nTime = std::max(previousBlockIndex->GetMedianTimePast() + 1, GetAdjustedTime());
-    int64_t nStart = GetTime();
-    uint256 hashTarget = uint256().SetCompact(block.nBits);
-    while (true)
-    {
-        unsigned int nHashesDone = 0;
-        uint256 hash;
-        while (true)
-        {
-            hash = block.GetHash();
-            if (hash <= hashTarget)
-            {
-                // Found a solution
-                LogPrint("minting","%s: proof-of-work found  \n  hash: %s  \ntarget: %s\n",__func__, hash, hashTarget);
-                return true;
-            }
-            block.nNonce += 1;
-            nHashesDone += 1;
-            if ((block.nNonce & 0xFF) == 0)
-                break;
-        }
-
-        // Check for stop or if block needs to be rebuilt
-        boost::this_thread::interruption_point();
-
-        if (block.nNonce >= 0xffff0000)
-            break;
-        if (GetTime() - nStart > 60)
-            break;
-        if (previousBlockIndex != chain_.Tip())
-            break;
-
-        // Update nTime every few seconds
-        block.nTime = std::max(previousBlockIndex->GetMedianTimePast() + 1, GetAdjustedTime());
-        if (chainParameters_.AllowMinDifficultyBlocks())
-        {
-            // Changing block->nTime can change work required on testnet:
-            hashTarget.SetCompact(block.nBits);
-        }
-    }
-    return false;
 }
 
 void BlockFactory::SetBlockHeader(
@@ -189,17 +134,10 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     {
         return NULL;
     }
-    if (fProofOfStake) {
-        boost::this_thread::interruption_point();
-        if (!AppendProofOfStakeToBlock(*pblocktemplate))
-            return NULL;
-    }
-    else
-    {
-        boost::this_thread::interruption_point();
-        if (!AppendProofOfWorkToBlock(*pblocktemplate))
-            return NULL;
-    }
+
+    boost::this_thread::interruption_point();
+    if(!blockProofProver_.attachBlockProof(pblocktemplate->previousBlockIndex, fProofOfStake, pblocktemplate->block))
+        return NULL;
 
     LogPrint("minting","%s: releasing template\n", __func__);
     return pblocktemplate.release();

@@ -12,8 +12,9 @@
 #include <BlockDiskAccessor.h>
 #include <utiltime.h>
 #include <chainparams.h>
-#include <SuperblockSubsidyContainer.h>
-#include <BlockIncentivesPopulator.h>
+#include <I_BlockSubsidyProvider.h>
+#include <I_SuperblockSubsidyContainer.h>
+#include <I_BlockIncentivesPopulator.h>
 #include <I_BlockDataReader.h>
 #include <IndexDatabaseUpdates.h>
 #include <IndexDatabaseUpdateCollector.h>

@@ -28,7 +28,6 @@ private:
     const CChainParams& chainParameters_;
     const I_DifficultyAdjuster& difficultyAdjuster_;
 
-    const I_BlockSubsidyProvider& blockSubsidies_;
     I_BlockTransactionCollector& blockTransactionCollector_;
     const I_BlockProofProver& blockProofProver_;
 
@@ -39,7 +38,6 @@ private:
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
     BlockFactory(
-        const I_BlockSubsidyProvider& blockSubsidies,
         const I_DifficultyAdjuster& difficultyAdjuster,
         I_BlockTransactionCollector& blockTransactionCollector,
         const I_BlockProofProver& blockProofProver,

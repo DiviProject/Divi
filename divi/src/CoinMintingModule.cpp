@@ -17,7 +17,6 @@ namespace
 
 I_BlockFactory* BlockFactorySelector(
     const I_StakingWallet& wallet,
-    const I_BlockSubsidyProvider& blockSubsidies,
     const I_DifficultyAdjuster& difficultyAdjuster,
     I_BlockTransactionCollector& blockTransactionCollector,
     const I_BlockProofProver& blockProofProver,
@@ -29,7 +28,6 @@ I_BlockFactory* BlockFactorySelector(
     {
         return new ExtendedBlockFactory(
             wallet,
-            blockSubsidies,
             difficultyAdjuster,
             blockTransactionCollector,
             blockProofProver,
@@ -40,7 +38,6 @@ I_BlockFactory* BlockFactorySelector(
     else
     {
         return new BlockFactory(
-            blockSubsidies,
             difficultyAdjuster,
             blockTransactionCollector,
             blockProofProver,
@@ -109,7 +106,6 @@ CoinMintingModule::CoinMintingModule(
     , blockFactory_(
         BlockFactorySelector(
             wallet,
-            blockSubsidyContainer_.blockSubsidiesProvider(),
             difficultyAdjuster,
             *blockTransactionCollector_,
             *blockProofProver_,

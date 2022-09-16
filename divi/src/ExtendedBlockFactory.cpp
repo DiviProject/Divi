@@ -101,7 +101,6 @@ public:
 
 ExtendedBlockFactory::ExtendedBlockFactory(
     const I_StakingWallet& wallet,
-    const I_BlockSubsidyProvider& blockSubsidies,
     const I_DifficultyAdjuster& difficultyAdjuster,
     I_BlockTransactionCollector& blockTransactionCollector,
     const I_BlockProofProver& blockProofProver,
@@ -114,7 +113,7 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     , ignoreMempool_(false)
     , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,ignoreMempool_,blockTransactionCollector))
     , blockProofProver_(new ExtendedBlockProofProver(wallet,customCoinstake_,blockBitsShift_, blockProofProver))
-    , blockFactory_(new BlockFactory(blockSubsidies,difficultyAdjuster,*extendedTransactionCollector_,*blockProofProver_, settings, chain,chainParameters))
+    , blockFactory_(new BlockFactory(difficultyAdjuster,*extendedTransactionCollector_,*blockProofProver_, settings, chain,chainParameters))
 {
 }
 ExtendedBlockFactory::~ExtendedBlockFactory()

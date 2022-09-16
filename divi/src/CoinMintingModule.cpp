@@ -132,6 +132,7 @@ CoinMintingModule::~CoinMintingModule()
     blockProofProver_.reset();
     coinstakeTransactionCreator_.reset();
     blockTransactionCollector_.reset();
+    chainstate_.reset();
 }
 
 I_BlockFactory& CoinMintingModule::blockFactory() const

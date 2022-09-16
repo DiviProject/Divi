@@ -39,7 +39,6 @@ private:
 public:
     ExtendedBlockFactory(
         const I_StakingWallet& wallet,
-        const I_BlockSubsidyProvider& blockSubsidies,
         const I_DifficultyAdjuster& difficultyAdjuster,
         I_BlockTransactionCollector& blockTransactionCollector,
         const I_BlockProofProver& blockProofProver,

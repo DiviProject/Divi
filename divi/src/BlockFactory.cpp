@@ -18,7 +18,6 @@
 
 // Actual mining functions
 BlockFactory::BlockFactory(
-    const I_BlockSubsidyProvider& blockSubsidies,
     const I_DifficultyAdjuster& difficultyAdjuster,
     I_BlockTransactionCollector& blockTransactionCollector,
     const I_BlockProofProver& blockProofProver,
@@ -29,7 +28,6 @@ BlockFactory::BlockFactory(
     , chain_(chain)
     , chainParameters_(chainParameters)
     , difficultyAdjuster_(difficultyAdjuster)
-    , blockSubsidies_(blockSubsidies)
     , blockTransactionCollector_(blockTransactionCollector)
     , blockProofProver_( blockProofProver)
 {

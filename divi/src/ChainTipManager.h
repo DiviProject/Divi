@@ -18,8 +18,8 @@ class I_BlockDataReader;
 class BlockConnectionService;
 class MasternodeModule;
 class CChainParams;
-class SuperblockSubsidyContainer;
-class BlockIncentivesPopulator;
+class I_SuperblockSubsidyContainer;
+class I_BlockIncentivesPopulator;
 
 class ChainTipManager final: public I_ChainTipManager
 {
@@ -37,8 +37,8 @@ public:
     ChainTipManager(
         const CChainParams& chainParameters,
         const Settings& settings,
-        const SuperblockSubsidyContainer& blockSubsidies,
-        const BlockIncentivesPopulator& incentives,
+        const I_SuperblockSubsidyContainer& blockSubsidies,
+        const I_BlockIncentivesPopulator& incentives,
         CCriticalSection& mainCriticalSection,
         CTxMemPool& mempool,
         MainNotificationSignals& mainNotificationSignals,

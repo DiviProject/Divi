@@ -67,8 +67,8 @@ void static UpdateTip(const CBlockIndex* pindexNew, CCriticalSection& mainCritic
 ChainTipManager::ChainTipManager(
     const CChainParams& chainParameters,
     const Settings& settings,
-    const SuperblockSubsidyContainer& blockSubsidies,
-    const BlockIncentivesPopulator& incentives,
+    const I_SuperblockSubsidyContainer& blockSubsidies,
+    const I_BlockIncentivesPopulator& incentives,
     CCriticalSection& mainCriticalSection,
     CTxMemPool& mempool,
     MainNotificationSignals& mainNotificationSignals,

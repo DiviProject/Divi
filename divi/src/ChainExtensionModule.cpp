@@ -93,12 +93,12 @@ const I_DifficultyAdjuster& ChainExtensionModule::getDifficultyAdjuster() const
     return *difficultyAdjuster_;
 }
 
-const SuperblockSubsidyContainer& ChainExtensionModule::getBlockSubsidies() const
+const I_SuperblockSubsidyContainer& ChainExtensionModule::getBlockSubsidies() const
 {
     return *blockSubsidies_;
 }
 
-const BlockIncentivesPopulator& ChainExtensionModule::getBlockIncentivesPopulator() const
+const I_BlockIncentivesPopulator& ChainExtensionModule::getBlockIncentivesPopulator() const
 {
     return *incentives_;
 }

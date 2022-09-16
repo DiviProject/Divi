@@ -18,8 +18,8 @@ struct TransactionLocationReference;
 class I_BlockDataReader;
 class CSporkManager;
 class BlockMap;
-class SuperblockSubsidyContainer;
-class BlockIncentivesPopulator;
+class I_SuperblockSubsidyContainer;
+class I_BlockIncentivesPopulator;
 class MasternodeModule;
 class CChainParams;
 
@@ -33,8 +33,8 @@ private:
     const I_BlockDataReader& blockDataReader_;
     const bool modifyCoinCacheInplace_;
     const CChainParams& chainParameters_;
-    const SuperblockSubsidyContainer& blockSubsidies_;
-    const BlockIncentivesPopulator& incentives_;
+    const I_SuperblockSubsidyContainer& blockSubsidies_;
+    const I_BlockIncentivesPopulator& incentives_;
 
     bool ApplyDisconnectionUpdateIndexToDBs(
         const uint256& bestBlockHash,
@@ -59,8 +59,8 @@ public:
     BlockConnectionService(
         const CChainParams& chainParameters,
         const MasternodeModule& masternodeModule,
-        const SuperblockSubsidyContainer& blockSubsidies,
-        const BlockIncentivesPopulator& incentives,
+        const I_SuperblockSubsidyContainer& blockSubsidies,
+        const I_BlockIncentivesPopulator& incentives,
         const BlockMap& blockIndicesByHash,
         CBlockTreeDB* blocktree,
         CCoinsViewCache* coinTip,

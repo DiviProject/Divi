@@ -107,7 +107,7 @@ ChainTipManager::~ChainTipManager()
 bool ChainTipManager::connectTip(CValidationState& state,const CBlock* pblock, CBlockIndex* blockIndex) const
 {
     AssertLockHeld(mainCriticalSection_);
-    auto& coinsTip = chainstate_.CoinsTip();
+    const auto& coinsTip = chainstate_.CoinsTip();
     const auto& blockMap = chainstate_.GetBlockMap();
 
     assert(blockIndex->pprev == chainstate_.ActiveChain().Tip());

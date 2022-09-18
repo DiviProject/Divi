@@ -24,9 +24,6 @@
 #include <I_CoinMinter.h>
 #include <CoinMintingModule.h>
 #include <ExtendedBlockFactory.h>
-#include <masternode-payments.h>
-#include <MasternodeModule.h>
-#include <spork.h>
 #include <stdint.h>
 #include <txmempool.h>
 #include <sync.h>

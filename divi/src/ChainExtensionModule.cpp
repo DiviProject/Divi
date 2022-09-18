@@ -50,7 +50,6 @@ ChainExtensionModule::ChainExtensionModule(
         new ChainExtensionService(
             chainParameters,
             settings,
-            masternodeModule,
             sporkManager,
             *blockSubsidies_,
             *incentives_,

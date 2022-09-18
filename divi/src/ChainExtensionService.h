@@ -11,7 +11,6 @@
 #include <I_ChainExtensionService.h>
 
 class CTxMemPool;
-class MasternodeModule;
 class MainNotificationSignals;
 class CCriticalSection;
 class Settings;
@@ -50,7 +49,6 @@ public:
     ChainExtensionService(
         const CChainParams& chainParameters,
         const Settings& settings,
-        const MasternodeModule& masternodeModule,
         const CSporkManager& sporkManager,
         const I_SuperblockSubsidyContainer& blockSubsidies,
         const I_BlockIncentivesPopulator& incentives,

@@ -57,7 +57,6 @@ private:
 public:
     BlockConnectionService(
         const CChainParams& chainParameters,
-        const MasternodeModule& masternodeModule,
         const I_SuperblockSubsidyContainer& blockSubsidies,
         const I_BlockIncentivesPopulator& incentives,
         const BlockMap& blockIndicesByHash,

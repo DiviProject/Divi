@@ -72,7 +72,6 @@ ChainTipManager::ChainTipManager(
     CCriticalSection& mainCriticalSection,
     CTxMemPool& mempool,
     MainNotificationSignals& mainNotificationSignals,
-    const MasternodeModule& masternodeModule,
     std::map<uint256, NodeId>& peerIdByBlockHash,
     const CSporkManager& sporkManager,
     ChainstateManager& chainstate
@@ -87,7 +86,6 @@ ChainTipManager::ChainTipManager(
     , blockConnectionService_(
         new BlockConnectionService(
             chainParameters,
-            masternodeModule,
             blockSubsidies,
             incentives,
             chainstate_.GetBlockMap(),

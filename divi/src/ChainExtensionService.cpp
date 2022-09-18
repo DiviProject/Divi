@@ -572,7 +572,6 @@ bool ChainExtensionService::transitionToMostWorkChainTip(
 ChainExtensionService::ChainExtensionService(
     const CChainParams& chainParameters,
     const Settings& settings,
-    const MasternodeModule& masternodeModule,
     const CSporkManager& sporkManager,
     const I_SuperblockSubsidyContainer& blockSubsidies,
     const I_BlockIncentivesPopulator& incentives,
@@ -609,7 +608,6 @@ ChainExtensionService::ChainExtensionService(
             mainCriticalSection_,
             mempool_,
             mainNotificationSignals_,
-            masternodeModule,
             peerIdByBlockHash,
             sporkManager_,
             chainstate_))

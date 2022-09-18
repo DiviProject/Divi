@@ -16,7 +16,6 @@ class CTxMemPool;
 class MainNotificationSignals;
 class I_BlockDataReader;
 class BlockConnectionService;
-class MasternodeModule;
 class CChainParams;
 class I_SuperblockSubsidyContainer;
 class I_BlockIncentivesPopulator;
@@ -42,7 +41,6 @@ public:
         CCriticalSection& mainCriticalSection,
         CTxMemPool& mempool,
         MainNotificationSignals& mainNotificationSignals,
-        const MasternodeModule& masternodeModule,
         std::map<uint256, NodeId>& peerIdByBlockHash,
         const CSporkManager& sporkManager,
         ChainstateManager& chainstate);

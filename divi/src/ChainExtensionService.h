@@ -35,7 +35,7 @@ private:
     CTxMemPool& mempool_;
     MainNotificationSignals& mainNotificationSignals_;
     CCriticalSection& mainCriticalSection_;
-    ChainstateManager* chainstateRef_;
+    ChainstateManager& chainstate_;
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors_;
     BlockIndexCandidates& blockIndexCandidates_;
     std::unique_ptr<BlockIndexLotteryUpdater> blockIndexLotteryUpdater_;

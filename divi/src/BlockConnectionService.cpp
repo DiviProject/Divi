@@ -300,11 +300,10 @@ bool BlockConnectionService::ConnectBlock(
     CValidationState& state,
     CBlockIndex* pindex,
     CCoinsViewCache& view,
-    const bool updateCoinsCacheOnly,
-    const bool alreadyChecked) const
+    const bool updateCoinsCacheOnly) const
 {
     // Check it again in case a previous version let a bad block in
-    if (!alreadyChecked && !CheckBlock(block, state))
+    if (!CheckBlock(block, state))
         return false;
 
     const CChainParams& chainParameters = Params();
@@ -365,19 +364,18 @@ bool BlockConnectionService::ConnectBlock(
     const CBlock& block,
     CValidationState& state,
     CBlockIndex* pindex,
-    const bool updateCoinsCacheOnly,
-    const bool alreadyChecked) const
+    const bool updateCoinsCacheOnly) const
 {
     bool connectBlockSucceeded = false;
     if(!modifyCoinCacheInplace_)
     {
         CCoinsViewCache coins(coinTip_);
-        connectBlockSucceeded = ConnectBlock(block, state, pindex, coins, updateCoinsCacheOnly,alreadyChecked);
+        connectBlockSucceeded = ConnectBlock(block, state, pindex, coins, updateCoinsCacheOnly);
         if(connectBlockSucceeded) assert(coins.Flush());
     }
     else
     {
-        connectBlockSucceeded = ConnectBlock(block, state, pindex, *coinTip_, updateCoinsCacheOnly,alreadyChecked);
+        connectBlockSucceeded = ConnectBlock(block, state, pindex, *coinTip_, updateCoinsCacheOnly);
     }
     return connectBlockSucceeded;
 }

@@ -147,7 +147,7 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
                apply ConnectBlock to a temporary copy, and verify later on
                that the fields computed match the ones we have already.  */
             CBlockIndex indexCopy(*pindex);
-            if (!chainManager_->ConnectBlock(block, state, &indexCopy, true, false))
+            if (!chainManager_->ConnectBlock(block, state, &indexCopy, true))
                 return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             if (indexCopy.nUndoPos != pindex->nUndoPos
                   || indexCopy.nStatus != pindex->nStatus

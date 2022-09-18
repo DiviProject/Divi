@@ -40,7 +40,7 @@ CVerifyDB::CVerifyDB(
     , chainstate_(chainstate)
     , coinsViewCache_(new CCoinsViewCache(&coinView_))
     , sporkManager_(sporkManager)
-    , chainManager_(
+    , blockConnectionService_(
         new BlockConnectionService(
             chainParameters,
             masternodeModule,
@@ -112,7 +112,7 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
             pindex == pindexState &&
             (coinCacheSize + coinsTipCacheSize) <= coinsCacheSize_)
         {
-            if (!chainManager_->DisconnectBlock(state, pindex, true).second)
+            if (!blockConnectionService_->DisconnectBlock(state, pindex, true).second)
                 return error("VerifyDB() : *** inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             pindexState = pindex->pprev;
             nGoodTransactions += block.vtx.size();
@@ -147,7 +147,7 @@ bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
                apply ConnectBlock to a temporary copy, and verify later on
                that the fields computed match the ones we have already.  */
             CBlockIndex indexCopy(*pindex);
-            if (!chainManager_->ConnectBlock(block, state, &indexCopy, true))
+            if (!blockConnectionService_->ConnectBlock(block, state, &indexCopy, true))
                 return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             if (indexCopy.nUndoPos != pindex->nUndoPos
                   || indexCopy.nStatus != pindex->nStatus

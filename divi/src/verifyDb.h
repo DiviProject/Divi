@@ -36,7 +36,7 @@ private:
     ChainstateManager& chainstate_;
     std::unique_ptr<CCoinsViewCache> coinsViewCache_;
     const CSporkManager& sporkManager_;
-    std::unique_ptr<const BlockConnectionService> chainManager_;
+    std::unique_ptr<const BlockConnectionService> blockConnectionService_;
     const CChain& activeChain_;
     CClientUIInterface& clientInterface_;
     const unsigned coinsCacheSize_;

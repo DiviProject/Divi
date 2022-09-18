@@ -20,7 +20,6 @@ class BlockConnectionService;
 class BlockDiskDataReader;
 class ChainstateManager;
 class I_BlockDataReader;
-class MasternodeModule;
 class CChainParams;
 class I_SuperblockSubsidyContainer;
 class I_BlockIncentivesPopulator;
@@ -44,7 +43,6 @@ private:
 public:
     CVerifyDB(
         const CChainParams& chainParameters,
-        const MasternodeModule& masternodeModule,
         const I_SuperblockSubsidyContainer& blockSubsidies,
         const I_BlockIncentivesPopulator& incentives,
         ChainstateManager& chainstate,

@@ -26,7 +26,6 @@
 
 CVerifyDB::CVerifyDB(
     const CChainParams& chainParameters,
-    const MasternodeModule& masternodeModule,
     const I_SuperblockSubsidyContainer& blockSubsidies,
     const I_BlockIncentivesPopulator& incentives,
     ChainstateManager& chainstate,
@@ -43,7 +42,6 @@ CVerifyDB::CVerifyDB(
     , blockConnectionService_(
         new BlockConnectionService(
             chainParameters,
-            masternodeModule,
             blockSubsidies,
             incentives,
             chainstate.GetBlockMap(),

@@ -424,7 +424,6 @@ bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip)
         : static_cast<const CCoinsView&>(chainstate->GetNonCatchingCoinsView());
     const CVerifyDB dbVerifier(
         Params(),
-        GetMasternodeModule(),
         chainExtensionModule->getBlockSubsidies(),
         chainExtensionModule->getBlockIncentivesPopulator(),
         *chainstate,

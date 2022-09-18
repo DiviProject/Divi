@@ -528,7 +528,7 @@ bool ChainExtensionService::transitionToMostWorkChainTip(
     CValidationState& state,
     const CBlock* pblock) const
 {
-    const auto& chain = chainstateRef_->ActiveChain();
+    const auto& chain = chainstate_.ActiveChain();
 
     const CBlockIndex* pindexNewTip = NULL;
     CBlockIndex* pindexMostWork = NULL;
@@ -591,7 +591,7 @@ ChainExtensionService::ChainExtensionService(
     , mempool_(mempool)
     , mainNotificationSignals_(mainNotificationSignals)
     , mainCriticalSection_(mainCriticalSection)
-    , chainstateRef_(&chainstateManager)
+    , chainstate_(chainstateManager)
     , blockIndexSuccessors_(blockIndexSuccessors)
     , blockIndexCandidates_(blockIndexCandidates)
     , blockIndexLotteryUpdater_(
@@ -612,12 +612,12 @@ ChainExtensionService::ChainExtensionService(
             masternodeModule,
             peerIdByBlockHash,
             sporkManager_,
-            *chainstateRef_))
+            chainstate_))
     , chainTransitionMediator_(
         new MostWorkChainTransitionMediator(
             settings_,
             mainCriticalSection_,
-            *chainstateRef_,
+            chainstate_,
             blockIndexSuccessors_,
             blockIndexCandidates_,
             *chainTipManager_))
@@ -638,7 +638,7 @@ std::pair<CBlockIndex*, bool> ChainExtensionService::assignBlockIndex(
 {
     std::pair<CBlockIndex*, bool> result(nullptr,false);
     result.second = AcceptBlock(
-        mainCriticalSection_, blockProofVerifier_, settings_, *blockIndexLotteryUpdater_, chainParameters_,block,*chainstateRef_,sporkManager_,state,&result.first,dbp);
+        mainCriticalSection_, blockProofVerifier_, settings_, *blockIndexLotteryUpdater_, chainParameters_,block,chainstate_,sporkManager_,state,&result.first,dbp);
     return result;
 }
 
@@ -648,27 +648,27 @@ bool ChainExtensionService::updateActiveChain(
 {
     const bool result = transitionToMostWorkChainTip(state, pblock);
     // Write changes periodically to disk, after relay.
-    if (!FlushStateToDisk(*chainstateRef_,state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
+    if (!FlushStateToDisk(chainstate_,state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
         return false;
     }
-    VerifyBlockIndexTree(*chainstateRef_,mainCriticalSection_, blockIndexSuccessors_, blockIndexCandidates_);
+    VerifyBlockIndexTree(chainstate_,mainCriticalSection_, blockIndexSuccessors_, blockIndexCandidates_);
     return result;
 }
 
 bool ChainExtensionService::invalidateBlock(CValidationState& state, CBlockIndex* blockIndex, const bool updateCoinDatabaseOnly) const
 {
     AssertLockHeld(mainCriticalSection_);
-    return InvalidateBlock(*chainTipManager_, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, state, mainCriticalSection_, *chainstateRef_, blockIndex, updateCoinDatabaseOnly);
+    return InvalidateBlock(*chainTipManager_, IsInitialBlockDownload(mainCriticalSection_,settings_), settings_, state, mainCriticalSection_, chainstate_, blockIndex, updateCoinDatabaseOnly);
 }
 
 bool ChainExtensionService::reconsiderBlock(CValidationState& state, CBlockIndex* pindex) const
 {
     AssertLockHeld(mainCriticalSection_);
-    const auto& chain = chainstateRef_->ActiveChain();
+    const auto& chain = chainstate_.ActiveChain();
     const int nHeight = pindex->nHeight;
 
     // Remove the invalidity flag from this block and all its descendants.
-    for (auto& entry : chainstateRef_->GetBlockMap()) {
+    for (auto& entry : chainstate_.GetBlockMap()) {
         CBlockIndex& blk = *entry.second;
         if (!blk.IsValid() && blk.GetAncestor(nHeight) == pindex) {
             blk.nStatus &= ~BLOCK_FAILED_MASK;
@@ -695,10 +695,10 @@ bool ChainExtensionService::connectGenesisBlock() const
 {
     LOCK(mainCriticalSection_);
 
-    auto& blockTree = chainstateRef_->BlockTree();
+    auto& blockTree = chainstate_.BlockTree();
 
     // Check whether we're already initialized
-    if (chainstateRef_->ActiveChain().Genesis() != nullptr)
+    if (chainstate_.ActiveChain().Genesis() != nullptr)
         return true;
 
     // Use the provided setting for transaciton search indices
@@ -723,13 +723,13 @@ bool ChainExtensionService::connectGenesisBlock() const
                 return error("%s : FindBlockPos failed",__func__);
             if (!WriteBlockToDisk(block, blockPos))
                 return error("%s : writing genesis block to disk failed",__func__);
-            CBlockIndex* pindex = AddToBlockIndex(*chainstateRef_, *blockIndexLotteryUpdater_, chainParameters_,sporkManager_,block);
-            if (!ReceivedBlockTransactions(chainstateRef_->ActiveChain(),block, pindex, blockPos))
+            CBlockIndex* pindex = AddToBlockIndex(chainstate_, *blockIndexLotteryUpdater_, chainParameters_,sporkManager_,block);
+            if (!ReceivedBlockTransactions(chainstate_.ActiveChain(),block, pindex, blockPos))
                 return error("%s : genesis block not accepted",__func__);
             if (!updateActiveChain(state, &block))
                 return error("%s : genesis block cannot be activated",__func__);
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
-            return FlushStateToDisk(*chainstateRef_,state, FLUSH_STATE_ALWAYS,mainNotificationSignals_,mainCriticalSection_);
+            return FlushStateToDisk(chainstate_,state, FLUSH_STATE_ALWAYS,mainNotificationSignals_,mainCriticalSection_);
         } catch (std::runtime_error& e) {
             return error("%s : failed to initialize block database: %s", __func__, e.what());
         }

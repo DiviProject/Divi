@@ -14,11 +14,11 @@
 BlockProofProver::BlockProofProver(
     const CChainParams& chainParameters,
     const I_BlockSubsidyProvider& blockSubsidies,
-    const I_PoSTransactionCreator& posTransactionCreator,
+    const I_BlockProofProver& proofOfStakeProver,
     const CChain& chain
     ): chainParameters_(chainParameters)
     , blockSubsidies_(blockSubsidies)
-    , posTransactionCreator_(posTransactionCreator)
+    , proofOfStakeProver_(proofOfStakeProver)
     , chain_(chain)
 {
 }
@@ -80,7 +80,7 @@ bool BlockProofProver::attachProofOfStakeToBlock(
     const CBlockIndex* const previousBlockIndex,
     CBlock& block) const
 {
-    return posTransactionCreator_.CreateProofOfStake(previousBlockIndex, block);
+    return proofOfStakeProver_.attachBlockProof(previousBlockIndex,true, block);
 }
 
 bool BlockProofProver::attachBlockProof(

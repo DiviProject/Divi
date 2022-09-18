@@ -383,3 +383,12 @@ bool PoSTransactionCreator::CreateProofOfStake(
     stakedCoins_->resetTimestamp(); //this will trigger stake set to repopulate next round
     return true;
 }
+
+bool PoSTransactionCreator::attachBlockProof(
+    const CBlockIndex* chainTip,
+    const bool proofOfStake,
+    CBlock& block) const
+{
+    if(!proofOfStake) return false;
+    return CreateProofOfStake(chainTip,block);
+}

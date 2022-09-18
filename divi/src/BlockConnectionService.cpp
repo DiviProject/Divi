@@ -24,7 +24,6 @@
 #include <ForkActivation.h>
 #include <BlockTransactionChecker.h>
 #include <Settings.h>
-#include <MasternodeModule.h>
 #include <utilmoneystr.h>
 #include <BlockFileHelpers.h>
 

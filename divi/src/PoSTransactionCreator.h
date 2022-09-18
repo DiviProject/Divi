@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <I_PoSTransactionCreator.h>
+#include <I_BlockProofProver.h>
 
 class CBlock;
 class CMutableTransaction;
@@ -24,7 +25,7 @@ struct StakableCoin;
 class Settings;
 class I_StakingWallet;
 
-class PoSTransactionCreator: public I_PoSTransactionCreator
+class PoSTransactionCreator: public I_PoSTransactionCreator, public I_BlockProofProver
 {
 private:
     const Settings& settings_;
@@ -88,6 +89,11 @@ public:
     ~PoSTransactionCreator();
     bool CreateProofOfStake(
         const CBlockIndex* chainTip,
+        CBlock& block) const override;
+
+    bool attachBlockProof(
+        const CBlockIndex* chainTip,
+        const bool proofOfStake,
         CBlock& block) const override;
 };
 #endif // COINSTAKE_CREATOR_H

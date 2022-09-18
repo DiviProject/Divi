@@ -34,7 +34,7 @@ private:
     const I_SuperblockSubsidyContainer& blockSubsidyContainer_;
     const I_BlockIncentivesPopulator& blockIncentivesPopulator_;
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
-    std::unique_ptr<I_PoSTransactionCreator> coinstakeTransactionCreator_;
+    std::unique_ptr<I_BlockProofProver> coinstakeTransactionCreator_;
     std::unique_ptr<I_BlockProofProver> blockProofProver_;
     std::unique_ptr<I_BlockFactory> blockFactory_;
     std::unique_ptr<I_CoinMinter> coinMinter_;

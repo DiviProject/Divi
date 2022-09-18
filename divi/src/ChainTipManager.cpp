@@ -122,7 +122,7 @@ bool ChainTipManager::connectTip(CValidationState& state,const CBlock* pblock, C
     }
     // Apply the block atomically to the chain state.
     {
-        bool rv = blockConnectionService_->ConnectBlock(*pblock,state,blockIndex,false,false);
+        bool rv = blockConnectionService_->ConnectBlock(*pblock,state,blockIndex,false);
         if (!rv) {
             if (state.IsInvalid())
                 InvalidBlockFound(peerIdByBlockHash_,IsInitialBlockDownload(mainCriticalSection_,settings_),settings_,mainCriticalSection_,blockIndex, state);

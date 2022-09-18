@@ -53,8 +53,7 @@ private:
         CValidationState& state,
         CBlockIndex* pindex,
         CCoinsViewCache& view,
-        const bool updateCoinsCacheOnly,
-        const bool alreadyChecked) const;
+        const bool updateCoinsCacheOnly) const;
 public:
     BlockConnectionService(
         const CChainParams& chainParameters,
@@ -80,7 +79,6 @@ public:
         const CBlock& block,
         CValidationState& state,
         CBlockIndex* pindex,
-        const bool updateCoinsCacheOnly,
-        const bool alreadyChecked) const;
+        const bool updateCoinsCacheOnly) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

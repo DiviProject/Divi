@@ -13,21 +13,20 @@
 #include <defaultValues.h>
 
 bool FlushStateToDisk(
+    ChainstateManager& chainstate,
     CValidationState& state,
     FlushStateMode mode,
     MainNotificationSignals& mainNotificationSignals,
     CCriticalSection& mainCriticalSection)
 {
     LOCK(mainCriticalSection);
-
-    ChainstateManager::Reference chainstate;
-    auto& coinsTip = chainstate->CoinsTip();
-    auto& blockTreeDB = chainstate->BlockTree();
+    auto& coinsTip = chainstate.CoinsTip();
+    auto& blockTreeDB = chainstate.BlockTree();
 
     static int64_t nLastWrite = 0;
     try {
         if ((mode == FLUSH_STATE_ALWAYS) ||
-            ((mode == FLUSH_STATE_PERIODIC || mode == FLUSH_STATE_IF_NEEDED) && coinsTip.GetCacheSize() > chainstate->GetNominalViewCacheSize() ) ||
+            ((mode == FLUSH_STATE_PERIODIC || mode == FLUSH_STATE_IF_NEEDED) && coinsTip.GetCacheSize() > chainstate.GetNominalViewCacheSize() ) ||
             (mode == FLUSH_STATE_PERIODIC && GetTimeMicros() > nLastWrite + DATABASE_WRITE_INTERVAL * 1000000))
         {
             // Typical CCoins structures on disk are around 100 bytes in size.
@@ -51,7 +50,7 @@ bool FlushStateToDisk(
                 return state.Abort("Failed to write to coin database");
             // Update best block in wallet (so we can detect restored wallets).
             if (mode != FLUSH_STATE_IF_NEEDED) {
-                mainNotificationSignals.SetBestChain(chainstate->ActiveChain().GetLocator());
+                mainNotificationSignals.SetBestChain(chainstate.ActiveChain().GetLocator());
             }
             nLastWrite = GetTimeMicros();
         }

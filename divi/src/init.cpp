@@ -129,7 +129,8 @@ void FlushStateToDisk()
 {
     MainNotificationSignals& notificationSignals = GetMainNotificationInterface();
     CValidationState state;
-    FlushStateToDisk(state, FlushStateMode::FLUSH_STATE_ALWAYS, notificationSignals,cs_main);
+    ChainstateManager::Reference chainstateRef_;
+    FlushStateToDisk(*chainstateRef_, state, FlushStateMode::FLUSH_STATE_ALWAYS, notificationSignals,cs_main);
 }
 
 void InitializeMultiWalletModule()

@@ -648,7 +648,7 @@ bool ChainExtensionService::updateActiveChain(
 {
     const bool result = transitionToMostWorkChainTip(state, pblock);
     // Write changes periodically to disk, after relay.
-    if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
+    if (!FlushStateToDisk(*chainstateRef_,state, FLUSH_STATE_PERIODIC,mainNotificationSignals_,mainCriticalSection_)) {
         return false;
     }
     VerifyBlockIndexTree(*chainstateRef_,mainCriticalSection_, blockIndexSuccessors_, blockIndexCandidates_);
@@ -729,7 +729,7 @@ bool ChainExtensionService::connectGenesisBlock() const
             if (!updateActiveChain(state, &block))
                 return error("%s : genesis block cannot be activated",__func__);
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
-            return FlushStateToDisk(state, FLUSH_STATE_ALWAYS,mainNotificationSignals_,mainCriticalSection_);
+            return FlushStateToDisk(*chainstateRef_,state, FLUSH_STATE_ALWAYS,mainNotificationSignals_,mainCriticalSection_);
         } catch (std::runtime_error& e) {
             return error("%s : failed to initialize block database: %s", __func__, e.what());
         }

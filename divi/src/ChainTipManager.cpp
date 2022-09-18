@@ -135,7 +135,7 @@ bool ChainTipManager::connectTip(CValidationState& state,const CBlock* pblock, C
     FlushStateMode flushMode = FLUSH_STATE_IF_NEEDED;
     if (blockIndex->pprev && (blockIndex->GetBlockPos().nFile != blockIndex->pprev->GetBlockPos().nFile))
         flushMode = FLUSH_STATE_ALWAYS;
-    if (!FlushStateToDisk(state, flushMode,mainNotificationSignals_,mainCriticalSection_))
+    if (!FlushStateToDisk(chainstate_,state, flushMode,mainNotificationSignals_,mainCriticalSection_))
         return false;
 
     // Remove conflicting transactions from the mempool.
@@ -172,7 +172,7 @@ bool ChainTipManager::disconnectTip(CValidationState& state, const bool updateCo
     std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
 
     // Write the chain state to disk, if necessary.
-    if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS, mainNotificationSignals_,mainCriticalSection_))
+    if (!FlushStateToDisk(chainstate_,state, FLUSH_STATE_ALWAYS, mainNotificationSignals_,mainCriticalSection_))
         return false;
     // Resurrect mempool transactions from the disconnected block.
     for(const CTransaction& tx: blockTransactions) {

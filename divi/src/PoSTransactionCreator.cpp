@@ -393,3 +393,10 @@ bool PoSTransactionCreator::attachBlockProof(
 {
     return CreateProofOfStake(chainTip,block);
 }
+
+void PoSTransactionCreator::setWallet(I_StakingWallet& wallet)
+{
+    wallet_.reset(&wallet);
+    stakedCoins_->resetCoins();
+    stakedCoins_->resetTimestamp();
+}

@@ -125,11 +125,6 @@ const I_BlockIncentivesPopulator& ChainExtensionModule::getBlockIncentivesPopula
     return *incentives_;
 }
 
-const I_ProofOfStakeGenerator& ChainExtensionModule::getProofOfStakeGenerator() const
-{
-    return proofOfStakeModule_->proofOfStakeGenerator();
-}
-
 const I_BlockProofProver& ChainExtensionModule::getBlockProofProver(I_StakingWallet& stakingWallet) const
 {
     LOCK(mainCriticalSection_);

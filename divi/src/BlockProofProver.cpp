@@ -8,6 +8,7 @@
 #include <utiltime.h>
 #include <I_PoSTransactionCreator.h>
 #include <I_BlockSubsidyProvider.h>
+#include <NextBlockTypeHelpers.h>
 
 #include <boost/thread.hpp>
 
@@ -80,15 +81,16 @@ bool BlockProofProver::attachProofOfStakeToBlock(
     const CBlockIndex* const previousBlockIndex,
     CBlock& block) const
 {
-    return proofOfStakeProver_.attachBlockProof(previousBlockIndex,true, block);
+    return proofOfStakeProver_.attachBlockProof(previousBlockIndex, block);
 }
 
 bool BlockProofProver::attachBlockProof(
     const CBlockIndex* chainTip,
-    const bool proofOfStake,
     CBlock& block) const
 {
     boost::this_thread::interruption_point();
-    if(!proofOfStake) return attachProofOfWorkToBlock(chainTip,block);
-    else return attachProofOfStakeToBlock(chainTip,block);
+    NextBlockType blockType = NextBlockTypeHelpers::ComputeNextBlockType(chainTip,chainParameters_.LAST_POW_BLOCK());
+    if(blockType == PROOF_OF_WORK) return attachProofOfWorkToBlock(chainTip,block);
+    else if(blockType == PROOF_OF_STAKE) return attachProofOfStakeToBlock(chainTip,block);
+    else return false;
 }

@@ -69,13 +69,14 @@ public:
 
     bool attachBlockProof(
         const CBlockIndex* chainTip,
-        const bool proofOfStake,
         CBlock& block) const override
     {
-        bool coinstakeCreated = blockProofProver_.attachBlockProof(chainTip,proofOfStake,block);
+        bool coinstakeCreated = blockProofProver_.attachBlockProof(chainTip,block);
         bool blockWasCustomized = false;
         if(customCoinstake_ != nullptr)
         {
+            if (!block.IsProofOfStake())
+                throw std::runtime_error("trying to set custom coinstake in non-PoS block");
             if (!customCoinstake_->IsCoinStake())
                 throw std::runtime_error("trying to use non-coinstake to set custom coinstake in block");
             block.vtx[1] = CMutableTransaction(*customCoinstake_);

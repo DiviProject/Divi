@@ -25,7 +25,6 @@ public:
         const CChain& chain);
     bool attachBlockProof(
         const CBlockIndex* chainTip,
-        const bool proofOfStake,
         CBlock& block) const override;
 };
 #endif// BLOCK_PROOF_PROVER_H

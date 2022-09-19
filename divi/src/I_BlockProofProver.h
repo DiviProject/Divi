@@ -8,7 +8,6 @@ public:
     virtual ~I_BlockProofProver(){}
     virtual bool attachBlockProof(
         const CBlockIndex* chainTip,
-        const bool proofOfStake,
         CBlock& block) const = 0;
 };
 #endif// I_BLOCK_PROOF_PROVERR_H

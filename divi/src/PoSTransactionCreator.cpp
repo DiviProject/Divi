@@ -386,9 +386,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
 bool PoSTransactionCreator::attachBlockProof(
     const CBlockIndex* chainTip,
-    const bool proofOfStake,
     CBlock& block) const
 {
-    if(!proofOfStake) return false;
     return CreateProofOfStake(chainTip,block);
 }

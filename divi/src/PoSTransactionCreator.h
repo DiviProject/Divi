@@ -93,7 +93,6 @@ public:
 
     bool attachBlockProof(
         const CBlockIndex* chainTip,
-        const bool proofOfStake,
         CBlock& block) const override;
 };
 #endif // COINSTAKE_CREATOR_H

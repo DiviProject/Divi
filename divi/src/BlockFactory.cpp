@@ -125,7 +125,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     }
 
     boost::this_thread::interruption_point();
-    if(!blockProofProver_.attachBlockProof(pblocktemplate->previousBlockIndex, fProofOfStake, pblocktemplate->block))
+    if(!blockProofProver_.attachBlockProof(pblocktemplate->previousBlockIndex, pblocktemplate->block))
         return NULL;
 
     LogPrint("minting","%s: releasing template\n", __func__);

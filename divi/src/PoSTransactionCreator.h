@@ -92,6 +92,7 @@ public:
         const CBlockIndex* chainTip,
         CBlock& block) const override;
 
+    void setWallet(I_StakingWallet& wallet);
     bool attachBlockProof(
         const CBlockIndex* chainTip,
         CBlock& block) const override;

@@ -289,6 +289,7 @@ BITCOIN_CORE_H = \
   miner.h \
   I_CoinMinter.h \
   BlockMemoryPoolTransactionCollector.h \
+  NextBlockTypeHelpers.h \
   CoinMinter.h \
   CoinMintingModule.h \
   PoSTransactionCreator.h \
@@ -500,6 +501,7 @@ libbitcoin_server_a_SOURCES = \
   merkleblock.cpp \
   merkletx.cpp \
   MerkleTxConfirmationNumberCalculator.cpp \
+  NextBlockTypeHelpers.cpp \
   CoinMinter.cpp \
   CoinMintingModule.cpp \
   PoSTransactionCreator.cpp \

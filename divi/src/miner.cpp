@@ -10,6 +10,7 @@
 #include <ChainstateManager.h>
 #include <CoinMintingModule.h>
 #include <I_CoinMinter.h>
+#include <NonDeletionDeleter.h>
 #include <Logging.h>
 #include <ThreadManagementHelpers.h>
 #include <chain.h>
@@ -21,11 +22,6 @@
 
 namespace
 {
-
- template <typename T>
- struct NonDeletionDeleter {
-  void operator()(T* r) {}
- };
 
 CCriticalSection cs_coinMintingModule;
 std::unique_ptr<CoinMintingModule> coinMintingModule;

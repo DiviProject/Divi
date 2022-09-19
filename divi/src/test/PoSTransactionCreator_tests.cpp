@@ -97,7 +97,7 @@ protected:
     CBlock block;
     block.vtx.resize(2);
     block.nBits = 0x207fffff;
-    return txCreator.CreateProofOfStake(fakeChain.activeChain->Tip(), block);
+    return txCreator.attachBlockProof(fakeChain.activeChain->Tip(), block);
   }
 };
 

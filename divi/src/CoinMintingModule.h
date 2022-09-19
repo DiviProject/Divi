@@ -9,7 +9,6 @@ class I_BlockTransactionCollector;
 class I_BlockSubmitter;
 class I_BlockProofProver;
 class I_CoinMinter;
-class I_PoSTransactionCreator;
 class I_PeerBlockNotifyService;
 class I_ProofOfStakeGenerator;
 class I_DifficultyAdjuster;

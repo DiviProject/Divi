@@ -15,7 +15,6 @@ class CBlockTemplate;
 class CReserveKey;
 class I_BlockSubsidyProvider;
 class I_BlockTransactionCollector;
-class I_PoSTransactionCreator;
 class Settings;
 class I_StakingWallet;
 class I_DifficultyAdjuster;

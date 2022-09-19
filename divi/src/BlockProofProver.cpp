@@ -6,7 +6,6 @@
 #include <primitives/block.h>
 #include <timedata.h>
 #include <utiltime.h>
-#include <I_PoSTransactionCreator.h>
 #include <I_BlockSubsidyProvider.h>
 #include <NextBlockTypeHelpers.h>
 

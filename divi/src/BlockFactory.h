@@ -11,7 +11,6 @@ class CBlock;
 class CMutableTransaction;
 class I_BlockSubsidyProvider;
 class I_BlockTransactionCollector;
-class I_PoSTransactionCreator;
 class CChain;
 class CChainParams;
 class Settings;

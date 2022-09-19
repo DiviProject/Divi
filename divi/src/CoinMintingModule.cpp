@@ -74,23 +74,17 @@ public:
 CoinMintingModule::CoinMintingModule(
     const Settings& settings,
     const CChainParams& chainParameters,
+    const I_BlockProofProver& blockProofProver,
     const CMasternodeSync& masternodeSynchronization,
-    const I_SuperblockSubsidyContainer& blockSubsidies,
-    const I_BlockIncentivesPopulator& incentives,
-    const I_ProofOfStakeGenerator& proofGenerator,
     const CFeeRate& relayTxFeeCalculator,
     const I_PeerBlockNotifyService& peerNotifier,
     const I_BlockSubmitter& blockSubmitter,
-    const CSporkManager& sporkManager,
     const I_DifficultyAdjuster& difficultyAdjuster,
     std::map<unsigned int, unsigned int>& mapHashedBlocks,
     CCriticalSection& mainCS,
     CTxMemPool& mempool,
     I_StakingWallet& wallet
-    ): mapHashedBlocks_(mapHashedBlocks)
-    , chainstateRef_(new ChainstateManagerReference())
-    , blockSubsidyContainer_(blockSubsidies)
-    , blockIncentivesPopulator_(incentives)
+    ): chainstateRef_(new ChainstateManagerReference())
     , blockTransactionCollector_(
         new BlockMemoryPoolTransactionCollector(
             settings,
@@ -100,29 +94,13 @@ CoinMintingModule::CoinMintingModule(
             mempool,
             mainCS,
             relayTxFeeCalculator))
-    , coinstakeTransactionCreator_(
-        new PoSTransactionCreator(
-            settings,
-            chainParameters,
-            chainstateRef_->getChainstateManager().ActiveChain(),
-            chainstateRef_->getChainstateManager().GetBlockMap(),
-            blockSubsidyContainer_.blockSubsidiesProvider(),
-            blockIncentivesPopulator_,
-            proofGenerator,
-            mapHashedBlocks_))
-    , blockProofProver_(
-        new BlockProofProver(
-            chainParameters,
-            blockSubsidyContainer_.blockSubsidiesProvider(),
-            *coinstakeTransactionCreator_,
-            chainstateRef_->getChainstateManager().ActiveChain() ))
     , blockFactory_(
         BlockFactorySelector(
             settings,
             chainParameters,
             chainstateRef_->getChainstateManager().ActiveChain(),
             difficultyAdjuster,
-            *blockProofProver_,
+            blockProofProver,
             wallet,
             *blockTransactionCollector_))
     , coinMinter_(
@@ -134,17 +112,14 @@ CoinMintingModule::CoinMintingModule(
             masternodeSynchronization,
             *blockFactory_,
             wallet,
-            mapHashedBlocks_))
+            mapHashedBlocks))
 {
-    dynamic_cast<PoSTransactionCreator*>(coinstakeTransactionCreator_.get())->setWallet(wallet);
 }
 
 CoinMintingModule::~CoinMintingModule()
 {
     coinMinter_.reset();
     blockFactory_.reset();
-    blockProofProver_.reset();
-    coinstakeTransactionCreator_.reset();
     blockTransactionCollector_.reset();
     chainstateRef_.reset();
 }

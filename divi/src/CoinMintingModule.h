@@ -8,14 +8,13 @@ class I_BlockFactory;
 class I_BlockTransactionCollector;
 class I_BlockSubmitter;
 class I_BlockProofProver;
-class I_BlockIncentivesPopulator;
 class I_CoinMinter;
-class I_SuperblockSubsidyContainer;
 class I_PoSTransactionCreator;
 class I_PeerBlockNotifyService;
 class I_ProofOfStakeGenerator;
 class I_DifficultyAdjuster;
 class I_StakingWallet;
+class I_BlockProofProver;
 
 class CChainParams;
 class CMasternodeSync;
@@ -29,27 +28,20 @@ class ChainstateManagerReference;
 class CoinMintingModule
 {
 private:
-    std::map<unsigned int, unsigned int>& mapHashedBlocks_;
     std::unique_ptr<const ChainstateManagerReference> chainstateRef_;
-    const I_SuperblockSubsidyContainer& blockSubsidyContainer_;
-    const I_BlockIncentivesPopulator& blockIncentivesPopulator_;
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
-    std::unique_ptr<I_BlockProofProver> coinstakeTransactionCreator_;
-    std::unique_ptr<I_BlockProofProver> blockProofProver_;
     std::unique_ptr<I_BlockFactory> blockFactory_;
     std::unique_ptr<I_CoinMinter> coinMinter_;
+
 public:
     CoinMintingModule(
         const Settings& settings,
         const CChainParams& chainParameters,
+        const I_BlockProofProver& blockProofProver,
         const CMasternodeSync& masternodeSynchronization,
-        const I_SuperblockSubsidyContainer& blockSubsidies,
-        const I_BlockIncentivesPopulator& incentives,
-        const I_ProofOfStakeGenerator& proofGenerator,
         const CFeeRate& relayTxFeeCalculator,
         const I_PeerBlockNotifyService& peers,
         const I_BlockSubmitter& blockSubmitter,
-        const CSporkManager& sporkManager,
         const I_DifficultyAdjuster& difficultyAdjuster,
         std::map<unsigned int, unsigned int>& mapHashedBlocks,
         CCriticalSection& mainCS,

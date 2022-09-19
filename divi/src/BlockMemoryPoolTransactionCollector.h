@@ -76,7 +76,7 @@ class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 private:
     using DependingTransactionsMap = std::map<uint256, std::vector<std::shared_ptr<COrphan>>>;
 
-    const CCoinsViewCache* baseCoinsViewCache_;
+    const CCoinsViewCache& baseCoinsViewCache_;
     const CChain& activeChain_;
     const BlockMap& blockIndexMap_;
     CTxMemPool& mempool_;
@@ -135,7 +135,7 @@ private:
 public:
     BlockMemoryPoolTransactionCollector(
         const Settings& settings,
-        const CCoinsViewCache* baseCoinsViewCache,
+        const CCoinsViewCache& baseCoinsViewCache,
         const CChain& activeChain,
         const BlockMap& blockIndexMap,
         CTxMemPool& mempool,

@@ -88,7 +88,7 @@ public:
 
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     const Settings& settings,
-    const CCoinsViewCache* baseCoinsViewCache,
+    const CCoinsViewCache& baseCoinsViewCache,
     const CChain& activeChain,
     const BlockMap& blockIndexMap,
     CTxMemPool& mempool,
@@ -375,7 +375,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock(
     CBlock& block = pblocktemplate.block;
     if(block.vtx.size() < 1) return false; // Block reward transaction must be set first
     const int nHeight = pblocktemplate.previousBlockIndex->nHeight + 1;
-    CCoinsViewCache view(baseCoinsViewCache_);
+    CCoinsViewCache view(&baseCoinsViewCache_);
 
     AddTransactionsToBlockIfPossible(nHeight, view, block);
 

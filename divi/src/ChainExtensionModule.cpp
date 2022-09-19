@@ -8,7 +8,9 @@
 #include <BlockIncentivesPopulator.h>
 #include <DifficultyAdjuster.h>
 #include <BlockProofVerifier.h>
-
+#include <PoSTransactionCreator.h>
+#include <BlockProofProver.h>
+#include <sync.h>
 
 ChainExtensionModule::ChainExtensionModule(
     ChainstateManager& chainstateManager,
@@ -19,10 +21,12 @@ ChainExtensionModule::ChainExtensionModule(
     const Settings& settings,
     const CChainParams& chainParameters,
     const CSporkManager& sporkManager,
+    std::map<unsigned int, unsigned int>& mapHashedBlocks,
     BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
     BlockIndexCandidates& blockIndexCandidates
     ): chainstateManager_(chainstateManager)
     , peerIdByBlockHash_()
+    , mainCriticalSection_(mainCriticalSection)
     , difficultyAdjuster_(new DifficultyAdjuster(chainParameters))
     , blockSubsidies_(
         new SuperblockSubsidyContainer(
@@ -39,6 +43,22 @@ ChainExtensionModule::ChainExtensionModule(
             chainParameters,
             chainstateManager.ActiveChain(),
             chainstateManager.GetBlockMap()))
+    , posBlockProofProver_(
+        new PoSTransactionCreator(
+            settings,
+            chainParameters,
+            chainstateManager.ActiveChain(),
+            chainstateManager.GetBlockMap(),
+            blockSubsidies_->blockSubsidiesProvider(),
+            *incentives_,
+            proofOfStakeModule_->proofOfStakeGenerator(),
+            mapHashedBlocks))
+    , blockProofProver_(
+        new BlockProofProver(
+            chainParameters,
+            blockSubsidies_->blockSubsidiesProvider(),
+            *posBlockProofProver_,
+            chainstateManager.ActiveChain()))
     , blockProofVerifier_(
         new BlockProofVerifier(
             chainParameters,
@@ -81,6 +101,9 @@ ChainExtensionModule::~ChainExtensionModule()
     blockSubmitter_.reset();
     blockValidator_.reset();
     chainExtensionService_.reset();
+    blockProofVerifier_.reset();
+    blockProofProver_.reset();
+    posBlockProofProver_.reset();
     proofOfStakeModule_.reset();
     incentives_.reset();
     blockSubsidies_.reset();
@@ -105,6 +128,13 @@ const I_BlockIncentivesPopulator& ChainExtensionModule::getBlockIncentivesPopula
 const I_ProofOfStakeGenerator& ChainExtensionModule::getProofOfStakeGenerator() const
 {
     return proofOfStakeModule_->proofOfStakeGenerator();
+}
+
+const I_BlockProofProver& ChainExtensionModule::getBlockProofProver(I_StakingWallet& stakingWallet) const
+{
+    LOCK(mainCriticalSection_);
+    posBlockProofProver_->setWallet(stakingWallet);
+    return *blockProofProver_;
 }
 
 const I_ChainExtensionService& ChainExtensionModule::getChainExtensionService() const

@@ -184,6 +184,7 @@ void InitializeChainExtensionModule(const MasternodeModule& masternodeModule)
             settings,
             Params(),
             GetSporkManager(),
+            hashedBlocksByHeight,
             GetBlockIndexSuccessorsByPreviousBlockIndex(),
             GetBlockIndexCandidates()));
 }

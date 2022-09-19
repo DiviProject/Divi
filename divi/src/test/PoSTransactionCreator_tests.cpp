@@ -61,15 +61,23 @@ protected:
   unsigned outputIndex;
 
   PoSTransactionCreatorTestFixture()
-    : fakeChain(1, 1600000000, 1),
-      fakeWallet(fakeChain),
-      chainParams(Params(CBaseChainParams::REGTEST)),
-      posModule(chainParams, *fakeChain.activeChain, *fakeChain.blockIndexByHash),
-      txCreator(settings, chainParams, *fakeChain.activeChain, *fakeChain.blockIndexByHash,
-                blockSubsidyProvider, blockIncentivesPopulator,
-                posModule.proofOfStakeGenerator(), fakeWallet.getWallet(), hashedBlockTimestamps),
-      walletScript(GetScriptForDestination(fakeWallet.getNewKey().GetID()))
+    : fakeChain(1, 1600000000, 1)
+    , fakeWallet(fakeChain)
+    , chainParams(
+        Params(CBaseChainParams::REGTEST))
+    , posModule(chainParams, *fakeChain.activeChain, *fakeChain.blockIndexByHash)
+    , txCreator(
+        settings,
+        chainParams,
+        *fakeChain.activeChain,
+        *fakeChain.blockIndexByHash,
+        blockSubsidyProvider,
+        blockIncentivesPopulator,
+        posModule.proofOfStakeGenerator(),
+        hashedBlockTimestamps)
+    , walletScript(GetScriptForDestination(fakeWallet.getNewKey().GetID()))
   {
+    txCreator.setWallet(fakeWallet.getWallet());
     /* Set up a default block reward if we don't need anything else.  */
     EXPECT_CALL(blockSubsidyProvider, GetBlockSubsidity(_))
         .WillRepeatedly(Return(CBlockRewards(10 * COIN, COIN, 0, 0, 0, 0)));

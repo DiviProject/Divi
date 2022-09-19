@@ -88,7 +88,6 @@ PoSTransactionCreator::PoSTransactionCreator(
     const I_BlockSubsidyProvider& blockSubsidies,
     const I_BlockIncentivesPopulator& incentives,
     const I_ProofOfStakeGenerator& proofGenerator,
-    I_StakingWallet& wallet,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): settings_(settings)
     , chainParameters_(chainParameters)
@@ -98,7 +97,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     , incentives_(incentives)
     , proofGenerator_(proofGenerator )
     , stakedCoins_(new StakedCoins(settings_.GetBoolArg("-vault", false)))
-    , wallet_(&wallet)
+    , wallet_()
     , hashedBlockTimestamps_(hashedBlockTimestamps)
     , hashproofTimestampMinimumValue_(0)
 {

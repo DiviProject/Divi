@@ -85,7 +85,6 @@ public:
         const I_BlockSubsidyProvider& blockSubsidies,
         const I_BlockIncentivesPopulator& incentives,
         const I_ProofOfStakeGenerator& proofGenerator,
-        I_StakingWallet& wallet,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     ~PoSTransactionCreator();
     bool CreateProofOfStake(

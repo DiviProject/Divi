@@ -109,7 +109,6 @@ CoinMintingModule::CoinMintingModule(
             blockSubsidyContainer_.blockSubsidiesProvider(),
             blockIncentivesPopulator_,
             proofGenerator,
-            wallet,
             mapHashedBlocks_))
     , blockProofProver_(
         new BlockProofProver(
@@ -137,6 +136,7 @@ CoinMintingModule::CoinMintingModule(
             wallet,
             mapHashedBlocks_))
 {
+    dynamic_cast<PoSTransactionCreator*>(coinstakeTransactionCreator_.get())->setWallet(wallet);
 }
 
 CoinMintingModule::~CoinMintingModule()

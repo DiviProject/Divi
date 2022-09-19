@@ -88,7 +88,7 @@ CoinMintingModule::CoinMintingModule(
     , blockTransactionCollector_(
         new BlockMemoryPoolTransactionCollector(
             settings,
-            &chainstateRef_->getChainstateManager().CoinsTip(),
+            chainstateRef_->getChainstateManager().CoinsTip(),
             chainstateRef_->getChainstateManager().ActiveChain(),
             chainstateRef_->getChainstateManager().GetBlockMap(),
             mempool,

@@ -15,6 +15,7 @@
 #include <utiltime.h>
 #include <ThreadManagementHelpers.h>
 #include <I_DifficultyAdjuster.h>
+#include <NextBlockTypeHelpers.h>
 
 // Actual mining functions
 BlockFactory::BlockFactory(
@@ -95,6 +96,10 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
 
     pblocktemplate->previousBlockIndex = chain_.Tip();
     if(!pblocktemplate->previousBlockIndex) return NULL;
+
+    const auto blockType = NextBlockTypeHelpers::ComputeNextBlockType(pblocktemplate->previousBlockIndex,chainParameters_.LAST_POW_BLOCK());
+    if(fProofOfStake && blockType != PROOF_OF_STAKE) return NULL;
+    if(!fProofOfStake && blockType != PROOF_OF_WORK) return NULL;
 
     // Create coinbase tx
     const unsigned nextBlockHeight = pblocktemplate->previousBlockIndex->nHeight+1;

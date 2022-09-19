@@ -46,7 +46,6 @@ class CoinMinter final: public I_CoinMinter
 
     bool hasMintableCoinForProofOfStake() const;
     bool limitStakingSpeed() const;
-    bool nextBlockIsProofOfStake() const;
 
     bool ProcessBlockFound(CBlock* block, CReserveKey* reservekey) const;
 

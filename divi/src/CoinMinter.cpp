@@ -18,6 +18,7 @@
 #include <script/standard.h>
 #include <ForkActivation.h>
 #include <I_BlockSubmitter.h>
+#include <NextBlockTypeHelpers.h>
 
 constexpr int hashingDelay = 45;
 
@@ -61,24 +62,6 @@ bool CoinMinter::hasMintableCoinForProofOfStake() const
     return haveMintableCoins_;
 }
 
-enum NextBlockType
-{
-    UNDEFINED_TIP,
-    PROOF_OF_STAKE,
-    PROOF_OF_WORK,
-};
-
-static NextBlockType ComputeNextBlockType(const CBlockIndex* chainTip,const int lastPOWBlock)
-{
-    return (!chainTip)? UNDEFINED_TIP:
-            (chainTip->nHeight < lastPOWBlock)? PROOF_OF_WORK: PROOF_OF_STAKE;
-}
-
-bool CoinMinter::nextBlockIsProofOfStake() const
-{
-    return ComputeNextBlockType(chain_.Tip(), chainParameters_.LAST_POW_BLOCK()) == PROOF_OF_STAKE;
-}
-
 bool CoinMinter::canMintCoins()
 {
     const unsigned oneReorgWorthOfTimestampDrift = 60*chainParameters_.MaxReorganizationDepth();
@@ -86,7 +69,7 @@ bool CoinMinter::canMintCoins()
 
     const CBlockIndex* chainTip = chain_.Tip();
     bool chainTipIsSyncedEnough = (chainTip && chainTip->nTime >= minimumChainTipTimestampForMinting) || mapHashedBlocks_.size() > 0u;
-    NextBlockType blockType = ComputeNextBlockType(chainTip, chainParameters_.LAST_POW_BLOCK());
+    NextBlockType blockType = NextBlockTypeHelpers::ComputeNextBlockType(chainTip, chainParameters_.LAST_POW_BLOCK());
     bool stakingRequirementsAreMet =
         chainTipIsSyncedEnough &&
         peerNotifier_.havePeersToNotify() &&
@@ -178,7 +161,7 @@ bool CoinMinter::createProofOfWorkBlock() const
 bool CoinMinter::createNewBlock() const
 {
     if(!mintingIsRequested_) return false;
-    auto status = ComputeNextBlockType(chain_.Tip(), chainParameters_.LAST_POW_BLOCK());
+    auto status = NextBlockTypeHelpers::ComputeNextBlockType(chain_.Tip(), chainParameters_.LAST_POW_BLOCK());
     if(status != UNDEFINED_TIP)
     {
         if(status != PROOF_OF_WORK)

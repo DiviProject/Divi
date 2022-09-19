@@ -10,6 +10,7 @@
 #include <memory>
 #include <I_PoSTransactionCreator.h>
 #include <I_BlockProofProver.h>
+#include <NonDeletionDeleter.h>
 
 class CBlock;
 class CMutableTransaction;
@@ -36,7 +37,7 @@ private:
     const I_BlockIncentivesPopulator& incentives_;
     const I_ProofOfStakeGenerator& proofGenerator_;
     mutable std::unique_ptr<StakedCoins> stakedCoins_;
-    I_StakingWallet& wallet_;
+    std::unique_ptr<I_StakingWallet,NonDeletionDeleter<I_StakingWallet>> wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
     mutable int64_t hashproofTimestampMinimumValue_;
 

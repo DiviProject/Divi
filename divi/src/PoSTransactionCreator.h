@@ -8,7 +8,6 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include <I_PoSTransactionCreator.h>
 #include <I_BlockProofProver.h>
 #include <NonDeletionDeleter.h>
 
@@ -26,7 +25,7 @@ struct StakableCoin;
 class Settings;
 class I_StakingWallet;
 
-class PoSTransactionCreator: public I_PoSTransactionCreator, public I_BlockProofProver
+class PoSTransactionCreator: public I_BlockProofProver
 {
 private:
     const Settings& settings_;
@@ -87,9 +86,6 @@ public:
         const I_ProofOfStakeGenerator& proofGenerator,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     ~PoSTransactionCreator();
-    bool CreateProofOfStake(
-        const CBlockIndex* chainTip,
-        CBlock& block) const override;
 
     void setWallet(I_StakingWallet& wallet);
     bool attachBlockProof(

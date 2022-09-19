@@ -21,10 +21,9 @@ class I_BlockSubmitter;
 class CChainParams;
 class CMasternodeSync;
 class CSporkManager;
-class I_ProofOfStakeGenerator;
-class I_SuperblockSubsidyContainer;
-class I_BlockIncentivesPopulator;
 class I_DifficultyAdjuster;
+class I_BlockProofProver;
+
 namespace boost
 {
 class thread_group;
@@ -34,11 +33,8 @@ class thread_group;
 void InitializeCoinMintingModule(
     const Settings& settings,
     const CChainParams& chainParameters,
+    const I_BlockProofProver& blockProofProver,
     const CMasternodeSync& masternodeSynchronization,
-    const I_SuperblockSubsidyContainer& blockSubsidies,
-    const I_BlockIncentivesPopulator& incentives,
-    const CSporkManager& sporkManager,
-    const I_ProofOfStakeGenerator& proofGenerator,
     const CFeeRate& minimumRelayFeeRate,
     const I_PeerBlockNotifyService& peerNotificationService,
     const I_BlockSubmitter& blockSubmitter,

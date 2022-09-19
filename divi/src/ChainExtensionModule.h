@@ -23,16 +23,22 @@ class I_SuperblockSubsidyContainer;
 class I_BlockIncentivesPopulator;
 class I_DifficultyAdjuster;
 class I_BlockProofVerifier;
+class I_BlockProofProver;
+class PoSTransactionCreator;
+class I_StakingWallet;
 
 class ChainExtensionModule
 {
 private:
     ChainstateManager& chainstateManager_;
     mutable std::map<uint256, NodeId> peerIdByBlockHash_;
+    CCriticalSection& mainCriticalSection_;
     std::unique_ptr<I_DifficultyAdjuster> difficultyAdjuster_;
     std::unique_ptr<const I_SuperblockSubsidyContainer> blockSubsidies_;
     std::unique_ptr<const I_BlockIncentivesPopulator> incentives_;
     std::unique_ptr<const ProofOfStakeModule> proofOfStakeModule_;
+    std::unique_ptr<PoSTransactionCreator> posBlockProofProver_;
+    std::unique_ptr<I_BlockProofProver> blockProofProver_;
     std::unique_ptr<I_BlockProofVerifier> blockProofVerifier_;
     std::unique_ptr<I_ChainExtensionService> chainExtensionService_;
     std::unique_ptr<I_BlockValidator> blockValidator_;
@@ -47,6 +53,7 @@ public:
         const Settings& settings,
         const CChainParams& chainParameters,
         const CSporkManager& sporkManager,
+        std::map<unsigned int, unsigned int>& mapHashedBlocks,
         BlockIndexSuccessorsByPreviousBlockIndex& blockIndexSuccessors,
         BlockIndexCandidates& blockIndexCandidates);
 
@@ -55,6 +62,7 @@ public:
     const I_SuperblockSubsidyContainer& getBlockSubsidies() const;
     const I_BlockIncentivesPopulator& getBlockIncentivesPopulator() const;
     const I_ProofOfStakeGenerator& getProofOfStakeGenerator() const;
+    const I_BlockProofProver& getBlockProofProver(I_StakingWallet& stakingWallet) const;
     const I_ChainExtensionService& getChainExtensionService() const;
     const I_BlockSubmitter& getBlockSubmitter() const;
 };

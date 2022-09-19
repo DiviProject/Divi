@@ -286,6 +286,7 @@ BITCOIN_CORE_H = \
   merkletx.h \
   I_MerkleTxConfirmationNumberCalculator.h \
   MerkleTxConfirmationNumberCalculator.h \
+  NonDeletionDeleter.h \
   miner.h \
   I_CoinMinter.h \
   BlockMemoryPoolTransactionCollector.h \

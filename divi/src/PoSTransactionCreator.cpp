@@ -98,7 +98,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     , incentives_(incentives)
     , proofGenerator_(proofGenerator )
     , stakedCoins_(new StakedCoins(settings_.GetBoolArg("-vault", false)))
-    , wallet_(wallet)
+    , wallet_(&wallet)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
     , hashproofTimestampMinimumValue_(0)
 {
@@ -106,16 +106,18 @@ PoSTransactionCreator::PoSTransactionCreator(
 
 PoSTransactionCreator::~PoSTransactionCreator()
 {
+    wallet_.reset();
     stakedCoins_.reset();
 }
 
 bool PoSTransactionCreator::SelectCoins() const
 {
+    if(wallet_ == nullptr) return false;
     if (chainParameters_.NetworkID() == CBaseChainParams::REGTEST ||
         GetTime() - stakedCoins_->timestamp() > settings_.GetArg("-stakeupdatetime",300))
     {
         stakedCoins_->resetCoins();
-        if (!wallet_.SelectStakeCoins(stakedCoins_->asSet())) {
+        if (!wallet_->SelectStakeCoins(stakedCoins_->asSet())) {
             return error("failed to select coins for staking");
         }
         stakedCoins_->updateShuffledSet();
@@ -318,6 +320,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
     const CBlockIndex* chainTip,
     CBlock& block) const
 {
+    if(wallet_ == nullptr) return false;
     CMutableTransaction txCoinStake;
     unsigned int nTxNewTime = block.nTime;
 
@@ -365,7 +368,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     int nIn = 0;
     for (const CTransaction* pcoin : vwtxPrev) {
-        if (!SignSignature(wallet_, *pcoin, txCoinStake, nIn++))
+        if (!SignSignature(*wallet_, *pcoin, txCoinStake, nIn++))
             return error("CreateCoinStake : failed to sign coinstake");
     }
 
@@ -374,7 +377,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     block.hashMerkleRoot = block.BuildMerkleTree();
     LogPrintf("%s: proof-of-stake block found %s \n",__func__, block.GetHash());
-    if (!SignBlock(wallet_, block)) {
+    if (!SignBlock(*wallet_, block)) {
         LogPrintf("%s: Signing new block failed \n",__func__);
         return false;
     }

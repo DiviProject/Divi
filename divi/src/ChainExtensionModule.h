@@ -18,7 +18,6 @@ class CSporkManager;
 class ChainstateManager;
 class I_BlockSubmitter;
 class ProofOfStakeModule;
-class I_ProofOfStakeGenerator;
 class I_SuperblockSubsidyContainer;
 class I_BlockIncentivesPopulator;
 class I_DifficultyAdjuster;
@@ -61,7 +60,6 @@ public:
     const I_DifficultyAdjuster& getDifficultyAdjuster() const;
     const I_SuperblockSubsidyContainer& getBlockSubsidies() const;
     const I_BlockIncentivesPopulator& getBlockIncentivesPopulator() const;
-    const I_ProofOfStakeGenerator& getProofOfStakeGenerator() const;
     const I_BlockProofProver& getBlockProofProver(I_StakingWallet& stakingWallet) const;
     const I_ChainExtensionService& getChainExtensionService() const;
     const I_BlockSubmitter& getBlockSubmitter() const;

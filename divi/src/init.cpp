@@ -1678,14 +1678,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             }
         }
         // Run a thread to flush wallet periodically
-        if (settings.GetBoolArg("-flushwallet", true))
-            multiWalletModule->getWalletDbEnpointFactory().enableBackgroundDatabaseFlushing(threadGroup);
-
-        if(settings.GetArg("-monthlybackups",12) > 0)
-            multiWalletModule->getWalletDbEnpointFactory().enableBackgroundMonthlyWalletBackup(
-                threadGroup,
-                GetDataDir().string(),
-                Params().NetworkID() == CBaseChainParams::REGTEST);
+        InitializeWalletBackendSettings(multiWalletModule->getWalletDbEnpointFactory());
     }
 #endif
 

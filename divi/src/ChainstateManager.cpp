@@ -85,6 +85,7 @@ ChainstateManager::~ChainstateManager ()
   coinsCatcher.reset ();
   coinsDbView.reset ();
 
+  blockTree->WriteFlag("shutdown", true);
   blockTree.reset ();
   activeChain.reset ();
   blockMap.reset ();

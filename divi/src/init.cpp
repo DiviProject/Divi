@@ -356,11 +356,7 @@ void PrepareShutdown()
         p2pNotifications.reset();
 
         //record that client took the proper shutdown procedure
-        chainstateInstance->BlockTree().WriteFlag("shutdown", true);
-        FinalizeChainExtensionModule();
-        FinalizeMultiWalletModule();
-        sporkManagerInstance.reset();
-        chainstateInstance.reset ();
+        FinalizeMainBlockchainModules();
     }
 
 #if ENABLE_ZMQ

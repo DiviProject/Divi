@@ -10,7 +10,7 @@ class I_StakingCoinSelector
 public:
     virtual ~I_StakingCoinSelector(){}
     virtual bool SelectStakeCoins(std::set<StakableCoin>&) const = 0;
-    virtual bool HasAgedCoins() = 0;
+    virtual bool HasAgedCoins() const = 0;
     virtual bool CanStakeCoins() const = 0;
 };
 class I_StakingWallet: public virtual CKeyStore, public I_StakingCoinSelector, public I_KeypoolReserver

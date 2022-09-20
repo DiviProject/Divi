@@ -272,7 +272,7 @@ public:
 
     bool SetAddressLabel(const CTxDestination& address, const std::string& strName);
 
-    bool HasAgedCoins() override;
+    bool HasAgedCoins() const override;
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const override;
     bool CanStakeCoins() const override;
 

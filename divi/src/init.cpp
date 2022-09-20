@@ -354,12 +354,11 @@ void PrepareShutdown()
         FlushStateToDisk();
         UnregisterAllMainNotificationInterfaces();
         p2pNotifications.reset();
-#ifdef ENABLE_WALLET
-        FinalizeMultiWalletModule();
-#endif
+
         //record that client took the proper shutdown procedure
         chainstateInstance->BlockTree().WriteFlag("shutdown", true);
         FinalizeChainExtensionModule();
+        FinalizeMultiWalletModule();
         sporkManagerInstance.reset();
         chainstateInstance.reset ();
     }
@@ -1334,11 +1333,13 @@ void InitializeMainBlockchainModules()
             unitTestMode?      true : false,
             unitTestMode?     false : settings.isReindexingBlocks()));
     sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
+    InitializeMultiWalletModule();
     InitializeChainExtensionModule(GetMasternodeModule());
 }
 void FinalizeMainBlockchainModules()
 {
     FinalizeChainExtensionModule();
+    FinalizeMultiWalletModule();
     sporkManagerInstance.reset();
     chainstateInstance.reset();
 }
@@ -1508,7 +1509,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(translate("Preparing databases..."));
     InitializeMainBlockchainModules();
-    InitializeMultiWalletModule();
 
     const auto& chainActive = chainstateInstance->ActiveChain();
     const auto& blockMap = chainstateInstance->GetBlockMap();

@@ -53,7 +53,6 @@ struct TestingSetup {
         boost::filesystem::create_directories(pathTemp);
         settings.SetParameter("-datadir", pathTemp.string());
         InitializeMainBlockchainModules();
-        InitializeMultiWalletModule();
         GetChainExtensionService().connectGenesisBlock();
         TransactionInputChecker::SetScriptCheckingThreadCount(3);
         TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
@@ -65,7 +64,6 @@ struct TestingSetup {
         threadGroup.interrupt_all();
         threadGroup.join_all();
         UnregisterNodeSignals();
-        FinalizeMultiWalletModule();
         FinalizeMainBlockchainModules();
 #ifdef ENABLE_WALLET
         bitdb_.Flush(true);

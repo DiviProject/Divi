@@ -6,7 +6,6 @@
 #include <map>
 
 #include <LoadWalletResult.h>
-#include <ChainstateManager.h>
 #include <I_MerkleTxConfirmationNumberCalculator.h>
 
 class CWallet;
@@ -17,6 +16,7 @@ class Settings;
 class CCriticalSection;
 class CChain;
 class BlockMap;
+class ChainstateManager;
 
 namespace boost
 {
@@ -45,7 +45,7 @@ public:
 class MultiWalletModule
 {
 private:
-    ChainstateManager::Reference chainStateReference_;
+    const ChainstateManager& chainstate_;
     Settings& settings_;
     const bool walletIsDisabled_;
     std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationCalculator_;
@@ -53,6 +53,7 @@ private:
     DatabaseBackedWallet* activeWallet_;
 public:
     MultiWalletModule(
+        const ChainstateManager& chainstate,
         Settings& settings,
         CTxMemPool& transactionMemoryPool,
         CCriticalSection& mmainCriticalSection,

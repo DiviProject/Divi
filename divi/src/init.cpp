@@ -20,6 +20,7 @@
 #include <BlockIndexLoading.h>
 #include <chain.h>
 #include <chainparams.h>
+#include <ChainstateManager.h>
 #include "compat/sanity.h"
 #include <DataDirectory.h>
 #include <defaultValues.h>
@@ -136,8 +137,10 @@ void FlushStateToDisk()
 void InitializeMultiWalletModule()
 {
     if(multiWalletModule) return;
+    assert(chainstateInstance);
     multiWalletModule.reset(
         new MultiWalletModule(
+            *chainstateInstance,
             settings,
             GetTransactionMemoryPool(),
             cs_main,

@@ -6,6 +6,7 @@
 #include <Settings.h>
 #include <sync.h>
 #include <dbenv.h>
+#include <ChainstateManager.h>
 
 DatabaseBackedWallet::DatabaseBackedWallet(
     const std::string walletFilename,
@@ -49,17 +50,18 @@ DatabaseBackedWallet::DatabaseBackedWallet(
 }
 
 MultiWalletModule::MultiWalletModule(
+    const ChainstateManager& chainstate,
     Settings& settings,
     CTxMemPool& transactionMemoryPool,
     CCriticalSection& mmainCriticalSection,
     const int coinbaseConfirmationsForMaturity
-    ): chainStateReference_()
+    ): chainstate_(chainstate)
     , settings_(settings)
     , walletIsDisabled_( settings_.GetBoolArg("-disablewallet", false) )
     , confirmationCalculator_(
         new MerkleTxConfirmationNumberCalculator(
-            chainStateReference_->ActiveChain(),
-            chainStateReference_->GetBlockMap(),
+            chainstate_.ActiveChain(),
+            chainstate_.GetBlockMap(),
             coinbaseConfirmationsForMaturity,
             transactionMemoryPool,
             mmainCriticalSection) )
@@ -89,8 +91,8 @@ bool MultiWalletModule::reloadActiveWallet()
         new DatabaseBackedWallet(
             activeWalletFilename,
             settings_,
-            chainStateReference_->ActiveChain(),
-            chainStateReference_->GetBlockMap(),
+            chainstate_.ActiveChain(),
+            chainstate_.GetBlockMap(),
             *confirmationCalculator_,
             activeWallet_->underlyingWalletCriticalSection_.release() ));
 
@@ -110,8 +112,8 @@ bool MultiWalletModule::loadWallet(const std::string walletFilename)
         new DatabaseBackedWallet(
             walletFilename,
             settings_,
-            chainStateReference_->ActiveChain(),
-            chainStateReference_->GetBlockMap(),
+            chainstate_.ActiveChain(),
+            chainstate_.GetBlockMap(),
             *confirmationCalculator_,
             nullptr));
     backedWalletsByName_.emplace(walletFilename, std::move(dbBackedWallet) );

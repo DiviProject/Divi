@@ -5,6 +5,7 @@
 #include <LegacyWalletDatabaseEndpointFactory.h>
 #include <MultiWalletModule.h>
 #include <txmempool.h>
+#include <ChainstateManager.h>
 
 BOOST_AUTO_TEST_CASE(willVerifyTwoDatabasesCanBeOpenAtTheSameTime)
 {
@@ -45,7 +46,7 @@ BOOST_AUTO_TEST_CASE(willVerifyMultiWalletModuleCanLoadTwoWallets)
         Settings& localSettings = Settings::instance();
         CTxMemPool mempool;
         CCriticalSection mainCriticalSection;
-        MultiWalletModule module(localSettings,mempool,mainCriticalSection,20);
+        MultiWalletModule module(ChainstateManager::Get(),localSettings,mempool,mainCriticalSection,20);
 
         module.loadWallet("myfirstwallet_c.dat");
         module.loadWallet("mysecondtwallet_c.dat");

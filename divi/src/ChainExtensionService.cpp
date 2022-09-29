@@ -26,6 +26,7 @@
 #include <StakeModifierIntervalHelpers.h>
 #include <ForkActivation.h>
 #include <boost/assign/list_of.hpp>
+#include <boost/thread.hpp>
 
 namespace
 {

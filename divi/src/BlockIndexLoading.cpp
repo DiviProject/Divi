@@ -11,6 +11,7 @@
 #include <BlockInvalidationHelpers.h>
 #include <blockmap.h>
 #include <BlockUndo.h>
+#include <boost/thread.hpp>
 #include <chain.h>
 #include <ChainstateManager.h>
 #include <ChainSyncHelpers.h>

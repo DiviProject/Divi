@@ -1050,7 +1050,7 @@ BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& str
 
         if(!settings.isReindexingBlocks()) uiInterface.InitMessage(translate("Loading block index..."));
         std::string strBlockIndexError = "";
-        if (!LoadBlockIndex(strBlockIndexError)) {
+        if (!LoadBlockIndex(settings, strBlockIndexError)) {
             strLoadError = translate("Error loading block database");
             strLoadError = strprintf("%s : %s", strLoadError, strBlockIndexError);
             return BlockLoadingStatus::RETRY_LOADING;

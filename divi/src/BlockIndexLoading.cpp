@@ -23,8 +23,6 @@
 #include <utilstrencodings.h>
 #include <utiltime.h>
 
-extern Settings& settings;
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // CBlockIndex loading from disk
@@ -305,7 +303,7 @@ void UnloadBlockIndex(ChainstateManager* chainstate)
     }
 }
 
-bool LoadBlockIndex(std::string& strError)
+bool LoadBlockIndex(Settings& settings, std::string& strError)
 {
     // Load block index from databases
     if (!settings.isReindexingBlocks() && !LoadBlockIndexState(settings, strError))

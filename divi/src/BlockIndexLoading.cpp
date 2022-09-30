@@ -217,7 +217,7 @@ bool static ResolveConflictsBetweenCoinDBAndBlockDB(
     return true;
 }
 
-bool static LoadBlockIndexState(std::string& strError)
+bool static LoadBlockIndexState(Settings& settings, std::string& strError)
 {
     ChainstateManager::Reference chainstate;
     auto& chain = chainstate->ActiveChain();
@@ -308,7 +308,7 @@ void UnloadBlockIndex(ChainstateManager* chainstate)
 bool LoadBlockIndex(std::string& strError)
 {
     // Load block index from databases
-    if (!settings.isReindexingBlocks() && !LoadBlockIndexState(strError))
+    if (!settings.isReindexingBlocks() && !LoadBlockIndexState(settings, strError))
         return false;
     return true;
 }

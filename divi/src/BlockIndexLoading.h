@@ -2,8 +2,9 @@
 #define BLOCK_INDEX_LOADING_H
 #include <string>
 class ChainstateManager;
+class Settings;
 /** Load the block tree and coins database from disk */
-bool LoadBlockIndex(std::string& strError);
+bool LoadBlockIndex(Settings& settings, std::string& strError);
 /** Unload database information.  If a ChainstateManager is present,
  *  the block map inside (and all other in-memory information) is unloaded.
  *  Otherwise just local data (e.g. validated but not yet attached

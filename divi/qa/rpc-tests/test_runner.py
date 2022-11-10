@@ -89,6 +89,7 @@ BASE_SCRIPTS = [
     'getchaintips.py',
     'httpbasics.py',
     'invalidateblock.py',
+    'imported_keys.py',
     'keypool.py',
     'listtransactions.py',
     'lottery.py',

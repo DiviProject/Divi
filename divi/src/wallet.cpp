@@ -981,6 +981,19 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
                             pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey) &&
                             (hdChainCurrent.IsNull() || pwalletdbEncryption->WriteCryptedHDChain(hdChainCrypted)) &&
                             pwalletdbEncryption->WriteMinVersion(nWalletVersion);
+
+                        if(encryptionComplete)
+                        {
+                            for(const auto& pubkeyAndEncryptedKey: getCryptedKeys())
+                            {
+                                const CPubKey & pubKey = pubkeyAndEncryptedKey.second.first;
+                                const std::vector<unsigned char> & encryptedKey = pubkeyAndEncryptedKey.second.second;
+                                if(!pwalletdbEncryption->WriteCryptedKey(pubKey,encryptedKey,mapKeyMetadata[pubKey.GetID()]))
+                                {
+                                    encryptionComplete = false;
+                                }
+                            }
+                        }
                     }
                 }
 

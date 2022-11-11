@@ -101,6 +101,10 @@ private:
     bool fOnlyMixingAllowed;
 
 protected:
+    const CryptedKeyMap& getCryptedKeys() const
+    {
+        return mapCryptedKeys;
+    }
     bool SetCrypted();
 
     //! will encrypt previously unencrypted keys

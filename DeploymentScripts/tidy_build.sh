@@ -6,7 +6,7 @@ readyToBuild=false
 case "$3" in
 clean)
    pushd ~/DeploymentScripts/
-   ./download_depencies && 
+   ./download_dependencies &&
    popd &&
    readyToBuild=true
 

@@ -58,7 +58,6 @@ if $MayBuild; then
 	/blddv/gitian-builder/bin/gbuild --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-osx.yml &&
 	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/osx/ &&
 	last_failed_build="rpi" &&
-	/blddv/gitian-builder/bin/make-base-vm --docker --suite trusty && wait &&
 	/blddv/gitian-builder/bin/gbuild --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-rpi2.yml &&
 	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/rpi2/ &&
 	all_builds_succeeded=true

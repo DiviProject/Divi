@@ -7,8 +7,20 @@ oldHash=$(tac LastBuiltDevelopment | head -n 1)
 remoteDevelopment="https://github.com/galpHub/Divi.git"
 remoteMaster="https://github.com/DiviProject/Divi.git"
 
-branch_name="Development"
-remoteRepo=$remoteDevelopment
+clean_mode=false
+if [[ -z $1 ]] ; then
+   branch_name="master"
+   remoteRepo=$remoteMaster
+   echo "Building master..."
+elif [[ ! -z $1 ]] && [[ $1 == "dev" ]] ; then
+   branch_name="Development"
+   remoteRepo=$remoteDevelopment   
+   echo "Building Development..."
+fi
+
+if [[ ! -z $2   ]] ; then
+    clean_mode=true
+fi
 
 git clone --depth=1 $remoteRepo --branch $branch_name /tmp/Divi/
 pushd /tmp/Divi/
@@ -17,7 +29,11 @@ popd
 rm -r /tmp/Divi/
 zero=0
 if [[ $oldHash != $newestHash ]]; then
-	./tidy_build.sh $branch_name $remoteRepo $1
+	if $clean_mode ; then
+		./tidy_build.sh $branch_name $remoteRepo clean
+	else
+		./tidy_build.sh $branch_name $remoteRepo
+	fi
 	if [[ $? ]]; then
 		if [[ -d "/divi_binaries/$newestHash" ]]; then
 			echo "Build complete!"
@@ -37,4 +53,4 @@ else
 fi
 
 }
-run $1
+run $1 $2

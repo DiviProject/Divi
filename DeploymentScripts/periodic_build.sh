@@ -1,13 +1,13 @@
 case "$1" in 
 start)
-   /root/DeploymentScripts/derp_build.sh && wait && $0 stop &
+   /root/DeploymentScripts/continuous_build.sh && wait && $0 stop &
    echo $!>/var/run/hit.pid
    
    ;;
 stop)
    kill `cat /var/run/hit.pid` &> /dev/null
    rm /var/run/hit.pid
-   echo periodic_build.sh is stopping...
+   echo continuous_build.sh is stopping...
    ;;
 restart)
    $0 stop

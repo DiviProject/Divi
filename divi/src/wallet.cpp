@@ -1004,7 +1004,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             }
             if(pwalletdbEncryption) pwalletdbEncryption->AtomicWriteEnd(encryptionComplete);
             pwalletdbEncryption.reset();
-            assert(encryptionComplete);
+            if(!encryptionComplete) return false;
         }
 
         Lock();
@@ -1022,7 +1022,10 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
 
         // Need to completely rewrite the wallet file; if we don't, bdb might keep
         // bits of the unencrypted private key in slack space in the database file.
-        walletDatabaseEndpointFactory_.getDatabaseEndpoint()->RewriteWallet();
+        if(!walletDatabaseEndpointFactory_.getDatabaseEndpoint()->RewriteWallet())
+        {
+            return false;
+        }
     }
 
     return true;

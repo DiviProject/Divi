@@ -145,6 +145,7 @@ void CDB::Close()
 
 bool CDB::Rewrite(const Settings& settings, CDBEnv& bitdb, const std::string& strFile, const char* pszSkip)
 {
+    bool removeRewriteDb = false;
     while (true) {
         {
             LOCK(bitdb.cs_db);
@@ -172,6 +173,7 @@ bool CDB::Rewrite(const Settings& settings, CDBEnv& bitdb, const std::string& st
                         LogPrintf("CDB::Rewrite : Can't create database file %s\n", strFileRes);
                         fSuccess = false;
                     }
+                    if(ret <= 0 && !removeRewriteDb) removeRewriteDb = true;
 
                     Dbc* pcursor = db.GetCursor();
                     if (pcursor)
@@ -218,7 +220,10 @@ bool CDB::Rewrite(const Settings& settings, CDBEnv& bitdb, const std::string& st
                         fSuccess = false;
                 }
                 if (!fSuccess)
+                {
                     LogPrintf("CDB::Rewrite : Failed to rewrite database file %s\n", strFileRes);
+                    if(removeRewriteDb) Db(&bitdb.dbenv, 0).remove(strFileRes.c_str(), NULL, 0);
+                }
                 return fSuccess;
             }
         }

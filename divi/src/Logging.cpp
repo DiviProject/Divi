@@ -18,6 +18,7 @@ bool fPrintToConsole = false;
 volatile bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
 volatile bool fLogTimestamps = false;
+volatile bool shrinkDebugLog = false;
 bool fLogIPs = false;
 
 extern Settings& settings;
@@ -166,21 +167,25 @@ void ShrinkDebugFile()
 {
     // Scroll debug.log if it's getting too big
     static boost::filesystem::path pathLog = GetDataDir() / "debug.log";
-    FILE* file = fopen(pathLog.string().c_str(), "r");
-    if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000) {
-        // Restart the file with some of the end
-        std::vector<char> vch(200000, 0);
-        fseek(file, -((long)vch.size()), SEEK_END);
-        int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
-        fclose(file);
-
-        file = fopen(pathLog.string().c_str(), "w");
-        if (file) {
-            fwrite(begin_ptr(vch), 1, nBytes, file);
+    const bool debugLogFileExists = boost::filesystem::exists(pathLog);
+    if(debugLogFileExists && shrinkDebugLog)
+    {
+        FILE* file = fopen(pathLog.string().c_str(), "r");
+        if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000) {
+            // Restart the file with some of the end
+            std::vector<char> vch(200000, 0);
+            fseek(file, -((long)vch.size()), SEEK_END);
+            int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
             fclose(file);
-        }
-    } else if (file != NULL)
-        fclose(file);
+
+            file = fopen(pathLog.string().c_str(), "w");
+            if (file) {
+                fwrite(begin_ptr(vch), 1, nBytes, file);
+                fclose(file);
+            }
+        } else if (file != NULL)
+            fclose(file);
+    }
 }
 
 void SetLoggingAndDebugSettings()
@@ -190,9 +195,8 @@ void SetLoggingAndDebugSettings()
     fLogIPs = settings.GetBoolArg("-logips", false);
 
     fDebug = settings.debugModeIsEnabled();
-
-    if (settings.GetBoolArg("-shrinkdebugfile", !fDebug))
-        ShrinkDebugFile();
+    shrinkDebugLog = settings.GetBoolArg("-shrinkdebugfile", !fDebug);
+    if (shrinkDebugLog) ShrinkDebugFile();
 
     if(fPrintToConsole)
     {

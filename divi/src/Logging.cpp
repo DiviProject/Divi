@@ -181,10 +181,7 @@ int LogPrintStr(const std::string& str)
         const int64_t timeOfCurrentWrite = GetTime();
         if (fLogTimestamps && fStartedNewLine)
             ret += fprintf(fileout, "%s ", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", timeOfCurrentWrite).c_str());
-        if (!str.empty() && str[str.size() - 1] == '\n')
-            fStartedNewLine = true;
-        else
-            fStartedNewLine = false;
+        fStartedNewLine = (!str.empty() && str[str.size() - 1] == '\n')? true: false;
 
         ret = fwrite(str.data(), 1, str.size(), fileout);
         if((timeOfCurrentWrite - timeOfLastFileShrinkCheck) > 5*60 && shrinkDebugLog)

@@ -6,6 +6,7 @@
 #include <utiltime.h>
 #include <mutex>
 #include <set>
+#include <cstdint>
 
 #include <DataDirectory.h>
 #include <chainparamsbase.h>
@@ -148,6 +149,7 @@ bool LogAcceptCategory(const char* category)
 
 int LogPrintStr(const std::string& str)
 {
+    static int64_t timeOfLastWrite = GetTime();
     int ret = 0; // Returns total number of characters written
     //ret = fwrite(str.data(), 1, str.size(), stdout);
     //fflush(stdout);
@@ -176,8 +178,9 @@ int LogPrintStr(const std::string& str)
         }
 
         // Debug print useful for profiling
+        const int64_t timeOfCurrentWrite = GetTime();
         if (fLogTimestamps && fStartedNewLine)
-            ret += fprintf(fileout, "%s ", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());
+            ret += fprintf(fileout, "%s ", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", timeOfCurrentWrite).c_str());
         if (!str.empty() && str[str.size() - 1] == '\n')
             fStartedNewLine = true;
         else

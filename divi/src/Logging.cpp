@@ -97,7 +97,7 @@ void ShrinkDebugFile()
     static boost::filesystem::path pathLog = GetDataDir() / "debug.log";
     const bool debugLogFileExists = boost::filesystem::exists(pathLog);
     const bool debugLogExceedsCompactSize = debugLogFileExists && boost::filesystem::file_size(pathLog) > 10 * 1000000;
-    if(debugLogExceedsCompactSize && shrinkDebugLog)
+    if(debugLogExceedsCompactSize)
     {
         FILE* file = fopen(pathLog.string().c_str(), "r");
         if (file) {
@@ -149,7 +149,7 @@ bool LogAcceptCategory(const char* category)
 
 int LogPrintStr(const std::string& str)
 {
-    static int64_t timeOfLastWrite = GetTime();
+    static int64_t timeOfLastFileShrinkCheck = GetTime();
     int ret = 0; // Returns total number of characters written
     //ret = fwrite(str.data(), 1, str.size(), stdout);
     //fflush(stdout);
@@ -187,6 +187,12 @@ int LogPrintStr(const std::string& str)
             fStartedNewLine = false;
 
         ret = fwrite(str.data(), 1, str.size(), fileout);
+        if((timeOfCurrentWrite - timeOfLastFileShrinkCheck) > 5*60 && shrinkDebugLog)
+        {
+            timeOfLastFileShrinkCheck = timeOfCurrentWrite;
+            fflush(fileout);
+            ShrinkDebugFile();
+        }
     }
 
     return ret;

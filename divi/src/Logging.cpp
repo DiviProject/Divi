@@ -168,10 +168,11 @@ void ShrinkDebugFile()
     // Scroll debug.log if it's getting too big
     static boost::filesystem::path pathLog = GetDataDir() / "debug.log";
     const bool debugLogFileExists = boost::filesystem::exists(pathLog);
-    if(debugLogFileExists && shrinkDebugLog)
+    const bool debugLogExceedsCompactSize = debugLogFileExists && boost::filesystem::file_size(pathLog) > 10 * 1000000;
+    if(debugLogExceedsCompactSize && shrinkDebugLog)
     {
         FILE* file = fopen(pathLog.string().c_str(), "r");
-        if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000) {
+        if (file) {
             // Restart the file with some of the end
             std::vector<char> vch(200000, 0);
             fseek(file, -((long)vch.size()), SEEK_END);

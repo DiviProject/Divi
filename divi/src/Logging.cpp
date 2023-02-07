@@ -90,6 +90,32 @@ bool EnsureDebugPrintInitialized()
     return true;
 }
 
+void ShrinkDebugFile()
+{
+    // Scroll debug.log if it's getting too big
+    static boost::filesystem::path pathLog = GetDataDir() / "debug.log";
+    const bool debugLogFileExists = boost::filesystem::exists(pathLog);
+    const bool debugLogExceedsCompactSize = debugLogFileExists && boost::filesystem::file_size(pathLog) > 10 * 1000000;
+    if(debugLogExceedsCompactSize && shrinkDebugLog)
+    {
+        FILE* file = fopen(pathLog.string().c_str(), "r");
+        if (file) {
+            // Restart the file with some of the end
+            std::vector<char> vch(200000, 0);
+            fseek(file, -((long)vch.size()), SEEK_END);
+            int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
+            fclose(file);
+
+            file = fopen(pathLog.string().c_str(), "w");
+            if (file) {
+                fwrite(begin_ptr(vch), 1, nBytes, file);
+                fclose(file);
+            }
+        } else if (file != NULL)
+            fclose(file);
+    }
+}
+
 } // anonymous namespace
 
 bool LogAcceptCategory(const char* category)
@@ -161,32 +187,6 @@ int LogPrintStr(const std::string& str)
     }
 
     return ret;
-}
-
-void ShrinkDebugFile()
-{
-    // Scroll debug.log if it's getting too big
-    static boost::filesystem::path pathLog = GetDataDir() / "debug.log";
-    const bool debugLogFileExists = boost::filesystem::exists(pathLog);
-    const bool debugLogExceedsCompactSize = debugLogFileExists && boost::filesystem::file_size(pathLog) > 10 * 1000000;
-    if(debugLogExceedsCompactSize && shrinkDebugLog)
-    {
-        FILE* file = fopen(pathLog.string().c_str(), "r");
-        if (file) {
-            // Restart the file with some of the end
-            std::vector<char> vch(200000, 0);
-            fseek(file, -((long)vch.size()), SEEK_END);
-            int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
-            fclose(file);
-
-            file = fopen(pathLog.string().c_str(), "w");
-            if (file) {
-                fwrite(begin_ptr(vch), 1, nBytes, file);
-                fclose(file);
-            }
-        } else if (file != NULL)
-            fclose(file);
-    }
 }
 
 void SetLoggingAndDebugSettings()

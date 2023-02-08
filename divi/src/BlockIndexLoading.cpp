@@ -250,7 +250,11 @@ bool static LoadBlockIndexState(Settings& settings, std::string& strError)
     if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.reindexingWasRequested())
     {
         uint256 expectedBestBlockHash;
-        if(!blockTree.ReadBestBlockHash(expectedBestBlockHash) || !ResolveConflictsBetweenCoinDBAndBlockDB(blockMap,expectedBestBlockHash,coinsTip,strError))
+        if(!blockTree.ReadBestBlockHash(expectedBestBlockHash))
+        {
+            return false;
+        }
+        if(!ResolveConflictsBetweenCoinDBAndBlockDB(blockMap,expectedBestBlockHash,coinsTip,strError))
         {
             return false;
         }

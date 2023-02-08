@@ -229,7 +229,10 @@ bool static LoadBlockIndexState(Settings& settings, std::string& strError)
     boost::this_thread::interruption_point();
 
     // Check presence of blk files
-    if(!VerifyAllBlockFilesArePresent(blockMap)) return error("Some block files that were expected to be found are missing!");
+    if(!VerifyAllBlockFilesArePresent(blockMap))
+    {
+         return error("Some block files that were expected to be found are missing!");
+    }
 
     // Calculate nChainWork
     InitializeBlockIndexGlobalData(blockMap);

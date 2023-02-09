@@ -24,6 +24,7 @@ struct TxIndexEntry
 
 struct IndexDatabaseUpdates
 {
+    const CBlockIndex* const blockIndex_;
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > addressUnspentIndex;
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;
@@ -31,6 +32,6 @@ struct IndexDatabaseUpdates
     const bool addressIndexingEnabled_;
     const bool spentIndexingEnabled_;
 
-    IndexDatabaseUpdates(bool addressIndexingEnabled, bool spentIndexingEnabled);
+    IndexDatabaseUpdates(const CBlockIndex* const blockIndex, bool addressIndexingEnabled, bool spentIndexingEnabled);
 };
 #endif// INDEX_DATABASE_UPDATES_H

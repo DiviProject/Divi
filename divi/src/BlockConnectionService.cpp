@@ -237,7 +237,7 @@ bool BlockConnectionService::DisconnectBlock(
     if(blockUndo.vtxundo.size() + 1 != block.vtx.size())
         return error("%s: block and undo data inconsistent", __func__);
 
-    IndexDatabaseUpdates indexDBUpdates(blocktree_->GetAddressIndexing(), blocktree_->GetSpentIndexing());
+    IndexDatabaseUpdates indexDBUpdates(pindex, blocktree_->GetAddressIndexing(), blocktree_->GetSpentIndexing());
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
@@ -318,6 +318,7 @@ bool BlockConnectionService::ConnectBlock(
 
 
     IndexDatabaseUpdates indexDatabaseUpdates(
+        pindex,
         blocktree_->GetAddressIndexing(),
         blocktree_->GetSpentIndexing());
     CBlockRewards nExpectedMint = blockSubsidies_.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);

@@ -3,9 +3,11 @@
 #include <primitives/transaction.h>
 
 IndexDatabaseUpdates::IndexDatabaseUpdates(
+    const CBlockIndex* const blockIndex,
     bool addressIndexingEnabled,
     bool spentIndexingEnabled
-    ): addressIndex()
+    ): blockIndex_(blockIndex)
+    , addressIndex()
     , addressUnspentIndex()
     , spentIndex()
     , txLocationData()

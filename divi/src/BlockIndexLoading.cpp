@@ -176,15 +176,10 @@ bool static ResolveConflictsBetweenCoinDBAndBlockDB(
         const auto mit = blockMap.find(coinsTip.GetBestBlock());
         if (mit == blockMap.end())
         {
-            strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database. Coin db best block unknown";;
+            strError = "Coin database corruption detected! Coin database best block is unknown";
             return false;
         }
         const auto iteratorToBestBlock = blockMap.find(bestBlockHashInBlockDB);
-        if (iteratorToBestBlock == blockMap.end())
-        {
-            strError = "The wallet has been not been closed gracefully, causing the transaction database to be out of sync with the block database. Block db best block unknown";
-            return false;
-        }
         const CBlockIndex* coinDBBestBlockIndex = mit->second;
         const CBlockIndex* blockDBBestBlockIndex = iteratorToBestBlock->second;
         const CBlockIndex* const lastCommonSyncedBlockIndex = LastCommonAncestor(coinDBBestBlockIndex,blockDBBestBlockIndex);
@@ -253,8 +248,9 @@ bool static LoadBlockIndexState(Settings& settings, std::string& strError)
     if (!fLastShutdownWasPrepared && !settings.GetBoolArg("-forcestart", false) && !settings.reindexingWasRequested())
     {
         uint256 expectedBestBlockHash;
-        if(!blockTree.ReadBestBlockHash(expectedBestBlockHash))
+        if(!blockTree.ReadBestBlockHash(expectedBestBlockHash) || blockMap.find(expectedBestBlockHash) == blockMap.end())
         {
+            strError = "Block database corruption detected! Failed to find best block in block index";
             return false;
         }
         if(!ResolveConflictsBetweenCoinDBAndBlockDB(blockMap,expectedBestBlockHash,coinsTip,strError))

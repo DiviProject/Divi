@@ -97,17 +97,18 @@ public:
     bool WriteBestBlockHash(const uint256 bestBlockHash);
 
     bool ReadTxIndex(const uint256& txid, CDiskTxPos& pos) const;
-    bool WriteTxIndex(const std::vector<TxIndexEntry>& list);
     bool WriteAddressIndex(const std::vector<std::pair<CAddressIndexKey, CAmount> > &vect);
     bool EraseAddressIndex(const std::vector<std::pair<CAddressIndexKey, CAmount> > &vect);
     bool ReadAddressIndex(uint160 addressHash, int type,
                           std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
                           int start = 0, int end = 0) const;
     bool ReadSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value) const;
-    bool UpdateSpentIndex(const std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> >&vect);
-    bool UpdateAddressUnspentIndex(const std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue > >&vect);
     bool ReadAddressUnspentIndex(uint160 addressHash, int type,
                                  std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &vect) const;
+
+    bool WriteTxIndex(const std::vector<TxIndexEntry>& list);
+    bool UpdateSpentIndex(const std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> >&vect);
+    bool UpdateAddressUnspentIndex(const std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue > >&vect);
 };
 
 #endif // BITCOIN_TXDB_H

@@ -41,6 +41,11 @@ private:
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
 
+    bool ApplyConnectionUpdateIndexToDBs(
+        const IndexDatabaseUpdates& indexDBUpdates,
+        const uint256& bestBlockHash,
+        CValidationState& state) const;
+
     bool DisconnectBlock(
         const CBlock& block,
         CValidationState& state,

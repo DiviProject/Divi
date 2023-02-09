@@ -119,34 +119,6 @@ bool WriteUndoDataToDisk(CBlockIndex* pindex, CValidationState& state, CBlockUnd
     }
     return true;
 }
-
-bool UpdateDBIndicesForNewBlock(
-    const IndexDatabaseUpdates& indexDatabaseUpdates,
-    const uint256& bestBlockHash,
-    CBlockTreeDB& blockTreeDatabase,
-    CValidationState& state)
-{
-    if (blockTreeDatabase.GetTxIndexing())
-        if (!blockTreeDatabase.WriteTxIndex(indexDatabaseUpdates.txLocationData))
-            return state.Abort("ConnectingBlock: Failed to write transaction index");
-
-    if (indexDatabaseUpdates.addressIndexingEnabled_) {
-        if (!blockTreeDatabase.WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
-            return state.Abort("ConnectingBlock: Failed to write address index");
-        }
-
-        if (!blockTreeDatabase.UpdateAddressUnspentIndex(indexDatabaseUpdates.addressUnspentIndex)) {
-            return state.Abort("ConnectingBlock: Failed to write address unspent index");
-        }
-    }
-
-    if (indexDatabaseUpdates.spentIndexingEnabled_)
-        if (!blockTreeDatabase.UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
-            return state.Abort("ConnectingBlock: Failed to write update spent index");
-
-    return blockTreeDatabase.WriteBestBlockHash(bestBlockHash);
-}
-
 }
 
 
@@ -174,6 +146,32 @@ BlockConnectionService::BlockConnectionService(
 
 BlockConnectionService::~BlockConnectionService()
 {
+}
+
+bool BlockConnectionService::ApplyConnectionUpdateIndexToDBs(
+    const IndexDatabaseUpdates& indexDatabaseUpdates,
+    const uint256& bestBlockHash,
+    CValidationState& state) const
+{
+    if (blocktree_->GetTxIndexing())
+        if (!blocktree_->WriteTxIndex(indexDatabaseUpdates.txLocationData))
+            return state.Abort("ConnectingBlock: Failed to write transaction index");
+
+    if (indexDatabaseUpdates.addressIndexingEnabled_) {
+        if (!blocktree_->WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
+            return state.Abort("ConnectingBlock: Failed to write address index");
+        }
+
+        if (!blocktree_->UpdateAddressUnspentIndex(indexDatabaseUpdates.addressUnspentIndex)) {
+            return state.Abort("ConnectingBlock: Failed to write address unspent index");
+        }
+    }
+
+    if (indexDatabaseUpdates.spentIndexingEnabled_)
+        if (!blocktree_->UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
+            return state.Abort("ConnectingBlock: Failed to write update spent index");
+
+    return blocktree_->WriteBestBlockHash(bestBlockHash);
 }
 
 bool BlockConnectionService::ApplyDisconnectionUpdateIndexToDBs(
@@ -347,7 +345,7 @@ bool BlockConnectionService::ConnectBlock(
 
     if (!updateCoinsCacheOnly) {
         if(!ConnectBlockHelpers::WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
-           !ConnectBlockHelpers::UpdateDBIndicesForNewBlock(indexDatabaseUpdates, pindex->GetBlockHash(), *blocktree_, state))
+           !ApplyConnectionUpdateIndexToDBs(indexDatabaseUpdates, pindex->GetBlockHash(), state))
         {
             return false;
         }

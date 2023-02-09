@@ -17,9 +17,9 @@
 
 TransactionLocationRecorder::TransactionLocationRecorder(
     const CBlockIndex* pindex,
-    const CBlock& block
-    ): nextBlockTxOnDiskLocation_(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()))
-    , numberOfTransactions_(block.vtx.size())
+    const size_t numberOfTransactions
+    ): numberOfTransactions_(numberOfTransactions)
+    , nextBlockTxOnDiskLocation_(pindex->GetBlockPos(), GetSizeOfCompactSize(numberOfTransactions_))
     , txLocationDataSizeHasBeenPreallocated_(false)
 {
 }
@@ -50,7 +50,7 @@ BlockTransactionChecker::BlockTransactionChecker(
     , pindex_(pindex)
     , view_(view)
     , txInputChecker_(view_,blockIndexMap,state_)
-    , txLocationRecorder_(pindex_,block_)
+    , txLocationRecorder_(pindex_,block_.vtx.size())
 {
 }
 

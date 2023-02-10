@@ -210,6 +210,24 @@ bool static ResolveConflictsBetweenCoinDBAndBlockDB(
     return true;
 }
 
+bool static AttemptBlockDBRecovery(
+    const BlockMap& blockMap,
+    const CCoinsViewCache& coinsTip,
+    CBlockTreeDB& blockTree,
+    uint256& expectedBestBlockHash,
+    Settings& settings)
+{
+    expectedBestBlockHash = coinsTip.GetBestBlock();
+    if(blockMap.find(expectedBestBlockHash)==blockMap.end()) return false;
+    settings.SetParameter("-addressindex", "0");
+    settings.SetParameter("-spentindex", "0");
+    blockTree.WriteIndexingFlags(
+        settings.GetBoolArg("-addressindex", false),
+        settings.GetBoolArg("-spentindex", false),
+        settings.GetBoolArg("-txindex", true));
+    return blockTree.WriteBestBlockHash(expectedBestBlockHash);
+}
+
 bool static LoadBlockIndexState(Settings& settings, std::string& strError)
 {
     ChainstateManager::Reference chainstate;
@@ -250,8 +268,12 @@ bool static LoadBlockIndexState(Settings& settings, std::string& strError)
         uint256 expectedBestBlockHash;
         if(!blockTree.ReadBestBlockHash(expectedBestBlockHash) || blockMap.find(expectedBestBlockHash) == blockMap.end())
         {
-            strError = "Block database corruption detected! Failed to find best block in block index";
-            return false;
+            if(!settings.GetBoolArg("-recoverblockdb",false) ||
+                !AttemptBlockDBRecovery(blockMap,coinsTip, blockTree, expectedBestBlockHash, settings))
+            {
+                strError = "Block database corruption detected! Failed to find best block in block index";
+                return false;
+            }
         }
         if(!ResolveConflictsBetweenCoinDBAndBlockDB(blockMap,expectedBestBlockHash,coinsTip,strError))
         {

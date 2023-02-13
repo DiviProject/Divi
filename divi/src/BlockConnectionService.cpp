@@ -150,7 +150,6 @@ BlockConnectionService::~BlockConnectionService()
 
 bool BlockConnectionService::ApplyConnectionUpdateIndexToDBs(
     const IndexDatabaseUpdates& indexDatabaseUpdates,
-    const uint256& bestBlockHash,
     CValidationState& state) const
 {
     if (blocktree_->GetTxIndexing())
@@ -171,12 +170,11 @@ bool BlockConnectionService::ApplyConnectionUpdateIndexToDBs(
         if (!blocktree_->UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
             return state.Abort("ConnectingBlock: Failed to write update spent index");
 
-    return blocktree_->WriteBestBlockHash(bestBlockHash);
+    return blocktree_->WriteBestBlockHash(indexDatabaseUpdates.blockIndex_->GetBlockHash());
 }
 
 bool BlockConnectionService::ApplyDisconnectionUpdateIndexToDBs(
-    const uint256& bestBlockHash,
-    IndexDatabaseUpdates& indexDBUpdates,
+    const IndexDatabaseUpdates& indexDBUpdates,
     CValidationState& state) const
 {
     if (indexDBUpdates.addressIndexingEnabled_) {
@@ -193,7 +191,7 @@ bool BlockConnectionService::ApplyDisconnectionUpdateIndexToDBs(
             return state.Abort("Disconnecting block: Failed to write update spent index");
         }
     }
-    return blocktree_->WriteBestBlockHash(bestBlockHash);
+    return blocktree_->WriteBestBlockHash(indexDBUpdates.blockIndex_->pprev->GetBlockHash());
 }
 
 
@@ -256,7 +254,7 @@ bool BlockConnectionService::DisconnectBlock(
     view.SetBestBlock(pindex->pprev->GetBlockHash());
     if(!fJustCheck)
     {
-        if(!ApplyDisconnectionUpdateIndexToDBs(pindex->pprev->GetBlockHash(), indexDBUpdates,state))
+        if(!ApplyDisconnectionUpdateIndexToDBs(indexDBUpdates,state))
             return error("%s: failed to apply index updates for block %s", __func__, block.GetHash());
     }
 
@@ -345,7 +343,7 @@ bool BlockConnectionService::ConnectBlock(
 
     if (!updateCoinsCacheOnly) {
         if(!ConnectBlockHelpers::WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
-           !ApplyConnectionUpdateIndexToDBs(indexDatabaseUpdates, pindex->GetBlockHash(), state))
+           !ApplyConnectionUpdateIndexToDBs(indexDatabaseUpdates, state))
         {
             return false;
         }

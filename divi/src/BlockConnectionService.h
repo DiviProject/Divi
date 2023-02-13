@@ -37,13 +37,11 @@ private:
     const I_BlockIncentivesPopulator& incentives_;
 
     bool ApplyDisconnectionUpdateIndexToDBs(
-        const uint256& bestBlockHash,
-        IndexDatabaseUpdates& indexDBUpdates,
+        const IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
 
     bool ApplyConnectionUpdateIndexToDBs(
         const IndexDatabaseUpdates& indexDBUpdates,
-        const uint256& bestBlockHash,
         CValidationState& state) const;
 
     bool DisconnectBlock(

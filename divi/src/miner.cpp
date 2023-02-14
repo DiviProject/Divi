@@ -28,7 +28,6 @@ CCriticalSection cs_coinMintingModule;
 std::unique_ptr<CoinMintingModule> coinMintingModule;
 std::unique_ptr<boost::thread, NonDeletionDeleter<boost::thread>> backgroundMintingThread(nullptr);
 volatile bool moduleInitialized = false;
-volatile bool mintingIsActive = false;
 
 void InterruptMintingThread()
 {
@@ -54,7 +53,7 @@ void StopMinting()
 }
 void DestructCoinMintingModule()
 {
-    while(mintingIsActive)
+    while(coinMintingModuleReferenceCount.load()>0)
     {
         MilliSleep(100);
     }
@@ -80,7 +79,7 @@ void InitializeCoinMintingModule(
     boost::thread_group& backgroundThreadGroup)
 {
     LOCK(cs_coinMintingModule);
-    assert(coinMintingModule == nullptr && !mintingIsActive);
+    assert(coinMintingModule == nullptr && coinMintingModuleReferenceCount.load()==0);
     coinMintingModule.reset(
         new CoinMintingModule(
             settings,
@@ -177,7 +176,6 @@ void ThreadCoinMinter()
         /* While the thread is running, we keep the mutex locked; this ensures
            that the module will not be reset or destructed while in use.  */
         LOCK(cs_coinMintingModule);
-        mintingIsActive = true;
         const CoinMintingModuleReference coinMintingModuleRef = GetCoinMintingModule();
         const CoinMintingModule& mintingModule = coinMintingModuleRef.access();
         I_CoinMinter& minter = mintingModule.coinMinter();
@@ -190,6 +188,5 @@ void ThreadCoinMinter()
         LogPrintf("%s error \n",__func__);
     }
     LogPrintf("%s exiting,\n",__func__);
-    mintingIsActive = false;
 }
 #endif // ENABLE_WALLET

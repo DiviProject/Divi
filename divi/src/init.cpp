@@ -231,7 +231,7 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
 {
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
     const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
-    if(underRegressionTesting) settings.SetParameter("-staking", "0");
+    if(underRegressionTesting && !settings.ParameterIsSet("-staking")) settings.SetParameter("-staking", "0");
 
     InitializeCoinMintingModule(
         settings,

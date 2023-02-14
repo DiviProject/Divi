@@ -23,6 +23,7 @@
 namespace
 {
 
+std::atomic<int> coinMintingModuleReferenceCount(0);
 CCriticalSection cs_coinMintingModule;
 std::unique_ptr<CoinMintingModule> coinMintingModule;
 std::unique_ptr<boost::thread, NonDeletionDeleter<boost::thread>> backgroundMintingThread(nullptr);
@@ -114,10 +115,10 @@ void ShutdownCoinMintingModule()
     DestructCoinMintingModule();
 }
 
-const CoinMintingModule& GetCoinMintingModule()
+const CoinMintingModuleReference GetCoinMintingModule()
 {
     assert(coinMintingModule != nullptr);
-    return *coinMintingModule;
+    return CoinMintingModuleReference(*coinMintingModule, coinMintingModuleReferenceCount);
 }
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -177,7 +178,8 @@ void ThreadCoinMinter()
            that the module will not be reset or destructed while in use.  */
         LOCK(cs_coinMintingModule);
         mintingIsActive = true;
-        const CoinMintingModule& mintingModule = GetCoinMintingModule();
+        const CoinMintingModuleReference coinMintingModuleRef = GetCoinMintingModule();
+        const CoinMintingModule& mintingModule = coinMintingModuleRef.access();
         I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);
         MinterThread(minter);

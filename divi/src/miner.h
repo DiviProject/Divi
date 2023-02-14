@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <map>
+#include <atomic>
 
 class I_StakingWallet;
 class I_CoinMinter;
@@ -29,6 +30,30 @@ namespace boost
 class thread_group;
 } // namespace boost
 
+struct CoinMintingModuleReference
+{
+private:
+    const CoinMintingModule* const coinMintingModuleRef_;
+    std::atomic<int>& referenceCounter_;
+public:
+    CoinMintingModuleReference(
+        const CoinMintingModule& coinMintingModule,
+        std::atomic<int>& referenceCounter
+        ): coinMintingModuleRef_(&coinMintingModule)
+        , referenceCounter_(referenceCounter)
+    {
+        referenceCounter_++;
+    }
+    ~CoinMintingModuleReference()
+    {
+        referenceCounter_--;
+    }
+
+    const CoinMintingModule& access() const
+    {
+        return *coinMintingModuleRef_;
+    }
+};
 
 void InitializeCoinMintingModule(
     const Settings& settings,
@@ -45,7 +70,7 @@ void InitializeCoinMintingModule(
     I_StakingWallet& stakingWallet,
     boost::thread_group& backgroundThreadGroup);
 void ShutdownCoinMintingModule();
-const CoinMintingModule& GetCoinMintingModule();
+const CoinMintingModuleReference GetCoinMintingModule();
 
 /** Run the miner threads */
 void ThreadCoinMinter();

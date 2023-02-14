@@ -96,7 +96,8 @@ Value setgenerate(const Array& params, bool fHelp, CWallet* pwallet)
     }
 
     Array blockHashes;
-    const CoinMintingModule& mintingModule = GetCoinMintingModule();
+    const CoinMintingModuleReference coinMintingModuleRef = GetCoinMintingModule();
+    const CoinMintingModule& mintingModule = coinMintingModuleRef.access();
     I_CoinMinter& minter = mintingModule.coinMinter();
     minter.setMintingRequestStatus(true);
 
@@ -152,7 +153,8 @@ Value generateblock(const Array& params, bool fHelp, CWallet* pwallet)
         nHeight = chain.Height();
     }
 
-    const CoinMintingModule& mintingModule = GetCoinMintingModule();
+    const CoinMintingModuleReference coinMintingModuleRef = GetCoinMintingModule();
+    const CoinMintingModule& mintingModule = coinMintingModuleRef.access();
     I_CoinMinter& minter = mintingModule.coinMinter();
     minter.setMintingRequestStatus(true);
 

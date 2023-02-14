@@ -42,11 +42,11 @@ public:
         ): coinMintingModuleRef_(&coinMintingModule)
         , referenceCounter_(referenceCounter)
     {
-        referenceCounter_++;
+        ++referenceCounter_;
     }
     ~CoinMintingModuleReference()
     {
-        referenceCounter_--;
+        --referenceCounter_;
     }
 
     const CoinMintingModule& access() const

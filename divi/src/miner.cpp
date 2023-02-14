@@ -181,7 +181,6 @@ void ThreadCoinMinter()
         I_CoinMinter& minter = mintingModule.coinMinter();
         minter.setMintingRequestStatus(true);
         MinterThread(minter);
-        mintingActive = false;
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
         LogPrintf("%s exception \n",__func__);
@@ -189,5 +188,6 @@ void ThreadCoinMinter()
         LogPrintf("%s error \n",__func__);
     }
     LogPrintf("%s exiting,\n",__func__);
+    mintingActive = false;
 }
 #endif // ENABLE_WALLET

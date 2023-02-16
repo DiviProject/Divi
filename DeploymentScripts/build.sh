@@ -47,7 +47,7 @@ if $MayBuild; then
 
 	all_builds_succeeded=false &&
 	cd /blddv/gitian-builder/ &&
-	/blddv/gitian-builder/bin/make-base-vm --docker --suite trusty && wait &&
+	/blddv/gitian-builder/bin/make-base-vm --docker --suite bionic && wait &&
 	last_failed_build="ubuntu" &&
 	/blddv/gitian-builder/bin/gbuild --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-linux.yml &&
 	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/ubuntu/ &&

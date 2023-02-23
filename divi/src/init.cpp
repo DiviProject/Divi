@@ -1158,7 +1158,8 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         multiWalletModule->loadWallet(strWalletFile);
         multiWalletModule->setActiveWallet(strWalletFile);
         GetWallet()->NotifyTransactionChanged.connect(&ExternalNotificationScript);
-        return ParseDbErrorsFromLoadingWallet(GetWallet()->loadWallet(), strErrors);
+        const auto parsedResult = ParseDbErrorsFromLoadingWallet(GetWallet()->loadWallet(), strErrors);
+        return parsedResult;
     }
     catch(const std::exception& e)
     {

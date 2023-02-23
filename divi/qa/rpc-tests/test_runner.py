@@ -126,6 +126,7 @@ BASE_SCRIPTS = [
     'TxInputsStandardness.py',
     'txn_doublespend.py',
     'txn_doublespend.py --mineblock',
+    'VaultWhitelisting.py',
     'VaultUtxoIndexing.py',
     'vaultfork.py',
     'wallet.py',

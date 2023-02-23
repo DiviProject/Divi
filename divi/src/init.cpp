@@ -1151,6 +1151,17 @@ LoadWalletResult ParseDbErrorsFromLoadingWallet(DBErrors dbError, std::ostringst
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }
 
+void LoadWhitelistedVaults(CWallet* wallet)
+{
+    std::vector<SerializedScript> whitelistedVaultScripts;
+    for(const std::string& whitelistedVaultScript: settings.GetMultiParameter("-whitelisted_vault"))
+    {
+        auto byteVector = ParseHex(whitelistedVaultScript);
+        whitelistedVaultScripts.push_back(byteVector);
+    }
+    wallet->loadWhitelistedVaults(whitelistedVaultScripts);
+}
+
 LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream& strErrors)
 {
     try
@@ -1159,6 +1170,7 @@ LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream&
         multiWalletModule->setActiveWallet(strWalletFile);
         GetWallet()->NotifyTransactionChanged.connect(&ExternalNotificationScript);
         const auto parsedResult = ParseDbErrorsFromLoadingWallet(GetWallet()->loadWallet(), strErrors);
+        if( parsedResult == NEW_WALLET_CREATED || parsedResult == EXISTING_WALLET_LOADED) LoadWhitelistedVaults(GetWallet());
         return parsedResult;
     }
     catch(const std::exception& e)

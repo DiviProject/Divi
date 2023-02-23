@@ -1969,6 +1969,20 @@ DBErrors CWallet::loadWallet()
     return nLoadWalletRet;
 }
 
+bool CWallet::loadWhitelistedVaults(const std::vector<SerializedScript>& vaultScripts)
+{
+    LOCK(cs_wallet);
+    for(const SerializedScript& serializedVaultScript: vaultScripts)
+    {
+        CScript vaultScript(serializedVaultScript.begin(),serializedVaultScript.end());
+        if(IsStakingVaultScript(vaultScript) && !HaveCScript(vaultScript))
+        {
+            if(AddCScript(vaultScript) && ownershipDetector_->isMine(CTxOut(0,vaultScript)) != isminetype::ISMINE_MANAGED_VAULT)
+                RemoveCScript(vaultScript);
+        }
+    }
+}
+
 bool CWallet::SetAddressLabel(const CTxDestination& address, const std::string& strName)
 {
     bool fUpdated = false;

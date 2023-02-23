@@ -140,6 +140,8 @@ struct TransactionCreationResult
 template <typename T>
 isminetype computeMineType(const CKeyStore& keystore, const T& destinationOrScript, const bool parseVaultsAsSpendable);
 
+using SerializedScript = std::vector<unsigned char>;
+
 class CWallet final:
     public CCryptoKeyStore,
     public NotificationInterface,
@@ -262,6 +264,7 @@ public:
     CCriticalSection& getWalletCriticalSection() const;
 
     DBErrors loadWallet();
+    bool loadWhitelistedVaults(const std::vector<SerializedScript>& vaultScripts);
     //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
     int getVersion();
 

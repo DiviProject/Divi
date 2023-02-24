@@ -1540,24 +1540,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         {
             return false;
         }
-
-        if (!fLoaded) {
-            // first suggest a reindex
-            if (!fReset) {
-                bool fRet = uiInterface.ThreadSafeMessageBox(
-                    strLoadError + ".\n\n" + translate("Do you want to rebuild the block database now?"),
-                    "", CClientUIInterface::MSG_ERROR | CClientUIInterface::BTN_ABORT);
-                if (fRet) {
-                    settings.setReindexingFlag(true);
-                    fRequestShutdown = false;
-                } else {
-                    LogPrintf("Aborted block database rebuild. Exiting.\n");
-                    return false;
-                }
-            } else {
-                return InitError(strLoadError);
-            }
-        }
+        if (!fLoaded) return InitError(strLoadError);
     }
 
     // As LoadBlockIndex can take several minutes, it's possible the user

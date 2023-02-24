@@ -21,6 +21,7 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <ChainstateManager.h>
+#include <clientversion.h>
 #include "compat/sanity.h"
 #include <DataDirectory.h>
 #include <defaultValues.h>

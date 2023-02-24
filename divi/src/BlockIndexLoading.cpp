@@ -15,6 +15,7 @@
 #include <chain.h>
 #include <ChainstateManager.h>
 #include <ChainSyncHelpers.h>
+#include <clientversion.h>
 #include <coins.h>
 #include <Settings.h>
 #include <streams.h>

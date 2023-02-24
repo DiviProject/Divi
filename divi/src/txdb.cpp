@@ -12,6 +12,7 @@
 #include <BlockFileInfo.h>
 #include <blockmap.h>
 #include <chainparams.h>
+#include <clientversion.h>
 #include <addressindex.h>
 #include <spentindex.h>
 #include <DataDirectory.h>

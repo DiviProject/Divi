@@ -1,5 +1,6 @@
 #include <BlockConnectionService.h>
 
+#include <clientversion.h>
 #include <primitives/block.h>
 #include <ValidationState.h>
 #include <chain.h>

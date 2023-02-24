@@ -1,5 +1,6 @@
 #include <VaultManagerDatabase.h>
 
+#include <clientversion.h>
 #include <utility>
 #include <WalletTx.h>
 #include <DataDirectory.h>

@@ -418,35 +418,35 @@ CAmount GetAccountBalance(
     return nBalance;
 }
 
-class I_AccountCoinSelector: public I_CoinSelectionAlgorithm
+class I_FilteredCoinSelector: public I_CoinSelectionAlgorithm
 {
 protected:
     std::unique_ptr<I_CoinSelectionAlgorithm> coinSelector_;
-    virtual std::vector<COutput> FilterCoinsByAccountName(const std::vector<COutput>& vCoins) const = 0;
+    virtual std::vector<COutput> FilterCoins(const std::vector<COutput>& vCoins) const = 0;
 public:
-    virtual ~I_AccountCoinSelector(){}
+    virtual ~I_FilteredCoinSelector(){}
     bool isSelectable(const COutput& coin) const final
     {
-        return coinSelector_ && coinSelector_->isSelectable(coin) && !(FilterCoinsByAccountName({coin}).empty());
+        return coinSelector_ && coinSelector_->isSelectable(coin) && !(FilterCoins({coin}).empty());
     }
     std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
         const std::vector<COutput>& vCoins,
         CAmount& fees) const override final
     {
-        std::vector<COutput> accountCoins = FilterCoinsByAccountName(vCoins);
+        std::vector<COutput> accountCoins = FilterCoins(vCoins);
         return coinSelector_? coinSelector_->SelectCoins(transactionToSelectCoinsFor,accountCoins,fees) : std::set<COutput>();
     }
 };
 
-class AccountCoinSelector final: public I_AccountCoinSelector
+class AccountCoinSelector final: public I_FilteredCoinSelector
 {
 private:
     SignatureSizeEstimator signatureSizeEstimator_;
     const AddressBook& addressBook_;
     std::string accountName_;
 
-    std::vector<COutput> FilterCoinsByAccountName(const std::vector<COutput>& vCoins) const override
+    std::vector<COutput> FilterCoins(const std::vector<COutput>& vCoins) const override
     {
         std::vector<COutput> accountCoins;
         accountCoins.reserve(vCoins.size());

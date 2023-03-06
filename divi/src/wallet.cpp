@@ -71,11 +71,13 @@ template isminetype computeMineType<CScript>(const CKeyStore& keystore, const CS
 
 TransactionCreationRequest::TransactionCreationRequest(
     const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
+    const CScript& changeAddressOverride,
     TransactionFeeMode txFeeMode,
     TxTextMetadata metadataToSet,
     AvailableCoinsType coinTypeSelected,
     const I_CoinSelectionAlgorithm& algorithm
     ): scriptsToFund(scriptsToSendTo)
+    , changeAddress(changeAddressOverride)
     , transactionFeeMode(txFeeMode)
     , coin_type(coinTypeSelected)
     , coinSelectionAlgorithm(algorithm)
@@ -1520,6 +1522,54 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
     return true;
 }
 
+class ChangeOutputCreator
+{
+private:
+    CReserveKey* const reserveKey_;
+    const CScript* const changeAddress_;
+public:
+    explicit ChangeOutputCreator(CReserveKey& reserveKey);
+    explicit ChangeOutputCreator(const CScript& changeAddress);
+
+    CTxOut createChangeOutput(const CAmount amount) const;
+    void reset() const {
+        if(reserveKey_) reserveKey_->ReturnKey();
+    }
+    void commit() const {
+        if(reserveKey_) reserveKey_->KeepKey();
+    }
+};
+
+ChangeOutputCreator::ChangeOutputCreator(
+    CReserveKey& reserveKey
+    ): reserveKey_(&reserveKey)
+    , changeAddress_(nullptr)
+{
+}
+
+ChangeOutputCreator::ChangeOutputCreator(
+    const CScript& changeAddress
+    ): reserveKey_(nullptr)
+    , changeAddress_(&changeAddress)
+{
+}
+
+CTxOut ChangeOutputCreator::createChangeOutput(const CAmount amount) const
+{
+    if(reserveKey_)
+    {
+        CPubKey vchPubKey;
+        assert(reserveKey_->GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
+        CTxOut changeOutput(amount, GetScriptForDestination(vchPubKey.GetID()));
+        return changeOutput;
+    }
+    else
+    {
+        CTxOut changeOutput(amount, *changeAddress_);
+        return changeOutput;
+    }
+}
+
 CTxOut CreateChangeOutput(
     const CAmount totalInputs,
     const CAmount totalOutputsPlusFees,
@@ -1730,7 +1780,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     const std::vector<COutput>& vCoins,
     const TransactionFeeMode sendMode,
     CMutableTransaction& txNew,
-    CReserveKey& reservekey,
+    const ChangeOutputCreator& changeOutputCreator,
     CWalletTx& wtxNew)
 {
     const CAmount totalValueToSend = txNew.GetValueOut();
@@ -1758,7 +1808,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
         return {translate("Insufficient funds to to pay for tx fee for the requested coin selection algorithm."),false};
     }
 
-    CTxOut changeOutput = CreateChangeOutput(nValueIn,totalValueToSendPlusFees,reservekey);
+    CTxOut changeOutput = changeOutputCreator.createChangeOutput(nValueIn-totalValueToSendPlusFees);
     switch (sendMode)
     {
     case TransactionFeeMode::RECEIVER_PAYS_FOR_TX_FEES:
@@ -1793,7 +1843,7 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     {
         if(!changeUsed)
         {
-            reservekey.ReturnKey();
+            changeOutputCreator.reset();
         }
         return {std::string(""),true};
     }
@@ -1804,7 +1854,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     const TransactionFeeMode feeMode,
     CWalletTx& wtxNew,
-    CReserveKey& reservekey,
+    const ChangeOutputCreator& changeOutputCreator,
     const I_CoinSelectionAlgorithm& coinSelector,
     AvailableCoinsType coin_type)
 {
@@ -1827,7 +1877,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     {
         return {translate("Transaction output(s) amount too small"),false};
     }
-    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,feeMode,txNew,reservekey,wtxNew);
+    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,feeMode,txNew,changeOutputCreator,wtxNew);
 }
 
 /**
@@ -1879,8 +1929,11 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
 TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& requestedTransaction)
 {
     TransactionCreationResult result;
-    std::unique_ptr<CReserveKey> reserveKey;
-    reserveKey.reset(new CReserveKey(*this));
+    std::unique_ptr<CReserveKey> reserveKey(new CReserveKey(*this));
+    std::unique_ptr<ChangeOutputCreator> changeOutputCreator;
+    if(requestedTransaction.changeAddress.empty()) changeOutputCreator.reset(new ChangeOutputCreator(*reserveKey));
+    else changeOutputCreator.reset(new ChangeOutputCreator(requestedTransaction.changeAddress));
+
     result.wtxNew.reset(new CWalletTx());
     if(!requestedTransaction.metadata.empty())
     {
@@ -1897,7 +1950,7 @@ TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& r
             requestedTransaction.scriptsToFund,
             requestedTransaction.transactionFeeMode,
             *result.wtxNew,
-            *reserveKey,
+            *changeOutputCreator,
             requestedTransaction.coinSelectionAlgorithm,
             requestedTransaction.coin_type);
 

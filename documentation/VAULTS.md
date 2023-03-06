@@ -22,11 +22,13 @@ The endpoints can be found in the `rpcwallet.cpp`.
 Sends funds to a staking vault address. These are DIFFERENT from normal addresses. These funds are now said to be 'vaulted' and you can no longer stake them.
 2. `./divi-cli reclaimvaultfunds destination amount`
 Sends funds from your currently vaulted funds to a destination address of your choice. The change address is one of your own.
-2. `./divi-cli addvault <owner_address>:<manager_address> funding_txhash`
+3. `./divi-cli debitvaultbyname <owner_address>:<manager_address> destination amount (fee-mode)`
+Sends funds from a specific vault to a destination address of your choice. Allows for specifying the fee calculation mode. The change address is one of your own.
+4. `./divi-cli addvault <owner_address>:<manager_address> funding_txhash`
 Vault managers must decide to manually accept responsibility to stake on another's behalf
-3. `./divi-cli removevault <owner_address>:<manager_address>`
+5. `./divi-cli removevault <owner_address>:<manager_address>`
 Vault managers can choose to rescind their responsibility to stake on anothers behalf.
-4. `./divi-cli getcoinavailability [verbose]`
+6. `./divi-cli getcoinavailability [verbose]`
 Shows amounts totals in the: Vaulted, Stakable and Spendable categories of funds. When verbose is set to 'true' it further shows txhashes and vault addresses.
 
 ## Some Use Cases

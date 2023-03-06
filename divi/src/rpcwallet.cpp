@@ -1052,6 +1052,76 @@ Value fundvault(const Array& params, bool fHelp, CWallet* pwallet)
     return fundingAttemptResult;
 }
 
+bool decomposeVaultEncodingIntoOwnerAndManagerAddresses(
+    const std::string& addressEncoding,
+    CBitcoinAddress ownerAddress,
+    CBitcoinAddress managerAddress)
+{
+    size_t indexOfSeparator = addressEncoding.find(':');
+    if(indexOfSeparator != std::string::npos)
+    {
+        ownerAddress.SetString(addressEncoding.substr(0u,indexOfSeparator));
+        managerAddress.SetString(addressEncoding.substr(indexOfSeparator+1));
+        return ownerAddress.IsValid() && managerAddress.IsValid();
+    }
+    return false;
+}
+
+Value debitvaultbyname(const Array& params, bool fHelp, CWallet* pwallet)
+{
+    if (fHelp || params.size() < 3 || params.size() > 4)
+        throw runtime_error(
+            "debitvaultbyname source destination amount (feeMode)"
+            "\nWithdraw an amount from a specific vaults to a destination address. The amount is a real and is rounded to the nearest 0.00000001\n" +
+            HelpRequiringPassphrase(pwallet) +
+            "\nArguments:\n"
+            "1. \"vault-encoding\"  (string, required) The vault encoding to withdraw from.\n"
+            "2. \"diviaddress\"  (string, required) The divi address of your choosing to send to.\n"
+            "3. \"amount\"      (numeric, required) The amount in DIVI to move. eg 0.1\n"
+            "4. \"fee mode\"      (string, optional) The fee + change output calculation mode\n"
+            "\nResult:\n"
+            "\"transactionid\"  (string) The transaction id.\n");
+
+    // Vault Encoding
+    const std::string vaultEncoding = params[0].get_str();
+    CBitcoinAddress ownerAddress;
+    CBitcoinAddress managerAddress;
+    if(decomposeVaultEncodingIntoOwnerAndManagerAddresses(vaultEncoding, ownerAddress, managerAddress))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Vault Encoding");
+
+    if(computeMineType(*pwallet,ownerAddress.Get(),true) != isminetype::ISMINE_SPENDABLE)
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Vault owner key is unknown");
+
+    // Destination Address
+    CBitcoinAddress address(params[1].get_str());
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
+
+    // Amount
+    CAmount nAmount = AmountFromValue(params[2]);
+
+    RpcTransactionCreationRequest rpcRequest;
+    rpcRequest.txShouldSpendFromVaults = true;
+    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+    {
+        const std::string feeMode = params[3].get_str();
+        if(feeMode == std::string("receiver_pays"))
+        {
+            rpcRequest.txFeeMode = TransactionFeeMode::RECEIVER_PAYS_FOR_TX_FEES;
+        }
+        else if(feeMode == std::string("sweep_funds"))
+        {
+            rpcRequest.txFeeMode = TransactionFeeMode::SWEEP_FUNDS;
+        }
+        else
+        {
+            throw JSONRPCError(RPC_INVALID_PARAMETER,"Unknown option for reclaiming vault funds");
+        }
+    }
+
+    EnsureWalletIsUnlocked(pwallet);
+    return SendMoneyToAddress(pwallet, address.Get(), nAmount, rpcRequest);
+}
 
 Value reclaimvaultfunds(const Array& params, bool fHelp, CWallet* pwallet)
 {

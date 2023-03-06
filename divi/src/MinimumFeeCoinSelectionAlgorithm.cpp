@@ -89,11 +89,11 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         {
             const CAmount gapA = inputA.outputRef->Value() - minRelayTxFee_.GetFee(inputA.sigSize);
             const CAmount gapB = inputB.outputRef->Value() - minRelayTxFee_.GetFee(inputB.sigSize);
-            if(gapA >= totalAmountNeeded && gapB >= totalAmountNeeded)
-            {
-                return inputA.sigSize < inputB.sigSize;
-            }
-            return gapA > gapB || (gapA == gapB && inputA.sigSize < inputB.sigSize);
+            const bool inputAShouldBePrioritized =
+                (gapA >= totalAmountNeeded && gapB >= totalAmountNeeded)
+                ? inputA.sigSize < inputB.sigSize
+                : gapA > gapB || (gapA == gapB && inputA.sigSize < inputB.sigSize);
+            return inputAShouldBePrioritized;
         });
     CAmount amountCovered =0;
     unsigned cummulativeByteSize = nominalChangeOutputSize;

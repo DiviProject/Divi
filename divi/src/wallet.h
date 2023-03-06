@@ -264,7 +264,7 @@ public:
     CCriticalSection& getWalletCriticalSection() const;
 
     DBErrors loadWallet();
-    bool loadWhitelistedVaults(const std::vector<SerializedScript>& vaultScripts);
+    void loadWhitelistedVaults(const std::vector<SerializedScript>& vaultScripts);
     //! get the current wallet format (the oldest client version guaranteed to understand this wallet)
     int getVersion();
 

@@ -1965,7 +1965,7 @@ DBErrors CWallet::loadWallet()
     return nLoadWalletRet;
 }
 
-bool CWallet::loadWhitelistedVaults(const std::vector<SerializedScript>& vaultScripts)
+void CWallet::loadWhitelistedVaults(const std::vector<SerializedScript>& vaultScripts)
 {
     LOCK(cs_wallet);
     for(const SerializedScript& serializedVaultScript: vaultScripts)

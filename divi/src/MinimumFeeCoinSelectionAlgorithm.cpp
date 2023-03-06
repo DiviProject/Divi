@@ -14,10 +14,12 @@
 MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(
     const CKeyStore& keyStore,
     const I_SignatureSizeEstimator& estimator,
-    const CFeeRate& minRelayTxFee
+    const CFeeRate& minRelayTxFee,
+    const UtxoPriorityMode utxoPriorityMode
     ): keyStore_(keyStore)
     , estimator_(estimator)
     , minRelayTxFee_(minRelayTxFee)
+    , utxoPriorityMode_(utxoPriorityMode)
 {
 }
 struct InputToSpendAndSigSize

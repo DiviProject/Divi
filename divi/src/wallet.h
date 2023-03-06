@@ -121,10 +121,10 @@ struct TransactionCreationRequest
     TxTextMetadata metadata;
     TransactionCreationRequest(
         const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
-        TransactionFeeMode txFeeMode = TransactionFeeMode::SENDER_PAYS_FOR_TX_FEES,
-        TxTextMetadata metadataToSet = TxTextMetadata(),
-        AvailableCoinsType coinTypeSelected = AvailableCoinsType::ALL_SPENDABLE_COINS,
-        const I_CoinSelectionAlgorithm* const algorithm = nullptr);
+        TransactionFeeMode txFeeMode,
+        TxTextMetadata metadataToSet,
+        AvailableCoinsType coinTypeSelected,
+        const I_CoinSelectionAlgorithm* const algorithm);
 };
 struct TransactionCreationResult
 {

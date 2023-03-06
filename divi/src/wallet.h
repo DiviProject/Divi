@@ -112,15 +112,18 @@ enum TransactionFeeMode
     SWEEP_FUNDS,
 };
 typedef std::map<std::string,std::string> TxTextMetadata;
+class ChangeOutputCreator;
 struct TransactionCreationRequest
 {
     const std::vector<std::pair<CScript, CAmount> >& scriptsToFund;
+    const CScript& changeAddress;
     TransactionFeeMode transactionFeeMode;
     AvailableCoinsType coin_type;
     const I_CoinSelectionAlgorithm& coinSelectionAlgorithm;
     TxTextMetadata metadata;
     TransactionCreationRequest(
         const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
+        const CScript& changeAddressOverride,
         TransactionFeeMode txFeeMode,
         TxTextMetadata metadataToSet,
         AvailableCoinsType coinTypeSelected,
@@ -349,7 +352,7 @@ public:
         const std::vector<std::pair<CScript, CAmount> >& vecSend,
         const TransactionFeeMode feeMode,
         CWalletTx& wtxNew,
-        CReserveKey& reservekey,
+        const ChangeOutputCreator& changeOutputCreator,
         const I_CoinSelectionAlgorithm& coinSelector,
         AvailableCoinsType coin_type = AvailableCoinsType::ALL_SPENDABLE_COINS);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);

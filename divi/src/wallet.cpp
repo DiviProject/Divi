@@ -74,7 +74,7 @@ TransactionCreationRequest::TransactionCreationRequest(
     TransactionFeeMode txFeeMode,
     TxTextMetadata metadataToSet,
     AvailableCoinsType coinTypeSelected,
-    const I_CoinSelectionAlgorithm* const algorithm
+    const I_CoinSelectionAlgorithm& algorithm
     ): scriptsToFund(scriptsToSendTo)
     , transactionFeeMode(txFeeMode)
     , coin_type(coinTypeSelected)
@@ -1729,7 +1729,7 @@ public:
 
 static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     const CKeyStore& walletKeyStore,
-    const I_CoinSelectionAlgorithm* coinSelector,
+    const I_CoinSelectionAlgorithm& coinSelector,
     const std::vector<COutput>& vCoins,
     const TransactionFeeMode sendMode,
     CMutableTransaction& txNew,
@@ -1747,8 +1747,8 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
     const bool sweepMode = sendMode == TransactionFeeMode::SWEEP_FUNDS;
     const std::set<COutput> setCoins =
         (sweepMode)
-        ? SweepFundsCoinSelectionAlgorithm(*coinSelector).SelectCoins(txNew,vCoins,nFeeRet)
-        : coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
+        ? SweepFundsCoinSelectionAlgorithm(coinSelector).SelectCoins(txNew,vCoins,nFeeRet)
+        : coinSelector.SelectCoins(txNew,vCoins,nFeeRet);
     const CAmount nValueIn = AttachInputs(setCoins,txNew);
 
     const CAmount totalValueToSendPlusFees = (!sweepMode)? totalValueToSend + nFeeRet: nValueIn;
@@ -1808,7 +1808,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     const TransactionFeeMode feeMode,
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
-    const I_CoinSelectionAlgorithm* coinSelector,
+    const I_CoinSelectionAlgorithm& coinSelector,
     AvailableCoinsType coin_type)
 {
     if (vecSend.empty())
@@ -1823,10 +1823,6 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     LOCK2(cs_main, cs_wallet);
     std::vector<COutput> vCoins;
     AvailableCoins(vCoins, true,  coin_type);
-    if(coinSelector == nullptr)
-    {
-        return {translate("Must provide a coin selection algorithm."),false};
-    }
 
     // vouts to the payees
     AppendOutputs(vecSend,txNew);

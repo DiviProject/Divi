@@ -117,14 +117,14 @@ struct TransactionCreationRequest
     const std::vector<std::pair<CScript, CAmount> >& scriptsToFund;
     TransactionFeeMode transactionFeeMode;
     AvailableCoinsType coin_type;
-    const I_CoinSelectionAlgorithm* const coinSelectionAlgorithm;
+    const I_CoinSelectionAlgorithm& coinSelectionAlgorithm;
     TxTextMetadata metadata;
     TransactionCreationRequest(
         const std::vector<std::pair<CScript, CAmount> >& scriptsToSendTo,
         TransactionFeeMode txFeeMode,
         TxTextMetadata metadataToSet,
         AvailableCoinsType coinTypeSelected,
-        const I_CoinSelectionAlgorithm* const algorithm);
+        const I_CoinSelectionAlgorithm& algorithm);
 };
 struct TransactionCreationResult
 {
@@ -351,7 +351,7 @@ public:
         const TransactionFeeMode feeMode,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
-        const I_CoinSelectionAlgorithm* coinSelector,
+        const I_CoinSelectionAlgorithm& coinSelector,
         AvailableCoinsType coin_type = AvailableCoinsType::ALL_SPENDABLE_COINS);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
     TransactionCreationResult SendMoney(const TransactionCreationRequest& requestedTransaction);

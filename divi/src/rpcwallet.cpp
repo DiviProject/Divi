@@ -703,7 +703,7 @@ std::string SendMoney(
     }
     AccountCoinSelector coinSelector(*pwallet);
     coinSelector.SetAccountName(rpcTxRequest.accountName);
-    TransactionCreationRequest request(scriptsToFund,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), &coinSelector);
+    TransactionCreationRequest request(scriptsToFund,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), coinSelector);
     TransactionCreationResult txCreation = pwallet->SendMoney(request);
     if(txCreation.transactionCreationSucceeded)
     {

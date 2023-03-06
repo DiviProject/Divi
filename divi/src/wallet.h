@@ -131,7 +131,6 @@ struct TransactionCreationResult
     bool transactionCreationSucceeded;
     std::string errorMessage;
     std::unique_ptr<CWalletTx> wtxNew;
-    std::unique_ptr<CReserveKey> reserveKey;
     TransactionCreationResult();
     ~TransactionCreationResult();
     TransactionCreationResult(TransactionCreationResult&& other);

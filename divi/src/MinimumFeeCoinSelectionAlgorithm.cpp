@@ -87,6 +87,10 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         inputsToSpendAndSignatureSizeEstimates.end(),
         [totalAmountNeeded,this](const InputToSpendAndSigSize& inputA, const InputToSpendAndSigSize& inputB)
         {
+            if(utxoPriorityMode_ == UtxoPriorityMode::MINIMUM_COIN_AGE && inputA.outputRef->nDepth != inputB.outputRef->nDepth)
+            {
+                return inputA.outputRef->nDepth < inputB.outputRef->nDepth;
+            }
             const CAmount gapA = inputA.outputRef->Value() - minRelayTxFee_.GetFee(inputA.sigSize);
             const CAmount gapB = inputB.outputRef->Value() - minRelayTxFee_.GetFee(inputB.sigSize);
             const bool inputAShouldBePrioritized =

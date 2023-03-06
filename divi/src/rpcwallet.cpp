@@ -481,6 +481,45 @@ public:
     }
 };
 
+class VaultCoinSelector final: public I_FilteredCoinSelector
+{
+private:
+    SignatureSizeEstimator signatureSizeEstimator_;
+    std::string vaultName_;
+
+    std::vector<COutput> FilterCoins(const std::vector<COutput>& vCoins) const override
+    {
+        std::vector<COutput> filteredCoins;
+        filteredCoins.reserve(vCoins.size());
+        for(const COutput& out: vCoins)
+        {
+            if(vaultName_.empty() || vaultName_ == GetVaultEncoding(out.tx->vout[out.i].scriptPubKey))
+            {
+                filteredCoins.push_back(out);
+            }
+        }
+        return filteredCoins;
+    }
+public:
+    VaultCoinSelector(
+        const CWallet& wallet
+        ): signatureSizeEstimator_()
+        , vaultName_()
+    {
+        coinSelector_.reset(
+            new MinimumFeeCoinSelectionAlgorithm(
+                wallet,
+                signatureSizeEstimator_,
+                FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
+                UtxoPriorityMode::MINIMUM_COIN_AGE));
+    }
+    ~VaultCoinSelector(){ coinSelector_.reset(); }
+
+    void SetVaultName(std::string vaultName)
+    {
+        vaultName_ = vaultName;
+    }
+};
 
 Value loadwallet(const Array& params, bool fHelp, CWallet* pwallet)
 {
@@ -661,6 +700,22 @@ struct RpcTransactionCreationRequest
     }
 };
 
+I_CoinSelectionAlgorithm* createCoinSelectionAlgorithm(CWallet& wallet, std::string accountName,const bool spendingFromVaults)
+{
+    if(spendingFromVaults)
+    {
+        std::unique_ptr<VaultCoinSelector> vaultCoinSelector(new VaultCoinSelector(wallet));
+        vaultCoinSelector->SetVaultName(accountName);
+        return vaultCoinSelector.release();
+    }
+    else
+    {
+        std::unique_ptr<AccountCoinSelector> accountCoinSelector(new AccountCoinSelector(wallet));
+        accountCoinSelector->SetAccountName(accountName);
+        return accountCoinSelector.release();
+    }
+}
+
 std::string SendMoney(
     CWallet* pwallet,
     const std::vector<std::pair<CScript,CAmount>>& scriptsToFund,
@@ -701,9 +756,10 @@ std::string SendMoney(
         LogPrintf("%s: %s\n",__func__, strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
-    AccountCoinSelector coinSelector(*pwallet);
-    coinSelector.SetAccountName(rpcTxRequest.accountName);
-    TransactionCreationRequest request(scriptsToFund,rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), coinSelector);
+    std::unique_ptr<I_CoinSelectionAlgorithm> coinSelector(
+        createCoinSelectionAlgorithm(*pwallet,rpcTxRequest.accountName, rpcTxRequest.txShouldSpendFromVaults));
+    const CScript changeAddress = CScript();
+    TransactionCreationRequest request(scriptsToFund,changeAddress, rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), *coinSelector);
     TransactionCreationResult txCreation = pwallet->SendMoney(request);
     if(txCreation.transactionCreationSucceeded)
     {

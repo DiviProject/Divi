@@ -87,20 +87,17 @@ TransactionCreationResult::TransactionCreationResult(
     ): transactionCreationSucceeded(false)
     , errorMessage("")
     , wtxNew(nullptr)
-    , reserveKey(nullptr)
 {
 }
 TransactionCreationResult::~TransactionCreationResult()
 {
     wtxNew.reset();
-    reserveKey.reset();
 }
 TransactionCreationResult::TransactionCreationResult(TransactionCreationResult&& other)
 {
     transactionCreationSucceeded = other.transactionCreationSucceeded;
     errorMessage = other.errorMessage;
     wtxNew.reset(other.wtxNew.release());
-    reserveKey.reset(other.reserveKey.release());
 }
 
 class WalletUtxoOwnershipDetector final: public I_UtxoOwnershipDetector
@@ -1882,7 +1879,8 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
 TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& requestedTransaction)
 {
     TransactionCreationResult result;
-    result.reserveKey.reset(new CReserveKey(*this));
+    std::unique_ptr<CReserveKey> reserveKey;
+    reserveKey.reset(new CReserveKey(*this));
     result.wtxNew.reset(new CWalletTx());
     if(!requestedTransaction.metadata.empty())
     {
@@ -1899,7 +1897,7 @@ TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& r
             requestedTransaction.scriptsToFund,
             requestedTransaction.transactionFeeMode,
             *result.wtxNew,
-            *result.reserveKey,
+            *reserveKey,
             requestedTransaction.coinSelectionAlgorithm,
             requestedTransaction.coin_type);
 
@@ -1907,7 +1905,7 @@ TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& r
     result.errorMessage = createTxResult.first;
     if(!result.transactionCreationSucceeded) return std::move(result);
 
-    result.transactionCreationSucceeded = CommitTransaction(*result.wtxNew,*result.reserveKey);
+    result.transactionCreationSucceeded = CommitTransaction(*result.wtxNew,*reserveKey);
     if(!result.transactionCreationSucceeded)
     {
         return std::move(result);

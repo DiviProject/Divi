@@ -70,6 +70,7 @@ extern json_spirit::Value getaddressesbyaccount(const json_spirit::Array& params
 extern json_spirit::Value getcoinavailability(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value fundvault(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value reclaimvaultfunds(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value debitvaultbyname(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value removevault(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value addvault(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value sendtoaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
@@ -450,6 +451,7 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "sendtoaddress", &sendtoaddress, false, false, true, true},
         {"wallet", "fundvault", &fundvault, false, false, true, true},
         {"wallet", "reclaimvaultfunds", &reclaimvaultfunds, false, false, true, true},
+        {"wallet", "debitvaultbyname", &debitvaultbyname, false, false, true, true},
         {"wallet", "removevault", &removevault, false, false, true, true},
         {"wallet", "addvault", &addvault, false, false, true, true},
         {"wallet", "getcoinavailability", &getcoinavailability, false, false, true, true},

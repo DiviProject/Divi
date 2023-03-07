@@ -682,6 +682,7 @@ struct RpcTransactionCreationRequest
     TxTextMetadata txMetadata;
     TransactionFeeMode txFeeMode;
     std::string accountName;
+    CScript changeOutputScript;
     RpcTransactionCreationRequest(
         bool spendFromVaults = false,
         TxTextMetadata metadata = TxTextMetadata(),
@@ -691,6 +692,7 @@ struct RpcTransactionCreationRequest
         , txMetadata(metadata)
         , txFeeMode(feeMode)
         , accountName(accountNameToDrawFrom)
+        , changeOutputScript()
     {
     }
 
@@ -758,8 +760,7 @@ std::string SendMoney(
     }
     std::unique_ptr<I_CoinSelectionAlgorithm> coinSelector(
         createCoinSelectionAlgorithm(*pwallet,rpcTxRequest.accountName, rpcTxRequest.txShouldSpendFromVaults));
-    const CScript changeAddress = CScript();
-    TransactionCreationRequest request(scriptsToFund,changeAddress, rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), *coinSelector);
+    TransactionCreationRequest request(scriptsToFund, rpcTxRequest.changeOutputScript, rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), *coinSelector);
     TransactionCreationResult txCreation = pwallet->SendMoney(request);
     if(txCreation.transactionCreationSucceeded)
     {
@@ -946,11 +947,11 @@ CScript validateAndConstructVaultScriptFromParsedAddresses(
 {
     CKeyID managerKeyID;
     if (!managerAddress.IsValid() || !managerAddress.GetKeyID(managerKeyID))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid manager DIVI address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid manager DIVI address");
 
     CKeyID ownerKeyID;
     if (!ownerAddress.IsValid() || !ownerAddress.GetKeyID(ownerKeyID))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid owner DIVI address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid owner DIVI address");
 
     return CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
 }
@@ -1102,6 +1103,8 @@ Value debitvaultbyname(const Array& params, bool fHelp, CWallet* pwallet)
 
     RpcTransactionCreationRequest rpcRequest;
     rpcRequest.txShouldSpendFromVaults = true;
+    rpcRequest.accountName = vaultEncoding;
+    rpcRequest.changeOutputScript = validateAndConstructVaultScriptFromParsedAddresses(ownerAddress,managerAddress);
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
     {
         const std::string feeMode = params[3].get_str();

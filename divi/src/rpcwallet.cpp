@@ -725,20 +725,23 @@ std::string SendMoney(
 {
     // Check amount
     const bool useDefaultAccount = rpcTxRequest.accountName.empty();
-    assert(useDefaultAccount || !rpcTxRequest.txShouldSpendFromVaults);
-
     CAmount availableWalletBalance = 0;
-    if(useDefaultAccount)
+    if(useDefaultAccount || rpcTxRequest.txShouldSpendFromVaults)
     {
         availableWalletBalance = rpcTxRequest.txShouldSpendFromVaults
             ? pwallet->GetVaultedBalance()
             : pwallet->GetSpendableBalance();
     }
-    else
+    else if(!rpcTxRequest.txShouldSpendFromVaults || !useDefaultAccount)
     {
         const int nMinDepth = 1;
         availableWalletBalance = GetAccountBalance(GetConfirmationsCalculator(), *pwallet,rpcTxRequest.accountName, nMinDepth, isminetype::ISMINE_SPENDABLE);
     }
+    else
+    {
+        assert(false && "Must spend from an account (default[all_funds] or otherwise) or from a vault");
+    }
+
     const CAmount totalAmountToSend = std::accumulate(scriptsToFund.begin(),scriptsToFund.end(),CAmount(0),
         [](const CAmount& runningTotal, const std::pair<CScript,CAmount>& recipient)
         {
@@ -1055,8 +1058,8 @@ Value fundvault(const Array& params, bool fHelp, CWallet* pwallet)
 
 bool decomposeVaultEncodingIntoOwnerAndManagerAddresses(
     const std::string& addressEncoding,
-    CBitcoinAddress ownerAddress,
-    CBitcoinAddress managerAddress)
+    CBitcoinAddress& ownerAddress,
+    CBitcoinAddress& managerAddress)
 {
     size_t indexOfSeparator = addressEncoding.find(':');
     if(indexOfSeparator != std::string::npos)
@@ -1087,11 +1090,12 @@ Value debitvaultbyname(const Array& params, bool fHelp, CWallet* pwallet)
     const std::string vaultEncoding = params[0].get_str();
     CBitcoinAddress ownerAddress;
     CBitcoinAddress managerAddress;
-    if(decomposeVaultEncodingIntoOwnerAndManagerAddresses(vaultEncoding, ownerAddress, managerAddress))
+    if(!decomposeVaultEncodingIntoOwnerAndManagerAddresses(vaultEncoding, ownerAddress, managerAddress))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Vault Encoding");
 
-    if(computeMineType(*pwallet,ownerAddress.Get(),true) != isminetype::ISMINE_SPENDABLE)
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Vault owner key is unknown");
+    CTxDestination dest = ownerAddress.Get();
+    if(computeMineType(*pwallet,dest,true) != isminetype::ISMINE_SPENDABLE)
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Vault owner key is unknown: ownership="+std::to_string(static_cast<int>(computeMineType(*pwallet,dest,true))) +" address="+ownerAddress.ToString() );
 
     // Destination Address
     CBitcoinAddress address(params[1].get_str());

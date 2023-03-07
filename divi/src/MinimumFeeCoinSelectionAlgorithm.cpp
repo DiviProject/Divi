@@ -48,7 +48,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     const std::vector<COutput>& vCoins,
     CAmount& fees) const
 {
-    constexpr unsigned nominalChangeOutputSize = 34u; // P2PKH change address
+    const unsigned nominalChangeOutputSize = (utxoPriorityMode_ == UtxoPriorityMode::MINIMUM_COIN_AGE)? 59u: 34u; // Vault? Vault-Change : P2PKH change address
     CTransaction initialTransaction = CTransaction(transactionToSelectCoinsFor);
     const unsigned initialByteSize = ::GetSerializeSize(initialTransaction, SER_NETWORK, PROTOCOL_VERSION);
 

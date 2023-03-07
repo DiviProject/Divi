@@ -1570,17 +1570,6 @@ CTxOut ChangeOutputCreator::createChangeOutput(const CAmount amount) const
     }
 }
 
-CTxOut CreateChangeOutput(
-    const CAmount totalInputs,
-    const CAmount totalOutputsPlusFees,
-    CReserveKey& reservekey)
-{
-    CPubKey vchPubKey;
-    assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
-    CTxOut changeOutput(totalInputs - totalOutputsPlusFees, GetScriptForDestination(vchPubKey.GetID()));
-    return changeOutput;
-}
-
 static CAmount GetMinimumFee(unsigned int nTxBytes)
 {
     const CFeeRate& feeRate = priorityFeeCalculator.getMinimumRelayFeeRate();

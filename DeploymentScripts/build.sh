@@ -49,16 +49,16 @@ if $MayBuild; then
 	cd /blddv/gitian-builder/ &&
 	/blddv/gitian-builder/bin/make-base-vm --docker --suite bionic && wait &&
 	last_failed_build="ubuntu" &&
-	/blddv/gitian-builder/bin/gbuild --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-linux.yml &&
+	/blddv/gitian-builder/bin/gbuild -j 1 --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-linux.yml &&
 	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/ubuntu/ &&
 	last_failed_build="windows" &&
-	/blddv/gitian-builder/bin/gbuild --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-win.yml &&
+	/blddv/gitian-builder/bin/gbuild -j 1 --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-win.yml &&
 	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/windows/ &&
 	last_failed_build="mac" &&
-	/blddv/gitian-builder/bin/gbuild --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-osx.yml &&
+	/blddv/gitian-builder/bin/gbuild -j 1 --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-osx.yml &&
 	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/osx/ &&
 	last_failed_build="rpi" &&
-	/blddv/gitian-builder/bin/gbuild --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-rpi2.yml &&
+	/blddv/gitian-builder/bin/gbuild -j 1 --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-rpi2.yml &&
 	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/rpi2/ &&
 	all_builds_succeeded=true
 fi

@@ -29,15 +29,12 @@ last_failed_build=""
 if ! $MayBuild; then
 	echo "Cannot build current configuration"
 fi
-all_builds_succeeded=false
+all_builds_succeeded=true
+builds=(linux win osx rpi2)
 if $MayBuild; then
 	echo "Working from commit: $1 -> $COMMIT & source: $2"
 	rm -rf /blddv/upload/ &&
-	mkdir -p /blddv/upload/ &&
-	mkdir -p /blddv/upload/ubuntu &&
-	mkdir -p /blddv/upload/windows &&
-	mkdir -p /blddv/upload/osx &&
-	mkdir -p /blddv/upload/rpi2
+	mkdir -p /blddv/upload/
 
 	cd /blddv/gitian-builder/ &&
 	mkdir -p /blddv/gitian-builder/inputs/ &&
@@ -45,22 +42,18 @@ if $MayBuild; then
 
 	[ -d "/blddv/gitian-builder/inputs/divi/" ] && rm -rf /blddv/gitian-builder/inputs/divi/
 
-	all_builds_succeeded=false &&
 	cd /blddv/gitian-builder/ &&
-	/blddv/gitian-builder/bin/make-base-vm --docker --suite bionic && wait &&
-	last_failed_build="ubuntu" &&
-	/blddv/gitian-builder/bin/gbuild -j 1 --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-linux.yml &&
-	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/ubuntu/ &&
-	last_failed_build="windows" &&
-	/blddv/gitian-builder/bin/gbuild -j 1 --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-win.yml &&
-	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/windows/ &&
-	last_failed_build="mac" &&
-	/blddv/gitian-builder/bin/gbuild -j 1 --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-osx.yml &&
-	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/osx/ &&
-	last_failed_build="rpi" &&
-	/blddv/gitian-builder/bin/gbuild -j 1 --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-rpi2.yml &&
-	cp -r /blddv/gitian-builder/build/out/* /blddv/upload/rpi2/ &&
-	all_builds_succeeded=true
+	for build_id in ${builds[@]}
+	do
+		if [ "${last_failed_build}" = "${build_id}" ]; then all_builds_succeeded=false && break ; fi
+		last_failed_build="${build_id}" &&
+		/blddv/gitian-builder/bin/make-base-vm --docker --suite bionic && wait &&
+		/blddv/gitian-builder/bin/gbuild -j 1 --commit divi=$COMMIT --url divi=/blddv/Divi/ /blddv/Divi/divi/contrib/gitian-descriptors/gitian-${build_id}.yml &&
+		mkdir -p /blddv/upload/${build_id} &&
+		cp -r /blddv/gitian-builder/build/out/* /blddv/upload/${build_id}/ &&
+		last_failed_build="" &&
+		 docker container stop $( docker ps -a -q )
+	done
 fi
 
 mkdir -p /divi_binaries/

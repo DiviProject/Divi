@@ -10,6 +10,11 @@ enum UtxoPriorityMode
     MINIMUM_FEES,
     MINIMUM_COIN_AGE,
 };
+enum class ChangeOutputType
+{
+    P2PKH = 34u,
+    VAULT = 59u
+};
 class MinimumFeeCoinSelectionAlgorithm final: public I_CoinSelectionAlgorithm
 {
 private:

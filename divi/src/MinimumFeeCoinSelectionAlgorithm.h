@@ -10,7 +10,7 @@ enum UtxoPriorityMode
     MINIMUM_FEES,
     MINIMUM_COIN_AGE,
 };
-class MinimumFeeCoinSelectionAlgorithm: public I_CoinSelectionAlgorithm
+class MinimumFeeCoinSelectionAlgorithm final: public I_CoinSelectionAlgorithm
 {
 private:
     const CKeyStore& keyStore_;

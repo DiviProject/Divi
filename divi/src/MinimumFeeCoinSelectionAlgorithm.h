@@ -15,6 +15,18 @@ enum class ChangeOutputType
     P2PKH = 34u,
     VAULT = 59u
 };
+
+struct InputToSpendAndSigSize
+{
+    const COutput* outputRef;
+    CAmount value;
+    unsigned sigSize;
+    InputToSpendAndSigSize(
+        const COutput& output,
+        const CKeyStore& keyStore,
+        const I_SignatureSizeEstimator& estimator);
+};
+
 class MinimumFeeCoinSelectionAlgorithm final: public I_CoinSelectionAlgorithm
 {
 private:

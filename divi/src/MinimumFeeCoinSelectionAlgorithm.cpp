@@ -10,25 +10,18 @@
 #include <I_SignatureSizeEstimator.h>
 #include <defaultValues.h>
 
-struct InputToSpendAndSigSize
+InputToSpendAndSigSize::InputToSpendAndSigSize(
+    const COutput& output,
+    const CKeyStore& keyStore,
+    const I_SignatureSizeEstimator& estimator
+    ): outputRef(&output)
+    , value(outputRef->Value())
+    , sigSize(
+        estimator.MaxBytesNeededForScriptSig(
+            keyStore,
+            outputRef->scriptPubKey()))
 {
-    const COutput* outputRef;
-    CAmount value;
-    unsigned sigSize;
-
-    InputToSpendAndSigSize(
-        const COutput& output,
-        const CKeyStore& keyStore,
-        const I_SignatureSizeEstimator& estimator
-        ): outputRef(&output)
-        , value(outputRef->Value())
-        , sigSize(
-            estimator.MaxBytesNeededForScriptSig(
-                keyStore,
-                outputRef->scriptPubKey()))
-    {
-    }
-};
+}
 
 MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(
     const CKeyStore& keyStore,

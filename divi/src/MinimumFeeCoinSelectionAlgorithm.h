@@ -5,11 +5,6 @@ class CKeyStore;
 class I_SignatureSizeEstimator;
 class CFeeRate;
 
-enum UtxoPriorityMode
-{
-    MINIMUM_FEES,
-    MINIMUM_COIN_AGE,
-};
 enum class ChangeOutputType
 {
     P2PKH = 34u,
@@ -33,13 +28,13 @@ private:
     const CKeyStore& keyStore_;
     const I_SignatureSizeEstimator& estimator_;
     const CFeeRate& minRelayTxFee_;
-    const UtxoPriorityMode utxoPriorityMode_;
+    const ChangeOutputType changeOutputType_;
 public:
     MinimumFeeCoinSelectionAlgorithm(
         const CKeyStore& keyStore,
         const I_SignatureSizeEstimator& estimator,
         const CFeeRate& minRelayTxFee,
-        const UtxoPriorityMode utxoPriorityMode = UtxoPriorityMode::MINIMUM_FEES);
+        const ChangeOutputType changeOutputType);
     bool isSelectable(const COutput& coin) const override { return true; };
     std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,

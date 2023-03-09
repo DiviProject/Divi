@@ -27,11 +27,11 @@ MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(
     const CKeyStore& keyStore,
     const I_SignatureSizeEstimator& estimator,
     const CFeeRate& minRelayTxFee,
-    const UtxoPriorityMode utxoPriorityMode
+    const ChangeOutputType changeOutputType
     ): keyStore_(keyStore)
     , estimator_(estimator)
     , minRelayTxFee_(minRelayTxFee)
-    , utxoPriorityMode_(utxoPriorityMode)
+    , changeOutputType_(changeOutputType)
 {
 }
 
@@ -40,7 +40,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     const std::vector<COutput>& vCoins,
     CAmount& fees) const
 {
-    const unsigned nominalChangeOutputSize = (utxoPriorityMode_ == UtxoPriorityMode::MINIMUM_COIN_AGE)? 59u: 34u; // Vault? Vault-Change : P2PKH change address
+    const unsigned nominalChangeOutputSize = static_cast<unsigned>(changeOutputType_); // Vault? Vault-Change : P2PKH change address
     CTransaction initialTransaction = CTransaction(transactionToSelectCoinsFor);
     const unsigned initialByteSize = ::GetSerializeSize(initialTransaction, SER_NETWORK, PROTOCOL_VERSION);
 
@@ -79,7 +79,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         inputsToSpendAndSignatureSizeEstimates.end(),
         [totalAmountNeeded,this](const InputToSpendAndSigSize& inputA, const InputToSpendAndSigSize& inputB)
         {
-            if(utxoPriorityMode_ == UtxoPriorityMode::MINIMUM_COIN_AGE && inputA.outputRef->nDepth != inputB.outputRef->nDepth)
+            if(changeOutputType_ == ChangeOutputType::VAULT && inputA.outputRef->nDepth != inputB.outputRef->nDepth)
             {
                 return inputA.outputRef->nDepth < inputB.outputRef->nDepth;
             }

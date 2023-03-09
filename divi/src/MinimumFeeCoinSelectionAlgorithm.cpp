@@ -10,18 +10,6 @@
 #include <I_SignatureSizeEstimator.h>
 #include <defaultValues.h>
 
-
-MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(
-    const CKeyStore& keyStore,
-    const I_SignatureSizeEstimator& estimator,
-    const CFeeRate& minRelayTxFee,
-    const UtxoPriorityMode utxoPriorityMode
-    ): keyStore_(keyStore)
-    , estimator_(estimator)
-    , minRelayTxFee_(minRelayTxFee)
-    , utxoPriorityMode_(utxoPriorityMode)
-{
-}
 struct InputToSpendAndSigSize
 {
     const COutput* outputRef;
@@ -42,6 +30,17 @@ struct InputToSpendAndSigSize
     }
 };
 
+MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(
+    const CKeyStore& keyStore,
+    const I_SignatureSizeEstimator& estimator,
+    const CFeeRate& minRelayTxFee,
+    const UtxoPriorityMode utxoPriorityMode
+    ): keyStore_(keyStore)
+    , estimator_(estimator)
+    , minRelayTxFee_(minRelayTxFee)
+    , utxoPriorityMode_(utxoPriorityMode)
+{
+}
 
 std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     const CMutableTransaction& transactionToSelectCoinsFor,

@@ -471,7 +471,8 @@ public:
             new MinimumFeeCoinSelectionAlgorithm(
                 wallet,
                 signatureSizeEstimator_,
-                FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate()));
+                FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
+                ChangeOutputType::P2PKH));
     }
     ~AccountCoinSelector(){ coinSelector_.reset(); }
 
@@ -511,7 +512,7 @@ public:
                 wallet,
                 signatureSizeEstimator_,
                 FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
-                UtxoPriorityMode::MINIMUM_COIN_AGE));
+                ChangeOutputType::VAULT));
     }
     ~VaultCoinSelector(){ coinSelector_.reset(); }
 

@@ -52,7 +52,7 @@ public:
         , keyIds()
         , mockSignatureSizeEstimator()
         , feeRate(10000)
-        , algorithm(keystore_,mockSignatureSizeEstimator,feeRate)
+        , algorithm(keystore_,mockSignatureSizeEstimator,feeRate,ChangeOutputType::P2PKH)
         , scriptGenerator()
         , smallScriptSigReqScript(scriptGenerator(25))
         , largeScriptSigReqScript(scriptGenerator(25))

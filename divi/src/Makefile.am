@@ -385,6 +385,7 @@ BITCOIN_CORE_H = \
   CachedTransactionDeltasCalculator.h \
   wallet.h \
   WalletTx.h \
+  I_UtxoPriorityAlgorithm.h \
   I_UtxoOwnershipDetector.h \
   I_TransactionDetailCalculator.h \
   CachedUtxoBalanceCalculator.h \

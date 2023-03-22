@@ -1858,7 +1858,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
 
     LOCK2(cs_main, cs_wallet);
     std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true,  coin_type);
+    AvailableCoins(vCoins, !settings.GetBoolArg("-spendzeroconfchange", false),  coin_type);
 
     // vouts to the payees
     AppendOutputs(vecSend,txNew);

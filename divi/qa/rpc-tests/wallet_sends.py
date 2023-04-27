@@ -183,7 +183,7 @@ class WalletSends (BitcoinTestFramework):
 
     def send_to_many_with_repetitions(self):
         sender_wallet_info = self.sender.getwalletinfo()
-        balance_before = sender_wallet_info["balance"]+sender_wallet_info["unconfirmed_balance"]
+        balance_before = sender_wallet_info["spendable_balance"]
         addr1 = self.receiver.getnewaddress()
         addr2 = self.receiver.getnewaddress()
         addr3 = self.receiver.getnewaddress()
@@ -194,7 +194,7 @@ class WalletSends (BitcoinTestFramework):
         amount_sent = Decimal(100.0*(7 + 9 + 5))
         txid = self.sender.sendmany("",sendmany_format)
         sender_wallet_info = self.sender.getwalletinfo()
-        balance_after = sender_wallet_info["balance"]+sender_wallet_info["unconfirmed_balance"]
+        balance_after = sender_wallet_info["spendable_balance"]
         assert_near(balance_before,balance_after+amount_sent,Decimal(1e-3))
 
     def run_test(self):

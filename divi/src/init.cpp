@@ -254,15 +254,15 @@ void RestartCoinMintingModuleWithReloadedWallet()
 {
     AssertLockHeld(cs_main);
     const std::string activeWalletName = multiWalletModule->getActiveWalletName();
-    const bool restartMintingModule = stakingWalletName == activeWalletName;
-    if(restartMintingModule)
+    if(activeWalletName == stakingWalletName)
+    {
         ShutdownCoinMintingModule();
-    UnregisterMainNotificationInterface(GetWallet());
-    multiWalletModule->reloadActiveWallet();
-    GetWallet()->LockFully();
-    LoadAndSelectWallet(activeWalletName, true);
-    if(restartMintingModule)
+        UnregisterMainNotificationInterface(GetWallet());
+        multiWalletModule->reloadActiveWallet();
+        GetWallet()->LockFully();
+        LoadAndSelectWallet(activeWalletName, true);
         StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
+    }
 }
 
 namespace

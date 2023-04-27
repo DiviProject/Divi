@@ -1376,7 +1376,10 @@ CAmount CWallet::GetStakingBalance() const
 
 CAmount CWallet::GetSpendableBalance() const
 {
-    return GetBalanceByCoinType(AvailableCoinsType::ALL_SPENDABLE_COINS);
+    LOCK2(cs_main,cs_wallet);
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
+    return balanceCalculator_->getSpendableBalance(filter);
 }
 
 CAmount CWallet::GetBalance() const

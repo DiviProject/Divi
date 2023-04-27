@@ -4,6 +4,7 @@
 #include <IsMineType.h>
 #include <memory>
 #include <FilteredTransactionsCalculator.h>
+#include <I_TransactionDetailCalculator.h>
 
 class I_AppendOnlyTransactionRecord;
 class I_SpentOutputTracker;
@@ -19,11 +20,15 @@ public:
     virtual CAmount getBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
     virtual CAmount getUnconfirmedBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
     virtual CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
+    virtual CAmount getSpendableBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const = 0;
 };
 
 class WalletBalanceCalculator final: public I_WalletBalanceCalculator
 {
 private:
+    const I_TransactionDetailCalculator<CAmount>& utxoBalanceCalculator_;
+    const I_AppendOnlyTransactionRecord& txRecord_;
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator_;
     FilteredTransactionsCalculator<CAmount> filteredTxCalculator_;
 
 public:
@@ -35,5 +40,6 @@ public:
     CAmount getBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const override;
     CAmount getUnconfirmedBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const override;
     CAmount getImmatureBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const override;
+    CAmount getSpendableBalance(UtxoOwnershipFilter ownershipFilter = isminetype::ISMINE_SPENDABLE) const override;
 };
 #endif// WALLET_BALANCE_CALCULATOR_H

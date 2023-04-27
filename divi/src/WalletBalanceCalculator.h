@@ -26,6 +26,7 @@ public:
 class WalletBalanceCalculator final: public I_WalletBalanceCalculator
 {
 private:
+const I_UtxoOwnershipDetector& utxoOwnershipDetector_;
     const I_TransactionDetailCalculator<CAmount>& utxoBalanceCalculator_;
     const I_AppendOnlyTransactionRecord& txRecord_;
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator_;
@@ -33,6 +34,7 @@ private:
 
 public:
     WalletBalanceCalculator(
+        const I_UtxoOwnershipDetector& utxoOwnershipDetector,
         const I_TransactionDetailCalculator<CAmount>& utxoBalanceCalculator,
         const I_AppendOnlyTransactionRecord& txRecord,
         const I_MerkleTxConfirmationNumberCalculator& confsCalculator);

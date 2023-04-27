@@ -175,6 +175,7 @@ CWallet::CWallet(
     , cachedUtxoBalanceCalculator_( new CachedUtxoBalanceCalculator(*utxoBalanceCalculator_) )
     , balanceCalculator_(
         new WalletBalanceCalculator(
+            *ownershipDetector_,
             *cachedUtxoBalanceCalculator_,
             *transactionRecord_,
             confirmationNumberCalculator_  ))
@@ -1221,6 +1222,7 @@ bool CWallet::PruneWallet()
     cachedUtxoBalanceCalculator_.reset( new CachedUtxoBalanceCalculator(*utxoBalanceCalculator_) );
     balanceCalculator_.reset(
         new WalletBalanceCalculator(
+            *ownershipDetector_,
             *cachedUtxoBalanceCalculator_,
             *transactionRecord_,
             confirmationNumberCalculator_  ));

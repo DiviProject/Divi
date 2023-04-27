@@ -9,10 +9,13 @@ WalletBalanceCalculator::WalletBalanceCalculator(
     const I_TransactionDetailCalculator<CAmount>& utxoBalanceCalculator,
     const I_AppendOnlyTransactionRecord& txRecord,
     const I_MerkleTxConfirmationNumberCalculator& confsCalculator
-    ): filteredTxCalculator_(
-        txRecord,
-        confsCalculator,
-        utxoBalanceCalculator)
+    ): utxoBalanceCalculator_(utxoBalanceCalculator)
+    , txRecord_(txRecord)
+    , confsCalculator_(confsCalculator)
+    , filteredTxCalculator_(
+        txRecord_,
+        confsCalculator_,
+        utxoBalanceCalculator_)
 {
 }
 
@@ -36,3 +39,11 @@ CAmount WalletBalanceCalculator::getImmatureBalance(UtxoOwnershipFilter ownershi
     filteredTxCalculator_.applyCalculationToMatchingTransactions(TxFlag::CONFIRMED_AND_IMMATURE,ownershipFilter,totalBalance);
     return totalBalance;
 }
+
+ CAmount WalletBalanceCalculator::getSpendableBalance(UtxoOwnershipFilter ownershipFilter) const
+ {
+    CAmount totalBalance = getBalance(ownershipFilter);
+    FilteredTransactionsCalculator<CAmount> calculator(txRecord_, confsCalculator_, utxoBalanceCalculator_);
+    calculator.applyCalculationToMatchingTransactions(TxFlag::UNCONFIRMED,ownershipFilter,totalBalance);
+    return totalBalance;
+ }

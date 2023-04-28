@@ -45,6 +45,7 @@ bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
 CTxMemPool& GetTransactionMemoryPool();
 bool ManualBackupWallet(const std::string& strDest);
 CWallet* GetWallet();
+std::string GetWalletName();
 const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator();
 bool LoadAndSelectWallet(const std::string& walletFilename, bool initializeBackendSettings);
 void RestartCoinMintingModuleWithReloadedWallet();

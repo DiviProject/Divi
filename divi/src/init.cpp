@@ -225,7 +225,14 @@ CWallet* GetWallet()
     return nullptr;
 #endif
 }
-
+std::string GetWalletName()
+{
+#ifdef ENABLE_WALLET
+    return multiWalletModule->getActiveWalletName();
+#else
+    return 'Wallets currently disabled';
+#endif
+}
 static std::string stakingWalletName = "";
 
 void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& stakingWallet)

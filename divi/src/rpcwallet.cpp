@@ -2912,6 +2912,7 @@ Value getwalletinfo(const Array& params, bool fHelp, CWallet* pwallet)
 
     CHDChain hdChainCurrent;
     Object obj;
+    obj.push_back(Pair("walletversion", GetWalletName()));
     obj.push_back(Pair("walletversion", pwallet->getVersion()));
     obj.push_back(Pair("balance",       ValueFromAmount(pwallet->GetBalance())));
     obj.push_back(Pair("unconfirmed_balance", ValueFromAmount(pwallet->GetUnconfirmedBalance())));

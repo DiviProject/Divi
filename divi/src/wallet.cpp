@@ -1401,33 +1401,6 @@ CAmount CWallet::GetBalance() const
     return balanceCalculator_->getBalance(filter);
 }
 
-CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
-{
-    CAmount nTotal = 0;
-    CAmount totalLockedCoinsBalance = 0;
-    {
-        LOCK2(cs_main, cs_wallet);
-        UtxoOwnershipFilter filter;
-        switch(coinType)
-        {
-            case AvailableCoinsType::ALL_SPENDABLE_COINS:
-                filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
-                break;
-            case AvailableCoinsType::STAKABLE_COINS:
-                filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
-                filter.addOwnershipType(isminetype::ISMINE_MANAGED_VAULT);
-                totalLockedCoinsBalance = lockedCoinBalance(filter);
-                break;
-            case AvailableCoinsType::OWNED_VAULT_COINS:
-                filter.addOwnershipType(isminetype::ISMINE_OWNED_VAULT);
-                break;
-        }
-        nTotal += balanceCalculator_->getBalance(filter) - totalLockedCoinsBalance;
-    }
-
-    return nTotal;
-}
-
 CAmount CWallet::GetUnconfirmedBalance() const
 {
     CAmount nTotal = 0;

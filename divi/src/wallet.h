@@ -251,8 +251,6 @@ protected:
     void loadAddressLabel(const CTxDestination& address, const std::string newLabel) override;
     bool loadHDChain(const CHDChain& chain, bool memonly) override;
 
-    CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;
-
 public:
     explicit CWallet(
         CCriticalSection& walletCriticalSection,

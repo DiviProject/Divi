@@ -1369,11 +1369,19 @@ bool CWallet::IsChange(const CTxOut& txout) const
  */
 CAmount CWallet::GetVaultedBalance() const
 {
-    return GetBalanceByCoinType(AvailableCoinsType::OWNED_VAULT_COINS);
+    LOCK2(cs_main,cs_wallet);
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(isminetype::ISMINE_OWNED_VAULT);
+    return balanceCalculator_->getBalance(filter);
 }
 CAmount CWallet::GetStakingBalance() const
 {
-    return GetBalanceByCoinType(AvailableCoinsType::STAKABLE_COINS);
+    LOCK2(cs_main,cs_wallet);
+    UtxoOwnershipFilter filter;
+    filter.addOwnershipType(isminetype::ISMINE_SPENDABLE);
+    filter.addOwnershipType(isminetype::ISMINE_MANAGED_VAULT);
+    CAmount totalLockedCoinsBalance = lockedCoinBalance(filter);
+    return balanceCalculator_->getBalance(filter) - totalLockedCoinsBalance;
 }
 
 CAmount CWallet::GetSpendableBalance() const

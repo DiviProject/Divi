@@ -48,7 +48,7 @@ CWallet* GetWallet();
 std::string GetWalletName();
 const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator();
 bool LoadAndSelectWallet(const std::string& walletFilename, bool initializeBackendSettings);
-void RestartCoinMintingModuleWithReloadedWallet();
-bool ConnectGenesisBlock();
+void ReloadActiveWallet();
+bool SwitchCoinMintingModuleToWallet(const std::string activeWalletName);
 bool HasRecentlyAttemptedToGenerateProofOfStake();
 #endif // BITCOIN_INIT_H

@@ -531,7 +531,7 @@ Value loadwallet(const Array& params, bool fHelp, CWallet* pwallet)
                 "\nArguments:\n"
                 "1. \"walletFilename\"       (string, required) The filename of the wallet.dat to be loaded.\n");
 
-    if(!LoadAndSelectWallet(params[0].get_str(),true))
+    if(!SwitchCoinMintingModuleToWallet(params[0].get_str()))
         throw JSONRPCError(RPC_INVALID_PARAMETER,"Unable to load wallet!");
     return Value::null;
 }
@@ -2750,7 +2750,7 @@ Value encryptwallet(const Array& params, bool fHelp, CWallet* pwallet)
     if (!pwallet->EncryptWallet(strWalletPass))
         throw JSONRPCError(RPC_WALLET_ENCRYPTION_FAILED, "Error: Failed to encrypt the wallet.");
 
-    RestartCoinMintingModuleWithReloadedWallet();
+    ReloadActiveWallet();
     return "Wallet reloaded!";
     /*
     // BDB seems to have a bad habit of writing old data into
@@ -2912,7 +2912,7 @@ Value getwalletinfo(const Array& params, bool fHelp, CWallet* pwallet)
 
     CHDChain hdChainCurrent;
     Object obj;
-    obj.push_back(Pair("walletversion", GetWalletName()));
+    obj.push_back(Pair("active_wallet", GetWalletName()));
     obj.push_back(Pair("walletversion", pwallet->getVersion()));
     obj.push_back(Pair("balance",       ValueFromAmount(pwallet->GetBalance())));
     obj.push_back(Pair("unconfirmed_balance", ValueFromAmount(pwallet->GetUnconfirmedBalance())));

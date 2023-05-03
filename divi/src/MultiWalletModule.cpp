@@ -146,3 +146,10 @@ std::string MultiWalletModule::getActiveWalletName() const
 {
     return activeWallet_? activeWallet_->walletFilename_ : "";
 }
+
+CWallet* MultiWalletModule::getWalletByName(const std::string& walletName) const
+{
+    const std::map<std::string, std::unique_ptr<DatabaseBackedWallet>>::const_iterator it = backedWalletsByName_.find(walletName);
+    if(it != backedWalletsByName_.end()) return it->second.get()->wallet_.get();
+    else return nullptr;
+}

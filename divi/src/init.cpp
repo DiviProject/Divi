@@ -257,19 +257,38 @@ void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& s
         threadGroup);
 }
 
-void RestartCoinMintingModuleWithReloadedWallet()
+bool SwitchCoinMintingModuleToWallet(const std::string activeWalletName)
+{
+    AssertLockHeld(cs_main);
+    if(activeWalletName == stakingWalletName) return true;
+    CWallet* stakingWallet = multiWalletModule->getWalletByName(stakingWalletName);
+
+    ShutdownCoinMintingModule();
+    UnregisterMainNotificationInterface(stakingWallet);
+    if(stakingWallet->IsCrypted()) stakingWallet->LockFully();
+    if(LoadAndSelectWallet(activeWalletName, true))
+    {
+        stakingWalletName = activeWalletName;
+    }
+    else
+    {
+        LoadAndSelectWallet(stakingWalletName, true);
+    }
+    StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
+    return stakingWalletName == activeWalletName;
+}
+
+void ReloadActiveWallet()
 {
     AssertLockHeld(cs_main);
     const std::string activeWalletName = multiWalletModule->getActiveWalletName();
-    if(activeWalletName == stakingWalletName)
-    {
-        ShutdownCoinMintingModule();
-        UnregisterMainNotificationInterface(GetWallet());
-        multiWalletModule->reloadActiveWallet();
-        GetWallet()->LockFully();
-        LoadAndSelectWallet(activeWalletName, true);
-        StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
-    }
+    CWallet* activeWallet = multiWalletModule->getWalletByName(activeWalletName);
+
+    if(activeWalletName == stakingWalletName) ShutdownCoinMintingModule();
+    UnregisterMainNotificationInterface(activeWallet);
+    multiWalletModule->reloadActiveWallet();
+    LoadAndSelectWallet(activeWalletName, true);
+    if(activeWalletName == stakingWalletName) StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
 }
 
 namespace

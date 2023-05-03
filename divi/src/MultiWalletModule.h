@@ -65,6 +65,7 @@ public:
     bool setActiveWallet(const std::string walletFilename);
     const I_MerkleTxConfirmationNumberCalculator& getConfirmationsCalculator() const;
     const LegacyWalletDatabaseEndpointFactory& getWalletDbEnpointFactory() const;
+    CWallet* getWalletByName(const std::string& walletName) const;
     CWallet* getActiveWallet() const;
     std::string getActiveWalletName() const;
 };

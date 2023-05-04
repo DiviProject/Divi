@@ -121,6 +121,7 @@ void CMasternodeMan::ManageLocalMasternode()
             }
         }
     }
+    LogPrint("masternode","%s - End\n",__func__);
 }
 
 bool CMasternodeMan::Add(const CMasternode& mn)
@@ -538,6 +539,8 @@ bool CMasternodeMan::ProcessMNBroadcastsAndPings(CNode* pfrom, const std::string
         LOCK(networkMessageManager_.cs_process_message);
         CMasternodeBroadcast mnb;
         vRecv >> mnb;
+
+        LogPrint("masternode", "mnb - Masternode broadcast, vin: %s\n", mnb.vin.prevout.hash);
         return ProcessBroadcast(pfrom, mnb);
     }
     else if (strCommand == "mnp") { //Masternode Ping

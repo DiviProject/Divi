@@ -121,6 +121,7 @@ BASE_SCRIPTS = [
     'remotestart.py',
     'remotestart.py --outdated_ping',
     'send_money_options.py',
+    'StakingWithLockedCoins.py',
     'StakingVaultWithdrawals.py',
     'sync.py',
     'txindex.py',

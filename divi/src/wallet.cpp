@@ -2242,6 +2242,7 @@ CAmount CWallet::lockedCoinBalance(const UtxoOwnershipFilter& filter) const
     for(const COutPoint& outPoint: setLockedCoins)
     {
         const CWalletTx* const walletTxPtr = GetWalletTx(outPoint.hash);
+        if(walletTxPtr == nullptr) continue;
         if(filter.hasRequested(ownershipDetector_->isMine(walletTxPtr->vout[outPoint.n])) &&
             !outputTracker_->IsSpent(outPoint.hash,outPoint.n,0) &&
             confirmationNumberCalculator_.GetNumberOfBlockConfirmations(*walletTxPtr)>0)

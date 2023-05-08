@@ -889,7 +889,9 @@ private:
     inline CAmount computeChangeAmountMinimum(const valtype& transferLimitSerialized) const
     {
         constexpr CAmount zeroValue = CAmount(0);
-        return std::max(zeroValue, amountBeingSpent_ - std::max(zeroValue,CScriptNum(transferLimitSerialized,false,8u).getint64()));
+        const CAmount transferLimit = std::max(zeroValue,CScriptNum(transferLimitSerialized,false,8u).getint64());
+        if(amountBeingSpent_ < transferLimit) return zeroValue;
+        return std::max(zeroValue, amountBeingSpent_ - transferLimit);
     }
 
     inline CScript computeChangeScript(const valtype& p2sh20ByteHashSerialized) const

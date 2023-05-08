@@ -114,7 +114,7 @@ const valtype StackOperator::vchFalse =valtype(0);
 const valtype StackOperator::vchTrue =valtype(1, 1);
 
 
-struct DisabledOp: public StackOperator
+struct DisabledOp final: public StackOperator
 {
     DisabledOp(
         StackType& stack,
@@ -135,7 +135,7 @@ struct DisabledOp: public StackOperator
     }
 };
 
-struct PushValueOp: public StackOperator
+struct PushValueOp final: public StackOperator
 {
     PushValueOp(
         StackType& stack,
@@ -153,7 +153,7 @@ struct PushValueOp: public StackOperator
     }
 };
 
-struct ConditionalOp: public StackOperator
+struct ConditionalOp final: public StackOperator
 {
     ConditionalOp(
         StackType& stack,
@@ -206,7 +206,7 @@ struct ConditionalOp: public StackOperator
 
 };
 
-struct StackModificationOp: public StackOperator
+struct StackModificationOp final: public StackOperator
 {
     StackModificationOp(
     StackType& stack,
@@ -430,7 +430,7 @@ struct StackModificationOp: public StackOperator
     }
 };
 
-struct EqualityVerificationOp: public StackOperator
+struct EqualityVerificationOp final: public StackOperator
 {
     EqualityVerificationOp(
     StackType& stack,
@@ -479,7 +479,7 @@ struct EqualityVerificationOp: public StackOperator
     }
 };
 
-struct MetadataOp: public StackOperator
+struct MetadataOp final: public StackOperator
 {
     MetadataOp(
         StackType& stack,
@@ -495,7 +495,7 @@ struct MetadataOp: public StackOperator
     }
 };
 
-struct UnaryNumericOp: public StackOperator
+struct UnaryNumericOp final: public StackOperator
 {
     UnaryNumericOp(
         StackType& stack,
@@ -527,7 +527,7 @@ struct UnaryNumericOp: public StackOperator
     }
 };
 
-struct BinaryNumericOp: public StackOperator
+struct BinaryNumericOp final: public StackOperator
 {
     BinaryNumericOp(
         StackType& stack,
@@ -585,7 +585,7 @@ struct BinaryNumericOp: public StackOperator
     }
 };
 
-struct NumericBoundsOp: public StackOperator
+struct NumericBoundsOp final: public StackOperator
 {
     NumericBoundsOp(
         StackType& stack,
@@ -614,7 +614,7 @@ struct NumericBoundsOp: public StackOperator
     }
 };
 
-struct HashingOp: public StackOperator
+struct HashingOp final: public StackOperator
 {
     HashingOp(
         StackType& stack,
@@ -648,7 +648,7 @@ struct HashingOp: public StackOperator
     }
 };
 
-struct SignatureCheckOp: public StackOperator
+struct SignatureCheckOp final: public StackOperator
 {
 private:
     unsigned& opCount_;
@@ -801,7 +801,7 @@ public:
     }
 };
 
-struct CoinstakeCheckOp: public StackOperator
+struct CoinstakeCheckOp final: public StackOperator
 {
 private:
     const BaseSignatureChecker& checker_;
@@ -828,7 +828,7 @@ public:
     }
 };
 
-struct LockTimeCheckOp: public StackOperator
+struct LockTimeCheckOp final: public StackOperator
 {
 private:
     const BaseSignatureChecker& checker_;
@@ -880,7 +880,7 @@ public:
 };
 
 
-struct LimitTransferCheckOp: public StackOperator
+struct LimitTransferCheckOp final: public StackOperator
 {
 private:
     const BaseSignatureChecker& checker_;

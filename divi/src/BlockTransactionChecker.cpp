@@ -117,6 +117,8 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint, IndexDat
     unsigned flags = MANDATORY_SCRIPT_VERIFY_FLAGS;
     if (activation_.IsActive(Fork::CheckLockTimeVerify))
         flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
+    if (activation_.IsActive(Fork::LimitTransferVerify))
+        flags |= SCRIPT_VERIFY_LIMIT_TRANSFER;
 
     for (unsigned int i = 0; i < block_.vtx.size(); i++) {
         const CTransaction& tx = block_.vtx[i];

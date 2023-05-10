@@ -1001,7 +1001,7 @@ std::vector<std::pair<CScript, CAmount>> parseFundVaultRPCParameters(
         Object fundingDetails = params[0].get_obj();
         BOOST_FOREACH (const Pair& funding, fundingDetails)
         {
-            if(funding.value_.type() == real_type)
+            if(funding.value_.type() == real_type || funding.value_.type() == int_type)
             {
                 CAmount nAmount = AmountFromValue(funding.value_);
                 parseSimpleVaultFund(pwallet,funding.name_,nAmount,1u,addressEncodings,vecSend);
@@ -1009,11 +1009,12 @@ std::vector<std::pair<CScript, CAmount>> parseFundVaultRPCParameters(
             else if(funding.value_.type() == obj_type)
             {
                 Object additionalFundingDetails = funding.value_.get_obj();
-                RPCTypeCheck(additionalFundingDetails, map_list_of("amount", real_type)("repetitions", int_type), true);
                 const Value& amountToSend = find_value(additionalFundingDetails, "amount");
                 const Value& repetitions  = find_value(additionalFundingDetails, "repetitions");
-                if(amountToSend.type() == null_type) throw JSONRPCError(RPC_INVALID_PARAMETER,std::string("Unable to parse amount for: ") + funding.name_);
-                if(repetitions.type() == null_type) throw JSONRPCError(RPC_INVALID_PARAMETER,std::string("Unable to parse repetitions for: ") + funding.name_);
+                if(amountToSend.type() != real_type && amountToSend.type() != int_type)
+                    throw JSONRPCError(RPC_INVALID_PARAMETER,std::string("Unable to parse amount for: ") + funding.name_);
+                if(repetitions.type() != int_type)
+                    throw JSONRPCError(RPC_INVALID_PARAMETER,std::string("Unable to parse repetitions for: ") + funding.name_);
 
                 CAmount nAmount = AmountFromValue(amountToSend);
                 const unsigned numberOfUtxos = static_cast<unsigned>(std::max<int>(repetitions.get_int(),1));

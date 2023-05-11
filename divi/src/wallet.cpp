@@ -1826,13 +1826,14 @@ static std::pair<std::string,bool> SelectInputsProvideSignaturesAndFees(
 }
 
 std::pair<std::string,bool> CWallet::CreateTransaction(
-    const std::vector<std::pair<CScript, CAmount> >& vecSend,
-    const TransactionFeeMode feeMode,
-    CWalletTx& wtxNew,
+    const TransactionCreationRequest& requestedTransaction,
     const ChangeOutputCreator& changeOutputCreator,
-    const I_CoinSelectionAlgorithm& coinSelector,
-    AvailableCoinsType coin_type)
+    CWalletTx& wtxNew)
 {
+    const std::vector<std::pair<CScript, CAmount> >& vecSend =   requestedTransaction.scriptsToFund;
+    const TransactionFeeMode feeMode =  requestedTransaction.transactionFeeMode;
+    const I_CoinSelectionAlgorithm& coinSelector = requestedTransaction.coinSelectionAlgorithm;
+    const AvailableCoinsType coin_type =  requestedTransaction.coin_type;
     if (vecSend.empty())
     {
         return {translate("Must provide at least one destination for funds."),false};
@@ -1922,12 +1923,9 @@ TransactionCreationResult CWallet::SendMoney(const TransactionCreationRequest& r
     }
     std::pair<std::string,bool> createTxResult =
         CreateTransaction(
-            requestedTransaction.scriptsToFund,
-            requestedTransaction.transactionFeeMode,
-            *result.wtxNew,
+            requestedTransaction,
             *changeOutputCreator,
-            requestedTransaction.coinSelectionAlgorithm,
-            requestedTransaction.coin_type);
+            *result.wtxNew);
 
     result.transactionCreationSucceeded = createTxResult.second;
     result.errorMessage = createTxResult.first;

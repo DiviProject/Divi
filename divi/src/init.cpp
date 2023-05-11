@@ -495,6 +495,7 @@ void Shutdown()
     startAndShutdownSignals.shutdown();
     /* At this point, the ChainstateManager doesn't exist anymore (and thus
        there is also no need to free any of its contents).  */
+    assert(!chainstateInstance);
     UnloadBlockIndex(nullptr);
 }
 

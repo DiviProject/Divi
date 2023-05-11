@@ -318,6 +318,7 @@ void UnloadBlockIndex(ChainstateManager* chainstate)
 
     if (chainstate != nullptr)
     {
+        chainstate->ActiveChain().SetTip(nullptr);
         auto& blockMap = chainstate->GetBlockMap();
 
         for(auto& blockHashAndBlockIndex: blockMap)
@@ -325,7 +326,6 @@ void UnloadBlockIndex(ChainstateManager* chainstate)
             delete blockHashAndBlockIndex.second;
         }
         blockMap.clear();
-        chainstate->ActiveChain().SetTip(nullptr);
     }
 }
 

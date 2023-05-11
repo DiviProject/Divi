@@ -229,6 +229,13 @@ private:
     void GenerateNewHDChain();
     bool IsHDEnabled();
 
+    // Transaction creation/commitment helpers
+    std::pair<std::string,bool> CreateTransaction(
+        const TransactionCreationRequest& requestedTransaction,
+        const ChangeOutputCreator& changeOutputCreator,
+        CWalletTx& wtxNew);
+    bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
+
 protected:
 
     // I_WalletLoader: load from disk methods
@@ -344,11 +351,6 @@ public:
     CAmount GetUnconfirmedBalance() const;
     CAmount GetImmatureBalance() const;
 
-    std::pair<std::string,bool> CreateTransaction(
-        const TransactionCreationRequest& requestedTransaction,
-        const ChangeOutputCreator& changeOutputCreator,
-        CWalletTx& wtxNew);
-    bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
     TransactionCreationResult SendMoney(const TransactionCreationRequest& requestedTransaction);
 
     bool NewKeyPool();

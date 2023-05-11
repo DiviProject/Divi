@@ -86,8 +86,6 @@ enum WalletFeature {
  * and provides the ability to create new transactions.
  */
 using CoinVector = std::vector<COutPoint>;
-using Inputs = std::vector<CTxIn>;
-using Outputs = std::vector<CTxOut>;
 
 enum TransactionNotificationType
 {

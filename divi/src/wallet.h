@@ -345,12 +345,9 @@ public:
     CAmount GetImmatureBalance() const;
 
     std::pair<std::string,bool> CreateTransaction(
-        const std::vector<std::pair<CScript, CAmount> >& vecSend,
-        const TransactionFeeMode feeMode,
-        CWalletTx& wtxNew,
+        const TransactionCreationRequest& requestedTransaction,
         const ChangeOutputCreator& changeOutputCreator,
-        const I_CoinSelectionAlgorithm& coinSelector,
-        AvailableCoinsType coin_type = AvailableCoinsType::ALL_SPENDABLE_COINS);
+        CWalletTx& wtxNew);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
     TransactionCreationResult SendMoney(const TransactionCreationRequest& requestedTransaction);
 

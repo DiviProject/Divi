@@ -62,6 +62,7 @@ class I_BlockDataReader;
 class I_WalletBalanceCalculator;
 class AvailableUtxoCollector;
 class I_WalletDatabaseEndpointFactory;
+class ChangeOutputCreator;
 
 template <typename T>
 class I_CachedTransactionDetailCalculator;
@@ -112,7 +113,6 @@ enum TransactionFeeMode
     SWEEP_FUNDS,
 };
 typedef std::map<std::string,std::string> TxTextMetadata;
-class ChangeOutputCreator;
 struct TransactionCreationRequest
 {
     const std::vector<std::pair<CScript, CAmount> >& scriptsToFund;

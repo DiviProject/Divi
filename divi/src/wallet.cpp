@@ -1733,18 +1733,18 @@ public:
 
     std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
-        const std::vector<COutput>& vCoins,
+        const std::vector<COutput>& allSpendableCoins,
         CAmount& fees) const override
     {
         CMutableTransaction txCopy = transactionToSelectCoinsFor;
         std::set<COutput> selectedCoins;
         std::copy_if(
-            vCoins.begin(),vCoins.end(),
+            allSpendableCoins.begin(),allSpendableCoins.end(),
             std::inserter(selectedCoins,selectedCoins.begin()),
             [this](const COutput coin){ return wrappedAlgorithm_.isSelectable(coin);});
         CAmount nValueIn = AttachInputs(selectedCoins,txCopy);
         txCopy.vout[0].nValue = nValueIn;
-        wrappedAlgorithm_.SelectCoins(txCopy,vCoins,fees);
+        wrappedAlgorithm_.SelectCoins(txCopy,allSpendableCoins,fees);
         return selectedCoins;
     }
 };

@@ -105,6 +105,7 @@ BASE_SCRIPTS = [
     'mnvaults.py',
     'multisig.py',
     'multiwallet.py',
+    'multiwallet_mining.py',
     'NoBlocksForLongTime.py',
     'op_meta.py',
     'prune_wallet.py',

@@ -205,20 +205,7 @@ bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
     }
     LogPrintf("Masternode address: %s\n", activeMasternode.service);
 
-    if(settings.ParameterIsSet("-masternodeprivkey"))
-    {
-        if(!activeMasternode.SetMasternodeKey(settings.GetArg("-masternodeprivkey", "")))
-        {
-            errorMessage = translate("Invalid masternodeprivkey. Please see documenation.");
-            return false;
-        }
-    }
-    else
-    {
-        errorMessage = translate("Unknown masternode key for masternode=<alias>.");
-        return false;
-    }
-    return true;
+    return ConfigureMasternodePrivateKey(settings,GetMasternodeModule().getMasternodeConfigurations(),activeMasternode,errorMessage);
 }
 
 bool LoadMasternodeConfigurations(const Settings& settings, std::string& errorMessage)

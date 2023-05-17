@@ -1259,47 +1259,6 @@ void LockUpMasternodeCollateral()
     }
 }
 
-bool LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& errorMessage)
-{
-    settings.ForceRemoveArg("-masternodeprivkey");
-    if(settings.ParameterIsSet("-masternode"))
-    {
-        if(!pwallet)
-        {
-            errorMessage = "Wallet must be enabled to run masternode";
-            return false;
-        }
-        std::string alias = settings.GetArg("-masternode","");
-        if(alias.empty())
-        {
-            errorMessage = "missing label for masternode=<alias>. masternode=<alias> may be missing from configuration.";
-            return false;
-        }
-        // Pull up keyID by alias and pass it downstream with keystore for lookup of the private key
-        // Potential issues may arise in the event that a person reuses the same alias for a differnt
-        // MN - should assert here that if duplicate potential addresses are found that it will pick
-        // one and maybe not the one that was originally intended
-        alias = "reserved->"+alias;
-        for(const std::pair<CTxDestination, AddressLabel>& addressData: pwallet->getAddressBookManager().getAddressBook())
-        {
-            if(addressData.second.name == alias)
-            {
-                CKeyID keyID = boost::get<CKeyID>(addressData.first);
-                CKey mnkey;
-                if(!pwallet->GetKey(keyID,mnkey))
-                {
-                    LogPrintf("%s - Unable to find masternode key\n",__func__);
-                }
-                settings.SetParameter("-masternodeprivkey",CBitcoinSecret(mnkey).ToString());
-                return true;
-            }
-        }
-        errorMessage = "Unknown key for specified mn alias. masternode=<alias> may be missing from configuration.";
-        return false;
-    }
-    return true;
-}
-
 void SubmitUnconfirmedWalletTransactionsToMempool(const CWallet& wallet)
 {
     LOCK2(cs_main, wallet.getWalletCriticalSection());
@@ -1633,15 +1592,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return false;
     }
     uiInterface.InitMessage(translate("Checking for active masternode..."));
-    if(!LookupMasternodeKey(settings,GetWallet(),errorMessage))
-    {
-        return InitError(errorMessage);
-    }
-    {
     if(!InitializeMasternodeIfRequested(settings, chainstateInstance->BlockTree().GetTxIndexing(), errorMessage))
     {
         return InitError(errorMessage);
-    }
     }
     LockUpMasternodeCollateral();
     threadGroup.create_thread(boost::bind(&ThreadMasternodeBackgroundSync));

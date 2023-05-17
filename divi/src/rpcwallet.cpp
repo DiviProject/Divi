@@ -445,9 +445,11 @@ private:
     SignatureSizeEstimator signatureSizeEstimator_;
     const AddressBook& addressBook_;
     std::string accountName_;
+    const bool accountsAsLabels_;
 
     std::vector<COutput> FilterCoins(const std::vector<COutput>& vCoins) const override
     {
+        if(!accountsAsLabels_ && accountName_.empty()) return vCoins;
         std::vector<COutput> accountCoins;
         accountCoins.reserve(vCoins.size());
         for(const COutput& out: vCoins)
@@ -462,10 +464,12 @@ private:
     }
 public:
     AccountCoinSelector(
-        const CWallet& wallet
+        const CWallet& wallet,
+        const Settings& settings
         ): signatureSizeEstimator_()
         , addressBook_(wallet.getAddressBookManager().getAddressBook())
         , accountName_()
+        , accountsAsLabels_(settings.GetBoolArg("-accountlabels",false))
     {
         coinSelector_.reset(
             new MinimumFeeCoinSelectionAlgorithm(
@@ -703,7 +707,7 @@ struct RpcTransactionCreationRequest
     }
 };
 
-I_CoinSelectionAlgorithm* createCoinSelectionAlgorithm(CWallet& wallet, std::string accountName,const bool spendingFromVaults)
+I_CoinSelectionAlgorithm* createCoinSelectionAlgorithm(CWallet& wallet, std::string accountName,const bool spendingFromVaults, const Settings& settings)
 {
     if(spendingFromVaults)
     {
@@ -713,7 +717,7 @@ I_CoinSelectionAlgorithm* createCoinSelectionAlgorithm(CWallet& wallet, std::str
     }
     else
     {
-        std::unique_ptr<AccountCoinSelector> accountCoinSelector(new AccountCoinSelector(wallet));
+        std::unique_ptr<AccountCoinSelector> accountCoinSelector(new AccountCoinSelector(wallet,settings));
         accountCoinSelector->SetAccountName(accountName);
         return accountCoinSelector.release();
     }
@@ -763,7 +767,7 @@ std::string SendMoney(
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
     std::unique_ptr<I_CoinSelectionAlgorithm> coinSelector(
-        createCoinSelectionAlgorithm(*pwallet,rpcTxRequest.accountName, rpcTxRequest.txShouldSpendFromVaults));
+        createCoinSelectionAlgorithm(*pwallet,rpcTxRequest.accountName, rpcTxRequest.txShouldSpendFromVaults,settings));
     TransactionCreationRequest request(scriptsToFund, rpcTxRequest.changeOutputScript, rpcTxRequest.txFeeMode, rpcTxRequest.txMetadata, rpcTxRequest.coinType(), *coinSelector);
     TransactionCreationResult txCreation = pwallet->SendMoney(request);
     if(txCreation.transactionCreationSucceeded)

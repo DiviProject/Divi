@@ -159,6 +159,42 @@ const MasternodeModule& GetMasternodeModule()
     return GetMutableModule();
 }
 
+
+bool ConfigureMasternodePrivateKey(
+    const Settings& settings,
+    const CMasternodeConfig& masternodeConfigurations,
+    CActiveMasternode& activeMasternode,
+    std::string& errorMessage)
+{
+    if(settings.ParameterIsSet("-masternode"))
+    {
+        const std::string& masternodeAlias = settings.GetArg("-masternode","");
+        const std::vector<CMasternodeConfig::CMasternodeEntry>& configEntries =masternodeConfigurations.getEntries();
+        const std::vector<CMasternodeConfig::CMasternodeEntry>::const_iterator iteratorToConfiguration =
+            std::find_if(configEntries.begin(),configEntries.end(),
+            [masternodeAlias](const CMasternodeConfig::CMasternodeEntry& configuration){
+                return configuration.getAlias() == masternodeAlias;
+            });
+        if(iteratorToConfiguration != configEntries.end())
+        {
+            const CMasternodeConfig::CMasternodeEntry& matchingConfig = *iteratorToConfiguration;
+            if(!activeMasternode.SetMasternodeKey(settings.GetArg("-masternodeprivkey", matchingConfig.getPrivKey())))
+            {
+                errorMessage = translate("Invalid masternodeprivkey. Please see documenation.");
+                return false;
+            }
+            return true;
+        }
+        errorMessage = translate("Unknown masternode configuration for masternode=<alias>.");
+        return false;
+    }
+    else
+    {
+        errorMessage = translate("Unknown masternode key for masternode=<alias>.");
+        return false;
+    }
+}
+
 bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
 {
     CActiveMasternode& activeMasternode = GetMasternodeModule().getActiveMasternode();

@@ -229,7 +229,7 @@ void GetAccountAmounts(
         // Spend from account
         for (const CTxOut& s : parsedEntry.previousOutputsSpent)
         {
-            if(!DebitsFromAnyAccount(addressBook,s))
+            if(!DebitsFromAnyAccount(addressBook,s) && filter.hasRequested(computeMineType(wallet,s.scriptPubKey,true)))
             {
                 nSent += s.nValue;
             }
@@ -237,7 +237,7 @@ void GetAccountAmounts(
         // Receive to account
         for (const CTxOut& s : wtx.vout)
         {
-            if(!DebitsFromAnyAccount(addressBook,s))
+            if(!DebitsFromAnyAccount(addressBook,s) && filter.hasRequested(computeMineType(wallet,s.scriptPubKey,true)) )
             {
                 nReceived += s.nValue;
             }
@@ -758,7 +758,12 @@ std::string SendMoney(
     }
     else if(totalAmountToSend > availableWalletBalance)
     {
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
+        std::string error = std::string("Insufficient funds: ") +
+            std::to_string(totalAmountToSend) +
+            std::string("(total requested) is greater than ") +
+            std::to_string(availableWalletBalance) +
+            std::string("(total available)");
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, error);
     }
     else if (pwallet->IsLocked())
     {
@@ -2351,33 +2356,7 @@ Value listaccounts(const Array& params, bool fHelp, CWallet* pwallet)
     map<string, CAmount> mapAccountBalances;
     BOOST_FOREACH (const PAIRTYPE(CTxDestination, AddressLabel) & entry, pwallet->getAddressBookManager().getAddressBook()) {
         if (filter.hasRequested( computeMineType(*pwallet,entry.first,true) )) // This address belongs to me
-            mapAccountBalances[entry.second.name] = 0;
-    }
-
-    std::vector<const CWalletTx*> walletTransactions = pwallet->GetWalletTransactionReferences();
-    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
-    for (const CWalletTx* walletTxReference: walletTransactions)
-    {
-        const CWalletTx& wtx = *walletTxReference;
-        string strSentAccount = wtx.strFromAccount;
-        int nDepth = confsCalculator.GetNumberOfBlockConfirmations(wtx);
-        if (confsCalculator.GetBlocksToMaturity(wtx) > 0 || nDepth < 0)
-            continue;
-        WalletOutputEntryParsing parsedEntry = GetAmounts(*pwallet,wtx, filter);
-        mapAccountBalances[strSentAccount] -= parsedEntry.nFee;
-        BOOST_FOREACH (const COutputEntry& s, parsedEntry.listSent)
-                mapAccountBalances[strSentAccount] -= s.amount;
-        if (nDepth >= nMinDepth)
-        {
-            const AddressBook& addressBook = pwallet->getAddressBookManager().getAddressBook();
-            BOOST_FOREACH (const COutputEntry& r, parsedEntry.listReceived)
-            {
-                if (addressBook.count(r.destination))
-                    mapAccountBalances[addressBook.find(r.destination)->second.name] += r.amount;
-                else
-                    mapAccountBalances[""] += r.amount;
-            }
-        }
+            mapAccountBalances[entry.second.name] = GetAccountBalance(GetConfirmationsCalculator(), *pwallet, entry.second.name, nMinDepth, filter);;
     }
 
     Object ret;

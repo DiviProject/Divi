@@ -1344,6 +1344,6 @@ void UnregisterNodeSignals()
     nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
     nodeSignals.ProcessReceivedMessages.disconnect(&ProcessReceivedMessages);
     nodeSignals.SendMessages.disconnect(&SendMessages);
-    nodeSignals.RespondToRequestForDataFrom.connect(&RespondToRequestForDataFrom);
-    nodeSignals.AdvertizeLocalAddress.connect(&AdvertizeLocal);
+    nodeSignals.RespondToRequestForDataFrom.disconnect(&RespondToRequestForDataFrom);
+    nodeSignals.AdvertizeLocalAddress.disconnect(&AdvertizeLocal);
 }

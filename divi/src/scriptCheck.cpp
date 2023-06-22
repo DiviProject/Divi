@@ -37,6 +37,7 @@ bool CScriptCheck::operator()()
 
 void CScriptCheck::swap(CScriptCheck& check)
 {
+    std::swap(amountHeld,check.amountHeld);
     scriptPubKey.swap(check.scriptPubKey);
     std::swap(ptxTo, check.ptxTo);
     std::swap(nIn, check.nIn);

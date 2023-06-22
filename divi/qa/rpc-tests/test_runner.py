@@ -78,6 +78,7 @@ BASE_SCRIPTS = [
     'BlocksOnlyHaveSingleCoinstake.py',
     'BadBlockTests.py',
     'CheckLockTimeVerify.py',
+    'CheckLimitTransferVerify.py',
     'CoinDBStats.py',
     'CorruptedCoinDb.py',
     'StakingStatus.py',

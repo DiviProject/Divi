@@ -26,6 +26,7 @@ import struct
 import time
 
 COIN = 100000000  # 1 coin in satoshis
+CENT = 1000000  # 1 cent in satoshis
 
 # Serialization/deserialization tools
 def sha256(s):

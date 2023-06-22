@@ -923,10 +923,13 @@ public:
         // Check for 20-byte address hash
         if(p2sh20ByteHashSerialized.size() != 20u) return Helpers::set_error(serror,SCRIPT_ERR_LIMIT_TRANSFER);
 
-        return checker_.CheckTransferLimit(
+        if(!checker_.CheckTransferLimit(
             computeChangeAmountMinimum(transferLimitSerialized),
-            computeChangeScript(p2sh20ByteHashSerialized)
-            );
+            computeChangeScript(p2sh20ByteHashSerialized)))
+        {
+            return Helpers::set_error(serror,SCRIPT_ERR_LIMIT_TRANSFER);
+        }
+        return true;
     }
 };
 

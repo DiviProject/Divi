@@ -989,8 +989,9 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastComma
     return IsFlaggedForDisconnection();
 }
 
-void CNode::PushVersion(int currentChainTipHeight)
+void CNode::PushVersion()
 {
+    const int currentChainTipHeight = *(nodeSignals_->GetHeight());
     /// when NTP implemented, change to just nTime = GetAdjustedTime()
     int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
     CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService("0.0.0.0", 0)));

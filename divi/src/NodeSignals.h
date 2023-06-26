@@ -7,6 +7,7 @@ class CNodeState;
 // Signals for message handling
 class CNode;
 struct CNodeSignals {
+    boost::signals2::signal<int()> GetHeight;
     boost::signals2::signal<void(CNodeState&)> InitializeNode;
     boost::signals2::signal<void(NodeId)> FinalizeNode;
     boost::signals2::signal<bool(CNode*)> ProcessReceivedMessages;

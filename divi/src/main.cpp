@@ -405,7 +405,7 @@ static bool SetPeerVersionAndServices(CCriticalSection& mainCriticalSection, CNo
 
     // Be shy and don't send version until we hear
     if (pfrom->fInbound)
-        pfrom->PushVersion(GetHeight());
+        pfrom->PushVersion();
 
     pfrom->fClient = !(pfrom->GetServices() & NODE_NETWORK);
 
@@ -1327,6 +1327,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 void RegisterNodeSignals()
 {
     CNodeSignals& nodeSignals = GetNodeSignals();
+    nodeSignals.GetHeight.connect(&GetHeight);
     nodeSignals.InitializeNode.connect(&InitializeNode);
     nodeSignals.FinalizeNode.connect(&FinalizeNode);
     nodeSignals.ProcessReceivedMessages.connect(&ProcessReceivedMessages);
@@ -1338,6 +1339,7 @@ void RegisterNodeSignals()
 void UnregisterNodeSignals()
 {
     CNodeSignals& nodeSignals = GetNodeSignals();
+    nodeSignals.GetHeight.disconnect(&GetHeight);
     nodeSignals.InitializeNode.disconnect(&InitializeNode);
     nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
     nodeSignals.ProcessReceivedMessages.disconnect(&ProcessReceivedMessages);

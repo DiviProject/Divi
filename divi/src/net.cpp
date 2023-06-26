@@ -317,7 +317,7 @@ CNode* CreateNode(SOCKET socket, Args&&... args)
     NodeWithSocket* nodeWithSocket = new NodeWithSocket(socket,std::forward<Args>(args)...);
     CNode* pnode = nodeWithSocket->node();
     if (pnode->CommunicationChannelIsValid() && !pnode->fInbound)
-        pnode->PushVersion(GetHeight());
+        pnode->PushVersion();
 
     NodeManager::Instance().recordNode(nodeWithSocket);
     return pnode;

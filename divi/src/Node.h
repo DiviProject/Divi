@@ -345,7 +345,7 @@ public:
     void PushInventory(const CInv& inv);
     void AskFor(const CInv& inv);
 
-    void PushVersion(int currentChainTipHeight);
+    void PushVersion();
     void SetSporkCount(int nSporkCountIn);
     bool AreSporksSynced() const;
 

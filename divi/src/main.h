@@ -13,7 +13,6 @@
 #endif
 class CNodeSignals;
 /** Get Current Chain Height with acquired lock **/
-int GetHeight();
 void RegisterNodeSignals();
 void UnregisterNodeSignals();
 CNodeSignals& GetNodeSignals();

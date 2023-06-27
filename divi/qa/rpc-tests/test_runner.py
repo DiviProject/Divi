@@ -67,79 +67,12 @@ EXTENDED_SCRIPTS = [
     # Longest test should go first, to favor running tests in parallel
 ]
 
-BASE_SCRIPTS = [
-    # Scripts that are run by default.
-    # Longest test should go first, to favor running tests in parallel
-    'AddressAndSpentIndicesAreOperational.py',
-    'AtomicTrading.py',
-    'BlocksOnlyHaveSingleCoinstake.py',
-    'BadBlockTests.py',
-    'CheckLockTimeVerify.py',
-    'CheckLimitTransferVerify.py',
-    'CoinDBStats.py',
-    'CorruptedCoinDb.py',
-    'StakingStatus.py',
-    'StakingVaultFunding.py',
-    'StakingVaultStaking.py',
-    'StakingVaultDeactivation.py',
-    'StakingVaultSpam.py',
-    'forknotify.py',
-    'getchaintips.py',
-    'httpbasics.py',
-    'invalidateblock.py',
-    'imported_keys.py',
-    'keypool.py',
-    'listtransactions.py',
-    'lottery.py',
-    'mempool_coinbase_spends.py',
-    'mempool_reject.py',
-    'mempool_resurrect_test.py',
-    'mempool_spendcoinbase.py',
-    'MnAreSafeToRestart.py',
-    'mncollateral.py',
-    'mnoperation.py',
-    'masternodes_with_vaults.py',
-    'mnstoredbroadcast.py',
-    'mnvaults.py',
-    'multisig.py',
-    'multiwallet.py',
-    'multiwallet_mining.py',
-    'wallet_accounts.py',
-    'NoBlocksForLongTime.py',
-    'op_meta.py',
-    'prune_wallet.py',
-    'paper_wallets.py',
-    'proxy_test.py',
-    'receivedby.py',
-    'reindex.py',
-    'repeatedwalletbackup.py',
-    'rescan.py',
-    'PowToPosTransition.py',
-    'rawtransactions.py',
-    'rest.py',
-    'rpcbind_test.py',
-    'remotestart.py',
-    'remotestart.py --outdated_ping',
-    'send_money_options.py',
-    'StakingWithLockedCoins.py',
-    'StakingVaultWithdrawals.py',
-    'sync.py',
-    'txindex.py',
-    'TxInputsStandardness.py',
-    'txn_doublespend.py',
-    'txn_doublespend.py --mineblock',
-    'VaultWhitelisting.py',
-    'VaultUtxoIndexing.py',
-    'vaultfork.py',
-    'wallet.py',
-    'wallet_balances.py',
-    'walletbackup.py',
-    'wallet_notifications.py',
-    'wallet_sends.py',
-    'WalletEncryption.py',
-    'WalletUnlockForStaking.py',
-    'zmq_test.py',
-]
+# Scripts that are run by default.
+# Longest test should go first, to favor running tests in parallel
+BASE_SCRIPTS = []
+with open('test_list.txt', 'r') as file:
+    BASE_SCRIPTS = file.readlines()
+    print(BASE_SCRIPTS)
 
 # Place EXTENDED_SCRIPTS first since it has the 3 longest running tests
 ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS

@@ -163,6 +163,7 @@ NON_SCRIPTS = [
 
 def main():
     # Parse arguments and pass through unrecognised args
+    print("Configuring test framework...")
     parser = argparse.ArgumentParser(add_help=False,
                                      usage='%(prog)s [test_runner.py options] [script options] [scripts]',
                                      description=__doc__,
@@ -216,6 +217,7 @@ def main():
         sys.exit(0)
 
     # Build list of tests
+    print("Building list of tests...")
     test_list = []
     if tests:
         # Individual tests have been specified. Run specified tests that exist
@@ -271,6 +273,7 @@ def main():
 
     check_script_list(src_dir=config["environment"]["SRCDIR"], fail_on_warn=args.ci)
 
+    print("Ready for running tests...!")
     run_tests(
         test_list=test_list,
         src_dir=config["environment"]["SRCDIR"],
@@ -292,11 +295,13 @@ def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, args=None, failf
             print("%sWARNING!%s There is already a divid process running on this system. Tests may fail unexpectedly due to resource contention!" % (BOLD[1], BOLD[0]))
     except OSError:
         # pgrep not supported
+        print("Unknown OSError when using pgrep")
         pass
 
     tests_dir = src_dir + '/qa/rpc-tests/'
 
     #Run Tests
+    print("Initializing test queue...")
     job_queue = TestHandler(
         num_tests_parallel=jobs,
         tests_dir=tests_dir,
@@ -305,13 +310,16 @@ def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, args=None, failf
         flags=args,
         use_term_control=use_term_control,
     )
+    print("Test queue ready...!")
     start_time = time.time()
     test_results = []
 
     max_len_name = len(max(test_list, key=len))
     test_count = len(test_list)
     for i in range(test_count):
+        print("Fetching job result {} from queue...".format(i))
         test_result, testdir, stdout, stderr = job_queue.get_next()
+        print("Job result {} acquired...!".format(i))
         test_results.append(test_result)
         done_str = "{}/{} - {}{}{}".format(i + 1, test_count, BOLD[1], test_result.name, BOLD[0])
         if test_result.status == "Passed":
@@ -384,11 +392,12 @@ class TestHandler:
             # Add tests
             self.num_running += 1
             test = self.test_list.pop(0)
+            test_argv = test.split()
+            print("Executing test file: {}".format(test_argv[0]))
             portseed = len(self.test_list)
             portseed_arg = ["--portseed={}".format(portseed)]
             log_stdout = tempfile.SpooledTemporaryFile(max_size=2**16)
             log_stderr = tempfile.SpooledTemporaryFile(max_size=2**16)
-            test_argv = test.split()
             script = self.tests_dir + test_argv[0]
             st_mode = os.stat (script).st_mode
             all_execute = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
@@ -405,7 +414,7 @@ class TestHandler:
                               testdir,
                               log_stdout,
                               log_stderr))
-        if not self.jobs:
+        if not self.jobs or len(self.jobs)==0:
             raise IndexError('pop from empty list')
 
         # Print remaining running jobs when all jobs have been started.
@@ -416,6 +425,7 @@ class TestHandler:
         while True:
             # Return first proc that finishes
             time.sleep(.5)
+            if dot_count % 300 == 0 and dot_count > 0: print("Tests are taking longer than 150 seconds. Jobs count: {} | Tests counts: {}".format(len(self.jobs),self.num_running))
             for job in self.jobs:
                 (name, start_time, proc, testdir, log_out, log_err) = job
                 if proc.poll() is not None:

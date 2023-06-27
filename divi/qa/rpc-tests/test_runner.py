@@ -81,6 +81,7 @@ def main():
     parser.add_argument('--tmpdirprefix', '-t', default=tempfile.gettempdir(), help="Root directory for datadirs")
     parser.add_argument('--failfast', action='store_true', help='stop execution after the first test failure')
     parser.add_argument('--filter', help='filter scripts to run by regular expression')
+    parser.add_argument('--test_suite_file',default='test_list.txt',action='store_true', help='Run tests within specified suite only')
 
     args, unknown_args = parser.parse_known_args()
     EXTENDED_SCRIPTS = [
@@ -91,7 +92,7 @@ def main():
     # Scripts that are run by default.
     # Longest test should go first, to favor running tests in parallel
     BASE_SCRIPTS = []
-    with open('test_list.txt', 'r') as file:
+    with open(args.test_suite_file, 'r') as file:
         BASE_SCRIPTS = file.readlines()
         print(BASE_SCRIPTS)
 

@@ -5,4 +5,5 @@ continous_integration_task:
     - pushd divi/src/GMock && autoreconf -fvi && popd
     - pushd divi/ && { make distclean || true ; } && ./autogen.sh && ./configure --without-gui NO_QT=1 && popd
     - pushd divi/ && make && make -j check && popd
-    - pushd divi/qa/rpc-tests && ./test_runner.py --exclude proxy_test.py,rpcbind_test.py --jobs=1 --cli_timeout=60.0 && popd
+    - pushd divi/qa/rpc-tests && ./test_runner.py --test_suite_file tests_part1.txt --exclude proxy_test.py,rpcbind_test.py --jobs=1 --cli_timeout=60.0 && popd
+    - pushd divi/qa/rpc-tests && ./test_runner.py --test_suite_file tests_part2.txt --exclude proxy_test.py,rpcbind_test.py --jobs=1 --cli_timeout=60.0 && popd

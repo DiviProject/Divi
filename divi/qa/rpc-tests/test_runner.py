@@ -62,35 +62,6 @@ if os.name != 'nt' or sys.getwindowsversion() >= (10, 0, 14393):
 TEST_EXIT_PASSED = 0
 TEST_EXIT_SKIPPED = 77
 
-EXTENDED_SCRIPTS = [
-    # These tests are not run by default.
-    # Longest test should go first, to favor running tests in parallel
-]
-
-# Scripts that are run by default.
-# Longest test should go first, to favor running tests in parallel
-BASE_SCRIPTS = []
-with open('test_list.txt', 'r') as file:
-    BASE_SCRIPTS = file.readlines()
-    print(BASE_SCRIPTS)
-
-# Place EXTENDED_SCRIPTS first since it has the 3 longest running tests
-ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS
-
-NON_SCRIPTS = [
-    # These are script files that live in the functional tests directory, but are not test scripts.
-    'authproxy.py',
-    'masternode.py',
-    'messages.py',
-    'netutil.py',
-    'test_framework.py',
-    'test_runner.py',
-    'script.py',
-    'socks5.py',
-    'util.py',
-    'util.sh',
-]
-
 def main():
     # Parse arguments and pass through unrecognised args
     print("Configuring test framework...")
@@ -112,6 +83,35 @@ def main():
     parser.add_argument('--filter', help='filter scripts to run by regular expression')
 
     args, unknown_args = parser.parse_known_args()
+    EXTENDED_SCRIPTS = [
+        # These tests are not run by default.
+        # Longest test should go first, to favor running tests in parallel
+    ]
+
+    # Scripts that are run by default.
+    # Longest test should go first, to favor running tests in parallel
+    BASE_SCRIPTS = []
+    with open('test_list.txt', 'r') as file:
+        BASE_SCRIPTS = file.readlines()
+        print(BASE_SCRIPTS)
+
+    # Place EXTENDED_SCRIPTS first since it has the 3 longest running tests
+    ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS
+
+    NON_SCRIPTS = [
+        # These are script files that live in the functional tests directory, but are not test scripts.
+        'authproxy.py',
+        'masternode.py',
+        'messages.py',
+        'netutil.py',
+        'test_framework.py',
+        'test_runner.py',
+        'script.py',
+        'socks5.py',
+        'util.py',
+        'util.sh',
+    ]
+
     if not args.ansi:
         global BOLD, GREEN, RED, GREY
         BOLD = ("", "")

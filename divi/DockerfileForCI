@@ -2,6 +2,7 @@ FROM ubuntu:bionic
 
 WORKDIR /app
 RUN apt-get update
+RUN apt-get upgrade -y
 RUN apt-get install apt-utils -y
 RUN apt-get install bsdmainutils -y
 RUN apt-get install software-properties-common -y
@@ -23,5 +24,7 @@ RUN apt-get install python3.8 -y
 RUN apt-get install python3-zmq -y
 RUN apt-get install python3-pip -y
 RUN pip3 install zmq
+RUN apt-get update
+RUN apt-get upgrade -y
 
 CMD ["bash"]

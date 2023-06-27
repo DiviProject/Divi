@@ -23,16 +23,7 @@ RUN apt-get install python3-zmq -y
 RUN apt-get install python3-pip -y
 RUN pip3 install zmq
 
-#WORKDIR /app
-#COPY . .
-#WORKDIR /app/src/GMock
-#RUN autoreconf -fvi
-#WORKDIR /app
-#RUN make distclean || true
-#RUN ./autogen.sh
-#RUN ./configure --without-gui
-#RUN make
-
+RUN apt-get upgrade -y
 RUN apt-get -y install sudo
 RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1001 ubuntu
 RUN echo "ubuntu:ubuntu" | chpasswd && adduser ubuntu sudo

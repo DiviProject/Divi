@@ -201,7 +201,7 @@ def main():
         subprocess.check_call([os.path.join(config["environment"]["SRCDIR"], 'qa', 'rpc-tests', test_list[0].split()[0]), '-h'])
         sys.exit(0)
 
-    check_script_list(src_dir=config["environment"]["SRCDIR"], fail_on_warn=args.ci)
+    check_script_list(src_dir=config["environment"]["SRCDIR"], fail_on_warn=args.ci, scripts_to_check=ALL_SCRIPTS + NON_SCRIPTS)
 
     print("Ready for running tests...!")
     run_tests(
@@ -423,14 +423,14 @@ class TestResult():
         return self.status != "Failed"
 
 
-def check_script_list(*, src_dir, fail_on_warn):
+def check_script_list(*, src_dir, fail_on_warn, scripts_to_check):
     """Check scripts directory.
 
     Check that there are no scripts in the functional tests directory which are
     not being run by pull-tester.py."""
     script_dir = src_dir + '/qa/rpc-tests/'
     python_files = set([test_file for test_file in os.listdir(script_dir) if test_file.endswith(".py")])
-    missed_tests = list(python_files - set(map(lambda x: x.split()[0], ALL_SCRIPTS + NON_SCRIPTS)))
+    missed_tests = list(python_files - set(map(lambda x: x.split()[0], scripts_to_check)))
     if len(missed_tests) != 0:
         print("%sWARNING!%s The following scripts are not being run: %s. Check the test lists in test_runner.py." % (BOLD[1], BOLD[0], str(missed_tests)))
         if fail_on_warn:

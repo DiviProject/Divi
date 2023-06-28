@@ -93,7 +93,6 @@ def main():
     BASE_SCRIPTS = []
     with open(args.test_suite_file, 'r') as file:
         BASE_SCRIPTS = file.readlines()
-        print(BASE_SCRIPTS)
 
     # Place EXTENDED_SCRIPTS first since it has the 3 longest running tests
     ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS
@@ -383,7 +382,7 @@ class TestHandler:
 
 class TestResult():
     def __init__(self, name, status, time):
-        self.name = name
+        self.name = name.strip()
         self.status = status
         self.time = time
         self.padding = 0

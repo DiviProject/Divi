@@ -11,7 +11,7 @@ from messages import *
 from util import *
 from script import *
 
-ACTIVATION_TIME = 2_000_000_000
+ACTIVATION_TIME = 1_692_792_000
 
 
 class CheckLockTimeVerifyTest (BitcoinTestFramework):

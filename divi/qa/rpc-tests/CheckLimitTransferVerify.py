@@ -11,16 +11,15 @@ from messages import *
 from util import *
 from script import *
 
-ACTIVATION_TIME = 2_000_000_000
+ACTIVATION_TIME = 1_692_792_000
 
 
 class CheckLimitTransferVerifyTest (BitcoinTestFramework):
 
     def setup_network (self, split=False):
-        self.nodes = start_nodes (2, self.options.tmpdir,[["--mocktime="+str(ACTIVATION_TIME+1_000)]]*2)
+        self.nodes = start_nodes (2, self.options.tmpdir)
         self.node = self.nodes[0]
         self.is_network_split = False
-        connect_nodes(self.nodes[0],1)
 
     def generateOutput (self, addr, amount):
         """Sends amount DIVI to the given address, and returns
@@ -48,9 +47,16 @@ class CheckLimitTransferVerifyTest (BitcoinTestFramework):
         return tx
 
     def run_test(self):
-        self.run_test_b()
+        set_node_times (self.nodes, ACTIVATION_TIME - 1_000)
+        connect_nodes(self.nodes[0],1)
+        self.nodes[1].loadwallet("wallet_1.dat")
+        self.run_spending_checks(limit_transfer_active = False)
+        set_node_times (self.nodes, ACTIVATION_TIME + 1_000)
+        connect_nodes(self.nodes[0],1)
+        self.nodes[1].loadwallet("wallet_2.dat")
+        self.run_spending_checks(limit_transfer_active = True)
 
-    def run_test_b (self):
+    def run_spending_checks (self,limit_transfer_active):
         # Generate outputs locked to block height 100, but spendable
         # easily (by pushing 42 on the stack) afterwards.
         self.node.setgenerate (30)
@@ -112,9 +118,17 @@ class CheckLimitTransferVerifyTest (BitcoinTestFramework):
             )
         )
 
-        for spendingTx in maliciousSpends:
-            assert_raises (JSONRPCException, self.node.sendrawtransaction, spendingTx.serialize().hex())
-            assert_raises (JSONRPCException, self.node.generateblock, {"extratx": [spendingTx.serialize ().hex ()]})
+        if limit_transfer_active:
+            for spendingTx in maliciousSpends:
+                assert_raises (JSONRPCException, self.node.sendrawtransaction, spendingTx.serialize().hex())
+                assert_raises (JSONRPCException, self.node.generateblock, {"extratx": [spendingTx.serialize ().hex ()]})
+        else:
+            for spendingTx in maliciousSpends:
+                blockhash = self.node.generateblock({"extratx": [spendingTx.serialize ().hex ()]})
+                sync_blocks(self.nodes)
+                for node in self.nodes:
+                    node.invalidateblock(blockhash)
+
 
         sync_blocks(self.nodes)
         self.node.setgenerate(20)

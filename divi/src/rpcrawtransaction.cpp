@@ -563,6 +563,42 @@ Value decodescript(const Array& params, bool fHelp, CWallet* pwallet)
     return r;
 }
 
+Value signtransactionwithaddresskey(const Array& params, bool fHelp, CWallet* pwallet)
+{
+    if (fHelp || false)
+        throw runtime_error("signTransactionWithAddressKey\n");
+
+    std::vector<unsigned char> txData(ParseHexV(params[0], "Transaction hex data"));
+    const int inputIndex = params[2].get_int();
+
+    CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
+    std::vector<CMutableTransaction> txVariants;
+    while (!ssData.empty()) {
+        try {
+            CMutableTransaction tx;
+            ssData >> tx;
+            txVariants.push_back(tx);
+        } catch (const std::exception&) {
+            throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+        }
+    }
+    CKeyID keyID;
+    CBitcoinAddress address(params[1].get_str());
+    address.GetKeyID(keyID);
+    CPubKey pubkey;
+    if (pwallet && !pwallet->GetPubKey(keyID, pubkey)) throw JSONRPCError(RPC_WALLET_ERROR,"Unable to sign for unknown address");
+
+    CMutableTransaction mergedTx(txVariants[0]);
+    CScript dummyOutputScript = CScript() << pubkey << OP_CHECKSIG;
+    const CTxOut dummyOutput(0,dummyOutputScript);
+    const CKeyStore& keyStore = *pwallet;
+    if(!SignForOutput(keyStore, dummyOutput, mergedTx, inputIndex, SIGHASH_SINGLE))
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR,"Unable to sign for input");
+    }
+    return mergedTx.vin[inputIndex].scriptSig.ToString();
+}
+
 Value signrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 4)

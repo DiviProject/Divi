@@ -34,9 +34,20 @@ class CheckLimitTransferVerifyTest (BitcoinTestFramework):
 
         raise AssertionError ("failed to find destination address")
 
-    def buildSpend (self, output, scriptSig, destinations = [ { "amount": 1, "script": CScript ([OP_META]) } ] ):
-        """Builds a transaction that spends one of our test outputs."""
+    def buildSig(self, output, destinations):
+        (txid, n) = output
+        outpoint = COutPoint (txid=txid, n=n)
+        tx = CTransaction ()
+        tx.vin.append (CTxIn (outpoint, CScript()))
+        for destination in destinations:
+            tx.vout.append (CTxOut (destination["amount"], destination["script"]))
 
+        return self.nodes[1].signtransactionwithaddresskey(tx.serialize().hex(), self.spend_auth_addr, 0)
+
+    def buildSpend (self, output, scriptSigArray, destinations = [ { "amount": 1, "script": CScript ([OP_META]) } ] ):
+        """Builds a transaction that spends one of our test outputs."""
+        sigValue = self.buildSig(output,destinations)
+        scriptSig = CScript( [ bytearray.fromhex(sigValue) ] + scriptSigArray)
         (txid, n) = output
         outpoint = COutPoint (txid=txid, n=n)
         tx = CTransaction ()
@@ -61,6 +72,12 @@ class CheckLimitTransferVerifyTest (BitcoinTestFramework):
         # easily (by pushing 42 on the stack) afterwards.
         self.node.setgenerate (30)
         sync_blocks(self.nodes)
+
+        receiver = self.nodes[1]
+        addr = receiver.getnewaddress()
+        pubkey = receiver.validateaddress(addr)["pubkey"]
+        self.spend_auth_addr = addr
+
         changeAddressDetails = self.node.decodescript(CScript([42, OP_EQUAL]).hex())
         changeAddressScript = CScript(
             bytearray.fromhex( self.node.validateaddress(changeAddressDetails["p2sh"])["scriptPubKey"])
@@ -69,7 +86,7 @@ class CheckLimitTransferVerifyTest (BitcoinTestFramework):
         amountTransferLimitInSats = 10*COIN # 10 DIVI
 
         #Change address 8vSkjqmyxE32xcjYG4TtmdR3tUwuoS2QU2 Subscription address 8hm9AfkNZu516J3zKZkLkkzKTvZiaC4yzT
-        limitTransferP2SHScript = CScript ([CScriptNum(amountTransferLimitInSats), p2shID, OP_LIMIT_TRANSFER ])
+        limitTransferP2SHScript = CScript ([ bytearray.fromhex(pubkey), OP_CHECKSIG, CScriptNum(amountTransferLimitInSats), p2shID, OP_LIMIT_TRANSFER ])
         limitTransferScriptP2SH = self.node.decodescript(limitTransferP2SHScript.hex())["p2sh"]
 
         assert_equal(changeAddressDetails["p2sh"], "8vSkjqmyxE32xcjYG4TtmdR3tUwuoS2QU2")
@@ -90,27 +107,27 @@ class CheckLimitTransferVerifyTest (BitcoinTestFramework):
             bytearray.fromhex(addrDetails["scriptPubKey"])
         )
 
-        scriptSig = CScript([OP_TRUE, bytearray.fromhex(limitTransferP2SHScript.hex())])
+        scriptSigArray = [bytearray.fromhex(limitTransferP2SHScript.hex())]
         maliciousSpends = []
         # Exceeds limit and does not return change amount
         maliciousSpends.append(
             self.buildSpend(
                 output,
-                scriptSig,
+                scriptSigArray,
                 destinations = [{"amount": 20*COIN, "script": receiverDestination}])
         )
         # Does not exceed limit but does not return change amount
         maliciousSpends.append(
             self.buildSpend(
                 output,
-                scriptSig,
+                scriptSigArray,
                 destinations = [{"amount": 9*COIN, "script": receiverDestination}])
         )
         # Does not exceed limit and returns change amount, but in the incorrect output index
         maliciousSpends.append(
             self.buildSpend(
                 output,
-                scriptSig,
+                scriptSigArray,
                 destinations = [
                     {"amount": 9*COIN, "script": receiverDestination},
                     {"amount": 90*COIN, "script": changeAddressScript}
@@ -136,7 +153,7 @@ class CheckLimitTransferVerifyTest (BitcoinTestFramework):
 
         validSpending = self.buildSpend(
             output,
-            scriptSig,
+            scriptSigArray,
             destinations = [
                 {"amount":91*COIN, "script": changeAddressScript},
                 {"amount": 8*COIN + 10*CENT, "script": receiverDestination},

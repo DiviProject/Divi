@@ -106,6 +106,7 @@ extern json_spirit::Value decoderawtransaction(const json_spirit::Array& params,
 extern json_spirit::Value decodescript(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value signrawtransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 extern json_spirit::Value sendrawtransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value signtransactionwithaddresskey(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
 extern json_spirit::Value getlotteryblockwinners(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rpclottery.cpp
 
@@ -374,6 +375,7 @@ static const CRPCCommand vRPCCommands[] =
         {"rawtransactions", "decodescript", &decodescript, true, false, false, false},
         {"rawtransactions", "getrawtransaction", &getrawtransaction, true, false, false, false},
         {"rawtransactions", "sendrawtransaction", &sendrawtransaction, false, false, false, false},
+        {"rawtransactions", "signtransactionwithaddresskey", &signtransactionwithaddresskey, false, false, false, true},
         {"rawtransactions", "signrawtransaction", &signrawtransaction, false, false, false, false}, /* uses wallet if enabled */
 
         /* Utility functions */

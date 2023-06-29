@@ -16,6 +16,10 @@ ACTIVATION_TIME = 1_692_792_000
 
 class CheckLimitTransferVerifyTest (BitcoinTestFramework):
 
+    def add_options(self, parser):
+        parser.add_option("--activate_fork", dest="activate_fork", default=False,
+                          help="Fork activation as a flag")
+
     def setup_network (self, split=False):
         self.nodes = start_nodes (2, self.options.tmpdir)
         self.node = self.nodes[0]
@@ -58,14 +62,16 @@ class CheckLimitTransferVerifyTest (BitcoinTestFramework):
         return tx
 
     def run_test(self):
-        set_node_times (self.nodes, ACTIVATION_TIME - 1_000)
+        limit_transfer_active = False
+        if self.options.activate_fork:
+            set_node_times (self.nodes, ACTIVATION_TIME + 1_000)
+            limit_transfer_active = True
+        else:
+            set_node_times (self.nodes, ACTIVATION_TIME - 1_000)
+
         connect_nodes(self.nodes[0],1)
         self.nodes[1].loadwallet("wallet_1.dat")
-        self.run_spending_checks(limit_transfer_active = False)
-        set_node_times (self.nodes, ACTIVATION_TIME + 1_000)
-        connect_nodes(self.nodes[0],1)
-        self.nodes[1].loadwallet("wallet_2.dat")
-        self.run_spending_checks(limit_transfer_active = True)
+        self.run_spending_checks(limit_transfer_active)
 
     def run_spending_checks (self,limit_transfer_active):
         # Generate outputs locked to block height 100, but spendable

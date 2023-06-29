@@ -4,6 +4,7 @@ BlocksOnlyHaveSingleCoinstake.py
 BadBlockTests.py
 CheckLockTimeVerify.py
 CheckLimitTransferVerify.py
+CheckLimitTransferVerify.py --activate_fork
 CoinDBStats.py
 CorruptedCoinDb.py
 StakingStatus.py

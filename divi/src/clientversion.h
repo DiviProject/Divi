@@ -10,8 +10,8 @@
 #include "config/divi-config.h"
 #else
 //! These need to be macros, as clientversion.cpp's and divi*-res.rc's voodoo requires it
-#define CLIENT_VERSION_MAJOR 2
-#define CLIENT_VERSION_MINOR 15
+#define CLIENT_VERSION_MAJOR 3
+#define CLIENT_VERSION_MINOR 0
 #define CLIENT_VERSION_REVISION 0
 #define CLIENT_VERSION_BUILD 0
 

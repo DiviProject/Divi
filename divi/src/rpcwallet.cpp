@@ -168,12 +168,7 @@ WalletOutputEntryParsing GetAmounts(
 
         // In either case, we need to get the destination address
         CTxDestination address;
-        if (!ExtractDestination(txout.scriptPubKey, address)) {
-            if (!wtx.IsCoinStake() && !wtx.IsCoinBase()) {
-                LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n", wtx.ToStringShort());
-            }
-            address = CNoDestination();
-        }
+        if (!ExtractDestination(txout.scriptPubKey, address)) address = CNoDestination();
 
         COutputEntry output = {address, txout.nValue, (int)i};
 

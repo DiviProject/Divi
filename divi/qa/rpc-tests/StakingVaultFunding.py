@@ -8,7 +8,6 @@
 #
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 import os
 import shutil
@@ -26,9 +25,9 @@ def createVaultPoSStacks(nodes):
     # Make sure all nodes have matured coins.
     mintingNode = nodes[0]
     for node in [nodes[0],nodes[2]]:
-      node.setgenerate(True, 25)
+      node.setgenerate( 25)
       sync_blocks(nodes)
-    mintingNode.setgenerate(True, 20)
+    mintingNode.setgenerate( 20)
 
     # Split those coins up into many pieces that can each be used
     # individually for staking.
@@ -40,7 +39,7 @@ def createVaultPoSStacks(nodes):
     # Make sure to get all those transactions mined.
     sync_mempools(nodes)
     while len(nodes[0].getrawmempool()) > 0:
-      nodes[0].setgenerate(True, 1)
+      nodes[0].setgenerate( 1)
     sync_blocks(nodes)
 
 class StakingVaultFunding(BitcoinTestFramework):
@@ -55,26 +54,6 @@ class StakingVaultFunding(BitcoinTestFramework):
         self.is_network_split = False
         self.sync_all()
 
-    def verify_vault_folder_recovers_state(self,intendedVaultedAmount):
-        vaultNode = self.nodes[1]
-        seed = vaultNode.dumphdinfo()["hdseed"]
-        source_directory = self.options.tmpdir + "/node"+str(1)+"/regtest/"
-        target_directory = self.options.tmpdir + "/node"+str(3)+"/regtest/"
-        subdirectories = [x[0].split("/")[-1] for x in os.walk(source_directory) if "vault_" in str(x[0])]
-        assert_equal(len(subdirectories),1)
-        shutil.copytree(source_directory+subdirectories[0],target_directory+subdirectories[0])
-        self.nodes.append( start_node(3, self.options.tmpdir, ["-hdseed="+str(seed),"-vault=1"]) )
-        connect_nodes(self.nodes[3], 0)
-        sync_blocks(self.nodes)
-        otherVaultNode = self.nodes[-1]
-
-        vaultNodeAllocations = otherVaultNode.getcoinavailability()
-        managedFunds = vaultNodeAllocations["Stakable"] - vaultNodeAllocations["Spendable"]
-        assert_near(vaultNodeAllocations["Spendable"], 0.0,1e-10)
-        assert_near(vaultNodeAllocations["Stakable"], intendedVaultedAmount,1e-10)
-        assert_near(vaultNodeAllocations["Vaulted"], 0.0,1e-10)
-        assert_equal(vaultNodeAllocations["Spendable"] +managedFunds+ vaultNodeAllocations["Vaulted"], otherVaultNode.getbalance())
-
     def run_test(self):
         miningNode = self.nodes[0]
         vaultNode = self.nodes[1]
@@ -88,7 +67,7 @@ class StakingVaultFunding(BitcoinTestFramework):
 
         self.sync_all()
         sync_blocks(self.nodes)
-        self.nodes[2].setgenerate(True,20)
+        self.nodes[2].setgenerate(20)
         sync_blocks(self.nodes)
 
         # Send funds to vault
@@ -105,7 +84,7 @@ class StakingVaultFunding(BitcoinTestFramework):
 
         self.sync_all()
         sync_blocks(self.nodes)
-        self.nodes[2].setgenerate(True,1)
+        self.nodes[2].setgenerate(1)
         sync_blocks(self.nodes)
 
         # Miner node has funds as expected and sends to a vault node
@@ -121,10 +100,10 @@ class StakingVaultFunding(BitcoinTestFramework):
         assert_near(vaultNodeAllocations["Spendable"], 0.0,1e-10)
         assert_near(vaultNodeAllocations["Stakable"], 0.0,1e-10)
         assert_near(vaultNodeAllocations["Vaulted"], 0.0,1e-10)
-        assert_equal(0.0, vaultNode.getbalance())
+        assert_equal(0.0, vaultNode.getstakingstatus()["staking_balance"])
 
         # Vault node has now accepted the responsibility to stake on behalf of the Miner node
-        vaultEncoding = vaultFundingData["vault"]
+        vaultEncoding = vaultFundingData["vault"][0]["encoding"]
         txhash = vaultFundingData["txhash"]
         vaultNode.addvault(vaultEncoding,txhash)
         vaultNodeAllocations = vaultNode.getcoinavailability()
@@ -132,18 +111,12 @@ class StakingVaultFunding(BitcoinTestFramework):
         assert_near(vaultNodeAllocations["Spendable"], 0.0,1e-10)
         assert_near(vaultNodeAllocations["Stakable"], intendedVaultedAmount,1e-10)
         assert_near(vaultNodeAllocations["Vaulted"], 0.0,1e-10)
-        assert_equal(vaultNodeAllocations["Spendable"] +managedFunds+ vaultNodeAllocations["Vaulted"], vaultNode.getbalance())
+        assert_equal(vaultNodeAllocations["Spendable"] +managedFunds+ vaultNodeAllocations["Vaulted"], vaultNode.getstakingstatus()["staking_balance"])
 
-        self.verify_vault_folder_recovers_state(intendedVaultedAmount)
-        stop_node(vaultNode,1)
-        vaultScript = vaultFundingData["script"]
-        self.nodes[1]=start_node(1, self.options.tmpdir, ["-vault=1","-whitelisted_vault="+str(vaultScript)])
-        connect_nodes(self.nodes[1], 0)
+        miningNode.fundvault(vaultFundingData["vault"][0]["encoding"],intendedVaultedAmount)
+        miningNode.setgenerate(1)
         self.sync_all()
-
-        miningNode.fundvault(vaultFundingData["vault"],intendedVaultedAmount)
-        self.sync_all()
-        assert_equal(vaultNode.getwalletinfo()["unconfirmed_balance"], Decimal(intendedVaultedAmount))
+        assert_equal(vaultNode.getcoinavailability()["Stakable"], Decimal(2*intendedVaultedAmount))
 
 
 

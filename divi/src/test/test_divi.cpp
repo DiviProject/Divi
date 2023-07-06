@@ -4,49 +4,46 @@
 
 #define BOOST_TEST_MODULE Divi Test Suite
 
-#include <dbenv.h>
-#include <chain.h>
-#include <init.h>
-#include "main.h"
-#include "net.h"
-#include "random.h"
-#include "txdb.h"
-#include "ui_interface.h"
-#include "util.h"
-#ifdef ENABLE_WALLET
-#include "db.h"
-#include "wallet.h"
-#endif
-#include <TransactionInputChecker.h>
 #include <chainparams.h>
+#include <dbenv.h>
+#include <init.h>
+#include <I_ChainExtensionService.h>
+#include <Logging.h>
+#include <noui.h>
+#include <random.h>
 #include <Settings.h>
+#include <tinyformat.h>
+#include <TransactionInputChecker.h>
+#include <util.h>
+#include <utiltime.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
 
-extern CClientUIInterface uiInterface;
-extern CWallet* pwalletMain;
 extern Settings& settings;
-extern void noui_connect();
-extern CBlockTreeDB* pblocktree;
-extern CCoinsViewCache* pcoinsTip;
-extern bool fCheckBlockIndex;
-extern BlockMap mapBlockIndex;
-extern int nScriptCheckThreads;
-extern CChain chainActive;
+
+/* The global spork-manager instance is normally managed by init.cpp (where it
+   is also defined).  For unit tests, we override the init sequence, and
+   manually construct / destruct the instance.  Since code depends on
+   GetSporkManager() to retrieve the global instance, need to actually use
+   that one rather than e.g. an instance in the test fixture.
+
+   FIXME: Get rid of GetSporkManager(), pass the instance everywhere, and then
+   make the instance part of the test class.  */
+extern void RegisterNodeSignals();
+extern void UnregisterNodeSignals();
 
 struct TestingSetup {
-    CCoinsViewDB *pcoinsdbview;
     boost::filesystem::path pathTemp;
     boost::thread_group threadGroup;
     CDBEnv& bitdb_;
 
-    TestingSetup(): pcoinsdbview(nullptr), pathTemp(), threadGroup(), bitdb_(BerkleyDBEnvWrapper())
+    TestingSetup(): pathTemp(), threadGroup(), bitdb_(BerkleyDBEnvWrapper())
     {
         SetupEnvironment();
-        fPrintToDebugLog = false; // don't want to write to debug.log file
-        fCheckBlockIndex = true;
+        setWriteToDebugLogFlag(false);
+        settings.SetParameter("-checkblockindex","1");
         SelectParams(CBaseChainParams::UNITTEST);
         noui_connect();
 #ifdef ENABLE_WALLET
@@ -55,32 +52,19 @@ struct TestingSetup {
         pathTemp = GetTempPath() / strprintf("test_divi_%lu_%i", (unsigned long)GetTime(), (int)(GetRand(100000)));
         boost::filesystem::create_directories(pathTemp);
         settings.SetParameter("-datadir", pathTemp.string());
-        pblocktree = new CBlockTreeDB(1 << 20, true);
-        pcoinsdbview = new CCoinsViewDB(mapBlockIndex, 1 << 23, true);
-        pcoinsTip = new CCoinsViewCache(pcoinsdbview);
-        InitBlockIndex();
-#ifdef ENABLE_WALLET
-        InitializeWallet("wallet.dat");
-        pwalletMain->LoadWallet();
-        RegisterValidationInterface(pwalletMain);
-#endif
-        nScriptCheckThreads = 3;
-        for (int i=0; i < nScriptCheckThreads-1; i++)
-            threadGroup.create_thread(&TransactionInputChecker::ThreadScriptCheck);
-        RegisterNodeSignals(GetNodeSignals());
+        InitializeMainBlockchainModules();
+        GetChainExtensionService().connectGenesisBlock();
+        TransactionInputChecker::SetScriptCheckingThreadCount(3);
+        TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
+        RegisterNodeSignals();
         EnableUnitTestSignals();
     }
     ~TestingSetup()
     {
         threadGroup.interrupt_all();
         threadGroup.join_all();
-        UnregisterNodeSignals(GetNodeSignals());
-#ifdef ENABLE_WALLET
-        DeallocateWallet();
-#endif
-        delete pcoinsTip;
-        delete pcoinsdbview;
-        delete pblocktree;
+        UnregisterNodeSignals();
+        FinalizeMainBlockchainModules();
 #ifdef ENABLE_WALLET
         bitdb_.Flush(true);
 #endif

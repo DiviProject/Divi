@@ -15,23 +15,42 @@
 
 #include <BlockUndo.h>
 #include <ValidationState.h>
-#include <BlockDiskAccessor.h>
+#include <BlockDiskDataReader.h>
 #include <ui_interface.h>
 #include <boost/thread.hpp>
-#include <ActiveChainManager.h>
+#include <BlockConnectionService.h>
+#include <ChainstateManager.h>
+#include <spork.h>
+#include <BlockCheckingHelpers.h>
 
-/** Apply the effects of this block (with given index) on the UTXO set represented by coins */
-bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
-bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleRoot = true);
 
 CVerifyDB::CVerifyDB(
-    const ActiveChainManager& chainManager,
-    const CChain& activeChain,
+    const CChainParams& chainParameters,
+    const I_SuperblockSubsidyContainer& blockSubsidies,
+    const I_BlockIncentivesPopulator& incentives,
+    ChainstateManager& chainstate,
+    const CCoinsView& coinView,
+    const CSporkManager& sporkManager,
     CClientUIInterface& clientInterface,
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
-    ): chainManager_(chainManager)
-    , activeChain_(activeChain)
+    ): blockDiskReader_(new BlockDiskDataReader())
+    , coinView_(coinView)
+    , chainstate_(chainstate)
+    , coinsViewCache_(new CCoinsViewCache(&coinView_))
+    , sporkManager_(sporkManager)
+    , blockConnectionService_(
+        new BlockConnectionService(
+            chainParameters,
+            blockSubsidies,
+            incentives,
+            chainstate.GetBlockMap(),
+            &chainstate.BlockTree(),
+            coinsViewCache_.get(),
+            sporkManager_,
+            *blockDiskReader_,
+            true))
+    , activeChain_(chainstate.ActiveChain())
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)
     , shutdownListener_(shutdownListener)
@@ -44,11 +63,12 @@ CVerifyDB::~CVerifyDB()
     clientInterface_.ShowProgress("", 100);
 }
 
-bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize, int nCheckLevel, int nCheckDepth) const
+bool CVerifyDB::VerifyDB(int nCheckLevel, int nCheckDepth) const
 {
     if (activeChain_.Tip() == NULL || activeChain_.Tip()->pprev == NULL)
         return true;
 
+    const unsigned coinsTipCacheSize = chainstate_.CoinsTip().GetCacheSize();
     // Verify blocks in the best chain
     if (nCheckDepth <= 0)
         nCheckDepth = 1000000000; // suffices until the year 19000
@@ -56,12 +76,11 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
         nCheckDepth = activeChain_.Height();
     nCheckLevel = std::max(0, std::min(4, nCheckLevel));
     LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
-    CCoinsViewCache coins(coinsview);
-    CBlockIndex* pindexState = activeChain_.Tip();
-    CBlockIndex* pindexFailure = NULL;
+
+    const CBlockIndex* pindexState = activeChain_.Tip();
     int nGoodTransactions = 0;
     CValidationState state;
-    for (CBlockIndex* pindex = activeChain_.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
+    for (const CBlockIndex* pindex = activeChain_.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
         boost::this_thread::interruption_point();
         const double fractionOfBlocksChecked = (double)(activeChain_.Height() - pindex->nHeight) / (double)nCheckDepth;
         const int fractionAsProgressPercentage = static_cast<int>(fractionOfBlocksChecked * (nCheckLevel >= 4 ? 50 : 100));
@@ -71,7 +90,7 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
             break;
         CBlock block;
         // check level 0: read from disk
-        if (!ReadBlockFromDisk(block, pindex))
+        if (!blockDiskReader_->ReadBlock(pindex,block))
             return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
         // check level 1: verify block validity
         if (nCheckLevel >= 1 && !CheckBlock(block, state))
@@ -86,30 +105,23 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
             }
         }
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
-        const unsigned int coinCacheSize = coins.GetCacheSize();
+        const unsigned int coinCacheSize = coinsViewCache_->GetCacheSize();
         if (nCheckLevel >= 3 &&
             pindex == pindexState &&
             (coinCacheSize + coinsTipCacheSize) <= coinsCacheSize_)
         {
-            bool fClean = true;
-            if (!chainManager_.DisconnectBlock(block, state, pindex, coins, &fClean))
-                return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
+            if (!blockConnectionService_->DisconnectBlock(state, pindex, true).second)
+                return error("VerifyDB() : *** inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
             pindexState = pindex->pprev;
-            if (!fClean) {
-                nGoodTransactions = 0;
-                pindexFailure = pindex;
-            } else
-                nGoodTransactions += block.vtx.size();
+            nGoodTransactions += block.vtx.size();
         }
         if (shutdownListener_())
             return true;
     }
-    if (pindexFailure)
-        return error("VerifyDB() : *** coin database inconsistencies found (last %i blocks, %i good transactions before that)\n", activeChain_.Height() - pindexFailure->nHeight + 1, nGoodTransactions);
 
     // check level 4: try reconnecting blocks
     if (nCheckLevel >= 4) {
-        CBlockIndex* pindex = pindexState;
+        const CBlockIndex* pindex = pindexState;
         while (pindex != activeChain_.Tip()) {
             boost::this_thread::interruption_point();
 
@@ -120,10 +132,27 @@ bool CVerifyDB::VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize
 
             pindex = activeChain_.Next(pindex);
             CBlock block;
-            if (!ReadBlockFromDisk(block, pindex))
+            if (!blockDiskReader_->ReadBlock(pindex,block))
                 return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
-            if (!ConnectBlock(block, state, pindex, coins, false))
+
+            /* ConnectBlock may modify some fields in pindex as the block's
+               status is updated.  In particular:
+
+                  nUndoPos, nStatus, nMint and nMoneySupply
+
+               In the current situation, we do not want to have the CBlockIndex
+               that is already part of the active chain modified.  Thus we
+               apply ConnectBlock to a temporary copy, and verify later on
+               that the fields computed match the ones we have already.  */
+            CBlockIndex indexCopy(*pindex);
+            if (!blockConnectionService_->ConnectBlock(block, state, &indexCopy, true))
                 return error("VerifyDB() : *** found unconnectable block at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash());
+            if (indexCopy.nUndoPos != pindex->nUndoPos
+                  || indexCopy.nStatus != pindex->nStatus
+                  || indexCopy.nMint != pindex->nMint
+                  || indexCopy.nMoneySupply != pindex->nMoneySupply)
+                return error("%s: *** attached block index differs from stored data at %d, hash=%s",
+                             __func__, pindex->nHeight, pindex->GetBlockHash());
         }
     }
 

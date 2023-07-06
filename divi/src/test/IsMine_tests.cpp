@@ -189,35 +189,27 @@ BOOST_AUTO_TEST_CASE(willDetectWhenVaultIsOwnedOrManagedAndDefaultToOwnedWhenBot
         CBasicKeyStore keyStore;
         keyStore.AddKey(keychain.keys_[0]);
 
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,vaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == OWNED_VAULT, "Did not detect owned vault");
+        BOOST_CHECK_MESSAGE(IsMine(keyStore,vaultScript) == isminetype::ISMINE_OWNED_VAULT, "Did not detect owned vault");
     }
     {
         CBasicKeyStore keyStore;
         keyStore.AddKey(keychain.keys_[1]);
 
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,vaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == MANAGED_VAULT, "Did not detect managed vault for which responsability wasnt accepted");
+        BOOST_CHECK_MESSAGE(IsMine(keyStore,vaultScript) == isminetype::ISMINE_NO, "Did not detect managed vault for which responsability wasnt accepted");
     }
     {
         CBasicKeyStore keyStore;
         keyStore.AddKey(keychain.keys_[1]);
         keyStore.AddCScript(vaultScript);
 
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,vaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == MANAGED_VAULT, "Did not detect managed vault");
+        BOOST_CHECK_MESSAGE(IsMine(keyStore,vaultScript) == isminetype::ISMINE_MANAGED_VAULT, "Did not detect managed vault");
     }
     {
         CBasicKeyStore keyStore;
         keyStore.AddKey(keychain.keys_[0]);
         keyStore.AddKey(keychain.keys_[1]);
 
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,vaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == OWNED_VAULT, "Did not default to owned when vault is both owned and managed");
+        BOOST_CHECK_MESSAGE(IsMine(keyStore,vaultScript) == isminetype::ISMINE_OWNED_VAULT, "Did not default to owned when vault is both owned and managed");
     }
 }
 
@@ -228,8 +220,7 @@ BOOST_AUTO_TEST_CASE(willFailToOwnAManagedVaultForWhichResponsibilityHasNotBeenA
     CBasicKeyStore keyStore;
     keyStore.AddKey(keychain.keys_[1]);
 
-    VaultType vaultOwnershipType;
-    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript,vaultOwnershipType) == isminetype::ISMINE_NO, "Detected managed vault for which responsability wasnt accepted");
+    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript) == isminetype::ISMINE_NO, "Detected managed vault for which responsability wasnt accepted");
 }
 BOOST_AUTO_TEST_CASE(willOwnAManagedVaultForWhichResponsibilityHasBeenAccepted)
 {
@@ -239,8 +230,7 @@ BOOST_AUTO_TEST_CASE(willOwnAManagedVaultForWhichResponsibilityHasBeenAccepted)
     keyStore.AddKey(keychain.keys_[1]);
     keyStore.AddCScript(vaultScript);
 
-    VaultType vaultOwnershipType;
-    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript,vaultOwnershipType) == isminetype::ISMINE_SPENDABLE, "Did not detect managed vault");
+    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript) == isminetype::ISMINE_MANAGED_VAULT, "Did not detect managed vault");
 }
 
 BOOST_AUTO_TEST_CASE(willDetectThatP2PKScriptsAreNotVaults)
@@ -255,9 +245,8 @@ BOOST_AUTO_TEST_CASE(willDetectThatP2PKScriptsAreNotVaults)
     for(const CPubKey& pubkey: keychain.pubkeys_)
     {
         CScript someNonVaultScript = CScriptCreator::P2PK(pubkey);
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,someNonVaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == NON_VAULT, "Did not detect non vault: p2pk");
+        isminetype recoveredType = IsMine(keyStore,someNonVaultScript);
+        BOOST_CHECK_MESSAGE(recoveredType != isminetype::ISMINE_OWNED_VAULT && recoveredType != isminetype::ISMINE_MANAGED_VAULT, "Did not detect non vault: p2pk");
     }
 }
 
@@ -272,9 +261,8 @@ BOOST_AUTO_TEST_CASE(willDetectThatP2PKHScriptsAreNotVaults)
     for(const CPubKey& pubkey: keychain.pubkeys_)
     {
         CScript someNonVaultScript = CScriptCreator::P2PKH(pubkey.GetID());
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,someNonVaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == NON_VAULT, "Did not detect non vault: p2pkh");
+        isminetype recoveredType = IsMine(keyStore,someNonVaultScript);
+        BOOST_CHECK_MESSAGE(recoveredType != isminetype::ISMINE_OWNED_VAULT && recoveredType != isminetype::ISMINE_MANAGED_VAULT, "Did not detect non vault: p2pkh");
     }
 }
 
@@ -289,18 +277,16 @@ BOOST_AUTO_TEST_CASE(willDetectThatMultiSigScriptsArentVaults)
 
     {
         CScript someNonVaultScript = CScriptCreator::MultiSig(keychain.pubkeys_,4);
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,someNonVaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == NON_VAULT,
+        isminetype recoveredType = IsMine(keyStore,someNonVaultScript);
+        BOOST_CHECK_MESSAGE(recoveredType != isminetype::ISMINE_OWNED_VAULT && recoveredType != isminetype::ISMINE_MANAGED_VAULT,
             "Did not detect non vault: Have needed keys but keystore has not recorded this multisig");
     }
     {
         CScript someNonVaultScript = CScriptCreator::MultiSig(keychain.pubkeys_,4);
 
         keyStore.AddMultiSig(someNonVaultScript);
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,someNonVaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == NON_VAULT,
+        isminetype recoveredType = IsMine(keyStore,someNonVaultScript);
+        BOOST_CHECK_MESSAGE(recoveredType != isminetype::ISMINE_OWNED_VAULT && recoveredType != isminetype::ISMINE_MANAGED_VAULT,
             "Did not detect non vault: Have needed keys and keystore is expecting this multisig");
     }
 }
@@ -310,18 +296,16 @@ BOOST_AUTO_TEST_CASE(willDetectNonStandardAndDataPushScriptsArentVaults)
     CBasicKeyStore keyStore;
     { //Non Standard
         CScript sourceScript = CScript() << OP_TRUE << OP_DROP << OP_FALSE;
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,sourceScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == NON_VAULT, "Did not detect non vault: non standard tx");
+        isminetype recoveredType = IsMine(keyStore,sourceScript);
+        BOOST_CHECK_MESSAGE(recoveredType != isminetype::ISMINE_OWNED_VAULT && recoveredType != isminetype::ISMINE_MANAGED_VAULT, "Did not detect non vault: non standard tx");
     }
     { // Null Data
         CScript sourceScript = CScript() << OP_META << ToByteVector(std::string("Some random message"));
         CScript someNonVaultScript = CScriptCreator::P2SH(CScriptID(sourceScript));
 
         keyStore.AddCScript(sourceScript);
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,someNonVaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == NON_VAULT, "Did not detect non vault: data push");
+        isminetype recoveredType = IsMine(keyStore,someNonVaultScript);
+        BOOST_CHECK_MESSAGE(recoveredType != isminetype::ISMINE_OWNED_VAULT && recoveredType != isminetype::ISMINE_MANAGED_VAULT, "Did not detect non vault: data push");
     }
 }
 
@@ -335,9 +319,8 @@ BOOST_AUTO_TEST_CASE(willDetectWhichP2SHScriptsAreVaultsOrNot)
         CScript someNonVaultScript = CScriptCreator::P2SH(CScriptID(sourceScript));
 
         keyStore.AddCScript(sourceScript);
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,someNonVaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType == NON_VAULT, "Did not detect non vault: p2sh - wrapping p2pkh");
+        isminetype recoveredType = IsMine(keyStore,someNonVaultScript);
+        BOOST_CHECK_MESSAGE(recoveredType != isminetype::ISMINE_OWNED_VAULT && recoveredType != isminetype::ISMINE_MANAGED_VAULT, "Did not detect non vault: p2sh - wrapping p2pkh");
     }
     {
         CBasicKeyStore keyStore;
@@ -346,9 +329,8 @@ BOOST_AUTO_TEST_CASE(willDetectWhichP2SHScriptsAreVaultsOrNot)
         CScript someNonVaultScript = CScriptCreator::P2SH(CScriptID(sourceScript));
 
         keyStore.AddCScript(sourceScript);
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,someNonVaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType != NON_VAULT, "Did not detect non vault: p2sh - wrapping owned vault");
+        isminetype recoveredType = IsMine(keyStore,someNonVaultScript);
+        BOOST_CHECK_MESSAGE(recoveredType == isminetype::ISMINE_OWNED_VAULT || recoveredType == isminetype::ISMINE_MANAGED_VAULT, "Did not detect non vault: p2sh - wrapping owned vault");
     }
     {
         CBasicKeyStore keyStore;
@@ -357,9 +339,8 @@ BOOST_AUTO_TEST_CASE(willDetectWhichP2SHScriptsAreVaultsOrNot)
         CScript someNonVaultScript = CScriptCreator::P2SH(CScriptID(sourceScript));
 
         keyStore.AddCScript(sourceScript);
-        VaultType vaultOwnershipType;
-        IsMine(keyStore,someNonVaultScript,vaultOwnershipType);
-        BOOST_CHECK_MESSAGE(vaultOwnershipType != NON_VAULT, "Did not detect non vault: p2sh - wrapping managed vault");
+        isminetype recoveredType = IsMine(keyStore,someNonVaultScript);
+        BOOST_CHECK_MESSAGE(recoveredType == isminetype::ISMINE_OWNED_VAULT || recoveredType == isminetype::ISMINE_MANAGED_VAULT, "Did not detect non vault: p2sh - wrapping managed vault");
     }
 }
 

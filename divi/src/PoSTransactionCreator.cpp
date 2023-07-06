@@ -18,16 +18,36 @@
 #include <StakableCoin.h>
 #include <timedata.h>
 #include <ForkActivation.h>
+#include <BlockSigning.h>
 
 class StakedCoins
 {
 private:
     std::set<StakableCoin> underlyingSet_;
+    std::vector<const StakableCoin*> shuffledSet_;
     int64_t timestampOfLastUpdate_;
+    bool utxoPermutationEnabled_;
 public:
-    StakedCoins(): underlyingSet_(), timestampOfLastUpdate_(0)
+    void resetCoins()
+    {
+        shuffledSet_.clear();
+        underlyingSet_.clear();
+    }
+    StakedCoins(
+        bool utxoPermutationEnabled
+        ): underlyingSet_()
+        , shuffledSet_()
+        , timestampOfLastUpdate_(0)
+        , utxoPermutationEnabled_(utxoPermutationEnabled)
     {
     }
+    ~StakedCoins()
+    {
+        resetCoins();
+    }
+    StakedCoins(const StakedCoins& other) = delete;
+    StakedCoins& operator=(const StakedCoins& other) = delete;
+
     const int64_t& timestamp() const
     {
         return timestampOfLastUpdate_;
@@ -39,6 +59,20 @@ public:
     void resetTimestamp()
     {
         timestampOfLastUpdate_ = 0;
+    }
+    void updateShuffledSet()
+    {
+        shuffledSet_.clear();
+        shuffledSet_.reserve(underlyingSet_.size());
+        for(const StakableCoin& coin: underlyingSet_)
+        {
+            shuffledSet_.push_back(&coin);
+        }
+        if(utxoPermutationEnabled_) std::random_shuffle(shuffledSet_.begin(), shuffledSet_.end());
+    }
+    const std::vector<const StakableCoin*>& getShuffledSet() const
+    {
+        return shuffledSet_;
     }
     std::set<StakableCoin>& asSet()
     {
@@ -54,7 +88,6 @@ PoSTransactionCreator::PoSTransactionCreator(
     const I_BlockSubsidyProvider& blockSubsidies,
     const I_BlockIncentivesPopulator& incentives,
     const I_ProofOfStakeGenerator& proofGenerator,
-    I_StakingWallet& wallet,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): settings_(settings)
     , chainParameters_(chainParameters)
@@ -63,8 +96,8 @@ PoSTransactionCreator::PoSTransactionCreator(
     , blockSubsidies_( blockSubsidies )
     , incentives_(incentives)
     , proofGenerator_(proofGenerator )
-    , stakedCoins_(new StakedCoins())
-    , wallet_(wallet)
+    , stakedCoins_(new StakedCoins(settings_.GetBoolArg("-vault", false)))
+    , wallet_()
     , hashedBlockTimestamps_(hashedBlockTimestamps)
     , hashproofTimestampMinimumValue_(0)
 {
@@ -72,19 +105,21 @@ PoSTransactionCreator::PoSTransactionCreator(
 
 PoSTransactionCreator::~PoSTransactionCreator()
 {
+    wallet_.reset();
     stakedCoins_.reset();
 }
 
-bool PoSTransactionCreator::SelectCoins()
+bool PoSTransactionCreator::SelectCoins() const
 {
+    if(wallet_ == nullptr) return false;
     if (chainParameters_.NetworkID() == CBaseChainParams::REGTEST ||
         GetTime() - stakedCoins_->timestamp() > settings_.GetArg("-stakeupdatetime",300))
     {
-        stakedCoins_->asSet().clear();
-        if (!wallet_.SelectStakeCoins(stakedCoins_->asSet())) {
+        stakedCoins_->resetCoins();
+        if (!wallet_->SelectStakeCoins(stakedCoins_->asSet())) {
             return error("failed to select coins for staking");
         }
-
+        stakedCoins_->updateShuffledSet();
         stakedCoins_->updateTimestamp();
     }
 
@@ -114,10 +149,10 @@ bool IsSupportedScript(
         LogPrintf("CreateCoinStake : failed to parse kernel\n");
         return false;
     }
-    LogPrint("staking","%s : parsed kernel type=%d\n",__func__, whichType);
+    LogPrint("minting","%s : parsed kernel type=%d\n",__func__, whichType);
     if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH && whichType != TX_VAULT)
     {
-        LogPrint("staking","%s : no support for kernel type=%d\n",__func__, whichType);
+        LogPrint("minting","%s : no support for kernel type=%d\n",__func__, whichType);
         return false; // only support pay to public key and pay to address
     }
     isVaultScript =whichType == TX_VAULT;
@@ -126,7 +161,7 @@ bool IsSupportedScript(
 
 bool PoSTransactionCreator::SetSuportedStakingScript(
     const StakableCoin& stakableCoin,
-    CMutableTransaction& txNew)
+    CMutableTransaction& txNew) const
 {
     txNew.vin.emplace_back(stakableCoin.utxo);
     txNew.vout.emplace_back(0, stakableCoin.GetTxOut().scriptPubKey);
@@ -138,7 +173,7 @@ void PoSTransactionCreator::CombineUtxos(
     const CAmount& stakeSplit,
     CMutableTransaction& txNew,
     CAmount& nCredit,
-    std::vector<const CTransaction*>& walletTransactions)
+    std::vector<const CTransaction*>& walletTransactions) const
 {
     static const unsigned maxInputs = settings_.MaxNumberOfPoSCombinableInputs();
     const CAmount nCombineThreshold = stakeSplit / 2;
@@ -178,12 +213,12 @@ bool PoSTransactionCreator::FindHashproof(
     unsigned int nBits,
     unsigned int& nTxNewTime,
     const StakableCoin& stakeData,
-    CMutableTransaction& txNew)
+    CMutableTransaction& txNew) const
 {
     BlockMap::const_iterator it = blockIndexByHash_.find(stakeData.blockHashOfFirstConfirmation);
     if (it == blockIndexByHash_.end())
     {
-        LogPrint("staking","%s failed to find block index for %s\n",__func__,stakeData.blockHashOfFirstConfirmation);
+        LogPrint("minting","%s failed to find block index for %s\n",__func__,stakeData.blockHashOfFirstConfirmation);
         return false;
     }
 
@@ -194,7 +229,7 @@ bool PoSTransactionCreator::FindHashproof(
         stakeData.utxo,
         stakeData.GetTxOut().nValue,
         chainTip->GetBlockHash());
-    HashproofCreationResult hashproofResult = proofGenerator_.CreateHashproofTimestamp(stakingData,nTxNewTime);
+    HashproofCreationResult hashproofResult = proofGenerator_.createHashproofTimestamp(stakingData,nTxNewTime);
     if(!hashproofResult.failedAtSetup())
     {
         hashedBlockTimestamps_.clear();
@@ -204,10 +239,10 @@ bool PoSTransactionCreator::FindHashproof(
     {
         if (hashproofResult.timestamp() <= chainTip->GetMedianTimePast())
         {
-            LogPrintf("%s : kernel found, but it is too far in the past \n",__func__);
+            LogPrint("minting","%s : kernel found, but it is too far in the past \n",__func__);
             return false;
         }
-        LogPrint("staking","%s : kernel found for %s\n",__func__, stakeData.tx->ToStringShort());
+        LogPrint("minting","%s : kernel found for %s\n",__func__, stakeData.tx->ToStringShort());
 
         SetSuportedStakingScript(stakeData,txNew);
         nTxNewTime = hashproofResult.timestamp();
@@ -221,11 +256,11 @@ const StakableCoin* PoSTransactionCreator::FindProofOfStake(
     uint32_t blockBits,
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime,
-    bool& isVaultScript)
+    bool& isVaultScript) const
 {
-    for (const StakableCoin& pcoin: stakedCoins_->asSet())
+    for (const StakableCoin* const pcoin: stakedCoins_->getShuffledSet())
     {
-        if(!IsSupportedScript(pcoin.GetTxOut().scriptPubKey,isVaultScript))
+        if(!IsSupportedScript(pcoin->GetTxOut().scriptPubKey,isVaultScript))
         {
             continue;
         }
@@ -234,9 +269,9 @@ const StakableCoin* PoSTransactionCreator::FindProofOfStake(
             hashproofTimestampMinimumValue_ = 0;
             return nullptr;
         }
-        if(FindHashproof(chainTip,blockBits, nTxNewTime, pcoin,txCoinStake) )
+        if(FindHashproof(chainTip,blockBits, nTxNewTime, *pcoin,txCoinStake) )
         {
-            return &pcoin;
+            return pcoin;
         }
     }
     hashproofTimestampMinimumValue_ = nTxNewTime;
@@ -248,7 +283,7 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
     const CBlockIndex* chainTip,
     CMutableTransaction& txCoinStake,
     const StakableCoin& stakeData,
-    std::vector<const CTransaction*>& vwtxPrev)
+    std::vector<const CTransaction*>& vwtxPrev) const
 {
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
     CAmount nCredit = stakeData.GetTxOut().nValue + blockSubdidy.nStakeReward + (ActivationState(chainTip).IsActive(Fork::DeprecateMasternodes)? blockSubdidy.nMasternodeReward : 0);
@@ -274,18 +309,21 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
 
 void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
     const CBlockIndex* chainTip,
-    CMutableTransaction& txCoinStake)
+    CMutableTransaction& txCoinStake) const
 {
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
     incentives_.FillBlockPayee(txCoinStake,blockSubdidy,chainTip);
 }
 
-bool PoSTransactionCreator::CreateProofOfStake(
+bool PoSTransactionCreator::attachBlockProof(
     const CBlockIndex* chainTip,
-    uint32_t blockBits,
-    CMutableTransaction& txCoinStake,
-    unsigned int& nTxNewTime)
+    CBlock& block) const
 {
+    if(wallet_ == nullptr) return false;
+    CMutableTransaction txCoinStake;
+    unsigned int nTxNewTime = block.nTime;
+
+    uint32_t blockBits = block.nBits;
     MarkTransactionAsCoinstake(txCoinStake);
 
     if(!SelectCoins()) return false;
@@ -329,10 +367,28 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     int nIn = 0;
     for (const CTransaction* pcoin : vwtxPrev) {
-        if (!SignSignature(wallet_, *pcoin, txCoinStake, nIn++))
+        if (!SignSignature(*wallet_, *pcoin, txCoinStake, nIn++))
             return error("CreateCoinStake : failed to sign coinstake");
     }
 
+    block.nTime = nTxNewTime;
+    block.vtx[1] = txCoinStake;
+
+    block.hashMerkleRoot = block.BuildMerkleTree();
+    LogPrintf("%s: proof-of-stake block found %s \n",__func__, block.GetHash());
+    if (!SignBlock(*wallet_, block)) {
+        LogPrintf("%s: Signing new block failed \n",__func__);
+        return false;
+    }
+    LogPrintf("%s: proof-of-stake block was signed %s \n", __func__, block.GetHash());
+
     stakedCoins_->resetTimestamp(); //this will trigger stake set to repopulate next round
     return true;
+}
+
+void PoSTransactionCreator::setWallet(I_StakingWallet& wallet)
+{
+    wallet_.reset(&wallet);
+    stakedCoins_->resetCoins();
+    stakedCoins_->resetTimestamp();
 }

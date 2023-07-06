@@ -10,11 +10,16 @@ class CopyableSettings
 protected:
     std::map<std::string, std::string> mapArgs_;
     std::map<std::string, std::vector<std::string> > mapMultiArgs_;
-
+    bool importingFiles_;
+    bool reindexingBlocks_;
+    bool startupBlockVerificationInProgress_;
 public:
     CopyableSettings(
         ): mapArgs_()
         , mapMultiArgs_()
+        , importingFiles_(false)
+        , reindexingBlocks_(false)
+        , startupBlockVerificationInProgress_(false)
     {
     }
 
@@ -35,7 +40,7 @@ public:
     std::string GetParameter(const std::string& key) const;
     const std::vector<std::string>& GetMultiParameter(const std::string& key) const;
 
-    void SetParameter(const std::string& key, const std::string& value);
+    void SetParameter(const std::string& key, const std::string& value, const bool setOnceOnly = false);
 
     void ClearParameter();
 
@@ -50,6 +55,17 @@ public:
     void ReadConfigFile();
     unsigned MaxNumberOfPoSCombinableInputs() const;
     int MaxFutureBlockDrift() const;
+    bool debugModeIsEnabled() const;
+
+    void setFileImportingFlag(const bool updatedValue);
+    bool isImportingFiles() const;
+
+    void setReindexingFlag(const bool updatedValue);
+    bool isReindexingBlocks() const;
+    bool reindexingWasRequested() const;
+
+    void setStartupBlockVerificationFlag(const bool updatedValue);
+    bool isStartupVerifyingBlocks() const;
 };
 
 class Settings: public CopyableSettings

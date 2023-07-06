@@ -14,7 +14,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread/exceptions.hpp>
 
-extern std::string strMiscWarning;
 void PrintExceptionContinue(std::exception* pex, const char* pszThread);
 void SetThreadPriority(int nPriority);
 void RenameThread(const char* name);

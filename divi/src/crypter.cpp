@@ -214,7 +214,6 @@ bool CCryptoKeyStore::Lock(bool fAllowMixing)
     }
 
     fOnlyMixingAllowed = fAllowMixing;
-    NotifyStatusChanged(this);
     return true;
 }
 
@@ -268,7 +267,6 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial& vMasterKeyIn, bool fForMixin
         fDecryptionThoroughlyChecked = true;
     }
     fOnlyMixingAllowed = fForMixingOnly;
-    NotifyStatusChanged(this);
     return true;
 }
 
@@ -343,7 +341,7 @@ bool CCryptoKeyStore::GetPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) co
     return false;
 }
 
-bool CCryptoKeyStore::EncryptKeys(CKeyingMaterial& vMasterKeyIn)
+bool CCryptoKeyStore::EncryptKeys(const CKeyingMaterial& vMasterKeyIn)
 {
     {
         LOCK(cs_KeyStore);
@@ -387,7 +385,6 @@ bool CCryptoKeyStore::EncryptHDChain(const CKeyingMaterial& vMasterKeyIn)
     if (!EncryptSecret(vMasterKeyIn, hdChain.GetSeed(), hdChain.GetID(), vchCryptedSeed))
         return false;
 
-    hdChain.Debug(__func__);
     cryptedHDChain = hdChain;
     cryptedHDChain.SetCrypted(true);
 
@@ -466,7 +463,6 @@ bool CCryptoKeyStore::DecryptHDChain(CHDChain& hdChainRet) const
     }
 
     hdChainRet.SetCrypted(false);
-    hdChainRet.Debug(__func__);
 
     return true;
 }

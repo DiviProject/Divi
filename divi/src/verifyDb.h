@@ -7,32 +7,52 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_VERIFYDB_H
 #define BITCOIN_VERIFYDB_H
+
+#include <memory>
+
 class CCoinsView;
 class CChain;
 class CClientUIInterface;
 class CCoinsViewCache;
+class CSporkManager;
 class CBlockTreeDB;
-class ActiveChainManager;
+class BlockConnectionService;
+class BlockDiskDataReader;
+class ChainstateManager;
+class I_BlockDataReader;
+class CChainParams;
+class I_SuperblockSubsidyContainer;
+class I_BlockIncentivesPopulator;
+
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB
 {
 public:
     typedef bool (*ShutdownListener)();
 private:
-    const ActiveChainManager& chainManager_;
+    std::unique_ptr<const I_BlockDataReader> blockDiskReader_;
+    const CCoinsView& coinView_;
+    ChainstateManager& chainstate_;
+    std::unique_ptr<CCoinsViewCache> coinsViewCache_;
+    const CSporkManager& sporkManager_;
+    std::unique_ptr<const BlockConnectionService> blockConnectionService_;
     const CChain& activeChain_;
     CClientUIInterface& clientInterface_;
     const unsigned coinsCacheSize_;
     ShutdownListener shutdownListener_;
 public:
     CVerifyDB(
-        const ActiveChainManager& chainManager,
-        const CChain& activeChain,
+        const CChainParams& chainParameters,
+        const I_SuperblockSubsidyContainer& blockSubsidies,
+        const I_BlockIncentivesPopulator& incentives,
+        ChainstateManager& chainstate,
+        const CCoinsView& coinView,
+        const CSporkManager& sporkManager,
         CClientUIInterface& clientInterface,
         const unsigned& coinsCacheSize,
         ShutdownListener shutdownListener);
     ~CVerifyDB();
-    bool VerifyDB(const CCoinsView* coinsview, unsigned coinsTipCacheSize, int nCheckLevel, int nCheckDepth) const;
+    bool VerifyDB(int nCheckLevel, int nCheckDepth) const;
 };
 
 #endif

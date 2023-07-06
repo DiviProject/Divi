@@ -134,7 +134,8 @@ enum opcodetype
     OP_NOP6 = 0xb5,
     OP_NOP7 = 0xb6,
     OP_NOP8 = 0xb7,
-    OP_NOP9 = 0xb8,
+    OP_LIMIT_TRANSFER = 0xb8,
+    OP_NOP9 = OP_LIMIT_TRANSFER,
     OP_REQUIRE_COINSTAKE = 0xb9,
     OP_NOP10 = OP_REQUIRE_COINSTAKE,
 

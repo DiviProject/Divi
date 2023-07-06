@@ -10,13 +10,13 @@
 #include "config/divi-config.h"
 #else
 //! These need to be macros, as clientversion.cpp's and divi*-res.rc's voodoo requires it
-#define CLIENT_VERSION_MAJOR 2
-#define CLIENT_VERSION_MINOR 10
-#define CLIENT_VERSION_REVISION 4
+#define CLIENT_VERSION_MAJOR 3
+#define CLIENT_VERSION_MINOR 0
+#define CLIENT_VERSION_REVISION 0
 #define CLIENT_VERSION_BUILD 0
 
 #define CLIENT_VERSION_IS_RELEASE true		// Todo: !! Set to true for release, false for prerelease or test build
-#define COPYRIGHT_YEAR 2018					// Todo: update this when changing our copyright comments in the source
+#define COPYRIGHT_YEAR 2023					// Todo: update this when changing our copyright comments in the source
 #endif //HAVE_CONFIG_H
 
 /**

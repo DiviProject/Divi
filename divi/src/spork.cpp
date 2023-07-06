@@ -20,6 +20,7 @@
 #include <blockmap.h>
 #include <FeeRate.h>
 #include <FeeAndPriorityCalculator.h>
+#include <ChainstateManager.h>
 
 #include <numeric>
 #include <boost/algorithm/string/join.hpp>
@@ -30,20 +31,12 @@
 #include <NodeStateRegistry.h>
 #include <utilstrencodings.h>
 
-extern bool fLiteMode;
-extern CCriticalSection cs_main;
-extern CChain chainActive;
-extern BlockMap mapBlockIndex;
-extern std::map<uint256, int64_t> mapRejectedBlocks;
-
-extern bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
-extern bool DisconnectBlocksAndReprocess(int blocks);
-extern bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
+/* The spork manager global is defined in init.cpp.  */
+extern std::unique_ptr<CSporkManager> sporkManagerInstance;
 
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
 unsigned int nTransactionSizeMultiplier = 300;
 std::map<uint256, CSporkMessage> mapSporks;
-CSporkManager sporkManager;
 
 bool ShareSporkDataWithPeer(CNode* peer, const uint256& inventoryHash)
 {
@@ -60,13 +53,10 @@ bool SporkDataIsKnown(const uint256& inventoryHash)
 {
     return mapSporks.count(inventoryHash);
 }
-void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
-{
-    sporkManager.ProcessSpork(pfrom, strCommand, vRecv);
-}
 CSporkManager& GetSporkManager()
 {
-    return sporkManager;
+    assert(sporkManagerInstance != nullptr);
+    return *sporkManagerInstance;
 }
 
 static std::map<int, std::string> mapSporkDefaults = {
@@ -91,12 +81,18 @@ static bool IsMultiValueSpork(int nSporkID)
     return false;
 }
 
+int64_t CSporkManager::GetBlockTime(const int nHeight) const
+{
+    const auto* pindex = chainstate_.ActiveChain()[nHeight];
+    return pindex != nullptr ? pindex->nTime : GetAdjustedTime();
+}
+
 bool CSporkManager::GetFullBlockValue(int nHeight, const CChainParams& chainParameters, CAmount& amount) const
 {
     if(IsSporkActive(SPORK_15_BLOCK_VALUE)) {
         MultiValueSporkList<BlockSubsiditySporkValue> vBlockSubsiditySporkValues;
         CSporkManager::ConvertMultiValueSporkVector(GetMultiValueSpork(SPORK_15_BLOCK_VALUE), vBlockSubsiditySporkValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        const auto nBlockTime = GetBlockTime(nHeight);
         BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight, nBlockTime);
 
         if(activeSpork.IsValid() &&
@@ -116,7 +112,7 @@ bool CSporkManager::GetRewardDistribution(int nHeight, const CChainParams& chain
     {
         MultiValueSporkList<BlockPaymentSporkValue> vBlockPaymentsValues;
         CSporkManager::ConvertMultiValueSporkVector(GetMultiValueSpork(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        const auto nBlockTime = GetBlockTime(nHeight);
         BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight, nBlockTime);
 
         if(activeSpork.IsValid() &&
@@ -133,7 +129,7 @@ bool CSporkManager::GetLotteryTicketMinimum(int nHeight, CAmount& minimumAmountF
     if(IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
         MultiValueSporkList<LotteryTicketMinValueSporkValue> vValues;
         CSporkManager::ConvertMultiValueSporkVector(GetMultiValueSpork(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        const auto nBlockTime = GetBlockTime(nHeight);
         LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight, nBlockTime);
 
         if(activeSpork.IsValid()) {
@@ -184,26 +180,13 @@ bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
     return true;
 }
 
-CSporkManager::CSporkManager(
-    ): pSporkDB_()
-{
-}
+CSporkManager::CSporkManager(ChainstateManager& chainstate)
+    : chainstate_(chainstate),
+      pSporkDB_(new CSporkDB(0, false, false))
+{}
 
-CSporkManager::~CSporkManager()
-{
-    pSporkDB_.reset();
-}
+CSporkManager::~CSporkManager() = default;
 
-
-void CSporkManager::AllocateDatabase()
-{
-    pSporkDB_.reset(new CSporkDB(0, false, false));
-}
-
-void CSporkManager::DeallocateDatabase()
-{
-    pSporkDB_.reset();
-}
 
 // DIVI: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::LoadSporksFromDB()
@@ -227,10 +210,8 @@ void CSporkManager::LoadSporksFromDB()
     }
 }
 
-void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
+void CSporkManager::ProcessSpork(CCriticalSection& mainCriticalSection, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
-    if(fLiteMode) return; // disable all Dash specific functionality
-
     if (strCommand == "spork") {
 
         CSporkMessage spork;
@@ -240,9 +221,9 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
 
         std::string strLogMsg;
         {
-            LOCK(cs_main);
-            if(!chainActive.Tip()) return;
-            strLogMsg = strprintf("SPORK -- hash: %s id: %d value: %10d bestHeight: %d peer=%d", hash.ToString(), spork.nSporkID, spork.strValue, chainActive.Height(), pfrom->id);
+            LOCK(mainCriticalSection);
+            if(!chainstate_.ActiveChain().Tip()) return;
+            strLogMsg = strprintf("SPORK -- hash: %s id: %d value: %10d bestHeight: %d peer=%d", hash.ToString(), spork.nSporkID, spork.strValue, chainstate_.ActiveChain().Height(), pfrom->id);
         }
 
         if(IsNewerSpork(spork)) {
@@ -256,7 +237,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         if(!spork.CheckSignature(sporkPubKey))
         {
             LogPrintf("CSporkManager::ProcessSpork -- ERROR: invalid signature\n");
-            Misbehaving(pfrom->GetNodeState(), 100);
+            Misbehaving(pfrom->GetNodeState(), 100, "Invalid spork signature");
             return;
         }
         if(!pSporkDB_)
@@ -294,85 +275,11 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
 
 }
 
-void ReprocessBlocks(int nBlocks)
-{
-    std::map<uint256, int64_t>::iterator it = mapRejectedBlocks.begin();
-    while (it != mapRejectedBlocks.end()) {
-        //use a window twice as large as is usual for the nBlocks we want to reset
-        if ((*it).second > GetTime() - (nBlocks * 60 * 5)) {
-            BlockMap::iterator mi = mapBlockIndex.find((*it).first);
-            if (mi != mapBlockIndex.end() && (*mi).second) {
-                LOCK(cs_main);
-
-                CBlockIndex* pindex = (*mi).second;
-                LogPrintf("ReprocessBlocks - %s\n", (*it).first);
-
-                CValidationState state;
-                ReconsiderBlock(state, pindex);
-            }
-        }
-        ++it;
-    }
-
-    CValidationState state;
-    {
-        LOCK(cs_main);
-        DisconnectBlocksAndReprocess(nBlocks);
-    }
-
-    if (state.IsValid()) {
-        ActivateBestChain(state);
-    }
-}
-
 void CSporkManager::ExecuteSpork(int nSporkID)
 {
 
     if(IsMultiValueSpork(nSporkID)) {
         ExecuteMultiValueSpork(nSporkID);
-    }
-    else
-    {
-        auto strValue = mapSporksActive.at(nSporkID).front().strValue;
-        //correct fork via spork technology
-        if(nSporkID == SPORK_12_RECONSIDER_BLOCKS) {
-
-            int64_t nValue = 0;
-            try
-            {
-                nValue = boost::lexical_cast<int64_t>(strValue);
-            }
-            catch(boost::bad_lexical_cast &)
-            {
-            }
-
-            if(nValue <= 0) {
-                return;
-            }
-
-            // allow to reprocess 24h of blocks max, which should be enough to resolve any issues
-            int64_t nMaxBlocks = 576;
-            // this potentially can be a heavy operation, so only allow this to be executed once per 10 minutes
-            int64_t nTimeout = 10 * 60;
-
-            static int64_t nTimeExecuted = 0; // i.e. it was never executed before
-
-            if(GetTime() - nTimeExecuted < nTimeout) {
-                LogPrint("spork", "CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider blocks, too soon - %d/%d\n", GetTime() - nTimeExecuted, nTimeout);
-                return;
-            }
-
-            if(nValue > nMaxBlocks) {
-                LogPrintf("CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider too many blocks %d/%d\n", strValue, nMaxBlocks);
-                return;
-            }
-
-
-            LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
-
-            ReprocessBlocks(nValue);
-            nTimeExecuted = GetTime();
-        }
     }
 }
 
@@ -380,7 +287,7 @@ void CSporkManager::ExecuteMultiValueSpork(int nSporkID)
 {
     if(nSporkID == SPORK_14_TX_FEE)
     {
-        auto chainTip = chainActive.Tip();
+        const auto& chainTip = chainstate_.ActiveChain().Tip();
         MultiValueSporkList<TxFeeSporkValue> vValues;
         CSporkManager::ConvertMultiValueSporkVector(GetMultiValueSpork(SPORK_14_TX_FEE), vValues);
         TxFeeSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, chainTip->nHeight, chainTip->nTime);
@@ -426,7 +333,7 @@ bool CSporkManager::UpdateSpork(int nSporkID, std::string strValue)
         return false;
 
     if(IsMultiValueSpork(nSporkID)) {
-        if(GetActivationHeightHelper(nSporkID, strValue) < chainActive.Height() + 10) {
+        if(GetActivationHeightHelper(nSporkID, strValue) < chainstate_.ActiveChain().Height() + 10) {
             return false;
         }
     }

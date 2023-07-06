@@ -24,15 +24,20 @@ public:
     FakeBlockIndexWithHashes fakeChain;
     FakeWallet fakeWallet;
     CWallet& wallet;
+    CPubKey walletKeyForTests;
 
     WalletCoinManagementTestFixture()
-      : fakeChain(1, 1600000000, 1), fakeWallet(fakeChain), wallet(static_cast<CWallet&>(fakeWallet))
+      : fakeChain(1, 1600000000, 1)
+      , fakeWallet(fakeChain)
+      , wallet(fakeWallet.getWallet())
+      , walletKeyForTests()
     {
-        ENTER_CRITICAL_SECTION(wallet.cs_wallet);
+        ENTER_CRITICAL_SECTION(wallet.getWalletCriticalSection());
+        wallet.GetKeyFromPool(walletKeyForTests,true);
     }
     ~WalletCoinManagementTestFixture()
     {
-        LEAVE_CRITICAL_SECTION(wallet.cs_wallet);
+        LEAVE_CRITICAL_SECTION(wallet.getWalletCriticalSection());
     }
 
     CScript vaultScriptAsOwner() const
@@ -40,7 +45,7 @@ public:
         CKey managerKey;
         managerKey.MakeNewKey(true);
         return CreateStakingVaultScript(
-            ToByteVector(wallet.GetDefaultKey().GetID()),
+            ToByteVector(walletKeyForTests.GetID()),
             ToByteVector(managerKey.GetPubKey().GetID()));
     }
     CScript vaultScriptAsManager() const
@@ -49,7 +54,7 @@ public:
         ownerKey.MakeNewKey(true);
         return CreateStakingVaultScript(
             ToByteVector(ownerKey.GetPubKey().GetID()),
-            ToByteVector(wallet.GetDefaultKey().GetID()) );
+            ToByteVector(walletKeyForTests.GetID()) );
     }
 };
 
@@ -60,10 +65,13 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingUnlockedCoin)
     const CScript defaultScript = GetScriptForDestination(fakeWallet.getNewKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable));
-    BOOST_CHECK(fIsSpendable);
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,false);
+    BOOST_CHECK(!utxos.empty());
+    BOOST_CHECK(utxos.front().tx->GetHash() == wtx.GetHash());
+    BOOST_CHECK(static_cast<unsigned>(utxos.front().i) == outputIndex);
 }
 
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
@@ -72,11 +80,12 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
 
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
     wallet.LockCoin(COutPoint(wtx.GetHash(),outputIndex));
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable));
-    BOOST_CHECK(!fIsSpendable);/**/
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,false);
+    BOOST_CHECK(utxos.empty());
 }
 
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromKeyOutsideWallet)
@@ -86,11 +95,11 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromKeyOutsideWallet)
     CScript defaultScript = GetScriptForDestination(nonWalletPubKey.GetID());
 
     unsigned outputIndex=0;
-    const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.AddDefaultTx(defaultScript,outputIndex);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable));
-    BOOST_CHECK(!fIsSpendable);/**/
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,false);
+    BOOST_CHECK(utxos.empty());
 }
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
 {
@@ -100,24 +109,24 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
 
 
     unsigned outputIndex=0;
-    const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.AddDefaultTx(defaultScript,outputIndex);
     wallet.AddWatchOnly(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable));
-    BOOST_CHECK(!fIsSpendable);/**/
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,false);
+    BOOST_CHECK(utxos.empty());
 }
 
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
 {
     CScript defaultScript = GetScriptForDestination(fakeWallet.getNewKey().GetID());
     unsigned outputIndex=0;
-    const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.AddDefaultTx(defaultScript,outputIndex);
     wallet.AddWatchOnly(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable));
-    BOOST_CHECK(!fIsSpendable);/**/
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,false);
+    BOOST_CHECK(utxos.empty());
 }
 
 BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
@@ -125,13 +134,16 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
     CScript defaultScript = GetScriptForDestination(fakeWallet.getNewKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
 
     wallet.LockCoin(COutPoint(wtx.GetHash(),outputIndex));
     wallet.UnlockCoin(COutPoint(wtx.GetHash(),outputIndex));
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable));
-    BOOST_CHECK(fIsSpendable);
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,false);
+    BOOST_CHECK(!utxos.empty());
+    BOOST_CHECK(utxos.front().tx->GetHash() == wtx.GetHash());
+    BOOST_CHECK(static_cast<unsigned>(utxos.front().i) == outputIndex);
 }
 
 BOOST_AUTO_TEST_CASE(willMakeNoDistinctionBetweenAllCoinsAndStakableCoins)
@@ -139,13 +151,19 @@ BOOST_AUTO_TEST_CASE(willMakeNoDistinctionBetweenAllCoinsAndStakableCoins)
     CScript defaultScript = GetScriptForDestination(fakeWallet.getNewKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,ALL_SPENDABLE_COINS));
-    BOOST_CHECK(fIsSpendable);
-    fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,STAKABLE_COINS));
-    BOOST_CHECK(fIsSpendable);
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::ALL_SPENDABLE_COINS);
+    BOOST_CHECK(!utxos.empty());
+    BOOST_CHECK(utxos.front().tx->GetHash() == wtx.GetHash());
+    BOOST_CHECK(static_cast<unsigned>(utxos.front().i) == outputIndex);
+
+    utxos.clear();
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::STAKABLE_COINS);
+    BOOST_CHECK(!utxos.empty());
+    BOOST_CHECK(utxos.front().tx->GetHash() == wtx.GetHash());
+    BOOST_CHECK(static_cast<unsigned>(utxos.front().i) == outputIndex);
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndSpendableCoinsSelected)
@@ -153,10 +171,12 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndSpendableCoinsSe
     CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
     wallet.AddCScript(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,ALL_SPENDABLE_COINS));
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::ALL_SPENDABLE_COINS);
+    BOOST_CHECK(utxos.empty());
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnerAndSpendableCoinsSelected)
@@ -164,9 +184,11 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnerAndSpendableCoinsSele
     CScript defaultScript =  vaultScriptAsOwner();
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,ALL_SPENDABLE_COINS));
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::ALL_SPENDABLE_COINS);
+    BOOST_CHECK(utxos.empty());
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnedAndStakableCoinsSelected)
@@ -174,30 +196,40 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnedAndStakableCoinsSelec
     CScript defaultScript =  vaultScriptAsOwner();
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,STAKABLE_COINS));
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::STAKABLE_COINS);
+    BOOST_CHECK(utxos.empty());
 }
 BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfManagedAndStakableCoinsSelected)
 {
     CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
     wallet.AddCScript(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,STAKABLE_COINS));
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::STAKABLE_COINS);
+    BOOST_CHECK(!utxos.empty());
+    BOOST_CHECK(utxos.front().tx->GetHash() == wtx.GetHash());
+    BOOST_CHECK(static_cast<unsigned>(utxos.front().i) == outputIndex);
 }
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedButScriptNotAdded)
 {
     CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,STAKABLE_COINS));
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,ALL_SPENDABLE_COINS));
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,OWNED_VAULT_COINS));
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::STAKABLE_COINS);
+    BOOST_CHECK(utxos.empty());
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::ALL_SPENDABLE_COINS);
+    BOOST_CHECK(utxos.empty());
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::OWNED_VAULT_COINS);
+    BOOST_CHECK(utxos.empty());
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsSelected)
@@ -205,10 +237,12 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsS
     CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
     wallet.AddCScript(defaultScript);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,OWNED_VAULT_COINS));
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::OWNED_VAULT_COINS);
+    BOOST_CHECK(utxos.empty());
 }
 
 BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfOwnerAndOwnedVaultCoinsSelected)
@@ -216,9 +250,13 @@ BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfOwnerAndOwnedVaultCoinsSelect
     CScript defaultScript =  vaultScriptAsOwner();
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,OWNED_VAULT_COINS));
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::OWNED_VAULT_COINS);
+    BOOST_CHECK(!utxos.empty());
+    BOOST_CHECK(utxos.front().tx->GetHash() == wtx.GetHash());
+    BOOST_CHECK(static_cast<unsigned>(utxos.front().i) == outputIndex);
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingNonVaultFundsIfOwnedVaultCoinsRequested)
@@ -226,26 +264,28 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingNonVaultFundsIfOwnedVaultCoinsRequeste
     CScript defaultScript = GetScriptForDestination(fakeWallet.getNewKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& wtx = fakeWallet.AddDefaultTx(defaultScript,outputIndex);
+    fakeWallet.FakeAddToChain(wtx);
 
-    bool fIsSpendable = false;
-    BOOST_CHECK(!wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,OWNED_VAULT_COINS));
-    BOOST_CHECK(!fIsSpendable);
-    fIsSpendable = false;
-    BOOST_CHECK(wallet.IsAvailableForSpending(&wtx,outputIndex,false,fIsSpendable,ALL_SPENDABLE_COINS));
-    BOOST_CHECK(fIsSpendable);
+    std::vector<COutput> utxos;
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::OWNED_VAULT_COINS);
+    BOOST_CHECK(utxos.empty());
+    wallet.AvailableCoins(utxos,true,AvailableCoinsType::ALL_SPENDABLE_COINS);
+    BOOST_CHECK(!utxos.empty());
+    BOOST_CHECK(utxos.front().tx->GetHash() == wtx.GetHash());
+    BOOST_CHECK(static_cast<unsigned>(utxos.front().i) == outputIndex);
 }
 
 BOOST_AUTO_TEST_CASE(willFindThatTransactionsByDefaultHaveNonPositiveDepth)
 {
-    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
+    CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
     unsigned outputIndex=0;
     auto normalTx = fakeWallet.AddDefaultTx(normalScript,outputIndex,100*COIN);
-    BOOST_CHECK_MESSAGE(wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx) < 1,"Found wallet transaction has positive depth in empty chain!");
+    BOOST_CHECK_MESSAGE(fakeWallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx) < 1,"Found wallet transaction has positive depth in empty chain!");
 }
 
 BOOST_AUTO_TEST_CASE(willFindThatTransactionsWillHaveDepthAccordingToLengthOfChain)
 {
-    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
+    CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
     unsigned outputIndex=0;
     const CWalletTx& normalTx = fakeWallet.AddDefaultTx(normalScript,outputIndex,100*COIN);
     fakeWallet.FakeAddToChain(normalTx);
@@ -254,14 +294,14 @@ BOOST_AUTO_TEST_CASE(willFindThatTransactionsWillHaveDepthAccordingToLengthOfCha
     int startingNumberOfConfirmations = 1;
     for(int numberOfAdditionalBlocks = 0; numberOfAdditionalBlocks < someNumberOfBlocksToAdd ; ++numberOfAdditionalBlocks )
     {
-        BOOST_CHECK_EQUAL(wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx),startingNumberOfConfirmations+numberOfAdditionalBlocks);
+        BOOST_CHECK_EQUAL(fakeWallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx),startingNumberOfConfirmations+numberOfAdditionalBlocks);
         fakeWallet.AddBlock();
     }
 }
 
 BOOST_AUTO_TEST_CASE(willReturnZeroBalancesWhenTransactionsAreUnconfirmed)
 {
-    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
+    CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
     CScript ownedVaultScript = vaultScriptAsOwner();
     CScript managedVaultScript = vaultScriptAsManager();
 
@@ -277,18 +317,18 @@ BOOST_AUTO_TEST_CASE(willReturnZeroBalancesWhenTransactionsAreUnconfirmed)
 
 BOOST_AUTO_TEST_CASE(willReturnCorrectBalanceWhenTransactionIsConfirmed)
 {
-    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
+    CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
     unsigned outputIndex=0;
     const CWalletTx& normalTx = fakeWallet.AddDefaultTx(normalScript,outputIndex,100*COIN);
     fakeWallet.FakeAddToChain(normalTx);
 
-    BOOST_CHECK_MESSAGE(wallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx) >= 1,"Transaction is not at least one block deep!");
+    BOOST_CHECK_MESSAGE(fakeWallet.getConfirmationCalculator().GetNumberOfBlockConfirmations(normalTx) >= 1,"Transaction is not at least one block deep!");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 100*COIN,"Total balance was not the expected amount");
 }
 
-BOOST_AUTO_TEST_CASE(willFindStakingBalanceMatchesBalanceWhenOwnWalletFundsAreNotVaulted)
+BOOST_AUTO_TEST_CASE(willFindStakingBalanceIncludesBalanceEvenWhenOwnWalletFundsAreNotVaulted)
 {
-    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
+    CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
     CScript managedVaultScript = vaultScriptAsManager();
     wallet.AddCScript(managedVaultScript);
 
@@ -297,8 +337,10 @@ BOOST_AUTO_TEST_CASE(willFindStakingBalanceMatchesBalanceWhenOwnWalletFundsAreNo
     const CWalletTx& managedVaultTx = fakeWallet.AddDefaultTx(managedVaultScript,outputIndex,10000*COIN);
     fakeWallet.FakeAddToChain(normalTx);
     fakeWallet.FakeAddToChain(managedVaultTx);
+    BOOST_CHECK(fakeWallet.TransactionIsInMainChain(&normalTx));
+    BOOST_CHECK(fakeWallet.TransactionIsInMainChain(&managedVaultTx));
 
-    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 10100*COIN,"Total balance was not the expected amount");
+    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 100*COIN,"Total balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetStakingBalance(), 10100*COIN,"Staking balance was not the expected amount");
 }
 
@@ -311,7 +353,7 @@ BOOST_AUTO_TEST_CASE(willHaveAStakingBalanceFromAVaultThatIsntSpendable)
     const CWalletTx& managedVaultTx = fakeWallet.AddDefaultTx(managedVaultScript,outputIndex,10000*COIN);
     fakeWallet.FakeAddToChain(managedVaultTx);
 
-    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 10000*COIN,"Total balance was not the expected amount");
+    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), 0*COIN,"Total balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetStakingBalance(), 10000*COIN,"Staking balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetSpendableBalance(), 0*COIN,"Spendable balance was not the expected amount");
 }
@@ -331,7 +373,7 @@ BOOST_AUTO_TEST_CASE(willTreatOwnedVaultAsUnspendableButWillRecordBalance)
 
 BOOST_AUTO_TEST_CASE(willEnsureBalancesAreAsExpected)
 {
-    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
+    CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
     CScript ownedVaultScript = vaultScriptAsOwner();
     CScript managedVaultScript = vaultScriptAsManager();
     wallet.AddCScript(managedVaultScript);
@@ -340,7 +382,7 @@ BOOST_AUTO_TEST_CASE(willEnsureBalancesAreAsExpected)
     CAmount normalTxValue = (GetRand(1000)+1)*COIN;
     CAmount ownedVaultTxValue = (GetRand(1000)+1)*COIN;
     CAmount managedVaultTxValue = (GetRand(1000)+1)*COIN;
-    CAmount totalBalance = normalTxValue + ownedVaultTxValue + managedVaultTxValue;
+    CAmount totalBalance = normalTxValue + ownedVaultTxValue;
 
     unsigned outputIndex=0;
     const CWalletTx& normalTx = fakeWallet.AddDefaultTx(normalScript,outputIndex,normalTxValue);
@@ -354,12 +396,12 @@ BOOST_AUTO_TEST_CASE(willEnsureBalancesAreAsExpected)
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), totalBalance,"Total balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetStakingBalance(), normalTxValue+managedVaultTxValue,"Staking balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetSpendableBalance(), normalTxValue,"Spendable balance was not the expected amount");
-    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalanceByCoinType(OWNED_VAULT_COINS), ownedVaultTxValue,"Owned vault balance was not the expected amount");
+    BOOST_CHECK_EQUAL_MESSAGE(wallet.GetVaultedBalance(), ownedVaultTxValue,"Owned vault balance was not the expected amount");
 }
 
 BOOST_AUTO_TEST_CASE(willEnsureLockedCoinsDoNotCountTowardStakableBalance)
 {
-    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
+    CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
     CScript ownedVaultScript = vaultScriptAsOwner();
     CScript managedVaultScript = vaultScriptAsManager();
     wallet.AddCScript(managedVaultScript);
@@ -384,7 +426,7 @@ BOOST_AUTO_TEST_CASE(willEnsureLockedCoinsDoNotCountTowardStakableBalance)
 
 BOOST_AUTO_TEST_CASE(willEnsureStakingBalanceAndTotalBalanceAgreeEvenIfTxsBelongToCommonBlock)
 {
-    CScript normalScript = GetScriptForDestination(wallet.GetDefaultKey().GetID());
+    CScript normalScript = GetScriptForDestination(walletKeyForTests.GetID());
 
     CAmount firstNormalTxValue = (GetRand(1000)+1)*COIN;
     CAmount secondNormalTxValue = (GetRand(1000)+1)*COIN;

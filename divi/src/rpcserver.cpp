@@ -7,9 +7,10 @@
 
 #include "rpcserver.h"
 
+#include <Logging.h>
+#include <rpcprotocol.h>
 #include "base58.h"
 #include "init.h"
-#include "main.h"
 #include "ui_interface.h"
 #include "util.h"
 #ifdef ENABLE_WALLET
@@ -18,6 +19,10 @@
 #include "Settings.h"
 #include <utilmoneystr.h>
 #include <random.h>
+#include <alert.h>
+#include <Warnings.h>
+
+#include <deque>
 
 #include "json/json_spirit_writer_template.h"
 #include <boost/algorithm/string.hpp>
@@ -30,143 +35,128 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 
+#include <AcceptedConnection.h>
+#include <rest.h>
+
 extern CCriticalSection cs_main;
-extern CConditionVariable cvBlockChange;
 
 // RPC Endpoints
-extern json_spirit::Value getconnectioncount(const json_spirit::Array& params, bool fHelp); // in rpcnet.cpp
-extern json_spirit::Value getpeerinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value ping(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value addnode(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getaddednodeinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getnettotals(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getconnectioncount(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rpcnet.cpp
+extern json_spirit::Value getpeerinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value ping(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value addnode(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getaddednodeinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getnettotals(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getnetworkinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
-extern json_spirit::Value dumpprivkey(const json_spirit::Array& params, bool fHelp); // in rpcdump.cpp
-extern json_spirit::Value importprivkey(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value importaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value dumphdinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value dumpwallet(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value importwallet(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value bip38encrypt(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value bip38decrypt(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value bip38paperwallet(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value importprivkey(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rpcdump.cpp
+extern json_spirit::Value importaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value dumpprivkey(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value dumphdinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value bip38paperwallet(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value bip38decrypt(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
-extern json_spirit::Value setgenerate(const json_spirit::Array& params, bool fHelp); // in rpcmining.cpp
-extern json_spirit::Value generateblock(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getmininginfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value prioritisetransaction(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getblocktemplate(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value estimatefee(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value estimatepriority(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value setgenerate(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rpcmining.cpp
+extern json_spirit::Value generateblock(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getmininginfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value prioritisetransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
-extern json_spirit::Value getnewaddress(const json_spirit::Array& params, bool fHelp); // in rpcwallet.cpp
-extern json_spirit::Value getaccountaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getrawchangeaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value setaccount(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getaccount(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getaddressesbyaccount(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value sendtoaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getcoinavailability(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value fundvault(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value reclaimvaultfunds(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value removevault(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value addvault(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value signmessage(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getreceivedbyaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getreceivedbyaccount(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getbalance(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getunconfirmedbalance(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value movecmd(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value sendfrom(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value sendmany(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value addmultisigaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listreceivedbyaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listreceivedbyaccount(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listtransactions(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listaddressgroupings(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listaccounts(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listsinceblock(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value gettransaction(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value backupwallet(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value keypoolrefill(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value walletpassphrase(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value walletpassphrasechange(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value walletlock(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value walletverify(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value encryptwallet(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getwalletinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getblockchaininfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getnetworkinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getnewaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rpcwallet.cpp
+extern json_spirit::Value getaccountaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getrawchangeaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value setaccount(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getaccount(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getaddressesbyaccount(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getcoinavailability(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value fundvault(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value reclaimvaultfunds(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value debitvaultbyname(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value removevault(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value addvault(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value sendtoaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value signmessage(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getreceivedbyaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getreceivedbyaccount(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getbalance(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getunconfirmedbalance(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value sendfrom(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value sendmany(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value addmultisigaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value listreceivedbyaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value listreceivedbyaccount(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value listtransactions(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value listaccounts(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value listsinceblock(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value gettransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value backupwallet(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value keypoolrefill(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value walletpassphrase(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value walletpassphrasechange(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value walletlock(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value encryptwallet(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value lockunspent(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value listlockunspent(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getwalletinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value loadwallet(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
-extern json_spirit::Value getrawtransaction(const json_spirit::Array& params, bool fHelp); // in rcprawtransaction.cpp
-extern json_spirit::Value listunspent(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value lockunspent(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listlockunspent(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value createrawtransaction(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value decoderawtransaction(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value decodescript(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value signrawtransaction(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value sendrawtransaction(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getrawtransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rcprawtransaction.cpp
+extern json_spirit::Value listunspent(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value createrawtransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value decoderawtransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value decodescript(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value signrawtransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value sendrawtransaction(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value signtransactionwithaddresskey(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
-extern json_spirit::Value getblockcount(const json_spirit::Array& params, bool fHelp); // in rpcblockchain.cpp
-extern json_spirit::Value getlotteryblockwinners(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getbestblockhash(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getdifficulty(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getmempoolinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getrawmempool(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getblockhash(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getblock(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getblockheader(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value gettxoutsetinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value gettxout(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value verifychain(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getchaintips(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value invalidateblock(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value reconsiderblock(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getinvalid(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getlotteryblockwinners(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rpclottery.cpp
 
-extern json_spirit::Value debug(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value allocatefunds(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value fundmasternode(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value obfuscation(const json_spirit::Array& params, bool fHelp); // in rpcmasternode.cpp
-extern json_spirit::Value getpoolinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value masternode(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listmasternodes(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getmasternodecount(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value masternodecurrent(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value masternodedebug(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value setupmasternode(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value signmnbroadcast(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value verifymasternodesetup(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value broadcaststartmasternode(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value startmasternode(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value createmasternodekey(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getmasternodeoutputs(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listmasternodeconf(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getmasternodestatus(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getmasternodewinners(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getmasternodescores(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value importmnbroadcast(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listmnbroadcasts(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getblockcount(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rpcblockchain.cpp
+extern json_spirit::Value getbestblockhash(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getdifficulty(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getrawmempool(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getblockhash(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getblock(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getblockheader(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value gettxoutsetinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value gettxout(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value verifychain(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getblockchaininfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getchaintips(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getmempoolinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value reverseblocktransactions(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value invalidateblock(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value reconsiderblock(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getinvalid(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
-extern json_spirit::Value getinfo(const json_spirit::Array& params, bool fHelp); // in rpcmisc.cpp
-extern json_spirit::Value mnsync(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value spork(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value validateaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value createmultisig(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value verifymessage(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value setmocktime(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getstakingstatus(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value allocatefunds(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);// in rpcmasternode.cpp
+extern json_spirit::Value verifymasternodesetup(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value signmnbroadcast(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value setupmasternode(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value listmasternodes(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getmasternodecount(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value broadcaststartmasternode(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value startmasternode(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getmasternodestatus(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getmasternodewinners(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value importmnbroadcast(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value listmnbroadcasts(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
-extern json_spirit::Value getaddresstxids(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getaddressdeltas(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getaddressbalance(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getaddressutxos(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getaddressmempool(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getspentinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value ban(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value clearbanned(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value listbanned(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value ban(const json_spirit::Array& params, bool fHelp, CWallet* pwallet); // in rpcmisc.cpp
+extern json_spirit::Value getinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value mnsync(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value spork(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value validateaddress(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value createmultisig(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value verifymessage(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value setmocktime(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getaddresstxids(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getaddressdeltas(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getaddressbalance(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getspentinfo(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getaddressutxos(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value clearbanned(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value listbanned(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
+extern json_spirit::Value getstakingstatus(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
 
 using namespace boost;
@@ -175,7 +165,6 @@ using namespace json_spirit;
 using namespace std;
 extern Settings& settings;
 static std::string strRPCUserColonPass;
-extern CWallet* pwalletMain;
 
 static bool fRPCRunning = false;
 static bool fRPCInWarmup = true;
@@ -189,6 +178,19 @@ static boost::thread_group* rpc_worker_group = NULL;
 static boost::asio::io_service::work* rpc_dummy_work = NULL;
 static std::vector<CSubNet> rpc_allow_subnets; //!< List of subnets to allow RPC connections from
 static std::vector<boost::shared_ptr<ip::tcp::acceptor> > rpc_acceptors;
+
+std::string GetWarningMessage(std::string category)
+{
+    int alertPriorityValue = 0;
+    std::pair<std::string,std::string> warningMessages = Warnings::GetWarnings(settings.GetBoolArg("-testsafemode",false),alertPriorityValue);
+    CAlert::GetHighestPriorityWarning(alertPriorityValue, warningMessages.first);
+    if (category == "statusbar")
+        return translate(warningMessages.first.c_str());
+    else if (category == "rpc")
+        return translate(warningMessages.second.c_str());
+
+    return translate("Error");
+}
 
 void RPCTypeCheck(const Array& params,
     const list<Value_type>& typesExpected,
@@ -226,83 +228,11 @@ void RPCTypeCheck(const Object& o,
     }
 }
 
-static inline int64_t roundint64(double d)
-{
-    return (int64_t)(d > 0 ? d + 0.5 : d - 0.5);
-}
-
-CAmount AmountFromValue(const Value& value, const bool allowZero)
-{
-    const double dAmount = value.get_real();
-    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
-    if (dAmount < 0.0 || dAmount >  maxMoneyAllowedInOutput)
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
-    const CAmount nAmount = roundint64(dAmount * COIN);
-    if (!allowZero && nAmount == 0)
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
-    if (!MoneyRange(nAmount,maxMoneyAllowedInOutput))
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
-    return nAmount;
-}
-
-Value ValueFromAmount(const CAmount& amount)
-{
-    return (double)amount / (double)COIN;
-}
-
-uint256 ParseHashV(const Value& v, string strName)
-{
-    string strHex;
-    if (v.type() == str_type)
-        strHex = v.get_str();
-    if (!IsHex(strHex)) // Note: IsHex("") is false
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strName + " must be hexadecimal string (not '" + strHex + "')");
-    uint256 result;
-    result.SetHex(strHex);
-    return result;
-}
-uint256 ParseHashO(const Object& o, string strKey)
-{
-    return ParseHashV(find_value(o, strKey), strKey);
-}
-std::vector<unsigned char> ParseHexV(const Value& v, string strName)
-{
-    string strHex;
-    if (v.type() == str_type)
-        strHex = v.get_str();
-    if (!IsHex(strHex))
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strName + " must be hexadecimal string (not '" + strHex + "')");
-    return ParseHex(strHex);
-}
-std::vector<unsigned char> ParseHexO(const Object& o, string strKey)
-{
-    return ParseHexV(find_value(o, strKey), strKey);
-}
-
-int ParseInt(const Object& o, string strKey)
-{
-    const Value& v = find_value(o, strKey);
-    if (v.type() != int_type)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, " + strKey + "is not an int");
-
-    return v.get_int();
-}
-
-bool ParseBool(const Object& o, string strKey)
-{
-    const Value& v = find_value(o, strKey);
-    if (v.type() != bool_type)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, " + strKey + "is not a bool");
-
-    return v.get_bool();
-}
-
-
 /**
  * Note: This interface may still be subject to change.
  */
 
-std::string CRPCTable::help(std::string strCommand) const
+std::string CRPCTable::help(std::string strCommand, CWallet* pwallet) const
 {
     std::string strRet;
     std::string category;
@@ -322,7 +252,7 @@ std::string CRPCTable::help(std::string strCommand) const
         if ((strCommand != "" || pcmd->category == "hidden") && strMethod != strCommand)
             continue;
 #ifdef ENABLE_WALLET
-        if (pcmd->reqWallet && !pwalletMain)
+        if (pcmd->requiresWalletLock && !pwallet)
             continue;
 #endif
 
@@ -330,7 +260,7 @@ std::string CRPCTable::help(std::string strCommand) const
             Array params;
             rpcfn_type pfn = pcmd->actor;
             if (setDone.insert(pfn).second)
-                (*pfn)(params, true);
+                (*pfn)(params, true, pwallet);
         } catch (std::exception& e) {
             // Help text is returned in an exception
             string strHelp = string(e.what());
@@ -356,7 +286,7 @@ std::string CRPCTable::help(std::string strCommand) const
     return strRet;
 }
 
-Value help(const Array& params, bool fHelp)
+Value help(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -371,11 +301,11 @@ Value help(const Array& params, bool fHelp)
     if (params.size() > 0)
         strCommand = params[0].get_str();
 
-    return tableRPC.help(strCommand);
+    return CRPCTable::getRPCTable().help(strCommand, pwallet);
 }
 
 
-Value stop(const Array& params, bool fHelp)
+Value stop(const Array& params, bool fHelp, CWallet* pwallet)
 {
     // Accept the deprecated and ignored 'detach' boolean argument
     if (fHelp || params.size() > 1)
@@ -393,174 +323,145 @@ Value stop(const Array& params, bool fHelp)
  */
 static const CRPCCommand vRPCCommands[] =
     {
-        //  category              name                      actor (function)         okSafeMode threadSafe reqWallet
-        //  --------------------- ------------------------  -----------------------  ---------- ---------- ---------
+        //  category              name                      actor (function)         okSafeMode threadSafe requiresWalletLock requiresWalletInstance
+        //  --------------------- ------------------------  -----------------------  ---------- ---------- ------------------ ----------------------
         /* Overall control/query calls */
-        {"control", "getinfo", &getinfo, true, false, false}, /* uses wallet if enabled */
-        {"control", "help", &help, true, true, false},
-        {"control", "stop", &stop, true, true, false},
+        {"control", "getinfo", &getinfo, true, false, false,false}, /* uses wallet if enabled */
+        {"control", "help", &help, true, true, false,false},
+        {"control", "stop", &stop, true, true, false,false},
 
         /* P2P networking */
-        {"network", "getnetworkinfo", &getnetworkinfo, true, false, false},
-        {"network", "addnode", &addnode, true, true, false},
-        {"network", "getaddednodeinfo", &getaddednodeinfo, true, true, false},
-        {"network", "getconnectioncount", &getconnectioncount, true, false, false},
-        {"network", "getnettotals", &getnettotals, true, true, false},
-        {"network", "getpeerinfo", &getpeerinfo, true, false, false},
-        {"network", "ping", &ping, true, false, false},
+        {"network", "getnetworkinfo", &getnetworkinfo, true, false, false,false},
+        {"network", "addnode", &addnode, true, true, false,false},
+        {"network", "getaddednodeinfo", &getaddednodeinfo, true, true, false,false},
+        {"network", "getconnectioncount", &getconnectioncount, true, false, false, false},
+        {"network", "getnettotals", &getnettotals, true, true, false, false},
+        {"network", "getpeerinfo", &getpeerinfo, true, false, false, false},
+        {"network", "ping", &ping, true, false, false, false},
 
         /* Block chain and UTXO */
-        {"blockchain", "getblockchaininfo", &getblockchaininfo, true, false, false},
-        {"blockchain", "getbestblockhash", &getbestblockhash, true, false, false},
-        {"blockchain", "getblockcount", &getblockcount, true, false, false},
-        {"blockchain", "getlotteryblockwinners", &getlotteryblockwinners, true, false, false},
-        {"blockchain", "getblock", &getblock, true, false, false},
-        {"blockchain", "getblockhash", &getblockhash, true, false, false},
-        {"blockchain", "getblockheader", &getblockheader, false, false, false},
-        {"blockchain", "getchaintips", &getchaintips, true, false, false},
-        {"blockchain", "getdifficulty", &getdifficulty, true, false, false},
-        {"blockchain", "getmempoolinfo", &getmempoolinfo, true, true, false},
-        {"blockchain", "getrawmempool", &getrawmempool, true, false, false},
-        {"blockchain", "gettxout", &gettxout, true, false, false},
-        {"blockchain", "gettxoutsetinfo", &gettxoutsetinfo, true, false, false},
-        {"blockchain", "verifychain", &verifychain, true, false, false},
-        {"blockchain", "invalidateblock", &invalidateblock, true, true, false},
-        {"blockchain", "reconsiderblock", &reconsiderblock, true, true, false},
-        {"getinvalid", "getinvalid", &getinvalid, true, true, false},
+        {"blockchain", "getblockchaininfo", &getblockchaininfo, true, false, false, false},
+        {"blockchain", "getbestblockhash", &getbestblockhash, true, false, false, false},
+        {"blockchain", "getblockcount", &getblockcount, true, false, false, false},
+        {"blockchain", "getlotteryblockwinners", &getlotteryblockwinners, true, false, false, false},
+        {"blockchain", "getblock", &getblock, true, false, false, false},
+        {"blockchain", "getblockhash", &getblockhash, true, false, false, false},
+        {"blockchain", "getblockheader", &getblockheader, false, false, false, false},
+        {"blockchain", "getchaintips", &getchaintips, true, false, false, false},
+        {"blockchain", "getdifficulty", &getdifficulty, true, false, false, false},
+        {"blockchain", "getmempoolinfo", &getmempoolinfo, true, true, false, false},
+        {"blockchain", "getrawmempool", &getrawmempool, true, false, false, false},
+        {"blockchain", "gettxout", &gettxout, true, false, false, false},
+        {"blockchain", "gettxoutsetinfo", &gettxoutsetinfo, true, false, false, false},
+        {"blockchain", "verifychain", &verifychain, true, false, false, false},
+        {"blockchain", "reverseblocktransactions", &reverseblocktransactions, true, false, false, false},
+        {"blockchain", "invalidateblock", &invalidateblock, true, false, false, false},
+        {"blockchain", "reconsiderblock", &reconsiderblock, true, false, false, false},
+        {"getinvalid", "getinvalid", &getinvalid, true, true, false, false},
 
         /* Mining */
-        {"mining", "getblocktemplate", &getblocktemplate, true, false, false},
-        {"mining", "getmininginfo", &getmininginfo, true, false, false},
-        {"mining", "prioritisetransaction", &prioritisetransaction, true, false, false},
+        {"mining", "getmininginfo", &getmininginfo, true, false, false, false},
+        {"mining", "prioritisetransaction", &prioritisetransaction, true, false, false, false},
 
 #ifdef ENABLE_WALLET
         /* Coin generation */
-        {"generating", "setgenerate", &setgenerate, true, true, false},
-        {"generating", "generateblock", &generateblock, true, true, false},
+        {"generating", "setgenerate", &setgenerate, true, true, false, true},
+        {"generating", "generateblock", &generateblock, true, true, false, true},
 #endif
 
         /* Raw transactions */
-        {"rawtransactions", "createrawtransaction", &createrawtransaction, true, false, false},
-        {"rawtransactions", "decoderawtransaction", &decoderawtransaction, true, false, false},
-        {"rawtransactions", "decodescript", &decodescript, true, false, false},
-        {"rawtransactions", "getrawtransaction", &getrawtransaction, true, false, false},
-        {"rawtransactions", "sendrawtransaction", &sendrawtransaction, false, false, false},
-        {"rawtransactions", "signrawtransaction", &signrawtransaction, false, false, false}, /* uses wallet if enabled */
+        {"rawtransactions", "createrawtransaction", &createrawtransaction, true, false, false, false},
+        {"rawtransactions", "decoderawtransaction", &decoderawtransaction, true, false, false, false},
+        {"rawtransactions", "decodescript", &decodescript, true, false, false, false},
+        {"rawtransactions", "getrawtransaction", &getrawtransaction, true, false, false, false},
+        {"rawtransactions", "sendrawtransaction", &sendrawtransaction, false, false, false, false},
+        {"rawtransactions", "signtransactionwithaddresskey", &signtransactionwithaddresskey, false, false, false, true},
+        {"rawtransactions", "signrawtransaction", &signrawtransaction, false, false, false, false}, /* uses wallet if enabled */
 
         /* Utility functions */
-        {"util", "createmultisig", &createmultisig, true, true, false},
-        {"util", "validateaddress", &validateaddress, true, false, false}, /* uses wallet if enabled */
-        {"util", "verifymessage", &verifymessage, true, false, false},
-        {"util", "estimatefee", &estimatefee, true, true, false},
-        {"util", "estimatepriority", &estimatepriority, true, true, false},
+        {"util", "createmultisig", &createmultisig, true, true, false, false},
+        {"util", "validateaddress", &validateaddress, true, false, false, false}, /* uses wallet if enabled */
+        {"util", "verifymessage", &verifymessage, true, false, false, false},
 
         /* Not shown in help */
-        {"hidden", "invalidateblock", &invalidateblock, true, true, false},
-        {"hidden", "reconsiderblock", &reconsiderblock, true, true, false},
-        {"hidden", "setmocktime", &setmocktime, true, false, false},
+        {"hidden", "invalidateblock", &invalidateblock, true, false, false, false},
+        {"hidden", "reconsiderblock", &reconsiderblock, true, false, false, false},
+        {"hidden", "setmocktime", &setmocktime, true, false, false, false},
 
         /* Divi features */
-		{ "divi", "debug", &debug, true, true, false },
-		{ "divi", "masternode", &masternode, true, true, false },
-		{ "divi", "allocatefunds", &allocatefunds, true, true, false },
-		{ "divi", "fundmasternode", &fundmasternode, true, true, false },
-		{"divi", "listmasternodes", &listmasternodes, true, true, false},
-        {"divi", "getmasternodecount", &getmasternodecount, true, true, false},
-        {"divi", "masternodecurrent", &masternodecurrent, true, true, false},
-        // {"divi", "masternodedebug", &masternodedebug, true, true, false},
-        {"divi","setupmasternode",&setupmasternode,true,false,true},
-        {"divi","signmnbroadcast",&signmnbroadcast,true,false,true},
-        {"divi","verifymasternodesetup",&verifymasternodesetup,true,true,true},
-        {"divi", "broadcaststartmasternode", &broadcaststartmasternode, true, true, false},
-        {"divi", "startmasternode", &startmasternode, true, true, false},
-        {"divi", "createmasternodekey", &createmasternodekey, true, true, false},
-        {"divi", "getmasternodeoutputs", &getmasternodeoutputs, true, true, false},
-        {"divi", "listmasternodeconf", &listmasternodeconf, true, true, false},
-        {"divi", "getmasternodestatus", &getmasternodestatus, true, true, false},
-        {"divi", "getmasternodewinners", &getmasternodewinners, true, true, false},
-        {"divi", "getmasternodescores", &getmasternodescores, true, true, false},
-        {"divi", "importmnbroadcast", &importmnbroadcast, true, false, false},
-        {"divi", "listmnbroadcasts", &listmnbroadcasts, true, false, false},
-        //{"divi", "mnbudget", &mnbudget, true, true, false},
-        //{"divi", "preparebudget", &preparebudget, true, true, false},
-        //{"divi", "submitbudget", &submitbudget, true, true, false},
-        //{"divi", "mnbudgetvote", &mnbudgetvote, true, true, false},
-        //{"divi", "getbudgetvotes", &getbudgetvotes, true, true, false},
-        //{"divi", "getnextsuperblock", &getnextsuperblock, true, true, false},
-        //{"divi", "getbudgetprojection", &getbudgetprojection, true, true, false},
-        //{"divi", "getbudgetinfo", &getbudgetinfo, true, true, false},
-        //{"divi", "mnbudgetrawvote", &mnbudgetrawvote, true, true, false},
-        //{"divi", "mnfinalbudget", &mnfinalbudget, true, true, false},
-        //{"divi", "checkbudgets", &checkbudgets, true, true, false},
-        {"divi", "mnsync", &mnsync, true, true, false},
-        {"divi", "spork", &spork, true, true, false},
-        {"divi", "getpoolinfo", &getpoolinfo, true, true, false},
-        {"divi","ban",&ban,false,false,false},
-        {"divi","clearbanned",&clearbanned,false,false,false},
-        {"divi","listbanned",&listbanned,false,false,false},
+		{ "divi", "allocatefunds", &allocatefunds, true, true, false, true},
+		{"divi", "listmasternodes", &listmasternodes, true, true, false, false},
+        {"divi", "getmasternodecount", &getmasternodecount, true, true, false,false},
+        {"divi","setupmasternode",&setupmasternode,true,false,true,true},
+        {"divi","signmnbroadcast",&signmnbroadcast,true,false,true,true},
+        {"divi","verifymasternodesetup",&verifymasternodesetup,true,true,true, false},
+        {"divi", "broadcaststartmasternode", &broadcaststartmasternode, true, true, false, false},
+        {"divi", "startmasternode", &startmasternode, true, true, false, true},
+        {"divi", "getmasternodestatus", &getmasternodestatus, true, true, false, false},
+        {"divi", "getmasternodewinners", &getmasternodewinners, true, true, false, false},
+        {"divi", "importmnbroadcast", &importmnbroadcast, true, false, false, false},
+        {"divi", "listmnbroadcasts", &listmnbroadcasts, true, false, false, false},
+
+        {"divi", "mnsync", &mnsync, true, true, false, false},
+        {"divi", "spork", &spork, true, true, false, false},
+        {"divi","ban",&ban,false,false,false, false},
+        {"divi","clearbanned",&clearbanned,false,false,false, false},
+        {"divi","listbanned",&listbanned,false,false,false, false},
 
         /* address index */
-        { "addressindex", "getaddresstxids", &getaddresstxids, false, false, false },
-        { "addressindex", "getaddressdeltas", &getaddressdeltas, false, false, false },
-        { "addressindex", "getaddressbalance", &getaddressbalance, false, false, false },
-        { "addressindex", "getaddressutxos", &getaddressutxos, false, false, false },
-        { "addressindex", "getaddressmempool", &getaddressmempool, true, false, false },
+        { "addressindex", "getaddresstxids", &getaddresstxids, false, false, false, false },
+        { "addressindex", "getaddressdeltas", &getaddressdeltas, false, false, false, false },
+        { "addressindex", "getaddressbalance", &getaddressbalance, false, false, false, false },
+        { "addressindex", "getaddressutxos", &getaddressutxos, false, false, false, false },
 
-        { "blockchain", "getspentinfo", &getspentinfo, false, false, false },
+        { "blockchain", "getspentinfo", &getspentinfo, false, false, false, false },
 
 #ifdef ENABLE_WALLET
-        // {"divi", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
-
-        /* Wallet */
-        {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true},
-        {"wallet", "backupwallet", &backupwallet, true, false, true},
-        {"wallet", "dumpprivkey", &dumpprivkey, true, false, true},
-        {"wallet", "dumphdinfo", &dumphdinfo, true, false, true},
-        {"wallet", "dumpwallet", &dumpwallet, true, false, true},
-        {"wallet", "bip38paperwallet", &bip38paperwallet, true, false, true},
-        {"wallet", "bip38encrypt", &bip38encrypt, true, false, true},
-        {"wallet", "bip38decrypt", &bip38decrypt, true, false, true},
-        {"wallet", "encryptwallet", &encryptwallet, true, false, true},
-        {"wallet", "getaccountaddress", &getaccountaddress, true, false, true},
-        {"wallet", "getaccount", &getaccount, true, false, true},
-        {"wallet", "getaddressesbyaccount", &getaddressesbyaccount, true, false, true},
-        {"wallet", "getbalance", &getbalance, false, false, true},
-        {"wallet", "getnewaddress", &getnewaddress, true, false, true},
-        {"wallet", "getrawchangeaddress", &getrawchangeaddress, true, false, true},
-        {"wallet", "getreceivedbyaccount", &getreceivedbyaccount, false, false, true},
-        {"wallet", "getreceivedbyaddress", &getreceivedbyaddress, false, false, true},
-        {"wallet", "getstakingstatus", &getstakingstatus, false, false, true},
-        {"wallet", "gettransaction", &gettransaction, false, false, true},
-        {"wallet", "getunconfirmedbalance", &getunconfirmedbalance, false, false, true},
-        {"wallet", "getwalletinfo", &getwalletinfo, false, false, true},
-        {"wallet", "importprivkey", &importprivkey, true, false, true},
-        {"wallet", "importwallet", &importwallet, true, false, true},
-        {"wallet", "importaddress", &importaddress, true, false, true},
-        {"wallet", "keypoolrefill", &keypoolrefill, true, false, true},
-        {"wallet", "listaccounts", &listaccounts, false, false, true},
-        {"wallet", "listaddressgroupings", &listaddressgroupings, false, false, true},
-        {"wallet", "listlockunspent", &listlockunspent, false, false, true},
-        {"wallet", "listreceivedbyaccount", &listreceivedbyaccount, false, false, true},
-        {"wallet", "listreceivedbyaddress", &listreceivedbyaddress, false, false, true},
-        {"wallet", "listsinceblock", &listsinceblock, false, false, true},
-        {"wallet", "listtransactions", &listtransactions, false, false, true},
-        {"wallet", "listunspent", &listunspent, false, false, true},
-        {"wallet", "lockunspent", &lockunspent, true, false, true},
-        {"wallet", "move", &movecmd, false, false, true},
-        {"wallet", "sendfrom", &sendfrom, false, false, true},
-        {"wallet", "sendmany", &sendmany, false, false, true},
-        {"wallet", "sendtoaddress", &sendtoaddress, false, false, true},
-        {"wallet", "fundvault", &fundvault, false, false, true},
-        {"wallet", "reclaimvaultfunds", &reclaimvaultfunds, false, false, true},
-        {"wallet", "removevault", &removevault, false, false, true},
-        {"wallet", "addvault", &addvault, false, false, true},
-        {"wallet", "getcoinavailability", &getcoinavailability, false, false, true},
-        {"wallet", "setaccount", &setaccount, true, false, true},
-        {"wallet", "signmessage", &signmessage, true, false, true},
-        {"wallet", "walletlock", &walletlock, true, false, true},
-        {"wallet", "walletpassphrasechange", &walletpassphrasechange, true, false, true},
-        {"wallet", "walletpassphrase", &walletpassphrase, true, false, true},
-        {"wallet", "walletverify", &walletverify, true, false, true}
+        {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true, true},
+        {"wallet", "backupwallet", &backupwallet, true, false, true, true},
+        {"wallet", "dumpprivkey", &dumpprivkey, true, false, true, true},
+        {"wallet", "dumphdinfo", &dumphdinfo, true, false, true, true},
+        {"wallet", "bip38paperwallet", &bip38paperwallet, true, false, true, true},
+        {"wallet", "bip38decrypt", &bip38decrypt, true, false, true, true},
+        {"wallet", "encryptwallet", &encryptwallet, true, false, true, true},
+        {"wallet", "getaccountaddress", &getaccountaddress, true, false, true, true},
+        {"wallet", "getaccount", &getaccount, true, false, true, true},
+        {"wallet", "getaddressesbyaccount", &getaddressesbyaccount, true, false, true, true},
+        {"wallet", "getbalance", &getbalance, false, false, true, true},
+        {"wallet", "getnewaddress", &getnewaddress, true, false, true, true},
+        {"wallet", "getrawchangeaddress", &getrawchangeaddress, true, false, true, true},
+        {"wallet", "getreceivedbyaccount", &getreceivedbyaccount, false, false, true, true},
+        {"wallet", "getreceivedbyaddress", &getreceivedbyaddress, false, false, true, true},
+        {"wallet", "getstakingstatus", &getstakingstatus, false, false, true, true},
+        {"wallet", "gettransaction", &gettransaction, false, false, true, true},
+        {"wallet", "getunconfirmedbalance", &getunconfirmedbalance, false, false, true, true},
+        {"wallet", "getwalletinfo", &getwalletinfo, false, false, true, true},
+        {"wallet", "loadwallet", &loadwallet, true, false, true, true},
+        {"wallet", "importprivkey", &importprivkey, true, false, true, true},
+        {"wallet", "importaddress", &importaddress, true, false, true, true},
+        {"wallet", "keypoolrefill", &keypoolrefill, true, false, true, true},
+        {"wallet", "listaccounts", &listaccounts, false, false, true, true},
+        {"wallet", "listlockunspent", &listlockunspent, false, false, true, true},
+        {"wallet", "listreceivedbyaccount", &listreceivedbyaccount, false, false, true, true},
+        {"wallet", "listreceivedbyaddress", &listreceivedbyaddress, false, false, true, true},
+        {"wallet", "listsinceblock", &listsinceblock, false, false, true, true},
+        {"wallet", "listtransactions", &listtransactions, false, false, true, true},
+        {"wallet", "listunspent", &listunspent, false, false, true, true},
+        {"wallet", "lockunspent", &lockunspent, true, false, true, true},
+        {"wallet", "sendfrom", &sendfrom, false, false, true, true},
+        {"wallet", "sendmany", &sendmany, false, false, true, true},
+        {"wallet", "sendtoaddress", &sendtoaddress, false, false, true, true},
+        {"wallet", "fundvault", &fundvault, false, false, true, true},
+        {"wallet", "reclaimvaultfunds", &reclaimvaultfunds, false, false, true, true},
+        {"wallet", "debitvaultbyname", &debitvaultbyname, false, false, true, true},
+        {"wallet", "removevault", &removevault, false, false, true, true},
+        {"wallet", "addvault", &addvault, false, false, true, true},
+        {"wallet", "getcoinavailability", &getcoinavailability, false, false, true, true},
+        {"wallet", "setaccount", &setaccount, true, false, true, true},
+        {"wallet", "signmessage", &signmessage, true, false, true, true},
+        {"wallet", "walletlock", &walletlock, true, false, true, true},
+        {"wallet", "walletpassphrasechange", &walletpassphrasechange, true, false, true, true},
+        {"wallet", "walletpassphrase", &walletpassphrase, true, false, true, true},
 
 #endif // ENABLE_WALLET
 };
@@ -894,7 +795,6 @@ void StopRPCThreads()
     deadlineTimers.clear();
 
     rpc_io_service->stop();
-    cvBlockChange.notify_all();
     if (rpc_worker_group != NULL)
         rpc_worker_group->join_all();
     delete rpc_dummy_work;
@@ -937,6 +837,10 @@ void RPCRunHandler(const boost::system::error_code& err, boost::function<void(vo
         func();
 }
 
+/**
+ * Run func nSeconds from now. Uses boost deadline timers.
+ * Overrides previous timer <name> (if any).
+ */
 void RPCRunLater(const std::string& name, boost::function<void(void)> func, int64_t nSeconds)
 {
     assert(rpc_io_service != NULL);
@@ -947,6 +851,15 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
     }
     deadlineTimers[name]->expires_from_now(posix_time::seconds(nSeconds));
     deadlineTimers[name]->async_wait(boost::bind(RPCRunHandler, _1, func));
+}
+void RPCDiscardRunLater(const string &name)
+{
+    auto it = deadlineTimers.find(name);
+
+    if(it != std::end(deadlineTimers)) {
+        it->second->cancel();
+        deadlineTimers.erase(it);
+    }
 }
 
 class JSONRequest
@@ -999,7 +912,7 @@ static Object JSONRPCExecOne(const Value& req)
     try {
         jreq.parse(req);
 
-        Value result = tableRPC.execute(jreq.strMethod, jreq.params);
+        Value result = CRPCTable::getRPCTable().execute(jreq.strMethod, jreq.params);
         rpc_result = JSONRPCReplyObj(result, Value::null, jreq.id);
     } catch (Object& objError) {
         rpc_result = JSONRPCReplyObj(Value::null, objError, jreq.id);
@@ -1062,7 +975,7 @@ static bool HTTPReq_JSONRPC(AcceptedConnection* conn,
         if (valRequest.type() == obj_type) {
             jreq.parse(valRequest);
 
-            Value result = tableRPC.execute(jreq.strMethod, jreq.params);
+            Value result = CRPCTable::getRPCTable().execute(jreq.strMethod, jreq.params);
 
             // Send reply
             strReply = JSONRPCReply(result, Value::null, jreq.id);
@@ -1110,7 +1023,7 @@ void ServiceConnection(AcceptedConnection* conn)
 
             // Process via HTTP REST API
         } else if (strURI.substr(0, 6) == "/rest/" && settings.GetBoolArg("-rest", false)) {
-            if (!HTTPReq_REST(conn, strURI, mapHeaders, fRun))
+            if (!HTTPReq_REST(&RPCIsInWarmup,conn, strURI, mapHeaders, fRun))
                 break;
 
         } else {
@@ -1123,16 +1036,19 @@ void ServiceConnection(AcceptedConnection* conn)
 json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_spirit::Array& params) const
 {
     // Find method
-    const CRPCCommand* pcmd = tableRPC[strMethod];
+    const CRPCCommand* pcmd = CRPCTable::getRPCTable()[strMethod];
     if (!pcmd)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found");
+
+    CWallet* pwallet = GetWallet();
 #ifdef ENABLE_WALLET
-    if (pcmd->reqWallet && !pwalletMain)
-        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
+    assert(!pcmd->requiresWalletLock || (!pcmd->threadSafe && pcmd->requiresWalletInstance) );
+    if ((pcmd->requiresWalletLock || pcmd->requiresWalletInstance) && !pwallet)
+        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method unavailable due to manually disabled wallet");
 #endif
 
     // Observe safe mode
-    string strWarning = GetWarnings("rpc");
+    string strWarning = GetWarningMessage("rpc");
     if (strWarning != "" && !settings.GetBoolArg("-disablesafemode", false) &&
         !pcmd->okSafeMode)
         throw JSONRPCError(RPC_FORBIDDEN_BY_SAFE_MODE, string("Safe mode: ") + strWarning);
@@ -1142,26 +1058,40 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
         Value result;
         {
             if (pcmd->threadSafe)
-                result = pcmd->actor(params, false);
+            {
+                result = pcmd->actor(params, false, pwallet);
+            }
 #ifdef ENABLE_WALLET
-            else if (!pwalletMain) {
+            else if (!pwallet)
+            {
+                assert(!(pcmd->requiresWalletLock || pcmd->requiresWalletInstance)); // Implied by above condition failing on wallet
                 LOCK(cs_main);
-                result = pcmd->actor(params, false);
+                result = pcmd->actor(params, false, pwallet);
             } else {
+                // Not threadsafe and may or may not require
                 while (true) {
                     TRY_LOCK(cs_main, lockMain);
                     if (!lockMain) {
                         MilliSleep(50);
                         continue;
                     }
-                    while (true) {
-                        TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
-                        if (!lockMain) {
-                            MilliSleep(50);
-                            continue;
-                        }
-                        result = pcmd->actor(params, false);
+                    else if(!pcmd->requiresWalletLock)
+                    {
+                        result = pcmd->actor(params, false, pwallet);
                         break;
+                    }
+                    else
+                    {
+                        while (true)
+                        {
+                            TRY_LOCK(pwallet->getWalletCriticalSection(), lockWallet);
+                            if (!lockMain) {
+                                MilliSleep(50);
+                                continue;
+                            }
+                            result = pcmd->actor(params, false, pwallet);
+                            break;
+                        }
                     }
                     break;
                 }
@@ -1169,7 +1099,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
 #else  // ENABLE_WALLET
             else {
                 LOCK(cs_main);
-                result = pcmd->actor(params, false);
+                result = pcmd->actor(params, false, pwallet);
             }
 #endif // !ENABLE_WALLET
         }
@@ -1190,6 +1120,125 @@ std::vector<std::string> CRPCTable::listCommands() const
     return commandList;
 }
 
+static int64_t nWalletUnlockTime;
+void EnsureWalletIsUnlocked(CWallet* pwallet)
+{
+    if (pwallet && !pwallet->IsFullyUnlocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+}
+
+struct CancellableMethod
+{
+private:
+    mutable bool executionComplete;
+    mutable bool cancelled;
+    bool unlockedForStakingOnExpiry;
+    CWallet* walletRef_;
+
+public:
+    CancellableMethod(
+        bool revertToUnlockedForStakingOnExpiry,
+        CWallet* walletReference
+        ): executionComplete(false)
+        , cancelled(false)
+        , unlockedForStakingOnExpiry(revertToUnlockedForStakingOnExpiry)
+        , walletRef_(walletReference)
+    {
+    }
+
+    void cancel()
+    {
+        if(walletRef_) AssertLockHeld(walletRef_->getWalletCriticalSection());
+        cancelled = true;
+    }
+
+    bool canBeRemoved() const
+    {
+        if(walletRef_) AssertLockHeld(walletRef_->getWalletCriticalSection());
+        return executionComplete;
+    }
+    void revertWalletUnlockStatus() const
+    {
+        if(walletRef_)
+        {
+            LOCK(walletRef_->getWalletCriticalSection()); // Required for modifying unlock time
+            if(cancelled){ executionComplete = true; return; }
+            RPCDiscardRunLater("lockwallet");
+            nWalletUnlockTime = 0;
+            if(unlockedForStakingOnExpiry) walletRef_->UnlockForStakingOnly();
+            else walletRef_->LockFully();
+            executionComplete = true;
+            return;
+        }
+        executionComplete = true;
+    }
+};
+static std::deque<CancellableMethod> cancellableCallStack;
+
+void removeCompletedOrCancelPendingCalls()
+{
+    for(auto it = cancellableCallStack.begin(); it != cancellableCallStack.end(); )
+    {
+        if(it->canBeRemoved())
+        {
+            it = cancellableCallStack.erase(it);
+            continue;
+        }
+        else
+        {
+            it->cancel();
+            ++it;
+        }
+    }
+}
+
+enum class WalletLockMode
+{
+    UNLOCK,
+    LOCK,
+};
+void ModifyWalletLockStateBriefly(CWallet* pwallet, WalletLockMode mode, int64_t sleepTime = 0, bool revertToUnlockedForStakingOnExpiry = false)
+{
+    if(pwallet)
+    {
+        AssertLockHeld(pwallet->getWalletCriticalSection());
+        nWalletUnlockTime = GetTime() + sleepTime;
+        removeCompletedOrCancelPendingCalls();
+        if(mode==WalletLockMode::LOCK)
+        {
+            RPCDiscardRunLater("lockwallet");
+            nWalletUnlockTime = 0;
+            pwallet->LockFully();
+        }
+        else if (sleepTime > 0 && mode == WalletLockMode::UNLOCK)
+        {
+            nWalletUnlockTime = GetTime () + sleepTime;
+            cancellableCallStack.emplace_back(revertToUnlockedForStakingOnExpiry,pwallet);
+            RPCRunLater ("lockwallet", boost::bind (&CancellableMethod::revertWalletUnlockStatus, &cancellableCallStack.back()), sleepTime);
+        }
+    }
+}
+
+void LockWallet(CWallet* pwallet)
+{
+    ModifyWalletLockStateBriefly(pwallet, WalletLockMode::LOCK);
+}
+void UnlockWalletBriefly(CWallet* pwallet,int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry)
+{
+    ModifyWalletLockStateBriefly(pwallet,WalletLockMode::UNLOCK,sleepTime,revertToUnlockedForStakingOnExpiry);
+}
+
+int64_t TimeTillWalletLock(CWallet* pwallet)
+{
+    AssertLockHeld(pwallet->getWalletCriticalSection());
+    return nWalletUnlockTime;
+}
+
+std::string HelpRequiringPassphrase(CWallet* pwallet)
+{
+    return pwallet && pwallet->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
+}
+
 std::string HelpExampleCli(string methodname, string args)
 {
     return "> divi-cli " + methodname + " " + args + "\n";
@@ -1200,16 +1249,4 @@ std::string HelpExampleRpc(string methodname, string args)
     return "> curl --user myusername --data-binary '{\"jsonrpc\": \"1.0\", \"id\":\"curltest\", "
            "\"method\": \"" +
            methodname + "\", \"params\": [" + args + "] }' -H 'content-type: text/plain;' http://127.0.0.1:51473/\n";
-}
-
-const CRPCTable tableRPC;
-
-void RPCDiscardRunLater(const string &name)
-{
-    auto it = deadlineTimers.find(name);
-
-    if(it != std::end(deadlineTimers)) {
-        it->second->cancel();
-        deadlineTimers.erase(it);
-    }
 }

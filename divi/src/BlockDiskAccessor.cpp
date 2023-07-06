@@ -9,7 +9,6 @@
 #include <chainparams.h>
 #include <Logging.h>
 #include <BlockUndo.h>
-#include <pow.h>
 
 /** Check whether enough disk space is available for an incoming block */
 bool CheckDiskSpace(uint64_t nAdditionalBytes)
@@ -25,7 +24,7 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
     return true;
 }
 
-bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos)
+bool WriteBlockToDisk(const CBlock& block, CDiskBlockPos& pos)
 {
     // Open history file to append
     CAutoFile fileout(OpenBlockFile(pos), SER_DISK, CLIENT_VERSION);
@@ -62,12 +61,6 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos)
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
     }
 
-    // Check the header
-    if (block.IsProofOfWork()) {
-        if (!CheckProofOfWork(block.GetHash(), block.nBits, Params()))
-            return error("ReadBlockFromDisk : Errors in block header");
-    }
-
     return true;
 }
 
@@ -79,20 +72,5 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
         LogPrintf("%s : block=%s index=%s\n", __func__, block.GetHash(), pindex->GetBlockHash());
         return error("ReadBlockFromDisk(CBlock&, CBlockIndex*) : GetHash() doesn't match index");
     }
-    return true;
-}
-
-bool BlockDiskDataReader::ReadBlock(const CBlockIndex* blockIndex, CBlock& block) const
-{
-    return ReadBlockFromDisk(block,blockIndex);
-}
-bool BlockDiskDataReader::ReadBlockUndo(const CBlockIndex* blockIndex, CBlockUndo& blockUndo) const
-{
-    CDiskBlockPos pos = blockIndex->GetUndoPos();
-    if (pos.IsNull())
-        return error("%s : no undo data available",__func__);
-    if (!blockUndo.ReadFromDisk(pos, blockIndex->pprev->GetBlockHash()))
-        return error("%s : failure reading undo data", __func__);
-
     return true;
 }

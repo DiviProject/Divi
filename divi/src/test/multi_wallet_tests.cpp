@@ -39,8 +39,7 @@ public:
     {
         if(walletCache_.empty() || walletID >= walletCache_.size() || !walletCache_[walletID].get()) return "";
         std::unique_ptr<FakeWallet>& fakeWalletPtr = walletCache_[walletID];
-        CWallet& wrappedWallet = static_cast<CWallet&>(*fakeWalletPtr);
-        const std::string walletName = wrappedWallet.dbFilename();
+        const std::string walletName = fakeWalletPtr->dbFilename();
         fakeWalletPtr.reset();
         return walletName;
     }
@@ -48,22 +47,22 @@ public:
     {
         if(walletCache_.empty() || walletID >= walletCache_.size() || !walletCache_[walletID].get()) return;
         std::unique_ptr<FakeWallet>& fakeWalletPtr = walletCache_[walletID];
-        CWallet& wrappedWallet = static_cast<CWallet&>(*fakeWalletPtr);
-        const std::string walletName = wrappedWallet.dbFilename();
+        const std::string walletName = fakeWalletPtr->dbFilename();
         fakeWalletPtr.reset();
         fakeWalletPtr.reset(new FakeWallet(fakeChain_,walletName));
     }
 
     const CWalletTx& AddDefaultTxToWallet(FakeWallet& currentWallet, const CAmount amount)
     {
-        CWallet& wrappedWallet = currentWallet;
-        assert(wrappedWallet.GetDefaultKey().IsValid());
-        CScript scriptToPayTo = GetScriptForDestination(wrappedWallet.GetDefaultKey().GetID());
+        CWallet& wrappedWallet = currentWallet.getWallet();
+        CPubKey destinationPubKey;
+        assert(wrappedWallet.GetKeyFromPool(destinationPubKey,true));
+        CScript scriptToPayTo = GetScriptForDestination(destinationPubKey.GetID());
         unsigned outputIndex;
         return currentWallet.AddDefaultTx(scriptToPayTo, outputIndex, amount);
     }
 
-    FakeWallet& getWallet(const unsigned walletID) const
+    FakeWallet& getFakeWallet(const unsigned walletID) const
     {
         if(walletID < walletCache_.size())
         {
@@ -84,11 +83,11 @@ BOOST_AUTO_TEST_CASE(multipleWalletsCanCoexist)
     {
         for(unsigned txCount = 0; txCount < totalTxsPerWallet; ++txCount)
         {
-            auto& wallet = getWallet(walletID);
-            const CWalletTx& tx = AddDefaultTxToWallet(wallet, 100 * COIN);
-            wallet.FakeAddToChain(tx);
+            auto& fakeWallet = getFakeWallet(walletID);
+            const CWalletTx& tx = AddDefaultTxToWallet(fakeWallet, 100 * COIN);
+            fakeWallet.FakeAddToChain(tx);
         }
-        CWallet& wrappedWallet = static_cast<CWallet&>(getWallet(walletID));
+        CWallet& wrappedWallet = getFakeWallet(walletID).getWallet();
         BOOST_CHECK_EQUAL_MESSAGE(
             wrappedWallet.GetBalance(),
             CAmount(totalTxsPerWallet*100*COIN),
@@ -105,11 +104,11 @@ BOOST_AUTO_TEST_CASE(multipleWalletsCanCoexistAndBeIndependentlyReloaded)
     {
         for(unsigned txCount = 0; txCount < totalTxsPerWallet; ++txCount)
         {
-            auto& wallet = getWallet(walletID);
-            const CWalletTx& tx = AddDefaultTxToWallet(wallet, 100 * COIN);
-            wallet.FakeAddToChain(tx);
+            auto& fakeWallet = getFakeWallet(walletID);
+            const CWalletTx& tx = AddDefaultTxToWallet(fakeWallet, 100 * COIN);
+            fakeWallet.FakeAddToChain(tx);
         }
-        CWallet& wrappedWallet = static_cast<CWallet&>(getWallet(walletID));
+        CWallet& wrappedWallet = getFakeWallet(walletID).getWallet();
         BOOST_CHECK_EQUAL_MESSAGE(
             wrappedWallet.GetBalance(),
             CAmount(totalTxsPerWallet*100*COIN),
@@ -119,9 +118,9 @@ BOOST_AUTO_TEST_CASE(multipleWalletsCanCoexistAndBeIndependentlyReloaded)
         {
             const unsigned walletToDeallocate = walletID - 4;
             deallocateAndReloadWallet(walletToDeallocate);
-            auto& wallet = getWallet(walletToDeallocate);
-            wallet.SetConfirmedTxsToVerified();
-            CWallet& wrappedWallet = static_cast<CWallet&>(wallet);
+            auto& fakeWallet = getFakeWallet(walletToDeallocate);
+            fakeWallet.SetConfirmedTxsToVerified();
+            CWallet& wrappedWallet = fakeWallet.getWallet();
             BOOST_CHECK_EQUAL_MESSAGE(
                 wrappedWallet.GetBalance(),
                 CAmount(totalTxsPerWallet*100*COIN),

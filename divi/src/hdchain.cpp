@@ -39,38 +39,6 @@ bool CHDChain::IsCrypted() const
     return fCrypted;
 }
 
-void CHDChain::Debug(const std::string& strName) const
-{
-#if 0
-    DBG(
-        std::cout << __func__ << ": ---" << strName << "---" << std::endl;
-        if (fCrypted) {
-            std::cout << "mnemonic: ***CRYPTED***" << std::endl;
-            std::cout << "mnemonicpassphrase: ***CRYPTED***" << std::endl;
-            std::cout << "seed: ***CRYPTED***" << std::endl;
-        } else {
-            std::cout << "mnemonic: " << std::string(vchMnemonic.begin(), vchMnemonic.end()).c_str() << std::endl;
-            std::cout << "mnemonicpassphrase: " << std::string(vchMnemonicPassphrase.begin(), vchMnemonicPassphrase.end()).c_str() << std::endl;
-            std::cout << "seed: " << HexStr(vchSeed).c_str() << std::endl;
-
-            CExtKey extkey;
-            extkey.SetMaster(&vchSeed[0], vchSeed.size());
-
-            CBitcoinExtKey b58extkey;
-            b58extkey.SetKey(extkey);
-            std::cout << "extended private masterkey: " << b58extkey.ToString().c_str() << std::endl;
-
-            CExtPubKey extpubkey;
-            extpubkey = extkey.Neuter();
-
-            CBitcoinExtPubKey b58extpubkey;
-            b58extpubkey.SetKey(extpubkey);
-            std::cout << "extended public masterkey: " << b58extpubkey.ToString().c_str() << std::endl;
-        }
-    );
-#endif
-}
-
 bool CHDChain::SetMnemonic(const SecureVector& vchMnemonic, const SecureVector& vchMnemonicPassphrase, bool fUpdateID)
 {
     return SetMnemonic(SecureString(vchMnemonic.begin(), vchMnemonic.end()), SecureString(vchMnemonicPassphrase.begin(), vchMnemonicPassphrase.end()), fUpdateID);
@@ -145,7 +113,7 @@ SecureVector CHDChain::GetSeed() const
     return vchSeed;
 }
 
-uint256 CHDChain::GetSeedHash()
+uint256 CHDChain::GetSeedHash() const
 {
     return Hash(vchSeed.begin(), vchSeed.end());
 }
@@ -211,4 +179,15 @@ size_t CHDChain::CountAccounts()
 std::string CHDPubKey::GetKeyPath() const
 {
     return strprintf("m/44'/%d'/%d'/%d/%d", Params().ExtCoinType(), nAccountIndex, nChangeIndex, extPubKey.nChild);
+}
+
+void CHDChain::setNewHDChain(CHDChain& hdChain)
+{
+    std::string strMnemonic = "";
+    std::string strMnemonicPassphrase = "";
+    SecureVector vchMnemonic(strMnemonic.begin(), strMnemonic.end());
+    SecureVector vchMnemonicPassphrase(strMnemonicPassphrase.begin(), strMnemonicPassphrase.end());
+    if (!hdChain.SetMnemonic(vchMnemonic, vchMnemonicPassphrase, true))
+        throw std::runtime_error(std::string(__func__) + ": SetMnemonic failed");
+
 }

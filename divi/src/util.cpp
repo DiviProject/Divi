@@ -13,6 +13,8 @@
 
 #include "allocators.h"
 #include "chainparamsbase.h"
+#include <DataDirectory.h>
+#include <Logging.h>
 #include "random.h"
 #include "serialize.h"
 #include "sync.h"
@@ -106,12 +108,6 @@ std::string to_internal(const std::string&);
 using namespace std;
 
 // DIVI only features
-
-// Masternode
-int nLiquidityProvider = 0;
-/** Spork enforcement enabled time */
-int64_t enforceMasternodePaymentsTime = 4085657524;
-bool fSucessfullyLoaded = false;
 
 Settings& settings = Settings::instance();
 

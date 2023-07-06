@@ -16,48 +16,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
-
-struct CDiskBlockPos {
-    int nFile;
-    unsigned int nPos;
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(VARINT(nFile));
-        READWRITE(VARINT(nPos));
-    }
-
-    CDiskBlockPos()
-    {
-        SetNull();
-    }
-
-    CDiskBlockPos(int nFileIn, unsigned int nPosIn)
-    {
-        nFile = nFileIn;
-        nPos = nPosIn;
-    }
-
-    friend bool operator==(const CDiskBlockPos& a, const CDiskBlockPos& b)
-    {
-        return (a.nFile == b.nFile && a.nPos == b.nPos);
-    }
-
-    friend bool operator!=(const CDiskBlockPos& a, const CDiskBlockPos& b)
-    {
-        return !(a == b);
-    }
-
-    void SetNull()
-    {
-        nFile = -1;
-        nPos = 0;
-    }
-    bool IsNull() const { return (nFile == -1); }
-};
+#include <BlockDiskPosition.h>
 
 enum BlockStatus {
     //! Unused.
@@ -113,7 +72,7 @@ public:
     CBlockIndex* pprev;
 
     //! pointer to the index of the next block
-    CBlockIndex* pnext;
+    const CBlockIndex* pnext;
 
     //! pointer to the index of some further predecessor of this block
     CBlockIndex* pskip;
@@ -158,10 +117,8 @@ public:
     // proof-of-stake specific fields
     uint256 GetBlockTrust() const;
     uint64_t nStakeModifier;             // hash modifier for proof-of-stake
-    unsigned int nStakeModifierChecksum; // checksum of index; in-memeory only
     COutPoint prevoutStake;
     unsigned int nStakeTime;
-    uint256 hashProofOfStake;
     int64_t nMint;
     int64_t nMoneySupply;
 
@@ -197,7 +154,6 @@ public:
         nMoneySupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
-        nStakeModifierChecksum = 0;
         prevoutStake.SetNull();
         nStakeTime = 0;
 
@@ -233,8 +189,6 @@ public:
         nMoneySupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
-        nStakeModifierChecksum = 0;
-        hashProofOfStake = uint256();
 
         if (block.IsProofOfStake()) {
             SetProofOfStake();
@@ -248,6 +202,7 @@ public:
         vLotteryWinnersCoinstakes.clear();
     }
 
+    CBlockIndex (const CBlockIndex& index) = default;
 
     CDiskBlockPos GetBlockPos() const
     {
@@ -377,6 +332,21 @@ public:
         return false;
     }
 
+    uint256 getBlockProof() const
+    {
+        uint256 bnTarget;
+        bool fNegative;
+        bool fOverflow;
+        bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+        if (fNegative || fOverflow || bnTarget == 0)
+            return 0;
+        // We need to compute 2**256 / (bnTarget+1), but we can't represent 2**256
+        // as it's too large for a uint256. However, as 2**256 is at least as large
+        // as bnTarget+1, it is equal to ((2**256 - bnTarget - 1) / (bnTarget+1)) + 1,
+        // or ~bnTarget / (nTarget+1) + 1.
+        return (~bnTarget / (bnTarget + 1)) + 1;
+    }
+
     //! Build the skiplist pointer for this entry.
     void BuildSkip();
 
@@ -398,7 +368,7 @@ public:
         hashNext = uint256();
     }
 
-    explicit CDiskBlockIndex(CBlockIndex* pindex) : CBlockIndex(*pindex)
+    explicit CDiskBlockIndex(const CBlockIndex* pindex) : CBlockIndex(*pindex)
     {
         hashPrev = (pprev ? pprev->GetBlockHash() : uint256());
     }
@@ -429,11 +399,9 @@ public:
         if (IsProofOfStake()) {
             READWRITE(prevoutStake);
             READWRITE(nStakeTime);
-            READWRITE(hashProofOfStake);
         } else {
             const_cast<CDiskBlockIndex*>(this)->prevoutStake.SetNull();
             const_cast<CDiskBlockIndex*>(this)->nStakeTime = 0;
-            const_cast<CDiskBlockIndex*>(this)->hashProofOfStake = uint256();
         }
 
         READWRITE(vLotteryWinnersCoinstakes);
@@ -481,22 +449,22 @@ public:
 class CChain
 {
 private:
-    std::vector<CBlockIndex*> vChain;
+    std::vector<const CBlockIndex*> vChain;
 
 public:
     /** Returns the index entry for the genesis block of this chain, or NULL if none. */
-    CBlockIndex* Genesis() const
+    const CBlockIndex* Genesis() const
     {
         return vChain.size() > 0 ? vChain[0] : NULL;
     }
 
     /** Returns the index entry for the tip of this chain, or NULL if none. */
-    CBlockIndex* Tip(bool fProofOfStake = false) const
+    const CBlockIndex* Tip(bool fProofOfStake = false) const
     {
         if (vChain.size() < 1)
             return NULL;
 
-        CBlockIndex* pindex = vChain[vChain.size() - 1];
+        const CBlockIndex* pindex = vChain[vChain.size() - 1];
 
         if (fProofOfStake) {
             while (pindex && pindex->pprev && !pindex->IsProofOfStake())
@@ -506,7 +474,7 @@ public:
     }
 
     /** Returns the index entry at a particular height in this chain, or NULL if no such height exists. */
-    CBlockIndex* operator[](int nHeight) const
+    const CBlockIndex* operator[](int nHeight) const
     {
         if (nHeight < 0 || nHeight >= (int)vChain.size())
             return NULL;
@@ -527,7 +495,7 @@ public:
     }
 
     /** Find the successor of a block in this chain, or NULL if the given index is not found or is the tip. */
-    CBlockIndex* Next(const CBlockIndex* pindex) const
+    const CBlockIndex* Next(const CBlockIndex* pindex) const
     {
         if (Contains(pindex))
             return (*this)[pindex->nHeight + 1];
@@ -542,7 +510,7 @@ public:
     }
 
     /** Set/initialize a chain with a given tip. */
-    void SetTip(CBlockIndex* pindex);
+    void SetTip(const CBlockIndex* pindex);
 
     /** Return a CBlockLocator that refers to a block in this chain (by default the tip). */
     CBlockLocator GetLocator(const CBlockIndex* pindex = NULL) const;
@@ -553,5 +521,5 @@ public:
 
 /** Find the last common ancestor two blocks have.
  *  Both pa and pb must be non-NULL. */
-CBlockIndex* LastCommonAncestor(CBlockIndex* pa, CBlockIndex* pb);
+const CBlockIndex* LastCommonAncestor(const CBlockIndex* pa, const CBlockIndex* pb);
 #endif // BITCOIN_CHAIN_H

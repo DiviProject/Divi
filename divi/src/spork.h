@@ -10,6 +10,7 @@
 #include "pubkey.h"
 #include <amount.h>
 
+class I_ChainExtensionService;
 class CDataStream;
 class CNode;
 
@@ -18,6 +19,8 @@ class CSporkManager;
 class CSporkDB;
 class uint256;
 class CChainParams;
+class ChainstateManager;
+class CCriticalSection;
 
 /*
     Don't ever reuse these IDs for other sporks
@@ -40,7 +43,6 @@ static const int SPORK_END                                              = SPORK_
 
 bool ShareSporkDataWithPeer(CNode* peer, const uint256& inventoryHash);
 bool SporkDataIsKnown(const uint256& inventoryHash);
-void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
 CSporkManager& GetSporkManager();
 //
 // Spork classes
@@ -165,6 +167,7 @@ struct TxFeeSporkValue : public SporkMultiValue {
 class CSporkManager
 {
 private:
+    ChainstateManager& chainstate_;
     std::unique_ptr<CSporkDB> pSporkDB_;
     std::vector<unsigned char> vchSig;
     // Some sporks require to have history, we will use sorted vector for this approach.
@@ -173,21 +176,19 @@ private:
     CPubKey sporkPubKey;
     CKey sporkPrivKey;
 
-private:
     bool AddActiveSpork(const CSporkMessage &spork);
     bool IsNewerSpork(const CSporkMessage &spork) const;
     void ExecuteSpork(int nSporkID);
     void ExecuteMultiValueSpork(int nSporkID);
+    int64_t GetBlockTime(int nHeight) const;
 
 public:
 
-    CSporkManager();
+    explicit CSporkManager(ChainstateManager& chainstate);
     ~CSporkManager();
 
-    void AllocateDatabase();
-    void DeallocateDatabase();
     void LoadSporksFromDB();
-    void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
+    void ProcessSpork(CCriticalSection& mainCriticalSection, CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     bool UpdateSpork(int nSporkID, std::string strValue);
     int GetActiveSporkCount() const;
 

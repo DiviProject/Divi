@@ -11,16 +11,15 @@
 #include <clientversion.h>
 #include <BlockRewards.h>
 #include <UtxoCheckingAndUpdating.h>
-#include <kernel.h>
 #include <IndexDatabaseUpdateCollector.h>
 #include <script/StakingVaultScript.h>
 #include <utilmoneystr.h>
 
 TransactionLocationRecorder::TransactionLocationRecorder(
     const CBlockIndex* pindex,
-    const CBlock& block
-    ): nextBlockTxOnDiskLocation_(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()))
-    , numberOfTransactions_(block.vtx.size())
+    const size_t numberOfTransactions
+    ): numberOfTransactions_(numberOfTransactions)
+    , nextBlockTxOnDiskLocation_(pindex->GetBlockPos(), GetSizeOfCompactSize(numberOfTransactions_))
     , txLocationDataSizeHasBeenPreallocated_(false)
 {
 }
@@ -43,16 +42,15 @@ BlockTransactionChecker::BlockTransactionChecker(
     CValidationState& state,
     CBlockIndex* pindex,
     CCoinsViewCache& view,
-    const BlockMap& blockIndexMap,
-    const int blocksToSkipChecksFor
+    const BlockMap& blockIndexMap
     ): blockundo_(block.vtx.size() - 1)
     , block_(block)
     , activation_(pindex)
     , state_(state)
     , pindex_(pindex)
     , view_(view)
-    , txInputChecker_(pindex->nHeight >= blocksToSkipChecksFor,view_,blockIndexMap,state_)
-    , txLocationRecorder_(pindex_,block_)
+    , txInputChecker_(view_,blockIndexMap,state_)
+    , txLocationRecorder_(pindex_,block_.vtx.size())
 {
 }
 
@@ -110,7 +108,7 @@ bool BlockTransactionChecker::CheckCoinstakeForVaults(
     return true;
 }
 
-bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJustCheck, IndexDatabaseUpdates& indexDatabaseUpdates)
+bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint, IndexDatabaseUpdates& indexDatabaseUpdates)
 {
     const CAmount nMoneySupplyPrev = pindex_->pprev ? pindex_->pprev->nMoneySupply : 0;
     pindex_->nMoneySupply = nMoneySupplyPrev;
@@ -119,6 +117,8 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
     unsigned flags = MANDATORY_SCRIPT_VERIFY_FLAGS;
     if (activation_.IsActive(Fork::CheckLockTimeVerify))
         flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
+    if (activation_.IsActive(Fork::LimitTransferVerify))
+        flags |= SCRIPT_VERIFY_LIMIT_TRANSFER;
 
     for (unsigned int i = 0; i < block_.vtx.size(); i++) {
         const CTransaction& tx = block_.vtx[i];
@@ -133,7 +133,7 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
         {
             return false;
         }
-        if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx, flags, fJustCheck, pindex_))
+        if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx, flags, pindex_))
         {
             return false;
         }
@@ -147,7 +147,7 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
         }
 
         IndexDatabaseUpdateCollector::RecordTransaction(tx,txLocationRef,view_, indexDatabaseUpdates);
-        UpdateCoinsWithTransaction(tx, view_, blockundo_.vtxundo[i>0u? i-1: 0u], pindex_->nHeight);
+        view_.UpdateWithConfirmedTransaction(tx,pindex_->nHeight, blockundo_.vtxundo[i>0u? i-1: 0u]);
         txLocationRecorder_.RecordTxLocationData(tx,indexDatabaseUpdates.txLocationData);
     }
     return true;

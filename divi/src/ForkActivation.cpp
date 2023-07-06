@@ -17,7 +17,8 @@ extern Settings& settings;
 namespace
 {
 constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
-const std::set<Fork> manualOverrides = {Fork::CheckLockTimeVerify};
+constexpr int64_t unixTimestampForAugust23MidnightGMT = 1692792000;
+const std::set<Fork> manualOverrides = {Fork::CheckLockTimeVerify,Fork::DeprecateMasternodes};
 /**
  * For forks that get activated at a certain block time, the associated
  * activation times.
@@ -26,14 +27,15 @@ const std::unordered_map<Fork, int64_t,std::hash<int>> ACTIVATION_TIMES = {
   {Fork::TestByTimestamp, 1000000000},
   {Fork::HardenedStakeModifier, unixTimestampForDec31stMidnight},
   {Fork::UniformLotteryWinners, unixTimestampForDec31stMidnight},
-  /* FIXME: Schedule for a real time.  */
-  {Fork::CheckLockTimeVerify, 2000000000},
-  {Fork::DeprecateMasternodes,2000000000}
+  {Fork::CheckLockTimeVerify, unixTimestampForAugust23MidnightGMT},
+  {Fork::DeprecateMasternodes,unixTimestampForAugust23MidnightGMT},
+  {Fork::LimitTransferVerify, unixTimestampForAugust23MidnightGMT}
 };
 
 const std::unordered_set<Fork, std::hash<int>> REQUIRE_BLOCK_INDEX_CONTEXT = {
   Fork::DeprecateMasternodes,
-  Fork::CheckLockTimeVerify
+  Fork::CheckLockTimeVerify,
+  Fork::LimitTransferVerify,
 };
 
 } // anonymous namespace

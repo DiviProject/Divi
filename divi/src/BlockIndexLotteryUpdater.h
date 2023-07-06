@@ -7,17 +7,17 @@ class LotteryWinnersCalculator;
 class CSporkManager;
 class CChain;
 class CChainParams;
-class SuperblockSubsidyContainer;
+class I_SuperblockSubsidyContainer;
 
 class BlockIndexLotteryUpdater
 {
 private:
     const CChainParams& chainParameters_;
-    std::unique_ptr<SuperblockSubsidyContainer> subsidyContainer_;
     std::unique_ptr<LotteryWinnersCalculator> lotteryCalculator_;
 public:
     BlockIndexLotteryUpdater(
         const CChainParams& chainParameters,
+        const I_SuperblockSubsidyContainer& subsidyContainer,
         const CChain& activeChain,
         const CSporkManager& sporkManager);
     ~BlockIndexLotteryUpdater();

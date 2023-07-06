@@ -31,6 +31,7 @@ static bool InterpretBool(const std::string& strValue)
 
 static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
 {
+    // -no-somesetting=somevalue // parses as -somesetting=0
     if (strKey.length()>3 && strKey[0]=='-' && strKey[1]=='n' && strKey[2]=='o') {
         strKey = "-" + strKey.substr(3);
         strValue = InterpretBool(strValue) ? "0" : "1";
@@ -46,9 +47,9 @@ bool CopyableSettings::GetBoolArg(const std::string& strArg, bool fDefault) cons
 
 bool CopyableSettings::SoftSetArg(const std::string& strArg, const std::string& strValue)
 {
-    if (mapArgs_.count(strArg))
+    if (ParameterIsSet(strArg))
         return false;
-    mapArgs_[strArg] = strValue;
+    SetParameter(strArg,strValue,true);
     return true;
 }
 
@@ -95,14 +96,30 @@ const std::vector<std::string>& CopyableSettings::GetMultiParameter(const std::s
     }
 }
 
-void CopyableSettings::SetParameter (const std::string& key, const std::string& value)
+void CopyableSettings::SetParameter (const std::string& key, const std::string& value, const bool setOnceOnly)
 {
-    mapArgs_[key] = value;
+    // Interpret --foo as -foo.
+    // If both --foo and -foo are set, the last takes effect.
+    // ---foo is ignored
+    std::string prunedKey = key;
+    std::string parsedValue = value;
+    if (prunedKey.length() > 1 && prunedKey[0] == '-' && prunedKey[1] == '-')
+        prunedKey = prunedKey.substr(1);
+    if (prunedKey.length() > 1 && prunedKey[0] == '-' && prunedKey[1] == '-')
+        return;
+
+    InterpretNegativeSetting(prunedKey, parsedValue);
+    if(!setOnceOnly || mapArgs_.count(prunedKey) == 0)
+    {
+        mapArgs_[prunedKey] = parsedValue;
+    }
+    mapMultiArgs_[prunedKey].push_back(parsedValue);
 }
 
 void CopyableSettings::ClearParameter ()
 {
     mapArgs_.clear();
+    mapMultiArgs_.clear();
 }
 
 bool CopyableSettings::ParameterIsSetForMultiArgs (const std::string& key) const
@@ -113,7 +130,6 @@ bool CopyableSettings::ParameterIsSetForMultiArgs (const std::string& key) const
 void CopyableSettings::ParseParameters(int argc, const char* const argv[])
 {
     ClearParameter();
-    mapMultiArgs_.clear();
 
     for (int i = 1; i < argc; i++) {
         std::string str(argv[i]);
@@ -129,18 +145,9 @@ void CopyableSettings::ParseParameters(int argc, const char* const argv[])
             str = "-" + str.substr(1);
 #endif
 
-        if (str[0] != '-')
-            break;
-
-        // Interpret --foo as -foo.
-        // If both --foo and -foo are set, the last takes effect.
-        if (str.length() > 1 && str[1] == '-')
-            str = str.substr(1);
-        InterpretNegativeSetting(str, strValue);
-
-        SetParameter(str, strValue);
-        mapMultiArgs_[str].push_back(strValue);
+        SetParameter(str, strValue,false);
     }
+    reindexingBlocks_ = reindexingWasRequested();
 }
 
 boost::filesystem::path CopyableSettings::GetConfigFile() const
@@ -150,6 +157,30 @@ boost::filesystem::path CopyableSettings::GetConfigFile() const
         pathConfigFile = GetDataDir(false) / pathConfigFile;
 
     return pathConfigFile;
+}
+
+static std::string ParseNetworkSpecificFlag(const std::string& key, const CopyableSettings& settings)
+{
+    size_t separatorPosition = key.find('.');
+    if(separatorPosition == std::string::npos)
+    {
+        return key;
+    }
+    const std::string networkType = key.substr(0,separatorPosition);
+    const std::string trimmedKey = key.substr(separatorPosition+1, std::string::npos);
+    if(networkType.empty()) return key;
+    if(settings.ParameterIsSet("testnet") && networkType == "test")
+    {
+        return trimmedKey;
+    }
+    if(!settings.ParameterIsSet("testnet") && !settings.ParameterIsSet("regtest"))
+    {
+        return trimmedKey;
+    }
+    else
+    {
+        return std::string("");
+    }
 }
 
 void CopyableSettings::ReadConfigFile()
@@ -168,12 +199,9 @@ void CopyableSettings::ReadConfigFile()
 
     for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it) {
         // Don't overwrite existing settings so command line settings override divi.conf
-        std::string strKey = std::string("-") + it->string_key;
-        std::string strValue = it->value[0];
-        InterpretNegativeSetting(strKey, strValue);
-        if (mapArgs_.count(strKey) == 0)
-            mapArgs_[strKey] = strValue;
-        mapMultiArgs_[strKey].push_back(strValue);
+        const std::string key = ParseNetworkSpecificFlag(it->string_key,*this);
+        if(key.empty()) continue;
+        SetParameter(std::string("-") + key, it->value[0],true);
     }
     // If datadir is changed in .conf file:
     ClearDatadirCache();
@@ -197,4 +225,43 @@ unsigned CopyableSettings::NumerOfParameters() const
 unsigned CopyableSettings::NumerOfMultiParameters() const
 {
     return mapMultiArgs_.size();
+}
+
+bool CopyableSettings::debugModeIsEnabled() const
+{
+    const std::vector<std::string>& categories = GetMultiParameter("-debug");
+    const bool anyNegativeDebugCategory = std::find(categories.begin(), categories.end(), std::string("0")) != categories.end();
+    bool debug = !(GetBoolArg("-nodebug", false) || anyNegativeDebugCategory) && !categories.empty();
+    return debug;
+}
+
+void CopyableSettings::setFileImportingFlag(const bool updatedValue)
+{
+    importingFiles_ = updatedValue;
+}
+bool CopyableSettings::isImportingFiles() const
+{
+    return importingFiles_;
+}
+
+void CopyableSettings::setReindexingFlag(const bool updatedValue)
+{
+    reindexingBlocks_ = updatedValue;
+}
+bool CopyableSettings::isReindexingBlocks() const
+{
+    return reindexingBlocks_;
+}
+bool CopyableSettings::reindexingWasRequested() const
+{
+    return GetBoolArg("-reindex",false);
+}
+
+void CopyableSettings::setStartupBlockVerificationFlag(const bool updatedValue)
+{
+    startupBlockVerificationInProgress_ = updatedValue;
+}
+bool CopyableSettings::isStartupVerifyingBlocks() const
+{
+    return startupBlockVerificationInProgress_;
 }

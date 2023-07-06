@@ -264,19 +264,6 @@ struct CCoinsCacheEntry {
 
 typedef boost::unordered_map<uint256, CCoinsCacheEntry, CCoinsKeyHasher> CCoinsMap;
 
-struct CCoinsStats {
-    int nHeight;
-    uint256 hashBlock;
-    uint64_t nTransactions;
-    uint64_t nTransactionOutputs;
-    uint64_t nSerializedSize;
-    uint256 hashSerialized;
-    CAmount nTotalAmount;
-
-    CCoinsStats() : nHeight(0), hashBlock(0), nTransactions(0), nTransactionOutputs(0), nSerializedSize(0), hashSerialized(0), nTotalAmount(0) {}
-};
-
-
 /** Abstract view on the open txout dataset. */
 class CCoinsView
 {
@@ -295,16 +282,13 @@ public:
     //! The passed mapCoins can be modified.
     virtual bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) = 0;
 
-    //! Calculate statistics about the unspent transaction output set
-    virtual bool GetStats(CCoinsStats& stats) const = 0;
-
     //! As we use CCoinsViews polymorphically, have a virtual destructor
     virtual ~CCoinsView() {}
 };
 
 
 /** CCoinsView backed by another CCoinsView */
-class CCoinsViewBacked : public CCoinsView
+class CCoinsViewBacked final: public CCoinsView
 {
 private:
     /** The base view used for read-only operations.  */
@@ -325,29 +309,24 @@ public:
     void SetBackend(const CCoinsView& viewIn);
     void DettachBackend();
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override;
-    bool GetStats(CCoinsStats& stats) const override;
 };
 
 class CCoinsViewCache;
-
-/** Flags for nSequence and nLockTime locks */
-enum {
-    /* Interpret sequence numbers as relative lock-time constraints. */
-    LOCKTIME_VERIFY_SEQUENCE = (1 << 0),
-
-    /* Use GetMedianTimePast() instead of nTime for end point timestamp. */
-    LOCKTIME_MEDIAN_TIME_PAST = (1 << 1),
-};
-
-/** Used as the flags parameter to sequence and nLocktime checks in non-consensus code. */
-static const unsigned int STANDARD_LOCKTIME_VERIFY_FLAGS = LOCKTIME_VERIFY_SEQUENCE |
-                                                           LOCKTIME_MEDIAN_TIME_PAST;
 
 /**
  * A reference to a mutable cache entry. Encapsulating it allows us to run
  *  cleanup code after the modification is finished, and keeping track of
  *  concurrent modifications.
  */
+
+enum class TxReversalStatus
+{
+    ABORT_NO_OTHER_ERRORS,
+    ABORT_WITH_OTHER_ERRORS,
+    CONTINUE_WITH_ERRORS,
+    OK,
+};
+class TransactionLocationReference;
 class CCoinsModifier
 {
 private:
@@ -363,9 +342,10 @@ public:
 };
 
 /** CCoinsView that adds a memory cache for transactions to another CCoinsView */
-class CCoinsViewCache : public CCoinsViewBacked
+class CCoinsViewCache final: public CCoinsView
 {
 protected:
+    CCoinsViewBacked backed_;
     /* Whether this cache has an active modifier. */
     bool hasModifier;
 
@@ -375,7 +355,6 @@ protected:
      */
     mutable uint256 hashBlock;
     mutable CCoinsMap cacheCoins;
-
 public:
     CCoinsViewCache();
     explicit CCoinsViewCache(CCoinsView* baseIn);
@@ -386,8 +365,10 @@ public:
     bool GetCoins(const uint256& txid, CCoins& coins) const override;
     bool HaveCoins(const uint256& txid) const override;
     uint256 GetBestBlock() const override;
-    void SetBestBlock(const uint256& hashBlock);
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override;
+
+    // Caches the best block to write to the backed coinsview on flush
+    void SetBestBlock(const uint256& hashBlock);
 
     /**
      * Return a pointer to CCoins in the cache, or NULL if not found. This is
@@ -430,6 +411,9 @@ public:
     double ComputeInputCoinAge(const CTransaction& tx, int nHeight) const;
 
     const CTxOut& GetOutputFor(const CTxIn& input) const;
+
+    void UpdateWithConfirmedTransaction(const CTransaction& confirmedTx, const int blockHeight, CTxUndo& txundo);
+    TxReversalStatus UpdateWithReversedTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo);
 
     friend class CCoinsModifier;
 

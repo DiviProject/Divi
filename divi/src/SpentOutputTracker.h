@@ -1,20 +1,18 @@
 #ifndef SPENT_OUTPUT_TRACKER_H
 #define SPENT_OUTPUT_TRACKER_H
 #include <map>
-#include <utility>
-#include <set>
-#include <uint256.h>
+#include <I_SpentOutputTracker.h>
 
-class WalletTransactionRecord;
+class I_AppendOnlyTransactionRecord;
 class COutPoint;
 class uint256;
 class CWalletTx;
 class I_MerkleTxConfirmationNumberCalculator;
 
-class SpentOutputTracker
+class SpentOutputTracker final: public I_SpentOutputTracker
 {
 private:
-    WalletTransactionRecord& transactionRecord_;
+    I_AppendOnlyTransactionRecord& transactionRecord_;
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
 
     using TxSpends = std::multimap<COutPoint, uint256>;
@@ -25,17 +23,15 @@ private:
 
 public:
     SpentOutputTracker(
-        WalletTransactionRecord& transactionRecord,
+        I_AppendOnlyTransactionRecord& transactionRecord,
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator);
     /**
      * Used to keep track of spent outpoints, and
      * detect and report conflicts (double-spends or
      * mutated transactions where the mutant gets mined).
      */
-    std::pair<CWalletTx*,bool> UpdateSpends(
-        const CWalletTx& newlyAddedTransaction,
-        bool loadedFromDisk=false);
-    bool IsSpent(const uint256& hash, unsigned int n) const;
-    std::set<uint256> GetConflictingTxHashes(const CWalletTx& tx) const;
+    std::pair<CWalletTx*,bool> UpdateSpends(const CWalletTx& newlyAddedTransaction, bool loadedFromDisk) override;
+    bool IsSpent(const uint256& hash, unsigned int n, const int minimumConfirmations) const override;
+    std::set<uint256> GetConflictingTxHashes(const CWalletTx& tx) const override;
 };
 #endif// SPENT_OUTPUT_TRACKER_H

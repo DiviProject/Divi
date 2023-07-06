@@ -10,6 +10,7 @@ class I_CoinSelectionAlgorithm
 {
 public:
     virtual ~I_CoinSelectionAlgorithm(){}
+    virtual bool isSelectable(const COutput& coin) const = 0;
     virtual std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
         const std::vector<COutput>& vCoins,

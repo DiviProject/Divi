@@ -7,12 +7,14 @@
 
 #include "chainparamsbase.h"
 #include "clientversion.h"
+#include <DataDirectory.h>
 #include <LicenseAndInfo.h>
 #include "rpcclient.h"
 #include "rpcprotocol.h"
 #include "util.h"
 #include "utilstrencodings.h"
 #include "Settings.h"
+#include <ThreadManagementHelpers.h>
 
 #include <boost/filesystem/operations.hpp>
 
@@ -50,6 +52,7 @@ static bool AppInitRPC(int argc, char* argv[])
     if (argc < 2 ||settings.ParameterIsSet("-?") ||settings.ParameterIsSet("-help") ||settings.ParameterIsSet("-version")) {
         std::string strUsage = translate("Divi Core RPC client version") + " " + FormatFullVersion() + "\n";
         if (settings.ParameterIsSet("-version")) {
+            strUsage += LicenseInfo();
             strUsage += "\n" + translate("Usage:") + "\n" +
                         "  divi-cli [options] <command> [params]  " + translate("Send command to Divi Core") + "\n" +
                         "  divi-cli [options] help                " + translate("List commands") + "\n" +

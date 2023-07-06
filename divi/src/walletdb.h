@@ -26,12 +26,14 @@
 class CDB;
 class CDBEnv;
 class Settings;
+
 class CWalletDB final: public I_WalletDatabase
 {
 private:
     Settings& settings_;
     const std::string dbFilename_;
     unsigned& walletDbUpdated_;
+    CDBEnv& berkleyDbEnvWrapper_;
     std::unique_ptr<CDB> berkleyDB_;
 
     static bool Recover(
@@ -46,15 +48,12 @@ public:
     CWalletDB(Settings& settings,const std::string& dbFilename, const char* pszMode = "r+");
     ~CWalletDB();
 
-    bool TxnBegin();
-    bool TxnCommit();
-    bool TxnAbort();
+    bool AtomicWriteBegin() override;
+    bool AtomicWriteEnd(bool) override;
 
     //I_WalletDatabase
     bool WriteName(const std::string& strAddress, const std::string& strName) override;
     bool EraseName(const std::string& strAddress) override;
-    bool WritePurpose(const std::string& strAddress, const std::string& purpose) override;
-    bool ErasePurpose(const std::string& strAddress) override;
     bool WriteTx(uint256 hash, const CWalletTx& wtx) override;
     bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta) override;
     bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret, const CKeyMetadata& keyMeta) override;
@@ -72,20 +71,26 @@ public:
     bool WritePool(int64_t nPool, const CKeyPool& keypool) override;
     bool ErasePool(int64_t nPool) override;
     bool WriteMinVersion(int nVersion) override;
-    bool ReadAccount(const std::string& strAccount, CAccount& account) override;
-    bool WriteAccount(const std::string& strAccount, const CAccount& account) override;
     bool WriteHDChain(const CHDChain& chain) override;
     bool WriteCryptedHDChain(const CHDChain& chain) override;
     bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta) override;
     DBErrors LoadWallet(I_WalletLoader& pwallet) override;
     bool RewriteWallet() override;
 
+    const unsigned& numberOfWalletUpdates() const;
+    bool Flush();
+    enum BackupStatus
+    {
+        FAILED_DB_IN_USE,
+        FAILED_FILESYSTEM_ERROR,
+        SUCCEEDED,
+    };
+    BackupStatus Backup(const std::string& destination);
+
 private:
     CWalletDB(const CWalletDB&) = delete;
     void operator=(const CWalletDB&) = delete;
 };
 
-void ThreadFlushWalletDB(const std::string& strWalletFile);
-bool BackupWallet(const std::string& walletDBFilename, const std::string& strDest);
 
 #endif // BITCOIN_WALLETDB_H

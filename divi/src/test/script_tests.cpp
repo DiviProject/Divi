@@ -8,7 +8,7 @@
 #include "core_io.h"
 #include "key.h"
 #include "keystore.h"
-#include "main.h"
+#include <primitives/transaction.h>
 #include "script/script.h"
 #include "script/script_error.h"
 #include "script/sign.h"
@@ -26,6 +26,7 @@
 #include <utilstrencodings.h>
 #include <random.h>
 #include <script/SignatureCheckers.h>
+#include <RandomCScriptGenerator.h>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -67,7 +68,7 @@ read_json(const std::string& jsondata)
 
 BOOST_AUTO_TEST_SUITE(script_tests)
 
-CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey)
+CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey, CAmount value = 0)
 {
     CMutableTransaction txCredit;
     txCredit.nVersion = 1;
@@ -78,7 +79,7 @@ CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey)
     txCredit.vin[0].scriptSig = CScript() << CScriptNum(0) << CScriptNum(0);
     txCredit.vin[0].nSequence = std::numeric_limits<unsigned int>::max();
     txCredit.vout[0].scriptPubKey = scriptPubKey;
-    txCredit.vout[0].nValue = 0;
+    txCredit.vout[0].nValue = value;
 
     return txCredit;
 }
@@ -104,13 +105,22 @@ CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMu
 
     return txSpend;
 }
+CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMutableTransaction& txCredit, const CScript& scriptToSendTo, const CAmount& amountToSend)
+{
+    CMutableTransaction txSpend = BuildSpendingTransaction(scriptSig,txCredit,false);
+    txSpend.vout[0] = CTxOut(amountToSend,scriptToSendTo);
+    return txSpend;
+}
+
+
 
 void DoTest(const CScript& scriptPubKey, const CScript& scriptSig, int flags, bool expect, const std::string& message, bool requireCoinStakeSpend = false)
 {
     ScriptError err;
-    CMutableTransaction tx = BuildSpendingTransaction(scriptSig, BuildCreditingTransaction(scriptPubKey),requireCoinStakeSpend);
+    CMutableTransaction txCrediting = BuildCreditingTransaction(scriptPubKey);
+    CMutableTransaction tx = BuildSpendingTransaction(scriptSig, txCrediting,requireCoinStakeSpend);
     CMutableTransaction tx2 = tx;
-    BOOST_CHECK_MESSAGE(VerifyScript(scriptSig, scriptPubKey, flags, MutableTransactionSignatureChecker(&tx, 0), &err) == expect, message);
+    BOOST_CHECK_MESSAGE(VerifyScript(scriptSig, txCrediting.vout[0], flags, MutableTransactionSignatureChecker(&tx, 0), &err) == expect, message);
     BOOST_CHECK_MESSAGE(expect == (err == SCRIPT_ERR_OK), std::string(ScriptErrorString(err)) + ": " + message);
 #if defined(HAVE_CONSENSUS_LIB)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
@@ -471,7 +481,7 @@ BOOST_AUTO_TEST_CASE(willVerifyStakingVaultSignatureAccordingToSpendingCondition
         unsigned flags = SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE;
         ScriptError err;
         BOOST_CHECK_MESSAGE(
-            expect==VerifyScript(spendTx.vin[0].scriptSig, creditTx.vout[0].scriptPubKey, flags, MutableTransactionSignatureChecker(&spendTx, 0), &err),
+            expect==VerifyScript(spendTx.vin[0].scriptSig, creditTx.vout[0], flags, MutableTransactionSignatureChecker(&spendTx, 0), &err),
             message);
         BOOST_CHECK_MESSAGE(expect==(err == SCRIPT_ERR_OK), std::string(ScriptErrorString(err)) + ": " + message);
     };
@@ -510,7 +520,7 @@ BOOST_AUTO_TEST_CASE(canSignAndCombineVaultSignatures)
         const unsigned flags = SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_VERIFY_MINIMALDATA | SCRIPT_REQUIRE_COINSTAKE;
         ScriptError err;
         BOOST_CHECK_MESSAGE(
-            VerifyScript(spendTx.vin[0].scriptSig, creditTx.vout[0].scriptPubKey, flags,
+            VerifyScript(spendTx.vin[0].scriptSig, creditTx.vout[0], flags,
                          MutableTransactionSignatureChecker(&spendTx, 0), &err),
             "Failed to verify the signature");
         BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, std::string(ScriptErrorString(err)));
@@ -1035,18 +1045,18 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG12)
     CMutableTransaction txTo12 = BuildSpendingTransaction(CScript(), txFrom12);
 
     CScript goodsig1 = sign_multisig(scriptPubKey12, key1, txTo12);
-    BOOST_CHECK(VerifyScript(goodsig1, scriptPubKey12, flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
+    BOOST_CHECK(VerifyScript(goodsig1, txFrom12.vout[0], flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
     txTo12.vout[0].nValue = 2;
-    BOOST_CHECK(!VerifyScript(goodsig1, scriptPubKey12, flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
+    BOOST_CHECK(!VerifyScript(goodsig1, txFrom12.vout[0], flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
     CScript goodsig2 = sign_multisig(scriptPubKey12, key2, txTo12);
-    BOOST_CHECK(VerifyScript(goodsig2, scriptPubKey12, flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
+    BOOST_CHECK(VerifyScript(goodsig2, txFrom12.vout[0], flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
 
     CScript badsig1 = sign_multisig(scriptPubKey12, key3, txTo12);
-    BOOST_CHECK(!VerifyScript(badsig1, scriptPubKey12, flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
+    BOOST_CHECK(!VerifyScript(badsig1, txFrom12.vout[0], flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
 
@@ -1073,54 +1083,54 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG23)
     std::vector<CKey> keys;
     keys.push_back(key1); keys.push_back(key2);
     CScript goodsig1 = sign_multisig(scriptPubKey23, keys, txTo23);
-    BOOST_CHECK(VerifyScript(goodsig1, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
+    BOOST_CHECK(VerifyScript(goodsig1, txFrom23.vout[0], flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
 
     keys.clear();
     keys.push_back(key1); keys.push_back(key3);
     CScript goodsig2 = sign_multisig(scriptPubKey23, keys, txTo23);
-    BOOST_CHECK(VerifyScript(goodsig2, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
+    BOOST_CHECK(VerifyScript(goodsig2, txFrom23.vout[0], flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
 
     keys.clear();
     keys.push_back(key2); keys.push_back(key3);
     CScript goodsig3 = sign_multisig(scriptPubKey23, keys, txTo23);
-    BOOST_CHECK(VerifyScript(goodsig3, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
+    BOOST_CHECK(VerifyScript(goodsig3, txFrom23.vout[0], flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
 
     keys.clear();
     keys.push_back(key2); keys.push_back(key2); // Can't re-use sig
     CScript badsig1 = sign_multisig(scriptPubKey23, keys, txTo23);
-    BOOST_CHECK(!VerifyScript(badsig1, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
+    BOOST_CHECK(!VerifyScript(badsig1, txFrom23.vout[0], flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
     keys.clear();
     keys.push_back(key2); keys.push_back(key1); // sigs must be in correct order
     CScript badsig2 = sign_multisig(scriptPubKey23, keys, txTo23);
-    BOOST_CHECK(!VerifyScript(badsig2, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
+    BOOST_CHECK(!VerifyScript(badsig2, txFrom23.vout[0], flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
     keys.clear();
     keys.push_back(key3); keys.push_back(key2); // sigs must be in correct order
     CScript badsig3 = sign_multisig(scriptPubKey23, keys, txTo23);
-    BOOST_CHECK(!VerifyScript(badsig3, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
+    BOOST_CHECK(!VerifyScript(badsig3, txFrom23.vout[0], flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
     keys.clear();
     keys.push_back(key4); keys.push_back(key2); // sigs must match pubkeys
     CScript badsig4 = sign_multisig(scriptPubKey23, keys, txTo23);
-    BOOST_CHECK(!VerifyScript(badsig4, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
+    BOOST_CHECK(!VerifyScript(badsig4, txFrom23.vout[0], flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
     keys.clear();
     keys.push_back(key1); keys.push_back(key4); // sigs must match pubkeys
     CScript badsig5 = sign_multisig(scriptPubKey23, keys, txTo23);
-    BOOST_CHECK(!VerifyScript(badsig5, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
+    BOOST_CHECK(!VerifyScript(badsig5, txFrom23.vout[0], flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
     keys.clear(); // Must have signatures
     CScript badsig6 = sign_multisig(scriptPubKey23, keys, txTo23);
-    BOOST_CHECK(!VerifyScript(badsig6, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
+    BOOST_CHECK(!VerifyScript(badsig6, txFrom23.vout[0], flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_INVALID_STACK_OPERATION, ScriptErrorString(err));
 
 
@@ -1246,8 +1256,9 @@ BOOST_AUTO_TEST_CASE(script_standard_push)
     for (int i=0; i<67000; i++) {
         CScript script;
         script << i;
+        const CTxOut previousOutput(0, CScript() << OP_1);
         BOOST_CHECK_MESSAGE(script.IsPushOnly(), "Number " << i << " is not pure push.");
-        BOOST_CHECK_MESSAGE(VerifyScript(script, CScript() << OP_1, SCRIPT_VERIFY_MINIMALDATA, BaseSignatureChecker(), &err), "Number " << i << " push is not minimal data.");
+        BOOST_CHECK_MESSAGE(VerifyScript(script, previousOutput, SCRIPT_VERIFY_MINIMALDATA, BaseSignatureChecker(), &err), "Number " << i << " push is not minimal data.");
         BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
     }
 
@@ -1255,8 +1266,9 @@ BOOST_AUTO_TEST_CASE(script_standard_push)
         std::vector<unsigned char> data(i, '\111');
         CScript script;
         script << data;
+        const CTxOut previousOutput(0, CScript() << OP_1);
         BOOST_CHECK_MESSAGE(script.IsPushOnly(), "Length " << i << " is not pure push.");
-        BOOST_CHECK_MESSAGE(VerifyScript(script, CScript() << OP_1, SCRIPT_VERIFY_MINIMALDATA, BaseSignatureChecker(), &err), "Length " << i << " push is not minimal data.");
+        BOOST_CHECK_MESSAGE(VerifyScript(script, previousOutput, SCRIPT_VERIFY_MINIMALDATA, BaseSignatureChecker(), &err), "Length " << i << " push is not minimal data.");
         BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
     }
 }
@@ -1270,6 +1282,146 @@ BOOST_AUTO_TEST_CASE(script_IsPushOnly_on_invalid_scripts)
     // the invalid push. Still, it doesn't hurt to test it explicitly.
     static const unsigned char direct[] = { 1 };
     BOOST_CHECK(!CScript(direct, direct+sizeof(direct)).IsPushOnly());
+}
+
+BOOST_AUTO_TEST_CASE(scriptWillLimitTransferOfFundsOnlyWhenFlagIsEnabled)
+{
+    CScript unexpectedChangeScript = RandomCScriptGenerator()(25);
+    valtype destinationScriptHashBytes = ToByteVector(CScriptID(RandomCScriptGenerator()(25)));
+
+    CScript expectedP2shScript = CScript() << OP_HASH160 << destinationScriptHashBytes << OP_EQUAL;
+    CScript transferLimitedScript = CScript() << CAmount(100*COIN) << destinationScriptHashBytes << OP_LIMIT_TRANSFER;
+    CMutableTransaction txToSpendFrom = BuildCreditingTransaction(transferLimitedScript,150*COIN);
+
+    BOOST_CHECK_EQUAL_MESSAGE(expectedP2shScript == unexpectedChangeScript,false, "Test precondition not met. Unexpected script and expected script are equal");
+    std::vector<std::pair<CMutableTransaction,bool>> txExpectations;
+    txExpectations.reserve(6);
+    // Incorrect change address
+    CMutableTransaction txWithinLimitButWrongChange = BuildSpendingTransaction(CScript(), txToSpendFrom, unexpectedChangeScript, 50*COIN);
+    txExpectations.emplace_back(txWithinLimitButWrongChange,false);
+    CMutableTransaction txUnderLimitButWrongChange = BuildSpendingTransaction(CScript(), txToSpendFrom, unexpectedChangeScript, 50*COIN + 1 );
+    txExpectations.emplace_back(txUnderLimitButWrongChange,false);
+    CMutableTransaction txOverLimitButWrongChange = BuildSpendingTransaction(CScript(), txToSpendFrom, unexpectedChangeScript, 50*COIN - 1 );
+    txExpectations.emplace_back(txOverLimitButWrongChange,false);
+
+    // Correct change address but wrong amount
+    CMutableTransaction txWithinLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN );
+    txExpectations.emplace_back(txWithinLimitButRightChange,true);
+    CMutableTransaction txUnderLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN + 1 );
+    txExpectations.emplace_back(txUnderLimitButRightChange,true);
+    CMutableTransaction txOverLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN - 1 );
+    txExpectations.emplace_back(txOverLimitButRightChange,false);
+
+    const CScript scriptSig;
+    {
+        ScriptError err;
+        for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
+        {
+            const CMutableTransaction& tx = expectation.first;
+            BOOST_CHECK_EQUAL_MESSAGE(
+                VerifyScript(
+                    scriptSig,
+                    txToSpendFrom.vout[0],
+                    SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_LIMIT_TRANSFER,
+                    MutableTransactionSignatureChecker(&tx, 0),
+                    &err),
+                expectation.second,
+                "Failed to limit transfers as expected");
+            if(expectation.second)
+            {
+                BOOST_CHECK_EQUAL_MESSAGE(err,SCRIPT_ERR_OK,"Script evaluation terminated with errors!");
+            }
+        }
+    }
+    {
+        // Without the flag there are no constraints
+        ScriptError err;
+        for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
+        {
+            const CMutableTransaction& tx = expectation.first;
+            BOOST_CHECK_EQUAL_MESSAGE(
+                VerifyScript(
+                    scriptSig,
+                    txToSpendFrom.vout[0],
+                    SCRIPT_VERIFY_P2SH,
+                    MutableTransactionSignatureChecker(&tx, 0),
+                    &err),
+                true,
+                "Failed to limit transfers as expected");
+            BOOST_CHECK(err==SCRIPT_ERR_OK);
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(willLimitTransferOfFundsForP2SHScriptOnlyWhenFlagIsEnabled)
+{
+    CScript unexpectedChangeScript = RandomCScriptGenerator()(25);
+    valtype destinationScriptHashBytes = ToByteVector(CScriptID(RandomCScriptGenerator()(25)));
+
+    CScript expectedP2shScript = CScript() << OP_HASH160 << destinationScriptHashBytes << OP_EQUAL;
+    CScript transferLimitedScript = CScript() << CAmount(100*COIN) << destinationScriptHashBytes << OP_LIMIT_TRANSFER;
+
+    CScript transferLimitedP2SH = CScript() << OP_HASH160 << ToByteVector(CScriptID(transferLimitedScript)) << OP_EQUAL;
+    CMutableTransaction txToSpendFrom = BuildCreditingTransaction(transferLimitedP2SH, 150*COIN);
+
+    BOOST_CHECK_EQUAL_MESSAGE(expectedP2shScript == unexpectedChangeScript,false, "Test precondition not met. Unexpected script and expected script are equal");
+    std::vector<std::pair<CMutableTransaction,bool>> txExpectations;
+    txExpectations.reserve(6);
+    // Incorrect change address
+    CMutableTransaction txWithinLimitButWrongChange = BuildSpendingTransaction(CScript(), txToSpendFrom, unexpectedChangeScript, 50*COIN);
+    txExpectations.emplace_back(txWithinLimitButWrongChange,false);
+    CMutableTransaction txUnderLimitButWrongChange = BuildSpendingTransaction(CScript(), txToSpendFrom, unexpectedChangeScript, 50*COIN + 1 );
+    txExpectations.emplace_back(txUnderLimitButWrongChange,false);
+    CMutableTransaction txOverLimitButWrongChange = BuildSpendingTransaction(CScript(), txToSpendFrom, unexpectedChangeScript, 50*COIN - 1 );
+    txExpectations.emplace_back(txOverLimitButWrongChange,false);
+
+    // Correct change address but wrong amount
+    CMutableTransaction txWithinLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN );
+    txExpectations.emplace_back(txWithinLimitButRightChange,true);
+    CMutableTransaction txUnderLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN + 1 );
+    txExpectations.emplace_back(txUnderLimitButRightChange,true);
+    CMutableTransaction txOverLimitButRightChange = BuildSpendingTransaction(CScript(), txToSpendFrom, expectedP2shScript, 50*COIN - 1 );
+    txExpectations.emplace_back(txOverLimitButRightChange,false);
+
+    const CScript scriptSig = CScript() << ToByteVector(transferLimitedScript);
+    {
+        ScriptError err;
+        for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
+        {
+            const CMutableTransaction& tx = expectation.first;
+            BOOST_CHECK_EQUAL_MESSAGE(
+                VerifyScript(
+                    scriptSig,
+                    txToSpendFrom.vout[0],
+                    SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_LIMIT_TRANSFER,
+                    MutableTransactionSignatureChecker(&tx, 0),
+                    &err),
+                expectation.second,
+                "Failed to limit transfers as expected");
+            if(expectation.second)
+            {
+                BOOST_CHECK_EQUAL_MESSAGE(err,SCRIPT_ERR_OK,"Script evaluation terminated with errors!");
+            }
+        }
+    }
+    {
+        // Without the flag there are no constraints
+        ScriptError err;
+        for(const std::pair<CMutableTransaction,bool>& expectation: txExpectations)
+        {
+            const CMutableTransaction& tx = expectation.first;
+            BOOST_CHECK_EQUAL_MESSAGE(
+                VerifyScript(
+                    scriptSig,
+                    txToSpendFrom.vout[0],
+                    SCRIPT_VERIFY_P2SH,
+                    MutableTransactionSignatureChecker(&tx, 0),
+                    &err),
+                true,
+                "Failed to limit transfers as expected");
+            BOOST_CHECK(err==SCRIPT_ERR_OK);
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

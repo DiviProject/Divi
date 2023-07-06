@@ -9,10 +9,7 @@
 
 #include <list>
 
-#include "addressindex.h"
-#include "spentindex.h"
 #include "amount.h"
-#include "FeeRate.h"
 #include "coins.h"
 #include "primitives/transaction.h"
 #include "sync.h"
@@ -24,7 +21,6 @@ class CAutoFile;
 /** Fake height value used in CCoins to signify they are only in the memory pool (since 0.8) */
 bool IsMemPoolHeight(unsigned coinHeight);
 
-class FeePolicyEstimator;
 /** An inpoint - a combination of a transaction and an index n into its vin */
 class CInPoint
 {
@@ -59,29 +55,8 @@ public:
 class CTxMemPool
 {
 private:
-    bool fSanityCheck; //! Normally false, true if -checkmempool or -regtest
-    unsigned int nTransactionsUpdated;
-    std::unique_ptr<FeePolicyEstimator> feePolicyEstimator;
-
-    const CFeeRate& minRelayFee; //! Passed to constructor to avoid dependency on main
+    bool fSanityCheck_; //! Normally false, true if -checkmempool or -regtest
     uint64_t totalTxSize; //! sum of all mempool tx' byte sizes
-
-    /* The mempool reads these flags, which are passed by reference in the
-       constructor and refer to the globals in main (normally at least).  */
-    const bool& fAddressIndex_;
-    const bool& fSpentIndex_;
-
-    typedef std::map<CMempoolAddressDeltaKey, CMempoolAddressDelta, CMempoolAddressDeltaKeyCompare> addressDeltaMap;
-    addressDeltaMap mapAddress;
-
-    typedef std::map<uint256, std::vector<CMempoolAddressDeltaKey> > addressDeltaMapInserted;
-    addressDeltaMapInserted mapAddressInserted;
-
-    typedef std::map<CSpentIndexKey, CSpentIndexValue, CSpentIndexKeyCompare> mapSpentIndex;
-    mapSpentIndex mapSpent;
-
-    typedef std::map<uint256, std::vector<CSpentIndexKey> > mapSpentIndexInserted;
-    mapSpentIndexInserted mapSpentInserted;
 
     std::map<uint256, std::pair<double, CAmount> > mapDeltas;
 
@@ -90,20 +65,23 @@ private:
      *  of mapTx in case of segwit light.  */
     std::map<uint256, const CTxMemPoolEntry*> mapBareTxid;
 
-    void addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
-    bool removeAddressIndex(const uint256 txhash);
-
-    void addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
-    bool removeSpentIndex(const uint256& txhash);
-
     void removeConflicts(const CTransaction& tx, std::list<CTransaction>& removed);
+
+    int64_t timeOfLastChainTipUpdate_;
 public:
     mutable CCriticalSection cs;
     std::map<uint256, CTxMemPoolEntry> mapTx;
     std::map<COutPoint, CInPoint> mapNextTx;
 
-    explicit CTxMemPool(const CFeeRate& _minRelayFee,
-                        const bool& addressIndex, const bool& spentIndex);
+    int64_t getLastTimeOfChainTipUpdate() const
+    {
+        return timeOfLastChainTipUpdate_;
+    }
+    void setLastTimeOfChainTipUpdate(int64_t currentTime)
+    {
+        timeOfLastChainTipUpdate_ = currentTime;
+    }
+    explicit CTxMemPool();
     ~CTxMemPool();
 
     /**
@@ -113,22 +91,15 @@ public:
      * check does nothing.
      */
     void check(const CCoinsViewCache* pcoins, const BlockMap& blockIndexMap) const;
-    void setSanityCheck(bool _fSanityCheck) { fSanityCheck = _fSanityCheck; }
+    void setSanityCheck(bool fSanityCheck) { fSanityCheck_ = fSanityCheck; }
 
-    bool addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry, const CCoinsViewCache& view);
+    bool addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry);
     void remove(const CTransaction& tx, std::list<CTransaction>& removed, bool fRecursive = false);
     void removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned int nMemPoolHeight);
     void removeConfirmedTransactions(const std::vector<CTransaction>& vtx, unsigned int nBlockHeight, std::list<CTransaction>& conflicts);
     void clear();
     void queryHashes(std::vector<uint256>& vtxid);
     void pruneSpent(const uint256& hash, CCoins& coins) const;
-    unsigned int GetTransactionsUpdated() const;
-    void AddTransactionsUpdated(unsigned int n);
-
-    bool getAddressIndex(const std::vector<std::pair<uint160, int> > &addresses,
-                         std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> > &results);
-
-    bool getSpentIndex(const CSpentIndexKey &key, CSpentIndexValue &value);
 
     /** Affect CreateNewBlock prioritisation of transactions */
     bool IsPrioritizedTransaction(const uint256 hash);
@@ -147,7 +118,7 @@ public:
         return totalTxSize;
     }
 
-    bool exists(const uint256& hash)
+    bool exists(const uint256& hash) const
     {
         LOCK(cs);
         return (mapTx.count(hash) != 0);
@@ -165,34 +136,31 @@ public:
     /** Looks up a transaction by its outpoint for spending, taking potential changes
      *  from the raw txid (e.g. segwit light) into account.  */
     bool lookupOutpoint(const uint256& hash, CTransaction& result) const;
-
-    /** Estimate fee rate needed to get into the next nBlocks */
-    CFeeRate estimateFee(int nBlocks) const;
-
-    /** Estimate priority needed to get into the next nBlocks */
-    double estimatePriority(int nBlocks) const;
-
-    /** Write/Read estimates to disk */
-    bool WriteFeeEstimates(CAutoFile& fileout) const;
-    bool ReadFeeEstimates(CAutoFile& filein);
 };
 
 /**
  * CCoinsView that brings transactions from a memorypool into view.
  * It does not check for spendings by memory pool transactions.
  */
-class CCoinsViewMemPool : public CCoinsViewBacked
+class CCoinsViewMemPool final: public CCoinsView
 {
 protected:
+    const CCoinsViewBacked backingView_;
     const CTxMemPool& mempool;
-
 public:
+    CCoinsViewMemPool(const CTxMemPool& mempoolIn);
     CCoinsViewMemPool(const CCoinsView* baseIn, const CTxMemPool& mempoolIn);
     bool GetCoins(const uint256& txid, CCoins& coins) const override;
     bool HaveCoins(const uint256& txid) const override;
+    uint256 GetBestBlock() const override;
+    bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override
+    {
+        return false;
+    }
+
     bool GetCoinsAndPruneSpent(const uint256& txid,CCoins& coins) const;
 };
 class CValidationState;
 bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx);
-bool SubmitTransactionToMempool(CTxMemPool& mempool, CValidationState& state, const CTransaction& tx);
+bool SubmitTransactionToMempool(CTxMemPool& mempool, const CTransaction& tx, CValidationState& state);
 #endif // BITCOIN_TXMEMPOOL_H

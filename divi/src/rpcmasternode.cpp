@@ -4,13 +4,14 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "activemasternode.h"
+#include <ChainstateManager.h>
 #include "init.h"
-#include "main.h"
 #include <chain.h>
 #include "masternode-payments.h"
 #include "activemasternode.h"
 #include "masternodeman.h"
 #include "obfuscation.h"
+#include <rpcprotocol.h>
 #include "rpcserver.h"
 #include "utilmoneystr.h"
 #include "script/standard.h"
@@ -32,10 +33,8 @@
 #include <fstream>
 using namespace json_spirit;
 
-extern CWallet* pwalletMain;
-extern CChain chainActive;
 extern CCriticalSection cs_main;
-extern void SendMoneyToAddress(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew);
+extern std::string SendMoneyToAddress(CWallet* pwallet, const CTxDestination& address, CAmount nValue);
 extern CBitcoinAddress GetAccountAddress(CWallet& wallet, std::string strAccount, bool forceNewKey, bool isWalletDerivedKey);
 
 static MasternodeTier GetMasternodeTierFromString(std::string str)
@@ -61,16 +60,7 @@ static MasternodeTier GetMasternodeTierFromString(std::string str)
     return MasternodeTier::INVALID;
 }
 
-Value debug(const Array& params, bool fHelp)
-{
-	Object obj;
-
-	// obj.push_back(Pair("pubKey", pubkey.GetHash().GetHex()));
-
-	return obj;
-}
-
-Value allocatefunds(const Array& params, bool fHelp)
+Value allocatefunds(const Array& params, bool fHelp, CWallet* pwallet)
 {
 	if (fHelp || params.size() != 3)
 		throw std::runtime_error(
@@ -89,7 +79,11 @@ Value allocatefunds(const Array& params, bool fHelp)
     {
         throw std::runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
     }
-	CBitcoinAddress acctAddr = GetAccountAddress(*pwalletMain,"alloc->" + params[1].get_str(),false,true);
+    if(!pwallet)
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Invalid masternode tier");
+    }
+	CBitcoinAddress acctAddr = GetAccountAddress(*pwallet,"alloc->" + params[1].get_str(),false,true);
 	std::string strAmt = params[2].get_str();
 
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
@@ -98,18 +92,20 @@ Value allocatefunds(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
     }
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
-    CWalletTx wtx;
-    SendMoneyToAddress(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), wtx);
+    const uint256 txid = uint256S(SendMoneyToAddress(pwallet,acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier)));
+    const CWalletTx* walletTx = pwallet->GetWalletTx(txid);
+    if(!walletTx)
+        throw JSONRPCError(RPC_WALLET_ERROR, "Couldn't find MN allocation transaction");
 
     Object obj;
-    obj.push_back(Pair("txhash", wtx.GetHash().GetHex()));
+    obj.push_back(Pair("txhash", walletTx->GetHash().GetHex() ));
     bool found = false;
     auto nAmount = CMasternode::GetTierCollateralAmount(nMasternodeTier);
-    for(size_t i = 0; i < wtx.vout.size(); ++i)
+    for(size_t i = 0; i < walletTx->vout.size(); ++i)
     {
-        if(wtx.vout[i].nValue == nAmount)
+        if(walletTx->vout[i].nValue == nAmount)
         {
             found = true;
             obj.push_back(Pair("vout", static_cast<int64_t>(i) ));
@@ -123,85 +119,7 @@ Value allocatefunds(const Array& params, bool fHelp)
     return obj;
 }
 
-Value fundmasternode(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() != 4)
-		throw std::runtime_error(
-			"fundmasternode alias amount TxID masternode ( \"pay wallet\" ( \"voting wallet\" ) )\n"
-			"\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
-
-			"\nArguments:\n"
-			"1. alias			(string, required) helpful identifier to recognize this allocation later.\n"
-			"2. amount			(diamond, platinum, gold, silver, copper) tier of masternode. \n"
-			"      <future>     (numeric, required) amount of divi funded will also be accepted for partially funding master nodes and other purposes.\n"
-			"3. TxID			(string, required) funding transaction id or bare txid.\n"
-            "4. masternode		(string, required) ip address of masternode.\n"
-			"(use an empty string for the pay wallet if the same as the funding wallet and you wish to assign a different voting wallet).\n"
-
-			"\nResult:\n"
-			"\"config line\"	(string) the above details for the masternode & wallet config files & cryptographic signature proving that you authorized this.\n");
-
-    auto alias = params[0].get_str();
-    auto nMasternodeTier = GetMasternodeTierFromString(params[1].get_str());
-
-    if(!CMasternode::IsTierValid(nMasternodeTier))
-    {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
-    }
-
-	uint256 txHash = uint256(params[2].get_str());
-	std::string mnAddress = params[3].get_str();
-
-	bool found = false;
-    auto nAmount = CMasternode::GetTierCollateralAmount(nMasternodeTier);
-    bool outputIndex = -1;
-    if(auto wtx = pwalletMain->GetWalletTx(txHash))
-    {
-        for(size_t i = 0; i < wtx->vout.size(); ++i)
-        {
-            if(wtx->vout[i].nValue == nAmount && !pwalletMain->IsSpent(*wtx, i))
-            {
-                found = true;
-                outputIndex = i;
-                break;
-            }
-        }
-    }
-
-    if (!found) {
-        throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction");
-    }
-
-    EnsureWalletIsUnlocked();
-    pwalletMain->TopUpKeyPool();
-
-    // Generate a new key that is added to wallet
-    CBitcoinAddress address = GetAccountAddress(*pwalletMain,"reserved->" + alias,false,false);
-
-    CKeyID keyID;
-    if (!address.GetKeyID(keyID))
-        throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
-
-    CKey vchSecret;
-    if (!pwalletMain->GetKey(keyID, vchSecret))
-        throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + CBitcoinAddress(keyID).ToString() + " is not known");
-
-    if (mnAddress.find(':') == std::string::npos)
-        mnAddress += ":" + std::to_string(Params().GetDefaultPort());
-
-    auto tokens = {
-        alias,
-        mnAddress,
-        CBitcoinSecret(vchSecret).ToString(),
-        txHash.ToString(),
-        std::to_string(outputIndex)
-    };
-
-	Object obj;
-    obj.push_back(Pair("config line", boost::algorithm::join(tokens, " ")));
-	return obj;
-}
-Value verifymasternodesetup(const Array&params, bool fHelp)
+Value verifymasternodesetup(const Array&params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 4)
 		throw std::runtime_error(
@@ -240,7 +158,7 @@ Value verifymasternodesetup(const Array&params, bool fHelp)
     return result;
 }
 
-Value signmnbroadcast(const Array& params, bool fHelp)
+Value signmnbroadcast(const Array& params, bool fHelp, CWallet* pwallet)
 {
    	if (fHelp || params.size() != 1)
 		throw std::runtime_error(
@@ -254,7 +172,7 @@ Value signmnbroadcast(const Array& params, bool fHelp)
 
     Object result;
     std::string hexdata = params[0].get_str();
-    if(!SignMasternodeBroadcast(*pwalletMain,hexdata))
+    if(!pwallet || !SignMasternodeBroadcast(*pwallet,hexdata))
     {
         throw JSONRPCError(RPC_INVALID_PARAMS,"Unable to sign broadcast!");
     }
@@ -262,7 +180,7 @@ Value signmnbroadcast(const Array& params, bool fHelp)
     return result;
 }
 
-Value setupmasternode(const Array& params, bool fHelp)
+Value setupmasternode(const Array& params, bool fHelp, CWallet* pwallet)
 {
 	if (fHelp || params.size() < 5 || params.size() > 6)
 		throw std::runtime_error(
@@ -283,16 +201,17 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     Object result;
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
-    CBitcoinAddress address = GetAccountAddress(*pwalletMain,"reserved->" + params[0].get_str(),false,true);
+    if(!pwallet) throw JSONRPCError(RPC_WALLET_ERROR,"Wallet disabled!");
+    CBitcoinAddress address = GetAccountAddress(*pwallet,"reserved->" + params[0].get_str(),false,true);
     CKeyID keyID;
     if (!address.GetKeyID(keyID))
     {
         throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
     }
     CKey masternodeKey;
-    if (!pwalletMain->GetKey(keyID, masternodeKey))
+    if (!pwallet->GetKey(keyID, masternodeKey))
     {
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + CBitcoinAddress(keyID).ToString() + " is not known");
     }
@@ -312,7 +231,7 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     CMasternodeBroadcast mnb;
     std::string errorMsg;
-    if(!CMasternodeBroadcastFactory::CreateWithoutCollateralKey(*pwalletMain,config,masternodeKey.GetPubKey(),pubkeyCollateralAddress,errorMsg,mnb))
+    if(!CMasternodeBroadcastFactory::CreateWithoutCollateralKey(*pwallet,config,masternodeKey.GetPubKey(),pubkeyCollateralAddress,errorMsg,mnb))
     {
         throw JSONRPCError(RPC_INVALID_PARAMS,errorMsg);
     }
@@ -330,16 +249,6 @@ Value setupmasternode(const Array& params, bool fHelp)
     return result;
 }
 
-Value getpoolinfo(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("Obfuscation, in general, and getpoolinfo, in particular, are deprecated!");
-}
-
-Value masternode(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("masternode is deprecated!  Use one of the newer, clearer commands.");
-}
-
 std::string nodeHelp(std::string indent = "")
 {
 	std::string ret = indent + "\"address\": \"address\",    (string) Masternode DIVI address\n";
@@ -351,7 +260,7 @@ std::string nodeHelp(std::string indent = "")
 	return ret;
 }
 
-Value listmasternodes(const Array& params, bool fHelp)
+Value listmasternodes(const Array& params, bool fHelp, CWallet* pwallet)
 {
     std::string strFilter = "";
 
@@ -384,10 +293,11 @@ Value listmasternodes(const Array& params, bool fHelp)
             HelpExampleCli("masternodelist", "") + HelpExampleRpc("masternodelist", ""));
 
     Array ret;
-    CBlockIndex* pindex;
+    const CBlockIndex* pindex;
     {
+        const ChainstateManager::Reference chainstate;
         LOCK(cs_main);
-        pindex = chainActive.Tip();
+        pindex = chainstate->ActiveChain().Tip();
         if(!pindex) return 0;
     }
 
@@ -414,7 +324,7 @@ Value listmasternodes(const Array& params, bool fHelp)
     return ret;
 }
 
-Value getmasternodecount (const Array& params, bool fHelp)
+Value getmasternodecount (const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || (params.size() > 0))
         throw std::runtime_error(
@@ -432,7 +342,8 @@ Value getmasternodecount (const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmasternodecount", "") + HelpExampleRpc("getmasternodecount", ""));
 
-    const CBlockIndex* tip = chainActive.Tip();
+    const ChainstateManager::Reference chainstate;
+    const CBlockIndex* tip = chainstate->ActiveChain().Tip();
     MasternodeCountData data = GetMasternodeCounts(tip);
 
     Object obj;
@@ -447,12 +358,7 @@ Value getmasternodecount (const Array& params, bool fHelp)
     return obj;
 }
 
-Value masternodecurrent(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("masternodecurrent is deprecated!  masternode payments always rely upon votes");
-}
-
-Value broadcaststartmasternode(const Array& params, bool fHelp)
+Value broadcaststartmasternode(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 2 || params.size() < 1)
         throw std::runtime_error(
@@ -484,7 +390,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
     return result;
 }
 
-Value startmasternode(const Array& params, bool fHelp)
+Value startmasternode(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw std::runtime_error(
@@ -500,9 +406,9 @@ Value startmasternode(const Array& params, bool fHelp)
     const std::string alias = params[0].get_str();
     const bool deferRelay = (params.size() == 1)? false: params[1].get_bool();
 
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
     Object result;
-    MasternodeStartResult mnResult = StartMasternode(*pwalletMain, GetMasternodeModule().getStoredBroadcasts(), alias, deferRelay);
+    MasternodeStartResult mnResult = StartMasternode(*pwallet, GetMasternodeModule().getStoredBroadcasts(), alias, deferRelay);
 
     result.push_back(Pair("status",mnResult.status?"success":"failed"));
     if(!mnResult.status)
@@ -518,22 +424,7 @@ Value startmasternode(const Array& params, bool fHelp)
     return result;
 }
 
-Value createmasternodekey(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("createmasternodekey is deprecated!  A masternodekey is no longer necessary for setup.");
-}
-
-Value getmasternodeoutputs(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("getmasternodeoutputs is deprecated!  It has been replaced by fundmasternode for setup.");
-}
-
-Value listmasternodeconf(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("listmasternodeconf is deprecated!  It is not necessary for setup.");
-}
-
-Value getmasternodestatus (const Array& params, bool fHelp)
+Value getmasternodestatus (const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || (params.size() != 0))
         throw std::runtime_error(
@@ -595,7 +486,7 @@ std::string ParsePayeesIntoPaymentsString(const MasternodePaymentData& paymentDa
     return "Unknown";
 }
 
-Value getmasternodewinners (const Array& params, bool fHelp)
+Value getmasternodewinners (const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 3)
         throw std::runtime_error(
@@ -636,10 +527,11 @@ Value getmasternodewinners (const Array& params, bool fHelp)
             HelpExampleCli("getmasternodewinners", "") + HelpExampleRpc("getmasternodewinners", ""));
 
     int nHeight;
-    CBlockIndex* pindex = nullptr;
+    const CBlockIndex* pindex = nullptr;
     {
+        const ChainstateManager::Reference chainstate;
         LOCK(cs_main);
-        pindex = chainActive.Tip();
+        pindex = chainstate->ActiveChain().Tip();
         if(!pindex) return 0;
         nHeight = pindex->nHeight;
     }
@@ -699,12 +591,8 @@ Value getmasternodewinners (const Array& params, bool fHelp)
 
     return ret;
 }
-Value getmasternodescores(const Array& params, bool fHelp)
-{
-	throw std::runtime_error("getmasternodescores is deprecated!  masternode payments always rely upon votes not current scores");
-}
 
-Value importmnbroadcast(const Array& params, bool fHelp)
+Value importmnbroadcast(const Array& params, bool fHelp, CWallet* pwallet)
 {
      if (fHelp || params.size() != 1)
         throw std::runtime_error(
@@ -724,7 +612,7 @@ Value importmnbroadcast(const Array& params, bool fHelp)
     return GetMasternodeModule().getStoredBroadcasts().AddBroadcast(mnb);
 }
 
-Value listmnbroadcasts(const Array& params, bool fHelp)
+Value listmnbroadcasts(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 0)
         throw std::runtime_error(

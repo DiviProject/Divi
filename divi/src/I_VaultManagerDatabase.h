@@ -13,5 +13,6 @@ public:
     virtual bool WriteManagedScript(const CScript& managedScript) = 0;
     virtual bool EraseManagedScript(const CScript& managedScript) = 0;
     virtual bool ReadManagedScripts(ManagedScripts& managedScripts) = 0;
+    virtual bool Sync(bool forceSync) = 0;
 };
 #endif// I_VAULT_MANAGER_DATABASE_H

@@ -8,6 +8,7 @@
 #include <map>
 #include <test/test_only.h>
 
+#include <ChainstateManager.h>
 #include <MockSuperblockHeightValidator.h>
 #include <memory>
 #include <random.h>
@@ -24,7 +25,8 @@ private:
     unsigned lastUpdatedLotteryCoinstakesHeight_;
     std::unique_ptr<NiceMock<MockSuperblockHeightValidator>> heightValidator_;
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashes_;
-    CSporkManager sporkManager_;
+    const ChainstateManager::Reference chainstate_;
+    const CSporkManager& sporkManager_;
     int nextLockTime_;
 public:
     const int lotteryStartBlock;
@@ -34,7 +36,7 @@ public:
         , lastUpdatedLotteryCoinstakesHeight_(0)
         , heightValidator_(new NiceMock<MockSuperblockHeightValidator>)
         , fakeBlockIndexWithHashes_()
-        , sporkManager_()
+        , sporkManager_(GetSporkManager())
         , nextLockTime_(0)
         , lotteryStartBlock(100)
         , calculator_()
@@ -89,7 +91,7 @@ public:
     {
         CMutableTransaction tx;
 
-        CBlockIndex* currentBlockIndex = fakeBlockIndexWithHashes_->activeChain->operator[](blockHeight);
+        CBlockIndex* currentBlockIndex = const_cast<CBlockIndex*>(fakeBlockIndexWithHashes_->activeChain->operator[](blockHeight));
         LotteryCoinstakeData previousCoinstakesData;
 
 

@@ -7,8 +7,8 @@
 #ifndef BITCOIN_RPCSERVER_H
 #define BITCOIN_RPCSERVER_H
 
+#include <boost/asio.hpp>
 #include <amount.h>
-#include "rpcprotocol.h"
 #include "uint256.h"
 
 #include <list>
@@ -19,19 +19,10 @@
 #include "json/json_spirit_reader_template.h"
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
+#include <JsonParseHelpers.h>
 
 class CBlockIndex;
 class CNetAddr;
-
-class AcceptedConnection
-{
-public:
-    virtual ~AcceptedConnection() {}
-
-    virtual std::iostream& stream() = 0;
-    virtual std::string peer_address_to_string() const = 0;
-    virtual void close() = 0;
-};
 
 /** Start RPC threads */
 void StartRPCThreads();
@@ -73,18 +64,11 @@ void RPCTypeCheck(const json_spirit::Object& o,
     const std::map<std::string, json_spirit::Value_type>& typesExpected,
     bool fAllowNull = false);
 
-/**
- * Run func nSeconds from now. Uses boost deadline timers.
- * Overrides previous timer <name> (if any).
- */
-void RPCRunLater(const std::string& name, boost::function<void(void)> func, int64_t nSeconds);
-
-void RPCDiscardRunLater(const std::string &name);
-
 //! Convert boost::asio address to CNetAddr
-extern CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address);
+CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address);
 
-typedef json_spirit::Value (*rpcfn_type)(const json_spirit::Array& params, bool fHelp);
+class CWallet;
+typedef json_spirit::Value (*rpcfn_type)(const json_spirit::Array& params, bool fHelp, CWallet* pwallet);
 
 class CRPCCommand
 {
@@ -94,7 +78,8 @@ public:
     rpcfn_type actor;
     bool okSafeMode;
     bool threadSafe;
-    bool reqWallet;
+    bool requiresWalletLock;
+    bool requiresWalletInstance;
 };
 
 /**
@@ -104,11 +89,11 @@ class CRPCTable
 {
 private:
     std::map<std::string, const CRPCCommand*> mapCommands;
+    CRPCTable();
 
 public:
-    CRPCTable();
     const CRPCCommand* operator[](std::string name) const;
-    std::string help(std::string name) const;
+    std::string help(std::string name,CWallet* pwallet) const;
 
     /**
      * Execute a method.
@@ -124,38 +109,19 @@ public:
     * @returns List of registered commands.
     */
     std::vector<std::string> listCommands() const;
+    inline static const CRPCTable& getRPCTable()
+    {
+        static const CRPCTable rpcTable;
+        return rpcTable;
+    }
 };
 
-extern const CRPCTable tableRPC;
-
-/**
- * Utilities: convert hex-encoded Values
- * (throws error if not hex).
- */
-extern uint256 ParseHashV(const json_spirit::Value& v, std::string strName);
-extern uint256 ParseHashO(const json_spirit::Object& o, std::string strKey);
-extern std::vector<unsigned char> ParseHexV(const json_spirit::Value& v, std::string strName);
-extern std::vector<unsigned char> ParseHexO(const json_spirit::Object& o, std::string strKey);
-extern int ParseInt(const json_spirit::Object& o, std::string strKey);
-extern bool ParseBool(const json_spirit::Object& o, std::string strKey);
-
-extern void InitRPCMining();
-extern void ShutdownRPCMining();
-
-extern int64_t nWalletUnlockTime;
-extern CAmount AmountFromValue(const json_spirit::Value& value, bool allowZero = false);
-extern json_spirit::Value ValueFromAmount(const CAmount& amount);
-extern double GetDifficulty(const CBlockIndex* blockindex = NULL);
-extern std::string HelpRequiringPassphrase();
-extern std::string HelpExampleCli(std::string methodname, std::string args);
-extern std::string HelpExampleRpc(std::string methodname, std::string args);
-
-extern void EnsureWalletIsUnlocked();
-
-// in rest.cpp
-extern bool HTTPReq_REST(AcceptedConnection* conn,
-    std::string& strURI,
-    std::map<std::string, std::string>& mapHeaders,
-    bool fRun);
-
+void EnsureWalletIsUnlocked(CWallet* pwallet);
+void LockWallet(CWallet* pwallet);
+void UnlockWalletBriefly(CWallet* pwallet, int64_t sleepTime, bool revertToUnlockedForStakingOnExpiry);
+int64_t TimeTillWalletLock(CWallet* pwallet);
+std::string HelpRequiringPassphrase(CWallet* pwallet);
+std::string HelpExampleCli(std::string methodname, std::string args);
+std::string HelpExampleRpc(std::string methodname, std::string args);
+std::string GetWarningMessage(std::string category);
 #endif // BITCOIN_RPCSERVER_H

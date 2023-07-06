@@ -49,15 +49,15 @@ public:
                 *mockStakeModifierService_,
                 *(fakeBlockIndexWithHashes_->blockIndexByHash) ));
 
-        if(numberOfBlocks>0) getActiveChain()[0]->SetStakeModifier(genesisStakeModifier, true);
-        if(numberOfBlocks>1) getActiveChain()[1]->SetStakeModifier(firstBlockStakeModifier, true);
+        if(numberOfBlocks>0) const_cast<CBlockIndex*>(getActiveChain()[0])->SetStakeModifier(genesisStakeModifier, true);
+        if(numberOfBlocks>1) const_cast<CBlockIndex*>(getActiveChain()[1])->SetStakeModifier(firstBlockStakeModifier, true);
     }
 
     const CChain& getActiveChain() const
     {
         return *(fakeBlockIndexWithHashes_->activeChain);
     }
-    uint64_t getLastStakeModifier(CBlockIndex* currentIndex) const
+    uint64_t getLastStakeModifier(const CBlockIndex* currentIndex) const
     {
         assert(currentIndex);
         while(currentIndex && currentIndex->pprev && !currentIndex->GeneratedStakeModifier())
@@ -67,7 +67,7 @@ public:
         assert(currentIndex->GeneratedStakeModifier());
         return currentIndex->nStakeModifier;
     }
-    uint64_t getExpectedStakeModifier(CBlockIndex* currentIndex) const
+    uint64_t getExpectedStakeModifier(const CBlockIndex* currentIndex) const
     {
         assert(currentIndex);
         CHashWriter hasher(SER_GETHASH,0);
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(willDelegateToDecoradtedStakeModifierServiceBefore2021)
     Init(100, unixTimestampDecember31st2020Midnight - 3600);
     ON_CALL(*mockStakeModifierService_,getStakeModifier(_)).WillByDefault(Return(defaultStakeModifierQueryResult));
     StakingData stakingData;
-    CBlockIndex* currentBlockIndex = getActiveChain().Tip();
+    const CBlockIndex* currentBlockIndex = getActiveChain().Tip();
     while(currentBlockIndex)
     {
         if(currentBlockIndex->GetBlockTime() < unixTimestampDecember31st2020Midnight)

@@ -9,11 +9,13 @@
 #include "base58.h"
 #include <chain.h>
 #include "chainparams.h"
+#include <ChainstateManager.h>
 #include "core_io.h"
 #include "init.h"
-#include "main.h"
+
 #include "miner.h"
 #include "net.h"
+#include <rpcprotocol.h>
 #include "rpcserver.h"
 #include "util.h"
 #ifdef ENABLE_WALLET
@@ -22,9 +24,6 @@
 #include <I_CoinMinter.h>
 #include <CoinMintingModule.h>
 #include <ExtendedBlockFactory.h>
-#include <masternode-payments.h>
-#include <MasternodeModule.h>
-#include <spork.h>
 #include <stdint.h>
 #include <txmempool.h>
 #include <sync.h>
@@ -40,112 +39,85 @@
 #include <FeeAndPriorityCalculator.h>
 #include <blockmap.h>
 
+#include <JsonBlockHelpers.h>
+
 using namespace json_spirit;
 using namespace std;
 using namespace boost;
 using namespace boost::assign;
 extern Settings& settings;
-extern CWallet* pwalletMain;
-extern CCoinsViewCache* pcoinsTip;
-extern BlockMap mapBlockIndex;
 extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
-extern CChain chainActive;
 
-LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
 #ifdef ENABLE_WALLET
-Value setgenerate(const Array& params, bool fHelp)
+Value setgenerate(const Array& params, bool fHelp, CWallet* pwallet)
 {
-    if (fHelp || params.size() < 1 || params.size() > 2)
+    if (fHelp || params.size() != 1)
         throw runtime_error(
-            "setgenerate generate ( genproclimit )\n"
-            "\nSet 'generate' true or false to turn generation on or off.\n"
-            "Generation is limited to 'genproclimit' processors, -1 is unlimited.\n"
+            "setgenerate numberofblocks\n"
+            "Generation is limited to 'numberofblocks' additional blocks. This method is regtest only\n"
+            "This method cannot be called during normal operation as it will be active by default.\n"
             "\nArguments:\n"
-            "1. generate         (boolean, required) Set to true to turn on generation, false to turn off.\n"
-            "2. genproclimit     (numeric, optional) Set the processor limit for when generation is on. Can be -1 for unlimited.\n"
-            "                    Note: in -regtest mode, genproclimit controls how many blocks are generated immediately.\n"
+            "1. numberofblocks     (numeric, required) Set the numberofblocks blocks that are generated immediately (in regtest).\n"
             "\nResult\n"
-            "[ blockhashes ]     (array, -regtest only) hashes of blocks generated\n"
+            "[ blockhashes ]     (array) hashes of blocks generated\n"
             "\nExamples:\n"
-            "\nSet the generation on with a limit of one processor\n" +
-            HelpExampleCli("setgenerate", "true 1") +
-            "\nCheck the setting\n" + HelpExampleCli("getmininginfo", "") +
-            "\nTurn off generation\n" + HelpExampleCli("setgenerate", "false") +
-            "\nUsing json rpc\n" + HelpExampleRpc("setgenerate", "true, 1"));
+            "\nSet the generation on 1 block\n"
+            "\nUsing json rpc\n" +
+            HelpExampleRpc("setgenerate", "1"));
 
-    if (pwalletMain == NULL)
-        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
-
-    bool fGenerate = true;
-    if (params.size() > 0)
-        fGenerate = params[0].get_bool();
-
-    int nGenProcLimit = -1;
-    if (params.size() > 1) {
-        nGenProcLimit = params[1].get_int();
-        if (nGenProcLimit == 0)
-            fGenerate = false;
+    if (Params().NetworkID() != CBaseChainParams::REGTEST)
+    {
+        std::string preffix = ": ";
+        std::string reason = "invalid networks setting (regtest only)";
+        std::string errorMsg = std::string("Method disabled") + ((!reason.empty())? (preffix+reason): std::string(""));
+        throw JSONRPCError(RPC_METHOD_NOT_FOUND, errorMsg.c_str() );
     }
+
+    int numberOfBlocks = -1;
+    if (params.size() > 0)
+    {
+        numberOfBlocks = params[0].get_int();
+    }
+    if(numberOfBlocks < 1) return Value::null;
 
     // -regtest mode: don't return until nGenProcLimit blocks are generated
-    if (fGenerate && Params().MineBlocksOnDemand()) {
-        int nHeightStart = 0;
-        int nHeightEnd = 0;
-        int nHeight = 0;
-        int nGenerate = (nGenProcLimit > 0 ? nGenProcLimit : 1);
+    int nHeightStart = 0;
+    int nHeightEnd = 0;
+    int nHeight = 0;
 
-        { // Don't keep cs_main locked
-            LOCK(cs_main);
-            nHeightStart = chainActive.Height();
-            nHeight = nHeightStart;
-            nHeightEnd = nHeightStart + nGenerate;
-        }
+    const ChainstateManager::Reference chainstate;
+    const auto& chain = chainstate->ActiveChain();
 
-        Array blockHashes;
-        CoinMintingModule mintingModule(
-            settings,
-            cs_main,
-            Params(),
-            chainActive,
-            mapBlockIndex,
-            GetMasternodeModule(),
-            FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
-            pcoinsTip,
-            mempool,
-            GetPeerBlockNotifyService(),
-            *pwalletMain,
-            mapHashedBlocks,
-            mapBlockIndex,
-            GetSporkManager());
-        I_CoinMinter& minter = mintingModule.coinMinter();
-        minter.setMintingRequestStatus(true);
-
-        while (nHeight < nHeightEnd)
-        {
-            const bool newBlockAdded = minter.createNewBlock();
-            nHeight +=  newBlockAdded;
-
-            if (!newBlockAdded)
-                throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
-
-            // Don't keep cs_main locked
-            LOCK(cs_main);
-            if(nHeight == chainActive.Height())
-                blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
-        }
-        return blockHashes;
+    { // Don't keep cs_main locked
+        LOCK(cs_main);
+        nHeightStart = chain.Height();
+        nHeight = nHeightStart;
+        nHeightEnd = nHeightStart + numberOfBlocks;
     }
-    else // Not -regtest: start generate thread, return immediately
+
+    Array blockHashes;
+    const CoinMintingModuleReference coinMintingModuleRef = GetCoinMintingModule();
+    const CoinMintingModule& mintingModule = coinMintingModuleRef.access();
+    I_CoinMinter& minter = mintingModule.coinMinter();
+    minter.setMintingRequestStatus(true);
+
+    while (nHeight < nHeightEnd)
     {
-        const int numberOfThreadsToSpawn = nGenProcLimit;
-        SetPoWThreadPool(pwalletMain, numberOfThreadsToSpawn);
-    }
+        const bool newBlockAdded = minter.createNewBlock();
+        nHeight +=  newBlockAdded;
 
-    return Value::null;
+        if (!newBlockAdded)
+            throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
+
+        // Don't keep cs_main locked
+        LOCK(cs_main);
+        if(nHeight == chain.Height())
+            blockHashes.push_back(chain.Tip()->GetBlockHash().GetHex());
+    }
+    return blockHashes;
 }
 
-Value generateblock(const Array& params, bool fHelp)
+Value generateblock(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -158,6 +130,7 @@ Value generateblock(const Array& params, bool fHelp)
             "      \"extratx\" : [\"hex\", ...],   (array of strings, optional) transactions to include as hex\n"
             "      \"coinstake\" : \"hex\",        (string, optional) coinstake transaction to use as hex\n"
             "      \"ignoreMempool\" : true,       (bool, optional) if set, do not include mempool transactions\n"
+            "      \"blockBitsShift\" : unsigned (integer, optional) if set, use custom block bits\n"
             "    }\n"
             "\nResult\n"
             "blockhash     (string) hash of the generated block\n"
@@ -168,36 +141,31 @@ Value generateblock(const Array& params, bool fHelp)
     Object options;
     if (params.size() > 0)
         options = params[0].get_obj();
-    RPCTypeCheck(options, map_list_of("extratx", array_type)("coinstake", str_type)("ignoreMempool", bool_type), true);
-
-    if (pwalletMain == NULL)
-        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
+    RPCTypeCheck(options, map_list_of("extratx", array_type)("coinstake", str_type)("ignoreMempool", bool_type)("blockBitsShift",int_type), true);
 
     int nHeight = 0;
 
+    const ChainstateManager::Reference chainstate;
+    const auto& chain = chainstate->ActiveChain();
+
     { // Don't keep cs_main locked
         LOCK(cs_main);
-        nHeight = chainActive.Height();
+        nHeight = chain.Height();
     }
 
-    CoinMintingModule mintingModule(
-        settings,
-        cs_main,
-        Params(),
-        chainActive,
-        mapBlockIndex,
-        GetMasternodeModule(),
-        FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate(),
-        pcoinsTip,
-        mempool,
-        GetPeerBlockNotifyService(),
-        *pwalletMain,
-        mapHashedBlocks,
-        mapBlockIndex,
-        GetSporkManager());
+    const CoinMintingModuleReference coinMintingModuleRef = GetCoinMintingModule();
+    const CoinMintingModule& mintingModule = coinMintingModuleRef.access();
     I_CoinMinter& minter = mintingModule.coinMinter();
     minter.setMintingRequestStatus(true);
-    ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
+
+    struct ResetExtendedFactory
+    {
+        void operator()(ExtendedBlockFactory* ptr)
+        {
+            ptr->reset();
+        }
+    };
+    std::unique_ptr<ExtendedBlockFactory, ResetExtendedFactory>blockFactory(dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory()));
     assert(blockFactory);
 
     const Value& extraTx = find_value(options, "extratx");
@@ -205,7 +173,9 @@ Value generateblock(const Array& params, bool fHelp)
         for (const Value& val : extraTx.get_array()) {
             CTransaction tx;
             if (!DecodeHexTx(tx, val.get_str()))
+            {
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+            }
             blockFactory->addExtraTransaction(tx);
         }
 
@@ -213,9 +183,13 @@ Value generateblock(const Array& params, bool fHelp)
     if (coinstake.type() != null_type) {
         CTransaction tx;
         if (!DecodeHexTx(tx, coinstake.get_str()))
+        {
             throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+        }
         if (!tx.IsCoinStake())
+        {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "TX is not a coinstake");
+        }
         blockFactory->setCustomCoinstake(tx);
     }
 
@@ -223,20 +197,25 @@ Value generateblock(const Array& params, bool fHelp)
     if (ignoreMempool.type() != null_type)
         blockFactory->setIgnoreMempool(ignoreMempool.get_bool());
 
+    const Value& blockBitsShift = find_value(options, "blockBitsShift");
+    if(blockBitsShift.type() != null_type)
+        blockFactory->setCustomBits(blockBitsShift.get_int());
+
     const bool newBlockAdded = minter.createNewBlock();
 
     // Don't keep cs_main locked
     LOCK(cs_main);
 
-    if (!newBlockAdded || chainActive.Height() != nHeight + 1)
+    if (!newBlockAdded || chain.Height() != nHeight + 1)
+    {
         throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
-
-    return chainActive.Tip()->GetBlockHash().GetHex();
+    }
+    return chain.Tip()->GetBlockHash().GetHex();
 }
 #endif
 
 
-Value getmininginfo(const Array& params, bool fHelp)
+Value getmininginfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -246,12 +225,8 @@ Value getmininginfo(const Array& params, bool fHelp)
             "{\n"
             "  \"blocks\": nnn,             (numeric) The current block\n"
             "  \"currentblocksize\": nnn,   (numeric) The last block size\n"
-            "  \"currentblocktx\": nnn,     (numeric) The last block transaction\n"
             "  \"difficulty\": xxx.xxxxx    (numeric) The current difficulty\n"
             "  \"errors\": \"...\"          (string) Current errors\n"
-            "  \"generate\": true|false     (boolean) If the generation is on or off (see setgenerate calls)\n"
-            "  \"genproclimit\": n          (numeric) The processor limit for generation. -1 if no generation. (see setgenerate calls)\n"
-            "  \"hashespersec\": n          (numeric) The hashes per second of the generation, or 0 if no generation.\n"
             "  \"pooledtx\": n              (numeric) The size of the mem pool\n"
             "  \"testnet\": true|false      (boolean) If using testnet or not\n"
             "  \"chain\": \"xxxx\",         (string) current network name as defined in BIP70 (main, test, regtest)\n"
@@ -259,13 +234,13 @@ Value getmininginfo(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmininginfo", "") + HelpExampleRpc("getmininginfo", ""));
 
+    const ChainstateManager::Reference chainstate;
+
     Object obj;
-    obj.push_back(Pair("blocks", (int)chainActive.Height()));
-    obj.push_back(Pair("difficulty", (double)GetDifficulty()));
-    obj.push_back(Pair("errors", GetWarnings("statusbar")));
-    obj.push_back(Pair("mining", (int)settings.GetArg("-mining", false) ));
-    obj.push_back(Pair("mining_threads", (int)settings.GetArg("-mining_threads", Params().DefaultMinerThreads() )));
-    obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
+    obj.push_back(Pair("blocks", (int)chainstate->ActiveChain().Height()));
+    obj.push_back(Pair("difficulty", (double)GetDifficulty(chainstate->ActiveChain())));
+    obj.push_back(Pair("errors", GetWarningMessage("statusbar")));
+    obj.push_back(Pair("pooledtx", (uint64_t)GetTransactionMemoryPool().size()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
     obj.push_back(Pair("chain", Params().NetworkIDString()));
     return obj;
@@ -273,7 +248,7 @@ Value getmininginfo(const Array& params, bool fHelp)
 
 
 // NOTE: Unlike wallet RPC (which use DIVI values), mining RPCs follow GBT (BIP 22) in using satoshi amounts
-Value prioritisetransaction(const Array& params, bool fHelp)
+Value prioritisetransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 3)
         throw runtime_error(
@@ -296,69 +271,6 @@ Value prioritisetransaction(const Array& params, bool fHelp)
 
     CAmount nAmount = params[2].get_int64();
 
-    mempool.PrioritiseTransaction(hash, nAmount);
+    GetTransactionMemoryPool().PrioritiseTransaction(hash, nAmount);
     return true;
-}
-
-Value getblocktemplate(const Array& params, bool fHelp)
-{
-    throw std::runtime_error("getblocktemplate has been removed, use divid for staking");
-}
-
-Value estimatefee(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() != 1)
-        throw runtime_error(
-            "estimatefee nblocks\n"
-            "\nEstimates the approximate fee per kilobyte\n"
-            "needed for a transaction to begin confirmation\n"
-            "within nblocks blocks.\n"
-            "\nArguments:\n"
-            "1. nblocks     (numeric)\n"
-            "\nResult:\n"
-            "n :    (numeric) estimated fee-per-kilobyte\n"
-            "\n"
-            "-1.0 is returned if not enough transactions and\n"
-            "blocks have been observed to make an estimate.\n"
-            "\nExample:\n" +
-            HelpExampleCli("estimatefee", "6"));
-
-    RPCTypeCheck(params, boost::assign::list_of(int_type));
-
-    int nBlocks = params[0].get_int();
-    if (nBlocks < 1)
-        nBlocks = 1;
-
-    CFeeRate feeRate = mempool.estimateFee(nBlocks);
-    if (feeRate == CFeeRate(0))
-        return -1.0;
-
-    return ValueFromAmount(feeRate.GetFeePerK());
-}
-
-Value estimatepriority(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() != 1)
-        throw runtime_error(
-            "estimatepriority nblocks\n"
-            "\nEstimates the approximate priority\n"
-            "a zero-fee transaction needs to begin confirmation\n"
-            "within nblocks blocks.\n"
-            "\nArguments:\n"
-            "1. nblocks     (numeric)\n"
-            "\nResult:\n"
-            "n :    (numeric) estimated priority\n"
-            "\n"
-            "-1.0 is returned if not enough transactions and\n"
-            "blocks have been observed to make an estimate.\n"
-            "\nExample:\n" +
-            HelpExampleCli("estimatepriority", "6"));
-
-    RPCTypeCheck(params, boost::assign::list_of(int_type));
-
-    int nBlocks = params[0].get_int();
-    if (nBlocks < 1)
-        nBlocks = 1;
-
-    return mempool.estimatePriority(nBlocks);
 }

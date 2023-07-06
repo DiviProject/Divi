@@ -6,7 +6,6 @@
 # Exercise the listtransactions API
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
 
@@ -35,9 +34,9 @@ class ListTransactionsTest(BitcoinTestFramework):
 
     def run_test(self):
         # Get some (matured) coins into both nodes.
-        self.nodes[0].setgenerate(True, 5)
+        self.nodes[0].setgenerate( 5)
         self.sync_all()
-        self.nodes[1].setgenerate(True, 30)
+        self.nodes[1].setgenerate( 30)
         self.sync_all()
 
         # Simple send, 0 to 1:
@@ -50,7 +49,7 @@ class ListTransactionsTest(BitcoinTestFramework):
                            {"txid":txid},
                            {"category":"receive","account":"","amount":Decimal("0.1"),"confirmations":0})
         # mine a block, confirmations should change:
-        self.nodes[0].setgenerate(True, 1)
+        self.nodes[0].setgenerate( 1)
         self.sync_all()
         check_array_result(self.nodes[0].listtransactions(),
                            {"txid":txid},
@@ -99,4 +98,3 @@ class ListTransactionsTest(BitcoinTestFramework):
 
 if __name__ == '__main__':
     ListTransactionsTest().main()
-

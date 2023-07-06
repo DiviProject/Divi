@@ -14,6 +14,8 @@
 #include <cstdint>
 
 class CScript;
+class I_WalletDatabaseEndpointFactory;
+class CCriticalSection;
 
 /** A wallet with (mostly) real seed and keys, which can be used in tests
  *  that need to exercise wallet functions.
@@ -28,9 +30,12 @@ private:
   static constexpr int32_t version = 1;
 
   /** The fake chain that we use for the wallet.  */
+  std::string walletFilename_;
   FakeBlockIndexWithHashes& fakeChain;
+  std::unique_ptr<CCriticalSection> underlyingWalletCriticalSection_;
+  std::unique_ptr<I_WalletDatabaseEndpointFactory> databaseEndpointFactory_;
   std::unique_ptr<FakeMerkleTxConfirmationNumberCalculator> confirmationsCalculator_;
-  std::unique_ptr<CWallet> wrappedWallet_;
+  mutable std::unique_ptr<CWallet> wrappedWallet_;
 
 public:
 
@@ -39,8 +44,12 @@ public:
   explicit FakeWallet(FakeBlockIndexWithHashes& c, std::string walletFilename);
   ~FakeWallet ();
 
-  operator CWallet&() const { return *wrappedWallet_; }
-  operator const CWallet&() const { return *wrappedWallet_; }
+  const I_MerkleTxConfirmationNumberCalculator& getConfirmationCalculator() const
+  {
+    return *confirmationsCalculator_;
+  }
+  CWallet& getWallet() { return *wrappedWallet_; }
+  const CWallet& getWallet() const { return *wrappedWallet_; }
 
   /** Adds a new block to our fake chain.  */
   void AddBlock();
@@ -67,6 +76,7 @@ public:
   /** Returns a new key from the wallet.  */
   CPubKey getNewKey();
 
+  const std::string dbFilename() const;
 };
 
 #endif // FAKE_WALLET_H

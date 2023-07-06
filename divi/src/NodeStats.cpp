@@ -7,17 +7,18 @@
 CNodeStats::CNodeStats(const CNode* pnode)
 {
     nodeid = pnode->GetId();
-    X(nServices);
-    nLastSend = pnode->dataLogger.GetLastTimeDataSent();
-    nLastRecv = pnode->dataLogger.GetLastTimeDataReceived();
-    X(nTimeConnected);
-    X(addrName);
-    X(nVersion);
+    const auto& communicationLogger = pnode->GetCommunicationLogger();
+    nLastSend = communicationLogger.GetLastTimeDataSent();
+    nLastRecv = communicationLogger.GetLastTimeDataReceived();
+    nSendBytes = communicationLogger.GetTotalBytesSent();
+    nRecvBytes = communicationLogger.GetTotalBytesReceived();
+    nTimeConnected = communicationLogger.GetTimeOfConnection();
+    nServices = pnode->GetServices();
+    nVersion = pnode->GetVersion();
+    addrName = pnode->GetAddressName();
     X(cleanSubVer);
     X(fInbound);
     X(nStartingHeight);
-    nSendBytes = pnode->dataLogger.GetTotalBytesSent();
-    nRecvBytes = pnode->dataLogger.GetTotalBytesReceived();
     X(fWhitelisted);
 
     // It is common for nodes with good ping times to suddenly become lagged,

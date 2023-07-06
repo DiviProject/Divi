@@ -1,6 +1,5 @@
 #include <test_only.h>
 
-#include <kernel.h>
 #include <random.h>
 #include <memory>
 #include <amount.h>
@@ -209,7 +208,7 @@ BOOST_AUTO_TEST_CASE(willEnsureBackwardCompatibilityWithMainnetHashproofs)
         ProofOfStakeGenerator generator(mockPoSStakeModifiers,0);
         unsigned initialTimestamp = timestamp;
         BOOST_CHECK_MESSAGE(
-            generator.CreateHashproofTimestamp(stakingData,initialTimestamp).succeeded(),
+            generator.createHashproofTimestamp(stakingData,initialTimestamp).succeeded(),
             "Failed to generate PoS - "+std::to_string(testCaseIndex));
         BOOST_CHECK_MESSAGE(initialTimestamp==timestamp,"MismatchedTimestamps "+std::to_string(testCaseIndex));
         ++testCaseIndex;

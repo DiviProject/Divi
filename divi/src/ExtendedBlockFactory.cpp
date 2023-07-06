@@ -4,8 +4,10 @@
 #include <primitives/transaction.h>
 #include <BlockTemplate.h>
 #include <I_BlockTransactionCollector.h>
-#include <I_PoSTransactionCreator.h>
 #include <sync.h>
+#include <BlockSigning.h>
+#include <I_StakingCoinSelector.h>
+#include <I_BlockProofProver.h>
 
 class ExtendedBlockTransactionCollector final: public I_BlockTransactionCollector
 {
@@ -45,33 +47,51 @@ public:
     }
 };
 
-class ExtendedPoSTransactionCreator final: public I_PoSTransactionCreator
+class ExtendedBlockProofProver final: public I_BlockProofProver
 {
 private:
+    const I_StakingWallet& wallet_;
     const std::unique_ptr<CTransaction>& customCoinstake_;
-    I_PoSTransactionCreator& transactionCreator_;
+    const std::unique_ptr<unsigned>& blockBitsShift_;
+    const I_BlockProofProver& blockProofProver_;
 public:
-    ExtendedPoSTransactionCreator(
+    ExtendedBlockProofProver(
+        const I_StakingWallet& wallet,
         const std::unique_ptr<CTransaction>& customCoinstake,
-        I_PoSTransactionCreator& transactionCreator
-        ): customCoinstake_(customCoinstake)
-        , transactionCreator_(transactionCreator)
+        const std::unique_ptr<unsigned>& blockBitsShift,
+        const I_BlockProofProver& blockProofProver
+        ): wallet_(wallet)
+        , customCoinstake_(customCoinstake)
+        , blockBitsShift_(blockBitsShift)
+        , blockProofProver_(blockProofProver)
     {
     }
 
-    bool CreateProofOfStake(
+    bool attachBlockProof(
         const CBlockIndex* chainTip,
-        uint32_t blockBits,
-        CMutableTransaction& txCoinStake,
-        unsigned int& nTxNewTime) override
+        CBlock& block) const override
     {
-        bool coinstakeCreated = transactionCreator_.CreateProofOfStake(chainTip,blockBits,txCoinStake,nTxNewTime);
-        if (customCoinstake_ != nullptr)
+        bool coinstakeCreated = blockProofProver_.attachBlockProof(chainTip,block);
+        bool blockWasCustomized = false;
+        if(customCoinstake_ != nullptr)
         {
+            if (!block.IsProofOfStake())
+                throw std::runtime_error("trying to set custom coinstake in non-PoS block");
             if (!customCoinstake_->IsCoinStake())
                 throw std::runtime_error("trying to use non-coinstake to set custom coinstake in block");
-            txCoinStake = CMutableTransaction(*customCoinstake_);
-            return true;
+            block.vtx[1] = CMutableTransaction(*customCoinstake_);
+            block.hashMerkleRoot = block.BuildMerkleTree();
+            blockWasCustomized = true;
+        }
+        if(blockBitsShift_ != nullptr)
+        {
+            uint256 modifiedBits = uint256(0).SetCompact(block.nBits) << std::min(32u,*blockBitsShift_);
+            block.nBits = modifiedBits.GetCompact();
+            blockWasCustomized = true;
+        }
+        if(blockWasCustomized)
+        {
+            return SignBlock(wallet_,block);
         }
         else
         {
@@ -81,18 +101,20 @@ public:
 };
 
 ExtendedBlockFactory::ExtendedBlockFactory(
-    const I_BlockSubsidyProvider& blockSubsidies,
-    I_BlockTransactionCollector& blockTransactionCollector,
-    I_PoSTransactionCreator& coinstakeCreator,
     const Settings& settings,
+    const CChainParams& chainParameters,
     const CChain& chain,
-    const CChainParams& chainParameters
+    const I_DifficultyAdjuster& difficultyAdjuster,
+    const I_BlockProofProver& blockProofProver,
+    const I_StakingWallet& wallet,
+    I_BlockTransactionCollector& blockTransactionCollector
     ): extraTransactions_()
     , customCoinstake_()
+    , blockBitsShift_()
     , ignoreMempool_(false)
     , extendedTransactionCollector_(new ExtendedBlockTransactionCollector(extraTransactions_,ignoreMempool_,blockTransactionCollector))
-    , extendedCoinstakeCreator_(new ExtendedPoSTransactionCreator(customCoinstake_,coinstakeCreator))
-    , blockFactory_(new BlockFactory(blockSubsidies,*extendedTransactionCollector_,*extendedCoinstakeCreator_, settings, chain,chainParameters))
+    , blockProofProver_(new ExtendedBlockProofProver(wallet,customCoinstake_,blockBitsShift_, blockProofProver))
+    , blockFactory_(new BlockFactory(settings,chainParameters,chain,difficultyAdjuster,*blockProofProver_,*extendedTransactionCollector_))
 {
 }
 ExtendedBlockFactory::~ExtendedBlockFactory()
@@ -101,10 +123,8 @@ ExtendedBlockFactory::~ExtendedBlockFactory()
     blockFactory_.reset();
 }
 
-CBlockTemplate* ExtendedBlockFactory::CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake)
+void ExtendedBlockFactory::VerifyBlockWithIsCompatibleWithCustomCoinstake(const CBlock& block)
 {
-    CBlockTemplate* blockTemplate = blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake);
-    CBlock& block = blockTemplate->block;
     if (customCoinstake_ != nullptr)
     {
         if (!block.IsProofOfStake())
@@ -112,6 +132,16 @@ CBlockTemplate* ExtendedBlockFactory::CreateNewBlockWithKey(CReserveKey& reserve
         assert(block.vtx.size() >= 2 && "PoS blocks must have at least 2 transactions");
         assert(block.vtx[1].IsCoinStake() && "PoS blocks' second transaction must be a coinstake");
     }
+}
+
+CBlockTemplate* ExtendedBlockFactory::CreateNewPoWBlock(const CScript& scriptPubKey)
+{
+    return blockFactory_->CreateNewPoWBlock(scriptPubKey);
+}
+CBlockTemplate* ExtendedBlockFactory::CreateNewPoSBlock()
+{
+    CBlockTemplate* blockTemplate = blockFactory_->CreateNewPoSBlock();
+    VerifyBlockWithIsCompatibleWithCustomCoinstake(blockTemplate->block);
     return blockTemplate;
 }
 
@@ -134,4 +164,17 @@ void ExtendedBlockFactory::setCustomCoinstake(const CTransaction& tx)
 void ExtendedBlockFactory::setIgnoreMempool(const bool val)
 {
     ignoreMempool_ = val;
+}
+
+void ExtendedBlockFactory::setCustomBits(unsigned bits)
+{
+    blockBitsShift_.reset(new unsigned(bits));
+}
+
+void ExtendedBlockFactory::reset()
+{
+    blockBitsShift_.reset();
+    extraTransactions_.clear();
+    customCoinstake_.reset();
+    ignoreMempool_ = false;
 }

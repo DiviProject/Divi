@@ -11,60 +11,39 @@ class CBlock;
 class CMutableTransaction;
 class I_BlockSubsidyProvider;
 class I_BlockTransactionCollector;
-class I_PoSTransactionCreator;
 class CChain;
 class CChainParams;
 class Settings;
 class CBlockIndex;
 class CBlockHeader;
+class I_DifficultyAdjuster;
+class I_BlockProofProver;
 
-class BlockFactory: public I_BlockFactory
+class BlockFactory final: public I_BlockFactory
 {
 private:
     const Settings& settings_;
-    const CChain& chain_;
     const CChainParams& chainParameters_;
-
-    const I_BlockSubsidyProvider& blockSubsidies_;
+    const CChain& chain_;
+    const I_DifficultyAdjuster& difficultyAdjuster_;
+    const I_BlockProofProver& blockProofProver_;
     I_BlockTransactionCollector& blockTransactionCollector_;
-    I_PoSTransactionCreator& coinstakeCreator_;
 
-    void SetRequiredWork(CBlockTemplate& pblocktemplate);
-    void SetBlockTime(CBlock& block);
-    void CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMutableTransaction& coinbaseTx) const;
-    bool AppendProofOfStakeToBlock(
-        CBlockTemplate& pBlockTemplate);
-
-    void UpdateTime(
+    void SetBlockHeader(
         CBlockHeader& block,
         const CBlockIndex* pindexPrev) const;
-    void IncrementExtraNonce(
-        CBlock& block,
-        const CBlockIndex* pindexPrev,
-        unsigned int& nExtraNonce) const;
-    void SetBlockHeaders(
-        CBlockTemplate& pblocktemplate,
-        const bool& proofOfStake) const;
-    void SetCoinbaseRewardAndHeight (
-        CBlockTemplate& pblocktemplate,
-        const CScript& scriptPubKeyIn,
-        const bool& fProofOfStake) const;
-    void FinalizeBlock (
-        CBlockTemplate& pblocktemplate,
-        const bool& fProofOfStake) const;
-    bool AppendProofOfWorkToBlock(
-        CBlockTemplate& blocktemplate);
 
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
     BlockFactory(
-        const I_BlockSubsidyProvider& blockSubsidies,
-        I_BlockTransactionCollector& blockTransactionCollector,
-        I_PoSTransactionCreator& coinstakeCreator,
         const Settings& settings,
+        const CChainParams& chainParameters,
         const CChain& chain,
-        const CChainParams& chainParameters);
+        const I_DifficultyAdjuster& difficultyAdjuster,
+        const I_BlockProofProver& blockProofProver,
+        I_BlockTransactionCollector& blockTransactionCollector);
 
-    CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake) override;
+    CBlockTemplate* CreateNewPoWBlock(const CScript& scriptPubKey) override;
+    CBlockTemplate* CreateNewPoSBlock() override;
 };
 #endif // BLOCK_FACTORY_H

@@ -16,12 +16,12 @@ static uint256 stakeHash(uint64_t stakeModifier, unsigned int hashproofTimestamp
 }
 
 //test hash vs target
-static bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, const uint256& bnTargetPerCoinDay, int64_t nTimeWeight)
+static bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, const uint256& coinAgeTarget, int64_t nTimeWeight)
 {
-    const uint256 bnCoinDayWeight = (uint256(nValueIn) * nTimeWeight) / COIN / 400;
+    const uint256 coinAgeWeight = (uint256(nValueIn) * nTimeWeight) / COIN / 400;
 
-    uint256 target = bnTargetPerCoinDay;
-    if (!target.MultiplyBy(bnCoinDayWeight)) {
+    uint256 target = coinAgeTarget;
+    if (!target.MultiplyBy(coinAgeWeight)) {
         // In regtest with minimal difficulty, it may happen that the
         // modification overflows the uint256, in which case it just means
         // that the target will always be hit.
@@ -39,7 +39,7 @@ ProofOfStakeCalculator::ProofOfStakeCalculator(
     ): utxoToStake_(stakingData.utxoBeingStaked_)
     , utxoValue_(stakingData.utxoValue_)
     , stakeModifier_(stakeModifier)
-    , targetPerCoinDay_(uint256().SetCompact(stakingData.nBits_))
+    , coinAgeTarget_(uint256().SetCompact(stakingData.nBits_))
     , coinstakeStartTime_(stakingData.blockTimeOfFirstConfirmationBlock_)
 {
 }
@@ -51,5 +51,5 @@ bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
 {
     if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,hashproofTimestamp, utxoToStake_,coinstakeStartTime_);
     int64_t coinAgeWeightOfUtxo = std::min<int64_t>(hashproofTimestamp - coinstakeStartTime_, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
-    return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
+    return stakeTargetHit(computedProofOfStake,utxoValue_,coinAgeTarget_, coinAgeWeightOfUtxo);
 }

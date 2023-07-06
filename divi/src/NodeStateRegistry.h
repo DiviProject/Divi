@@ -18,7 +18,7 @@ class CBlockReject;
 void InitializeNode(CNodeState& nodeState);
 void FinalizeNode(NodeId nodeId);
 void MarkBlockAsReceived(const uint256& hash);
-void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex = nullptr);
+void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, const CBlockIndex* pindex = nullptr);
 bool BlockIsInFlight(const uint256& hash);
 void UpdateBlockAvailability(const BlockMap& blockIndicesByHash, CNodeState* state, const uint256& hash);
 void FindNextBlocksToDownload(
@@ -26,7 +26,7 @@ void FindNextBlocksToDownload(
     const CChain& activeChain,
     CNodeState* state,
     unsigned int count,
-    std::vector<CBlockIndex*>& vBlocks,
+    std::vector<const CBlockIndex*>& vBlocks,
     NodeId& nodeStaller);
 
 bool BlockDownloadHasTimedOut(NodeId nodeId, int64_t nNow, int64_t targetSpacing);
@@ -36,6 +36,6 @@ std::vector<int> GetBlockHeightsInFlight(NodeId nodeId);
 int GetNumberOfBlocksInFlight(NodeId nodeId);
 // Requires cs_main.
 /** Increase a node's misbehavior score. */
-bool Misbehaving(NodeId nodeId, int howmuch);
-bool Misbehaving(CNodeState* state, int howmuch);
+bool Misbehaving(NodeId nodeId, int howmuch, std::string cause);
+bool Misbehaving(CNodeState* state, int howmuch, std::string cause);
 #endif// NODE_STATE_REGISTRY_H

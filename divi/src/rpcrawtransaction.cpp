@@ -9,13 +9,14 @@
 
 #include <blockmap.h>
 #include <chain.h>
+#include <ChainstateManager.h>
 #include "core_io.h"
 #include <FeeAndPriorityCalculator.h>
 #include "init.h"
 #include "keystore.h"
-#include "main.h"
 #include "net.h"
 #include "primitives/transaction.h"
+#include <rpcprotocol.h>
 #include "rpcserver.h"
 #include "script/script.h"
 #include "script/sign.h"
@@ -37,47 +38,20 @@
 #include <ValidationState.h>
 #include <script/SignatureCheckers.h>
 
+#include <JsonTxHelpers.h>
+
 using namespace boost;
 using namespace boost::assign;
 using namespace json_spirit;
 using namespace std;
 
-extern CCoinsViewCache* pcoinsTip;
-extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
-extern BlockMap mapBlockIndex;
-extern CBlockTreeDB* pblocktree;
-extern bool fSpentIndex;
-extern CChain chainActive;
-
-void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex)
-{
-    txnouttype type;
-    std::vector<CTxDestination> addresses;
-    int nRequired;
-
-    out.push_back(Pair("asm", scriptPubKey.ToString()));
-    if (fIncludeHex)
-        out.push_back(Pair("hex", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
-
-    if (!ExtractDestinations(scriptPubKey, type, addresses, nRequired)) {
-        out.push_back(Pair("type", GetTxnOutputType(type)));
-        return;
-    }
-
-    out.push_back(Pair("reqSigs", nRequired));
-    out.push_back(Pair("type", GetTxnOutputType(type)));
-
-    Array a;
-    BOOST_FOREACH (const CTxDestination& addr, addresses)
-        a.push_back(CBitcoinAddress(addr).ToString());
-    out.push_back(Pair("addresses", a));
-}
 
 void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& entry,
                       int nHeight = 0, int nConfirmations = 0, int nBlockTime = 0)
 {
+    const ChainstateManager::Reference chainstate;
+    const auto& blockTree = chainstate->BlockTree();
 
     uint256 txid = tx.GetHash();
     entry.push_back(Pair("txid", txid.GetHex()));
@@ -100,7 +74,7 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
             // Add address and value info if spentindex enabled
             CSpentIndexValue spentInfo;
             const CSpentIndexKey spentKey(txin.prevout.hash, txin.prevout.n);
-            if (TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,spentKey, spentInfo)) {
+            if (TransactionSearchIndexes::GetSpentIndex(&blockTree, spentKey, spentInfo)) {
                 in.push_back(Pair("value", ValueFromAmount(spentInfo.satoshis)));
                 in.push_back(Pair("valueSat", spentInfo.satoshis));
                 if (spentInfo.addressType == 1) {
@@ -131,9 +105,9 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
         // so we simply try looking up by both txid and bare txid as at
         // most one of them can match anyway.
         CSpentIndexValue spentInfo;
-        bool found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,CSpentIndexKey(txid, i), spentInfo);
+        bool found = TransactionSearchIndexes::GetSpentIndex(&blockTree, CSpentIndexKey(txid, i), spentInfo);
         if (!found)
-          found = TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
+          found = TransactionSearchIndexes::GetSpentIndex(&blockTree, CSpentIndexKey(tx.GetBareTxid(), i), spentInfo);
         if (found) {
             out.push_back(Pair("spentTxId", spentInfo.txid.GetHex()));
             out.push_back(Pair("spentIndex", (int)spentInfo.inputIndex));
@@ -162,58 +136,7 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
 
 }
 
-void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)
-{
-    entry.push_back(Pair("txid", tx.GetHash().GetHex()));
-    entry.push_back(Pair("baretxid", tx.GetBareTxid().GetHex()));
-    entry.push_back(Pair("version", tx.nVersion));
-    entry.push_back(Pair("locktime", (int64_t)tx.nLockTime));
-    Array vin;
-    BOOST_FOREACH (const CTxIn& txin, tx.vin) {
-        Object in;
-        if (tx.IsCoinBase())
-            in.push_back(Pair("coinbase", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
-        else {
-            in.push_back(Pair("txid", txin.prevout.hash.GetHex()));
-            in.push_back(Pair("vout", (int64_t)txin.prevout.n));
-            Object o;
-            o.push_back(Pair("asm", txin.scriptSig.ToString()));
-            o.push_back(Pair("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end())));
-            in.push_back(Pair("scriptSig", o));
-        }
-        in.push_back(Pair("sequence", (int64_t)txin.nSequence));
-        vin.push_back(in);
-    }
-    entry.push_back(Pair("vin", vin));
-    Array vout;
-    for (unsigned int i = 0; i < tx.vout.size(); i++) {
-        const CTxOut& txout = tx.vout[i];
-        Object out;
-        out.push_back(Pair("value", ValueFromAmount(txout.nValue)));
-        out.push_back(Pair("n", (int64_t)i));
-        Object o;
-        ScriptPubKeyToJSON(txout.scriptPubKey, o, true);
-        out.push_back(Pair("scriptPubKey", o));
-        vout.push_back(out);
-    }
-    entry.push_back(Pair("vout", vout));
-
-    if (hashBlock != 0) {
-        entry.push_back(Pair("blockhash", hashBlock.GetHex()));
-        BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
-        if (mi != mapBlockIndex.end() && (*mi).second) {
-            CBlockIndex* pindex = (*mi).second;
-            if (chainActive.Contains(pindex)) {
-                entry.push_back(Pair("confirmations", 1 + chainActive.Height() - pindex->nHeight));
-                entry.push_back(Pair("time", pindex->GetBlockTime()));
-                entry.push_back(Pair("blocktime", pindex->GetBlockTime()));
-            } else
-                entry.push_back(Pair("confirmations", 0));
-        }
-    }
-}
-
-Value getrawtransaction(const Array& params, bool fHelp)
+Value getrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -294,12 +217,16 @@ Value getrawtransaction(const Array& params, bool fHelp)
         if (!GetTransaction(hash, tx, hashBlock, true))
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available about transaction");
 
-        BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
-        if (mi != mapBlockIndex.end() && (*mi).second) {
+        const ChainstateManager::Reference chainstate;
+        const auto& chain = chainstate->ActiveChain();
+        const auto& blockMap = chainstate->GetBlockMap();
+
+        const auto mi = blockMap.find(hashBlock);
+        if (mi != blockMap.end() && (*mi).second) {
             CBlockIndex* pindex = (*mi).second;
-            if (chainActive.Contains(pindex)) {
+            if (chain.Contains(pindex)) {
                 nHeight = pindex->nHeight;
-                nConfirmations = 1 + chainActive.Height() - pindex->nHeight;
+                nConfirmations = 1 + chain.Height() - pindex->nHeight;
                 nBlockTime = pindex->GetBlockTime();
             } else {
                 nHeight = -1;
@@ -321,7 +248,7 @@ Value getrawtransaction(const Array& params, bool fHelp)
 }
 
 #ifdef ENABLE_WALLET
-Value listunspent(const Array& params, bool fHelp)
+Value listunspent(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 3)
         throw runtime_error(
@@ -381,9 +308,12 @@ Value listunspent(const Array& params, bool fHelp)
 
     Array results;
     std::vector<COutput> vecOutputs;
-    assert(pwalletMain != NULL);
-    pwalletMain->AvailableCoins(vecOutputs, false);
-    const AddressBook& addressBook = pwalletMain->GetAddressBook();
+    if(!pwallet)
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR,"No wallet is enabled");
+    }
+    pwallet->AvailableCoins(vecOutputs, false);
+    const AddressBook& addressBook = pwallet->getAddressBookManager().getAddressBook();
     BOOST_FOREACH (const COutput& out, vecOutputs) {
         if (out.nDepth < nMinDepth || out.nDepth > nMaxDepth)
             continue;
@@ -414,7 +344,7 @@ Value listunspent(const Array& params, bool fHelp)
             if (ExtractDestination(pk, address)) {
                 const CScriptID& hash = boost::get<CScriptID>(address);
                 CScript redeemScript;
-                if (pwalletMain->GetCScript(hash, redeemScript))
+                if (pwallet->GetCScript(hash, redeemScript))
                     entry.push_back(Pair("redeemScript", HexStr(redeemScript.begin(), redeemScript.end())));
             }
         }
@@ -428,7 +358,7 @@ Value listunspent(const Array& params, bool fHelp)
 }
 #endif
 
-Value createrawtransaction(const Array& params, bool fHelp)
+Value createrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 2)
         throw runtime_error(
@@ -531,7 +461,7 @@ Value createrawtransaction(const Array& params, bool fHelp)
     return EncodeHexTx(rawTx);
 }
 
-Value decoderawtransaction(const Array& params, bool fHelp)
+Value decoderawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -594,7 +524,7 @@ Value decoderawtransaction(const Array& params, bool fHelp)
     return result;
 }
 
-Value decodescript(const Array& params, bool fHelp)
+Value decodescript(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -633,7 +563,43 @@ Value decodescript(const Array& params, bool fHelp)
     return r;
 }
 
-Value signrawtransaction(const Array& params, bool fHelp)
+Value signtransactionwithaddresskey(const Array& params, bool fHelp, CWallet* pwallet)
+{
+    if (fHelp || false)
+        throw runtime_error("signTransactionWithAddressKey\n");
+
+    std::vector<unsigned char> txData(ParseHexV(params[0], "Transaction hex data"));
+    const int inputIndex = params[2].get_int();
+
+    CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
+    std::vector<CMutableTransaction> txVariants;
+    while (!ssData.empty()) {
+        try {
+            CMutableTransaction tx;
+            ssData >> tx;
+            txVariants.push_back(tx);
+        } catch (const std::exception&) {
+            throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+        }
+    }
+    CKeyID keyID;
+    CBitcoinAddress address(params[1].get_str());
+    address.GetKeyID(keyID);
+    CPubKey pubkey;
+    if (pwallet && !pwallet->GetPubKey(keyID, pubkey)) throw JSONRPCError(RPC_WALLET_ERROR,"Unable to sign for unknown address");
+
+    CMutableTransaction mergedTx(txVariants[0]);
+    CScript dummyOutputScript = CScript() << pubkey << OP_CHECKSIG;
+    const CTxOut dummyOutput(0,dummyOutputScript);
+    const CKeyStore& keyStore = *pwallet;
+    if(!SignForOutput(keyStore, dummyOutput, mergedTx, inputIndex, SIGHASH_SINGLE))
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR,"Unable to sign for input");
+    }
+    return mergedTx.vin[inputIndex].scriptSig.ToString();
+}
+
+Value signrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 4)
         throw runtime_error(
@@ -644,46 +610,45 @@ Value signrawtransaction(const Array& params, bool fHelp)
             "The third optional argument (may be null) is an array of base58-encoded private\n"
             "keys that, if given, will be the only keys used to sign the transaction.\n"
 #ifdef ENABLE_WALLET
-            + HelpRequiringPassphrase() + "\n"
+            + HelpRequiringPassphrase(pwallet) + "\n"
 #endif
+            "\nArguments:\n"
+            "1. \"hexstring\"     (string, required) The transaction hex string\n"
+            "2. \"prevtxs\"       (string, optional) An json array of previous dependent transaction outputs\n"
+            "     [               (json array of json objects, or 'null' if none provided)\n"
+            "       {\n"
+            "         \"txid\":\"id\",             (string, required) The transaction id\n"
+            "         \"vout\":n,                  (numeric, required) The output number\n"
+            "         \"scriptPubKey\": \"hex\",   (string, required) script key\n"
+            "         \"redeemScript\": \"hex\"    (string, required for P2SH) redeem script\n"
+            "       }\n"
+            "       ,...\n"
+            "    ]\n"
+            "3. \"privatekeys\"     (string, optional) A json array of base58-encoded private keys for signing\n"
+            "    [                  (json array of strings, or 'null' if none provided)\n"
+            "      \"privatekey\"   (string) private key in base58-encoding\n"
+            "      ,...\n"
+            "    ]\n"
+            "4. \"sighashtype\"     (string, optional, default=ALL) The signature hash type. Must be one of\n"
+            "       \"ALL\"\n"
+            "       \"NONE\"\n"
+            "       \"SINGLE\"\n"
+            "       \"ALL|ANYONECANPAY\"\n"
+            "       \"NONE|ANYONECANPAY\"\n"
+            "       \"SINGLE|ANYONECANPAY\"\n"
 
-                                          "\nArguments:\n"
-                                          "1. \"hexstring\"     (string, required) The transaction hex string\n"
-                                          "2. \"prevtxs\"       (string, optional) An json array of previous dependent transaction outputs\n"
-                                          "     [               (json array of json objects, or 'null' if none provided)\n"
-                                          "       {\n"
-                                          "         \"txid\":\"id\",             (string, required) The transaction id\n"
-                                          "         \"vout\":n,                  (numeric, required) The output number\n"
-                                          "         \"scriptPubKey\": \"hex\",   (string, required) script key\n"
-                                          "         \"redeemScript\": \"hex\"    (string, required for P2SH) redeem script\n"
-                                          "       }\n"
-                                          "       ,...\n"
-                                          "    ]\n"
-                                          "3. \"privatekeys\"     (string, optional) A json array of base58-encoded private keys for signing\n"
-                                          "    [                  (json array of strings, or 'null' if none provided)\n"
-                                          "      \"privatekey\"   (string) private key in base58-encoding\n"
-                                          "      ,...\n"
-                                          "    ]\n"
-                                          "4. \"sighashtype\"     (string, optional, default=ALL) The signature hash type. Must be one of\n"
-                                          "       \"ALL\"\n"
-                                          "       \"NONE\"\n"
-                                          "       \"SINGLE\"\n"
-                                          "       \"ALL|ANYONECANPAY\"\n"
-                                          "       \"NONE|ANYONECANPAY\"\n"
-                                          "       \"SINGLE|ANYONECANPAY\"\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"hex\": \"value\",   (string) The raw transaction with signature(s) (hex-encoded string)\n"
+            "  \"complete\": n       (numeric) if transaction has a complete set of signature (0 if not)\n"
+            "}\n"
 
-                                          "\nResult:\n"
-                                          "{\n"
-                                          "  \"hex\": \"value\",   (string) The raw transaction with signature(s) (hex-encoded string)\n"
-                                          "  \"complete\": n       (numeric) if transaction has a complete set of signature (0 if not)\n"
-                                          "}\n"
-
-                                          "\nExamples:\n" +
+            "\nExamples:\n" +
             HelpExampleCli("signrawtransaction", "\"myhex\"") + HelpExampleRpc("signrawtransaction", "\"myhex\""));
 
     RPCTypeCheck(params, list_of(str_type)(array_type)(array_type)(str_type), true);
 
-    std::vector<unsigned char> txData(ParseHexV(params[0], "argument 1"));
+    std::vector<unsigned char> txData(ParseHexV(params[0], "Transaction hex data"));
     CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
     std::vector<CMutableTransaction> txVariants;
     while (!ssData.empty()) {
@@ -705,12 +670,15 @@ Value signrawtransaction(const Array& params, bool fHelp)
     bool fComplete = true;
 
     // Fetch previous transactions (inputs):
-    CCoinsViewCache view;
+    CCoinsViewBacked temporaryBacking;
+    CCoinsViewCache view(&temporaryBacking);
     {
+        CTxMemPool& mempool = GetTransactionMemoryPool();
         LOCK(mempool.cs);
-        const CCoinsViewCache& viewChain = *pcoinsTip;
+        const ChainstateManager::Reference chainstate;
+        const CCoinsViewCache& viewChain = chainstate->CoinsTip();
         const CCoinsViewMemPool viewMempool(&viewChain, mempool);
-        view.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
+        temporaryBacking.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
 
         BOOST_FOREACH (const CTxIn& txin, mergedTx.vin) {
             const uint256& prevHash = txin.prevout.hash;
@@ -718,7 +686,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
             view.AccessCoins(prevHash); // this is certainly allowed to fail
         }
 
-        view.DettachBackend(); // switch back to avoid locking mempool for too long
+        temporaryBacking.DettachBackend(); // switch back to avoid locking mempool for too long
     }
 
     bool fGivenKeys = false;
@@ -739,7 +707,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
     }
 #ifdef ENABLE_WALLET
     else
-        EnsureWalletIsUnlocked();
+        EnsureWalletIsUnlocked(pwallet);
 #endif
 
     // Add previous txouts given in the RPC call:
@@ -791,7 +759,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
     }
 
 #ifdef ENABLE_WALLET
-    const CKeyStore& keystore = ((fGivenKeys || !pwalletMain) ? tempKeystore : *pwalletMain);
+    const CKeyStore& keystore = ((fGivenKeys || !pwallet) ? tempKeystore : *pwallet);
 #else
     const CKeyStore& keystore = tempKeystore;
 #endif
@@ -822,13 +790,13 @@ Value signrawtransaction(const Array& params, bool fHelp)
         txin.scriptSig.clear();
         // Only sign SIGHASH_SINGLE if there's a corresponding output:
         if (!fHashSingle || (i < mergedTx.vout.size()))
-            SignSignature(keystore, prevPubKey, mergedTx, i, nHashType);
+            SignForOutput(keystore, coins->vout[txin.prevout.n], mergedTx, i, nHashType);
 
         // ... and merge in other signatures:
         BOOST_FOREACH (const CMutableTransaction& txv, txVariants) {
             txin.scriptSig = CombineSignatures(prevPubKey, mergedTx, i, txin.scriptSig, txv.vin[i].scriptSig);
         }
-        if (!VerifyScript(txin.scriptSig, prevPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&mergedTx, i)))
+        if (!VerifyScript(txin.scriptSig, coins->vout[txin.prevout.n], STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&mergedTx, i)))
             fComplete = false;
     }
 
@@ -841,8 +809,10 @@ Value signrawtransaction(const Array& params, bool fHelp)
 
 static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransaction& tx)
 {
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     LOCK(mempool.cs);
-    const CCoinsViewMemPool viewMemPool(pcoinsTip, mempool);
+    const ChainstateManager::Reference chainstate;
+    const CCoinsViewMemPool viewMemPool(&chainstate->CoinsTip(), mempool);
     const CCoinsViewCache view(&viewMemPool);
 
     if(!view.HaveInputs(tx))
@@ -855,7 +825,7 @@ static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransa
     }
 }
 
-Value sendrawtransaction(const Array& params, bool fHelp)
+Value sendrawtransaction(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -886,7 +856,9 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     if (params.size() > 1)
         fOverrideFees = params[1].get_bool();
 
-    CCoinsViewCache& view = *pcoinsTip;
+    const ChainstateManager::Reference chainstate;
+    const auto& view = chainstate->CoinsTip();
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     const bool fHaveMempool = mempool.exists(hashTx);
 
     /* We use the UTXO set as heuristic about whether or not a transaction
@@ -912,7 +884,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_TRANSACTION_REJECTED, "Fees being paid are in excess of maximum fee, but fee override is not provided");
         }
         CValidationState state;
-        if (!SubmitTransactionToMempool(mempool, state, tx))
+        if (!SubmitTransactionToMempool(mempool, tx, state))
         {
             if (state.IsInvalid())
                 throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));

@@ -114,7 +114,7 @@ const valtype StackOperator::vchFalse =valtype(0);
 const valtype StackOperator::vchTrue =valtype(1, 1);
 
 
-struct DisabledOp: public StackOperator
+struct DisabledOp final: public StackOperator
 {
     DisabledOp(
         StackType& stack,
@@ -135,7 +135,7 @@ struct DisabledOp: public StackOperator
     }
 };
 
-struct PushValueOp: public StackOperator
+struct PushValueOp final: public StackOperator
 {
     PushValueOp(
         StackType& stack,
@@ -153,7 +153,7 @@ struct PushValueOp: public StackOperator
     }
 };
 
-struct ConditionalOp: public StackOperator
+struct ConditionalOp final: public StackOperator
 {
     ConditionalOp(
         StackType& stack,
@@ -206,7 +206,7 @@ struct ConditionalOp: public StackOperator
 
 };
 
-struct StackModificationOp: public StackOperator
+struct StackModificationOp final: public StackOperator
 {
     StackModificationOp(
     StackType& stack,
@@ -430,7 +430,7 @@ struct StackModificationOp: public StackOperator
     }
 };
 
-struct EqualityVerificationOp: public StackOperator
+struct EqualityVerificationOp final: public StackOperator
 {
     EqualityVerificationOp(
     StackType& stack,
@@ -479,7 +479,7 @@ struct EqualityVerificationOp: public StackOperator
     }
 };
 
-struct MetadataOp: public StackOperator
+struct MetadataOp final: public StackOperator
 {
     MetadataOp(
         StackType& stack,
@@ -495,7 +495,7 @@ struct MetadataOp: public StackOperator
     }
 };
 
-struct UnaryNumericOp: public StackOperator
+struct UnaryNumericOp final: public StackOperator
 {
     UnaryNumericOp(
         StackType& stack,
@@ -527,7 +527,7 @@ struct UnaryNumericOp: public StackOperator
     }
 };
 
-struct BinaryNumericOp: public StackOperator
+struct BinaryNumericOp final: public StackOperator
 {
     BinaryNumericOp(
         StackType& stack,
@@ -585,7 +585,7 @@ struct BinaryNumericOp: public StackOperator
     }
 };
 
-struct NumericBoundsOp: public StackOperator
+struct NumericBoundsOp final: public StackOperator
 {
     NumericBoundsOp(
         StackType& stack,
@@ -614,7 +614,7 @@ struct NumericBoundsOp: public StackOperator
     }
 };
 
-struct HashingOp: public StackOperator
+struct HashingOp final: public StackOperator
 {
     HashingOp(
         StackType& stack,
@@ -648,7 +648,7 @@ struct HashingOp: public StackOperator
     }
 };
 
-struct SignatureCheckOp: public StackOperator
+struct SignatureCheckOp final: public StackOperator
 {
 private:
     unsigned& opCount_;
@@ -801,7 +801,7 @@ public:
     }
 };
 
-struct CoinstakeCheckOp: public StackOperator
+struct CoinstakeCheckOp final: public StackOperator
 {
 private:
     const BaseSignatureChecker& checker_;
@@ -828,7 +828,7 @@ public:
     }
 };
 
-struct LockTimeCheckOp: public StackOperator
+struct LockTimeCheckOp final: public StackOperator
 {
 private:
     const BaseSignatureChecker& checker_;
@@ -880,6 +880,59 @@ public:
 };
 
 
+struct LimitTransferCheckOp final: public StackOperator
+{
+private:
+    const BaseSignatureChecker& checker_;
+    const CAmount& amountBeingSpent_;
+
+    inline CAmount computeChangeAmountMinimum(const valtype& transferLimitSerialized) const
+    {
+        constexpr CAmount zeroValue = CAmount(0);
+        const CAmount transferLimit = std::max(zeroValue,CScriptNum(transferLimitSerialized,false,8u).getint64());
+        if(amountBeingSpent_ < transferLimit) return zeroValue;
+        return std::max(zeroValue, amountBeingSpent_ - transferLimit);
+    }
+
+    inline CScript computeChangeScript(const valtype& p2sh20ByteHashSerialized) const
+    {
+        return CScript() << OP_HASH160 << p2sh20ByteHashSerialized << OP_EQUAL;
+    }
+public:
+    LimitTransferCheckOp(
+        StackType& stack,
+        StackType& altstack,
+        const unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager,
+        const BaseSignatureChecker& checker,
+        const CAmount& amountBeingSpent
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+        , checker_(checker)
+        , amountBeingSpent_(amountBeingSpent)
+    {}
+
+    bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        if (stack_.empty() || stack_.size() < 2)
+            return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+        const valtype& transferLimitSerialized = stackTop(1);
+        const valtype& p2sh20ByteHashSerialized = stackTop(0);
+        // Check for 8-byte limit transfer
+        if(transferLimitSerialized.size() > 8u) return Helpers::set_error(serror,SCRIPT_ERR_LIMIT_TRANSFER);
+        // Check for 20-byte address hash
+        if(p2sh20ByteHashSerialized.size() != 20u) return Helpers::set_error(serror,SCRIPT_ERR_LIMIT_TRANSFER);
+
+        if(!checker_.CheckTransferLimit(
+            computeChangeAmountMinimum(transferLimitSerialized),
+            computeChangeScript(p2sh20ByteHashSerialized)))
+        {
+            return Helpers::set_error(serror,SCRIPT_ERR_LIMIT_TRANSFER);
+        }
+        return true;
+    }
+};
+
 namespace
 {
 const std::set<opcodetype> upgradableOpCodes =
@@ -907,22 +960,30 @@ const std::set<opcodetype> checkSigOpcodes =
 #define ApplyOperation(opname) \
     opname(stack,altstack,flags,conditionalManager)(opcode,serror)\
 
+#define ApplyOperationWithChecker(opname) \
+    opname(stack,altstack,flags,conditionalManager,checker)(opcode,serror)\
+
     static bool ApplyOpcode(
         StackType& stack,
         StackType& altstack,
         const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager,
         const BaseSignatureChecker& checker,
+        const CAmount& amountBeingSPent,
         opcodetype opcode,
         ScriptError* serror)
     {
+        if(flags & SCRIPT_VERIFY_LIMIT_TRANSFER && opcode == OP_LIMIT_TRANSFER)
+        {
+            return LimitTransferCheckOp(stack,altstack,flags,conditionalManager,checker,amountBeingSPent)(opcode,serror);
+        }
         if(flags & SCRIPT_REQUIRE_COINSTAKE && opcode == OP_REQUIRE_COINSTAKE)
         {
-            return CoinstakeCheckOp(stack,altstack,flags,conditionalManager,checker)(opcode,serror);
+            return ApplyOperationWithChecker(CoinstakeCheckOp);
         }
         if(flags & SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY && opcode == OP_CHECKLOCKTIMEVERIFY)
         {
-            return LockTimeCheckOp(stack, altstack, flags, conditionalManager, checker)(opcode, serror);
+            return ApplyOperationWithChecker(LockTimeCheckOp);
         }
         if(opcode == OP_META)
         {
@@ -991,19 +1052,21 @@ const std::set<opcodetype> checkSigOpcodes =
 StackOperationManager::StackOperationManager(
     StackType& stack,
     const BaseSignatureChecker& checker,
+    const CAmount amountBeingSpent,
     unsigned flags
     ): stack_(stack)
     , altstack_()
     , flags_(flags)
     , conditionalManager_()
     , checker_(checker)
+    , amountBeingSpent_(amountBeingSpent)
     , opCount_(0u)
 {
 }
 
 bool StackOperationManager::ApplyOp(opcodetype opcode,ScriptError* serror)
 {
-    return ApplyOpcode(stack_,altstack_,flags_,conditionalManager_,checker_,opcode,serror);
+    return ApplyOpcode(stack_,altstack_,flags_,conditionalManager_,checker_,amountBeingSpent_, opcode,serror);
 }
 bool StackOperationManager::ApplyOp(opcodetype opcode,const CScript& scriptCode,ScriptError* serror)
 {

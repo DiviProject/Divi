@@ -19,14 +19,14 @@ class CBlockRewards;
 class TransactionLocationRecorder
 {
 private:
-    CDiskTxPos nextBlockTxOnDiskLocation_;
     size_t numberOfTransactions_;
+    CDiskTxPos nextBlockTxOnDiskLocation_;
     bool txLocationDataSizeHasBeenPreallocated_;
 public:
 
     TransactionLocationRecorder(
         const CBlockIndex* pindex,
-        const CBlock& block);
+        const size_t numberOfTransactions);
     void RecordTxLocationData(
         const CTransaction& tx,
         std::vector<TxIndexEntry>& txLocationData);
@@ -61,12 +61,10 @@ public:
         CValidationState& state,
         CBlockIndex* pindex,
         CCoinsViewCache& view,
-        const BlockMap& blockIndexMap,
-        const int blocksToSkipChecksFor);
+        const BlockMap& blockIndexMap);
 
     bool Check(
         const CBlockRewards& nExpectedMint,
-        bool fJustCheck,
         IndexDatabaseUpdates& indexDatabaseUpdates);
     bool WaitForScriptsToBeChecked();
     CBlockUndo& getBlockUndoData();

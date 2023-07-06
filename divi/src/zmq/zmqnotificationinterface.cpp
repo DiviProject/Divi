@@ -137,19 +137,22 @@ void CZMQNotificationInterface::UpdatedBlockTip(const CBlockIndex *pindex)
     }
 }
 
-void CZMQNotificationInterface::SyncTransaction(const CTransaction &tx, const CBlock *pblock, const TransactionSyncType syncType)
+void CZMQNotificationInterface::SyncTransactions(const TransactionVector & txs, const CBlock *pblock, const TransactionSyncType syncType)
 {
-    for (std::list<CZMQAbstractNotifier*>::iterator i = notifiers.begin(); i!=notifiers.end(); )
+    for(const CTransaction& tx: txs)
     {
-        CZMQAbstractNotifier *notifier = *i;
-        if (notifier->NotifyTransaction(tx))
+        for (std::list<CZMQAbstractNotifier*>::iterator i = notifiers.begin(); i!=notifiers.end(); )
         {
-            i++;
-        }
-        else
-        {
-            notifier->Shutdown();
-            i = notifiers.erase(i);
+            CZMQAbstractNotifier *notifier = *i;
+            if (notifier->NotifyTransaction(tx))
+            {
+                i++;
+            }
+            else
+            {
+                notifier->Shutdown();
+                i = notifiers.erase(i);
+            }
         }
     }
 }

@@ -227,8 +227,10 @@ OP_NOP5 = CScriptOp(0xb4)
 OP_NOP6 = CScriptOp(0xb5)
 OP_NOP7 = CScriptOp(0xb6)
 OP_NOP8 = CScriptOp(0xb7)
-OP_NOP9 = CScriptOp(0xb8)
-OP_NOP10 = CScriptOp(0xb9)
+OP_LIMIT_TRANSFER = CScriptOp(0xb8)
+OP_NOP9 = OP_LIMIT_TRANSFER
+OP_REQUIRE_COINSTAKE = CScriptOp(0xb9)
+OP_NOP10 = OP_REQUIRE_COINSTAKE
 
 # BIP 342 opcodes (Tapscript)
 OP_CHECKSIGADD = CScriptOp(0xba)

@@ -98,8 +98,6 @@ public:
     void SetCrypted(bool fCryptedIn);
     bool IsCrypted() const;
 
-    void Debug(const std::string& strName) const;
-
     bool SetMnemonic(const SecureVector& vchMnemonic, const SecureVector& vchMnemonicPassphrase, bool fUpdateID);
     bool SetMnemonic(const SecureString& ssMnemonic, const SecureString& ssMnemonicPassphrase, bool fUpdateID);
     bool GetMnemonic(SecureVector& vchMnemonicRet, SecureVector& vchMnemonicPassphraseRet) const;
@@ -110,13 +108,15 @@ public:
 
     uint256 GetID() const { return id; }
 
-    uint256 GetSeedHash();
+    uint256 GetSeedHash() const;
     void DeriveChildExtKey(uint32_t nAccountIndex, bool fInternal, uint32_t nChildIndex, CExtKey& extKeyRet);
 
     void AddAccount();
     bool GetAccount(uint32_t nAccountIndex, CHDAccount& hdAccountRet);
     bool SetAccount(uint32_t nAccountIndex, const CHDAccount& hdAccount);
     size_t CountAccounts();
+
+    static void setNewHDChain(CHDChain& hdChain);
 };
 
 /* hd pubkey data model */

@@ -6,8 +6,9 @@
 #include <memory>
 #include <sync.h>
 #include <Output.h>
+#include <NotificationInterface.h>
+#include <script/script.h>
 
-class CScript;
 using ManagedScripts = std::set<CScript>;
 class COutPoint;
 using UnspentOutputs = std::vector<COutput>;
@@ -19,7 +20,7 @@ class CTxOut;
 
 class I_VaultManagerDatabase;
 class WalletTransactionRecord;
-class SpentOutputTracker;
+class I_SpentOutputTracker;
 class I_MerkleTxConfirmationNumberCalculator;
 
 enum VaultUTXOFilters
@@ -31,14 +32,14 @@ enum VaultUTXOFilters
     INMATURE = 1 << 3,
     CONFIRMED_AND_MATURED = CONFIRMED | MATURED
 };
-class VaultManager
+class VaultManager final: public NotificationInterface
 {
 private:
     const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator_;
     I_VaultManagerDatabase& vaultManagerDB_;
     mutable CCriticalSection cs_vaultManager_;
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;
-    std::unique_ptr<SpentOutputTracker> outputTracker_;
+    std::unique_ptr<I_SpentOutputTracker> outputTracker_;
     ManagedScripts managedScripts_;
     ManagedScripts whiteListedScripts_;
 
@@ -47,14 +48,21 @@ private:
     bool transactionIsRelevant(const CTransaction& tx, bool checkOutputs,const CScript& outputScriptFilter) const;
     bool allInputsAreKnown(const CTransaction& tx) const;
     bool isManagedUTXO(const CWalletTx& walletTransaction,const CTxOut& output) const;
+
+    // Notification interface methods
+    void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) override {};
+    void SetBestChain(const CBlockLocator& loc) override {};
+    void UpdatedBlockTip(const CBlockIndex *pindex) override {};
+
+    void addSingleTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy);
 public:
     VaultManager(
         const I_MerkleTxConfirmationNumberCalculator& confirmationsCalculator,
         I_VaultManagerDatabase& vaultManagerDB);
     ~VaultManager();
 
-    void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit);
-    void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy);
+    void syncTransactions(const TransactionVector &tx, const CBlock *pblock);
+    void addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy = CScript());
     void addManagedScript(const CScript& script);
     void addWhiteListedScript(const CScript& script);
     void removeManagedScript(const CScript& script);
@@ -62,5 +70,6 @@ public:
 
     const CWalletTx& getTransaction(const uint256&) const;
     const ManagedScripts& getManagedScriptLimits() const;
+    bool Sync();
 };
 #endif// VAULT_MANAGER_H

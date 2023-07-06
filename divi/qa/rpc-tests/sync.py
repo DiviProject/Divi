@@ -8,7 +8,6 @@
 #
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 import os
 import shutil
@@ -25,7 +24,7 @@ def mineSingleBlock(miningQueue):
         while not taskCompleted:
             try:
                 if blockCount > 0:
-                    nodeToWorkOn.setgenerate(True,1)
+                    nodeToWorkOn.setgenerate(1)
                     blockCount -= 1
                 else:
                     taskCompleted = True
@@ -56,7 +55,7 @@ class SyncTest(BitcoinTestFramework):
             qObj.join()
 
         sync_blocks(self.nodes)
-        self.nodes[1].setgenerate(True, 50)
+        self.nodes[1].setgenerate( 50)
         sync_blocks(self.nodes)
         bestBlockHash = self.nodes[0].getbestblockhash()
         print("Block count totals {}".format(self.nodes[0].getblockcount()) )

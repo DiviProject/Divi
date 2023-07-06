@@ -12,6 +12,7 @@
 from test_framework import BitcoinTestFramework
 from util import *
 from masternode import *
+from authproxy import JSONRPCException
 
 import codecs
 import time
@@ -47,20 +48,20 @@ class MnStoredBroadcastTest (MnTestFramework):
   def setup_network (self, config_line=None):
     self.nodes = start_nodes(self.number_of_nodes, self.options.tmpdir, extra_args=[self.base_args]*2)
     self.setup = [None]*self.number_of_nodes
-    connect_nodes_bi (self.nodes, 0, 1)
+    connect_nodes(self.nodes[0],1)
     self.is_network_split = False
     self.sync_all ()
 
   def run_test (self):
     print ("Funding masternode...")
-    self.nodes[0].setgenerate(True,30)
+    self.nodes[0].setgenerate(30)
     self.setup_masternode(0,1,"mn","copper")
-    self.nodes[0].setgenerate (True, 16)
+    self.nodes[0].setgenerate ( 16)
 
     print ("Updating masternode.conf...")
     self.stop_masternode_daemons()
     self.start_masternode_daemons()
-    connect_nodes_bi(self.nodes,0,1)
+    connect_nodes(self.nodes[0],1)
 
     print ("Preparing the masternode broadcast...")
     cfg = self.setup[1].cfg
@@ -102,7 +103,7 @@ class MnStoredBroadcastTest (MnTestFramework):
     print ("Restarting node...")
     self.stop_masternode_daemons()
     self.start_masternode_daemons()
-    connect_nodes_bi(self.nodes,0,1)
+    connect_nodes(self.nodes[0],1)
 
     print ("Testing imported data...")
     assert_equal (self.nodes[1].listmnbroadcasts (), expected)
@@ -111,8 +112,10 @@ class MnStoredBroadcastTest (MnTestFramework):
     # is expired.  It should be auto-refreshed when starting the masternode.
     blk = self.nodes[0].getblock (self.nodes[0].getbestblockhash ())
     for i in range (100):
-      set_node_times (self.nodes, blk["time"] + i * 100)
+      self.time = blk["time"] + i * 100
+      set_node_times (self.nodes, self.time)
       time.sleep (0.01)
+    connect_nodes(self.nodes[0],1)
 
     print ("Starting masternode with stored broadcast...")
     for n in self.nodes:
@@ -124,6 +127,7 @@ class MnStoredBroadcastTest (MnTestFramework):
     assert_equal (res["status"], 4)
     assert_equal (res["message"], "Masternode successfully started")
     time.sleep (1)
+    self.wait_for_mn_list_to_sync(self.nodes[0],1);
     for n in self.nodes:
       lst = n.listmasternodes ()
       assert_equal (len (lst), 1)

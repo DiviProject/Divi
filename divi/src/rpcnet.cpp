@@ -4,10 +4,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <rpcprotocol.h>
 #include "rpcserver.h"
 
 #include "clientversion.h"
-#include "main.h"
 #include "net.h"
 #include <Node.h>
 #include "netbase.h"
@@ -23,6 +23,7 @@
 #include <QueuedBlock.h>
 #include <NodeState.h>
 #include <NodeStateRegistry.h>
+#include <tinyformat.h>
 
 #include <boost/foreach.hpp>
 
@@ -31,11 +32,9 @@
 using namespace json_spirit;
 using namespace std;
 
-extern std::vector<std::string> vAddedNodes;
-extern CCriticalSection cs_vAddedNodes;
 extern CCriticalSection cs_main;
 
-Value getconnectioncount(const Array& params, bool fHelp)
+Value getconnectioncount(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -49,7 +48,7 @@ Value getconnectioncount(const Array& params, bool fHelp)
     return GetPeerCount();
 }
 
-Value ping(const Array& params, bool fHelp)
+Value ping(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -65,7 +64,7 @@ Value ping(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value getpeerinfo(const Array& params, bool fHelp)
+Value getpeerinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -154,7 +153,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
     return ret;
 }
 
-Value addnode(const Array& params, bool fHelp)
+Value addnode(const Array& params, bool fHelp, CWallet* pwallet)
 {
     string strCommand;
     if (params.size() == 2)
@@ -171,34 +170,22 @@ Value addnode(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("addnode", "\"192.168.0.6:51472\" \"onetry\"") + HelpExampleRpc("addnode", "\"192.168.0.6:51472\", \"onetry\""));
 
-    string strNode = params[0].get_str();
-
-    if (strCommand == "onetry") {
-        CAddress addr;
-        OpenNetworkConnection(addr, strNode.c_str());
-        return Value::null;
-    }
-
-    LOCK(cs_vAddedNodes);
-    std::vector<std::string>::iterator it = vAddedNodes.begin();
-    for (; it != vAddedNodes.end(); it++)
-        if (strNode == *it)
-            break;
-
-    if (strCommand == "add") {
-        if (it != vAddedNodes.end())
+    const string strNode = params[0].get_str();
+    if(!addNode(strNode,strCommand))
+    {
+        if(strCommand == "add")
+        {
             throw JSONRPCError(RPC_CLIENT_NODE_ALREADY_ADDED, "Error: Node already added");
-        vAddedNodes.push_back(strNode);
-    } else if (strCommand == "remove") {
-        if (it == vAddedNodes.end())
+        }
+        else if(strCommand == "remove")
+        {
             throw JSONRPCError(RPC_CLIENT_NODE_NOT_ADDED, "Error: Node has not been added.");
-        vAddedNodes.erase(it);
+        }
     }
-
     return Value::null;
 }
 
-Value getaddednodeinfo(const Array& params, bool fHelp)
+Value getaddednodeinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -230,15 +217,14 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
 
     bool fDns = params[0].get_bool();
 
+    std::vector<std::string> addedNodes = getAddedNodeList();
     list<string> laddedNodes(0);
     if (params.size() == 1) {
-        LOCK(cs_vAddedNodes);
-        BOOST_FOREACH (string& strAddNode, vAddedNodes)
+        BOOST_FOREACH (std::string& strAddNode, addedNodes)
             laddedNodes.push_back(strAddNode);
     } else {
         string strNode = params[1].get_str();
-        LOCK(cs_vAddedNodes);
-        BOOST_FOREACH (string& strAddNode, vAddedNodes)
+        BOOST_FOREACH (std::string& strAddNode, addedNodes)
             if (strAddNode == strNode) {
                 laddedNodes.push_back(strAddNode);
                 break;
@@ -260,7 +246,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
     std::list<std::pair<std::string, std::vector<CService> > > laddedAddreses(0);
     BOOST_FOREACH (string& strAddNode, laddedNodes) {
         std::vector<CService> vservNode(0);
-        if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0))
+        if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), getNameLookupFlag(), 0))
             laddedAddreses.push_back(std::make_pair(strAddNode, vservNode));
         else {
             Object obj;
@@ -300,7 +286,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
     return ret;
 }
 
-Value getnettotals(const Array& params, bool fHelp)
+Value getnettotals(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 0)
         throw runtime_error(
@@ -343,7 +329,7 @@ static Array GetNetworksInfo()
     return networks;
 }
 
-Value getnetworkinfo(const Array& params, bool fHelp)
+Value getnetworkinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(

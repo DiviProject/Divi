@@ -2,6 +2,7 @@
 
 #include <sync.h>
 #include <chain.h>
+#include <ChainstateManager.h>
 #include <utiltime.h>
 #include <timedata.h>
 #include <masternode.h>
@@ -9,12 +10,10 @@
 #include <TransactionDiskAccessor.h>
 #include <MasternodePing.h>
 #include <Logging.h>
+#include <Settings.h>
 
 extern CCriticalSection cs_main;
-extern bool fImporting;
-extern bool fReindex;
-extern CChain chainActive;
-extern BlockMap mapBlockIndex;
+extern Settings& settings;
 
 static bool mnResyncRequested  = false;
 bool MasternodeResyncIsRequested()
@@ -45,12 +44,13 @@ bool IsBlockchainSynced()
 
     if (fBlockchainSynced) return true;
 
-    if (fImporting || fReindex) return false;
+    if (settings.isImportingFiles() || settings.isReindexingBlocks()) return false;
 
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain) return false;
 
-    CBlockIndex* pindex = chainActive.Tip();
+    const ChainstateManager::Reference chainstate;
+    const CBlockIndex* pindex = chainstate->ActiveChain().Tip();
     if (pindex == NULL) return false;
 
 
@@ -65,7 +65,8 @@ bool IsBlockchainSynced()
 
 bool GetBlockHashForScoring(uint256& hash, int nBlockHeight)
 {
-    const auto* tip = chainActive.Tip();
+    const ChainstateManager::Reference chainstate;
+    const auto* tip = chainstate->ActiveChain().Tip();
     if (tip == nullptr)
         return false;
     return GetBlockHashForScoring(hash, tip, nBlockHeight - tip->nHeight);
@@ -87,11 +88,12 @@ bool GetBlockHashForScoring(uint256& hash, const CBlockIndex* pindex, const int 
 const CBlockIndex* ComputeCollateralBlockIndex(const CMasternode& masternode)
 {
     static std::map<COutPoint,const CBlockIndex*> cachedCollateralBlockIndices;
+    const ChainstateManager::Reference chainstate;
 
     const CBlockIndex* collateralBlockIndex = cachedCollateralBlockIndices[masternode.vin.prevout];
     if (collateralBlockIndex)
     {
-        if(chainActive.Contains(collateralBlockIndex))
+        if(chainstate->ActiveChain().Contains(collateralBlockIndex))
         {
             return collateralBlockIndex;
         }
@@ -104,13 +106,14 @@ const CBlockIndex* ComputeCollateralBlockIndex(const CMasternode& masternode)
         return collateralBlockIndex;
     }
 
-    const auto mi = mapBlockIndex.find(hashBlock);
-    if (mi == mapBlockIndex.end() || mi->second == nullptr) {
+    const auto& blockMap = chainstate->GetBlockMap();
+    const auto mi = blockMap.find(hashBlock);
+    if (mi == blockMap.end() || mi->second == nullptr) {
         collateralBlockIndex = nullptr;
         return collateralBlockIndex;
     }
 
-    if (!chainActive.Contains(mi->second)) {
+    if (!chainstate->ActiveChain().Contains(mi->second)) {
         collateralBlockIndex = nullptr;
         return collateralBlockIndex;
     }
@@ -123,12 +126,13 @@ const CBlockIndex* ComputeMasternodeConfirmationBlockIndex(const CMasternode& ma
     const CBlockIndex* pindexConf = nullptr;
     {
         LOCK(cs_main);
+        const ChainstateManager::Reference chainstate;
         const auto* pindexCollateral = ComputeCollateralBlockIndex(masternode);
         if (pindexCollateral == nullptr)
             pindexConf = nullptr;
         else {
-            assert(chainActive.Contains(pindexCollateral));
-            pindexConf = chainActive[pindexCollateral->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1];
+            assert(chainstate->ActiveChain().Contains(pindexCollateral));
+            pindexConf = chainstate->ActiveChain()[pindexCollateral->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1];
             assert(pindexConf == nullptr || pindexConf->GetAncestor(pindexCollateral->nHeight) == pindexCollateral);
         }
     }
@@ -138,14 +142,15 @@ const CBlockIndex* ComputeMasternodeConfirmationBlockIndex(const CMasternode& ma
 int ComputeMasternodeInputAge(const CMasternode& masternode)
 {
     LOCK(cs_main);
+    const ChainstateManager::Reference chainstate;
 
     const auto* pindex = ComputeCollateralBlockIndex(masternode);
     if (pindex == nullptr)
         return 0;
 
-    assert(chainActive.Contains(pindex));
+    assert(chainstate->ActiveChain().Contains(pindex));
 
-    const unsigned tipHeight = chainActive.Height();
+    const unsigned tipHeight = chainstate->ActiveChain().Height();
     assert(tipHeight >= pindex->nHeight);
 
     return tipHeight - pindex->nHeight + 1;
@@ -153,9 +158,12 @@ int ComputeMasternodeInputAge(const CMasternode& masternode)
 
 CMasternodePing createCurrentPing(const CTxIn& newVin)
 {
+    const ChainstateManager::Reference chainstate;
+    const auto& activeChain = chainstate->ActiveChain();
+
     CMasternodePing ping;
     ping.vin = newVin;
-    ping.blockHash = chainActive[chainActive.Height() - 12]->GetBlockHash();
+    ping.blockHash = activeChain[activeChain.Height() - 12]->GetBlockHash();
     ping.sigTime = GetAdjustedTime();
     ping.signature = std::vector<unsigned char>();
     return ping;
@@ -182,16 +190,19 @@ bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now)
 }
 bool ReindexingOrImportingIsActive()
 {
-    return (fImporting || fReindex);
+    return (settings.isImportingFiles() || settings.isReindexingBlocks());
 }
 CMasternodePing createDelayedMasternodePing(const CMasternode& mn)
 {
+    const ChainstateManager::Reference chainstate;
+    const auto& activeChain = chainstate->ActiveChain();
+
     CMasternodePing ping;
     const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
     ping.vin = mn.vin;
     const int depthOfTx = ComputeMasternodeInputAge(mn);
     const int offset = std::min( std::max(0, depthOfTx), 12 );
-    const auto* block = chainActive[chainActive.Height() - offset];
+    const auto* block = activeChain[activeChain.Height() - offset];
     ping.blockHash = block->GetBlockHash();
     ping.sigTime = std::max(block->GetBlockTime() + offsetTimeBy45BlocksInSeconds, GetAdjustedTime());
     ping.signature = std::vector<unsigned char>();

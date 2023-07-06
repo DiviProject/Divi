@@ -101,10 +101,14 @@ private:
     bool fOnlyMixingAllowed;
 
 protected:
+    const CryptedKeyMap& getCryptedKeys() const
+    {
+        return mapCryptedKeys;
+    }
     bool SetCrypted();
 
     //! will encrypt previously unencrypted keys
-    bool EncryptKeys(CKeyingMaterial& vMasterKeyIn);
+    bool EncryptKeys(const CKeyingMaterial& vMasterKeyIn);
 
     bool EncryptHDChain(const CKeyingMaterial& vMasterKeyIn);
     bool DecryptHDChain(CHDChain& hdChainRet) const;
@@ -112,6 +116,7 @@ protected:
     bool SetCryptedHDChain(const CHDChain& chain);
 
     bool Unlock(const CKeyingMaterial& vMasterKeyIn, bool fForMixingOnly = false);
+    bool AddCryptedKey(const CPubKey &vchPubKey, const std::vector<unsigned char> &vchCryptedSecret);
 
 public:
     CCryptoKeyStore() : fUseCrypto(false), fDecryptionThoroughlyChecked(false), fOnlyMixingAllowed(false)
@@ -154,7 +159,6 @@ public:
 
     bool Lock(bool fAllowMixing = false);
 
-    virtual bool AddCryptedKey(const CPubKey &vchPubKey, const std::vector<unsigned char> &vchCryptedSecret);
     bool AddKeyPubKey(const CKey& key, const CPubKey &pubkey) override;
     bool HaveKey(const CKeyID &address) const override
     {
@@ -185,12 +189,6 @@ public:
     }
 
     virtual bool GetHDChain(CHDChain& hdChainRet) const override;
-
-    /**
-     * Wallet status (encrypted, locked) changed.
-     * Note: Called without locks held.
-     */
-    boost::signals2::signal<void (CCryptoKeyStore* wallet)> NotifyStatusChanged;
 };
 
 #endif // BITCOIN_CRYPTER_H

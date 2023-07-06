@@ -83,15 +83,18 @@ private:
     int64_t nLastRecv;
     uint64_t nSendBytes;
     uint64_t nRecvBytes;
+    int64_t nTimeConnected;
 
 public:
     CommunicationLogger();
     void RecordSentBytes(int additionalBytes);
     void RecordReceivedBytes(int additionalBytes);
+    void RecordTimeOfConnection(int64_t timeOfConnection);
     int64_t GetLastTimeDataSent() const;
     int64_t GetLastTimeDataReceived() const;
     uint64_t GetTotalBytesReceived() const;
     uint64_t GetTotalBytesSent() const;
+    int64_t GetTimeOfConnection() const;
 };
 
 enum CommsMode
@@ -175,15 +178,49 @@ public:
     std::deque<CNetMessage>& GetReceivedMessageQueue();
 };
 
+enum NodeConnectionFlags
+{
+    DEFAULT = 0,
+    INBOUND_CONN = 1 << 0,
+    WHITELISTED = 1 << 1,
+    ONE_SHOT = 1 << 2,
+};
+typedef uint8_t ConnectionFlagBitmask;
 class CNode
 {
-public:
+private:
     bool fSuccessfullyConnected;
     CommunicationLogger dataLogger;
-private:
     I_CommunicationChannel& channel_;
     QueuedMessageConnection messageConnection_;
+    std::deque<CInv> vRecvGetData;
+    int nVersion;
+    uint64_t nServices;
+    int64_t nTimeConnected;
+    CAddress addr;
+    std::string addrName;
+
+    bool RespondToRequestForData();
+    void RecordRequestForData(std::vector<CInv>& inventoryRequested);
+
+    CNode(
+        I_CommunicationChannel& channel,
+        CNodeSignals* nodeSignals,
+        CAddrMan& addressMananger,
+        CAddress addrIn,
+        std::string addrNameIn,
+        ConnectionFlagBitmask connectionFlags);
+
+    void LogMessageSize(unsigned int messageDataSize) const;
+
+protected:
+    CNodeSignals* nodeSignals_;
+    std::unique_ptr<CNodeState> nodeState_;
+
 public:
+    bool IsSuccessfullyConnected() const;
+    void RecordSuccessfullConnection();
+    const CommunicationLogger& GetCommunicationLogger() const;
     bool CommunicationChannelIsValid() const;
     void CloseCommsAndDisconnect();
     CommsMode SelectCommunicationMode();
@@ -199,25 +236,21 @@ public:
     void ProcessReceivedPing(CDataStream& receivedStream);
     void ProcessReceivedPong(CDataStream& receivedStream, int64_t nTimeReceived);
 
-private:
-    std::deque<CInv> vRecvGetData;
-public:
-    uint64_t nServices;
-    int64_t nTimeConnected;
-    CAddress addr;
-    std::string addrName;
+    void SetVersionAndServices(int nodeVersionNumber, uint64_t bitmaskOfNodeServices);
+    const int& GetVersion() const;
+    const uint64_t& GetServices() const;
+    const CAddress& GetCAddress() const;
+    const std::string& GetAddressName() const;
     CService addrLocal;
-    int nVersion;
     // strSubVer is whatever byte array we read from the wire. However, this field is intended
     // to be printed out, displayed to humans in various forms and so on. So we sanitize it and
     // store the sanitized version in cleanSubVer. The original should be used when dealing with
     // the network or wire types and the cleaned string used when displayed or logged.
     std::string strSubVer, cleanSubVer;
     const bool fInbound;
-    bool fWhitelisted; // This peer can bypass DoS banning.
-    bool fOneShot;
+    const bool fWhitelisted; // This peer can bypass DoS banning.
+    const bool fOneShot;
     bool fClient;
-    bool fNetworkNode;
     // We use fRelayTxes for two purposes -
     // a) it allows us to not relay tx invs before receiving the peer's version message
     // b) the peer may tell us in their version message that we should not relay tx invs
@@ -233,26 +266,8 @@ public:
     std::atomic<int> nRefCount;
     NodeId id;
 
-    int nSporksCount = -1;
+    int nSporksCount;
 
-protected:
-    CNodeSignals* nodeSignals_;
-    std::unique_ptr<CNodeState> nodeState_;
-
-private:
-
-    CNode(
-        I_CommunicationChannel& channel,
-        CNodeSignals* nodeSignals,
-        CAddrMan& addressMananger,
-        CAddress addrIn,
-        std::string addrNameIn,
-        bool fInboundIn,
-        bool whiteListed);
-
-    void LogMessageSize(unsigned int messageDataSize) const;
-
-public:
     uint256 hashContinue;
     int nStartingHeight;
 
@@ -279,7 +294,7 @@ public:
     // Whether a ping is requested.
     bool fPingQueued;
 
-    int nSporksSynced = 0;
+    int nSporksSynced;
 
     template <typename ...Args>
     static CNode* CreateNode(Args&&... args)
@@ -289,7 +304,6 @@ public:
 
     ~CNode();
 
-public:
     template <typename ...Args>
     void PushMessage(const char* pszCommand, Args&&... args)
     {
@@ -304,8 +318,7 @@ public:
     bool IsInUse();
     void MaybeSendPing();
 
-    bool RespondToRequestForData();
-    void RecordRequestForData(std::vector<CInv>& inventoryRequested);
+    void HandleRequestForData(std::vector<CInv>& inventoryRequested);
     std::deque<CInv>& GetRequestForDataQueue();
 
     void CheckForInnactivity();
@@ -332,7 +345,7 @@ public:
     void PushInventory(const CInv& inv);
     void AskFor(const CInv& inv);
 
-    void PushVersion(int currentChainTipHeight);
+    void PushVersion();
     void SetSporkCount(int nSporkCountIn);
     bool AreSporksSynced() const;
 

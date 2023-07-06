@@ -56,7 +56,7 @@ class MnRemoteStartTest (MnTestFramework):
   def mine_blocks (self, n):
     """Mines blocks with node 3."""
 
-    self.nodes[3].setgenerate(True, n)
+    self.nodes[3].setgenerate( n)
     sync_blocks (self.nodes)
 
   def run_test (self):
@@ -67,7 +67,7 @@ class MnRemoteStartTest (MnTestFramework):
     print ("Allocating masternode funds...")
     set_node_times (self.nodes, self.time)
 
-    self.nodes[0].setgenerate (True, 5)
+    self.nodes[0].setgenerate ( 5)
     sync_blocks (self.nodes)
     self.mine_blocks (25)
     assert_equal (self.nodes[0].getbalance (), 6250)

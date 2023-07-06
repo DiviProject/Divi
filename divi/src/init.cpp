@@ -16,24 +16,23 @@
 #include <base58.h>
 #include "BlockFileOpener.h"
 #include <BlockDiskAccessor.h>
+#include <BlockDiskDataReader.h>
+#include <BlockIndexLoading.h>
 #include <chain.h>
 #include <chainparams.h>
-#include "checkpoints.h"
+#include <ChainstateManager.h>
+#include <clientversion.h>
 #include "compat/sanity.h"
+#include <DataDirectory.h>
 #include <defaultValues.h>
-#include <dbenv.h>
-#include "key.h"
-#include "main.h"
-#include "obfuscation.h"
 #include <WalletBackupFeatureContainer.h>
-#include "miner.h"
+#include <miner.h>
 #include "net.h"
 #include "rpcserver.h"
-#include "script/standard.h"
 #include "spork.h"
 #include "sporkdb.h"
-#include "txdb.h"
 #include "torcontrol.h"
+#include <txdb.h>
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
@@ -43,18 +42,27 @@
 #include <MasternodeModule.h>
 #include <functional>
 #include <uiMessenger.h>
-#include <ActiveChainManager.h>
-#include <BlockDiskAccessor.h>
+#include <timeIntervalConstants.h>
 #include <TransactionInputChecker.h>
 #include <txmempool.h>
-#include <WalletRescanner.h>
 #include <StartAndShutdownSignals.h>
-#include <MerkleTxConfirmationNumberCalculator.h>
+#include <I_MerkleTxConfirmationNumberCalculator.h>
+#include <I_BlockSubmitter.h>
+#include <ThreadManagementHelpers.h>
+#include <LoadWalletResult.h>
+#include <MultiWalletModule.h>
+#include <TransactionDiskAccessor.h>
+#include <MainNotificationRegistration.h>
+#include <ChainSyncHelpers.h>
+#include <ChainExtensionModule.h>
+#include <BlockInvalidationHelpers.h>
+#include <FlushChainState.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #include "walletdb.h"
 #include <WalletTx.h>
+#include <LegacyWalletDatabaseEndpointFactory.h>
 #endif
 
 #include <fstream>
@@ -71,6 +79,7 @@
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/thread.hpp>
 #include <openssl/crypto.h>
+#include <I_ChainExtensionService.h>
 
 #if ENABLE_ZMQ
 #include "zmq/zmqnotificationinterface.h"
@@ -78,82 +87,226 @@
 
 #include <ValidationState.h>
 #include <verifyDb.h>
+#include <stdio.h>
 
-extern CCriticalSection cs_main;
-extern CChain chainActive;
 extern Settings& settings;
-extern bool fReindex;
-extern bool fImporting;
-extern bool fCheckBlockIndex;
-extern int nScriptCheckThreads;
-extern int nCoinCacheSize;
-extern bool fTxIndex;
-extern bool fVerifyingBlocks;
-extern bool fLiteMode;
-extern BlockMap mapBlockIndex;
-extern Settings& settings;
-extern CBlockTreeDB* pblocktree;
-extern CCoinsViewCache* pcoinsTip;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
 #endif
-#ifdef ENABLE_WALLET
-std::unique_ptr<I_MerkleTxConfirmationNumberCalculator> confirmationsCalculator(nullptr);
-CWallet* pwalletMain = NULL;
-constexpr int nWalletBackups = 20;
-
-/**
- * Wallet Settings
- */
-#endif
-
-
-//! -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
-static const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
-//! -maxtxfee will warn if called with a higher fee than this amount (in satoshis)
-static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
-
-constexpr char FEE_ESTIMATES_FILENAME[] = "fee_estimates.dat";
 CClientUIInterface uiInterface;
 
-bool fAddressIndex = false;
-bool fSpentIndex = false;
 const FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
-CTxMemPool mempool(feeAndPriorityCalculator.getMinimumRelayFeeRate(), fAddressIndex, fSpentIndex);
+static CTxMemPool mempool;
+CTxMemPool& GetTransactionMemoryPool()
+{
+    return mempool;
+}
+/** Global instance of the SporkManager, managed through startup/shutdown.  */
+std::unique_ptr<CSporkManager> sporkManagerInstance;
+/** Global instance of the ChainstateManager.  The lifetime is managed through
+ *  the startup/shutdown cycle.  */
+std::unique_ptr<ChainstateManager> chainstateInstance;
 
-void InitializeWallet(std::string strWalletFile)
+class P2PNotifications final: public NotificationInterface
+{
+public:
+    void UpdatedBlockTip(const CBlockIndex *pindex) override
+    {
+        ChainstateManager::Reference chainStateRef;
+        uiInterface.NotifyBlockTip(pindex->GetBlockHash());
+        NotifyPeersOfNewChainTip(chainStateRef->ActiveChain().Height(),pindex->GetBlockHash(), 100);
+        GetTransactionMemoryPool().setLastTimeOfChainTipUpdate(GetTime());
+    }
+};
+std::unique_ptr<P2PNotifications> p2pNotifications;
+
+#ifdef ENABLE_WALLET
+constexpr int nWalletBackups = 20;
+#endif
+static boost::thread_group* globalThreadGroupRef = nullptr;
+std::unique_ptr<MultiWalletModule> multiWalletModule(nullptr);
+CCriticalSection cs_main;
+
+void FlushStateToDisk()
+{
+    MainNotificationSignals& notificationSignals = GetMainNotificationInterface();
+    CValidationState state;
+    ChainstateManager::Reference chainstateRef_;
+    FlushStateToDisk(*chainstateRef_, state, FlushStateMode::FLUSH_STATE_ALWAYS, notificationSignals,cs_main);
+}
+
+void InitializeMultiWalletModule()
+{
+    if(multiWalletModule) return;
+    assert(chainstateInstance);
+    multiWalletModule.reset(
+        new MultiWalletModule(
+            *chainstateInstance,
+            settings,
+            GetTransactionMemoryPool(),
+            cs_main,
+            Params().COINBASE_MATURITY()));
+}
+void FinalizeMultiWalletModule()
+{
+    if(!multiWalletModule) return;
+    multiWalletModule.reset();
+}
+
+typedef std::map<unsigned int, unsigned int> LastExtensionTimestampByBlockHeight;
+static LastExtensionTimestampByBlockHeight hashedBlocksByHeight;
+bool CheckHeightForRecentProofOfStakeGeneration(const int blockHeight)
+{
+    constexpr int64_t fiveMinutes = 5*60;
+    const auto it = hashedBlocksByHeight.find(blockHeight);
+    return it != hashedBlocksByHeight.end() && GetTime() - it->second < fiveMinutes;
+}
+
+bool HasRecentlyAttemptedToGenerateProofOfStake()
+{
+    const ChainstateManager::Reference chainstate;
+    int currentChainHeight = chainstate->ActiveChain().Tip()->nHeight;
+    for(int offset =0 ; offset < 4; offset++ )
+    {
+        if(currentChainHeight - offset < 0) break;
+        if(CheckHeightForRecentProofOfStakeGeneration(currentChainHeight-offset)) return true;
+    }
+    return false;
+}
+
+std::unique_ptr<ChainExtensionModule> chainExtensionModule;
+void InitializeChainExtensionModule(const MasternodeModule& masternodeModule)
+{
+    assert(chainExtensionModule == nullptr);
+    chainExtensionModule.reset(
+        new ChainExtensionModule(
+            ChainstateManager::Get(),
+            GetTransactionMemoryPool(),
+            masternodeModule,
+            GetMainNotificationInterface(),
+            cs_main,
+            settings,
+            Params(),
+            GetSporkManager(),
+            hashedBlocksByHeight,
+            GetBlockIndexSuccessorsByPreviousBlockIndex(),
+            GetBlockIndexCandidates()));
+}
+void FinalizeChainExtensionModule()
+{
+    chainExtensionModule.reset();
+}
+const I_ChainExtensionService& GetChainExtensionService()
+{
+    return chainExtensionModule->getChainExtensionService();
+}
+const I_BlockSubmitter& GetBlockSubmitter()
+{
+    return chainExtensionModule->getBlockSubmitter();
+}
+
+bool ManualBackupWallet(const std::string& strDest)
+{
+    assert(multiWalletModule);
+    return  multiWalletModule->getWalletDbEnpointFactory().backupWalletFile(strDest);
+}
+
+const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator()
+{
+    assert(multiWalletModule);
+    return multiWalletModule->getConfirmationsCalculator();
+}
+
+CWallet* GetWallet()
 {
 #ifdef ENABLE_WALLET
-    confirmationsCalculator.reset(
-        new MerkleTxConfirmationNumberCalculator(
-            chainActive,
-            mapBlockIndex,
-            Params().COINBASE_MATURITY(),
-            mempool,
-            cs_main));
-    pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex, *confirmationsCalculator);
+    return multiWalletModule->getActiveWallet();
+#else
+    return nullptr;
 #endif
 }
-void DeallocateWallet()
+std::string GetWalletName()
 {
 #ifdef ENABLE_WALLET
-    delete pwalletMain;
-    pwalletMain = nullptr;
-    confirmationsCalculator.reset();
+    return multiWalletModule->getActiveWalletName();
+#else
+    return 'Wallets currently disabled';
 #endif
 }
+static std::string stakingWalletName = "";
 
-bool static InitError(const std::string& str)
+void StartCoinMintingModule(boost::thread_group& threadGroup, I_StakingWallet& stakingWallet)
+{
+    // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
+    const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
+    if(underRegressionTesting && !settings.ParameterIsSet("-staking")) settings.SetParameter("-staking", "0");
+
+    InitializeCoinMintingModule(
+        settings,
+        Params(),
+        chainExtensionModule->getBlockProofProver(stakingWallet),
+        GetMasternodeModule().getMasternodeSynchronization(),
+        feeAndPriorityCalculator.getMinimumRelayFeeRate(),
+        GetPeerBlockNotifyService(),
+        chainExtensionModule->getBlockSubmitter(),
+        chainExtensionModule->getDifficultyAdjuster(),
+        hashedBlocksByHeight,
+        cs_main,
+        GetTransactionMemoryPool(),
+        stakingWallet,
+        threadGroup);
+}
+
+bool SwitchCoinMintingModuleToWallet(const std::string activeWalletName)
+{
+    AssertLockHeld(cs_main);
+    if(activeWalletName == stakingWalletName) return true;
+    CWallet* stakingWallet = multiWalletModule->getWalletByName(stakingWalletName);
+
+    ShutdownCoinMintingModule();
+    UnregisterMainNotificationInterface(stakingWallet);
+    if(stakingWallet->IsCrypted()) stakingWallet->LockFully();
+    if(LoadAndSelectWallet(activeWalletName, true))
+    {
+        stakingWalletName = activeWalletName;
+    }
+    else
+    {
+        LoadAndSelectWallet(stakingWalletName, true);
+    }
+    StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
+    return stakingWalletName == activeWalletName;
+}
+
+void ReloadActiveWallet()
+{
+    AssertLockHeld(cs_main);
+    const std::string activeWalletName = multiWalletModule->getActiveWalletName();
+    CWallet* activeWallet = multiWalletModule->getWalletByName(activeWalletName);
+
+    if(activeWalletName == stakingWalletName) ShutdownCoinMintingModule();
+    UnregisterMainNotificationInterface(activeWallet);
+    multiWalletModule->reloadActiveWallet();
+    LoadAndSelectWallet(activeWalletName, true);
+    if(activeWalletName == stakingWalletName) StartCoinMintingModule(*globalThreadGroupRef,*static_cast<I_StakingWallet*>(GetWallet()));
+}
+
+namespace
+{
+
+bool InitError(const std::string& str)
 {
     uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
     return false;
 }
 
-bool static InitWarning(const std::string& str)
+bool InitWarning(const std::string& str)
 {
     uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_WARNING);
     return true;
 }
+
+} // anonymous namespace
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -185,6 +338,8 @@ bool static InitWarning(const std::string& str)
 // shutdown thing.
 //
 
+namespace
+{
 
 volatile bool fRequestShutdown = false;
 volatile bool fRestartRequested = false; // if true then restart, else shutdown
@@ -195,98 +350,6 @@ void MainStartShutdown()
 bool MainShutdownRequested()
 {
     return fRequestShutdown || fRestartRequested;
-}
-
-class CCoinsViewErrorCatcher : public CCoinsViewBacked
-{
-public:
-    CCoinsViewErrorCatcher(CCoinsView* view) : CCoinsViewBacked(view) {}
-    bool GetCoins(const uint256& txid, CCoins& coins) const override
-    {
-        try {
-            return CCoinsViewBacked::GetCoins(txid, coins);
-        } catch (const std::runtime_error& e) {
-            uiInterface.ThreadSafeMessageBox(translate("Error reading from database, shutting down."), "", CClientUIInterface::MSG_ERROR);
-            LogPrintf("Error reading from database: %s\n", e.what());
-            // Starting the shutdown sequence and returning false to the caller would be
-            // interpreted as 'entry not found' (as opposed to unable to read data), and
-            // could lead to invalid interpration. Just exit immediately, as we can't
-            // continue anyway, and all writes should be atomic.
-            abort();
-        }
-    }
-    // Writes do not need similar protection, as failure to write is handled by the caller.
-};
-
-static CCoinsViewDB* pcoinsdbview = NULL;
-static CCoinsViewErrorCatcher* pcoinscatcher = NULL;
-
-#ifdef ENABLE_WALLET
-inline void FlushWallet(bool shutdown = false) { if(pwalletMain) BerkleyDBEnvWrapper().Flush(shutdown);}
-#endif
-void FlushWalletAndStopMinting()
-{
-#ifdef ENABLE_WALLET
-    FlushWallet();
-    SetPoWThreadPool(NULL, 0);
-#endif
-}
-
-void LoadFeeEstimatesForMempool()
-{
-    boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
-    CAutoFile est_filein(fopen(est_path.string().c_str(), "rb"), SER_DISK, CLIENT_VERSION);
-    // Allowed to fail as this file IS missing on first startup.
-    if (!est_filein.IsNull())
-        mempool.ReadFeeEstimates(est_filein);
-}
-
-void SaveFeeEstimatesFromMempool()
-{
-    if (settings.GetArg("-savemempoolfees",false))
-    {
-        boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
-        CAutoFile est_fileout(fopen(est_path.string().c_str(), "wb"), SER_DISK, CLIENT_VERSION);
-        if (!est_fileout.IsNull())
-            mempool.WriteFeeEstimates(est_fileout);
-        else
-            LogPrintf("%s: Failed to write fee estimates to %s\n", __func__, est_path.string());
-    }
-}
-
-void DeallocateShallowDatabases()
-{
-    delete pcoinsTip;
-    delete pcoinscatcher;
-    delete pcoinsdbview;
-    delete pblocktree;
-
-    pcoinsTip = NULL;
-    pcoinscatcher = NULL;
-    pcoinsdbview = NULL;
-    pblocktree = NULL;
-    GetSporkManager().DeallocateDatabase();
-}
-
-void CleanAndReallocateShallowDatabases(const std::pair<std::size_t,std::size_t>& blockTreeAndCoinDBCacheSizes)
-{
-    DeallocateShallowDatabases();
-    GetSporkManager().AllocateDatabase();
-    pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
-    pcoinsdbview = new CCoinsViewDB(mapBlockIndex,blockTreeAndCoinDBCacheSizes.second, false, fReindex);
-    pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
-    pcoinsTip = new CCoinsViewCache(pcoinscatcher);
-}
-
-void FlushStateAndDeallocateShallowDatabases()
-{
-    LOCK(cs_main);
-    if (pcoinsTip != NULL) {
-        FlushStateToDisk();
-        //record that client took the proper shutdown procedure
-        pblocktree->WriteFlag("shutdown", true);
-    }
-    DeallocateShallowDatabases();
 }
 
 /** Preparing steps before shutting down or restarting the wallet */
@@ -305,23 +368,26 @@ void PrepareShutdown()
     /// Be sure that anything that writes files or flushes caches only does this if the respective
     /// module was initialized.
     RenameThread("divi-shutoff");
-    mempool.AddTransactionsUpdated(1);
     StopRPCThreads();
-    FlushWalletAndStopMinting();
     StopNode();
+    ShutdownCoinMintingModule();
     InterruptTorControl();
     StopTorControl();
     SaveMasternodeDataToDisk();
-    UnregisterNodeSignals(GetNodeSignals());
-    SaveFeeEstimatesFromMempool();
-    FlushStateAndDeallocateShallowDatabases();
+    FinalizeP2PNetwork();
 
-#ifdef ENABLE_WALLET
-    FlushWallet(true);
-#endif
+    {
+        LOCK(cs_main);
+        FlushStateToDisk();
+        UnregisterAllMainNotificationInterfaces();
+        p2pNotifications.reset();
+
+        //record that client took the proper shutdown procedure
+        FinalizeMainBlockchainModules();
+    }
+
 #if ENABLE_ZMQ
     if (pzmqNotificationInterface) {
-        UnregisterValidationInterface(pzmqNotificationInterface);
         delete pzmqNotificationInterface;
         pzmqNotificationInterface = NULL;
     }
@@ -329,8 +395,6 @@ void PrepareShutdown()
 #ifndef WIN32
     boost::filesystem::remove(GetPidFile(settings));
 #endif
-
-    UnregisterAllValidationInterfaces();
 }
 
 /**
@@ -350,9 +414,6 @@ void MainShutdown()
     }
 
 // Shutdown part 2: delete wallet instance
-#ifdef ENABLE_WALLET
-    DeallocateWallet();
-#endif
     CleanupP2PConnections();
     LogPrintf("%s: done\n", __func__);
 }
@@ -372,7 +433,30 @@ bool UnitTestShutdownRequested()
   return false;
 }
 
-static StartAndShutdownSignals& startAndShutdownSignals = StartAndShutdownSignals::instance();
+StartAndShutdownSignals& startAndShutdownSignals = StartAndShutdownSignals::instance();
+
+} // anonymous namespace
+
+bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip)
+{
+    AssertLockHeld(cs_main);
+    ChainstateManager::Reference chainstate;
+    const CCoinsView& coinView =
+        useCoinTip
+        ? static_cast<const CCoinsView&>(chainstate->CoinsTip())
+        : static_cast<const CCoinsView&>(chainstate->GetNonCatchingCoinsView());
+    const CVerifyDB dbVerifier(
+        Params(),
+        chainExtensionModule->getBlockSubsidies(),
+        chainExtensionModule->getBlockIncentivesPopulator(),
+        *chainstate,
+        coinView,
+        GetSporkManager(),
+        uiInterface,
+        chainstate->GetNominalViewCacheSize(),
+        &ShutdownRequested);
+    return dbVerifier.VerifyDB(nCheckLevel, nCheckDepth);
+}
 
 void EnableMainSignals()
 {
@@ -409,9 +493,14 @@ void Shutdown()
 {
     assert(!startAndShutdownSignals.shutdown.empty());
     startAndShutdownSignals.shutdown();
-    UnloadBlockIndex();
+    /* At this point, the ChainstateManager doesn't exist anymore (and thus
+       there is also no need to free any of its contents).  */
+    assert(!chainstateInstance);
+    UnloadBlockIndex(nullptr);
 }
 
+namespace
+{
 
 /**
  * Signal handlers are very limited in what they are allowed to do, so:
@@ -423,10 +512,10 @@ void HandleSIGTERM(int)
 
 void HandleSIGHUP(int)
 {
-    fReopenDebugLog = true;
+    requestReopeningDebugLog();
 }
 
-static void BlockNotifyCallback(const uint256& hashNewTip)
+void BlockNotifyCallback(const uint256& hashNewTip)
 {
     std::string strCmd = settings.GetArg("-blocknotify", "");
 
@@ -435,57 +524,186 @@ static void BlockNotifyCallback(const uint256& hashNewTip)
 }
 
 struct CImportingNow {
-    CImportingNow()
+private:
+    Settings& internalSettings_;
+public:
+    CImportingNow(Settings& settings): internalSettings_(settings)
     {
-        assert(fImporting == false);
-        fImporting = true;
+        assert(internalSettings_.isImportingFiles() == false);
+        internalSettings_.setFileImportingFlag(true);
     }
 
     ~CImportingNow()
     {
-        assert(fImporting == true);
-        fImporting = false;
+        assert(internalSettings_.isImportingFiles() == true);
+        internalSettings_.setFileImportingFlag(false);
     }
 };
 
-void ReconstructBlockIndexIfRequested()
-{
-    // -reindex
-    if (fReindex) {
-        CImportingNow imp;
-        int nFile = 0;
-        while (true) {
-            CDiskBlockPos pos(nFile, 0);
-            if (!BlockFileExists(pos, "blk"))
-                break; // No block files left to reindex
-            FILE* file = OpenBlockFile(pos, true);
-            if (!file)
-                break; // This error is logged in OpenBlockFile
-            LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
-            LoadExternalBlockFile(file, &pos);
-            nFile++;
-        }
-        pblocktree->WriteReindexing(false);
-        fReindex = false;
-        LogPrintf("Reindexing finished\n");
-        // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
-        InitBlockIndex();
+struct CVerifyingNow {
+private:
+    Settings& internalSettings_;
+public:
+    CVerifyingNow(Settings& settings): internalSettings_(settings)
+    {
+        assert(internalSettings_.isStartupVerifyingBlocks() == false);
+        internalSettings_.setStartupBlockVerificationFlag(true);
     }
+
+    ~CVerifyingNow()
+    {
+        assert(internalSettings_.isStartupVerifyingBlocks() == true);
+        internalSettings_.setStartupBlockVerificationFlag(false);
+    }
+};
+
+bool LoadExternalBlockFile(ChainstateManager& chainstate, FILE* fileIn, CDiskBlockPos* dbp = NULL)
+{
+    // Map of disk positions for blocks with unknown parent (only used for reindex)
+    static std::multimap<uint256, CDiskBlockPos> mapBlocksUnknownParent;
+    int64_t nStart = GetTimeMillis();
+
+    const auto& blockSubmitter = chainExtensionModule->getBlockSubmitter();
+    const auto& blockMap = chainstate.GetBlockMap();
+
+    int nLoaded = 0;
+    try {
+        // This takes over fileIn and calls fclose() on it in the CBufferedFile destructor
+        CBufferedFile blkdat(fileIn, 2 * MAX_BLOCK_SIZE_CURRENT, MAX_BLOCK_SIZE_CURRENT + 8, SER_DISK, CLIENT_VERSION);
+        uint64_t nRewind = blkdat.GetPos();
+        while (!blkdat.eof()) {
+            boost::this_thread::interruption_point();
+
+            blkdat.SetPos(nRewind);
+            nRewind++;         // start one byte further next time, in case of failure
+            blkdat.SetLimit(); // remove former limit
+            unsigned int nSize = 0;
+            try {
+                // locate a header
+                unsigned char buf[MESSAGE_START_SIZE];
+                blkdat.FindByte(Params().MessageStart()[0]);
+                nRewind = blkdat.GetPos() + 1;
+                blkdat >> FLATDATA(buf);
+                if (memcmp(buf, Params().MessageStart(), MESSAGE_START_SIZE))
+                    continue;
+                // read size
+                blkdat >> nSize;
+                if (nSize < 80 || nSize > MAX_BLOCK_SIZE_CURRENT)
+                    continue;
+            } catch (const std::exception&) {
+                // no valid block header found; don't complain
+                break;
+            }
+            try {
+                // read block
+                uint64_t nBlockPos = blkdat.GetPos();
+                if (dbp)
+                    dbp->nPos = nBlockPos;
+                blkdat.SetLimit(nBlockPos + nSize);
+                blkdat.SetPos(nBlockPos);
+                CBlock block;
+                blkdat >> block;
+                nRewind = blkdat.GetPos();
+
+                // detect out of order blocks, and store them for later
+                uint256 hash = block.GetHash();
+                if (hash != Params().HashGenesisBlock() && blockMap.count(block.hashPrevBlock) == 0) {
+                    LogPrint("reindex", "%s: Out of order block %s, parent %s not known\n", __func__, hash,
+                             block.hashPrevBlock);
+                    if (dbp)
+                        mapBlocksUnknownParent.insert(std::make_pair(block.hashPrevBlock, *dbp));
+                    continue;
+                }
+
+                // process in case the block isn't known yet
+                const auto mit = blockMap.find(hash);
+                if (mit == blockMap.end() || (mit->second->nStatus & BLOCK_HAVE_DATA) == 0) {
+                    CValidationState state;
+                    if (blockSubmitter.acceptBlockForChainExtension(state, block, dbp))
+                        nLoaded++;
+                    if (state.IsError())
+                        break;
+                } else if (hash != Params().HashGenesisBlock() && mit->second->nHeight % 1000 == 0) {
+                    LogPrintf("Block Import: already had block %s at height %d\n", hash, mit->second->nHeight);
+                }
+
+                // Recursively process earlier encountered successors of this block
+                std::deque<uint256> queue;
+                queue.push_back(hash);
+                while (!queue.empty()) {
+                    uint256 head = queue.front();
+                    queue.pop_front();
+                    std::pair<std::multimap<uint256, CDiskBlockPos>::iterator, std::multimap<uint256, CDiskBlockPos>::iterator> range = mapBlocksUnknownParent.equal_range(head);
+                    while (range.first != range.second) {
+                        std::multimap<uint256, CDiskBlockPos>::iterator it = range.first;
+                        if (ReadBlockFromDisk(block, it->second)) {
+                            LogPrintf("%s: Processing out of order child %s of %s\n", __func__, block.GetHash(), head);
+                            CValidationState dummy;
+                            if (blockSubmitter.acceptBlockForChainExtension(dummy, block, &it->second)) {
+                                nLoaded++;
+                                queue.push_back(block.GetHash());
+                            }
+                        }
+                        range.first++;
+                        mapBlocksUnknownParent.erase(it);
+                    }
+                }
+            } catch (std::exception& e) {
+                LogPrintf("%s : Deserialize or I/O error - %s", __func__, e.what());
+            }
+        }
+    } catch (std::runtime_error& e) {
+        CValidationState().Abort(std::string("System error: ") + e.what());
+    }
+    if (nLoaded > 0)
+        LogPrintf("Loaded %i blocks from external file in %dms\n", nLoaded, GetTimeMillis() - nStart);
+    return nLoaded > 0;
 }
 
-void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
+void ReconstructBlockIndex(ChainstateManager& chainstate)
+{
+    // -reindex
+    CImportingNow imp(settings);
+    int nFile = 0;
+    while (true) {
+        CDiskBlockPos pos(nFile, 0);
+        if (!BlockFileExists(pos, "blk"))
+            break; // No block files left to reindex
+        FILE* file = OpenBlockFile(pos, true);
+        if (!file)
+            break; // This error is logged in OpenBlockFile
+        LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
+        LoadExternalBlockFile(chainstate, file, &pos);
+        nFile++;
+    }
+    chainstate.BlockTree().WriteReindexing(false);
+    settings.setReindexingFlag(false);
+    LogPrintf("Reindexing finished\n");
+    // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
+    GetChainExtensionService().connectGenesisBlock();
+}
+
+void ReindexAndImportBlockFiles(ChainstateManager* chainstate, Settings& settings)
 {
     RenameThread("divi-loadblk");
+
+    if(settings.isReindexingBlocks()) ReconstructBlockIndex(*chainstate);
+    std::vector<boost::filesystem::path> vImportFiles;
+    if(settings.ParameterIsSet("-loadblock"))
+    {
+        BOOST_FOREACH (std::string strFile, settings.GetMultiParameter("-loadblock"))
+            vImportFiles.push_back(strFile);
+    }
 
     // hardcoded $DATADIR/bootstrap.dat
     boost::filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
     if (boost::filesystem::exists(pathBootstrap)) {
         FILE* file = fopen(pathBootstrap.string().c_str(), "rb");
         if (file) {
-            CImportingNow imp;
+            CImportingNow imp(settings);
             boost::filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
             LogPrintf("Importing bootstrap.dat...\n");
-            LoadExternalBlockFile(file);
+            LoadExternalBlockFile(*chainstate, file);
             RenameOver(pathBootstrap, pathBootstrapOld);
         } else {
             LogPrintf("Warning: Could not open bootstrap file %s\n", pathBootstrap.string());
@@ -496,9 +714,9 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
     BOOST_FOREACH (boost::filesystem::path& path, vImportFiles) {
         FILE* file = fopen(path.string().c_str(), "rb");
         if (file) {
-            CImportingNow imp;
+            CImportingNow imp(settings);
             LogPrintf("Importing blocks file %s...\n", path.string());
-            LoadExternalBlockFile(file);
+            LoadExternalBlockFile(*chainstate, file);
         } else {
             LogPrintf("Warning: Could not open blocks file %s\n", path.string());
         }
@@ -574,21 +792,13 @@ bool CheckCriticalUnsupportedFeaturesAreNotUsed()
 void SetConsistencyChecks()
 {
     // Checkmempool and checkblockindex default to true in regtest mode
-    mempool.setSanityCheck(settings.GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
-    fCheckBlockIndex = settings.GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks());
-    CCheckpointServices::fEnabled = settings.GetBoolArg("-checkpoints", true);
+    GetTransactionMemoryPool().setSanityCheck(settings.GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
 }
 
 void SetNumberOfThreadsToCheckScripts()
 {
-    // -par=0 means autodetect, but nScriptCheckThreads==0 means no concurrency
-    nScriptCheckThreads = settings.GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS);
-    if (nScriptCheckThreads <= 0)
-        nScriptCheckThreads += boost::thread::hardware_concurrency();
-    if (nScriptCheckThreads <= 1)
-        nScriptCheckThreads = 0;
-    else if (nScriptCheckThreads > MAX_SCRIPTCHECK_THREADS)
-        nScriptCheckThreads = MAX_SCRIPTCHECK_THREADS;
+    // -par=0 means autodetect, but scriptCheckingThreadCount==0 means no concurrency
+    TransactionInputChecker::SetScriptCheckingThreadCount(settings.GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS));
 }
 
 bool WalletIsDisabled()
@@ -596,6 +806,7 @@ bool WalletIsDisabled()
 #ifdef ENABLE_WALLET
     return settings.GetBoolArg("-disablewallet", false);
 #else
+    settings.SetParameter("-disablewallet", true);
     return true;
 #endif
 }
@@ -619,6 +830,7 @@ bool SetTransactionRequirements()
 #ifdef ENABLE_WALLET
     if (settings.ParameterIsSet("-maxtxfee")) {
         CAmount maxTxFee;
+        const CAmount nHighTransactionMaxFeeWarning = 10 * COIN;
         if (!ParseMoney(settings.GetParameter("-maxtxfee"), maxTxFee))
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), settings.GetParameter("-maxtxfee")));
         if (maxTxFee > nHighTransactionMaxFeeWarning)
@@ -653,18 +865,34 @@ bool CheckWalletFileExists(std::string strDataDir)
 {
     std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     // Wallet file must be a plain filename without a directory
-    if (strWalletFile != boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile))
-        return InitError(strprintf(translate("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
+    const std::string expectedWalletFilename = boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile);
+    if (strWalletFile != expectedWalletFilename)
+    {
+        return InitError(strprintf(translate("Unexpected wallet filename %s"), strWalletFile));
+    }
 
+    boost::filesystem::path pathToWallet = boost::filesystem::path(strDataDir) / strWalletFile;
+    if(boost::filesystem::exists(pathToWallet))
+    {
+        if(settings.ParameterIsSet("-hdseed") || settings.ParameterIsSet("-mnemonic"))
+        {
+            try
+            {
+                boost::filesystem::path pathDest = boost::filesystem::path(strDataDir) / ( strWalletFile + std::to_string(GetTime()) + ".moved" );
+                boost::filesystem::rename(pathToWallet,pathDest);
+            }
+            catch(...)
+            {
+                return  InitError(strprintf(translate("Unable to move wallet out of the way for seed restore: %s"), pathToWallet.string()));
+            }
+        }
+    }
     return true;
 }
 
 void StartScriptVerificationThreads(boost::thread_group& threadGroup)
 {
-    if (nScriptCheckThreads) {
-        for (int i = 0; i < nScriptCheckThreads - 1; i++)
-            threadGroup.create_thread(&TransactionInputChecker::ThreadScriptCheck);
-    }
+    TransactionInputChecker::InitializeScriptCheckingThreads(threadGroup);
 }
 
 
@@ -702,24 +930,16 @@ void ClearFoldersForResync()
 }
 
 #endif
-bool BackupWallet(const std::string strDataDir, bool fDisableWallet)
+void BackupWallet(const std::string strDataDir)
 {
 #ifdef ENABLE_WALLET
     const std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
-    boost::filesystem::path walletPath = boost::filesystem::path(strDataDir) / strWalletFile;
-    if (!fDisableWallet)
-    {
-        WalletBackupFeatureContainer walletBackupFeatureContainer(
-            settings.GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
-        LogPrintf("backing up wallet\n");
-        if(walletBackupFeatureContainer.GetFileSystem().exists(walletPath.string()))
-        {
-            return walletBackupFeatureContainer.GetBackupCreator().BackupWallet() &&
-                walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
-        }
-    }
+    WalletBackupFeatureContainer walletBackupFeatureContainer(
+        settings.GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
+    LogPrintf("backing up wallet\n");
+    walletBackupFeatureContainer.createCurrentBackup();
+    walletBackupFeatureContainer.createMonthlyBackup();
 #endif // ENABLE_WALLET
-    return true;
 }
 
 void PruneHDSeedParameterInteraction()
@@ -737,18 +957,16 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     LogPrintf("DIVI version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
-    if(!fDisableWallet) LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
-    if (!fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
+    if (!ShouldLogTimestamps()) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", dataDirectoryInUse);
     LogPrintf("Using config file %s\n", settings.GetConfigFile().string());
     LogPrintf("Using at most %i connections (%i file descriptors available)\n", maximumNumberOfConnections, numberOfFileDescriptors);
-    LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
+    LogPrintf("Using %u threads for script verification\n", TransactionInputChecker::GetScriptCheckingThreadCount());
 }
 
-bool SetSporkKey()
+bool SetSporkKey(CSporkManager& sporkManager)
 {
-    CSporkManager& sporkManager = GetSporkManager();
     sporkManager.SetSporkAddress(Params().SporkKey());
     if (settings.ParameterIsSet("-sporkkey")) // spork priv key
     {
@@ -773,7 +991,8 @@ void WarmUpRPCAndStartRPCThreads()
 
 void CreateHardlinksForBlocks()
 {
-    fReindex = settings.GetBoolArg("-reindex", false);
+    if(settings.reindexingWasRequested())
+        settings.setReindexingFlag(true);
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
     boost::filesystem::path blocksDir = GetDataDir() / "blocks";
     if (!boost::filesystem::exists(blocksDir)) {
@@ -794,17 +1013,36 @@ void CreateHardlinksForBlocks()
                 break;
             }
         }
-        if (linked) {
-            fReindex = true;
+        if (linked)
+        {
+            settings.setReindexingFlag(true);
         }
     }
 }
 
-std::pair<size_t,size_t> CalculateDBCacheSizes()
+struct CoinCacheSizes
 {
-    size_t nTotalCache = (settings.GetArg("-dbcache", DEFAULT_DB_CACHE_SIZE) << 20);
-    size_t nBlockTreeDBCache = 0;
-    size_t nCoinDBCache = 0;
+    size_t nTotalCache;
+    size_t nBlockTreeDBCache;
+    size_t nCoinDBCache;
+    unsigned int nCoinCacheSize;
+    CoinCacheSizes(
+        ): nTotalCache(settings.GetArg("-dbcache", DEFAULT_DB_CACHE_SIZE) << 20)
+        , nBlockTreeDBCache(0)
+        , nCoinDBCache(0)
+        , nCoinCacheSize(5000)
+    {
+    }
+};
+
+CoinCacheSizes CalculateDBCacheSizes()
+{
+    CoinCacheSizes cacheSizes;
+    size_t& nTotalCache = cacheSizes.nTotalCache;
+    size_t& nBlockTreeDBCache = cacheSizes.nBlockTreeDBCache;
+    size_t& nCoinDBCache = cacheSizes.nCoinDBCache;
+    unsigned int& nCoinCacheSize = cacheSizes.nCoinCacheSize;
+
     if (nTotalCache < (MIN_DB_CACHE_SIZE << 20))
         nTotalCache = (MIN_DB_CACHE_SIZE << 20); // total cache cannot be less than MIN_DB_CACHE_SIZE
     else if (nTotalCache > (MAX_DB_CACHE_SIZE << 20))
@@ -817,30 +1055,30 @@ std::pair<size_t,size_t> CalculateDBCacheSizes()
     nTotalCache -= nCoinDBCache;
     nCoinCacheSize = nTotalCache / 300; // coins in memory require around 300 bytes
 
-    return std::make_pair(nBlockTreeDBCache,nCoinDBCache);
+    return cacheSizes;
 }
 
 enum class BlockLoadingStatus {RETRY_LOADING,FAILED_LOADING,SUCCESS_LOADING};
 
-BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
+BlockLoadingStatus TryToLoadBlocks(CSporkManager& sporkManager, std::string& strLoadError)
 {
-    if(fReindex) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
+    if(settings.isReindexingBlocks()) uiInterface.InitMessage(translate("Reindexing requested. Skip loading block index..."));
     try {
-        uiInterface.InitMessage(translate("Preparing databases..."));
-        UnloadBlockIndex();
-        std::pair<std::size_t, std::size_t> dbCacheSizes = CalculateDBCacheSizes();
-        CleanAndReallocateShallowDatabases(dbCacheSizes);
+        ChainstateManager::Reference chainstate;
+        auto& blockMap = chainstate->GetBlockMap();
 
-        if (fReindex)
-            pblocktree->WriteReindexing(true);
+        UnloadBlockIndex(&*chainstate);
+
+        if (settings.isReindexingBlocks())
+            chainstate->BlockTree().WriteReindexing(true);
 
         // DIVI: load previous sessions sporks if we have them.
         uiInterface.InitMessage(translate("Loading sporks..."));
-        GetSporkManager().LoadSporksFromDB();
+        sporkManager.LoadSporksFromDB();
 
-        if(!fReindex) uiInterface.InitMessage(translate("Loading block index..."));
+        if(!settings.isReindexingBlocks()) uiInterface.InitMessage(translate("Loading block index..."));
         std::string strBlockIndexError = "";
-        if (!LoadBlockIndex(strBlockIndexError)) {
+        if (!LoadBlockIndex(settings, strBlockIndexError)) {
             strLoadError = translate("Error loading block database");
             strLoadError = strprintf("%s : %s", strLoadError, strBlockIndexError);
             return BlockLoadingStatus::RETRY_LOADING;
@@ -849,21 +1087,21 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
         // If the loaded chain has a wrong genesis, bail out immediately
         // (we're likely using a testnet datadir, or the other way around).
         uiInterface.InitMessage(translate("Checking genesis block..."));
-        if (!mapBlockIndex.empty() && mapBlockIndex.count(Params().HashGenesisBlock()) == 0)
+        if (!blockMap.empty() && blockMap.count(Params().HashGenesisBlock()) == 0)
         {
             InitError(translate("Incorrect or no genesis block found. Wrong datadir for network?"));
             return BlockLoadingStatus::FAILED_LOADING;
         }
 
         // Initialize the block index (no-op if non-empty database was already loaded)
-        if(!fReindex) uiInterface.InitMessage(translate("Initializing block index databases..."));
-        if (!InitBlockIndex()) {
+        if(!settings.isReindexingBlocks()) uiInterface.InitMessage(translate("Initializing block index databases..."));
+        if (!GetChainExtensionService().connectGenesisBlock()) {
             strLoadError = translate("Error initializing block database");
             return BlockLoadingStatus::RETRY_LOADING;
         }
 
         // Check for changed -txindex state
-        if (fTxIndex != settings.GetBoolArg("-txindex", true)) {
+        if (chainstate->BlockTree().GetTxIndexing() != settings.GetBoolArg("-txindex", true)) {
             strLoadError = translate("You need to rebuild the database using -reindex to change -txindex");
             return BlockLoadingStatus::RETRY_LOADING;
         }
@@ -871,33 +1109,22 @@ BlockLoadingStatus TryToLoadBlocks(std::string& strLoadError)
         uiInterface.InitMessage(translate("Verifying blocks..."));
 
         // Flag sent to validation code to let it know it can skip certain checks
-        fVerifyingBlocks = true;
 
         {
-
             LOCK(cs_main);
-            const ActiveChainManager& chainManager = GetActiveChainManager();
-            const CVerifyDB dbVerifier(
-                chainManager,
-                chainActive,
-                uiInterface,
-                nCoinCacheSize,
-                &ShutdownRequested);
-            if (!dbVerifier.VerifyDB(pcoinsdbview,pcoinsTip->GetCacheSize(), 4, settings.GetArg("-checkblocks", 100)))
+            CVerifyingNow chainVerificationInProgress(settings);
+            if (!VerifyChain(4, settings.GetArg("-checkblocks", 100),false))
             {
                 strLoadError = translate("Corrupted block database detected");
-                fVerifyingBlocks = false;
                 return BlockLoadingStatus::RETRY_LOADING;
             }
         }
     } catch (std::exception& e) {
-        if (fDebug) LogPrintf("%s\n", e.what());
+        if (settings.debugModeIsEnabled()) LogPrintf("%s\n", e.what());
         strLoadError = translate("Error opening block database");
-        fVerifyingBlocks = false;
         return BlockLoadingStatus::RETRY_LOADING;
     }
 
-    fVerifyingBlocks = false;
     return BlockLoadingStatus::SUCCESS_LOADING;
 }
 
@@ -914,190 +1141,115 @@ void ExternalNotificationScript(const uint256& transactionHash,int status)
     }
 }
 
-enum LoadWalletResult
+LoadWalletResult ParseDbErrorsFromLoadingWallet(DBErrors dbError, std::ostringstream& strErrors)
 {
-    NEW_WALLET_CREATED,
-    EXISTING_WALLET_LOADED,
-    ERROR_LOADING_WALLET,
-};
+    bool warningDetected = false;
+    const bool fFirstRun = dbError == DB_LOAD_OK_FIRST_RUN;
+    if(dbError != DB_LOAD_OK && (dbError==DB_LOAD_OK_FIRST_RUN || dbError == DB_LOAD_OK_RELOAD))
+        dbError = DB_LOAD_OK;
 
-LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream& strErrors)
-{
-    InitializeWallet(strWalletFile);
-    pwalletMain->NotifyTransactionChanged.connect(&ExternalNotificationScript);
-    DBErrors nLoadWalletRet = pwalletMain->LoadWallet();
-    const bool fFirstRun = nLoadWalletRet == DB_LOAD_OK_FIRST_RUN;
-    if(nLoadWalletRet != DB_LOAD_OK && (nLoadWalletRet==DB_LOAD_OK_FIRST_RUN || nLoadWalletRet == DB_LOAD_OK_RELOAD))
-        nLoadWalletRet = DB_LOAD_OK;
-
-    if (nLoadWalletRet != DB_LOAD_OK)
+    if (dbError != DB_LOAD_OK)
     {
-        if (nLoadWalletRet == DB_CORRUPT)
+        if (dbError == DB_CORRUPT)
         {
-            strErrors << translate("Error loading wallet.dat: Wallet corrupted") << "\n";
-            return ERROR_LOADING_WALLET;
+            strErrors << std::string("Error loading wallet.dat: Wallet corrupted");
         }
-        else if (nLoadWalletRet == DB_NONCRITICAL_ERROR)
+        else if (dbError == DB_NONCRITICAL_ERROR)
         {
-            std::string msg(translate("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
-                            " or address book entries might be missing or incorrect."));
-            InitWarning(msg);
+            std::string msg("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
+                            " or address book entries might be missing or incorrect.");
+            strErrors << msg;
+            warningDetected = true;
         }
-        else if (nLoadWalletRet == DB_TOO_NEW)
+        else if (dbError == DB_TOO_NEW)
         {
-            strErrors << translate("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly") << "\n";
-            InitWarning(strErrors.str());
+            strErrors << std::string("Loading newer wallet.dat: wallet may require newer version of DIVI Core to run properly");
+            warningDetected = true;
         }
-        else if (nLoadWalletRet == DB_NEED_REWRITE || nLoadWalletRet == DB_REWRITTEN)
+        else if (dbError == DB_NEED_REWRITE || dbError == DB_REWRITTEN)
         {
-            strErrors << translate("Wallet needed to be rewritten: restart DIVI Core to complete") << "\n";
-            LogPrintf("%s", strErrors.str());
-            return ERROR_LOADING_WALLET;
+            strErrors << std::string("Wallet needed to be rewritten: restart DIVI Core to complete");
         }
         else
         {
-            strErrors << translate("Error loading wallet.dat: database load failure") << "\n";
-            return ERROR_LOADING_WALLET;
+            strErrors << std::string("Error loading wallet.dat: database load failure") << "\n";
         }
+        return warningDetected? WARNING_LOADING_WALLET: ERROR_LOADING_WALLET;
     }
     return fFirstRun? NEW_WALLET_CREATED : EXISTING_WALLET_LOADED;
 }
 
-bool UpdateWalletVersion(std::ostringstream& strErrors)
+void LoadWhitelistedVaults(CWallet* wallet)
 {
-    int nMaxVersion = settings.GetArg("-upgradewallet", 0);
-    if (nMaxVersion == 0) // the -upgradewallet without argument case
+    std::vector<SerializedScript> whitelistedVaultScripts;
+    for(const std::string& whitelistedVaultScript: settings.GetMultiParameter("-whitelisted_vault"))
     {
-        LogPrintf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
-        nMaxVersion = CLIENT_VERSION;
-        pwalletMain->SetMinVersion(FEATURE_LATEST); // permanently upgrade the wallet immediately
+        auto byteVector = ParseHex(whitelistedVaultScript);
+        whitelistedVaultScripts.push_back(byteVector);
     }
-    else
-    {
-        LogPrintf("Allowing wallet upgrade up to %i\n", nMaxVersion);
-    }
-    if (nMaxVersion < pwalletMain->GetVersion())
-    {
-        strErrors << translate("Cannot downgrade wallet") << "\n";
-        return false;
-    }
-    pwalletMain->SetMaxVersion(nMaxVersion);
-    return true;
+    wallet->loadWhitelistedVaults(whitelistedVaultScripts);
 }
 
-bool InitializeWalletHDAndChainState(std::ostringstream& strErrors)
+LoadWalletResult LoadWallet(const std::string strWalletFile, std::ostringstream& strErrors)
 {
-     // Create new keyUser and set as default key
-    if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled())
+    try
     {
-        if (settings.GetArg("-mnemonicpassphrase", "").size() > 256)
-        {
-            strErrors << translate("Mnemonic passphrase is too long, must be at most 256 characters") << "\n";
-            return false;
-        }
-
-        pwalletMain->GenerateNewHDChain(); // generate a new master key
-        pwalletMain->SetMinVersion(FEATURE_HD); // ensure this wallet.dat can only be opened by clients supporting HD
+        multiWalletModule->loadWallet(strWalletFile);
+        multiWalletModule->setActiveWallet(strWalletFile);
+        GetWallet()->NotifyTransactionChanged.connect(&ExternalNotificationScript);
+        const auto parsedResult = ParseDbErrorsFromLoadingWallet(GetWallet()->loadWallet(), strErrors);
+        if( parsedResult == NEW_WALLET_CREATED || parsedResult == EXISTING_WALLET_LOADED) LoadWhitelistedVaults(GetWallet());
+        return parsedResult;
     }
-
-    if(!pwalletMain->InitializeDefaultKey())
+    catch(const std::exception& e)
     {
-        strErrors << translate("Cannot write default address") << "\n";
-        return false;
+        std::cerr << e.what() << '\n';
+        std::string errorMessage = std::string("Error loading or creating wallet.dat, ")+ e.what();
+        strErrors << errorMessage;
+        return ERROR_LOADING_WALLET;
     }
-    pwalletMain->UpdateBestBlockLocation();
-    return true;
 }
 
-bool EnsureWalletHDIsNotChanged(std::ostringstream& strErrors)
-{
-    bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
-    if (pwalletMain->IsHDEnabled() && !useHD)
-    {
-        strErrors << strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"), pwalletMain->dbFilename()) << "\n";
-        return false;
-    }
-    if (!pwalletMain->IsHDEnabled() && useHD) {
-        strErrors << strprintf(translate("Error loading %s: You can't enable HD on a already existing non-HD wallet"), pwalletMain->dbFilename()) << "\n";
-        return false;
-    }
-    return true;
-}
-
-bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
+bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors, bool& errorMessageIsWarning)
 {
     const LoadWalletResult loadResult = LoadWallet(strWalletFile, strErrors);
-    bool fFirstRun = false;
     switch(loadResult)
     {
         case ERROR_LOADING_WALLET:
+            errorMessageIsWarning = false;
             return false;
-        case NEW_WALLET_CREATED:
-            fFirstRun = true;
+        case WARNING_LOADING_WALLET:
+            errorMessageIsWarning = true;
+            return false;
+        case NEW_WALLET_CREATED: case EXISTING_WALLET_LOADED:
             break;
-        case EXISTING_WALLET_LOADED:
-            fFirstRun = false;
-            break;
-    }
-
-    if (settings.GetBoolArg("-upgradewallet", fFirstRun) && !UpdateWalletVersion(strErrors))
-    {
-        return false;
-    }
-    if (fFirstRun && !InitializeWalletHDAndChainState(strErrors))
-    {
-        return false;
-    }
-    if (!fFirstRun && settings.ParameterIsSet("-usehd") && !EnsureWalletHDIsNotChanged(strErrors))
-    {
-        return false;
     }
 
     // Warn user every time he starts non-encrypted HD wallet
-    if (!settings.GetBoolArg("-allowunencryptedwallet", false) && settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked())
+    if (!settings.GetBoolArg("-allowunencryptedwallet", false) && !GetWallet()->IsLocked())
     {
         InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
     }
+    RegisterMainNotificationInterface(GetWallet());
     return true;
 }
 
-int ScanForWalletTransactions(CWallet& walletToRescan, CBlockIndex* scanStartIndex, bool updateWallet)
+void ScanBlockchainForWalletUpdates()
 {
-    static BlockDiskDataReader blockReader;
-    static WalletRescanner rescanner(blockReader,chainActive,cs_main);
-    return rescanner.scanForWalletTransactions(walletToRescan,scanStartIndex,updateWallet);
-}
-
-void ScanBlockchainForWalletUpdates(std::string strWalletFile, int64_t& nStart)
-{
-    BlockDiskDataReader blockReader;
-    CBlockIndex* pindexRescan = chainActive.Tip();
-    if (settings.GetBoolArg("-rescan", false))
-        pindexRescan = chainActive.Genesis();
-    else {
-        CBlockLocator locator;
-        if (pwalletMain->GetBlockLocator(locator))
-            pindexRescan = FindForkInGlobalIndex(chainActive, locator);
-        else
-            pindexRescan = chainActive.Genesis();
-    }
-    if (chainActive.Tip() && chainActive.Tip() != pindexRescan) {
-        uiInterface.InitMessage(translate("Rescanning..."));
-        LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight, pindexRescan->nHeight);
-        nStart = GetTimeMillis();
-        ScanForWalletTransactions(*pwalletMain,pindexRescan,true);
-        LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
-        pwalletMain->UpdateBestBlockLocation();
-    }
+    int64_t nStart = GetTimeMillis();
+    uiInterface.InitMessage(translate("Scanning chain for wallet updates..."));
+    BlockDiskDataReader reader;
+    GetWallet()->verifySyncToActiveChain(reader,settings.GetBoolArg("-rescan", false));
+    LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
 }
 
 void LockUpMasternodeCollateral()
 {
-    if (pwalletMain) {
+    if (GetWallet()) {
         LogPrintf("Locking Masternodes:\n");
-        LOCK(pwalletMain->cs_wallet);
+        LOCK(GetWallet()->getWalletCriticalSection());
 
-        CWallet& walletReference = *pwalletMain;
+        CWallet& walletReference = *GetWallet();
         LockUpMasternodeCollateral(
             settings,
             [&walletReference](const COutPoint& outpoint)
@@ -1107,37 +1259,91 @@ void LockUpMasternodeCollateral()
     }
 }
 
-void LookupMasternodeKey(Settings& settings, CWallet* pwallet, std::string& errorMessage)
+void SubmitUnconfirmedWalletTransactionsToMempool(const CWallet& wallet)
 {
-    settings.ForceRemoveArg("-masternodeprivkey");
-    if(settings.ParameterIsSet("-masternode"))
+    LOCK2(cs_main, wallet.getWalletCriticalSection());
+    const I_MerkleTxConfirmationNumberCalculator& confsCalculator = GetConfirmationsCalculator();
+    for(const std::pair<int64_t,const CWalletTx*>& item: wallet.OrderedTxItems())
     {
-        std::string alias = settings.GetArg("-masternode","");
-        if(alias.empty()) return;
-        // Pull up keyID by alias and pass it downstream with keystore for lookup of the private key
-        // Potential issues may arise in the event that a person reuses the same alias for a differnt
-        // MN - should assert here that if duplicate potential addresses are found that it will pick
-        // one and maybe not the one that was originally intended
-        alias = "reserved->"+alias;
-        for(const std::pair<CTxDestination, CAddressBookData>& addressData: pwallet->GetAddressBook())
+        const CWalletTx& wtx = *(item.second);
+        if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && confsCalculator.GetNumberOfBlockConfirmations(wtx) < 0)
         {
-            if(addressData.second.name == alias)
-            {
-                CKeyID keyID = boost::get<CKeyID>(addressData.first);
-                CKey mnkey;
-                if(!pwallet->GetKey(keyID,mnkey))
-                {
-                    LogPrintf("%s - Unable to find masternode key\n",__func__);
-                }
-                settings.SetParameter("-masternodeprivkey",CBitcoinSecret(mnkey).ToString());
-            }
+            // Try to add to memory pool
+            SubmitTransactionToMempool(GetTransactionMemoryPool(),wtx);
         }
     }
+}
+
+} // anonymous namespace
+
+void InitializeWalletBackendSettings(const LegacyWalletDatabaseEndpointFactory& dbEndpointFactory)
+{
+    if (settings.GetBoolArg("-flushwallet", true))
+        dbEndpointFactory.enableBackgroundDatabaseFlushing(*globalThreadGroupRef);
+
+    if(settings.GetArg("-monthlybackups",12) > 0)
+        dbEndpointFactory.enableBackgroundMonthlyWalletBackup(
+            *globalThreadGroupRef,
+            GetDataDir().string(),
+            Params().NetworkID() == CBaseChainParams::REGTEST);
+}
+
+bool LoadAndSelectWallet(const std::string& walletFilename, bool initializeBackendSettings)
+{
+    assert(multiWalletModule);
+    if(WalletIsDisabled()) return false;
+
+    int64_t nStart = GetTimeMillis();
+    std::ostringstream errors;
+    bool errorMessageIsWarning = false;
+    if(!CreateNewWalletIfOneIsNotAvailable(walletFilename,errors,errorMessageIsWarning))
+    {
+        const std::string sourceErrorMessage = errors.str();
+        std::string translatedErrorMessage = translate(sourceErrorMessage.c_str());
+        LogPrintf("%s\n%s\n", translate("Errors detected during wallet loading"), translatedErrorMessage );
+        if(!errorMessageIsWarning)
+            return InitError(translatedErrorMessage);
+
+        InitWarning(translatedErrorMessage);
+        if(settings.GetArg("-dbloadfailexit",false))
+            return false;
+    }
+
+    LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
+    ScanBlockchainForWalletUpdates();
+    if(initializeBackendSettings)
+        InitializeWalletBackendSettings(multiWalletModule->getWalletDbEnpointFactory());
+
+    return true;
+}
+
+void InitializeMainBlockchainModules()
+{
+    const auto cacheSizes = CalculateDBCacheSizes();
+    const bool unitTestMode = Params().NetworkID() == CBaseChainParams::UNITTEST;
+    chainstateInstance.reset(
+        new ChainstateManager (
+            unitTestMode? (1 << 20) : cacheSizes.nBlockTreeDBCache,
+            unitTestMode? (1 << 23) : cacheSizes.nCoinDBCache,
+            unitTestMode? (  5000 ) : cacheSizes.nCoinCacheSize,
+            unitTestMode?      true : false,
+            unitTestMode?     false : settings.isReindexingBlocks()));
+    sporkManagerInstance.reset(new CSporkManager(*chainstateInstance));
+    InitializeMultiWalletModule();
+    InitializeChainExtensionModule(GetMasternodeModule());
+}
+void FinalizeMainBlockchainModules()
+{
+    FinalizeChainExtensionModule();
+    FinalizeMultiWalletModule();
+    sporkManagerInstance.reset();
+    chainstateInstance.reset();
 }
 
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
+    globalThreadGroupRef = &threadGroup;
 #ifdef _MSC_VER
     // Turn off Microsoft heap dump noise
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -1202,6 +1408,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 2: parameter interactions
     // Set this early so that parameter interactions go to console
+    InitializeTransactionDiskAccessors(GetTransactionMemoryPool(),cs_main);
+
     UIMessenger uiMessenger(uiInterface);
     SetLoggingAndDebugSettings();
 
@@ -1264,16 +1472,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     PrintInitialLogHeader(fDisableWallet,numberOfFileDescriptors,strDataDir);
     StartScriptVerificationThreads(threadGroup);
 
-    if(!SetSporkKey())
-    {
-        return false;
-    }
     WarmUpRPCAndStartRPCThreads();
 
-    int64_t nStart;
 
     // ********************************************************* Step 5: Backup wallet and verify wallet database integrity
-    BackupWallet(strDataDir, fDisableWallet);
+    if(!fDisableWallet) BackupWallet(strDataDir);
     if (settings.GetBoolArg("-resync", false))
     {
         ClearFoldersForResync();
@@ -1284,6 +1487,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
+    p2pNotifications.reset(new P2PNotifications());
+    RegisterMainNotificationInterface(p2pNotifications.get());
 
     PruneHDSeedParameterInteraction();
 
@@ -1291,44 +1496,38 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(settings);
 
     if (pzmqNotificationInterface) {
-        RegisterValidationInterface(pzmqNotificationInterface);
+        RegisterMainNotificationInterface(pzmqNotificationInterface);
     }
 #endif
 
     // ********************************************************* Step 7: load block chain
     CreateHardlinksForBlocks();
+
+    uiInterface.InitMessage(translate("Preparing databases..."));
+    InitializeMainBlockchainModules();
+
+    const auto& chainActive = chainstateInstance->ActiveChain();
+    const auto& blockMap = chainstateInstance->GetBlockMap();
+
+    if(!SetSporkKey(*sporkManagerInstance))
+        return false;
+
     bool fLoaded = false;
+    int64_t nStart;
     while (!fLoaded) {
-        bool fReset = fReindex;
+        bool fReset = settings.isReindexingBlocks();
         std::string strLoadError;
 
         uiInterface.InitMessage(translate("Loading block index..."));
 
         nStart = GetTimeMillis();
-        const BlockLoadingStatus status = TryToLoadBlocks(strLoadError);
+        const BlockLoadingStatus status = TryToLoadBlocks(*sporkManagerInstance, strLoadError);
         fLoaded = (status == BlockLoadingStatus::SUCCESS_LOADING);
         if(!fLoaded && status != BlockLoadingStatus::RETRY_LOADING)
         {
             return false;
         }
-
-        if (!fLoaded) {
-            // first suggest a reindex
-            if (!fReset) {
-                bool fRet = uiInterface.ThreadSafeMessageBox(
-                    strLoadError + ".\n\n" + translate("Do you want to rebuild the block database now?"),
-                    "", CClientUIInterface::MSG_ERROR | CClientUIInterface::BTN_ABORT);
-                if (fRet) {
-                    fReindex = true;
-                    fRequestShutdown = false;
-                } else {
-                    LogPrintf("Aborted block database rebuild. Exiting.\n");
-                    return false;
-                }
-            } else {
-                return InitError(strLoadError);
-            }
-        }
+        if (!fLoaded) return InitError(strLoadError);
     }
 
     // As LoadBlockIndex can take several minutes, it's possible the user
@@ -1340,43 +1539,20 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
     LogPrintf(" block index %15dms\n", GetTimeMillis() - nStart);
 
-    LoadFeeEstimatesForMempool();
-
 // ********************************************************* Step 8: load wallet
     std::ostringstream strErrors;
 #ifdef ENABLE_WALLET
     const std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     if (fDisableWallet) {
-        pwalletMain = NULL;
         LogPrintf("Wallet disabled!\n");
     } else {
         uiInterface.InitMessage(translate("Loading wallet..."));
-        fVerifyingBlocks = true;
-
-        nStart = GetTimeMillis();
-        if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors))
         {
-            return InitError(strErrors.str());
+            CVerifyingNow chainVerificationInProgress(settings);
+            if(!LoadAndSelectWallet(strWalletFile,false))
+                return false;
+            nStart = GetTimeMillis();
         }
-        if(settings.GetBoolArg("-spendzeroconfchange", false))
-        {
-            // Off by default in wallet
-            pwalletMain->toggleSpendingZeroConfirmationOutputs();
-        }
-        if(settings.GetBoolArg("-vault", false))
-        {
-            // Off by default in wallet
-            pwalletMain->activateVaultMode();
-        }
-
-
-        LogPrintf("%s", strErrors.str());
-        LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
-
-        RegisterValidationInterface(pwalletMain);
-
-        ScanBlockchainForWalletUpdates(strWalletFile, nStart);
-        fVerifyingBlocks = false;
 
     }  // (!fDisableWallet)
 #else  // ENABLE_WALLET
@@ -1390,16 +1566,18 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
     uiInterface.InitMessage(translate("Connecting best block..."));
     CValidationState state;
-    if (!ActivateBestChain(state))
+    if (!GetChainExtensionService().updateActiveChain(state,nullptr))
         strErrors << "Failed to connect best block";
 
-    ReconstructBlockIndexIfRequested();
-    if (settings.ParameterIsSet("-loadblock")) {
-        std::vector<boost::filesystem::path> vImportFiles;
-        BOOST_FOREACH (std::string strFile, settings.GetMultiParameter("-loadblock"))
-            vImportFiles.push_back(strFile);
-        threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
+    InitializeBestHeaderBlockIndex();
+#ifdef ENABLE_WALLET
+    if(GetWallet() && settings.ParameterIsSet("-prunewalletconfs"))
+    {
+        GetWallet()->PruneWallet();
     }
+#endif
+
+    threadGroup.create_thread(boost::bind(&ReindexAndImportBlockFiles, chainstateInstance.get(), settings));
 
     if (chainActive.Tip() == NULL) {
         LogPrintf("Waiting for genesis block to be imported...\n");
@@ -1414,14 +1592,12 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return false;
     }
     uiInterface.InitMessage(translate("Checking for active masternode..."));
-    LookupMasternodeKey(settings,pwalletMain,errorMessage);
-    if(!InitializeMasternodeIfRequested(settings,fTxIndex,errorMessage))
+    if(!InitializeMasternodeIfRequested(settings, chainstateInstance->BlockTree().GetTxIndexing(), errorMessage))
     {
         return InitError(errorMessage);
     }
     LockUpMasternodeCollateral();
     threadGroup.create_thread(boost::bind(&ThreadMasternodeBackgroundSync));
-    LogPrintf("fLiteMode %d\n", fLiteMode);
 
     // ********************************************************* Step 11: start node
 
@@ -1432,23 +1608,30 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return InitError(strErrors.str());
 
     //// debug print
-    LogPrintf("mapBlockIndex.size() = %u\n", mapBlockIndex.size());
+    LogPrintf("mapBlockIndex.size() = %u\n", blockMap.size());
     LogPrintf("chainActive.Height() = %d\n", chainActive.Height());
 #ifdef ENABLE_WALLET
-    LogPrintf("Key Pool size = %u\n", pwalletMain ? pwalletMain->GetKeyPoolSize() : 0);
-    LogPrintf("Address Book size = %u\n", pwalletMain ? pwalletMain->GetAddressBook().size() : 0);
+    {
+        auto pwallet = GetWallet();
+        LogPrintf("Key Pool size = %u\n", pwallet ? pwallet->GetKeyPoolSize() : 0);
+        LogPrintf("Address Book size = %u\n", pwallet ? pwallet->getAddressBookManager().getAddressBook().size() : 0);
+    }
 #endif
 
     if (settings.GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION))
         StartTorControl(threadGroup);
 
     uiInterface.InitMessage(translate("Initializing P2P connections..."));
-    StartNode(threadGroup,fReindex,pwalletMain);
-
+    StartNode(settings, cs_main, threadGroup);
 #ifdef ENABLE_WALLET
-    // Generate coins in the background
-    if (pwalletMain && settings.GetBoolArg("-mining", false))
-        SetPoWThreadPool(pwalletMain, settings.GetArg("-mining_threads", 1));
+    {
+        auto pwallet = GetWallet();
+        if (pwallet)
+        {
+            stakingWalletName = multiWalletModule->getActiveWalletName();
+            StartCoinMintingModule(threadGroup,*pwallet);
+        }
+    }
 #endif
 
     // ********************************************************* Step 12: finished
@@ -1457,18 +1640,21 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     uiInterface.InitMessage(translate("Done loading"));
 
 #ifdef ENABLE_WALLET
-    if (pwalletMain) {
+    auto pwallet = GetWallet();
+    if (pwallet) {
         // Add wallet transactions that aren't already in a block to mapTransactions
-        pwalletMain->ReacceptWalletTransactions();
+        SubmitUnconfirmedWalletTransactionsToMempool(*pwallet);
         if(settings.ParameterIsSet("-prunewalletconfs"))
         {
-            pwalletMain->PruneWallet();
+            if(!pwallet->PruneWallet())
+            {
+                StartShutdown();
+                LogPrintf("Failed to prune wallet correctly!");
+                return false;
+            }
         }
         // Run a thread to flush wallet periodically
-        if (settings.GetBoolArg("-flushwallet", true))
-        {
-            threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, pwalletMain->dbFilename() ));
-        }
+        InitializeWalletBackendSettings(multiWalletModule->getWalletDbEnpointFactory());
     }
 #endif
 

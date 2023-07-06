@@ -16,7 +16,7 @@ auto insecure_rand = []() -> uint32_t { return random_source.rand32();};
 
 namespace
 {
-class CCoinsViewTest : public CCoinsView
+class CCoinsViewTest final: public CCoinsView
 {
     uint256 hashBestBlock_;
     std::map<uint256, CCoins> map_;
@@ -46,20 +46,18 @@ public:
 
     bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock) override
     {
-        for (auto it = mapCoins.begin(); it != mapCoins.end(); ) {
+        for (auto it = mapCoins.begin(); it != mapCoins.end(); mapCoins.erase(it++))
+        {
             map_[it->first] = it->second.coins;
             if (it->second.coins.IsPruned() && insecure_rand() % 3 == 0) {
                 // Randomly delete empty entries on write.
                 map_.erase(it->first);
             }
-            mapCoins.erase(it++);
         }
-        mapCoins.clear();
         hashBestBlock_ = hashBlock;
         return true;
     }
 
-    bool GetStats(CCoinsStats& stats) const override { return false; }
 };
 }
 

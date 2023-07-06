@@ -9,6 +9,7 @@
 #include <boost/signals2/signal.hpp>
 #include <boost/shared_ptr.hpp>
 #include <unordered_set>
+#include <vector>
 
 class CBlock;
 struct CBlockLocator;
@@ -18,7 +19,9 @@ class CTransaction;
 class NotificationInterface;
 class CValidationState;
 class uint256;
+//class TransactionVector;
 
+using TransactionVector = std::vector<CTransaction>;
 enum TransactionSyncType
 {
     MEMPOOL_TX_ADD,
@@ -32,7 +35,7 @@ struct MainNotificationSignals {
     /** Notifies listeners of updated block chain tip */
     boost::signals2::signal<void (const CBlockIndex *)> UpdatedBlockTip;
     /** Notifies listeners of updated transaction data (transaction, and optionally the block it is found in. */
-    boost::signals2::signal<void (const CTransaction &, const CBlock *,const TransactionSyncType)> SyncTransaction;
+    boost::signals2::signal<void (const TransactionVector &, const CBlock *,const TransactionSyncType)> SyncTransactions;
     /** Notifies listeners of a new active block chain. */
     boost::signals2::signal<void (const CBlockLocator &)> SetBestChain;
 };
@@ -45,11 +48,11 @@ private:
     std::unordered_set<NotificationInterface*> registeredInterfaces;
 public:
     /** Register a wallet to receive updates from core */
-    void RegisterValidationInterface(NotificationInterface* pwalletIn);
+    void RegisterMainNotificationInterface(NotificationInterface* pwalletIn);
     /** Unregister a wallet from core */
-    void UnregisterValidationInterface(NotificationInterface* pwalletIn);
+    void UnregisterMainNotificationInterface(NotificationInterface* pwalletIn);
     /** Unregister all wallets from core */
-    void UnregisterAllValidationInterfaces();
+    void UnregisterAllMainNotificationInterfaces();
 
     MainNotificationSignals& getSignals() const;
 };
@@ -57,7 +60,7 @@ public:
 class NotificationInterface {
 protected:
     virtual void UpdatedBlockTip(const CBlockIndex *pindex) {}
-    virtual void SyncTransaction(const CTransaction &tx, const CBlock *pblock, const TransactionSyncType) {}
+    virtual void SyncTransactions(const TransactionVector &tx, const CBlock *pblock, const TransactionSyncType) {}
     virtual void SetBestChain(const CBlockLocator &locator) {}
 public:
     /** (Un)Register a wallet to receive updates from core */

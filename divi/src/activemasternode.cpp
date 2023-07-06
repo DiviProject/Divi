@@ -93,6 +93,7 @@ bool CActiveMasternode::VerifyStartedStatus()
 bool CActiveMasternode::TryUpdatingPing(CMasternode* pmn)
 {
     //send to all peers
+    LogPrintf("%s - trying to update ping\n",__func__);
     std::string errorMessage ="";
     if (!UpdateLocalMasternodePing(pmn,errorMessage)) {
         LogPrintf("%s - Error on Ping: %s\n",__func__, errorMessage);
@@ -165,10 +166,8 @@ bool CActiveMasternode::UpdateLocalMasternodePing(CMasternode* pmn, std::string&
 bool CActiveMasternode::IsThisMasternodeCollateral(const CTxIn& newVin) const
 {
     BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfigurations_.getEntries()) {
-        if(
-            std::strcmp(newVin.prevout.hash.ToString().c_str(), mne.getTxHash().c_str()) == 0 &&
-            std::strcmp(std::to_string(newVin.prevout.n).c_str(), mne.getOutputIndex().c_str()) == 0
-        )
+        if( newVin.prevout.hash.ToString() == mne.getTxHash() &&
+            std::to_string(newVin.prevout.n) == mne.getOutputIndex() )
         {
             return true;
         }
@@ -181,6 +180,7 @@ bool CActiveMasternode::EnablePinging(CTxIn& newVin, CService& newService)
     {
         return false;
     }
+    LogPrintf("%s - trying to enable pinging\n",__func__);
 
     if(status == ACTIVE_MASTERNODE_STARTED)
     {
@@ -207,7 +207,7 @@ bool CActiveMasternode::EnablePinging(CTxIn& newVin, CService& newService)
 bool CActiveMasternode::SignMasternodeWinner(CMasternodePaymentWinner& winner) const
 {
     std::string errorMessage = "";
-
+    LogPrint("masternode", "%s - signing mn winner\n",__func__);
     if(!CObfuScationSigner::SignAndVerify<CMasternodePaymentWinner>(winner,masternodeKey_,pubKeyMasternode,errorMessage))
     {
         LogPrint("masternode", "%s - Error: %s\n", __func__, errorMessage);
@@ -217,13 +217,17 @@ bool CActiveMasternode::SignMasternodeWinner(CMasternodePaymentWinner& winner) c
 
 bool CActiveMasternode::IsOurBroadcast(const CMasternodeBroadcast& mnb, bool checkConfig) const
 {
-    return fMasterNode_ &&
+    LogPrint("masternode", "%s - mnb.vin: %s vs. local vin: %s\n", __func__, mnb.vin, vin);
+    const bool matchesOurKeyAndUTXO =  fMasterNode_ &&
         (checkConfig && vin== CTxIn())? IsThisMasternodeCollateral(mnb.vin) : mnb.vin.prevout == vin.prevout &&
         mnb.pubKeyMasternode == pubKeyMasternode;
+    LogPrint("masternode", "%s - mnb.vin: %s vs. local vin: %s is_ours: %u\n",__func__, mnb.vin, vin, static_cast<unsigned>(matchesOurKeyAndUTXO));
+    return matchesOurKeyAndUTXO;
 }
 
 bool CActiveMasternode::UpdatePing(CMasternodePing& mnp) const
 {
+    LogPrint("masternode", "%s - updating ping\n",__func__);
     CMasternodePing updatedPing = createCurrentPing(mnp.vin);
     std::string errorMessage = "";
     if(CObfuScationSigner::SignAndVerify<CMasternodePing>(updatedPing,masternodeKey_,pubKeyMasternode,errorMessage))

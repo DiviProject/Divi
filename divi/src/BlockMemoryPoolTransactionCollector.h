@@ -76,7 +76,7 @@ class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 private:
     using DependingTransactionsMap = std::map<uint256, std::vector<std::shared_ptr<COrphan>>>;
 
-    CCoinsViewCache* baseCoinsViewCache_;
+    const CCoinsViewCache& baseCoinsViewCache_;
     const CChain& activeChain_;
     const BlockMap& blockIndexMap_;
     CTxMemPool& mempool_;
@@ -117,7 +117,7 @@ private:
     std::vector<TxPriority> ComputeMempoolTransactionPriorities(
         const int& nHeight,
         DependingTransactionsMap& mapDependers,
-        CCoinsViewCache& view) const;
+        const CCoinsViewCache& view) const;
 
     bool ShouldSwitchToPriotizationByFee(
         const uint64_t& currentBlockSize,
@@ -135,7 +135,7 @@ private:
 public:
     BlockMemoryPoolTransactionCollector(
         const Settings& settings,
-        CCoinsViewCache* baseCoinsViewCache,
+        const CCoinsViewCache& baseCoinsViewCache,
         const CChain& activeChain,
         const BlockMap& blockIndexMap,
         CTxMemPool& mempool,

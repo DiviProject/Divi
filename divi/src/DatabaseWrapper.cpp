@@ -9,33 +9,42 @@ const VerificationCodeMapping conversionTable = {
     {CDBEnv::VerifyResult::RECOVER_FAIL, I_DatabaseWrapper::RECOVERY_FAIL}
 };
 
-bool DatabaseWrapper::Open(const std::string& directory)
+DatabaseWrapper::DatabaseWrapper(const std::string& dataDirectory): berkleyEnvironment_(BerkleyDBEnvWrapper()), dataDirectory_(dataDirectory)
 {
-    return BerkleyDBEnvWrapper().Open(directory);
+    Open();
+}
+
+bool DatabaseWrapper::Open()
+{
+    return berkleyEnvironment_.Open(dataDirectory_);
 }
 
 DatabaseWrapper::DatabaseStatus DatabaseWrapper::Verify(const std::string& walletFilename)
 {
-    return conversionTable.at(BerkleyDBEnvWrapper().Verify(walletFilename,NULL));
+    return conversionTable.at(berkleyEnvironment_.Verify(walletFilename,NULL));
 }
 
-void DatabaseWrapper::Dettach(const std::string& walletFilename)
+void DatabaseWrapper::FlushToDisk(const std::string& walletFilename)
 {
-    BerkleyDBEnvWrapper().CloseDb(walletFilename);
-    BerkleyDBEnvWrapper().CheckpointLSN(walletFilename);
-    BerkleyDBEnvWrapper().mapFileUseCount.erase(walletFilename);
+    berkleyEnvironment_.CloseDb(walletFilename);
+    berkleyEnvironment_.CheckpointLSN(walletFilename);
+    berkleyEnvironment_.mapFileUseCount.erase(walletFilename);
 }
 
 bool DatabaseWrapper::FilenameIsInUse(const std::string& walletFilename)
 {
-    auto it = BerkleyDBEnvWrapper().mapFileUseCount.find( walletFilename );
+    auto it = berkleyEnvironment_.mapFileUseCount.find( walletFilename );
     return (
-        BerkleyDBEnvWrapper().mapFileUseCount.count(walletFilename) > 0 &&
-        ((it != BerkleyDBEnvWrapper().mapFileUseCount.end())?  (it->second > 0)  :  false)
+        berkleyEnvironment_.mapFileUseCount.count(walletFilename) > 0 &&
+        ((it != berkleyEnvironment_.mapFileUseCount.end())?  (it->second > 0)  :  false)
     );
 }
 
-CCriticalSection& DatabaseWrapper::GetDatabaseLock()
+void DatabaseWrapper::Lock()
 {
-    return BerkleyDBEnvWrapper().cs_db;
+    ENTER_CRITICAL_SECTION(berkleyEnvironment_.cs_db);
+}
+void DatabaseWrapper::Unlock()
+{
+    LEAVE_CRITICAL_SECTION(berkleyEnvironment_.cs_db);
 }

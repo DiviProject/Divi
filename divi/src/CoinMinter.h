@@ -24,6 +24,7 @@ class I_BlockFactory;
 class CBlockTemplate;
 class CTxMemPool;
 class I_BlockSubsidyProvider;
+class I_BlockSubmitter;
 
 class CoinMinter final: public I_CoinMinter
 {
@@ -31,6 +32,7 @@ class CoinMinter final: public I_CoinMinter
     const CChain& chain_;
     const CChainParams& chainParameters_;
     const I_PeerBlockNotifyService& peerNotifier_;
+    const I_BlockSubmitter& blockSubmitter_;
     const CMasternodeSync& masternodeSync_;
 
     I_BlockFactory& blockFactory_;
@@ -38,31 +40,30 @@ class CoinMinter final: public I_CoinMinter
     HashedBlockMap& mapHashedBlocks_;
 
     bool mintingIsRequested_;
-    bool haveMintableCoins_;
-    int64_t lastTimeCheckedMintable_;
-    int64_t timeToWait_;
+    mutable bool haveMintableCoins_;
+    mutable int64_t lastTimeCheckedMintable_;
+    mutable int64_t timeToWait_;
 
-    bool hasMintableCoinForProofOfStake();
-    bool satisfiesMintingRequirements() const;
+    bool hasMintableCoinForProofOfStake() const;
     bool limitStakingSpeed() const;
-    bool nextBlockIsProofOfStake() const;
 
-    bool ProcessBlockFound(CBlock* block, CReserveKey& reservekey, const bool isProofOfStake) const;
+    bool ProcessBlockFound(CBlock* block, CReserveKey* reservekey) const;
 
-    bool createProofOfStakeBlock(CReserveKey& reserveKey) const;
-    bool createProofOfWorkBlock(CReserveKey& reserveKey) const;
+    bool createProofOfStakeBlock() const;
+    bool createProofOfWorkBlock() const;
 
 public:
     CoinMinter(
         const CChain& chain,
         const CChainParams& chainParameters,
         const I_PeerBlockNotifyService& peers,
+        const I_BlockSubmitter& blockSubmitter,
         const CMasternodeSync& masternodeSynchronization,
         I_BlockFactory& blockFactory,
         I_StakingWallet& wallet,
         HashedBlockMap& mapHashedBlocks);
 
-    virtual bool CanMintCoins() override;
+    virtual bool canMintCoins() override;
     virtual void sleep(uint64_t milliseconds) const override;
     virtual void setMintingRequestStatus(bool newStatus) override;
     virtual bool mintingHasBeenRequested() const override;

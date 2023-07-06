@@ -32,24 +32,6 @@ public:
     std::string strFromAccount;
     int64_t nOrderPos; //! position in ordered transaction list
 
-    // memory only
-    mutable bool fDebitCached;
-    mutable bool fCreditCached;
-    mutable bool fImmatureCreditCached;
-    mutable bool fAvailableCreditCached;
-    mutable bool fWatchDebitCached;
-    mutable bool fWatchCreditCached;
-    mutable bool fChangeCached;
-    mutable bool totalInputsCached;
-    mutable CAmount nDebitCached;
-    mutable CAmount nCreditCached;
-    mutable CAmount nImmatureCreditCached;
-    mutable CAmount nAvailableCreditCached;
-    mutable CAmount nWatchDebitCached;
-    mutable CAmount nWatchCreditCached;
-    mutable CAmount nChangeCached;
-    mutable CAmount totalInputs;
-
     CWalletTx();
     CWalletTx(const CTransaction& txIn);
     void Init();
@@ -104,11 +86,7 @@ public:
         mapValue.erase("timesmart");
     }
 
-    //! make sure balances are recalculated
-    void RecomputeCachedQuantities();
-
     int64_t GetTxTime() const;
-    int64_t GetComputedTxTime() const;
     bool UpdateTransaction(const CWalletTx& other, bool reorg);
 };
 #endif// WALLET_TX_H

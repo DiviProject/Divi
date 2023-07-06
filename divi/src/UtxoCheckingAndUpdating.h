@@ -11,15 +11,6 @@ class CCoinsViewCache;
 class CTxUndo;
 class TransactionLocationReference;
 
-enum class TxReversalStatus
-{
-    ABORT_NO_OTHER_ERRORS,
-    ABORT_WITH_OTHER_ERRORS,
-    CONTINUE_WITH_ERRORS,
-    OK,
-};
-void UpdateCoinsWithTransaction(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
-TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, CCoinsViewCache& inputs, const CTxUndo* txundo);
 bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,
@@ -27,7 +18,6 @@ bool CheckInputs(
     const BlockMap& blockIndexMap,
     bool fScriptChecks,
     unsigned int flags,
-    bool cacheStore,
     std::vector<CScriptCheck>* pvChecks = nullptr);
 bool CheckInputs(
     const CTransaction& tx,
@@ -38,7 +28,6 @@ bool CheckInputs(
     CAmount& nValueIn,
     bool fScriptChecks,
     unsigned int flags,
-    bool cacheStore,
     std::vector<CScriptCheck>* pvChecks = nullptr,
     bool connectBlockDoS = false);
 #endif// UTXO_CHECKING_AND_UPDATING_H

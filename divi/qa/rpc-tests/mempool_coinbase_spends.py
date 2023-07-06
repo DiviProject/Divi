@@ -9,7 +9,6 @@
 #
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 import os
 import shutil
@@ -37,12 +36,12 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
         return signresult["hex"]
 
     def run_test(self):
-        self.nodes[0].setgenerate(True, 3)
+        self.nodes[0].setgenerate( 3)
         self.sync_all()
 
         # Mine some blocks. After this, nodes[0] blocks
         # 1, 2, and 3 are spend-able.
-        new_blocks = self.nodes[1].setgenerate(True, 20)
+        new_blocks = self.nodes[1].setgenerate( 20)
         self.sync_all()
 
         node0_address = self.nodes[0].getnewaddress()
@@ -63,7 +62,7 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
         # Broadcast and mine spend_102 and 103:
         spend_102_id = self.nodes[0].sendrawtransaction(spend_102_raw)
         spend_103_id = self.nodes[0].sendrawtransaction(spend_103_raw)
-        self.nodes[0].setgenerate(True, 1)
+        self.nodes[0].setgenerate( 1)
 
         # Create 102_1 and 103_1:
         spend_102_1_raw = self.create_tx(spend_102_id, node1_address, 1250)
@@ -71,7 +70,7 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
 
         # Broadcast and mine 103_1:
         spend_103_1_id = self.nodes[0].sendrawtransaction(spend_103_1_raw)
-        self.nodes[0].setgenerate(True, 1)
+        self.nodes[0].setgenerate( 1)
 
         # ... now put spend_101 and spend_102_1 in memory pools:
         spend_101_id = self.nodes[0].sendrawtransaction(spend_101_raw)

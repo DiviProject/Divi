@@ -9,7 +9,7 @@ pushd MacOSX10.9.sdk &&
 find . -type f ! -iname "sha256checksums" -print0 | sort -z | xargs -r0 sha256sum > sha256checksums &&
 echo "5c4e5b294f196c7f88f755c35e8ecc688f80da5a33f00d8078ed4c6f9ff4d3d8  sha256checksums" | sha256sum -c  &&
 rm sha256checksums && popd &&
-tar -cJf MacOSX10.9.sdk.tar.xz ./ &&
+{ tar -cJf MacOSX10.9.sdk.tar.xz ./ || true ; } &&
 rm -r MacOSX10.9.sdk &&
 git clone -q https://github.com/raspberrypi/tools.git &&
 tar -czf raspberrypi-tools.tar.gz ./tools &&

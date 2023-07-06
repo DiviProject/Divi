@@ -16,13 +16,9 @@
 #include <bloom.h>
 #include "chainparams.h"
 #include "clientversion.h"
-#include "miner.h"
-#include "obfuscation.h"
 #include "primitives/transaction.h"
 #include "ui_interface.h"
 #include <timeIntervalConstants.h>
-#include <WalletBackupFeatureContainer.h>
-#include "wallet.h"
 #include "Settings.h"
 #include <main.h>
 #include <Logging.h>
@@ -48,6 +44,7 @@
 #include <I_CommunicationRegistrar.h>
 #include <NodeState.h>
 #include <SocketChannel.h>
+#include <ChainSyncHelpers.h>
 
 #ifdef WIN32
 #include <string.h>
@@ -150,9 +147,6 @@ public:
 //
 // Global state variables
 //
-bool fDiscover = true;
-bool fListen = true;
-
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 class NodeWithSocket
@@ -254,7 +248,7 @@ public:
                 // close socket and cleanup
                 pnode->CloseCommsAndDisconnect();
 
-                if (pnode->fNetworkNode || pnode->fInbound) pnode->Release();
+                pnode->Release();
                 queueForDisconnection(pnode);
             }
         }
@@ -323,7 +317,7 @@ CNode* CreateNode(SOCKET socket, Args&&... args)
     NodeWithSocket* nodeWithSocket = new NodeWithSocket(socket,std::forward<Args>(args)...);
     CNode* pnode = nodeWithSocket->node();
     if (pnode->CommunicationChannelIsValid() && !pnode->fInbound)
-        pnode->PushVersion(GetHeight());
+        pnode->PushVersion();
 
     NodeManager::Instance().recordNode(nodeWithSocket);
     return pnode;
@@ -346,17 +340,7 @@ CAddrMan& GetNetworkAddressManager()
 {
     return addrman;
 }
-// Signals for message handling
-static CNodeSignals globalNodeSignals;
-CNodeSignals& GetNodeSignals()
-{
-    return globalNodeSignals;
-}
 
-const bool& IsListening()
-{
-    return fListen;
-}
 int GetMaxConnections()
 {
     return nMaxConnections;
@@ -401,8 +385,8 @@ std::vector<std::string> BanOutdatedPeers()
         std::string subVersion = getSubVersion(pnode->cleanSubVer);
         if(versionToIndexConverter(subVersion) < referenceVersionIndex)
         {
-            PeerBanningService::LifetimeBan(pnode->addr);
-            bannedNodeAddresses.push_back(pnode->addr.ToString() );
+            PeerBanningService::LifetimeBan(pnode->GetCAddress());
+            bannedNodeAddresses.push_back(pnode->GetCAddress().ToString() );
             pnode->FlagForDisconnection();
         }
     }
@@ -413,9 +397,9 @@ bool BanSpecificPeer(const CNetAddr& address)
     LOCK(cs_vNodes);
     for (CNode* pnode: vNodes)
     {
-        if(strcmp(address.ToString().c_str(), pnode->addr.ToString().c_str() ) == 0)
+        if(strcmp(address.ToString().c_str(), pnode->GetCAddress().ToString().c_str() ) == 0)
         {
-            PeerBanningService::LifetimeBan(pnode->addr);
+            PeerBanningService::LifetimeBan(pnode->GetCAddress());
             pnode->FlagForDisconnection();
             return true;
         }
@@ -440,7 +424,7 @@ NodeConnectionStatus GetConnectionStatus(const CService& addrNode)
     LOCK(cs_vNodes);
     for(CNode* pnode: vNodes)
     {
-        if (pnode->addr == addrNode)
+        if (pnode->GetCAddress() == addrNode)
         {
             return (pnode->fInbound)? NodeConnectionStatus::INBOUND: NodeConnectionStatus::OUTBOUND;
         }
@@ -462,8 +446,8 @@ void GetNodeStateStats(std::vector<std::pair<CNodeStats,CNodeStateStats>>& vstat
         if(stateStats.stateFound)
         {
             stateStats.nMisbehavior = state->GetMisbehaviourPenalty();
-            stateStats.nSyncHeight = state->pindexBestKnownBlock ? state->pindexBestKnownBlock->nHeight : -1;
-            stateStats.nCommonHeight = state->pindexLastCommonBlock ? state->pindexLastCommonBlock->nHeight : -1;
+            stateStats.nSyncHeight = state->GetSyncHeight();
+            stateStats.nCommonHeight = state->GetLastCommonBlockHeight();
             stateStats.vHeightInFlight = GetBlockHeightsInFlight(state->nodeId);
         }
         vstats.push_back(std::make_pair(CNodeStats(pnode),stateStats));
@@ -477,58 +461,11 @@ void AddOneShot(string strDest)
     vOneShots.push_back(strDest);
 }
 
-// Is our peer's addrLocal potentially useful as an external IP source?
-bool PeersLocalAddressIsGood(CNode* pnode)
-{
-    return fDiscover && pnode->addr.IsRoutable() && pnode->addrLocal.IsRoutable() &&
-           !IsLimited(pnode->addrLocal.GetNetwork());
-}
-
-// pushes our own address to a peer
-void AdvertizeLocal(CNode* pnode)
-{
-    if (fListen && pnode->fSuccessfullyConnected) {
-        CAddress addrLocal = GetLocalAddress(&pnode->addr);
-        // If discovery is enabled, sometimes give our peer the address it
-        // tells us that it sees us as in case it has a better idea of our
-        // address than we do.
-        if (PeersLocalAddressIsGood(pnode) && (!addrLocal.IsRoutable() ||
-                                              GetRand((GetnScore(addrLocal) > LOCAL_MANUAL) ? 8 : 2) == 0)) {
-            addrLocal.SetIP(pnode->addrLocal);
-        }
-        if (addrLocal.IsRoutable()) {
-            LogPrintf("AdvertizeLocal: advertizing address %s\n", addrLocal);
-            pnode->PushAddress(addrLocal);
-        }
-    }
-}
-/** Register with a network node to receive its signals */
-void RegisterNodeSignals(CNodeSignals& nodeSignals)
-{
-    nodeSignals.InitializeNode.connect(&InitializeNode);
-    nodeSignals.FinalizeNode.connect(&FinalizeNode);
-    nodeSignals.ProcessReceivedMessages.connect(&ProcessReceivedMessages);
-    nodeSignals.SendMessages.connect(&SendMessages);
-    nodeSignals.RespondToRequestForDataFrom.connect(&RespondToRequestForDataFrom);
-    nodeSignals.AdvertizeLocalAddress.connect(&AdvertizeLocal);
-}
-/** Unregister a network node */
-void UnregisterNodeSignals(CNodeSignals& nodeSignals)
-{
-    nodeSignals.InitializeNode.disconnect(&InitializeNode);
-    nodeSignals.FinalizeNode.disconnect(&FinalizeNode);
-    nodeSignals.ProcessReceivedMessages.disconnect(&ProcessReceivedMessages);
-    nodeSignals.SendMessages.disconnect(&SendMessages);
-    nodeSignals.RespondToRequestForDataFrom.connect(&RespondToRequestForDataFrom);
-    nodeSignals.AdvertizeLocalAddress.connect(&AdvertizeLocal);
-}
-
-
 CNode* FindNode(const CNetAddr& ip)
 {
     LOCK(cs_vNodes);
     BOOST_FOREACH (CNode* pnode, vNodes)
-        if ((CNetAddr)pnode->addr == ip)
+        if ((CNetAddr)pnode->GetCAddress() == ip)
             return (pnode);
     return NULL;
 }
@@ -537,7 +474,7 @@ CNode* FindNode(const std::string& addrName)
 {
     LOCK(cs_vNodes);
     BOOST_FOREACH (CNode* pnode, vNodes)
-        if (pnode->addrName == addrName)
+        if (pnode->GetAddressName() == addrName)
             return (pnode);
     return NULL;
 }
@@ -548,17 +485,17 @@ CNode* FindNode(const CService& addr)
     BOOST_FOREACH (CNode* pnode, vNodes) {
         if (Params().NetworkID() == CBaseChainParams::REGTEST) {
             //if using regtest, just check the IP
-            if ((CNetAddr)pnode->addr == (CNetAddr)addr)
+            if ((CNetAddr)pnode->GetCAddress() == (CNetAddr)addr)
                 return (pnode);
         } else {
-            if (pnode->addr == addr)
+            if (pnode->GetCAddress() == addr)
                 return (pnode);
         }
     }
     return NULL;
 }
 
-NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool weOpenedNetworkConnection = false)
+NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool oneShot = false)
 {
     if (pszDest == NULL) {
         // we clean masternode connections in CMasternodeMan::ProcessMasternodeConnections()
@@ -582,8 +519,8 @@ NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool
     CAddrMan& addrman = GetNetworkAddressManager();
     SOCKET hSocket;
     bool proxyConnectionFailed = false;
-    if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort(), nConnectTimeout, &proxyConnectionFailed) :
-                  ConnectSocket(addrConnect, hSocket, nConnectTimeout, &proxyConnectionFailed)) {
+    if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort(), getConnectionTimeoutDuration(), &proxyConnectionFailed) :
+                  ConnectSocket(addrConnect, hSocket, getConnectionTimeoutDuration(), &proxyConnectionFailed)) {
         if (!IsSelectableSocket(hSocket)) {
             LogPrintf("Cannot create connection: non-selectable socket created (fd >= FD_SETSIZE ?)\n");
             CloseSocket(hSocket);
@@ -593,9 +530,7 @@ NodeRef ConnectNode(CAddress addrConnect, const char* pszDest = NULL, const bool
         addrman.Attempt(addrConnect);
 
         // Add node
-        CNode* pnode = CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addrConnect, pszDest ? pszDest : "", false,false);
-        pnode->nTimeConnected = GetTime();
-        if(weOpenedNetworkConnection) pnode->fNetworkNode = true;
+        CNode* pnode = CreateNode(hSocket, &GetNodeSignals(), GetNetworkAddressManager(), addrConnect, pszDest ? pszDest : "", oneShot? NodeConnectionFlags::ONE_SHOT : NodeConnectionFlags::DEFAULT);
         return NodeReferenceFactory::makeUniqueNodeReference(pnode);
     } else if (!proxyConnectionFailed) {
         // If connecting to the node failed, and failure is not caused by a problem connecting to
@@ -826,7 +761,8 @@ public:
                     LogPrintf("connection from %s dropped (banned)\n", addr);
                     CloseSocket(hSocket);
                 } else {
-                    CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addr, "", true, whitelisted);
+                    ConnectionFlagBitmask flags = NodeConnectionFlags::INBOUND_CONN | (whitelisted? NodeConnectionFlags::WHITELISTED : NodeConnectionFlags::DEFAULT);
+                    CreateNode(hSocket,&GetNodeSignals(),GetNetworkAddressManager(), addr, "", flags);
                 }
             }
         }
@@ -897,7 +833,12 @@ void ThreadSocketHandler()
     }
 }
 
-void ThreadMessageHandler()
+struct MessageHandlerDependencies
+{
+    const Settings& settings_;
+    CCriticalSection& mainCriticalSection_;
+};
+void ThreadMessageHandler(MessageHandlerDependencies& dependencies)
 {
     boost::mutex condition_mutex;
     boost::unique_lock<boost::mutex> lock(condition_mutex);
@@ -911,7 +852,7 @@ void ThreadMessageHandler()
         ThreadSafeNodesCopy safeNodesCopy(cs_vNodes,vNodes);
         const std::vector<NodeRef>& vNodesCopy = safeNodesCopy.Nodes();
 
-        bool rebroadcast = (!IsInitialBlockDownload() && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
+        bool rebroadcast = (!IsInitialBlockDownload(dependencies.mainCriticalSection_,dependencies.settings_) && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
 
         // Poll the connected nodes for messages
         CNode* pnodeTrickle = vNodesCopy.empty()? nullptr: vNodesCopy[GetRand(vNodesCopy.size())].get();
@@ -991,7 +932,7 @@ void ThreadMapPort()
 
     r = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
     if (r == 1) {
-        if (fDiscover) {
+        if (isDiscoverEnabled()) {
             char externalIPAddress[40];
             r = UPNP_GetExternalIPAddress(urls.controlURL, data.first.servicetype, externalIPAddress);
             if (r != UPNPCOMMAND_SUCCESS)
@@ -1197,7 +1138,7 @@ void ThreadOpenConnections()
             LOCK(cs_vNodes);
             BOOST_FOREACH (CNode* pnode, vNodes) {
                 if (!pnode->fInbound) {
-                    setConnected.insert(pnode->addr.GetGroup());
+                    setConnected.insert(pnode->GetCAddress().GetGroup());
                     nOutbound++;
                 }
             }
@@ -1239,6 +1180,36 @@ void ThreadOpenConnections()
             OpenNetworkConnection(addrConnect);
     }
 }
+bool addNode(const std::string& strNode, const std::string& strCommand)
+{
+    if (strCommand == "onetry") {
+        CAddress addr;
+        OpenNetworkConnection(addr, strNode.c_str());
+        return true;
+    }
+
+    LOCK(cs_vAddedNodes);
+    std::vector<std::string>::iterator it = vAddedNodes.begin();
+    for (; it != vAddedNodes.end(); it++)
+        if (strNode == *it)
+            break;
+
+    if (strCommand == "add") {
+        if (it != vAddedNodes.end())
+            return false;
+        vAddedNodes.push_back(strNode);
+    } else if (strCommand == "remove") {
+        if (it == vAddedNodes.end())
+            return false;
+        vAddedNodes.erase(it);
+    }
+    return true;
+}
+std::vector<std::string> getAddedNodeList()
+{
+    LOCK(cs_vAddedNodes);
+    return vAddedNodes;
+}
 
 void ThreadOpenAddedConnections()
 {
@@ -1275,7 +1246,7 @@ void ThreadOpenAddedConnections()
         std::list<std::vector<CService> > lservAddressesToAdd(0);
         BOOST_FOREACH (std::string& strAddNode, lAddresses) {
             std::vector<CService> vservNode(0);
-            if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0)) {
+            if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), getNameLookupFlag(), 0)) {
                 lservAddressesToAdd.push_back(vservNode);
             }
         }
@@ -1286,7 +1257,7 @@ void ThreadOpenAddedConnections()
             BOOST_FOREACH (CNode* pnode, vNodes)
                 for (std::list<std::vector<CService> >::iterator it = lservAddressesToAdd.begin(); it != lservAddressesToAdd.end(); it++)
                     BOOST_FOREACH (CService& addrNode, *(it))
-                        if (pnode->addr == addrNode) {
+                        if (pnode->GetCAddress() == addrNode) {
                             it = lservAddressesToAdd.erase(it);
                             it--;
                             break;
@@ -1315,46 +1286,13 @@ bool OpenNetworkConnection(const CAddress& addrConnect, const char* pszDest, boo
     } else if (FindNode(pszDest))
         return false;
 
-    NodeRef pnode = ConnectNode(addrConnect, pszDest,true);
+    NodeRef pnode = ConnectNode(addrConnect, pszDest, fOneShot);
     boost::this_thread::interruption_point();
 
     if (!pnode)
         return false;
-    if (fOneShot)
-        pnode->fOneShot = true;
 
     return true;
-}
-
-void ThreadBackupWallet(const CWallet* wallet)
-{
-    const std::string& walletFileName = wallet->dbFilename();
-    static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(settings.GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
-    while (true)
-    {
-        if(!wallet->isBackedByFile()) return;
-
-        {
-            LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
-            if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName))
-            {
-                // Flush log data to the dat file
-                walletBackupFeatureContainer.GetDatabase().Dettach(walletFileName);
-                LogPrintf("backing up wallet\n");
-                if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(GetDataDir().string(), walletFileName))
-                {
-                    walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
-                    return;
-                }
-                else
-                {
-                    LogPrintf("Error: Wallet integrity check failed.");
-                    return;
-                }
-            }
-        }
-        MilliSleep(100);
-    }
 }
 
 bool BindListenPort(const CService& addrBind, string& strError, bool fWhitelisted)
@@ -1438,7 +1376,7 @@ bool BindListenPort(const CService& addrBind, string& strError, bool fWhiteliste
     }
 
     NodeManager::Instance().addListeningSocket(hListenSocket,fWhitelisted);
-    if (addrBind.IsRoutable() && fDiscover && !fWhitelisted)
+    if (addrBind.IsRoutable() && isDiscoverEnabled() && !fWhitelisted)
         AddLocal(addrBind, LOCAL_BIND);
 
     return true;
@@ -1446,7 +1384,7 @@ bool BindListenPort(const CService& addrBind, string& strError, bool fWhiteliste
 
 void static Discover(boost::thread_group& threadGroup)
 {
-    if (!fDiscover)
+    if (!isDiscoverEnabled())
         return;
 
 #ifdef WIN32
@@ -1487,7 +1425,7 @@ void static Discover(boost::thread_group& threadGroup)
 #endif
 }
 
-void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet* pwalletMain)
+void StartNode(const Settings& settings, CCriticalSection& mainCriticalSection, boost::thread_group& threadGroup)
 {
     uiInterface.InitMessage(translate("Loading addresses..."));
     // Load addresses for peers.dat
@@ -1525,28 +1463,12 @@ void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "opencon", &ThreadOpenConnections));
 
     // Process messages
+    static MessageHandlerDependencies messageDependencies{settings,mainCriticalSection};
     threadGroup.create_thread(
-        boost::bind(&TraceThread<void (*)()>, "msghand", &ThreadMessageHandler) );
+        boost::bind(&TraceThread<void (*)(MessageHandlerDependencies&), MessageHandlerDependencies&>, "msghand", &ThreadMessageHandler, messageDependencies) );
 
     // Dump network addresses
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
-
-    // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
-    const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
-    if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
-        threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "stakemint", &ThreadStakeMinter, pwalletMain));
-
-    if(pwalletMain && pwalletMain->isBackedByFile())
-    {
-        int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
-        threadGroup.create_thread(
-            (!underRegressionTesting)?
-            boost::bind(&LoopForever<void (*)(const CWallet*), const CWallet*>, "monthly_backup", &ThreadBackupWallet, pwalletMain, millisecondDelay):
-            boost::bind(&MockLoopForever<void (*)(const CWallet*), const CWallet*>, "monthly_backup", &ThreadBackupWallet, pwalletMain, millisecondDelay)
-            );
-    }
-    else
-        LogPrintf("Error: Wallet monthly backups not enabled. Wallet isn't backed by file\n");
 }
 
 bool StopNode()
@@ -1587,7 +1509,7 @@ void DeterministicallyRelayAddressToLimitedPeers(const CAddress& addr,int number
     hashRand = Hash(BEGIN(hashRand), END(hashRand));
     std::multimap<uint256, CNode*> mapMix;
     for(CNode* pnode: vNodes) {
-        if (pnode->nVersion < CADDR_TIME_VERSION)
+        if (pnode->GetVersion() < CADDR_TIME_VERSION)
             continue;
         unsigned int nPointer;
         memcpy(&nPointer, &pnode, sizeof(nPointer));
@@ -1604,11 +1526,11 @@ bool ShouldRelayAlertToPeer(const CAlert& alert, CNode* pnode)
     if (!alert.IsInEffect())
         return false;
     // don't relay to nodes which haven't sent their version message
-    if (pnode->nVersion == 0)
+    if (pnode->GetVersion() == 0)
         return false;
     // returns true if wasn't already contained in the set
     if (pnode->setKnown.insert(alert.GetHash()).second) {
-        if (alert.AppliesTo(pnode->nVersion, pnode->strSubVer) ||
+        if (alert.AppliesTo(pnode->GetVersion(), pnode->strSubVer) ||
             alert.AppliesToMe() ||
             GetAdjustedTime() < alert.nRelayUntil) {
             return true;
@@ -1696,7 +1618,7 @@ void RelayInv(CInv& inv)
 {
     LOCK(cs_vNodes);
     BOOST_FOREACH (CNode* pnode, vNodes){
-        if (pnode->nVersion >= ActiveProtocol())
+        if (pnode->GetVersion() >= ActiveProtocol())
             pnode->PushInventory(inv);
     }
 }
@@ -1794,9 +1716,7 @@ void SetNetworkingParameters()
             LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
     }
 
-    nConnectTimeout = settings.GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
-    if (nConnectTimeout <= 0)
-        nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
+    setConnectionTimeoutDuration(settings.GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT));
 
     EnableAlertsAccordingToSettings(settings);
     if (settings.GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
@@ -1810,7 +1730,7 @@ void SetNetworkingParameters()
 
 bool InitializeP2PNetwork(UIMessenger& uiMessenger)
 {
-    RegisterNodeSignals(GetNodeSignals());
+    RegisterNodeSignals();
     if (settings.ParameterIsSet("-onlynet")) {
         std::set<enum Network> nets;
         BOOST_FOREACH (std::string snet, settings.GetMultiParameter("-onlynet")) {
@@ -1836,7 +1756,7 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
     }
 
     // Check for host lookup allowed before parsing any network related parameters
-    fNameLookup = settings.GetBoolArg("-dns", DEFAULT_NAME_LOOKUP);
+    setNameLookupFlag(settings.GetBoolArg("-dns", DEFAULT_NAME_LOOKUP));
 
     bool proxyRandomize = settings.GetBoolArg("-proxyrandomize", true);
     // -proxy sets a proxy for all outgoing network traffic
@@ -1844,7 +1764,7 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
     std::string proxyArg = settings.GetArg("-proxy", "");
     if (proxyArg != "" && proxyArg != "0") {
         CService proxyAddr;
-        if (!Lookup(proxyArg.c_str(), proxyAddr, 9050, fNameLookup)) {
+        if (!Lookup(proxyArg.c_str(), proxyAddr, 9050, getNameLookupFlag())) {
             return uiMessenger.InitError(strprintf(translate("Invalid -proxy address or hostname: '%s'"), proxyArg));
         }
 
@@ -1868,7 +1788,7 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
             SetReachable(NET_TOR, false); // set onions as unreachable
         } else {
             CService onionProxy;
-            if (!Lookup(onionArg.c_str(), onionProxy, 9050, fNameLookup)) {
+            if (!Lookup(onionArg.c_str(), onionProxy, 9050, getNameLookupFlag())) {
                 return uiMessenger.InitError(strprintf(translate("Invalid -onion address or hostname: '%s'"), onionArg));
             }
             proxyType addrOnion = proxyType(onionProxy, proxyRandomize);
@@ -1880,11 +1800,11 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
     }
 
     // see Step 2: parameter interactions for more information about these
-    fListen = settings.GetBoolArg("-listen", DEFAULT_LISTEN);
-    fDiscover = settings.GetBoolArg("-discover", true);
+    setListeningFlag(settings.GetBoolArg("-listen", DEFAULT_LISTEN));
+    setDiscoverFlag(settings.GetBoolArg("-discover", true));
 
     bool fBound = false;
-    if (fListen) {
+    if (IsListening()) {
         if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
             BOOST_FOREACH (std::string strBind, settings.GetMultiParameter("-bind")) {
                 CService addrBind;
@@ -1912,10 +1832,10 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
 
     if (settings.ParameterIsSet("-externalip")) {
         BOOST_FOREACH (std::string strAddr, settings.GetMultiParameter("-externalip")) {
-            CService addrLocal(strAddr, GetListenPort(), fNameLookup);
+            CService addrLocal(strAddr, GetListenPort(), getNameLookupFlag());
             if (!addrLocal.IsValid())
                 return uiMessenger.InitError(strprintf(translate("Cannot resolve -externalip address: '%s'"), strAddr));
-            AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
+            AddLocal(CService(strAddr, GetListenPort(), getNameLookupFlag()), LOCAL_MANUAL);
         }
     }
 
@@ -1923,4 +1843,9 @@ bool InitializeP2PNetwork(UIMessenger& uiMessenger)
         AddOneShot(strDest);
 
     return true;
+}
+
+void FinalizeP2PNetwork()
+{
+    UnregisterNodeSignals();
 }

@@ -177,5 +177,8 @@ class BadBlockTests (BitcoinTestFramework):
         assert_raises(JSONRPCException, self.node.generateblock, {"extratx": [fake_tx["hex"]]} )
         self.verify_chainstate_unchanged()
 
+        assert_raises(JSONRPCException, self.node.generateblock, {"blockBitsShift": 1} )
+        self.verify_chainstate_unchanged()
+
 if __name__ == '__main__':
     BadBlockTests ().main ()

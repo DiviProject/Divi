@@ -4,55 +4,13 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "primitives/block.h"
-#include "primitives/transaction.h"
-#include "chain.h"
-#include "hash.h"
-#include "main.h"
-#include "tinyformat.h"
-#include "utilstrencodings.h"
 #include "transaction.h"
 
-#include <boost/foreach.hpp>
+#include "primitives/block.h"
+#include "hash.h"
+#include "tinyformat.h"
+#include "utilstrencodings.h"
 
-
-
-COutPoint::COutPoint() { SetNull(); }
-COutPoint::COutPoint(const uint256& hashIn, uint32_t nIn)
-  : hash(hashIn), n(nIn)
-{}
-
-void COutPoint::SetNull() { hash.SetNull(); n = (uint32_t) -1; }
-bool COutPoint::IsNull() const { return (hash.IsNull() && n == (uint32_t) -1); }
-bool operator<(const COutPoint& a, const COutPoint& b)
-{
-    return (a.hash < b.hash || (a.hash == b.hash && a.n < b.n));
-}
-
-bool operator==(const COutPoint& a, const COutPoint& b)
-{
-    return (a.hash == b.hash && a.n == b.n);
-}
-
-bool operator!=(const COutPoint& a, const COutPoint& b)
-{
-    return !(a == b);
-}
-
-std::string COutPoint::ToString() const
-{
-    return strprintf("COutPoint(%s, %u)", hash.ToString()/*.substr(0,10)*/, n);
-}
-
-std::string COutPoint::ToStringShort() const
-{
-    return strprintf("%s-%u", hash.ToString().substr(0,64), n);
-}
-
-uint256 COutPoint::GetHash() const
-{
-    return Hash(BEGIN(hash), END(hash), BEGIN(n), END(n));
-}
 
 CTxIn::CTxIn()
 {

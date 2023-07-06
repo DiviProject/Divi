@@ -111,6 +111,7 @@ BITCOIN_CORE_H = \
   BIP9ActivationManager.h \
   BIP9ActivationFeatureContainer.h \
   BlockIndexLotteryUpdater.h \
+  BlockScanner.h \
   CachedBIP9ActivationStateTracker.h \
   bip38.h \
   bip39.h \
@@ -120,11 +121,11 @@ BITCOIN_CORE_H = \
   BlockSubsidyProvider.h \
   BlockRewards.h \
   BlockSigning.h \
+  BlockDiskPosition.h \
   chain.h \
   chainparams.h \
   chainparamsbase.h \
   chainparamsseeds.h \
-  checkpoints.h \
   checkpoint_data.h\
   checkqueue.h \
   clientversion.h \
@@ -138,6 +139,9 @@ BITCOIN_CORE_H = \
   compressor.h \
   KeyMetadata.h \
   MasterKey.h \
+  OutPoint.h \
+  AvailableCoinsType.h \
+  LockedCoinsSet.h \
   primitives/block.h \
   primitives/transaction.h \
   core_io.h \
@@ -158,16 +162,24 @@ BITCOIN_CORE_H = \
   Settings.h \
   hash.h \
   hdchain.h \
-  WalletRescanner.h \
   StartAndShutdownSignals.h \
+  LoadWalletResult.h \
+  MultiWalletModule.h \
   init.h \
   LicenseAndInfo.h \
+  TransactionLocationReference.h \
   IndexDatabaseUpdates.h \
   BlockTransactionChecker.h \
   FeeAndPriorityCalculator.h \
+  BlockSubmitter.h \
+  I_MostWorkChainTransitionMediator.h \
+  I_BlockValidator.h \
+  I_BlockSubmitter.h \
+  I_ChainTipManager.h \
   I_Filesystem.h \
   I_WalletLoader.h \
   I_WalletDatabase.h \
+  I_WalletDatabaseEndpointFactory.h \
   I_WalletBackupCreator.h \
   I_DatabaseWrapper.h \
   I_SuperblockHeightValidator.h \
@@ -186,9 +198,11 @@ BITCOIN_CORE_H = \
   I_BlockDataReader.h \
   ProofOfStakeCalculator.h \
   uiMessenger.h \
-  kernel.h \
   I_StakingCoinSelector.h \
   I_ProofOfStakeGenerator.h \
+  I_BlockProofProver.h \
+  I_BlockProofVerifier.h \
+  I_DifficultyAdjuster.h \
   ProofOfStakeGenerator.h \
   ProofOfStakeModule.h \
   StakeModifierIntervalHelpers.h \
@@ -202,35 +216,54 @@ BITCOIN_CORE_H = \
   leveldbwrapper.h \
   limitedmap.h \
   defaultValues.h \
-  blockFileInfo.h \
+  BlockFileInfo.h \
   scriptCheck.h \
   verifyDb.h \
   BlockUndo.h \
   ValidationState.h \
-  ActiveChainManager.h \
+  BlockConnectionService.h \
+  BlockIndexLoading.h \
+  ChainstateManager.h \
   IndexDatabaseUpdateCollector.h \
   NodeState.h \
   NodeStateRegistry.h \
   BlocksInFlightRegistry.h \
   NodeSignals.h \
-  BlockRejects.h\
   QueuedBlock.h \
+  BlockFileHelpers.h \
+  MainNotificationRegistration.h \
+  BlockCheckingHelpers.h \
+  AcceptBlockValidator.h \
+  Warnings.h \
+  ForkWarningHelpers.h \
+  BlockInvalidationHelpers.h \
+  FlushChainState.h \
+  MostWorkChainTransitionMediator.h \
+  ChainSyncHelpers.h \
+  TransactionFinalityHelpers.h \
+  MempoolConsensus.h \
+  ChainTipManager.h \
+  ChainExtensionService.h \
+  BlockIndexWork.h \
+  DifficultyAdjuster.h \
+  ChainExtensionModule.h \
   main.h \
   TransactionSearchIndexes.h \
   OrphanTransactions.h \
   TransactionOpCounting.h \
   TransactionInputChecker.h \
   UtxoCheckingAndUpdating.h\
-  WalletLoggingHelper.h \
   BlockFileOpener.h \
   BlockDiskAccessor.h \
+  BlockDiskDataReader.h \
   TransactionDiskAccessor.h \
   BlockTemplate.h \
   I_BlockFactory.h \
   I_BlockTransactionCollector.h \
   I_SuperblockSubsidyContainer.h \
-  I_PoSTransactionCreator.h \
+  I_ChainExtensionService.h \
   ExtendedBlockFactory.h \
+  BlockProofProver.h \
   BlockFactory.h \
   masternode.h \
   MasternodePing.h \
@@ -252,9 +285,11 @@ BITCOIN_CORE_H = \
   merkletx.h \
   I_MerkleTxConfirmationNumberCalculator.h \
   MerkleTxConfirmationNumberCalculator.h \
+  NonDeletionDeleter.h \
   miner.h \
   I_CoinMinter.h \
   BlockMemoryPoolTransactionCollector.h \
+  NextBlockTypeHelpers.h \
   CoinMinter.h \
   CoinMintingModule.h \
   PoSTransactionCreator.h \
@@ -277,13 +312,18 @@ BITCOIN_CORE_H = \
   PeerBanningService.h \
   OutputEntry.h \
   noui.h \
-  pow.h \
+  rest.h \
+  BlockProofVerifier.h \
   protocol.h \
   pubkey.h \
   random.h \
   reverse_iterate.h \
   rpcclient.h \
   rpcprotocol.h \
+  JsonTxHelpers.h \
+  JsonParseHelpers.h \
+  JsonBlockHelpers.h \
+  AcceptedConnection.h \
   rpcserver.h \
   script/interpreter.h \
   script/SignatureCheckers.h \
@@ -304,6 +344,7 @@ BITCOIN_CORE_H = \
   StoredMasternodeBroadcasts.h \
   streams.h \
   sync.h \
+  I_SpentOutputTracker.h \
   SpentOutputTracker.h \
   ThresholdConditionCache.h \
   threadsafety.h \
@@ -337,8 +378,21 @@ BITCOIN_CORE_H = \
   I_CoinSelectionAlgorithm.h \
   CoinControlSelectionAlgorithm.h \
   StochasticSubsetSelectionAlgorithm.h \
+  AddressBookManager.h \
+  AvailableUtxoCalculator.h \
+  AvailableUtxoCollector.h \
+  CachedTransactionDeltas.h \
+  CachedTransactionDeltasCalculator.h \
   wallet.h \
   WalletTx.h \
+  I_UtxoPriorityAlgorithm.h \
+  I_UtxoOwnershipDetector.h \
+  I_TransactionDetailCalculator.h \
+  CachedUtxoBalanceCalculator.h \
+  UtxoBalanceCalculator.h \
+  FilteredTransactionsCalculator.h \
+  WalletBalanceCalculator.h \
+  I_AppendOnlyTransactionRecord.h \
   WalletTransactionRecord.h \
   StakableCoin.h \
   keypool.h \
@@ -347,7 +401,9 @@ BITCOIN_CORE_H = \
   WalletBackupCreator.h \
   WalletBackupFeatureContainer.h \
   WalletIntegrityVerifier.h \
+  IsMineType.h \
   wallet_ismine.h \
+  LegacyWalletDatabaseEndpointFactory.h \
   walletdb.h \
   zmq/zmqabstractnotifier.h \
   zmq/zmqconfig.h \
@@ -389,18 +445,21 @@ libbitcoin_server_a_SOURCES = \
   CachedBIP9ActivationStateTracker.cpp \
   bloom.cpp \
   chain.cpp \
-  checkpoints.cpp \
   FilteredBoostFileSystem.cpp \
-  WalletRescanner.cpp \
+  BlockScanner.cpp \
   StartAndShutdownSignals.cpp \
+  MultiWalletModule.cpp \
+  BlockSubmitter.cpp \
+  BlockIndexLoading.cpp \
   init.cpp \
+  TransactionLocationReference.cpp \
   IndexDatabaseUpdates.cpp \
   BlockTransactionChecker.cpp \
   FeeAndPriorityCalculator.cpp \
   ForkActivation.cpp \
   uiMessenger.cpp \
   leveldbwrapper.cpp \
-  blockFileInfo.cpp \
+  BlockFileInfo.cpp \
   scriptCheck.cpp \
   verifyDb.cpp \
   BlockUndo.cpp \
@@ -408,27 +467,45 @@ libbitcoin_server_a_SOURCES = \
   TransactionOpCounting.cpp \
   TransactionInputChecker.cpp \
   UtxoCheckingAndUpdating.cpp\
-  ActiveChainManager.cpp \
+  BlockConnectionService.cpp \
+  ChainstateManager.cpp \
   IndexDatabaseUpdateCollector.cpp \
   NodeState.cpp \
   BlocksInFlightRegistry.cpp \
   NodeStateRegistry.cpp \
+  BlockFileHelpers.cpp \
+  MainNotificationRegistration.cpp \
+  BlockCheckingHelpers.cpp \
+  AcceptBlockValidator.cpp \
+  Warnings.cpp \
+  ForkWarningHelpers.cpp \
+  BlockInvalidationHelpers.cpp \
+  FlushChainState.cpp \
+  MostWorkChainTransitionMediator.cpp \
+  ChainSyncHelpers.cpp \
+  TransactionFinalityHelpers.cpp \
+  MempoolConsensus.cpp \
+  ChainTipManager.cpp \
+  ChainExtensionService.cpp \
+  DifficultyAdjuster.cpp \
+  ChainExtensionModule.cpp \
   main.cpp \
   TransactionSearchIndexes.cpp \
   OrphanTransactions.cpp \
-  WalletLoggingHelper.cpp \
+  BlockProofProver.cpp \
   BlockFactory.cpp \
   ExtendedBlockFactory.cpp \
   BlockFileOpener.cpp \
   BlockDiskAccessor.cpp \
+  BlockDiskDataReader.cpp \
   TransactionDiskAccessor.cpp \
   merkleblock.cpp \
   merkletx.cpp \
   MerkleTxConfirmationNumberCalculator.cpp \
+  NextBlockTypeHelpers.cpp \
   CoinMinter.cpp \
   CoinMintingModule.cpp \
   PoSTransactionCreator.cpp \
-  kernel.cpp \
   ProofOfStakeGenerator.cpp \
   ProofOfStakeModule.cpp \
   ProofOfStakeCalculator.cpp \
@@ -451,8 +528,11 @@ libbitcoin_server_a_SOURCES = \
   PeerBanningService.cpp \
   netfulfilledman.cpp \
   noui.cpp \
-  pow.cpp \
+  BlockProofVerifier.cpp \
   rest.cpp \
+  JsonTxHelpers.cpp \
+  JsonBlockHelpers.cpp \
+  JsonParseHelpers.cpp \
   rpcblockchain.cpp \
   rpclottery.cpp \
   rpcmasternode.cpp \
@@ -533,6 +613,8 @@ libbitcoin_wallet_a_SOURCES = \
   netfulfilledman.cpp \
   reservekey.cpp \
   rpcdump.cpp \
+  BlockSubmitter.cpp \
+  init.cpp \
   rpcwallet.cpp \
   VaultManagerDatabase.cpp \
   VaultManager.cpp \
@@ -541,12 +623,23 @@ libbitcoin_wallet_a_SOURCES = \
   StochasticSubsetSelectionAlgorithm.cpp \
   MinimumFeeCoinSelectionAlgorithm.cpp \
   MerkleTxConfirmationNumberCalculator.cpp \
+  BlockScanner.cpp \
+  CachedUtxoBalanceCalculator.cpp \
+  UtxoBalanceCalculator.cpp \
+  WalletBalanceCalculator.cpp \
+  AddressBookManager.cpp \
+  TransactionFinalityHelpers.cpp \
+  AvailableUtxoCalculator.cpp \
+  AvailableUtxoCollector.cpp \
+  CachedTransactionDeltas.cpp \
+  CachedTransactionDeltasCalculator.cpp \
   wallet.cpp \
   Output.cpp \
   WalletTx.cpp \
   WalletTransactionRecord.cpp \
   merkletx.cpp \
   wallet_ismine.cpp \
+  LegacyWalletDatabaseEndpointFactory.cpp \
   walletdb.cpp \
   $(BITCOIN_CORE_H)
 
@@ -618,6 +711,7 @@ libbitcoin_common_a_SOURCES = \
   FeeAndPriorityCalculator.cpp \
   compressor.cpp \
   destination.cpp \
+  OutPoint.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \
   core_io.cpp \
@@ -664,6 +758,7 @@ libbitcoin_util_a_SOURCES = \
   sync.cpp \
   uint256.cpp \
   util.cpp \
+  Warnings.cpp \
   ThreadManagementHelpers.cpp \
   Logging.cpp \
   DataDirectory.cpp \
@@ -761,6 +856,7 @@ if BUILD_BITCOIN_LIBS
 include_HEADERS = script/bitcoinconsensus.h
 libbitcoinconsensus_la_SOURCES = \
   allocators.cpp \
+  OutPoint.cpp \
   primitives/transaction.cpp \
   crypto/hmac_sha512.cpp \
   crypto/scrypt.cpp \

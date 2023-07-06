@@ -148,6 +148,7 @@ CommunicationLogger::CommunicationLogger(
     , nLastRecv(0)
     , nSendBytes(0)
     , nRecvBytes(0)
+    , nTimeConnected(0)
 {
 }
 void CommunicationLogger::RecordSentBytes(int additionalBytes)
@@ -178,6 +179,15 @@ uint64_t CommunicationLogger::GetTotalBytesSent() const
 {
     return nSendBytes;
 }
+void CommunicationLogger::RecordTimeOfConnection(int64_t timeOfConnection)
+{
+    nTimeConnected = timeOfConnection;
+}
+int64_t CommunicationLogger::GetTimeOfConnection() const
+{
+    return nTimeConnected;
+}
+
 
 NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
@@ -508,55 +518,68 @@ void QueuedMessageConnection::SetOutboundSerializationVersion(int versionNumber)
     ssSend.SetVersion(versionNumber);
 }
 
+static NodeId GetNextNodeId()
+{
+    LOCK(cs_nLastNodeId);
+    return nLastNodeId++;
+}
+
 CNode::CNode(
     I_CommunicationChannel& channel,
     CNodeSignals* nodeSignals,
     CAddrMan& addressMananger,
     CAddress addrIn,
     std::string addrNameIn,
-    bool fInboundIn,
-    bool whitelisted
+    ConnectionFlagBitmask connectionFlags
     ) : fSuccessfullyConnected(false)
     , dataLogger()
     , channel_(channel)
     , messageConnection_(channel_,fSuccessfullyConnected,dataLogger)
     , vRecvGetData()
-    , fInbound(fInboundIn)
-    , fWhitelisted(whitelisted)
+    , nVersion(0)
+    , nServices(0)
+    , nTimeConnected(GetTime())
+    , addr(addrIn)
+    , addrName(
+        addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn)
+    , nodeSignals_(nodeSignals)
+    , nodeState_(nullptr)
+    , addrLocal()
+    , strSubVer("")
+    , cleanSubVer("")
+    , fInbound( connectionFlags & NodeConnectionFlags::INBOUND_CONN )
+    , fWhitelisted( connectionFlags & NodeConnectionFlags::WHITELISTED )
+    , fOneShot( connectionFlags & NodeConnectionFlags::ONE_SHOT )
+    , fClient(false)
+    , fRelayTxes(false)
+    , cs_filter()
+    , pfilter(new CBloomFilter())
+    , nRefCount(0)
+    , id(GetNextNodeId())
+    , nSporksCount(-1)
+    , hashContinue(0)
+    , nStartingHeight(-1)
+    , vAddrToSend()
     , setAddrKnown(5000)
+    , fGetAddr(false)
+    , setKnown()
+    , setInventoryKnown(MaxSendBufferSize() / 1000)
+    , vInventoryToSend()
+    , cs_inventory()
+    , mapAskFor()
+    , vBlockRequested()
+    , nPingNonceSent(0)
+    , nPingUsecStart(0)
+    , nPingUsecTime(0)
+    , fPingQueued(false)
+    , nSporksSynced(0)
 {
-    nServices = 0;
-    nTimeConnected = GetTime();
-    addr = addrIn;
-    addrName = addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn;
-    nVersion = 0;
-    strSubVer = "";
-    fOneShot = false;
-    fClient = false; // set by version message
-    fNetworkNode = false;
-    nRefCount = 0;
-    hashContinue = 0;
-    nStartingHeight = -1;
-    fGetAddr = false;
-    fRelayTxes = false;
-    setInventoryKnown.max_size(MaxSendBufferSize() / 1000);
-    pfilter = new CBloomFilter();
-    nPingNonceSent = 0;
-    nPingUsecStart = 0;
-    nPingUsecTime = 0;
-    fPingQueued = false;
-    nodeSignals_ = nodeSignals;
-
-    {
-        LOCK(cs_nLastNodeId);
-        id = nLastNodeId++;
-    }
-
     if (ShouldLogPeerIPs())
         LogPrint("net", "Added connection to %s peer=%d\n", addrName, id);
     else
         LogPrint("net", "Added connection peer=%d\n", id);
 
+    dataLogger.RecordTimeOfConnection(nTimeConnected);
     assert(nodeSignals_);
     nodeState_.reset(new CNodeState(id,addressMananger));
     nodeState_->name = addrName;
@@ -576,6 +599,29 @@ CNode::~CNode()
     nodeSignals_->FinalizeNode(id);
     nodeState_->Finalize();
     nodeState_.reset();
+}
+
+const CAddress& CNode::GetCAddress() const
+{
+    return addr;
+}
+const std::string& CNode::GetAddressName() const
+{
+    return addrName;
+}
+
+bool CNode::IsSuccessfullyConnected() const
+{
+    return fSuccessfullyConnected;
+}
+void CNode::RecordSuccessfullConnection()
+{
+    fSuccessfullyConnected = true;
+}
+
+const CommunicationLogger& CNode::GetCommunicationLogger() const
+{
+    return dataLogger;
 }
 
 bool CNode::CommunicationChannelIsValid() const
@@ -633,7 +679,7 @@ void CNode::ProcessReceiveMessages(bool& shouldSleep)
     TRY_LOCK(messageConnection_.GetReceiveLock(), lockRecv);
     if (lockRecv)
     {
-        bool result = *(nodeSignals_->ProcessReceivedMessages(this));
+        bool result = (!RespondToRequestForData())? true: *(nodeSignals_->ProcessReceivedMessages(this));
         if (!result)
             CloseCommsAndDisconnect();
 
@@ -673,6 +719,13 @@ void CNode::RecordRequestForData(std::vector<CInv>& inventoryRequested)
 
     vRecvGetData.insert(vRecvGetData.end(), inventoryRequested.begin(), inventoryRequested.end());
 }
+
+void CNode::HandleRequestForData(std::vector<CInv>& inventoryRequested)
+{
+    RecordRequestForData(inventoryRequested);
+    RespondToRequestForData();
+}
+
 std::deque<CInv>& CNode::GetRequestForDataQueue()
 {
     return vRecvGetData;
@@ -911,6 +964,20 @@ void CNode::AskFor(const CInv& inv)
     mapAskFor.insert(std::make_pair(nRequestTime, inv));
 }
 
+void CNode::SetVersionAndServices(int nodeVersionNumber, uint64_t bitmaskOfNodeServices)
+{
+    nVersion = nodeVersionNumber;
+    nServices = bitmaskOfNodeServices;
+}
+const int& CNode::GetVersion() const
+{
+    return nVersion;
+}
+const uint64_t& CNode::GetServices() const
+{
+    return nServices;
+}
+
 bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand)
 {
     if (!IsFlaggedForDisconnection() && nVersion < nVersionRequired) {
@@ -922,8 +989,9 @@ bool CNode::DisconnectOldProtocol(int nVersionRequired, std::string strLastComma
     return IsFlaggedForDisconnection();
 }
 
-void CNode::PushVersion(int currentChainTipHeight)
+void CNode::PushVersion()
 {
+    const int currentChainTipHeight = *(nodeSignals_->GetHeight());
     /// when NTP implemented, change to just nTime = GetAdjustedTime()
     int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
     CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService("0.0.0.0", 0)));

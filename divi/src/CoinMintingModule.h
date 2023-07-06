@@ -4,56 +4,48 @@
 #include <memory>
 #include <vector>
 #include <boost/thread/recursive_mutex.hpp>
-class I_StakingWallet;
-class CChain;
-class CChainParams;
-class CNode;
-class CMasternodeSync;
-typedef std::map<unsigned int, unsigned int> BlockTimestampsByHeight;
 class I_BlockFactory;
+class I_BlockTransactionCollector;
+class I_BlockSubmitter;
+class I_BlockProofProver;
+class I_CoinMinter;
+class I_PeerBlockNotifyService;
+class I_ProofOfStakeGenerator;
+class I_DifficultyAdjuster;
+class I_StakingWallet;
+class I_BlockProofProver;
+
+class CChainParams;
+class CMasternodeSync;
 class CTxMemPool;
 class CCriticalSection;
-class BlockMap;
-class I_CoinMinter;
-class I_BlockTransactionCollector;
-class I_PoSTransactionCreator;
-class SuperblockSubsidyContainer;
-class BlockIncentivesPopulator;
-class BlockMap;
-class CMasternodePayments;
-class ProofOfStakeModule;
 class CSporkManager;
 class Settings;
-class CCoinsViewCache;
 class CFeeRate;
-class MasternodeModule;
-class I_PeerBlockNotifyService;
+class ChainstateManagerReference;
 
 class CoinMintingModule
 {
-    std::unique_ptr<ProofOfStakeModule> posModule_;
-    std::unique_ptr<SuperblockSubsidyContainer> blockSubsidyContainer_;
-    std::unique_ptr<BlockIncentivesPopulator> blockIncentivesPopulator_;
+private:
+    std::unique_ptr<const ChainstateManagerReference> chainstateRef_;
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
-    std::unique_ptr<I_PoSTransactionCreator> coinstakeTransactionCreator_;
     std::unique_ptr<I_BlockFactory> blockFactory_;
     std::unique_ptr<I_CoinMinter> coinMinter_;
+
 public:
     CoinMintingModule(
         const Settings& settings,
-        CCriticalSection& mainCS,
         const CChainParams& chainParameters,
-        const CChain& activeChain,
-        const BlockMap& blockIndexMap,
-        const MasternodeModule& masternodeModule,
+        const I_BlockProofProver& blockProofProver,
+        const CMasternodeSync& masternodeSynchronization,
         const CFeeRate& relayTxFeeCalculator,
-        CCoinsViewCache* baseCoinsViewCache,
-        CTxMemPool& mempool,
         const I_PeerBlockNotifyService& peers,
-        I_StakingWallet& wallet,
-        BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
-        BlockMap& blockIndexByHash,
-        const CSporkManager& sporkManager);
+        const I_BlockSubmitter& blockSubmitter,
+        const I_DifficultyAdjuster& difficultyAdjuster,
+        std::map<unsigned int, unsigned int>& mapHashedBlocks,
+        CCriticalSection& mainCS,
+        CTxMemPool& mempool,
+        I_StakingWallet& wallet);
     ~CoinMintingModule();
 
     I_BlockFactory& blockFactory() const;

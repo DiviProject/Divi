@@ -9,4 +9,5 @@ CScript CreateStakingVaultScript(const valtype& ownerKeyHash, const valtype& vau
 CScript GetStakingVaultScriptTemplate();
 bool IsStakingVaultScript(const CScript& scriptPubKey);
 bool GetStakingVaultPubkeyHashes(const CScript& scriptPubKey, std::pair<valtype,valtype>& pubkeyHashes);
+std::string GetVaultEncoding(const CScript& scriptPubKey);
 #endif// STAKING_VAULT_SCRIPT_H

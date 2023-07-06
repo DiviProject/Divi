@@ -65,6 +65,8 @@ const char* ScriptErrorString(const ScriptError serror)
             return "Public key is neither compressed or uncompressed";
         case SCRIPT_ERR_CLTV:
             return "Invalid transaction lock time (BIP65)";
+        case SCRIPT_ERR_LIMIT_TRANSFER:
+            return "Invalid transfer limit";
         case SCRIPT_ERR_UNKNOWN_ERROR:
         case SCRIPT_ERR_ERROR_COUNT:
         default: break;

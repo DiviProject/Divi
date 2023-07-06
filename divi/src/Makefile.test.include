@@ -1,21 +1,7 @@
-TESTS += test/test_divi test/bitcoin-util-test.py
+TESTS += test/test_divi
 bin_PROGRAMS += test/test_divi
 TEST_SRCDIR = test
 TEST_BINARY=test/test_divi$(EXEEXT)
-
-
-EXTRA_DIST += \
-	test/bctest.py \
-	test/bitcoin-util-test.py \
-	test/data/bitcoin-util-test.json \
-	test/data/blanktx.hex \
-	test/data/tt-delin1-out.hex \
-	test/data/tt-delout1-out.hex \
-	test/data/tt-locktime317000-out.hex \
-	test/data/tx394b54bb.hex \
-	test/data/txcreate1.hex \
-	test/data/txcreate2.hex \
-	test/data/txcreatesign.hex
 
 JSON_TEST_FILES = \
   test/data/script_valid.json \
@@ -42,8 +28,6 @@ BITCOIN_TESTS =\
   test/BIP9ActivationManager_tests.cpp \
   test/BlockSignature_tests.cpp \
   test/CachedBIP9ActivationStateTracker_tests.cpp \
-  test/checkblock_tests.cpp \
-  test/Checkpoints_tests.cpp \
   test/coins_tests.cpp \
   test/compress_tests.cpp \
   test/crypto_tests.cpp \
@@ -52,17 +36,22 @@ BITCOIN_TESTS =\
   test/FakeBlockIndexChain.cpp \
   test/FakeWallet.cpp \
   test/ForkActivation_tests.cpp \
-  test/getarg_tests.cpp \
+  test/Settings_tests.cpp \
   test/hash_tests.cpp \
   test/kernel_tests.cpp \
   test/key_tests.cpp \
   test/main_tests.cpp \
   test/mempool_tests.cpp \
   test/MockFileSystem.cpp \
+  test/MockUtxoBalanceCalculator.h \
   test/MockCoinMinter.h \
+  test/MockSpentOutputTracker.h \
+  test/MockUtxoOwnershipDetector.h \
+  test/MockMerkleTxConfirmationNumberCalculator.h \
   test/MockSuperblockHeightValidator.h \
   test/MockBlockIncentivesPopulator.h \
   test/MockBlockSubsidyProvider.h \
+  test/MockTransactionRecord.h \
   test/MockPoSStakeModifierService.h \
   test/MockVaultManagerDatabase.h \
   test/Monthlywalletbackupcreator_tests.cpp \
@@ -85,6 +74,9 @@ BITCOIN_TESTS =\
   test/SuperblockHelper_tests.cpp \
   test/RandomCScriptGenerator.h \
   test/RandomCScriptGenerator.cpp \
+  test/RandomScriptPubKeyGenerator.h \
+  test/RandomTransactionGenerator.h \
+  test/RandomUtxoGenerator.h \
   test/test_divi.cpp \
   test/timedata_tests.cpp \
   test/torcontrol_tests.cpp \
@@ -95,6 +87,8 @@ BITCOIN_TESTS =\
   test/versionbits_tests.cpp \
   test/googletestenabled_test.cpp \
   test/wallet_coinmanagement_tests.cpp \
+  test/UtxoBalanceCalculator_tests.cpp \
+  test/FilteredTransactionsCalculator_tests.cpp \
   test/walletbackupcreator_tests.cpp \
   test/WalletIntegrityVerifier_tests.cpp \
   test/CoinMinting_tests.cpp \
@@ -109,6 +103,7 @@ BITCOIN_TESTS =\
   test/multi_wallet_tests.cpp \
   test/MockSignatureSizeEstimator.h \
   test/MinimumFeeCoinSelectionAlgorithm_tests.cpp \
+  test/WalletDB_tests.cpp \
   test/ZmqNotifierFactory_tests.cpp
 
 if ENABLE_WALLET

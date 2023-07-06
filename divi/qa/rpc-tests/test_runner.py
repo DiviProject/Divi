@@ -11,18 +11,16 @@ forward all unrecognized arguments onto the individual test scripts.
 """
 
 import argparse
-from collections import deque
 import configparser
 import datetime
 import os
 import time
-import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 import re
 import logging
-import unittest
 
 # Formatting. Default colors to empty strings.
 BOLD, GREEN, RED, GREY = ("", ""), ("", ""), ("", ""), ("", "")
@@ -64,87 +62,6 @@ if os.name != 'nt' or sys.getwindowsversion() >= (10, 0, 14393):
 TEST_EXIT_PASSED = 0
 TEST_EXIT_SKIPPED = 77
 
-EXTENDED_SCRIPTS = [
-    # These tests are not run by default.
-    # Longest test should go first, to favor running tests in parallel
-]
-
-BASE_SCRIPTS = [
-    # Scripts that are run by default.
-    # Longest test should go first, to favor running tests in parallel
-    'AddressAndSpentIndicesAreOperational.py',
-    'AtomicTrading.py',
-    'BlocksOnlyHaveSingleCoinstake.py',
-    'BadBlockTests.py',
-    'CheckLockTimeVerify.py',
-    'CoinDBStats.py',
-    'StakingVaultFunding.py',
-    'StakingVaultStaking.py',
-    'StakingVaultDeactivation.py',
-    'StakingVaultSpam.py',
-    'forknotify.py',
-    'getchaintips.py',
-    'httpbasics.py',
-    'invalidateblock.py',
-    'keypool.py',
-    'listtransactions.py',
-    'lottery.py',
-    'mempool_coinbase_spends.py',
-    'mempool_indices.py',
-    'mempool_reject.py',
-    'mempool_resurrect_test.py',
-    'mempool_spendcoinbase.py',
-    'MnAreSafeToRestart.py',
-    'mncollateral.py',
-    'mnoperation.py',
-    'masternodes_with_vaults.py',
-    'mnstoredbroadcast.py',
-    'mnvaults.py',
-    'multisig.py',
-    'NoBlocksForLongTime.py',
-    'op_meta.py',
-    'paper_wallets.py',
-    'proxy_test.py',
-    'receivedby.py',
-    'reindex.py',
-    'PowToPosTransition.py',
-    'rawtransactions.py',
-    'rest.py',
-    'rpcbind_test.py',
-    'remotestart.py',
-    'remotestart.py --outdated_ping',
-    'smartfees.py',
-    'sync.py',
-    'txindex.py',
-    'TxInputsStandardness.py',
-    'txn_doublespend.py',
-    'txn_doublespend.py --mineblock',
-    'VaultUtxoIndexing.py',
-    'vaultfork.py',
-    'wallet.py',
-    'walletbackup.py',
-    'wallet_notifications.py',
-    'wallet_sends.py',
-    'zmq_test.py',
-]
-
-# Place EXTENDED_SCRIPTS first since it has the 3 longest running tests
-ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS
-
-NON_SCRIPTS = [
-    # These are script files that live in the functional tests directory, but are not test scripts.
-    'authproxy.py',
-    'masternode.py',
-    'messages.py',
-    'netutil.py',
-    'test_framework.py',
-    'test_runner.py',
-    'script.py',
-    'socks5.py',
-    'util.py',
-    'util.sh',
-]
-
 def main():
     # Parse arguments and pass through unrecognised args
     parser = argparse.ArgumentParser(add_help=False,
@@ -163,8 +80,38 @@ def main():
     parser.add_argument('--tmpdirprefix', '-t', default=tempfile.gettempdir(), help="Root directory for datadirs")
     parser.add_argument('--failfast', action='store_true', help='stop execution after the first test failure')
     parser.add_argument('--filter', help='filter scripts to run by regular expression')
+    parser.add_argument('--test_suite_file', default='test_list.txt', help='Run tests within specified suite only')
 
     args, unknown_args = parser.parse_known_args()
+    EXTENDED_SCRIPTS = [
+        # These tests are not run by default.
+        # Longest test should go first, to favor running tests in parallel
+    ]
+
+    # Scripts that are run by default.
+    # Longest test should go first, to favor running tests in parallel
+    BASE_SCRIPTS = []
+    with open(args.test_suite_file, 'r') as file:
+        filenames = file.readlines()
+        BASE_SCRIPTS = [test_filename.strip() for test_filename in filenames]
+
+    # Place EXTENDED_SCRIPTS first since it has the 3 longest running tests
+    ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS
+
+    NON_SCRIPTS = [
+        # These are script files that live in the functional tests directory, but are not test scripts.
+        'authproxy.py',
+        'masternode.py',
+        'messages.py',
+        'netutil.py',
+        'test_framework.py',
+        'test_runner.py',
+        'script.py',
+        'socks5.py',
+        'util.py',
+        'util.sh',
+    ]
+
     if not args.ansi:
         global BOLD, GREEN, RED, GREY
         BOLD = ("", "")
@@ -253,7 +200,7 @@ def main():
         subprocess.check_call([os.path.join(config["environment"]["SRCDIR"], 'qa', 'rpc-tests', test_list[0].split()[0]), '-h'])
         sys.exit(0)
 
-    check_script_list(src_dir=config["environment"]["SRCDIR"], fail_on_warn=args.ci)
+    check_script_list(src_dir=config["environment"]["SRCDIR"], fail_on_warn=args.ci, scripts_to_check=ALL_SCRIPTS + NON_SCRIPTS)
 
     run_tests(
         test_list=test_list,
@@ -373,11 +320,16 @@ class TestHandler:
             log_stdout = tempfile.SpooledTemporaryFile(max_size=2**16)
             log_stderr = tempfile.SpooledTemporaryFile(max_size=2**16)
             test_argv = test.split()
+            script = self.tests_dir + test_argv[0]
+            st_mode = os.stat (script).st_mode
+            all_execute = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+            if (st_mode & all_execute) != all_execute:
+                sys.exit("Test file %s is missing global execute permissions" % test_argv[0])
             testdir = "{}/{}_{}".format(self.tmpdir, re.sub(".py$", "", test_argv[0]), portseed)
             tmpdir_arg = ["--tmpdir={}".format(testdir)]
             self.jobs.append((test,
                               time.time(),
-                              subprocess.Popen([self.tests_dir + test_argv[0]] + test_argv[1:] + self.flags + portseed_arg + tmpdir_arg,
+                              subprocess.Popen([script] + test_argv[1:] + self.flags + portseed_arg + tmpdir_arg,
                                                universal_newlines=True,
                                                stdout=log_stdout,
                                                stderr=log_stderr),
@@ -462,14 +414,14 @@ class TestResult():
         return self.status != "Failed"
 
 
-def check_script_list(*, src_dir, fail_on_warn):
+def check_script_list(*, src_dir, fail_on_warn, scripts_to_check):
     """Check scripts directory.
 
     Check that there are no scripts in the functional tests directory which are
     not being run by pull-tester.py."""
     script_dir = src_dir + '/qa/rpc-tests/'
     python_files = set([test_file for test_file in os.listdir(script_dir) if test_file.endswith(".py")])
-    missed_tests = list(python_files - set(map(lambda x: x.split()[0], ALL_SCRIPTS + NON_SCRIPTS)))
+    missed_tests = list(python_files - set(map(lambda x: x.split()[0], scripts_to_check)))
     if len(missed_tests) != 0:
         print("%sWARNING!%s The following scripts are not being run: %s. Check the test lists in test_runner.py." % (BOLD[1], BOLD[0], str(missed_tests)))
         if fail_on_warn:

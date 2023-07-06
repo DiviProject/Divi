@@ -11,7 +11,7 @@ from messages import *
 from util import *
 from script import *
 
-ACTIVATION_TIME = 2_000_000_000
+ACTIVATION_TIME = 1_692_792_000
 
 
 class CheckLockTimeVerifyTest (BitcoinTestFramework):
@@ -53,12 +53,12 @@ class CheckLockTimeVerifyTest (BitcoinTestFramework):
 
         # Generate outputs locked to block height 100, but spendable
         # easily (by pushing 42 on the stack) afterwards.
-        self.node.setgenerate (True, 30)
+        self.node.setgenerate ( 30)
         self.cltvScript = CScript ([100, OP_CHECKLOCKTIMEVERIFY, OP_DROP,
                                    42, OP_EQUAL])
         addr = self.node.decodescript (self.cltvScript.hex ())["p2sh"]
         outputs = [self.generateOutput (addr, 1) for _ in range (2)]
-        self.node.setgenerate (True, 1)
+        self.node.setgenerate ( 1)
 
         # Spending an output before the fork is activated should work
         # even without a proper lock time on the transaction, although
@@ -71,7 +71,7 @@ class CheckLockTimeVerifyTest (BitcoinTestFramework):
         # After the fork, the output should not be spendable (even directly
         # in a block) without the lock time.
         set_node_times (self.nodes, ACTIVATION_TIME)
-        self.node.setgenerate (True, 7)
+        self.node.setgenerate ( 7)
         tx = self.buildSpend (outputs[1])
         assert_raises (JSONRPCException, self.node.generateblock,
                        {"extratx": [tx.serialize ().hex ()]})
@@ -86,11 +86,11 @@ class CheckLockTimeVerifyTest (BitcoinTestFramework):
         # Once the lock height is reached (exceeded), the transaction should
         # be fine, even in the mempool.
         additional_blocks = 100 - self.node.getblockcount()
-        self.node.setgenerate (True, additional_blocks-1)
+        self.node.setgenerate ( additional_blocks-1)
         assert_raises (JSONRPCException, self.node.generateblock, {"extratx": [tx.serialize ().hex ()]})
-        self.node.setgenerate (True, 1)
+        self.node.setgenerate ( 1)
         txid = self.node.sendrawtransaction (tx.serialize ().hex ())
-        self.node.setgenerate (True, 1)
+        self.node.setgenerate ( 1)
         assert_greater_than(self.node.getrawtransaction(txid,1)["confirmations"],0)
 
         # Make sure the outputs have really been spent.

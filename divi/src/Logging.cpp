@@ -6,6 +6,7 @@
 #include <utiltime.h>
 #include <mutex>
 #include <set>
+#include <cstdint>
 
 #include <DataDirectory.h>
 #include <chainparamsbase.h>
@@ -13,14 +14,24 @@
 #include <serialize.h>
 #include <Settings.h>
 
-bool fDebug = false;
+volatile bool fDebug = false;
 bool fPrintToConsole = false;
-bool fPrintToDebugLog = true;
+volatile bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
-bool fLogTimestamps = false;
+volatile bool fLogTimestamps = false;
+volatile bool shrinkDebugLog = false;
 bool fLogIPs = false;
 
 extern Settings& settings;
+
+void requestReopeningDebugLog()
+{
+    fReopenDebugLog = true;
+}
+void setWriteToDebugLogFlag(bool settingValue)
+{
+    fPrintToDebugLog = settingValue;
+}
 
 LOG_FORMAT_WITH_TOSTRING(uint256)
 
@@ -80,6 +91,32 @@ bool EnsureDebugPrintInitialized()
     return true;
 }
 
+void ShrinkDebugFile()
+{
+    // Scroll debug.log if it's getting too big
+    static boost::filesystem::path pathLog = GetDataDir() / "debug.log";
+    const bool debugLogFileExists = boost::filesystem::exists(pathLog);
+    const bool debugLogExceedsCompactSize = debugLogFileExists && boost::filesystem::file_size(pathLog) > 10 * 1000000;
+    if(debugLogExceedsCompactSize)
+    {
+        FILE* file = fopen(pathLog.string().c_str(), "r");
+        if (file) {
+            // Restart the file with some of the end
+            std::vector<char> vch(200000, 0);
+            fseek(file, -((long)vch.size()), SEEK_END);
+            int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
+            fclose(file);
+
+            file = fopen(pathLog.string().c_str(), "w");
+            if (file) {
+                fwrite(begin_ptr(vch), 1, nBytes, file);
+                fclose(file);
+            }
+        } else if (file != NULL)
+            fclose(file);
+    }
+}
+
 } // anonymous namespace
 
 bool LogAcceptCategory(const char* category)
@@ -112,6 +149,7 @@ bool LogAcceptCategory(const char* category)
 
 int LogPrintStr(const std::string& str)
 {
+    static int64_t timeOfLastFileShrinkCheck = GetTime();
     int ret = 0; // Returns total number of characters written
     //ret = fwrite(str.data(), 1, str.size(), stdout);
     //fflush(stdout);
@@ -140,38 +178,21 @@ int LogPrintStr(const std::string& str)
         }
 
         // Debug print useful for profiling
+        const int64_t timeOfCurrentWrite = GetTime();
         if (fLogTimestamps && fStartedNewLine)
-            ret += fprintf(fileout, "%s ", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());
-        if (!str.empty() && str[str.size() - 1] == '\n')
-            fStartedNewLine = true;
-        else
-            fStartedNewLine = false;
+            ret += fprintf(fileout, "%s ", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", timeOfCurrentWrite).c_str());
+        fStartedNewLine = (!str.empty() && str[str.size() - 1] == '\n')? true: false;
 
         ret = fwrite(str.data(), 1, str.size(), fileout);
+        if((timeOfCurrentWrite - timeOfLastFileShrinkCheck) > 5*60 && shrinkDebugLog)
+        {
+            timeOfLastFileShrinkCheck = timeOfCurrentWrite;
+            fflush(fileout);
+            ShrinkDebugFile();
+        }
     }
 
     return ret;
-}
-
-void ShrinkDebugFile()
-{
-    // Scroll debug.log if it's getting too big
-    boost::filesystem::path pathLog = GetDataDir() / "debug.log";
-    FILE* file = fopen(pathLog.string().c_str(), "r");
-    if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000) {
-        // Restart the file with some of the end
-        std::vector<char> vch(200000, 0);
-        fseek(file, -((long)vch.size()), SEEK_END);
-        int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
-        fclose(file);
-
-        file = fopen(pathLog.string().c_str(), "w");
-        if (file) {
-            fwrite(begin_ptr(vch), 1, nBytes, file);
-            fclose(file);
-        }
-    } else if (file != NULL)
-        fclose(file);
 }
 
 void SetLoggingAndDebugSettings()
@@ -180,14 +201,9 @@ void SetLoggingAndDebugSettings()
     fLogTimestamps = settings.GetBoolArg("-logtimestamps", true);
     fLogIPs = settings.GetBoolArg("-logips", false);
 
-    const std::vector<std::string>& categories = settings.GetMultiParameter("-debug");
-    fDebug = !categories.empty();
-    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-    if (settings.GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
-        fDebug = false;
-
-    if (settings.GetBoolArg("-shrinkdebugfile", !fDebug))
-        ShrinkDebugFile();
+    fDebug = settings.debugModeIsEnabled();
+    shrinkDebugLog = settings.GetBoolArg("-shrinkdebugfile", !fDebug);
+    if (shrinkDebugLog) ShrinkDebugFile();
 
     if(fPrintToConsole)
     {
@@ -198,4 +214,8 @@ void SetLoggingAndDebugSettings()
 bool ShouldLogPeerIPs()
 {
     return fLogIPs;
+}
+bool ShouldLogTimestamps()
+{
+    return fLogTimestamps;
 }

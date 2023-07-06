@@ -30,12 +30,13 @@ class CAddrMan;
 class CAlert;
 class CBlockIndex;
 class CNode;
-class CWallet;
 class CInv;
 class CDataStream;
 class uint256;
 class CNodeStats;
 class CNodeStateStats;
+class CCriticalSection;
+class Settings;
 
 namespace boost
 {
@@ -44,19 +45,17 @@ class thread_group;
 
 bool CheckNodeIsAcceptingConnections(CAddress addrToConnectTo);
 bool OpenNetworkConnection(const CAddress& addrConnect, const char* strDest = NULL, bool fOneShot = false);
-void StartNode(boost::thread_group& threadGroup,const bool& reindexFlag, CWallet* pwalletMain);
+bool addNode(const std::string& strNode, const std::string& strCommand);
+std::vector<std::string> getAddedNodeList();
+
+void StartNode(const Settings& settings, CCriticalSection& mainCriticalSection, boost::thread_group& threadGroup);
 bool StopNode();
 void CleanupP2PConnections();
 
 CAddrMan& GetNetworkAddressManager();
-CNodeSignals& GetNodeSignals();
-void RegisterNodeSignals(CNodeSignals& nodeSignals);
-void UnregisterNodeSignals(CNodeSignals& nodeSignals);
-
 bool PeersLocalAddressIsGood(CNode* pnode);
 void AdvertizeLocal(CNode* pnode);
 
-const bool& IsListening();
 int GetMaxConnections();
 const I_PeerSyncQueryService& GetPeerSyncQueryService();
 const I_PeerBlockNotifyService& GetPeerBlockNotifyService();
@@ -104,4 +103,5 @@ bool AlertsAreEnabled();
 bool SetNumberOfFileDescriptors(UIMessenger& uiMessenger, int& nFD);
 void SetNetworkingParameters();
 bool InitializeP2PNetwork(UIMessenger& uiMessenger);
+void FinalizeP2PNetwork();
 #endif // BITCOIN_NET_H

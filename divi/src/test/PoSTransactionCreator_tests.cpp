@@ -38,7 +38,7 @@ class PoSTransactionCreatorTestFixture
 protected:
 
   FakeBlockIndexWithHashes fakeChain;
-  FakeWallet wallet;
+  FakeWallet fakeWallet;
 
 private:
 
@@ -57,26 +57,28 @@ protected:
   /** A script from the wallet for convenience.  */
   const CScript walletScript;
 
-  /* Convenience variables for tests to use in calls to CreatePoS.  */
-  CMutableTransaction mtx;
-  unsigned txTime;
-
   /* Convenience variable for the wallet's AddDefaultTx.  */
   unsigned outputIndex;
 
   PoSTransactionCreatorTestFixture()
-    : fakeChain(1, 1600000000, 1),
-      wallet(fakeChain),
-      chainParams(Params(CBaseChainParams::REGTEST)),
-      posModule(chainParams, *fakeChain.activeChain, *fakeChain.blockIndexByHash),
-      txCreator(settings, chainParams, *fakeChain.activeChain, *fakeChain.blockIndexByHash,
-                blockSubsidyProvider, blockIncentivesPopulator,
-                posModule.proofOfStakeGenerator(), wallet, hashedBlockTimestamps),
-      walletScript(GetScriptForDestination(wallet.getNewKey().GetID()))
+    : fakeChain(1, 1600000000, 1)
+    , fakeWallet(fakeChain)
+    , chainParams(
+        Params(CBaseChainParams::REGTEST))
+    , posModule(chainParams, *fakeChain.activeChain, *fakeChain.blockIndexByHash)
+    , txCreator(
+        settings,
+        chainParams,
+        *fakeChain.activeChain,
+        *fakeChain.blockIndexByHash,
+        blockSubsidyProvider,
+        blockIncentivesPopulator,
+        posModule.proofOfStakeGenerator(),
+        hashedBlockTimestamps)
+    , walletScript(GetScriptForDestination(fakeWallet.getNewKey().GetID()))
   {
+    txCreator.setWallet(fakeWallet.getWallet());
     /* Set up a default block reward if we don't need anything else.  */
-    EXPECT_CALL(blockSubsidyProvider, GetFullBlockValue(_))
-        .WillRepeatedly(Return(11 * COIN));
     EXPECT_CALL(blockSubsidyProvider, GetBlockSubsidity(_))
         .WillRepeatedly(Return(CBlockRewards(10 * COIN, COIN, 0, 0, 0, 0)));
 
@@ -90,16 +92,13 @@ protected:
 
   /** Calls CreateProofOfStake on our PoSTransactionCreator with the
    *  fake wallet's chain tip and regtest difficulty.  */
-  bool CreatePoS(CMutableTransaction& txCoinStake, unsigned& nTxNewTime)
-  {
-    return txCreator.CreateProofOfStake(fakeChain.activeChain->Tip(), 0x207fffff, txCoinStake, nTxNewTime);
-  }
-
   bool CreatePoS()
   {
-    return CreatePoS(mtx, txTime);
+    CBlock block;
+    block.vtx.resize(2);
+    block.nBits = 0x207fffff;
+    return txCreator.attachBlockProof(fakeChain.activeChain->Tip(), block);
   }
-
 };
 
 BOOST_FIXTURE_TEST_SUITE(PoSTransactionCreator_tests, PoSTransactionCreatorTestFixture)
@@ -111,12 +110,12 @@ BOOST_AUTO_TEST_CASE(failsWithoutCoinsInWallet)
 
 BOOST_AUTO_TEST_CASE(checksForConfirmationsAndAge)
 {
-  const auto& tx = wallet.AddDefaultTx(walletScript, outputIndex, 1000 * COIN);
-  wallet.FakeAddToChain(tx);
+  const auto& tx = fakeWallet.AddDefaultTx(walletScript, outputIndex, 1000 * COIN);
+  fakeWallet.FakeAddToChain(tx);
 
   BOOST_CHECK(!CreatePoS());
 
-  wallet.AddConfirmations(20, 1000);
+  fakeWallet.AddConfirmations(20, 1000);
   BOOST_CHECK(CreatePoS());
 }
 

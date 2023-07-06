@@ -142,13 +142,18 @@ bool VaultManager::isManagedUTXO(const CWalletTx& walletTransaction,const CTxOut
     return output.nValue >0 && isAllowedByDepositDescription && isManagedScript(output.scriptPubKey);
 }
 
-void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit)
-{
-    addTransaction(tx, pblock, deposit,CScript());
-}
-void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy)
+void VaultManager::syncTransactions(const TransactionVector &txs, const CBlock *pblock)
 {
     LOCK(cs_vaultManager_);
+    for(const CTransaction& tx: txs)
+    {
+        addSingleTransaction(tx,pblock,false, CScript());
+    }
+}
+
+void VaultManager::addSingleTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy)
+{
+    AssertLockHeld(cs_vaultManager_);
     const bool blockIsNull = pblock==nullptr;
     const bool txIsWhiteListed = transactionIsWhitelisted(tx);
     const bool checkOutputs = txIsWhiteListed? false: (deposit || tx.IsCoinStake());
@@ -177,6 +182,12 @@ void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, 
             vaultManagerDB_.WriteTx(*walletTxAndRecordStatus.first);
         }
     }
+}
+
+void VaultManager::addTransaction(const CTransaction& tx, const CBlock *pblock, bool deposit,const CScript& scriptToFilterBy)
+{
+    LOCK(cs_vaultManager_);
+    addSingleTransaction(tx,pblock,deposit,scriptToFilterBy);
 }
 
 void VaultManager::addManagedScript(const CScript& script)
@@ -212,7 +223,7 @@ UnspentOutputs VaultManager::getManagedUTXOs(VaultUTXOFilters filter) const
     LOCK(cs_vaultManager_);
     UnspentOutputs outputs;
     auto managedScriptsLimitsCopy = managedScripts_;
-    for(const auto& hashAndTransaction: walletTxRecord_->mapWallet)
+    for(const auto& hashAndTransaction: walletTxRecord_->GetWalletTransactions())
     {
         uint256 hash = hashAndTransaction.first;
         const CWalletTx& tx = hashAndTransaction.second;
@@ -231,7 +242,7 @@ UnspentOutputs VaultManager::getManagedUTXOs(VaultUTXOFilters filter) const
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
             const CTxOut& output = tx.vout[outputIndex];
-            if(isManagedUTXO(tx,output) && !outputTracker_->IsSpent(hash,outputIndex))
+            if(isManagedUTXO(tx,output) && !outputTracker_->IsSpent(hash,outputIndex,0))
             {
                 outputs.emplace_back(&tx, outputIndex,depth,true);
             }
@@ -256,4 +267,10 @@ const CWalletTx& VaultManager::getTransaction(const uint256& hash) const
 const ManagedScripts& VaultManager::getManagedScriptLimits() const
 {
     return managedScripts_;
+}
+
+bool VaultManager::Sync()
+{
+    // Force database sync
+    return vaultManagerDB_.Sync(true);
 }

@@ -29,17 +29,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread/exceptions.hpp>
 
-#include <Logging.h>
-#include <DataDirectory.h>
-#include <ThreadManagementHelpers.h>
-//DIVI only features
-
 class Settings;
-
-extern int nLiquidityProvider;
-extern int64_t enforceMasternodePaymentsTime;
-extern int keysLoaded;
-extern bool fSucessfullyLoaded;
 
 void SetupEnvironment();
 void FileCommit(FILE* fileout);

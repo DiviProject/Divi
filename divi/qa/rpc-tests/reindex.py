@@ -4,10 +4,9 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #
-# Test -reindex with CheckBlockIndex
+# Test -reindex with VerifyBlockIndexTree
 #
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 import os.path
 
@@ -23,7 +22,7 @@ class ReindexTest(BitcoinTestFramework):
         self.nodes.append(start_node(0, self.options.tmpdir))
 
     def run_test(self):
-        self.nodes[0].setgenerate(True, 3)
+        self.nodes[0].setgenerate( 3)
         stop_node(self.nodes[0], 0)
         wait_bitcoinds()
         self.nodes[0]=start_node(0, self.options.tmpdir, ["-debug", "-reindex", "-checkblockindex=1"])

@@ -1,6 +1,7 @@
 #include "WalletBackupCreator.h"
 #include <utiltime.h>
 #include <util.h>
+#include <Logging.h>
 #include <boost/foreach.hpp>
 #include <iostream>
 #include <ui_interface.h>

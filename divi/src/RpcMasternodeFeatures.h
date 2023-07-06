@@ -59,6 +59,6 @@ MasternodeStartResult RelayMasternodeBroadcast(const std::string& hexData, const
 bool SignMasternodeBroadcast(const CKeyStore& keystore, std::string& hexData);
 MasternodeStartResult StartMasternode(const CKeyStore& keyStore, const StoredMasternodeBroadcasts& stored, std::string alias, bool deferRelay);
 ActiveMasternodeStatus GetActiveMasternodeStatus();
-std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter, CBlockIndex* chainTip);
+std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter, const CBlockIndex* chainTip);
 MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip);
 #endif// RPC_MASTERNODE_FEATURES_H

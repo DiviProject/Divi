@@ -8,18 +8,15 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include <I_PoSTransactionCreator.h>
+#include <I_BlockProofProver.h>
+#include <NonDeletionDeleter.h>
 
-class CWallet;
 class CBlock;
 class CMutableTransaction;
-class CKeyStore;
 class CTransaction;
 class CChainParams;
-class I_SuperblockSubsidyContainer;
 class I_BlockIncentivesPopulator;
 class CChain;
-class I_PoSStakeModifierService;
 class I_ProofOfStakeGenerator;
 class I_BlockSubsidyProvider;
 class BlockMap;
@@ -28,7 +25,7 @@ struct StakableCoin;
 class Settings;
 class I_StakingWallet;
 
-class PoSTransactionCreator: public I_PoSTransactionCreator
+class PoSTransactionCreator: public I_BlockProofProver
 {
 private:
     const Settings& settings_;
@@ -38,46 +35,46 @@ private:
     const I_BlockSubsidyProvider& blockSubsidies_;
     const I_BlockIncentivesPopulator& incentives_;
     const I_ProofOfStakeGenerator& proofGenerator_;
-    std::unique_ptr<StakedCoins> stakedCoins_;
-    I_StakingWallet& wallet_;
+    mutable std::unique_ptr<StakedCoins> stakedCoins_;
+    std::unique_ptr<I_StakingWallet,NonDeletionDeleter<I_StakingWallet>> wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
-    int64_t hashproofTimestampMinimumValue_;
+    mutable int64_t hashproofTimestampMinimumValue_;
 
     void CombineUtxos(
         const CAmount& stakeSplit,
         CMutableTransaction& txNew,
         CAmount& nCredit,
-        std::vector<const CTransaction*>& walletTransactions);
+        std::vector<const CTransaction*>& walletTransactions) const;
 
     bool SetSuportedStakingScript(
         const StakableCoin& stakableCoin,
-        CMutableTransaction& txNew);
+        CMutableTransaction& txNew) const;
 
-    bool SelectCoins();
+    bool SelectCoins() const;
 
     bool FindHashproof(
         const CBlockIndex* chainTip,
         unsigned int nBits,
         unsigned int& nTxNewTime,
         const StakableCoin& stakeData,
-        CMutableTransaction& txNew);
+        CMutableTransaction& txNew) const;
 
     const StakableCoin* FindProofOfStake(
         const CBlockIndex* chainTip,
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime,
-        bool& isVaultScript);
+        bool& isVaultScript) const;
 
     void AppendBlockRewardPayoutsToTransaction(
         const CBlockIndex* chainTip,
-        CMutableTransaction& txCoinStake);
+        CMutableTransaction& txCoinStake) const;
     void SplitOrCombineUTXOS(
         const CAmount stakeSplit,
         const CBlockIndex* chainTip,
         CMutableTransaction& txCoinStake,
         const StakableCoin& stakeData,
-        std::vector<const CTransaction*>& vwtxPrev);
+        std::vector<const CTransaction*>& vwtxPrev) const;
 public:
     PoSTransactionCreator(
         const Settings& settings,
@@ -87,13 +84,12 @@ public:
         const I_BlockSubsidyProvider& blockSubsidies,
         const I_BlockIncentivesPopulator& incentives,
         const I_ProofOfStakeGenerator& proofGenerator,
-        I_StakingWallet& wallet,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     ~PoSTransactionCreator();
-    virtual bool CreateProofOfStake(
+
+    void setWallet(I_StakingWallet& wallet);
+    bool attachBlockProof(
         const CBlockIndex* chainTip,
-        uint32_t blockBits,
-        CMutableTransaction& txCoinStake,
-        unsigned int& nTxNewTime);
+        CBlock& block) const override;
 };
 #endif // COINSTAKE_CREATOR_H

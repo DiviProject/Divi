@@ -7,6 +7,7 @@
 #include <LegacyBlockSubsidies.h>
 #include <SuperblockHeightValidator.h>
 #include <BlockSubsidyProvider.h>
+#include <spork.h>
 
 #include <boost/test/unit_test.hpp>
 
@@ -88,6 +89,7 @@ BOOST_AUTO_TEST_SUITE_END()
 class SuperblockSubsidyProviderTestFixture
 {
 public:
+    const CSporkManager& sporkManager_;
     std::shared_ptr<MockSuperblockHeightValidator> heightValidator_;
     std::shared_ptr<MockBlockSubsidyProvider> blockSubsidyProvider_;
 
@@ -125,7 +127,8 @@ public:
     }
 
     SuperblockSubsidyProviderTestFixture(
-        ): heightValidator_( new NiceMock<MockSuperblockHeightValidator>)
+        ): sporkManager_(GetSporkManager())
+        , heightValidator_( new NiceMock<MockSuperblockHeightValidator>)
         , blockSubsidyProvider_( new NiceMock<MockBlockSubsidyProvider> )
     {
     }
@@ -227,7 +230,7 @@ public:
                 Return(false)
             );
         setChainParameters(chainParams);
-        auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams,*heightValidator_);
+        auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams, sporkManager_, *heightValidator_);
         for(int blockHeight = 0; blockHeight < chainParams.GetTreasuryPaymentsCycle()*10; blockHeight++)
         {
             BOOST_CHECK_MESSAGE(
@@ -240,13 +243,13 @@ public:
     {
         int transitionHeight =  SuperblockHeightValidator(chainParams).getTransitionHeight();
         auto concreteHeightValidator = std::make_shared<SuperblockHeightValidator>(chainParams);
-        auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams,*concreteHeightValidator);
+        auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams, sporkManager_, *concreteHeightValidator);
 
         for(int blockHeight =0; blockHeight < transitionHeight; blockHeight++)
         {
             if( concreteHeightValidator->IsValidTreasuryBlockHeight(blockHeight) )
             {
-                CAmount expectedTreasuryReward = Legacy::GetTreasuryReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
+                CAmount expectedTreasuryReward = Legacy::GetTreasuryReward(Legacy::GetBlockSubsidity(blockHeight, chainParams, sporkManager_),chainParams);
                 CAmount actualTreasuryReward = concreteBlockSubsidyProvider->GetBlockSubsidity(blockHeight).nTreasuryReward;
 
                 BOOST_CHECK_MESSAGE(actualTreasuryReward == expectedTreasuryReward,
@@ -254,7 +257,7 @@ public:
                     << "! " << actualTreasuryReward << " vs. " << expectedTreasuryReward);
                 if(actualTreasuryReward != expectedTreasuryReward) break;
 
-                CAmount expectedCharityReward = Legacy::GetCharityReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
+                CAmount expectedCharityReward = Legacy::GetCharityReward(Legacy::GetBlockSubsidity(blockHeight, chainParams, sporkManager_),chainParams);
                 CAmount actualCharityReward = concreteBlockSubsidyProvider->GetBlockSubsidity(blockHeight).nCharityReward;
 
                 BOOST_CHECK_MESSAGE(actualCharityReward == expectedCharityReward,
@@ -264,7 +267,7 @@ public:
             }
             if( concreteHeightValidator->IsValidLotteryBlockHeight(blockHeight) )
             {
-                CAmount expectedLotteryReward = Legacy::GetLotteryReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
+                CAmount expectedLotteryReward = Legacy::GetLotteryReward(Legacy::GetBlockSubsidity(blockHeight, chainParams, sporkManager_),chainParams);
                 CAmount actualLotteryReward = concreteBlockSubsidyProvider->GetBlockSubsidity(blockHeight).nLotteryReward;
 
                 BOOST_CHECK_MESSAGE(actualLotteryReward == expectedLotteryReward,
@@ -328,8 +331,8 @@ public:
         int superblockAfterHalving = subsidyHalvingHeight - (subsidyHalvingHeight % superblockCycleLength) + superblockCycleLength;
         int superblockBeforeHalving = superblockAfterHalving - superblockCycleLength;
 
-        CBlockRewards firstBlockRewards = Legacy::GetBlockSubsidity(superblockBeforeHalving,chainParams);
-        CBlockRewards secondBlockRewards = Legacy::GetBlockSubsidity(superblockAfterHalving,chainParams);
+        CBlockRewards firstBlockRewards = Legacy::GetBlockSubsidity(superblockBeforeHalving, chainParams, sporkManager_);
+        CBlockRewards secondBlockRewards = Legacy::GetBlockSubsidity(superblockAfterHalving, chainParams, sporkManager_);
 
         if(superblockIsTreasuryBlock)
         {
@@ -378,7 +381,7 @@ public:
         CAmount expectedReward = (superblockAfterHalving-subsidyHalvingHeight)* getReward(secondBlockRewards) +
             (subsidyHalvingHeight-superblockBeforeHalving)* getReward(firstBlockRewards);
 
-        auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams,*heightValidator_);
+        auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams, sporkManager_, *heightValidator_);
         CAmount actualReward = getReward(concreteBlockSubsidyProvider->GetBlockSubsidity(superblockAfterHalving));
         BOOST_CHECK_MESSAGE(
             expectedReward == actualReward,

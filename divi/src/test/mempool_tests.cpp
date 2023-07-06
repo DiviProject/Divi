@@ -4,6 +4,7 @@
 
 #include "txmempool.h"
 
+#include <chain.h>
 #include "FakeBlockIndexChain.h"
 
 #include <boost/test/unit_test.hpp>
@@ -12,10 +13,6 @@
 class MempoolTestFixture
 {
 protected:
-
-  /* The test mempool will use these flags instead of the global ones.  */
-  bool addressIndex = false;
-  bool spentIndex = false;
 
   /** A parent transaction.  */
   CMutableTransaction txParent;
@@ -42,9 +39,10 @@ public:
 
   MempoolTestFixture()
     : fakeChain(1, 1500000000, 1),
-      testPool(CFeeRate(0), addressIndex, spentIndex),
-      coinsMemPool(nullptr, testPool), coins(&coinsMemPool)
+      testPool(),
+      coinsMemPool(testPool), coins(&coinsMemPool)
   {
+    testPool.setSanityCheck(true);
     CMutableTransaction mtx;
     mtx.vout.emplace_back(2 * COIN, CScript () << OP_TRUE);
     mtx.vout.emplace_back(COIN, CScript () << OP_TRUE);
@@ -89,18 +87,17 @@ public:
         txGrandChild[i].vout[0].nValue = COIN;
     }
 
-    testPool.setSanityCheck(true);
     testPool.clear();
   }
 
   /** Adds the parent, childs and grandchilds to the mempool.  */
   void AddAll()
   {
-      testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1), coins);
+      testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1));
       for (int i = 0; i < 3; i++)
       {
-          testPool.addUnchecked(txChild[i].GetHash(), CTxMemPoolEntry(txChild[i], 0, 0, 0.0, 1), coins);
-          testPool.addUnchecked(txGrandChild[i].GetHash(), CTxMemPoolEntry(txGrandChild[i], 0, 0, 0.0, 1), coins);
+          testPool.addUnchecked(txChild[i].GetHash(), CTxMemPoolEntry(txChild[i], 0, 0, 0.0, 1));
+          testPool.addUnchecked(txGrandChild[i].GetHash(), CTxMemPoolEntry(txGrandChild[i], 0, 0, 0.0, 1));
       }
   }
 
@@ -119,7 +116,7 @@ BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
     BOOST_CHECK_EQUAL(removed.size(), 0);
 
     // Just the parent:
-    testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1), coins);
+    testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1));
     testPool.remove(txParent, removed, true);
     BOOST_CHECK_EQUAL(removed.size(), 1);
     removed.clear();
@@ -147,8 +144,8 @@ BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
     // Add children and grandchildren, but NOT the parent (simulate the parent being in a block)
     for (int i = 0; i < 3; i++)
     {
-        testPool.addUnchecked(txChild[i].GetHash(), CTxMemPoolEntry(txChild[i], 0, 0, 0.0, 1), coins);
-        testPool.addUnchecked(txGrandChild[i].GetHash(), CTxMemPoolEntry(txGrandChild[i], 0, 0, 0.0, 1), coins);
+        testPool.addUnchecked(txChild[i].GetHash(), CTxMemPoolEntry(txChild[i], 0, 0, 0.0, 1));
+        testPool.addUnchecked(txGrandChild[i].GetHash(), CTxMemPoolEntry(txGrandChild[i], 0, 0, 0.0, 1));
     }
     // Now remove the parent, as might happen if a block-re-org occurs but the parent cannot be
     // put into the mempool (maybe because it is non-standard):
@@ -221,29 +218,6 @@ BOOST_AUTO_TEST_CASE(MempoolExists)
     testPool.remove(txParent, removed, true);
     BOOST_CHECK(!testPool.exists(txParent.GetHash()));
     BOOST_CHECK(!testPool.existsBareTxid(txParent.GetBareTxid()));
-}
-
-BOOST_AUTO_TEST_CASE(MempoolSpentIndex)
-{
-    spentIndex = true;
-
-    testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1), coins);
-    testPool.addUnchecked(txChild[0].GetHash(), CTxMemPoolEntry(txChild[0], 0, 0, 0.0, 1), coins);
-
-    const CSpentIndexKey keyParent(txParent.GetHash(), 0);
-    const CSpentIndexKey keyChild(txChild[0].GetHash(), 0);
-
-    CSpentIndexValue value;
-    BOOST_CHECK(testPool.getSpentIndex(keyParent, value));
-    BOOST_CHECK(value.txid == txChild[0].GetHash());
-    BOOST_CHECK_EQUAL(value.inputIndex, 0);
-    BOOST_CHECK(!testPool.getSpentIndex(keyChild, value));
-
-    std::list<CTransaction> removed;
-    testPool.remove(txChild[0], removed, true);
-
-    BOOST_CHECK(!testPool.getSpentIndex(keyParent, value));
-    BOOST_CHECK(!testPool.getSpentIndex(keyChild, value));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

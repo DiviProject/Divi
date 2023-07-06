@@ -8,6 +8,7 @@
 
 #include <script/script_error.h>
 #include <script/script.h>
+#include <amount.h>
 
 class CTransaction;
 class CCoins;
@@ -20,16 +21,16 @@ class CScriptCheck
 {
 private:
     CScript scriptPubKey;
+    CAmount amountHeld;
     const CTransaction* ptxTo;
     unsigned int nIn;
     unsigned int nFlags;
-    bool cacheStore;
     ScriptError error;
 
 public:
     CScriptCheck();
 
-    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, bool cacheIn);
+    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn);
 
 
     bool operator()();

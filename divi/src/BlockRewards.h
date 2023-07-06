@@ -8,8 +8,8 @@ struct CBlockRewards {
         CAmount nStakeReward,
         CAmount nMasternodeReward,
         CAmount nTreasuryReward,
-        CAmount nCharityReward, 
-        CAmount nLotteryReward, 
+        CAmount nCharityReward,
+        CAmount nLotteryReward,
         CAmount nProposalsReward);
 
     std::string ToString() const;

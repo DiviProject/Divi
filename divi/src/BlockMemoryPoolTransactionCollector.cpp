@@ -13,8 +13,7 @@
 #include <UtxoCheckingAndUpdating.h>
 
 #include <Settings.h>
-
-bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+#include <TransactionFinalityHelpers.h>
 
 static unsigned int GetMaxBlockSize(const Settings& settings,unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
 {
@@ -89,7 +88,7 @@ public:
 
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     const Settings& settings,
-    CCoinsViewCache* baseCoinsViewCache,
+    const CCoinsViewCache& baseCoinsViewCache,
     const CChain& activeChain,
     const BlockMap& blockIndexMap,
     CTxMemPool& mempool,
@@ -193,13 +192,13 @@ void BlockMemoryPoolTransactionCollector::AddTransactionToBlock(
 std::vector<TxPriority> BlockMemoryPoolTransactionCollector::ComputeMempoolTransactionPriorities(
     const int& nHeight,
     DependingTransactionsMap& dependentTransactions,
-    CCoinsViewCache& view) const
+    const CCoinsViewCache& view) const
 {
     std::vector<TxPriority> vecPriority;
     vecPriority.reserve(mempool_.mapTx.size());
     for (auto mi = mempool_.mapTx.begin(); mi != mempool_.mapTx.end(); ++mi) {
         const CTransaction& tx = mi->second.GetTx();
-        if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, activeChain_, nHeight)){
+        if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(mainCS_,tx, activeChain_, nHeight)){
             continue;
         }
 
@@ -323,7 +322,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         // policy here, but we still have to ensure that the block we
         // create only contains transactions that are valid in new blocks.
         CValidationState state;
-        if (!CheckInputs(tx, state, view, blockIndexMap_, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true)) {
+        if (!CheckInputs(tx, state, view, blockIndexMap_, true, MANDATORY_SCRIPT_VERIFY_FLAGS)) {
             continue;
         }
 
@@ -332,13 +331,13 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         currentBlockSigOps += transactionSigOpCount;
 
         CTxUndo txundo;
-        UpdateCoinsWithTransaction(tx, view, txundo, nHeight);
+        view.UpdateWithConfirmedTransaction(tx,nHeight,txundo);
 
         // Add transactions that depend on this one to the priority queue
         AddDependingTransactionsToPriorityQueue(dependentTransactions, hash, vecPriority, comparer);
     }
 
-    LogPrintf("%s: total size %u\n",__func__, currentBlockSize);
+    LogPrint("minting","%s: total size %u\n",__func__, currentBlockSize);
     return prioritizedTransactions;
 }
 
@@ -364,6 +363,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible(
         const CTransaction& tx = *txData.tx;
         AddTransactionToBlock(tx, txData.fee, block);
     }
+    if(block.IsProofOfWork()) block.vtx[0] = CMutableTransaction(block.vtx[0]);
 }
 
 bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock(
@@ -373,11 +373,12 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock(
     if(pblocktemplate.previousBlockIndex != activeChain_.Tip()) return false;
 
     CBlock& block = pblocktemplate.block;
+    if(block.vtx.size() < 1) return false; // Block reward transaction must be set first
     const int nHeight = pblocktemplate.previousBlockIndex->nHeight + 1;
-    CCoinsViewCache view(baseCoinsViewCache_);
+    CCoinsViewCache view(&baseCoinsViewCache_);
 
     AddTransactionsToBlockIfPossible(nHeight, view, block);
 
-    LogPrintf("%s: block tostring %s\n",__func__, block);
+    LogPrint("minting","%s: block tostring %s\n",__func__, block);
     return true;
 }

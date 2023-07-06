@@ -2,7 +2,7 @@
 name: "divi-win-3.0"
 enable_cache: true
 suites:
-- "trusty"
+- "bionic"
 architectures:
 - "amd64"
 packages:
@@ -45,6 +45,7 @@ script: |
     export BASE_CACHE=${GBUILD_PACKAGE_CACHE}
     mkdir -p ${BASE_CACHE} ${SOURCES_PATH}
   fi
+  #update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
 
   function create_global_faketime_wrappers {
   for prog in ${FAKETIME_PROGS}; do

@@ -4,11 +4,13 @@
 
 #include "timedata.h"
 
+#include <Logging.h>
 #include "netbase.h"
 #include "sync.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include <Warnings.h>
 
 #include <boost/foreach.hpp>
 
@@ -92,16 +94,11 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
                 if (!fMatch) {
                     fDone = true;
                     string strMessage = translate("Warning: Please check that your computer's date and time are correct! If your clock is wrong DIVI Core will not work properly.");
-                    strMiscWarning = strMessage;
+                    Warnings::setMiscWarning(strMessage);
                     LogPrintf("*** %s\n", strMessage);
                     uiInterface.ThreadSafeMessageBox(strMessage, "", CClientUIInterface::MSG_WARNING);
                 }
             }
-        }
-        if (fDebug) {
-            BOOST_FOREACH (int64_t n, vSorted)
-                LogPrintf("%+d  ", n);
-            LogPrintf("|  ");
         }
         LogPrintf("nTimeOffset = %+d  (%+d minutes)\n", nTimeOffset, nTimeOffset / 60);
     }

@@ -1,19 +1,17 @@
 #include <TransactionSearchIndexes.h>
 
 #include <txdb.h>
-#include <txmempool.h>
 #include <Logging.h>
 
 bool TransactionSearchIndexes::GetAddressIndex(
-    bool addresIndexEnabled,
-    CBlockTreeDB* pblocktree,
+    const CBlockTreeDB* pblocktree,
     uint160 addressHash,
     int type,
     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
     int start,
     int end)
 {
-    if (!addresIndexEnabled)
+    if (!pblocktree->GetAddressIndexing())
         return error("address index not enabled");
 
     if (!pblocktree->ReadAddressIndex(addressHash, type, addressIndex, start, end))
@@ -23,13 +21,12 @@ bool TransactionSearchIndexes::GetAddressIndex(
 }
 
 bool TransactionSearchIndexes::GetAddressUnspent(
-    bool addresIndexEnabled,
-    CBlockTreeDB* pblocktree,
+    const CBlockTreeDB* pblocktree,
     uint160 addressHash,
     int type,
     std::vector<std::pair<CAddressUnspentKey,CAddressUnspentValue> > &unspentOutputs)
 {
-    if (!addresIndexEnabled)
+    if (!pblocktree->GetAddressIndexing())
         return error("address index not enabled");
 
     if (!pblocktree->ReadAddressUnspentIndex(addressHash, type, unspentOutputs))
@@ -39,17 +36,12 @@ bool TransactionSearchIndexes::GetAddressUnspent(
 }
 
 bool TransactionSearchIndexes::GetSpentIndex(
-    bool spentIndexEnabled,
-    CBlockTreeDB* pblocktree,
-    CTxMemPool& mempool,
+    const CBlockTreeDB* pblocktree,
     const CSpentIndexKey &key,
     CSpentIndexValue &value)
 {
-    if (!spentIndexEnabled)
+    if (!pblocktree->GetSpentIndexing())
         return false;
-
-    if (mempool.getSpentIndex(key, value))
-        return true;
 
     if (!pblocktree->ReadSpentIndex(key, value))
         return false;

@@ -11,6 +11,13 @@
 #include <set>
 class CWallet;
 class CBlockIndex;
+class CTxMemPool;
+class I_MerkleTxConfirmationNumberCalculator;
+class CChainParams;
+class CChain;
+class BlockMap;
+class I_BlockSubmitter;
+class I_ChainExtensionService;
 
 namespace boost
 {
@@ -23,8 +30,25 @@ void Shutdown();
 
 void EnableMainSignals();
 void EnableUnitTestSignals();
+
+void InitializeMainBlockchainModules();
+void FinalizeMainBlockchainModules();
 bool InitializeDivi(boost::thread_group& threadGroup);
-int ScanForWalletTransactions(CWallet& walletToRescan, CBlockIndex* scanStartIndex, bool updateWallet = false);
-void InitializeWallet(std::string strWalletFile);
-void DeallocateWallet();
+
+/** Flush all state, indexes and buffers to disk. */
+void FlushStateToDisk();
+
+const I_ChainExtensionService& GetChainExtensionService();
+const I_BlockSubmitter& GetBlockSubmitter();
+
+bool VerifyChain(int nCheckLevel, int nCheckDepth, bool useCoinTip);
+CTxMemPool& GetTransactionMemoryPool();
+bool ManualBackupWallet(const std::string& strDest);
+CWallet* GetWallet();
+std::string GetWalletName();
+const I_MerkleTxConfirmationNumberCalculator& GetConfirmationsCalculator();
+bool LoadAndSelectWallet(const std::string& walletFilename, bool initializeBackendSettings);
+void ReloadActiveWallet();
+bool SwitchCoinMintingModuleToWallet(const std::string activeWalletName);
+bool HasRecentlyAttemptedToGenerateProofOfStake();
 #endif // BITCOIN_INIT_H

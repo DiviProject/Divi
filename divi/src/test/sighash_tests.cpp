@@ -3,16 +3,18 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "data/sighash.json.h"
-#include "main.h"
 #include "random.h"
 #include "serialize.h"
 #include "script/script.h"
 #include "script/interpreter.h"
 #include "version.h"
+#include <primitives/transaction.h>
+#include <BlockCheckingHelpers.h>
 
 #include <iostream>
 
 #include <boost/test/unit_test.hpp>
+#include <boost/foreach.hpp>
 #include "json/json_spirit_reader_template.h"
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"

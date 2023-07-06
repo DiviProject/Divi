@@ -240,7 +240,7 @@ bool CMasternodePayments::CheckMasternodeWinnerCandidate(CNode* pfrom, CMasterno
 
     if (!CheckMasternodeWinnerSignature(winner,mn.pubKeyMasternode)) {
         LogPrintf("%s : - invalid signature\n", __func__);
-        if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetNodeState(), 20);
+        if (masternodeSynchronization_.IsSynced()) Misbehaving(pfrom->GetNodeState(), 20,"Invalid signature for mnwinner.");
         // it could just be a non-synced masternode
         masternodeSynchronization_.AskForMN(pfrom, winner.vinMasternode);
         return false;
@@ -254,7 +254,7 @@ void CMasternodePayments::ProcessMasternodeWinners(CNode* pfrom, const std::stri
         CMasternodePaymentWinner winner;
         vRecv >> winner;
 
-        if(pfrom->nVersion < ActiveProtocol() || !CheckMasternodeWinnerCandidate(pfrom,winner))
+        if(pfrom->GetVersion() < ActiveProtocol() || !CheckMasternodeWinnerCandidate(pfrom,winner))
         {
             return;
         }
@@ -334,7 +334,7 @@ bool CMasternodePayments::IsScheduled(const CScript mnpayee, int nNotBlockHeight
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    CBlockIndex* tip = activeChain_.Tip();
+    const CBlockIndex* tip = activeChain_.Tip();
     if (tip == nullptr)
         return false;
 

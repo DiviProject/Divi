@@ -9,6 +9,8 @@
 
 #include <assert.h>
 #include <sstream>
+#include <TransactionLocationReference.h>
+#include <Logging.h>
 
 CCoins::CCoins(
     ) : fCoinBase(false)
@@ -190,13 +192,12 @@ bool CCoinsViewBacked::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock)
   return writeBase? writeBase->BatchWrite(mapCoins, hashBlock):false;
 }
 
-bool CCoinsViewBacked::GetStats(CCoinsStats& stats) const { return roBase? roBase->GetStats(stats):false; }
 
 CCoinsKeyHasher::CCoinsKeyHasher() : salt(GetRandHash()) {}
 
-CCoinsViewCache::CCoinsViewCache() : CCoinsViewBacked(), hasModifier(false), hashBlock(0) {}
-CCoinsViewCache::CCoinsViewCache(CCoinsView* baseIn) : CCoinsViewBacked(baseIn), hasModifier(false), hashBlock(0) {}
-CCoinsViewCache::CCoinsViewCache(const CCoinsView* baseIn) : CCoinsViewBacked(baseIn), hasModifier(false), hashBlock(0) {}
+CCoinsViewCache::CCoinsViewCache() : backed_(), hasModifier(false), hashBlock(0), cacheCoins() {}
+CCoinsViewCache::CCoinsViewCache(CCoinsView* baseIn) : backed_(baseIn), hasModifier(false), hashBlock(0), cacheCoins() {}
+CCoinsViewCache::CCoinsViewCache(const CCoinsView* baseIn) : backed_(baseIn), hasModifier(false), hashBlock(0), cacheCoins() {}
 
 CCoinsViewCache::~CCoinsViewCache()
 {
@@ -209,7 +210,7 @@ CCoinsMap::const_iterator CCoinsViewCache::FetchCoins(const uint256& txid) const
     if (it != cacheCoins.end())
         return it;
     CCoins tmp;
-    if (!CCoinsViewBacked::GetCoins(txid, tmp))
+    if (!backed_.GetCoins(txid, tmp))
         return cacheCoins.end();
     CCoinsMap::iterator ret = cacheCoins.insert(std::make_pair(txid, CCoinsCacheEntry())).first;
     tmp.swap(ret->second.coins);
@@ -236,7 +237,7 @@ CCoinsModifier CCoinsViewCache::ModifyCoins(const uint256& txid)
     assert(!hasModifier);
     std::pair<CCoinsMap::iterator, bool> ret = cacheCoins.insert(std::make_pair(txid, CCoinsCacheEntry()));
     if (ret.second) {
-        if (!CCoinsViewBacked::GetCoins(txid, ret.first->second.coins)) {
+        if (!backed_.GetCoins(txid, ret.first->second.coins)) {
             // The parent view does not have this entry; mark it as fresh.
             ret.first->second.coins.Clear();
             ret.first->second.flags = CCoinsCacheEntry::FRESH;
@@ -273,7 +274,7 @@ bool CCoinsViewCache::HaveCoins(const uint256& txid) const
 uint256 CCoinsViewCache::GetBestBlock() const
 {
     if (hashBlock == uint256(0))
-        hashBlock = CCoinsViewBacked::GetBestBlock();
+        hashBlock = backed_.GetBestBlock();
     return hashBlock;
 }
 
@@ -282,38 +283,37 @@ void CCoinsViewCache::SetBestBlock(const uint256& hashBlockIn)
     hashBlock = hashBlockIn;
 }
 
-bool CCoinsViewCache::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlockIn)
+bool CCoinsViewCache::BatchWrite(CCoinsMap& coinUpdates, const uint256& hashBlockIn)
 {
     assert(!hasModifier);
-    for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) {
-        if (it->second.flags & CCoinsCacheEntry::DIRTY) { // Ignore non-dirty entries (optimization).
-            CCoinsMap::iterator itUs = cacheCoins.find(it->first);
-            if (itUs == cacheCoins.end()) {
-                if (!it->second.coins.IsPruned()) {
-                    // The parent cache does not have an entry, while the child
-                    // cache does have (a non-pruned) one. Move the data up, and
-                    // mark it as fresh (if the grandparent did have it, we
-                    // would have pulled it in at first GetCoins).
-                    assert(it->second.flags & CCoinsCacheEntry::FRESH);
-                    CCoinsCacheEntry& entry = cacheCoins[it->first];
-                    entry.coins.swap(it->second.coins);
-                    entry.flags = CCoinsCacheEntry::DIRTY | CCoinsCacheEntry::FRESH;
+    for (CCoinsMap::iterator coinUpdate = coinUpdates.begin(); coinUpdate != coinUpdates.end(); coinUpdates.erase(coinUpdate++))
+    {
+        if (coinUpdate->second.flags & CCoinsCacheEntry::DIRTY)
+        { // Ignore non-dirty entries (optimization).
+            CCoinsMap::iterator matchingCachedCoin = cacheCoins.find(coinUpdate->first);
+            const bool coinUpdateIsPruned = coinUpdate->second.coins.IsPruned();
+            const bool matchingCoinExistInCache = matchingCachedCoin != cacheCoins.end();
+            if (!matchingCoinExistInCache && !coinUpdateIsPruned)
+            { // Add unknown entry to local cache with not-prunned coin from incoming updates
+                assert(coinUpdate->second.flags & CCoinsCacheEntry::FRESH);
+                CCoinsCacheEntry& entry = cacheCoins[coinUpdate->first];
+                entry.coins.swap(coinUpdate->second.coins);
+                entry.flags = CCoinsCacheEntry::DIRTY | CCoinsCacheEntry::FRESH;
+            }
+            else if(matchingCoinExistInCache)
+            {
+                if ((matchingCachedCoin->second.flags & CCoinsCacheEntry::FRESH) && coinUpdateIsPruned)
+                { // coinUpdate is a pruned coin, so remove the matching entry from the local cache
+                    cacheCoins.erase(matchingCachedCoin);
                 }
-            } else {
-                if ((itUs->second.flags & CCoinsCacheEntry::FRESH) && it->second.coins.IsPruned()) {
-                    // The grandparent does not have an entry, and the child is
-                    // modified and being pruned. This means we can just delete
-                    // it from the parent.
-                    cacheCoins.erase(itUs);
-                } else {
+                else
+                {
                     // A normal modification.
-                    itUs->second.coins.swap(it->second.coins);
-                    itUs->second.flags |= CCoinsCacheEntry::DIRTY;
+                    matchingCachedCoin->second.coins.swap(coinUpdate->second.coins);
+                    matchingCachedCoin->second.flags |= CCoinsCacheEntry::DIRTY;
                 }
             }
         }
-        CCoinsMap::iterator itOld = it++;
-        mapCoins.erase(itOld);
     }
     hashBlock = hashBlockIn;
     return true;
@@ -321,7 +321,7 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlockIn
 
 bool CCoinsViewCache::Flush()
 {
-    bool fOk = CCoinsViewBacked::BatchWrite(cacheCoins, hashBlock);
+    bool fOk = backed_.BatchWrite(cacheCoins, hashBlock);
     cacheCoins.clear();
     return fOk;
 }
@@ -378,6 +378,103 @@ double CCoinsViewCache::ComputeInputCoinAge(const CTransaction& tx, int nHeight)
         }
     }
     return dResult;
+}
+
+void CCoinsViewCache::UpdateWithConfirmedTransaction(const CTransaction& confirmedTx, const int blockHeight, CTxUndo& txundo)
+{
+    // mark inputs spent
+    if (!confirmedTx.IsCoinBase() ) {
+        txundo.vprevout.reserve(confirmedTx.vin.size());
+        BOOST_FOREACH (const CTxIn& txin, confirmedTx.vin) {
+            txundo.vprevout.push_back(CTxInUndo());
+            bool ret = ModifyCoins(txin.prevout.hash)->Spend(txin.prevout.n, txundo.vprevout.back());
+            assert(ret);
+        }
+    }
+
+    // add outputs
+    ModifyCoins(confirmedTx.GetHash())->FromTx(confirmedTx, blockHeight);
+}
+
+static bool RemoveTxOutputsFromCache(
+    const CTransaction& tx,
+    const TransactionLocationReference& txLocationReference,
+    CCoinsViewCache& view)
+{
+    bool outputsAvailable = true;
+    // Check that all outputs are available and match the outputs in the block itself
+    // exactly. Note that transactions with only provably unspendable outputs won't
+    // have outputs available even in the block itself, so we handle that case
+    // specially with outsEmpty.
+    CCoins outsEmpty;
+    CCoinsModifier outs = view.ModifyCoins(txLocationReference.hash);
+    outs->ClearUnspendable();
+
+    CCoins outsBlock(tx, txLocationReference.blockHeight);
+    // The CCoins serialization does not serialize negative numbers.
+    // No network rules currently depend on the version here, so an inconsistency is harmless
+    // but it must be corrected before txout nversion ever influences a network rule.
+    if (outsBlock.nVersion < 0)
+        outs->nVersion = outsBlock.nVersion;
+    if (*outs != outsBlock)
+        outputsAvailable = error("DisconnectBlock() : added transaction mismatch? database corrupted");
+
+    // remove outputs
+    outs->Clear();
+    return outputsAvailable;
+}
+
+static void UpdateCoinsForRestoredInputs(
+    const COutPoint& out,
+    const CTxInUndo& undo,
+    CCoinsModifier& coins,
+    bool& fClean)
+{
+    if (undo.nHeight != 0)
+    {
+        // undo data contains height: this is the last output of the prevout tx being spent
+        if (!coins->IsPruned())
+            fClean = fClean && error("DisconnectBlock() : undo data overwriting existing transaction");
+        coins->Clear();
+        coins->fCoinBase = undo.fCoinBase;
+        coins->nHeight = undo.nHeight;
+        coins->nVersion = undo.nVersion;
+    }
+    else
+    {
+        if (coins->IsPruned())
+            fClean = fClean && error("DisconnectBlock() : undo data adding output to missing transaction");
+    }
+
+    if (coins->IsAvailable(out.n))
+        fClean = fClean && error("DisconnectBlock() : undo data overwriting existing output");
+
+    if (coins->vout.size() < out.n + 1)
+        coins->vout.resize(out.n + 1);
+
+    coins->vout[out.n] = undo.txout;
+}
+
+TxReversalStatus CCoinsViewCache::UpdateWithReversedTransaction(const CTransaction& tx, const TransactionLocationReference& txLocationReference, const CTxUndo* txundo)
+{
+    bool fClean = true;
+    fClean = fClean && RemoveTxOutputsFromCache(tx, txLocationReference, *this);
+    if(tx.IsCoinBase()) return fClean? TxReversalStatus::OK : TxReversalStatus::CONTINUE_WITH_ERRORS;
+    assert(txundo != nullptr);
+    if (txundo->vprevout.size() != tx.vin.size())
+    {
+        error("%s : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d",__func__, txundo->vprevout.size(), tx.vin.size());
+        return fClean?TxReversalStatus::ABORT_NO_OTHER_ERRORS:TxReversalStatus::ABORT_WITH_OTHER_ERRORS;
+    }
+
+    for (unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
+    {
+        const COutPoint& out = tx.vin[txInputIndex].prevout;
+        const CTxInUndo& undo = txundo->vprevout[txInputIndex];
+        CCoinsModifier coins = ModifyCoins(out.hash);
+        UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
+    }
+    return fClean? TxReversalStatus::OK : TxReversalStatus::CONTINUE_WITH_ERRORS;
 }
 
 CCoinsModifier::CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_) : cache(cache_), it(it_)

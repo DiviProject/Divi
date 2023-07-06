@@ -10,8 +10,8 @@ import sys
 import tempfile
 import traceback
 
-from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
+from authproxy import JSONRPCException
 
 
 class BitcoinTestFramework(object):
@@ -88,12 +88,16 @@ class BitcoinTestFramework(object):
                           help="Leave bitcoinds and test.* datadir on exit or error")
         parser.add_option("--srcdir", dest="srcdir", default="../../src",
                           help="Source directory containing bitcoind/bitcoin-cli (default: %default%)")
+        parser.add_option("--prior_binaries", dest="prior_binaries", default="../../prior_binaries",
+                    help="Source directory containing bitcoind/bitcoin-cli (default: %default%)")
         parser.add_option("--tmpdir", dest="tmpdir", default="",
                           help="Root directory for datadirs")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
                           help="Print out all RPC calls as they are made")
         parser.add_option("--portseed", dest="port_seed", default=os.getpid(), type=int,
                           help="The seed to use for assigning port numbers (default: current process id)")
+        parser.add_option("--cli_timeout", dest="cli_timeout", default=60.0, type=float,
+                          help="The rpc timeout to use for making rpc calls to a node instance")
         self.add_options(parser)
         (self.options, self.args) = parser.parse_args()
 
@@ -109,9 +113,10 @@ class BitcoinTestFramework(object):
             logging.basicConfig(level=logging.DEBUG)
 
         import util
-        util.portseed = self.options.port_seed
+        util.set_port_seed(self.options.port_seed)
+        util.set_cli_timeout(self.options.cli_timeout)
 
-        os.environ['PATH'] = self.options.srcdir+":"+os.environ['PATH']
+        os.environ['PATH'] = self.options.prior_binaries+":"+self.options.srcdir+":"+os.environ['PATH']
 
         check_json_precision()
 

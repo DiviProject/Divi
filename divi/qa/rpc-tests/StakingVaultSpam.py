@@ -8,7 +8,7 @@
 #
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
+from authproxy import JSONRPCException
 from util import *
 import os
 import shutil
@@ -29,9 +29,9 @@ def createVaultPoSStacks(ownerNodes,vaultNode):
     all_nodes = ownerNodes[:]
     all_nodes.append(vaultNode)
 
-    owner_node.setgenerate(True, 40)
+    owner_node.setgenerate( 40)
     sync_blocks(all_nodes)
-    minting_node.setgenerate(True, 21)
+    minting_node.setgenerate( 21)
     sync_blocks(all_nodes)
 
     # Split those coins up into many pieces that can each be used
@@ -51,10 +51,10 @@ def createVaultPoSStacks(ownerNodes,vaultNode):
     # Make sure to get all those transactions mined.
     sync_mempools(all_nodes)
     while len(minting_node.getrawmempool()) > 0:
-      minting_node.setgenerate(True, 1)
+      minting_node.setgenerate( 1)
     sync_blocks(all_nodes)
     for funding_datum in funding_data:
-      assert vaultNode.addvault(funding_datum["vault"],funding_datum["txhash"])["succeeded"]
+      assert vaultNode.addvault(funding_datum["vault"][0]["encoding"],funding_datum["txhash"])["succeeded"]
 
 class StakingVaultSpamTest(BitcoinTestFramework):
 
@@ -84,7 +84,7 @@ class StakingVaultSpamTest(BitcoinTestFramework):
         print ("Mining remaining PoW blocks...")
         missing = posStart - minting_node.getblockcount()
         assert missing > 0
-        minting_node.setgenerate(True, missing)
+        minting_node.setgenerate( missing)
         self.sync_all()
 
         print ("Vault trying to mine PoS blocks now...")

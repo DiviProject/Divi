@@ -9,28 +9,36 @@
 
 class WalletBackupFeatureContainer
 {
-
+public:
+    enum BackupStatus
+    {
+        BACKUP_CREATED,
+        BACKUP_ATTEMPTED,
+        INTEGRITY_CHECK_FAILED,
+        NO_FILE_TO_BACKUP,
+        FILE_IN_USE,
+    };
 private:
+    std::string dataDirectory_;
+    std::string walletFileName_;
     std::unique_ptr<I_FileSystem> fileSystem_;
     std::unique_ptr<I_WalletBackupCreator> walletBackupCreator_;
     std::unique_ptr<I_WalletBackupCreator> monthlyWalletBackupCreator_;
     std::unique_ptr<I_WalletBackupCreator> monthlyWalletBackupDecorator_;
     std::unique_ptr<I_DatabaseWrapper> database_;
     std::unique_ptr<WalletIntegrityVerifier> walletIntegrityVerifier_;
-    std::string dataDirectory_;
-    std::string walletFileName_;
+
+    bool fileToBackUpExists();
+    BackupStatus backupWalletWithLockedDB(bool monthlyBackupOnly);
+    BackupStatus backupWallet (bool monthlyBackupOnly);
 public:
     WalletBackupFeatureContainer (
         int numberOfBackups,
         std::string walletFileName,
         std::string dataDirectory);
-    bool backupWallet ();
 
-    I_FileSystem& GetFileSystem();
-    I_WalletBackupCreator& GetBackupCreator ();
-    I_WalletBackupCreator& GetMonthlyBackupCreator ();
-    I_DatabaseWrapper& GetDatabase ();
-    WalletIntegrityVerifier& GetWalletIntegrityVerifier ();
+    BackupStatus createMonthlyBackup();
+    BackupStatus createCurrentBackup();
 };
 
 #endif //WALLET_BACKUP_FEATURE_CONTAINER_H

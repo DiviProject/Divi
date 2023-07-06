@@ -44,7 +44,7 @@ void FinalizeNode(NodeId nodeId)
     mapNodeState.erase(nodeId);
 }
 
-bool Misbehaving(CNodeState* state, int howmuch)
+bool Misbehaving(CNodeState* state, int howmuch, std::string cause)
 {
     if (state == NULL)
         return false;
@@ -52,15 +52,15 @@ bool Misbehaving(CNodeState* state, int howmuch)
     if (howmuch == 0)
         return true;
 
-    state->ApplyMisbehavingPenalty(howmuch);
+    state->ApplyMisbehavingPenalty(howmuch,cause);
     return true;
 }
 
-bool Misbehaving(NodeId nodeId, int howmuch)
+bool Misbehaving(NodeId nodeId, int howmuch, std::string cause)
 {
     AssertLockHeld(cs_main);
     CNodeState* state = State(nodeId);
-    return Misbehaving(state,howmuch);
+    return Misbehaving(state,howmuch,cause);
 }
 
 // Requires cs_main.
@@ -71,7 +71,7 @@ void MarkBlockAsReceived(const uint256& hash)
 }
 
 // Requires cs_main.
-void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex)
+void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, const CBlockIndex* pindex)
 {
     AssertLockHeld(cs_main);
     blocksInFlightRegistry.MarkBlockAsInFlight(nodeid,hash,pindex);
@@ -148,7 +148,7 @@ void FindNextBlocksToDownload(
     const CChain& activeChain,
     CNodeState* state,
     unsigned int count,
-    std::vector<CBlockIndex*>& vBlocks,
+    std::vector<const CBlockIndex*>& vBlocks,
     NodeId& nodeStaller)
 {
     if (count == 0)
@@ -177,8 +177,8 @@ void FindNextBlocksToDownload(
     if (state->pindexLastCommonBlock == state->pindexBestKnownBlock)
         return;
 
-    std::vector<CBlockIndex*> vToFetch;
-    CBlockIndex* pindexWalk = state->pindexLastCommonBlock;
+    std::vector<const CBlockIndex*> vToFetch;
+    const CBlockIndex* pindexWalk = state->pindexLastCommonBlock;
     // Never fetch further than the best block we know the peer has, or more than BLOCK_DOWNLOAD_WINDOW + 1 beyond the last
     // linked block we have in common with this peer. The +1 is so we can detect stalling, namely if we would be able to
     // download that next block if the window were 1 larger.
@@ -201,7 +201,7 @@ void FindNextBlocksToDownload(
         // Iterate over those blocks in vToFetch (in forward direction), adding the ones that
         // are not yet downloaded and not in flight to vBlocks. In the mean time, update
         // pindexLastCommonBlock as long as all ancestors are already downloaded.
-        for(CBlockIndex* pindex: vToFetch) {
+        for(const auto* pindex: vToFetch) {
             if (!pindex->IsValid(BLOCK_VALID_TREE)) {
                 // We consider the chain that this peer is on invalid.
                 return;

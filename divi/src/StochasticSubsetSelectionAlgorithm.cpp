@@ -77,7 +77,7 @@ static void ApproximateSmallestCoinSubsetForPayment(
     }
 }
 
-static bool SelectCoinsMinConf(
+bool SelectCoinsMinConf(
     const TxConfirmationChecker& txConfirmationChecker,
     const CAmount& nTargetValue,
     int nConfMine,
@@ -187,5 +187,6 @@ std::set<COutput> StochasticSubsetSelectionAlgorithm::SelectCoins(
     {
         setCoinsRet.clear();
     }
+    fees = nValueRet - transactionToSelectCoinsFor.GetValueOut();
     return setCoinsRet;
 }

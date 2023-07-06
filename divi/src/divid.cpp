@@ -6,14 +6,15 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "clientversion.h"
+#include <DataDirectory.h>
 #include "init.h"
-#include "main.h"
 #include <chainparams.h>
 #include "noui.h"
-#include "rpcserver.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "Settings.h"
+#include <ThreadManagementHelpers.h>
+
 #include <LicenseAndInfo.h>
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -136,6 +137,10 @@ bool AppInit(int argc, char* argv[])
         }
 #endif
         settings.SoftSetBoolArg("-server", true);
+        if(settings.ParameterIsSet("-mocktime"))
+        {
+            SetMockTime(settings.GetArg("-mocktime",GetTime()));
+        }
 
         detectShutdownThread = new boost::thread(boost::bind(&DetectShutdownThread, &threadGroup));
         fRet = InitializeDivi(threadGroup);

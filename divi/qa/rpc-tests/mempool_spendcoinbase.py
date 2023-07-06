@@ -14,7 +14,7 @@
 #
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
+from authproxy import JSONRPCException
 from util import *
 import os
 import shutil
@@ -38,7 +38,7 @@ class MempoolSpendCoinbaseTest(BitcoinTestFramework):
         return signresult["hex"]
 
     def run_test(self):
-        self.nodes[0].setgenerate(True, 50)
+        self.nodes[0].setgenerate( 50)
         chain_height = self.nodes[0].getblockcount()
         assert_equal(chain_height, 50)
         node0_address = self.nodes[0].getnewaddress()
@@ -59,7 +59,7 @@ class MempoolSpendCoinbaseTest(BitcoinTestFramework):
         assert_equal(self.nodes[0].getrawmempool(), [ spend_101_id ])
 
         # mine a block, spend_101 should get confirmed
-        self.nodes[0].setgenerate(True, 1)
+        self.nodes[0].setgenerate( 1)
         assert_equal(set(self.nodes[0].getrawmempool()), set())
 
         # ... and now height 102 can be spent:

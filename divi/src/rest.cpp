@@ -3,11 +3,13 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "main.h"
+#include <rest.h>
+
 #include "BlockDiskAccessor.h"
+#include "ChainstateManager.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
-#include "rpcserver.h"
+#include "rpcprotocol.h"
 #include "streams.h"
 #include "sync.h"
 #include <TransactionDiskAccessor.h>
@@ -16,12 +18,16 @@
 #include <blockmap.h>
 #include <sync.h>
 
+#include <JsonTxHelpers.h>
+#include <JsonBlockHelpers.h>
+
 #include <boost/algorithm/string.hpp>
+
+#include <AcceptedConnection.h>
 
 using namespace std;
 using namespace json_spirit;
 
-extern BlockMap mapBlockIndex;
 extern CCriticalSection cs_main;
 
 enum RetFormat {
@@ -47,9 +53,6 @@ public:
     enum HTTPStatusCode status;
     string message;
 };
-
-extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
-extern Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false);
 
 static RestErr RESTERR(enum HTTPStatusCode status, string message)
 {
@@ -114,10 +117,14 @@ static bool rest_block(AcceptedConnection* conn,
     CBlockIndex* pblockindex = NULL;
     {
         LOCK(cs_main);
-        if (mapBlockIndex.count(hash) == 0)
+        const ChainstateManager::Reference chainstate;
+        const auto& blockMap = chainstate->GetBlockMap();
+
+        const auto mit = blockMap.find(hash);
+        if (mit == blockMap.end())
             throw RESTERR(HTTP_NOT_FOUND, hashStr + " not found");
 
-        pblockindex = mapBlockIndex[hash];
+        pblockindex = mit->second;
         if (!ReadBlockFromDisk(block, pblockindex))
             throw RESTERR(HTTP_NOT_FOUND, hashStr + " not found");
     }
@@ -139,7 +146,8 @@ static bool rest_block(AcceptedConnection* conn,
     }
 
     case RF_JSON: {
-        Object objBlock = blockToJSON(block, pblockindex, showTxDetails);
+        const ChainstateManager::Reference chainstate;
+        Object objBlock = blockToJSON(chainstate->ActiveChain(),block, pblockindex, showTxDetails);
         string strJSON = write_string(Value(objBlock), false) + "\n";
         conn->stream() << HTTPReply(HTTP_OK, strJSON, fRun) << std::flush;
         return true;
@@ -233,14 +241,16 @@ static const struct {
     {"/rest/block/", rest_block_extended},
 };
 
-bool HTTPReq_REST(AcceptedConnection* conn,
-    string& strURI,
-    map<string, string>& mapHeaders,
+bool HTTPReq_REST(
+    bool (*rpcStatusCheck)(std::string* statusMessageRef),
+    AcceptedConnection* conn,
+    std::string& strURI,
+    std::map<std::string, std::string>& mapHeaders,
     bool fRun)
 {
     try {
         std::string statusmessage;
-        if (RPCIsInWarmup(&statusmessage))
+        if (rpcStatusCheck(&statusmessage))
             throw RESTERR(HTTP_SERVICE_UNAVAILABLE, "Service temporarily unavailable: " + statusmessage);
 
         for (unsigned int i = 0; i < ARRAYLEN(uri_prefixes); i++) {

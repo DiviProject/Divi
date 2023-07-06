@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(willSuccesfullyTransitionFromNonMintableToMintableInProofOf
     NiceMock<MockCoinMinter> minter;
 
     bool mintableReturnValue = false;
-    ON_CALL(minter, CanMintCoins())
+    ON_CALL(minter, canMintCoins())
         .WillByDefault(
             Invoke(
                 [&mintableReturnValue]()->bool
@@ -53,11 +53,8 @@ BOOST_AUTO_TEST_CASE(willSuccesfullyTransitionFromNonMintableToMintableInProofOf
     EXPECT_CALL(minter, sleep(_)).Times(1);
     EXPECT_CALL(minter, createNewBlock()).Times(9);
 
-    bool proofOfStake = true;
 
-    MintCoins(
-        proofOfStake,
-        minter);
+    MintCoins(minter);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

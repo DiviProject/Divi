@@ -16,7 +16,7 @@ Then 5 iterations of 1/2/3 sending coins amongst
 themselves to get transactions in the wallets,
 and the miner mining one block.
 
-Wallets are backed up using dumpwallet/backupwallet.
+Wallets are backed up using backupwallet.
 Then 5 more iterations of transactions and mining a block.
 
 Miner then generates 101 more blocks, so any
@@ -28,9 +28,6 @@ Sanity check:
 1/2/3 are shutdown, and their wallets erased.
 Then restore using wallet.dat backup. And
 confirm 1/2/3/4 balances are same as before.
-
-Shutdown again, restore using importwallet,
-and confirm again balances are correct.
 """
 
 from test_framework import BitcoinTestFramework
@@ -79,7 +76,7 @@ class WalletBackupTest(BitcoinTestFramework):
         # Have the miner (node3) mine a block.
         # Must sync mempools before mining.
         sync_mempools(self.nodes)
-        self.nodes[3].setgenerate(True, 1)
+        self.nodes[3].setgenerate( 1)
         assert_equal(self.nodes[3].getrawmempool(), [])
         sync_blocks(self.nodes)
 
@@ -128,21 +125,35 @@ class WalletBackupTest(BitcoinTestFramework):
             self.advance_time(1)
         assert_equal(len(all_files),2)
 
+    def create_sendmany_format_for_address(self,addr, reps):
+        sendmany_format = {}
+        sendmany_format[addr] = {"amount":10.0,"repetitions":reps}
+        return sendmany_format
+
+    def split_utxos_for_all_nodes(self):
+        for nodeId in range(3):
+            node = self.nodes[nodeId]
+            assert_equal(node.getbalance(), 1250)
+            addr_to_split_to = node.getnewaddress()
+            selfmany_format = self.create_sendmany_format_for_address(addr_to_split_to, 124)
+            node.sendmany("", selfmany_format)
+        self.sync_all()
+        self.nodes[3].setgenerate(1)
+        self.sync_all()
+
     def run_test(self):
         logging.info("Generating initial blockchain")
-        self.nodes[0].setgenerate(True, 1)
+        self.nodes[0].setgenerate( 1)
         sync_blocks(self.nodes)
-        self.nodes[1].setgenerate(True, 1)
+        self.nodes[1].setgenerate( 1)
         sync_blocks(self.nodes)
-        self.nodes[2].setgenerate(True, 1)
+        self.nodes[2].setgenerate( 1)
         sync_blocks(self.nodes)
-        self.nodes[3].setgenerate(True, 20)
+        self.nodes[3].setgenerate( 20)
         sync_blocks(self.nodes)
-
-        assert_equal(self.nodes[0].getbalance(), 1250)
-        assert_equal(self.nodes[1].getbalance(), 1250)
-        assert_equal(self.nodes[2].getbalance(), 1250)
         assert_equal(self.nodes[3].getbalance(), 0)
+
+        self.split_utxos_for_all_nodes()
         tmpdir = self.options.tmpdir
 
         # Five rounds of sending each other transactions.
@@ -155,11 +166,8 @@ class WalletBackupTest(BitcoinTestFramework):
         logging.info("Backing up")
 
         self.nodes[0].backupwallet(tmpdir + "/node0/wallet.bak")
-        self.nodes[0].dumpwallet(tmpdir + "/node0/wallet.dump")
         self.nodes[1].backupwallet(tmpdir + "/node1/wallet.bak")
-        self.nodes[1].dumpwallet(tmpdir + "/node1/wallet.dump")
         self.nodes[2].backupwallet(tmpdir + "/node2/wallet.bak")
-        self.nodes[2].dumpwallet(tmpdir + "/node2/wallet.dump")
 
         logging.info("More transactions")
         for i in range(5):
@@ -169,7 +177,7 @@ class WalletBackupTest(BitcoinTestFramework):
         balance1 = self.nodes[1].getbalance()
         balance2 = self.nodes[2].getbalance()
         total = balance0 + balance1 + balance2 + self.fees
-        assert_equal(total, 3 * 1250)
+        assert_near(total, 3 * 1250,5e-3)
 
         ##
         # Test restoring spender wallets from backups
@@ -208,16 +216,6 @@ class WalletBackupTest(BitcoinTestFramework):
         assert_equal(self.nodes[0].getbalance(), 0)
         assert_equal(self.nodes[1].getbalance(), 0)
         assert_equal(self.nodes[2].getbalance(), 0)
-
-        self.nodes[0].importwallet(tmpdir + "/node0/wallet.dump")
-        self.nodes[1].importwallet(tmpdir + "/node1/wallet.dump")
-        self.nodes[2].importwallet(tmpdir + "/node2/wallet.dump")
-
-        sync_blocks(self.nodes)
-
-        assert_equal(self.nodes[0].getbalance(), balance0)
-        assert_equal(self.nodes[1].getbalance(), balance1)
-        assert_equal(self.nodes[2].getbalance(), balance2)
 
         #Check For Monthly Backups
         self.check_monthly()

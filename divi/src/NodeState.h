@@ -37,11 +37,11 @@ public:
     //! String name of this peer (debugging/logging purposes).
     std::string name;
     //! The best known block we know this peer has announced.
-    CBlockIndex* pindexBestKnownBlock;
+    const CBlockIndex* pindexBestKnownBlock;
     //! The hash of the last unknown block this peer has announced.
     uint256 hashLastUnknownBlock;
     //! The last full block we both have.
-    CBlockIndex* pindexLastCommonBlock;
+    const CBlockIndex* pindexLastCommonBlock;
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
 
@@ -53,9 +53,11 @@ public:
     static bool NodeSyncStarted();
     static bool HavePreferredDownloadPeers();
     void Finalize();
-    void ApplyMisbehavingPenalty(int penaltyAmount);
+    void ApplyMisbehavingPenalty(int penaltyAmount,std::string cause);
     int GetMisbehaviourPenalty() const;
     void SetBanScoreThreshold(int banThreshold);
+    int GetSyncHeight() const;
+    int GetLastCommonBlockHeight() const;
 };
 
 #endif// NODE_STATE_H

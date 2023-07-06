@@ -5,130 +5,33 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "checkpoints.h"
-#include "main.h"
+#include <ChainstateManager.h>
 #include "BlockDiskAccessor.h"
+#include <rpcprotocol.h>
 #include <rpcserver.h>
 #include "sync.h"
 #include "util.h"
-#include "Settings.h"
 #include <stdint.h>
 #include "json/json_spirit_value.h"
 #include "utilmoneystr.h"
 #include "base58.h"
 #include <ValidationState.h>
-#include <verifyDb.h>
-#include <ui_interface.h>
 #include <txdb.h>
-#include <ActiveChainManager.h>
 #include <boost/foreach.hpp>
 #include <utilstrencodings.h>
 #include <txmempool.h>
 #include <blockmap.h>
+#include <JsonTxHelpers.h>
+#include <init.h>
+#include <JsonBlockHelpers.h>
+#include <spork.h>
+#include <I_ChainExtensionService.h>
+#include <ChainSyncHelpers.h>
 
 using namespace json_spirit;
 using namespace std;
 
-extern Settings& settings;
-extern unsigned int nCoinCacheSize;
-extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
-void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
-extern bool ShutdownRequested();
-extern CBlockTreeDB* pblocktree;
-extern CCoinsViewCache* pcoinsTip;
-extern bool fAddressIndex;
-extern BlockMap mapBlockIndex;
-extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
-extern CBlockIndex* pindexBestHeader;
-extern CChain chainActive;
-
-double GetDifficulty(const CBlockIndex* blockindex)
-{
-    // Floating point number that is a multiple of the minimum difficulty,
-    // minimum difficulty = 1.0.
-    if (blockindex == NULL) {
-        if (chainActive.Tip() == NULL)
-            return 1.0;
-        else
-            blockindex = chainActive.Tip();
-    }
-
-    int nShift = (blockindex->nBits >> 24) & 0xff;
-
-    double dDiff =
-        (double)0x0000ffff / (double)(blockindex->nBits & 0x00ffffff);
-
-    while (nShift < 29) {
-        dDiff *= 256.0;
-        nShift++;
-    }
-    while (nShift > 29) {
-        dDiff /= 256.0;
-        nShift--;
-    }
-
-    return dDiff;
-}
-
-
-Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false)
-{
-    Object result;
-    result.push_back(Pair("hash", block.GetHash().GetHex()));
-    int confirmations = -1;
-    // Only report confirmations if the block is on the main chain
-    if (chainActive.Contains(blockindex))
-        confirmations = chainActive.Height() - blockindex->nHeight + 1;
-    result.push_back(Pair("confirmations", confirmations));
-    result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)));
-    result.push_back(Pair("height", blockindex->nHeight));
-    result.push_back(Pair("version", block.nVersion));
-    result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
-    result.push_back(Pair("acc_checkpoint", block.nAccumulatorCheckpoint.GetHex()));
-    Array txs;
-    BOOST_FOREACH (const CTransaction& tx, block.vtx) {
-        if (txDetails) {
-            Object objTx;
-            TxToJSON(tx, uint256(0), objTx);
-            txs.push_back(objTx);
-        } else
-            txs.push_back(tx.GetHash().GetHex());
-    }
-    result.push_back(Pair("tx", txs));
-    result.push_back(Pair("time", block.GetBlockTime()));
-    result.push_back(Pair("nonce", (uint64_t)block.nNonce));
-    result.push_back(Pair("bits", strprintf("%08x", block.nBits)));
-    result.push_back(Pair("difficulty", GetDifficulty(blockindex)));
-    result.push_back(Pair("chainwork", blockindex->nChainWork.GetHex()));
-
-    if (blockindex->pprev)
-        result.push_back(Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
-    CBlockIndex* pnext = chainActive.Next(blockindex);
-    if (pnext)
-        result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
-
-    result.push_back(Pair("moneysupply",ValueFromAmount(blockindex->nMoneySupply)));
-
-    return result;
-}
-
-
-Object blockHeaderToJSON(const CBlock& block, const CBlockIndex* blockindex)
-{
-    Object result;
-    result.push_back(Pair("version", block.nVersion));
-    if (blockindex->pprev)
-        result.push_back(Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
-    result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
-    result.push_back(Pair("time", block.GetBlockTime()));
-    result.push_back(Pair("bits", strprintf("%08x", block.nBits)));
-    result.push_back(Pair("nonce", (uint64_t)block.nNonce));
-    return result;
-}
-
-
-Value getblockcount(const Array& params, bool fHelp)
+Value getblockcount(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -139,10 +42,11 @@ Value getblockcount(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getblockcount", "") + HelpExampleRpc("getblockcount", ""));
 
-    return chainActive.Height();
+    const ChainstateManager::Reference chainstate;
+    return chainstate->ActiveChain().Height();
 }
 
-Value getbestblockhash(const Array& params, bool fHelp)
+Value getbestblockhash(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -153,10 +57,11 @@ Value getbestblockhash(const Array& params, bool fHelp)
             "\nExamples\n" +
             HelpExampleCli("getbestblockhash", "") + HelpExampleRpc("getbestblockhash", ""));
 
-    return chainActive.Tip()->GetBlockHash().GetHex();
+    const ChainstateManager::Reference chainstate;
+    return chainstate->ActiveChain().Tip()->GetBlockHash().GetHex();
 }
 
-Value getdifficulty(const Array& params, bool fHelp)
+Value getdifficulty(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -167,11 +72,12 @@ Value getdifficulty(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getdifficulty", "") + HelpExampleRpc("getdifficulty", ""));
 
-    return GetDifficulty();
+    const ChainstateManager::Reference chainstate;
+    return GetDifficulty(chainstate->ActiveChain());
 }
 
 
-Value getrawmempool(const Array& params, bool fHelp)
+Value getrawmempool(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -205,7 +111,9 @@ Value getrawmempool(const Array& params, bool fHelp)
     if (params.size() > 0)
         fVerbose = params[0].get_bool();
 
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     if (fVerbose) {
+        const ChainstateManager::Reference chainstate;
         LOCK(mempool.cs);
         Object o;
         BOOST_FOREACH (const PAIRTYPE(uint256, CTxMemPoolEntry) & entry, mempool.mapTx) {
@@ -217,7 +125,7 @@ Value getrawmempool(const Array& params, bool fHelp)
             info.push_back(Pair("time", e.GetTime()));
             info.push_back(Pair("height", (int)e.GetHeight()));
             info.push_back(Pair("startingpriority", e.ComputeInputCoinAgePerByte(e.GetHeight())));
-            info.push_back(Pair("currentpriority", e.ComputeInputCoinAgePerByte(chainActive.Height())));
+            info.push_back(Pair("currentpriority", e.ComputeInputCoinAgePerByte(chainstate->ActiveChain().Height())));
             const CTransaction& tx = e.GetTx();
             set<string> setDepends;
             for (const CTxIn& txin : tx.vin) {
@@ -242,7 +150,7 @@ Value getrawmempool(const Array& params, bool fHelp)
     }
 }
 
-Value getblockhash(const Array& params, bool fHelp)
+Value getblockhash(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -255,15 +163,17 @@ Value getblockhash(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getblockhash", "1000") + HelpExampleRpc("getblockhash", "1000"));
 
+    const ChainstateManager::Reference chainstate;
+
     int nHeight = params[0].get_int();
-    if (nHeight < 0 || nHeight > chainActive.Height())
+    if (nHeight < 0 || nHeight > chainstate->ActiveChain().Height())
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Block height out of range");
 
-    CBlockIndex* pblockindex = chainActive[nHeight];
+    const CBlockIndex* pblockindex = chainstate->ActiveChain()[nHeight];
     return pblockindex->GetBlockHash().GetHex();
 }
 
-Value getblock(const Array& params, bool fHelp)
+Value getblock(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -305,11 +215,14 @@ Value getblock(const Array& params, bool fHelp)
     if (params.size() > 1)
         fVerbose = params[1].get_bool();
 
-    if (mapBlockIndex.count(hash) == 0)
+    const ChainstateManager::Reference chainstate;
+    const auto& blockMap = chainstate->GetBlockMap();
+    const auto mit = blockMap.find(hash);
+    if (mit == blockMap.end())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
     CBlock block;
-    CBlockIndex* pblockindex = mapBlockIndex[hash];
+    const CBlockIndex* pblockindex = mit->second;
 
     if (!ReadBlockFromDisk(block, pblockindex))
         throw JSONRPCError(RPC_INTERNAL_ERROR, "Can't read block from disk");
@@ -321,10 +234,10 @@ Value getblock(const Array& params, bool fHelp)
         return strHex;
     }
 
-    return blockToJSON(block, pblockindex);
+    return blockToJSON(chainstate->ActiveChain(), block, pblockindex);
 }
 
-Value getblockheader(const Array& params, bool fHelp)
+Value getblockheader(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -355,11 +268,14 @@ Value getblockheader(const Array& params, bool fHelp)
     if (params.size() > 1)
         fVerbose = params[1].get_bool();
 
-    if (mapBlockIndex.count(hash) == 0)
+    const ChainstateManager::Reference chainstate;
+    const auto& blockMap = chainstate->GetBlockMap();
+    const auto mit = blockMap.find(hash);
+    if (mit == blockMap.end())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
     CBlock block;
-    CBlockIndex* pblockindex = mapBlockIndex[hash];
+    const CBlockIndex* pblockindex = mit->second;
 
     if (!ReadBlockFromDisk(block, pblockindex))
         throw JSONRPCError(RPC_INTERNAL_ERROR, "Can't read block from disk");
@@ -374,7 +290,7 @@ Value getblockheader(const Array& params, bool fHelp)
     return blockHeaderToJSON(block, pblockindex);
 }
 
-Value gettxoutsetinfo(const Array& params, bool fHelp)
+Value gettxoutsetinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -396,9 +312,10 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
 
     Object ret;
 
+    const ChainstateManager::Reference chainstate;
     CCoinsStats stats;
     FlushStateToDisk();
-    if (pcoinsTip->GetStats(stats)) {
+    if (chainstate->GetNonCatchingCoinsView().GetStats(stats)) {
         ret.push_back(Pair("height", (int64_t)stats.nHeight));
         ret.push_back(Pair("bestblock", stats.hashBlock.GetHex()));
         ret.push_back(Pair("transactions", (int64_t)stats.nTransactions));
@@ -410,7 +327,7 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
     return ret;
 }
 
-Value gettxout(const Array& params, bool fHelp)
+Value gettxout(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 2 || params.size() > 3)
         throw runtime_error(
@@ -454,18 +371,21 @@ Value gettxout(const Array& params, bool fHelp)
     if (params.size() > 2)
         fMempool = params[2].get_bool();
 
+    const ChainstateManager::Reference chainstate;
+
     CCoins coins;
     if (fMempool) {
-        CCoinsViewMemPool(pcoinsTip, mempool).GetCoinsAndPruneSpent(hash,coins);
+        CCoinsViewMemPool(&chainstate->CoinsTip(), GetTransactionMemoryPool()).GetCoinsAndPruneSpent(hash,coins);
     } else {
-        if (!pcoinsTip->GetCoins(hash, coins))
+        if (!chainstate->CoinsTip().GetCoins(hash, coins))
             return Value::null;
     }
     if (n < 0 || (unsigned int)n >= coins.vout.size() || coins.vout[n].IsNull())
         return Value::null;
 
-    BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
-    CBlockIndex* pindex = it->second;
+    const auto& blockMap = chainstate->GetBlockMap();
+    const auto mit = blockMap.find(chainstate->CoinsTip().GetBestBlock());
+    const CBlockIndex* pindex = mit->second;
     ret.push_back(Pair("bestblock", pindex->GetBlockHash().GetHex()));
     if (IsMemPoolHeight(static_cast<unsigned>(coins.nHeight)))
         ret.push_back(Pair("confirmations", 0));
@@ -481,7 +401,7 @@ Value gettxout(const Array& params, bool fHelp)
     return ret;
 }
 
-Value verifychain(const Array& params, bool fHelp)
+Value verifychain(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 2)
         throw runtime_error(
@@ -495,24 +415,15 @@ Value verifychain(const Array& params, bool fHelp)
             HelpExampleCli("verifychain", "") + HelpExampleRpc("verifychain", ""));
 
     int nCheckLevel = 4;
-    int nCheckDepth = settings.GetArg("-checkblocks", 288);
+    int nCheckDepth = 288;
     if (params.size() > 0)
         nCheckDepth = params[1].get_int();
 
-    LOCK(cs_main);
-    const ActiveChainManager& chainManager = GetActiveChainManager();
-    const CVerifyDB dbVerifier(
-        chainManager,
-        chainActive,
-        uiInterface,
-        nCoinCacheSize,
-        &ShutdownRequested);
-    return dbVerifier.VerifyDB(pcoinsTip,pcoinsTip->GetCacheSize(), nCheckLevel, nCheckDepth);
+    return VerifyChain(nCheckLevel,nCheckDepth, true);
 }
 
-Value getblockchaininfo(const Array& params, bool fHelp)
+Value getblockchaininfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
-    static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
     if (fHelp || params.size() != 0)
         throw runtime_error(
             "getblockchaininfo\n"
@@ -524,20 +435,20 @@ Value getblockchaininfo(const Array& params, bool fHelp)
             "  \"headers\": xxxxxx,        (numeric) the current number of headers we have validated\n"
             "  \"bestblockhash\": \"...\", (string) the hash of the currently best block\n"
             "  \"difficulty\": xxxxxx,     (numeric) the current difficulty\n"
-            "  \"verificationprogress\": xxxx, (numeric) estimate of verification progress [0..1]\n"
             "  \"chainwork\": \"xxxx\"     (string) total amount of work in active chain, in hexadecimal\n"
             "}\n"
             "\nExamples:\n" +
             HelpExampleCli("getblockchaininfo", "") + HelpExampleRpc("getblockchaininfo", ""));
 
+    const ChainstateManager::Reference chainstate;
+
     Object obj;
     obj.push_back(Pair("chain", Params().NetworkIDString()));
-    obj.push_back(Pair("blocks", (int)chainActive.Height()));
-    obj.push_back(Pair("headers", pindexBestHeader ? pindexBestHeader->nHeight : -1));
-    obj.push_back(Pair("bestblockhash", chainActive.Tip()->GetBlockHash().GetHex()));
-    obj.push_back(Pair("difficulty", (double)GetDifficulty()));
-    obj.push_back(Pair("verificationprogress", checkpointsVerifier.GuessVerificationProgress(chainActive.Tip())));
-    obj.push_back(Pair("chainwork", chainActive.Tip()->nChainWork.GetHex()));
+    obj.push_back(Pair("blocks", (int)chainstate->ActiveChain().Height()));
+    obj.push_back(Pair("headers", GetBestHeaderBlockHeight()));
+    obj.push_back(Pair("bestblockhash", chainstate->ActiveChain().Tip()->GetBlockHash().GetHex()));
+    obj.push_back(Pair("difficulty", (double)GetDifficulty(chainstate->ActiveChain())));
+    obj.push_back(Pair("chainwork", chainstate->ActiveChain().Tip()->nChainWork.GetHex()));
     return obj;
 }
 
@@ -555,7 +466,7 @@ struct CompareBlocksByHeight {
     }
 };
 
-Value getchaintips(const Array& params, bool fHelp)
+Value getchaintips(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -586,20 +497,22 @@ Value getchaintips(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getchaintips", "") + HelpExampleRpc("getchaintips", ""));
 
+    const ChainstateManager::Reference chainstate;
+
     /* Build up a list of chain tips.  We start with the list of all
        known blocks, and successively remove blocks that appear as pprev
        of another block.  */
     std::set<const CBlockIndex*, CompareBlocksByHeight> setTips;
-    BOOST_FOREACH (const PAIRTYPE(const uint256, CBlockIndex*) & item, mapBlockIndex)
+    for (const auto& item : chainstate->GetBlockMap())
         setTips.insert(item.second);
-    BOOST_FOREACH (const PAIRTYPE(const uint256, CBlockIndex*) & item, mapBlockIndex) {
+    for (const auto& item : chainstate->GetBlockMap()) {
         const CBlockIndex* pprev = item.second->pprev;
         if (pprev)
             setTips.erase(pprev);
     }
 
     // Always report the currently active tip.
-    setTips.insert(chainActive.Tip());
+    setTips.insert(chainstate->ActiveChain().Tip());
 
     /* Construct the output array.  */
     Array res;
@@ -608,11 +521,11 @@ Value getchaintips(const Array& params, bool fHelp)
         obj.push_back(Pair("height", block->nHeight));
         obj.push_back(Pair("hash", block->phashBlock->GetHex()));
 
-        const int branchLen = block->nHeight - chainActive.FindFork(block)->nHeight;
+        const int branchLen = block->nHeight - chainstate->ActiveChain().FindFork(block)->nHeight;
         obj.push_back(Pair("branchlen", branchLen));
 
         string status;
-        if (chainActive.Contains(block)) {
+        if (chainstate->ActiveChain().Contains(block)) {
             // This block is part of the currently active chain.
             status = "active";
         } else if (block->nStatus & BLOCK_FAILED_MASK) {
@@ -639,7 +552,7 @@ Value getchaintips(const Array& params, bool fHelp)
     return res;
 }
 
-Value getmempoolinfo(const Array& params, bool fHelp)
+Value getmempoolinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -654,13 +567,49 @@ Value getmempoolinfo(const Array& params, bool fHelp)
             HelpExampleCli("getmempoolinfo", "") + HelpExampleRpc("getmempoolinfo", ""));
 
     Object ret;
+    CTxMemPool& mempool = GetTransactionMemoryPool();
     ret.push_back(Pair("size", (int64_t)mempool.size()));
     ret.push_back(Pair("bytes", (int64_t)mempool.GetTotalTxSize()));
 
     return ret;
 }
 
-Value invalidateblock(const Array& params, bool fHelp)
+Value reverseblocktransactions(const Array& params, bool fHelp, CWallet* pwallet)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "reverseblocktransactions \"hash\"\n"
+            "\nReverse the transactions in a block to mimic coin database corruption.\n"
+            "\nArguments:\n"
+            "1. hash   (string, required) the hash of the block to mark as invalid\n"
+            "\nResult:\n"
+            "\nExamples:\n" +
+            HelpExampleCli("reverseblocktransactions", "\"blockhash\"") + HelpExampleRpc("reverseblocktransactions", "\"blockhash\""));
+
+    uint256 hash = uint256S(params[0].get_str());
+    CValidationState state;
+
+    {
+        ChainstateManager::Reference chainstate;
+        auto& blockMap = chainstate->GetBlockMap();
+        const auto mit = blockMap.find(hash);
+        if (mit == blockMap.end())
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+
+        CBlockIndex* pblockindex = mit->second;
+        const I_ChainExtensionService& chainExtensionService = GetChainExtensionService();
+        chainExtensionService.invalidateBlock(state,pblockindex,true);
+        chainExtensionService.reconsiderBlock(state, pblockindex);
+    }
+
+    if (!state.IsValid()) {
+        throw JSONRPCError(RPC_DATABASE_ERROR, state.GetRejectReason());
+    }
+
+    return Value::null;
+}
+
+Value invalidateblock(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -676,17 +625,18 @@ Value invalidateblock(const Array& params, bool fHelp)
     uint256 hash(strHash);
     CValidationState state;
 
-    {
-        LOCK(cs_main);
-        if (mapBlockIndex.count(hash) == 0)
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+    ChainstateManager::Reference chainstate;
+    auto& blockMap = chainstate->GetBlockMap();
+    const auto mit = blockMap.find(hash);
+    if (mit == blockMap.end())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
-        CBlockIndex* pblockindex = mapBlockIndex[hash];
-        InvalidateBlock(state, pblockindex);
-    }
+    CBlockIndex* pblockindex = mit->second;
+    const I_ChainExtensionService& chainExtensionService = GetChainExtensionService();
+    chainExtensionService.invalidateBlock(state, pblockindex,false);
 
     if (state.IsValid()) {
-        ActivateBestChain(state);
+        chainExtensionService.updateActiveChain(state,nullptr);
     }
 
     if (!state.IsValid()) {
@@ -696,7 +646,7 @@ Value invalidateblock(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value reconsiderblock(const Array& params, bool fHelp)
+Value reconsiderblock(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -713,17 +663,18 @@ Value reconsiderblock(const Array& params, bool fHelp)
     uint256 hash(strHash);
     CValidationState state;
 
-    {
-        LOCK(cs_main);
-        if (mapBlockIndex.count(hash) == 0)
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+    ChainstateManager::Reference chainstate;
+    auto& blockMap = chainstate->GetBlockMap();
+    const auto mit = blockMap.find(hash);
+    if (mit == blockMap.end())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
-        CBlockIndex* pblockindex = mapBlockIndex[hash];
-        ReconsiderBlock(state, pblockindex);
-    }
+    CBlockIndex* pblockindex = mit->second;
+    const I_ChainExtensionService& chainExtensionService = GetChainExtensionService();
+    chainExtensionService.reconsiderBlock(state, pblockindex);
 
     if (state.IsValid()) {
-        ActivateBestChain(state);
+        chainExtensionService.updateActiveChain(state,nullptr);
     }
 
     if (!state.IsValid()) {
@@ -733,7 +684,7 @@ Value reconsiderblock(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value getinvalid (const Array& params, bool fHelp)
+Value getinvalid (const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(

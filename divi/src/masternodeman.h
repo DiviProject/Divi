@@ -49,7 +49,7 @@ private:
         MN_UPDATED,
     };
     bool UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const;
-    bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
+    bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb);
     bool CheckMasternodeBroadcastContext(CMasternodeBroadcast& mnb, int& nDoS);
     MnUpdateStatus UpdateMasternodeFromBroadcast(CMasternodeBroadcast& mnb);
     bool CheckAndUpdatePing(CMasternode& mn, const CMasternodePing& mnp, int& nDoS, bool skipPingChainSyncCheck = false);

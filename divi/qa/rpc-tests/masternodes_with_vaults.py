@@ -64,22 +64,23 @@ class MnPlusVaults (MnTestFramework):
   def mine_blocks (self, n):
     """Mines blocks with node 3."""
     if self.nodes[3].getblockcount() > 100:
-      self.nodes[6].setgenerate(True,n)
+      self.nodes[6].setgenerate(n)
     else:
-      self.nodes[3].setgenerate(True, n)
+      self.nodes[3].setgenerate( n)
     sync_blocks (self.nodes)
 
   def fund_vaults(self):
     staking_vault = self.nodes[6]
     staking_address = staking_vault.getnewaddress()
     funding_data = []
-    for _ in range(20):
-      funding_data.append(self.nodes[0].fundvault(staking_address,20))
+    funding_format = {staking_address:{"amount":20.0,"repetitions":20}}
+    funding_data.append(self.nodes[0].fundvault(funding_format))
 
     sync_mempools(self.nodes)
     self.mine_blocks(1)
     for data in funding_data:
-      staking_vault.addvault(data["vault"],data["txhash"])
+      for vault in data["vault"]:
+        staking_vault.addvault(vault["encoding"],data["txhash"])
 
 
   def fund_masternodes (self):
@@ -89,7 +90,7 @@ class MnPlusVaults (MnTestFramework):
     # with a very early timestamp.
     set_node_times (self.nodes, self.time)
 
-    self.nodes[0].setgenerate (True, 5)
+    self.nodes[0].setgenerate ( 5)
     sync_blocks (self.nodes)
     self.mine_blocks (24)
     self.fund_vaults()

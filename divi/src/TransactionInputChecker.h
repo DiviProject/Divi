@@ -10,21 +10,29 @@ class CCoinsViewCache;
 class CBlockIndex;
 class CTransaction;
 
+namespace boost
+{
+class thread_group;
+} // namespace boost
+
 class TransactionInputChecker
 {
 private:
     unsigned nSigOps;
-    const bool fScriptChecks;
     std::vector<CScriptCheck> vChecks;
     CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker;
     const CCoinsViewCache& view_;
     const BlockMap& blockIndexMap_;
     CValidationState& state_;
+    static int nScriptCheckThreads;
 
-public:
     static void ThreadScriptCheck();
+public:
+    static void SetScriptCheckingThreadCount(int threadCount);
+    static int GetScriptCheckingThreadCount();
+    static void InitializeScriptCheckingThreads(boost::thread_group& threadGroup);
+
     TransactionInputChecker(
-        bool checkScripts,
         const CCoinsViewCache& view,
         const BlockMap& blockIndexMap,
         CValidationState& state);
@@ -33,7 +41,6 @@ public:
     bool CheckInputsAndUpdateCoinSupplyRecords(
         const CTransaction& tx,
         unsigned flags,
-        const bool fJustCheck,
         CBlockIndex* pindex);
 
     bool InputsAreValid(const CTransaction& tx) const;

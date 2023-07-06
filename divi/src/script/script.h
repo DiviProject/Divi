@@ -137,6 +137,10 @@ public:
             return std::numeric_limits<int>::min();
         return m_value;
     }
+    int64_t getint64() const
+    {
+        return m_value;
+    }
 
     std::vector<unsigned char> getvch() const
     {

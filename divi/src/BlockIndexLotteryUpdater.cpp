@@ -3,23 +3,22 @@
 #include <LotteryCoinstakes.h>
 #include <chainparams.h>
 #include <chain.h>
-#include <SuperblockSubsidyContainer.h>
+#include <I_SuperblockSubsidyContainer.h>
 #include <LotteryWinnersCalculator.h>
 
 BlockIndexLotteryUpdater::BlockIndexLotteryUpdater(
     const CChainParams& chainParameters,
+    const I_SuperblockSubsidyContainer& subsidyContainer,
     const CChain& activeChain,
     const CSporkManager& sporkManager
     ): chainParameters_(chainParameters)
-    , subsidyContainer_(new SuperblockSubsidyContainer(chainParameters_))
-    , lotteryCalculator_(new LotteryWinnersCalculator(chainParameters_.GetLotteryBlockStartBlock(),activeChain,sporkManager, subsidyContainer_->superblockHeightValidator()) )
+    , lotteryCalculator_(new LotteryWinnersCalculator(chainParameters_.GetLotteryBlockStartBlock(), activeChain,sporkManager, subsidyContainer.superblockHeightValidator()) )
 {
 }
 
 BlockIndexLotteryUpdater::~BlockIndexLotteryUpdater()
 {
     lotteryCalculator_.reset();
-    subsidyContainer_.reset();
 }
 
 void BlockIndexLotteryUpdater::UpdateBlockIndexLotteryWinners(const CBlock &block, CBlockIndex *newestBlockIndex) const

@@ -33,7 +33,7 @@ class MempoolRejectTest (BitcoinTestFramework):
         # nodes is set to allow that and the other to reject them
         # according to their relay policy.
 
-        self.nodes[0].setgenerate (True, 30)
+        self.nodes[0].setgenerate ( 30)
         utxo = self.nodes[0].listunspent ()[0]
 
         value = utxo["amount"]

@@ -121,6 +121,7 @@ void CMasternodeMan::ManageLocalMasternode()
             }
         }
     }
+    LogPrint("masternode","%s - End\n",__func__);
 }
 
 bool CMasternodeMan::Add(const CMasternode& mn)
@@ -192,7 +193,7 @@ bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMa
     }
     return false;
 }
-bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS)
+bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb)
 {
     // search existing Masternode list
     // nothing to do here if we already know about this masternode and it's enabled
@@ -427,7 +428,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     if(!CheckMasternodeBroadcastContext(mnb,nDoS))
     {
         if (nDoS > 0 && pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS,"Bad masternode broadcast context");
         return false;
     }
     if (UpdateMasternodeFromBroadcast(mnb) == MnUpdateStatus::MN_UPDATE_INVALID)
@@ -440,17 +441,17 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     if (!IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<MasternodeTier>(mnb.nTier))) {
         LogPrintf("%s : mnb - Got mismatched pubkey and vin\n", __func__);
         if (pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), 33);
+            Misbehaving(pfrom->GetNodeState(), 33,"Mismatched pubkey and vin for masternode");
         return false;
     }
 
     // make sure collateral is still unspent
     const bool isOurBroadcast = localActiveMasternode_.IsOurBroadcast(mnb,true);
-    if (!isOurBroadcast && !CheckInputsForMasternode(mnb,nDoS))
+    if (!isOurBroadcast && !CheckInputsForMasternode(mnb))
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash);
-        if (nDoS > 0 && pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), nDoS);
+        if (pfrom != nullptr)
+            Misbehaving(pfrom->GetNodeState(), nDoS,"Rejected masternode addition to list");
         return false;
     }
 
@@ -461,14 +462,14 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     {
         LogPrintf("%s : mnb - attached ping is invalid\n", __func__);
         if (pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS, "Invalid masternode ping");
         return false;
     }
 
     // use this as a peer
     CNetAddr addr("127.0.0.1");
     if (pfrom != nullptr)
-        addr = pfrom->addr;
+        addr = pfrom->GetCAddress();
     addressManager_.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
     masternodeSynchronization_.RecordMasternodeListUpdate(mnb.GetHash());
 
@@ -518,7 +519,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, const CMasternodePing& mnp)
     if (nDoS > 0) {
         // if anything significant failed, mark that node
         if (pfrom != nullptr)
-            Misbehaving(pfrom->GetNodeState(), nDoS);
+            Misbehaving(pfrom->GetNodeState(), nDoS,"Ping update failed");
     } else {
         // if the masternode is known, don't ask for the mnb, just return
         if (pmn != nullptr) return false;
@@ -538,6 +539,8 @@ bool CMasternodeMan::ProcessMNBroadcastsAndPings(CNode* pfrom, const std::string
         LOCK(networkMessageManager_.cs_process_message);
         CMasternodeBroadcast mnb;
         vRecv >> mnb;
+
+        LogPrint("masternode", "mnb - Masternode broadcast, vin: %s\n", mnb.vin.prevout.hash);
         return ProcessBroadcast(pfrom, mnb);
     }
     else if (strCommand == "mnp") { //Masternode Ping

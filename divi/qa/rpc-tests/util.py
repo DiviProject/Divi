@@ -19,12 +19,21 @@ import re
 from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
-portseed = 0
+cli_timeout = 30
+portSeedsByPID = {}
+
+def set_cli_timeout(updated_timeout = None):
+    if updated_timeout:
+        cli_timeout = updated_timeout
+
+def set_port_seed(port_seed):
+    portSeedsByPID[os.getpid()] = port_seed
 
 def p2p_port(n):
-    return 11000 + n + 10 * (portseed % 99)
+    return 11000 + n + 20 * ( portSeedsByPID[os.getpid()] % 100)
+
 def rpc_port(n):
-    return 12000 + n + 10 * (portseed % 99)
+    return 13000 + n + 20 * ( portSeedsByPID[os.getpid()] % 100)
 
 def check_json_precision():
     """Make sure json library being used does not lose precision converting BTC values"""
@@ -97,6 +106,9 @@ def initialize_datadir(dirname, n):
         f.write("rpcport="+str(rpc_port(n))+"\n")
     return datadir
 
+def drop_wallet(tmpdir,n):
+    os.remove(tmpdir + "/node"+str(n)+"/regtest/wallet.dat")
+
 def prune_datadir(tmpdir,n):
     os.remove(tmpdir + "/node"+str(n)+"/regtest/mncache.dat")
     os.remove(tmpdir + "/node"+str(n)+"/regtest/mnpayments.dat")
@@ -125,7 +137,7 @@ def _rpchost_to_args(rpchost):
         rv += ['-rpcport=' + rpcport]
     return rv
 
-def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
+def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None, daemon_name = None):
     """
     Start a divid and return RPC connection to it
     """
@@ -134,17 +146,18 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
       f.write("\n".join(mn_config_lines))
     binary = []
     runner_name = None
-    timeout_limit = 30.0
+    timeout_limit = cli_timeout
     if os.getenv("RUNNER") is not None:
       runner_name = os.getenv("RUNNER")
-      timeout_limit = 60.0
+      timeout_limit += 30.0
       binary.append(runner_name)
       if os.getenv("RUNNER_FLAGS") is not None:
         flags = str(os.getenv("RUNNER_FLAGS")).split(" ")
         print("Using flags: '{}'".format(flags))
         for flag in flags:
             binary.append(flag)
-    binary.append(os.getenv("BITCOIND", "divid"))
+    divid_env_name = os.getenv("BITCOIND", "divid") if daemon_name is None else daemon_name
+    binary.append(divid_env_name)
     # By default, Divi checks if Tor is running on the system and if it is,
     # then the real Tor instance will be used as proxy for .onion
     # connections even if -proxy is set otherwise, and it will try to set up
@@ -167,7 +180,7 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
       url += "%s:%d" % (rpchost, rpc_port(i))
     else:
       url += "127.0.0.1:%d" % rpc_port(i)
-    proxy = AuthServiceProxy(url)
+    proxy = AuthServiceProxy(url,timeout=cli_timeout)
     proxy.url = url # store URL on proxy for info
     return proxy
 

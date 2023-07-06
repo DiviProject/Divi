@@ -18,6 +18,8 @@ class I_WalletLoader;
 class CHDChain;
 class CHDPubKey;
 class CKeyMetadata;
+class CPubKey;
+
 using WalletTxVector = std::vector<CWalletTx>;
 
 /** Error statuses for the wallet database */
@@ -39,10 +41,11 @@ class I_WalletDatabase
 public:
     virtual ~I_WalletDatabase(){};
 
+    virtual bool AtomicWriteBegin() = 0;
+    virtual bool AtomicWriteEnd(bool commitChanges) = 0;
+
     virtual bool WriteName(const std::string& strAddress, const std::string& strName) = 0;
     virtual bool EraseName(const std::string& strAddress) = 0;
-    virtual bool WritePurpose(const std::string& strAddress, const std::string& purpose) = 0;
-    virtual bool ErasePurpose(const std::string& strAddress) = 0;
     virtual bool WriteTx(uint256 hash, const CWalletTx& wtx) = 0;
     virtual bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata& keyMeta) = 0;
     virtual bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret, const CKeyMetadata& keyMeta) = 0;
@@ -60,8 +63,6 @@ public:
     virtual bool WritePool(int64_t nPool, const CKeyPool& keypool) = 0;
     virtual bool ErasePool(int64_t nPool) = 0;
     virtual bool WriteMinVersion(int nVersion) = 0;
-    virtual bool ReadAccount(const std::string& strAccount, CAccount& account) = 0;
-    virtual bool WriteAccount(const std::string& strAccount, const CAccount& account) = 0;
     virtual bool WriteHDChain(const CHDChain& chain) = 0;
     virtual bool WriteCryptedHDChain(const CHDChain& chain) = 0;
     virtual bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta) = 0;

@@ -2,14 +2,12 @@
 name: "divi-linux-1.0"
 enable_cache: true
 suites:
-- "trusty"
+- "bionic"
 architectures:
 - "amd64"
 packages:
 - "curl"
 - "g++-aarch64-linux-gnu"
-- "g++-4.8-aarch64-linux-gnu"
-- "gcc-4.8-aarch64-linux-gnu"
 - "binutils-aarch64-linux-gnu"
 - "g++-4.8-multilib"
 - "gcc-4.8-multilib"

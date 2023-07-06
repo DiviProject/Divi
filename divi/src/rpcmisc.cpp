@@ -8,27 +8,27 @@
 #include "base58.h"
 #include "clientversion.h"
 #include "init.h"
+#include <rpcprotocol.h>
 #include "rpcserver.h"
 #include "spork.h"
 #include "timedata.h"
 #include "util.h"
-#include "miner.h"
 #ifdef ENABLE_WALLET
 #include "wallet.h"
-#include "walletdb.h"
 #endif
+#include <KeyMetadata.h>
 
 #include <stdint.h>
 
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 #include <boost/assign/list_of.hpp>
+#include <ChainstateManager.h>
 #include <txdb.h>
 #include <addressindex.h>
 #include <spentindex.h>
 #include <net.h>
 #include <obfuscation.h>
-#include <txmempool.h>
 #include <MasternodeModule.h>
 #include <masternode-sync.h>
 #include <MasternodeHelpers.h>
@@ -36,6 +36,8 @@
 #include <PeerBanningService.h>
 #include <IndexDatabaseUpdateCollector.h>
 #include <TransactionSearchIndexes.h>
+
+#include <JsonBlockHelpers.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -58,18 +60,9 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
-extern int64_t nLastCoinStakeSearchInterval;
-extern bool fAddressIndex;
-extern CBlockTreeDB* pblocktree;
-extern CChain chainActive;
-extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
-extern CWallet* pwalletMain;
-extern bool fSpentIndex;
 
-std::string GetWarnings(std::string strFor);
 
-Value ban(const Array& params, bool fHelp)
+Value ban(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -105,7 +98,7 @@ Value ban(const Array& params, bool fHelp)
     return Value();
 }
 
-Value getinfo(const Array& params, bool fHelp)
+Value getinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -138,39 +131,33 @@ Value getinfo(const Array& params, bool fHelp)
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
 
+    const ChainstateManager::Reference chainstate;
+    const auto& chain = chainstate->ActiveChain();
+
     Object obj;
     obj.push_back(Pair("version", CLIENT_VERSION_STR));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
 #ifdef ENABLE_WALLET
-    if (pwalletMain) {
-        obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
-        obj.push_back(Pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
+    if (pwallet) {
+        obj.push_back(Pair("walletversion", pwallet->getVersion()));
+        obj.push_back(Pair("balance", ValueFromAmount(pwallet->GetBalance())));
     }
 #endif
-    obj.push_back(Pair("blocks", (int)chainActive.Height()));
+    obj.push_back(Pair("blocks", (int)chain.Height()));
     obj.push_back(Pair("timeoffset", GetTimeOffset()));
     obj.push_back(Pair("connections", (int) GetPeerCount() ));
     obj.push_back(Pair("proxy", (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : string())));
-    obj.push_back(Pair("difficulty", (double)GetDifficulty()));
+    obj.push_back(Pair("difficulty", (double)GetDifficulty(chain)));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
-    obj.push_back(Pair("moneysupply",ValueFromAmount(chainActive.Tip()->nMoneySupply)));
-
-#ifdef ENABLE_WALLET
-    if (pwalletMain) {
-        obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
-        obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
-    }
-    if (pwalletMain && pwalletMain->IsCrypted())
-        obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
-#endif
+    obj.push_back(Pair("moneysupply",ValueFromAmount(chain.Tip()->nMoneySupply)));
     obj.push_back(Pair("relayfee", ValueFromAmount( FeeAndPriorityCalculator::instance().getMinimumRelayFeeRate().GetFeePerK())));
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
-    obj.push_back(Pair("errors", GetWarnings("statusbar")));
+    obj.push_back(Pair("errors", GetWarningMessage("statusbar")));
     return obj;
 }
 
-Value mnsync(const Array& params, bool fHelp)
+Value mnsync(const Array& params, bool fHelp, CWallet* pwallet)
 {
     std::string strMode;
     if (params.size() == 1)
@@ -240,9 +227,9 @@ class DescribeAddressVisitor : public boost::static_visitor<Object>
 {
 private:
     isminetype mine;
-
+    const CWallet* walletRef_;
 public:
-    DescribeAddressVisitor(isminetype mineIn) : mine(mineIn) {}
+    DescribeAddressVisitor(isminetype mineIn,const CWallet* walletRef) : mine(mineIn), walletRef_(walletRef) {}
 
     Object operator()(const CNoDestination& dest) const { return Object(); }
 
@@ -252,7 +239,7 @@ public:
         CPubKey vchPubKey;
         obj.push_back(Pair("isscript", false));
         if (mine == isminetype::ISMINE_SPENDABLE) {
-            pwalletMain->GetPubKey(keyID, vchPubKey);
+            if(walletRef_) walletRef_->GetPubKey(keyID, vchPubKey);
             obj.push_back(Pair("pubkey", HexStr(vchPubKey)));
             obj.push_back(Pair("iscompressed", vchPubKey.IsCompressed()));
         }
@@ -265,7 +252,7 @@ public:
         obj.push_back(Pair("isscript", true));
         if (mine != isminetype::ISMINE_NO) {
             CScript subscript;
-            pwalletMain->GetCScript(scriptID, subscript);
+            walletRef_->GetCScript(scriptID, subscript);
             std::vector<CTxDestination> addresses;
             txnouttype whichType;
             int nRequired;
@@ -287,9 +274,9 @@ public:
 /*
     Used for updating/reading spork settings on the network
 */
-Value spork(const Array& params, bool fHelp)
+Value spork(const Array& params, bool fHelp, CWallet* pwallet)
 {
-    static CSporkManager& sporkManager = GetSporkManager();
+    CSporkManager& sporkManager = GetSporkManager();
     if (params.size() == 1 && params[0].get_str() == "show") {
         Object ret;
         for (int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++) {
@@ -325,10 +312,10 @@ Value spork(const Array& params, bool fHelp)
         "spork <name> [<value>]\n"
         "<name> is the corresponding spork name, or 'show' to show all current spork settings, active to show which sporks are active"
         "<value> is a epoch datetime to enable or disable spork" +
-        HelpRequiringPassphrase());
+        HelpRequiringPassphrase(pwallet));
 }
 
-Value validateaddress(const Array& params, bool fHelp)
+Value validateaddress(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -363,23 +350,23 @@ Value validateaddress(const Array& params, bool fHelp)
         ret.push_back(Pair("scriptPubKey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
 
 #ifdef ENABLE_WALLET
-        isminetype mine = pwalletMain ? pwalletMain->IsMine(dest) : isminetype::ISMINE_NO;
+        isminetype mine = pwallet ? computeMineType(*pwallet,dest,true) : isminetype::ISMINE_NO;
         ret.push_back(Pair("ismine", (mine == isminetype::ISMINE_SPENDABLE) ? true : false));
         if (mine != isminetype::ISMINE_NO) {
             ret.push_back(Pair("iswatchonly", (mine == isminetype::ISMINE_WATCH_ONLY) ? true : false));
-            Object detail = boost::apply_visitor(DescribeAddressVisitor(mine), dest);
+            Object detail = boost::apply_visitor(DescribeAddressVisitor(mine,pwallet), dest);
             ret.insert(ret.end(), detail.begin(), detail.end());
         }
-        if (pwalletMain)
+        if (pwallet)
         {
-            const AddressBook& addressBook = pwalletMain->GetAddressBook();
+            const AddressBook& addressBook = pwallet->getAddressBookManager().getAddressBook();
             if(addressBook.count(dest)) ret.push_back(Pair("account", addressBook.find(dest)->second.name));
         }
 
 
         CKeyID keyID;
-        if (pwalletMain) {
-            CKeyMetadata result = pwalletMain->getKeyMetadata(dest);
+        if (pwallet) {
+            CKeyMetadata result = pwallet->getKeyMetadata(dest);
             if(!result.unknownKeyID)
             {
                 ret.push_back(Pair("timestamp", result.nCreateTime));
@@ -398,7 +385,7 @@ Value validateaddress(const Array& params, bool fHelp)
 /**
  * Used by addmultisigaddress / createmultisig:
  */
-CScript _createmultisig_redeemScript(const Array& params)
+CScript _createmultisig_redeemScript(const Array& params, CWallet* pwallet)
 {
     int nRequired = params[0].get_int();
     const Array& keys = params[1].get_array();
@@ -420,13 +407,13 @@ CScript _createmultisig_redeemScript(const Array& params)
 #ifdef ENABLE_WALLET
         // Case 1: DIVI address and we have full public key:
         CBitcoinAddress address(ks);
-        if (pwalletMain && address.IsValid()) {
+        if (pwallet && address.IsValid()) {
             CKeyID keyID;
             if (!address.GetKeyID(keyID))
                 throw runtime_error(
                     strprintf("%s does not refer to a key", ks));
             CPubKey vchPubKey;
-            if (!pwalletMain->GetPubKey(keyID, vchPubKey))
+            if (!pwallet->GetPubKey(keyID, vchPubKey))
                 throw runtime_error(
                     strprintf("no full public key for address %s", ks));
             if (!vchPubKey.IsFullyValid())
@@ -455,7 +442,7 @@ CScript _createmultisig_redeemScript(const Array& params)
     return result;
 }
 
-Value createmultisig(const Array& params, bool fHelp)
+Value createmultisig(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 2 || params.size() > 2) {
         string msg = "createmultisig nrequired [\"key\",...]\n"
@@ -484,7 +471,7 @@ Value createmultisig(const Array& params, bool fHelp)
     }
 
     // Construct using pay-to-script-hash:
-    CScript inner = _createmultisig_redeemScript(params);
+    CScript inner = _createmultisig_redeemScript(params,pwallet);
     CScriptID innerID(inner);
     CBitcoinAddress address(innerID);
 
@@ -495,7 +482,7 @@ Value createmultisig(const Array& params, bool fHelp)
     return result;
 }
 
-Value verifymessage(const Array& params, bool fHelp)
+Value verifymessage(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 3)
         throw runtime_error(
@@ -536,7 +523,7 @@ Value verifymessage(const Array& params, bool fHelp)
     return CObfuScationSigner::VerifyMessage(keyID,vchSig,strMessage,errorMessage);
 }
 
-Value setmocktime(const Array& params, bool fHelp)
+Value setmocktime(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -619,22 +606,18 @@ bool getAddressFromIndex(const int &type, const uint160 &hash, std::string &addr
     return true;
 }
 
-Value getaddresstxids(const Array& params, bool fHelp)
+Value getaddresstxids(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddresstxids [addresses] ( start end ) [only_vaults]\n"
+            "getaddresstxids <address>|<addresses> (only_vaults)\n"
             "\nReturns the txids for an address(es) (requires addressindex to be enabled).\n"
             "\nArguments:\n"
-            "{\n"
-            "  \"addresses\"\n"
-            "    [\n"
-            "      \"address\"  (string) The base58check encoded address\n"
-            "      ,...\n"
-            "    ]\n"
-            "  \"start\" (number) The start block height\n"
-            "  \"end\" (number) The end block height\n"
-            "}\n"
+            "address: (string) The base58check encoded address\n"
+            "\"addresses\": (optional JSON object) An object with fields:\n"
+            "               (1) '\"addresses\"' (required) array of base58check encoded addresses\n"
+            "               (2) '\"start\"' (optional field) integer block height to start at\n"
+            "               (3) '\"end\"' (optional field) integer block height to stop at\n"
             "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult:\n"
             "[\n"
@@ -666,13 +649,16 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
+    const ChainstateManager::Reference chainstate;
+    const auto& blockTree = chainstate->BlockTree();
+
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(&blockTree, (*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(&blockTree, (*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -704,23 +690,19 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
 }
 
-Value getaddressdeltas(const Array& params, bool fHelp)
+Value getaddressdeltas(const Array& params, bool fHelp, CWallet* pwallet)
 {
-    if (fHelp || params.size() < 1 || params.size() > 2 || params[0].type() != obj_type)
+    if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddressdeltas {addresses:...} [only_vaults]\n"
+            "getaddressdeltas <address>|<addresses> (only_vaults)\n"
             "\nReturns all changes for an address (requires addressindex to be enabled).\n"
             "\nArguments:\n"
-            "{\n"
-            "  \"addresses\"\n"
-            "    [\n"
-            "      \"address\"  (string) The base58check encoded address\n"
-            "      ,...\n"
-            "    ]\n"
-            "  \"start\" (number) The start block height\n"
-            "  \"end\" (number) The end block height\n"
-            "  \"chainInfo\" (boolean) Include chain info in results, only applies if start and end specified\n"
-            "}\n"
+            "address: (string) The base58check encoded address\n"
+            "\"addresses\": (optional JSON object) An object with fields:\n"
+            "               (1) '\"addresses\"' (required) array of base58check encoded addresses\n"
+            "               (2) '\"start\"' (optional field) integer block height to start at\n"
+            "               (3) '\"end\"' (optional field) integer block height to stop at\n"
+            "               (4) '\"chainInfo\"' (optional field) bool flag to include chain info\n"
             "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult:\n"
             "[\n"
@@ -737,44 +719,48 @@ Value getaddressdeltas(const Array& params, bool fHelp)
             + HelpExampleRpc("getaddressdeltas", "{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}")
         );
 
-    Value startValue = find_value(params[0].get_obj(), "start");
-    Value endValue = find_value(params[0].get_obj(), "end");
-
-    Value chainInfo = find_value(params[0].get_obj(), "chainInfo");
-    bool includeChainInfo = false;
-    if (chainInfo.type() == bool_type) {
-        includeChainInfo = chainInfo.get_bool();
-    }
-
     int start = 0;
     int end = 0;
+    bool includeChainInfo = false;
+    if (params[0].type() == obj_type)
+    {
+        Value startValue = find_value(params[0].get_obj(), "start");
+        Value endValue = find_value(params[0].get_obj(), "end");
 
-    if (startValue.type() == int_type && endValue.type() == int_type) {
-        start = startValue.get_int();
-        end = endValue.get_int();
-        if (start <= 0 || end <= 0) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Start and end is expected to be greater than zero");
+        Value chainInfo = find_value(params[0].get_obj(), "chainInfo");
+        if (chainInfo.type() == bool_type) {
+            includeChainInfo = chainInfo.get_bool();
         }
-        if (end < start) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "End value is expected to be greater than start");
+        if (startValue.type() == int_type && endValue.type() == int_type) {
+            start = startValue.get_int();
+            end = endValue.get_int();
+            if (start <= 0 || end <= 0) {
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Start and end is expected to be greater than zero");
+            }
+            if (end < start) {
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "End value is expected to be greater than start");
+            }
         }
     }
 
     std::vector<std::pair<uint160, int>> addresses;
-
     if (!getAddressesFromParams(params, addresses)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
+    const ChainstateManager::Reference chainstate;
+    const auto& blockTree = chainstate->BlockTree();
+    const auto& chain = chainstate->ActiveChain();
+
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(&blockTree, (*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
+            if (!TransactionSearchIndexes::GetAddressIndex(&blockTree, (*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -801,14 +787,13 @@ Value getaddressdeltas(const Array& params, bool fHelp)
     Object result;
 
     if (includeChainInfo && start > 0 && end > 0) {
-        LOCK(cs_main);
 
-        if (start > chainActive.Height() || end > chainActive.Height()) {
+        if (start > chain.Height() || end > chain.Height()) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Start or end is outside chain range");
         }
 
-        CBlockIndex* startIndex = chainActive[start];
-        CBlockIndex* endIndex = chainActive[end];
+        const CBlockIndex* startIndex = chain[start];
+        const CBlockIndex* endIndex = chain[end];
 
         Object startInfo;
         Object endInfo;
@@ -829,20 +814,16 @@ Value getaddressdeltas(const Array& params, bool fHelp)
     }
 }
 
-Value getaddressbalance(const Array& params, bool fHelp)
+Value getaddressbalance(const Array& params, bool fHelp, CWallet* pwallet)
 {
-    if (fHelp || params.size() < 1 || params.size() > 2 || params[0].type() != obj_type)
+    if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddressbalance {addresses:...} [only_vaults]\n"
+            "getaddressbalance <address>|<addresses> (only_vaults)\n"
             "\nReturns the balance for an address(es) (requires addressindex to be enabled).\n"
             "\nArguments:\n"
-            "{\n"
-            "  \"addresses\"\n"
-            "    [\n"
-            "      \"address\"  (string) The base58check encoded address\n"
-            "      ,...\n"
-            "    ]\n"
-            "}\n"
+            "address: (string) The base58check encoded address\n"
+            "\"addresses\": (JSON object) An object with field '\"addresses\"' holding array\n"
+            "               of base58check encoded addresses\n"
             "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult:\n"
             "{\n"
@@ -850,6 +831,7 @@ Value getaddressbalance(const Array& params, bool fHelp)
             "  \"received\"  (string) The total number of satoshis received (including change)\n"
             "}\n"
             "\nExamples:\n"
+            + HelpExampleCli("getaddressbalance", "'\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"'")
             + HelpExampleCli("getaddressbalance", "'{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}'")
             + HelpExampleRpc("getaddressbalance", "{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}")
         );
@@ -862,8 +844,10 @@ Value getaddressbalance(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
+    const ChainstateManager::Reference chainstate;
+
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!TransactionSearchIndexes::GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
+        if (!TransactionSearchIndexes::GetAddressIndex(&chainstate->BlockTree(), (*it).first, (*it).second, addressIndex)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }
@@ -891,83 +875,7 @@ bool heightSort(std::pair<CAddressUnspentKey, CAddressUnspentValue> a,
     return a.second.blockHeight < b.second.blockHeight;
 }
 
-bool timestampSort(std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> a,
-                   std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> b) {
-    return a.second.time < b.second.time;
-}
-
-Value getaddressmempool(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() != 1 || params[0].type() != obj_type)
-        throw runtime_error(
-            "getaddressmempool {addresses:...}\n"
-            "\nReturns all mempool deltas for an address (requires addressindex to be enabled).\n"
-            "\nArguments:\n"
-            "{\n"
-            "  \"addresses\"\n"
-            "    [\n"
-            "      \"address\"  (string) The base58check encoded address\n"
-            "      ,...\n"
-            "    ]\n"
-            "}\n"
-            "\nResult:\n"
-            "[\n"
-            "  {\n"
-            "    \"address\"  (string) The base58check encoded address\n"
-            "    \"txid\"  (string) The related txid\n"
-            "    \"index\"  (number) The related input or output index\n"
-            "    \"satoshis\"  (number) The difference of satoshis\n"
-            "    \"timestamp\"  (number) The time the transaction entered the mempool (seconds)\n"
-            "    \"prevtxid\"  (string) The previous txid (if spending)\n"
-            "    \"prevout\"  (string) The previous transaction output index (if spending)\n"
-            "  }\n"
-            "]\n"
-            "\nExamples:\n"
-            + HelpExampleCli("getaddressmempool", "'{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}'")
-            + HelpExampleRpc("getaddressmempool", "{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}")
-        );
-
-    std::vector<std::pair<uint160, int> > addresses;
-
-    if (!getAddressesFromParams(params, addresses)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
-    }
-
-    std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> > indexes;
-
-    if (!mempool.getAddressIndex(addresses, indexes)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
-    }
-
-    std::sort(indexes.begin(), indexes.end(), timestampSort);
-
-    Array result;
-
-    for (std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> >::iterator it = indexes.begin();
-         it != indexes.end(); it++) {
-
-        std::string address;
-        if (!getAddressFromIndex(it->first.type, it->first.addressBytes, address)) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unknown address type");
-        }
-
-        Object delta;
-        delta.push_back(Pair("address", address));
-        delta.push_back(Pair("txid", it->first.txhash.GetHex()));
-        delta.push_back(Pair("index", (int)it->first.index));
-        delta.push_back(Pair("satoshis", it->second.amount));
-        delta.push_back(Pair("timestamp", it->second.time));
-        if (it->second.amount < 0) {
-            delta.push_back(Pair("prevtxid", it->second.prevhash.GetHex()));
-            delta.push_back(Pair("prevout", (int)it->second.prevout));
-        }
-        result.push_back(delta);
-    }
-
-    return result;
-}
-
-Value getspentinfo(const Array& params, bool fHelp)
+Value getspentinfo(const Array& params, bool fHelp, CWallet* pwallet)
 {
 
     if (fHelp || params.size() != 1 || params[0].type() != obj_type)
@@ -1003,7 +911,9 @@ Value getspentinfo(const Array& params, bool fHelp)
     const CSpentIndexKey key(txid, outputIndex);
     CSpentIndexValue value;
 
-    if (!TransactionSearchIndexes::GetSpentIndex(fSpentIndex,pblocktree,mempool,key, value)) {
+    const ChainstateManager::Reference chainstate;
+
+    if (!TransactionSearchIndexes::GetSpentIndex(&chainstate->BlockTree(), key, value)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unable to get spent info");
     }
 
@@ -1015,21 +925,17 @@ Value getspentinfo(const Array& params, bool fHelp)
     return obj;
 }
 
-Value getaddressutxos(const Array& params, bool fHelp)
+Value getaddressutxos(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getaddressutxos {addresses:...} [only_vaults]\n"
+            "getaddressutxos <address>|<addresses> (only_vaults)\n"
             "\nReturns all unspent outputs for an address (requires addressindex to be enabled).\n"
             "\nArguments:\n"
-            "{\n"
-            "  \"addresses\"\n"
-            "    [\n"
-            "      \"address\"  (string) The base58check encoded address\n"
-            "      ,...\n"
-            "    ],\n"
-            "  \"chainInfo\"  (boolean) Include chain info with results\n"
-            "}\n"
+            "address: (string) The base58check encoded address\n"
+            "\"addresses\": (optional JSON object) An object with fields:\n"
+            "               (1) '\"addresses\"' (required) array of base58check encoded addresses\n"
+            "               (2) '\"chainInfo\"' (optional field) bool flag to include chain info\n"
             "\"only_vaults\" (boolean, optional) Only return utxos spendable by the specified addresses\n"
             "\nResult\n"
             "[\n"
@@ -1062,8 +968,11 @@ Value getaddressutxos(const Array& params, bool fHelp)
 
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue>> unspentOutputs;
 
+    const ChainstateManager::Reference chainstate;
+    const auto& chain = chainstate->ActiveChain();
+
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!TransactionSearchIndexes::GetAddressUnspent(fAddressIndex,pblocktree,(*it).first, (*it).second, unspentOutputs)) {
+        if (!TransactionSearchIndexes::GetAddressUnspent(&chainstate->BlockTree(), (*it).first, (*it).second, unspentOutputs)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }
@@ -1092,16 +1001,15 @@ Value getaddressutxos(const Array& params, bool fHelp)
         Object result;
         result.push_back(Pair("utxos", utxos));
 
-        LOCK(cs_main);
-        result.push_back(Pair("hash", chainActive.Tip()->GetBlockHash().GetHex()));
-        result.push_back(Pair("height", (int)chainActive.Height()));
+        result.push_back(Pair("hash", chain.Tip()->GetBlockHash().GetHex()));
+        result.push_back(Pair("height", (int)chain.Height()));
         return result;
     } else {
         return utxos;
     }
 }
 
-Value clearbanned(const Array& params, bool fHelp)
+Value clearbanned(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -1112,7 +1020,7 @@ Value clearbanned(const Array& params, bool fHelp)
     return Value();
 
 }
-Value listbanned(const Array& params, bool fHelp)
+Value listbanned(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -1126,7 +1034,7 @@ Value listbanned(const Array& params, bool fHelp)
 }
 
 #ifdef ENABLE_WALLET
-Value getstakingstatus(const Array& params, bool fHelp)
+Value getstakingstatus(const Array& params, bool fHelp, CWallet* pwallet)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -1145,13 +1053,17 @@ Value getstakingstatus(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getstakingstatus", "") + HelpExampleRpc("getstakingstatus", ""));
 
+    const ChainstateManager::Reference chainstate;
+
     Object obj;
-    obj.push_back(Pair("validtime", chainActive.Tip()->nTime > 1471482000));
+    obj.push_back(Pair("validtime", chainstate->ActiveChain().Tip()->nTime > 1471482000));
     obj.push_back(Pair("haveconnections", GetPeerCount()>0 ));
-    if (pwalletMain) {
-        obj.push_back(Pair("walletunlocked", !pwalletMain->IsLocked()));
-        obj.push_back(Pair("mintablecoins", pwalletMain->HasAgedCoins()));
-        obj.push_back(Pair("enoughcoins", pwalletMain->GetStakingBalance() > 0  ));
+    if (pwallet) {
+        obj.push_back(Pair("walletunlocked", !pwallet->IsLocked()));
+        obj.push_back(Pair("mintablecoins", pwallet->HasAgedCoins()));
+        CAmount stakkingBalance = pwallet->GetStakingBalance();
+        obj.push_back(Pair("staking_balance", ValueFromAmount(stakkingBalance)   ));
+        obj.push_back(Pair("enoughcoins", stakkingBalance > 0 ));
     }
 
     obj.push_back(Pair("mnsync", GetMasternodeModule().getMasternodeSynchronization().IsSynced()));
@@ -1160,7 +1072,7 @@ Value getstakingstatus(const Array& params, bool fHelp)
     obj.push_back(Pair("staking status", nStaking));
 
     constexpr char stakeSplitSettingLookup[] = "-stakesplitthreshold";
-    CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,100000)* COIN);
+    CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,20000)* COIN);
     obj.push_back(Pair("stake split threshold",ValueFromAmount(stakeSplit) ));
     return obj;
 }

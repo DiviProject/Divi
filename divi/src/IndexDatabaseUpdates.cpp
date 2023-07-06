@@ -3,19 +3,15 @@
 #include <primitives/transaction.h>
 
 IndexDatabaseUpdates::IndexDatabaseUpdates(
-    ): addressIndex()
+    const CBlockIndex* const blockIndex,
+    bool addressIndexingEnabled,
+    bool spentIndexingEnabled
+    ): blockIndex_(blockIndex)
+    , addressIndex()
     , addressUnspentIndex()
     , spentIndex()
     , txLocationData()
-{
-}
-
-TransactionLocationReference::TransactionLocationReference(
-    const CTransaction& tx,
-    unsigned blockheightValue,
-    int transactionIndexValue
-    ): hash(tx.GetHash())
-    , blockHeight(blockheightValue)
-    , transactionIndex(transactionIndexValue)
+    , addressIndexingEnabled_(addressIndexingEnabled)
+    , spentIndexingEnabled_(spentIndexingEnabled)
 {
 }

@@ -8,11 +8,9 @@ architectures:
 packages:
 - "curl"
 - "g++-aarch64-linux-gnu"
-- "g++-4.9-aarch64-linux-gnu"
-- "gcc-4.9-aarch64-linux-gnu"
+- "g++-9-aarch64-linux-gnu"
+- "gcc-9-aarch64-linux-gnu"
 - "binutils-aarch64-linux-gnu"
-- "g++-4.9-multilib"
-- "gcc-4.9-multilib"
 - "binutils-gold"
 - "git-core"
 - "pkg-config"

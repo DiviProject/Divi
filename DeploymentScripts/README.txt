@@ -1,19 +1,19 @@
-# This tool was designed to be used in an Ubuntu 18.04 environment
-# It provides a quick way of building divi binaries without all the
-# maneuvering that's otherwise required. A few dependencies like the MacOSX10.9 sdk
-# as well as the raspberrypi-tools. These are downloaded as part of the tidy_build.sh
-# but require care as these tools have not been thoroughly tested against careless
-# usage.
-# First time usage should be './continuous_build.sh clean'
-# Later usages that wish to skip the download of the 3rd party dependencies
-# can ommit the call to clean
-# Note that these deployment scripts point to a specific remote repo and branch
-# namely the development branch being managed by @galpHub. These should be updated
-# whenever these change
+Release Process Procedure (For Ubuntu 20.04 OS base machine - e.g. Digital Ocean)
+* sudo apt-get update
+* sudo apt-get -y upgrade
+* sudo apt-get install -y ruby rename
+* git clone --depth=1 <development-repo> Divi
+* cp Divi/DeploymentScripts DeploymentScripts && cd DeploymentScripts
+* ./install_docker_20-04.sh
+* sudo chmod +x download_dependencies.sh continuous_build.sh tidy_build.sh build.sh
+* ./download_dependencies.sh
+If development binaries are desired:
+* rm LastBuiltDevelopment && nohup ./continuous_build.sh dev > build_process.log 2>&1 &
+If production binaries are desired:
+* rm LastBuiltDevelopment && nohup ./continuous_build.sh > build_process.log 2>&1 &
 
-## Pre-requisites to be run in ~/build_dependencies
-# curl -L https://github.com/phracker/MacOSX-SDKs/releases/download/10.13/MacOSX10.9.sdk.tar.xz | tar -xJf - &&
-# tar -cJf MacOSX10.9.sdk.tar.xz ./ &&
-# rm -r MacOSX10.9.sdk &&
-# git clone -q https://github.com/raspberrypi/tools.git && tar -czf raspberrypi-tools.tar.gz ./tools &&
-# rm -rf ./tools
+Additonal notes:
+* Should have at least 4 ram and 2 cpus of hardware for building
+* Built binaries are stored under /divi_binaries/
+* LastBuiltDevelopment is a list of recently built commit hashes. The build process ignores the last commit hash in this file.
+* It's important to run the build process in the background as it can slow down the reponsiveness of the shell on which it executes potentially cancelling the build in the event of disconnection
